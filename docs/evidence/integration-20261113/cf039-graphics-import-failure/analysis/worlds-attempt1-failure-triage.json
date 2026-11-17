@@ -1,0 +1,53 @@
+{
+  "kind": "original_ci_failure_triage",
+  "repository": "Ullmann27/lumo-godot",
+  "run_id": 43444648887,
+  "run_attempt": 1,
+  "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "source_tree": "4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2",
+  "job_id": 131950805514,
+  "job_conclusion": "failure",
+  "failed_phase": "Capture the exact prior source with the same comparison harness: headless editor import",
+  "imported_baseline_sha": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "original_error": "ERROR: /root: The caller thread can't call the function `propagate_notification()` on this node. Use `call_deferred()` or `call_deferred_thread_group()` instead.",
+  "engine_crash_signal": 11,
+  "shell_exit_code": 134,
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "preceding_import_display": "87% reimport: lumo_reference_manifest.csv",
+  "root_cause_limit": "The last displayed CSV is not proof that this resource caused the crash; no current-product regression is established by this baseline-import failure.",
+  "current_source_results": {
+    "import": "PASS, no ERROR",
+    "world_regression_checks": 72,
+    "winter_visibility_checks": 50,
+    "winter_headless_capture_marker": "[KartWorldExpansionCapture] PASS track=winter_sprint views=0",
+    "winter_renderer_images": 3,
+    "crystal_renderer_images": 3,
+    "tracked_source_clean": true
+  },
+  "missing_results": [
+    "baseline renderer images",
+    "completed world before/after comparison"
+  ],
+  "evidence": {
+    "zip": "worlds-14047548008-attempt1.zip",
+    "artifact_id": 14047548008,
+    "bytes": 9631786,
+    "sha256": "faa5624566720da5e85b21ed3beaf624f9a61d6d11d0820ad1dcedb4f11bd226",
+    "job_log": "worlds-job-attempt1.log",
+    "job_log_sha256": "857ee961f734daf90ef4a4891044872e625a908f1b44fbaeb72318d5a41d39c6",
+    "baseline_import_log": "worlds-attempt1/baseline/import.log",
+    "baseline_import_log_sha256": "0fe41cc4a3080cc5dc73097a1eb46c8b67f56489ca99c75ff00ef98f608f24f8"
+  },
+  "recovery_owner": "Root",
+  "planned_recovery": "Adopt producer import blocks while preserving integration triggers, PR-head checkout, and all gates. Root runs the combined immutable head.",
+  "recovery_status": "Unchanged rerun cancelled by Root: finished producer25e3 import correction will be combined with the separate Touch repair and checked on a new exact head.",
+  "product_changes_by_triage": false,
+  "gate_changes": false,
+  "errors_suppressed": false,
+  "recovery_history": [
+    "Initial unchanged retry proposed after original failure archived.",
+    "Root API attempt returned403 because Home was still running; no retry started.",
+    "Root cancelled unchanged retry after completed producer25e3 was found.",
+    "Root verified narrow integration diff0aec->97b91: two import blocks/comments only, integration PR trigger and head checkout kept; actionlint PASS."
+  ]
+}

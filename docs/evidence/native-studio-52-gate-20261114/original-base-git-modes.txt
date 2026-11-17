@@ -1,0 +1,3 @@
+100644 blob cbb9e6df3fbb5e022033fdbf384fcec406df8f30	tools/tests/test_nextgen_runner.py
+100755 blob cbc19f229d8142bc6c4cc7721460c616d10379e1	tools/validate_nextgen.sh
+100644 blob 8dc6a7b1df79d74925d5b53758bbe3d553bdcea9	tools/verify_village_rasters.py

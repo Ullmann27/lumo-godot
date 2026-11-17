@@ -1,0 +1,5781 @@
+{
+  "errors": [],
+  "godot": "4.6.3-stable (official)",
+  "maximum_error_m": 0.000720983138307929,
+  "measurements": [
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "rabbit",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "rabbit",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "lion",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "lion",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "owl",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "owl",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "squirrel",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "squirrel",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "comet",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "glider",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000745058059692383,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000667232654905092,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000000644206011202186,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_seated",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_left",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000720983138307929,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00067206408130005,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000319431001116754,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000016205997326324,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000529355020262301,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000525947310961783,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_steer_right",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.0000642613376840018,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.13
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.00000206584059014858,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.5
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.L",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.L",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Hand.R",
+      "driver": "turtle",
+      "error_m": 0.000036200501199346,
+      "kart": "turbo",
+      "phase": 0.89
+    },
+    {
+      "clip": "kart_jump",
+      "contact": "Foot.R",
+      "driver": "turtle",
+      "error_m": 0.00000010536712125031,
+      "kart": "turbo",
+      "phase": 0.89
+    }
+  ],
+  "method": "Exported Skeleton3D global poses against moving SteeringWheel grip and fixed foot markers",
+  "passed": true,
+  "physical_android": false,
+  "sources": {
+    "assets/kart/production/drivers/lion/driver.glb": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833",
+    "assets/kart/production/drivers/owl/driver.glb": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3",
+    "assets/kart/production/drivers/rabbit/driver.glb": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3",
+    "assets/kart/production/drivers/squirrel/driver.glb": "61b1bf1c4d8f7c407001ef23334d402e81417435b841ed87095c5eea3c2a0db0",
+    "assets/kart/production/drivers/turtle/driver.glb": "282febd626d383eaf666ace1d845e728e1d5526d6894bdb8209b92ecb3bec77f",
+    "assets/kart/production/karts/aurora_comet.glb": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "assets/kart/production/karts/aurora_glider.glb": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "assets/kart/production/karts/aurora_turbo.glb": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639"
+  },
+  "threshold_m": 0.01
+}

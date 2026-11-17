@@ -1,0 +1,2269 @@
+{
+  "schema_version": 1,
+  "asset_set": "LUMO Kart rivals",
+  "units": "metres",
+  "runtime_axes": "X right, Y up, -Z forward",
+  "integration_status": "Isolated assets and review scenes; existing gameplay roster remains unchanged.",
+  "authoring": "Local Blender 4.3.2 mesh, skin, keyframe and procedural texture authoring.",
+  "source_generator": {
+    "file": "tools/lumo_kart_art/drivers/build_drivers.py",
+    "bytes": 50465,
+    "sha256": "b92d0ae7769b02ac346495951aff5081d046fc3043225be7a9920bccdab82db0"
+  },
+  "original_lumo_reference": {
+    "file": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+    "bytes": 5156596,
+    "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "unchanged": true,
+    "existing_attribution": "assets/characters/lumo_animated/ATTRIBUTION.md"
+  },
+  "validation_scope": {
+    "blender_pose_samples": 150,
+    "export_files": 15,
+    "geometry_and_glb_structure": "PASS for the files listed by SHA-256.",
+    "godot_and_kart_fit": "Separate reports under evidence/lumo_kart_art/review and evidence/lumo_kart_art/karts identify their tested hashes.",
+    "android_performance": "No device FPS claim is made by this package."
+  },
+  "drivers": [
+    {
+      "id": "lion",
+      "roster_name": "Löwe",
+      "blender_source": {
+        "file": "art/lumo_kart/blender/drivers/lion.blend",
+        "bytes": 1646578,
+        "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26"
+      },
+      "references": [
+        {
+          "file": "assets/characters/rivals/reference/inputs/lion-front.jpg",
+          "bytes": 19747,
+          "sha256": "b30e1bb0d2cf21855582712ba1b969e54a79894f626301828295aae967e91a2c"
+        },
+        {
+          "file": "assets/characters/rivals/reference/inputs/lion-material.jpg",
+          "bytes": 72815,
+          "sha256": "e2eb779ab95c9b28b3b6740f2b9ebd4225b8be9d47336dee657b9ae700368ffd"
+        }
+      ],
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/lion/driver.glb",
+          "bytes": 2011312,
+          "sha256": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833",
+          "blender_measurements": {
+            "vertices": 20752,
+            "triangles": 41008,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 2.9802322387695312e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0662376880645752,
+              1.2401467561721802
+            ],
+            "file": "assets/kart/production/drivers/lion/driver.glb",
+            "sha256": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833"
+          },
+          "glb": {
+            "exported_triangles": 41008,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
+          "bytes": 1334660,
+          "sha256": "14df7f9d3dbcc19759779e589c0a83305960d9495f587394809c07bb5935305e",
+          "blender_measurements": {
+            "vertices": 11935,
+            "triangles": 23374,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0662376880645752,
+              1.240160346031189
+            ],
+            "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
+            "sha256": "14df7f9d3dbcc19759779e589c0a83305960d9495f587394809c07bb5935305e"
+          },
+          "glb": {
+            "exported_triangles": 23374,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD1",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
+          "bytes": 897264,
+          "sha256": "e3d091927fe6db0975711cd3a73ea7c1f636792987a8efa31666e506f005c05a",
+          "blender_measurements": {
+            "vertices": 6194,
+            "triangles": 11892,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0659313201904297,
+              1.2405853271484375
+            ],
+            "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
+            "sha256": "e3d091927fe6db0975711cd3a73ea7c1f636792987a8efa31666e506f005c05a"
+          },
+          "glb": {
+            "exported_triangles": 11892,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD2",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        }
+      ],
+      "rig": "DriverRig",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R"
+      ],
+      "markers": [
+        "Grip_L",
+        "Grip_R",
+        "Foot_L",
+        "Foot_R",
+        "SeatAnchor",
+        "HeadAnchor",
+        "NeckAnchor"
+      ],
+      "textures": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 21018,
+          "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 236489,
+          "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+        }
+      ],
+      "pose_evidence": {
+        "file": "evidence/lumo_kart_art/drivers/lion/pose_check.json",
+        "bytes": 10801,
+        "sha256": "22c8a298d5be479035d74588c10df2185db7656b9d79e8829e3c80f445394b7d"
+      },
+      "pose_samples": 30,
+      "geometry_evidence": {
+        "triangles": 41008,
+        "degenerate_triangles": 0,
+        "invalid_normals": 0,
+        "nonfinite_uv_coordinates": 0,
+        "material_count": 6,
+        "packed_texture_sizes": [
+          [
+            "LUMO_Fabric_MicroNormal",
+            512,
+            512
+          ],
+          [
+            "LUMO_Organic_MicroNormal",
+            512,
+            512
+          ]
+        ]
+      }
+    },
+    {
+      "id": "owl",
+      "roster_name": "Eule",
+      "blender_source": {
+        "file": "art/lumo_kart/blender/drivers/owl.blend",
+        "bytes": 1720470,
+        "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f"
+      },
+      "references": [
+        {
+          "file": "assets/characters/rivals/reference/inputs/owl-front.jpg",
+          "bytes": 20393,
+          "sha256": "31fd3ff63abe21f3179198cdd811b5fd93a06c71267a1a39032ed8bf1af4961a"
+        },
+        {
+          "file": "assets/characters/rivals/reference/inputs/owl-material.jpg",
+          "bytes": 81822,
+          "sha256": "9b1b0c1d07b80e0124a8a61c6aa6e27c46ef9d4b6cd88821d15ac43e00fda9de"
+        }
+      ],
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/owl/driver.glb",
+          "bytes": 2104952,
+          "sha256": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3",
+          "blender_measurements": {
+            "vertices": 21985,
+            "triangles": 43462,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 2.9802322387695312e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.656999945640564,
+              1.3331164121627808
+            ],
+            "file": "assets/kart/production/drivers/owl/driver.glb",
+            "sha256": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3"
+          },
+          "glb": {
+            "exported_triangles": 43462,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
+          "bytes": 1388168,
+          "sha256": "f423385a7386e651b5f784729fb5427177d8bde5927975a8f542e60daf87fa69",
+          "blender_measurements": {
+            "vertices": 12640,
+            "triangles": 24772,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.656999945640564,
+              1.3329423666000366
+            ],
+            "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
+            "sha256": "f423385a7386e651b5f784729fb5427177d8bde5927975a8f542e60daf87fa69"
+          },
+          "glb": {
+            "exported_triangles": 24772,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD1",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
+          "bytes": 924628,
+          "sha256": "9847a75504fe05c6f5a24831453f6c7349fcd4af5826e8194a999294919444f5",
+          "blender_measurements": {
+            "vertices": 6555,
+            "triangles": 12602,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.6568284034729004,
+              1.3328900337219238
+            ],
+            "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
+            "sha256": "9847a75504fe05c6f5a24831453f6c7349fcd4af5826e8194a999294919444f5"
+          },
+          "glb": {
+            "exported_triangles": 12602,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD2",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        }
+      ],
+      "rig": "DriverRig",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R"
+      ],
+      "markers": [
+        "Grip_L",
+        "Grip_R",
+        "Foot_L",
+        "Foot_R",
+        "SeatAnchor",
+        "HeadAnchor",
+        "NeckAnchor"
+      ],
+      "textures": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 21018,
+          "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 236489,
+          "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+        }
+      ],
+      "pose_evidence": {
+        "file": "evidence/lumo_kart_art/drivers/owl/pose_check.json",
+        "bytes": 10828,
+        "sha256": "ae0b683fbb1829cb9588d56d034a61bb89042f4965466594b8922110fc5bf702"
+      },
+      "pose_samples": 30,
+      "geometry_evidence": {
+        "triangles": 43462,
+        "degenerate_triangles": 0,
+        "invalid_normals": 0,
+        "nonfinite_uv_coordinates": 0,
+        "material_count": 6,
+        "packed_texture_sizes": [
+          [
+            "LUMO_Fabric_MicroNormal",
+            512,
+            512
+          ],
+          [
+            "LUMO_Organic_MicroNormal",
+            512,
+            512
+          ]
+        ]
+      }
+    },
+    {
+      "id": "rabbit",
+      "roster_name": "Nova",
+      "blender_source": {
+        "file": "art/lumo_kart/blender/drivers/rabbit.blend",
+        "bytes": 1597029,
+        "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16"
+      },
+      "references": [
+        {
+          "file": "assets/characters/rivals/reference/inputs/rabbit-front.jpg",
+          "bytes": 17353,
+          "sha256": "d3762002a34492d2c5d37b51ab11c2c84df0b547b950ef18151ae79cb60c46dc"
+        },
+        {
+          "file": "assets/characters/rivals/reference/inputs/rabbit-material.jpg",
+          "bytes": 64361,
+          "sha256": "b005d854dc85ee157bfa4071910773e35083be735222ea2480f96dbec68118a2"
+        }
+      ],
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/rabbit/driver.glb",
+          "bytes": 1936648,
+          "sha256": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3",
+          "blender_measurements": {
+            "vertices": 19762,
+            "triangles": 39124,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 2.9802322387695312e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.726595401763916,
+              1.573201060295105
+            ],
+            "file": "assets/kart/production/drivers/rabbit/driver.glb",
+            "sha256": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3"
+          },
+          "glb": {
+            "exported_triangles": 39124,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/rabbit/driver_lod1.glb",
+          "bytes": 1290896,
+          "sha256": "b7b7aa1f8253b86b95ea8c65759f5bbe2497da600cb1cfa09289e1df1cec365c",
+          "blender_measurements": {
+            "vertices": 11350,
+            "triangles": 22300,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.726595401763916,
+              1.5732272863388062
+            ],
+            "file": "assets/kart/production/drivers/rabbit/driver_lod1.glb",
+            "sha256": "b7b7aa1f8253b86b95ea8c65759f5bbe2497da600cb1cfa09289e1df1cec365c"
+          },
+          "glb": {
+            "exported_triangles": 22300,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD1",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/rabbit/driver_lod2.glb",
+          "bytes": 873364,
+          "sha256": "7b892848f6b4c9a49d2859f018be9b6461ce4c70fc82d8d5fe632df81e64a7f3",
+          "blender_measurements": {
+            "vertices": 5872,
+            "triangles": 11344,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.7260617613792419,
+              1.5732026100158691
+            ],
+            "file": "assets/kart/production/drivers/rabbit/driver_lod2.glb",
+            "sha256": "7b892848f6b4c9a49d2859f018be9b6461ce4c70fc82d8d5fe632df81e64a7f3"
+          },
+          "glb": {
+            "exported_triangles": 11344,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD2",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        }
+      ],
+      "rig": "DriverRig",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R"
+      ],
+      "markers": [
+        "Grip_L",
+        "Grip_R",
+        "Foot_L",
+        "Foot_R",
+        "SeatAnchor",
+        "HeadAnchor",
+        "NeckAnchor"
+      ],
+      "textures": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 21018,
+          "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 236489,
+          "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+        }
+      ],
+      "pose_evidence": {
+        "file": "evidence/lumo_kart_art/drivers/rabbit/pose_check.json",
+        "bytes": 10789,
+        "sha256": "137adcb70eb752a8841444f21822eca8bbbe5fc0173f9d038193cebe645de47b"
+      },
+      "pose_samples": 30,
+      "geometry_evidence": {
+        "triangles": 39124,
+        "degenerate_triangles": 0,
+        "invalid_normals": 0,
+        "nonfinite_uv_coordinates": 0,
+        "material_count": 6,
+        "packed_texture_sizes": [
+          [
+            "LUMO_Fabric_MicroNormal",
+            512,
+            512
+          ],
+          [
+            "LUMO_Organic_MicroNormal",
+            512,
+            512
+          ]
+        ]
+      }
+    },
+    {
+      "id": "squirrel",
+      "roster_name": "Eichhörnchen",
+      "blender_source": {
+        "file": "art/lumo_kart/blender/drivers/squirrel.blend",
+        "bytes": 1564082,
+        "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404"
+      },
+      "references": [
+        {
+          "file": "assets/characters/rivals/reference/inputs/squirrel-material.jpg",
+          "bytes": 60831,
+          "sha256": "e9b1b987d919708071e0331d0a3b831360d8d709ff978157e4d6ae71d68fe2dc"
+        }
+      ],
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/squirrel/driver.glb",
+          "bytes": 1897816,
+          "sha256": "61b1bf1c4d8f7c407001ef23334d402e81417435b841ed87095c5eea3c2a0db0",
+          "blender_measurements": {
+            "vertices": 19252,
+            "triangles": 38092,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 2.9802322387695312e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0900448560714722,
+              1.2876232862472534
+            ],
+            "file": "assets/kart/production/drivers/squirrel/driver.glb",
+            "sha256": "61b1bf1c4d8f7c407001ef23334d402e81417435b841ed87095c5eea3c2a0db0"
+          },
+          "glb": {
+            "exported_triangles": 38092,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
+          "bytes": 1268936,
+          "sha256": "440cf534739d799671ba076723c98dae5e6f82db60a24edc492a5d5769bc0f23",
+          "blender_measurements": {
+            "vertices": 11062,
+            "triangles": 21712,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0900448560714722,
+              1.2876452207565308
+            ],
+            "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
+            "sha256": "440cf534739d799671ba076723c98dae5e6f82db60a24edc492a5d5769bc0f23"
+          },
+          "glb": {
+            "exported_triangles": 21712,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD1",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
+          "bytes": 862428,
+          "sha256": "25ab22d03a3d04f67029b9e29daf9bdf7b47dbff8e7a5cbb5e5e276ccf733534",
+          "blender_measurements": {
+            "vertices": 5729,
+            "triangles": 11046,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              1.0897384881973267,
+              1.287592887878418
+            ],
+            "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
+            "sha256": "25ab22d03a3d04f67029b9e29daf9bdf7b47dbff8e7a5cbb5e5e276ccf733534"
+          },
+          "glb": {
+            "exported_triangles": 11046,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD2",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        }
+      ],
+      "rig": "DriverRig",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R"
+      ],
+      "markers": [
+        "Grip_L",
+        "Grip_R",
+        "Foot_L",
+        "Foot_R",
+        "SeatAnchor",
+        "HeadAnchor",
+        "NeckAnchor"
+      ],
+      "textures": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 21018,
+          "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 236489,
+          "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+        }
+      ],
+      "pose_evidence": {
+        "file": "evidence/lumo_kart_art/drivers/squirrel/pose_check.json",
+        "bytes": 10805,
+        "sha256": "9c96bd316738c6cb3e4c684db39ba6199edbb56d19ce9400da00b21d9f917ac3"
+      },
+      "pose_samples": 30,
+      "geometry_evidence": {
+        "triangles": 38092,
+        "degenerate_triangles": 0,
+        "invalid_normals": 0,
+        "nonfinite_uv_coordinates": 0,
+        "material_count": 6,
+        "packed_texture_sizes": [
+          [
+            "LUMO_Fabric_MicroNormal",
+            512,
+            512
+          ],
+          [
+            "LUMO_Organic_MicroNormal",
+            512,
+            512
+          ]
+        ]
+      }
+    },
+    {
+      "id": "turtle",
+      "roster_name": "Schildkröte",
+      "blender_source": {
+        "file": "art/lumo_kart/blender/drivers/turtle.blend",
+        "bytes": 1706875,
+        "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b"
+      },
+      "references": [
+        {
+          "file": "assets/characters/rivals/reference/inputs/turtle-material.jpg",
+          "bytes": 48349,
+          "sha256": "ad6e631bb0adcc65e45f34ca47031f8a8704b9df62b8757b1f8e914937f60f45"
+        }
+      ],
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/turtle/driver.glb",
+          "bytes": 2099608,
+          "sha256": "282febd626d383eaf666ace1d845e728e1d5526d6894bdb8209b92ecb3bec77f",
+          "blender_measurements": {
+            "vertices": 21841,
+            "triangles": 43286,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 2.9802322387695312e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.8202457427978516,
+              1.1552799940109253
+            ],
+            "file": "assets/kart/production/drivers/turtle/driver.glb",
+            "sha256": "282febd626d383eaf666ace1d845e728e1d5526d6894bdb8209b92ecb3bec77f"
+          },
+          "glb": {
+            "exported_triangles": 43286,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
+          "bytes": 1382384,
+          "sha256": "6d39bfac47632e53566c606848590216cad8573e9923af4f7fe610326cff032f",
+          "blender_measurements": {
+            "vertices": 12534,
+            "triangles": 24672,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.820330798625946,
+              1.1552799940109253
+            ],
+            "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
+            "sha256": "6d39bfac47632e53566c606848590216cad8573e9923af4f7fe610326cff032f"
+          },
+          "glb": {
+            "exported_triangles": 24672,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD1",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
+          "bytes": 919980,
+          "sha256": "8df4e047eb0f0af515a6bd3763a1bd5b44afd4fe74bf66ae55f648e910f0d0c9",
+          "blender_measurements": {
+            "vertices": 6474,
+            "triangles": 12552,
+            "materials": 6,
+            "nonmanifold_edges": 0,
+            "zero_weight_vertices": 0,
+            "max_weight_sum_error": 8.940696716308594e-08,
+            "max_influences": 2,
+            "evaluated_dimensions_blender_m": [
+              0.8279998898506165,
+              0.8203186988830566,
+              1.1550877094268799
+            ],
+            "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
+            "sha256": "8df4e047eb0f0af515a6bd3763a1bd5b44afd4fe74bf66ae55f648e910f0d0c9"
+          },
+          "glb": {
+            "exported_triangles": 12552,
+            "mesh_count": 1,
+            "primitive_count": 6,
+            "material_count": 6,
+            "skin_joint_counts": [
+              21
+            ],
+            "embedded_images": [
+              "LUMO_Organic_MicroNormal",
+              "LUMO_Fabric_MicroNormal"
+            ],
+            "animation_clips": [
+              {
+                "name": "celebrate",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "idle",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_jump",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 1.5,
+                "active_key_span_s": 1.4583333333333333,
+                "godot_clip_length_s": 1.5
+              },
+              {
+                "name": "kart_seated",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 3,
+                "active_key_span_s": 2.9583333333333335,
+                "godot_clip_length_s": 3
+              },
+              {
+                "name": "kart_steer_left",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              },
+              {
+                "name": "kart_steer_right",
+                "channels": 63,
+                "first_key_s": 0.041666666666666664,
+                "last_key_s": 2,
+                "active_key_span_s": 1.9583333333333333,
+                "godot_clip_length_s": 2
+              }
+            ],
+            "node_names": [
+              "Ear.L",
+              "Ear.R",
+              "HeadAnchor",
+              "NeckAnchor",
+              "Head",
+              "Neck",
+              "Grip_L",
+              "Hand.L",
+              "Forearm.L",
+              "UpperArm.L",
+              "Grip_R",
+              "Hand.R",
+              "Forearm.R",
+              "UpperArm.R",
+              "Chest",
+              "Spine",
+              "Tail",
+              "Foot_L",
+              "Foot.L",
+              "Shin.L",
+              "Thigh.L",
+              "Foot_R",
+              "Foot.R",
+              "Shin.R",
+              "Thigh.R",
+              "Pelvis",
+              "Root",
+              "DriverMesh_LOD2",
+              "SeatAnchor",
+              "DriverRig"
+            ]
+          }
+        }
+      ],
+      "rig": "DriverRig",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R"
+      ],
+      "markers": [
+        "Grip_L",
+        "Grip_R",
+        "Foot_L",
+        "Foot_R",
+        "SeatAnchor",
+        "HeadAnchor",
+        "NeckAnchor"
+      ],
+      "textures": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 21018,
+          "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "width": 512,
+          "height": 512,
+          "packed_bytes": 236489,
+          "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+        }
+      ],
+      "pose_evidence": {
+        "file": "evidence/lumo_kart_art/drivers/turtle/pose_check.json",
+        "bytes": 10834,
+        "sha256": "b00fc4157373e908e681915eadebcce217a934ddfc67eca31e6b7afa3c593a7c"
+      },
+      "pose_samples": 30,
+      "geometry_evidence": {
+        "triangles": 43286,
+        "degenerate_triangles": 0,
+        "invalid_normals": 0,
+        "nonfinite_uv_coordinates": 0,
+        "material_count": 6,
+        "packed_texture_sizes": [
+          [
+            "LUMO_Fabric_MicroNormal",
+            512,
+            512
+          ],
+          [
+            "LUMO_Organic_MicroNormal",
+            512,
+            512
+          ]
+        ]
+      }
+    }
+  ],
+  "godot_contact_evidence": {
+    "file": "evidence/lumo_kart_art/review/godot_driver_kart_fit.json",
+    "bytes": 130706,
+    "sha256": "1876099e7c37ed467d5eb1eae762e8f9663035c77d5510f589fa1ec7dd8f826c",
+    "engine": "4.6.3-stable (official)",
+    "measurements": 720,
+    "maximum_error_m": 0.000720983138307929,
+    "threshold_m": 0.01,
+    "physical_android": false
+  }
+}

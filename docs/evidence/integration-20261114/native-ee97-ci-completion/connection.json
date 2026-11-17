@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "state": "LOCAL_REPAIR_VERIFIED_NEW_SOURCE_CI_REQUIRED",
+  "parent_published_source": "ee97b4bcd6d56091a8084305fc2bc33d279ae9d2",
+  "parent_local_twin": "2a6f0457ab4a99f5e74922c9084525d84932b501",
+  "parent_tree": "785061536460b9d22fd475bc8362fe2dba84544d",
+  "original_result": {
+    "schema": 1,
+    "source": "ee97b4bcd6d56091a8084305fc2bc33d279ae9d2",
+    "original_run": 43525738510,
+    "original_job": 132230901583,
+    "original_job_result": "cancelled",
+    "completed_probe_pairs": 45,
+    "required_probe_pairs": 48,
+    "old_job_minutes": 35,
+    "new_job_minutes": 70,
+    "observed_prefix_seconds": 2022,
+    "unchanged_remaining_probe_budgets_seconds": {
+      "mobile_safe_area_regression/rendered": 900,
+      "rhythm_tour_play_regression/rendered": 420,
+      "kart_player_full_route_regression/rendered": 420
+    },
+    "manifest_archive_cleanup_allowance_seconds": 300,
+    "required_budget_seconds": 4062,
+    "configured_budget_seconds": 4200,
+    "cause_scope": "35-minute timeout strongly supported by exact workflow, elapsed timing and unchanged PR/ref; check annotation unavailable and not claimed",
+    "preserved": "All48pairs, individual deadlines, failure markers, source/digest checks, visual/Android separation and protected main remain unchanged",
+    "archive_guard": "Only the two exact integration branches can archive; all existing same-repository/base/event/success requirements retained"
+  },
+  "archive": {
+    "archive": "local-connection-evidence.tar.gz",
+    "bytes": 125610,
+    "sha256": "99e72fc87ddf079c6603501a605660023dba95cf2f0c7d8b2db9101784011c80"
+  },
+  "test_evidence": "Two original archive-guard contracts, real old-guard negative, positive two-head matrix and negative failure/fork/base/head cases; actionlint and diff check",
+  "no_gameplay_source_change": true,
+  "new_source_acceptance": "Pending actual full48/renderer/graphics/source-bound evidence, then Host Android and update gates"
+}

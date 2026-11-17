@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "kind": "Source-only tree plan for Root; no remote mutation performed",
+  "repository": "Ullmann27/lumo-godot",
+  "parent_commit": "baf148b03a7a32c6ad9f737d731f900eb9113ea1",
+  "base_tree": "0c18a0ca5200ade267cfedb4c12d5c4b0a761a00",
+  "files": [
+    {
+      "path": "assets/manifests/assets.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0ea85bdd7f4492eda8aeb05dd3a86a5c3ecb35f0",
+      "bytes": 20907,
+      "sha256": "6df3a52fe25f388d9472919c0313951e716059824d4507aac812e58fadb19c19",
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/assets/manifests/assets.json",
+      "existing_blob_reusable": true
+    },
+    {
+      "path": "export_presets.cfg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6df845e568e8a1573233ab3ad93b96b46c457ddd",
+      "bytes": 4458,
+      "sha256": "2b1833f731cd0335711052d12679f6a0605dedf66526b466ae7f6f385496c36e",
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/export_presets.cfg",
+      "existing_blob_reusable": true
+    },
+    {
+      "path": "tools/build_web_bundle.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "07b2b8d0e7341d57a9567996a7a446ff6536195e",
+      "bytes": 5134,
+      "sha256": "604aa5c53955329b0d373c61819994c11a905bdb4eb3dcaa557550794336cae2",
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/tools/build_web_bundle.sh",
+      "existing_blob_reusable": true
+    }
+  ],
+  "source_freeze_sha256": "398fa68f811af0250fb3c3a53f7dbc3ec769525a70d14159efca843db628feee",
+  "target_branch": "Root chooses a separate followup branch; active integration ref must not be changed by this plan."
+}

@@ -1,0 +1,14 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 121.50959736500226,
+  "display": 99,
+  "project": "/workspace/scratch/5987865ae883/lumo-godot",
+  "godot_arguments": [
+    "--script",
+    "scripts/tests/learning_sharing_capture.gd",
+    "--",
+    "--output=/tmp/lumo-local-renderer-root-20261113/captures"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

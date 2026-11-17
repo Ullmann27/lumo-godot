@@ -1,0 +1,30 @@
+{
+  "case": "build-dialog-density",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/build-dialog-density/engine.log",
+    "--timeout",
+    "600",
+    "--required",
+    "[BuildDialogDensity] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_dialog_density_regression.gd"
+  ],
+  "started_at": "2026-11-13T17:01:04.769087+00:00",
+  "finished_at": "2026-11-13T17:01:45.889059+00:00",
+  "seconds": 41.12,
+  "exit_code": 0,
+  "engine_log_sha256": "84cdd18620c18e038faeaabe82aed73b1d916827baee5bf774e4aa606fc1a086",
+  "significant_lines": [
+    "[BuildDialogDensity] PASS 2016 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore"
+  ]
+}

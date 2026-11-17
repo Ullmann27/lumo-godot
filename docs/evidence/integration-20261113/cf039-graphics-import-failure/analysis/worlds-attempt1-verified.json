@@ -1,0 +1,123 @@
+{
+  "area": "worlds",
+  "run_attempt": 1,
+  "job_id": 131950805514,
+  "job_conclusion": "failure",
+  "head_sha": "cf039ad8c834522f355b858e3bee1e201e397da4",
+  "source_tree": "4fdbcbfcf069c6790e17101a09d4fb3f2955c2e2",
+  "current_regression_and_captures": "PASS",
+  "baseline_import": "FAIL with engine crash; baseline images absent",
+  "images": [
+    {
+      "file": "images/crystal_canyon/01_race_approach.png",
+      "bytes": 926127,
+      "sha256": "b49dc0033c78b673f59679e8e42fa5cf58bfd63d78b3527708373091c166906d",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/crystal_canyon/02_world_landmark.png",
+      "bytes": 688351,
+      "sha256": "e5d2db23751308307d007f1a00dac32461d1cfd72b5063c8fdc102cc89948fbe",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/crystal_canyon/03_route_reveal.png",
+      "bytes": 868321,
+      "sha256": "12563de94e07fb31a4cb52385adc66c0f550a530fa19a3943d28852852522ea7",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/winter_sprint/01_race_approach.png",
+      "bytes": 997057,
+      "sha256": "a74fa4ce5027b0e905b50832b4a43bc009c06269b45ddfe58493b3d40a97e44a",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/winter_sprint/02_world_landmark.png",
+      "bytes": 595985,
+      "sha256": "099bbefbfb5532080da8ae5a52a047dfd49f5f4b540eff9006f812154f55a3e2",
+      "pixels": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "images/winter_sprint/03_route_reveal.png",
+      "bytes": 792088,
+      "sha256": "3d26f1c85c79e2e92a7c913a5c2ce1102d71bdc57994663f6544ead2609ab8b7",
+      "pixels": [
+        1280,
+        720
+      ]
+    }
+  ],
+  "logs": {
+    "import.log": {
+      "bytes": 161827,
+      "sha256": "5e0110b80ea6c372a4ded1d9002de92e923be32ae040ccd7d73f8cea136a35a7",
+      "errors": [],
+      "markers": []
+    },
+    "project-validation.log": {
+      "bytes": 6124,
+      "sha256": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e",
+      "errors": [],
+      "markers": []
+    },
+    "regression.log": {
+      "bytes": 1457,
+      "sha256": "22012b92813347135be6af3357e02955d76ff99f3e8a54bad1b34c99d0eaa969",
+      "errors": [],
+      "markers": [
+        "[KartWorldExpansion] PASS checks=72 triangles=6072 failures=0"
+      ]
+    },
+    "winter-visibility.log": {
+      "bytes": 14293,
+      "sha256": "c23d79b270d1773165abd060602801cb24ab56648b07d5adcc0c0220e592138c",
+      "errors": [],
+      "markers": [
+        "[KartWinterVisibility] PASS checks=50; geometry only, no pixels",
+        "[KartWorldExpansionCapture] PASS track=winter_sprint views=0"
+      ]
+    },
+    "render-winter_sprint.log": {
+      "bytes": 16119,
+      "sha256": "bb95b3a95d47598063e8c1c59b76e439f9e8aa2b39d25487c3508a96237647fa",
+      "errors": [],
+      "markers": [
+        "[KartWorldExpansionCapture] PASS track=winter_sprint views=3"
+      ]
+    },
+    "render-crystal_canyon.log": {
+      "bytes": 16121,
+      "sha256": "c201f96248920324640eb16073f16dfbd723bc044b4d7bf0957fa56e4b1b9ac1",
+      "errors": [],
+      "markers": [
+        "[KartWorldExpansionCapture] PASS track=crystal_canyon views=3"
+      ]
+    },
+    "baseline/import.log": {
+      "bytes": 151335,
+      "sha256": "0fe41cc4a3080cc5dc73097a1eb46c8b67f56489ca99c75ff00ef98f608f24f8",
+      "errors": [
+        "ERROR: /root: The caller thread can't call the function `propagate_notification()` on this node. Use `call_deferred()` or `call_deferred_thread_group()` instead.",
+        "handle_crash: Program crashed with signal 11"
+      ],
+      "markers": []
+    }
+  },
+  "baseline_sha": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9"
+}

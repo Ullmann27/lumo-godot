@@ -1,0 +1,42 @@
+{
+  "inputs": [
+    {
+      "species": "lion",
+      "blend": "art/lumo_kart/blender/drivers/lion.blend",
+      "sha256": "79dcfa81cff5479567aaa5bced10b246a1ad5a1cdf09833d8831855ae690a454"
+    },
+    {
+      "species": "owl",
+      "blend": "art/lumo_kart/blender/drivers/owl.blend",
+      "sha256": "6767dd79ff6972377a7831840f5d611f958006607e3d9a53c01804d677975310"
+    },
+    {
+      "species": "rabbit",
+      "blend": "art/lumo_kart/blender/drivers/rabbit.blend",
+      "sha256": "4ae4ad3ef9bb011e0ce9cbb64cc5eb5e64bc889b3e45f518bd8cfe71db731e36"
+    },
+    {
+      "species": "squirrel",
+      "blend": "art/lumo_kart/blender/drivers/squirrel.blend",
+      "sha256": "774075c55b11d95e5402278a458b38bf0e45dd0bbc14440733269bc8824d71ae"
+    },
+    {
+      "species": "turtle",
+      "blend": "art/lumo_kart/blender/drivers/turtle.blend",
+      "sha256": "4af338710c07db9f3f204530bf11079c38d89c37b1f39688cdf2b52a48ee8ad8"
+    }
+  ],
+  "engine": "Blender Cycles CPU",
+  "resolution": [
+    1400,
+    650
+  ],
+  "samples_max": 8,
+  "angles_degrees": {
+    "front": 0.0,
+    "three_quarter": 45.0
+  },
+  "shared_camera": true,
+  "shared_lighting": true,
+  "placement": "Each model is rotated about its own vertical axis; shared camera remains fixed. Feet are placed on the same floor."
+}

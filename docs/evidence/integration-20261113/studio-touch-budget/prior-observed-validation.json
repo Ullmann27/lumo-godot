@@ -1,0 +1,31 @@
+{
+  "actionlint": {
+    "command": [
+      "/workspace/scratch/e0abce7d2838/toolchain/actionlint/actionlint",
+      "-no-color",
+      ".github/workflows/lumo-nextgen-2018.yml"
+    ],
+    "exit_code": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "version": "1.7.12"
+  },
+  "existing_orchestration_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "tools.tests.test_nextgen_runner",
+      "-v"
+    ],
+    "exit_code": 0,
+    "tests": 8,
+    "seconds": 18.754,
+    "result": "OK",
+    "scope": "Existing orchestration fixtures and workflow/archive source guards; not renderer or product acceptance.",
+    "raw_output_location": "original exec session 73256 / chunks 0fa6a0 and 767e40; this JSON records the observed result, not a reconstructed raw log"
+  },
+  "source_hashes_unchanged": true,
+  "workflow_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+  "workflow_git_blob": "9dee37da9994927eb1d34fa8f7c0e6fa7fc9e3d1",
+  "new_tests_or_orchestration_test_edits": false
+}

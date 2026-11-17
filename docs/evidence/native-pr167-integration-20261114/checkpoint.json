@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "created_at": "2026-11-14T06:41:32.088737+00:00",
+  "status": "SOURCE_CHECKPOINT_BEFORE_52_GATE_TESTS",
+  "parent_native": "27ae427029a5199699c95a79a84b0027d7571752",
+  "producer_native": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+  "paired_host_checkpoint": "8dd2ad1fc2f04a8a116c15147436da3c15102b87",
+  "product_freeze_sha256": "adebc0799e1178c65590c007af735c8860c766842bfb47331c98796f051dd717",
+  "gate_freeze_sha256": "fb8d09a4474b6d130214d98ec5dd38640f763f9bfbcf4df2f7386e594f8bd546",
+  "gate_v1_metadata_correction": "Only existing validate_nextgen.sh executable Git mode corrected to100755; all five bytes/blobs unchanged.",
+  "product_paths": 16,
+  "additive_gate_paths": 5,
+  "unchanged_C4": [
+    {
+      "path": "scenes/games/connect_four_table.tscn",
+      "blob": "e1c14734e2bde85fd9852db3d8ef20f4cd0ca24d"
+    },
+    {
+      "path": "scripts/app/app_boot.gd",
+      "blob": "2fc3b5ea4fac7440733ae5a77a8289bcd57557f6"
+    },
+    {
+      "path": "scripts/app/scene_router.gd",
+      "blob": "0e28e5c797af076d2a2410143e42605982e8d1d5"
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "blob": "cdeb31fc6cfe30c18fc6c96afb2b1d749532c37f"
+    },
+    {
+      "path": "scripts/systems/host_bridge.gd",
+      "blob": "dab96a1b918dc754568c0eda14cdda05175c89fb"
+    },
+    {
+      "path": "scripts/tests/connect_four_runtime_regression.gd",
+      "blob": "94c32597c0170c5c3199e39ca6fbfcc1caf25f99"
+    }
+  ],
+  "source_acceptance": "Pending new 52-mode source tests, fresh imports/rendering and actual Android build/device acceptance.",
+  "archival_scope": "Selected exact original source proofs and reviews are retained here. All 16 product blobs are already in published PR167; the complete product source is in this Git tree. No old producer run is substituted for new integration acceptance."
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/usr/local/bin/godot",
+    "--headless",
+    "--editor",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--import"
+  ],
+  "started_at": "2026-11-13T16:58:27.048784+00:00",
+  "finished_at": "2026-11-13T16:58:45.528342+00:00",
+  "exit_code": 0,
+  "seconds": 18.48,
+  "log_sha256": "10f54eacec1966847b89aaab02d98431a6d0df125961a534ab2e71407a45a061",
+  "errors": []
+}

@@ -1,0 +1,6 @@
+{
+  "base_source_commit": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "product_puzzle_sha256": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+  "probe_sha256": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+  "probe_unchanged_from_red": true
+}

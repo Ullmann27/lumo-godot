@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "recorded_at_utc": "2026-11-13T13:59:15.871925+00:00",
+  "source_commit": "3db8ffcedf0e7bc5bddf58867d9cfa13e83bde4e",
+  "scope": "tracked scripts, assets, scenes and project.godot; runner edits are separate",
+  "runtime_files": 1183,
+  "runtime_changes": [],
+  "rendered": false,
+  "results": [
+    {
+      "probe": "kart_home_experience_regression",
+      "returncode": 0,
+      "seconds": 36.317,
+      "log_sha256": "470556981f51f3da0f14526bb3cd2d667bb9355742e9b3b390496ef78d22d161",
+      "success_lines": [
+        "[KartHomeExperience] PASS checks=251 cases=4/4 baseline=false renderer=headless"
+      ],
+      "archive": "kart_home_experience_regression.log.gz",
+      "archive_sha256": "2ceb90bf45ec209cea564a5da5d1182684f3af1b3b76eb8a6d1aa764c5d4711e"
+    },
+    {
+      "probe": "kart_drive_feedback_regression",
+      "returncode": 0,
+      "seconds": 5.612,
+      "log_sha256": "dc10be11df59ffc3b438d0fa29a82a14846fd122cb953279f7e0f66a60c465d7",
+      "success_lines": [
+        "[KartDriveFeedback] LOGIC_PASS 44 checks: pause, reset, bounded pools and real events"
+      ],
+      "archive": "kart_drive_feedback_regression.log.gz",
+      "archive_sha256": "e07ff781bd04424c0488df6c104068e0fae4effa36291b5310f18073e9e7e23b"
+    },
+    {
+      "probe": "learning_studio_regression",
+      "returncode": 0,
+      "seconds": 1.507,
+      "log_sha256": "92f60c1e11ba7fdddefa19ea16ef489f63013cbf5a1b7862f72faf2adc95df08",
+      "success_lines": [
+        "[LearningStudio] PASS checks=117; runtime asset, materials, reduced motion and preserved learning"
+      ],
+      "archive": "learning_studio_regression.log.gz",
+      "archive_sha256": "1dd3e59c1a7486f66d5fbc9ddc198eeaa043c067a27f543108cbcf64a74c13d1"
+    },
+    {
+      "probe": "lumo_studio_motion_regression",
+      "returncode": 0,
+      "seconds": 0.554,
+      "log_sha256": "0b95982e77eaab37152a0a1f780a96d5ea6242b173a07687cb7f4ee7599896c5",
+      "success_lines": [
+        "[LumoStudioMotion] PASS checks=1046 Blender/Godot endpoint_error_m=0.000000733 segment_error_m=0.000000179; no physical Android claim"
+      ],
+      "archive": "lumo_studio_motion_regression.log.gz",
+      "archive_sha256": "2834e3d8544b22c7bdf819f495707bb4f3e32b5d4fc3b6fc39e29b6bd58e4da2"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "returncode": 0,
+      "seconds": 2.541,
+      "log_sha256": "5f461cb949ebc96db8146c1e90787a233e280637a2ee36c9aa0b5fbf0b4fb277",
+      "success_lines": [
+        "[TreasureExploration] PASS 87 checks: branching, actual location questions, movement, legacy saves and original rewards"
+      ],
+      "archive": "treasure_exploration_regression.log.gz",
+      "archive_sha256": "eb77dd8d9b583ee88cf628da51c921b2041faacf159ddb8afb5df8ca7f8ec62f"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "returncode": 0,
+      "seconds": 5.201,
+      "log_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+      "success_lines": [
+        "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+      ],
+      "archive": "puzzle_rotation_regression.log.gz",
+      "archive_sha256": "7a18af0464fe4dabf1b9b2e9a1faca3bd2a422d26153469bda500bbf3c0e50d0"
+    },
+    {
+      "probe": "learning_host_payload_regression",
+      "returncode": 0,
+      "seconds": 0.322,
+      "log_sha256": "2c10581b2fd5d475f5fdd7dfde61c1dff0c9f8284d4339ff1ebd6e9ca2a65c55",
+      "success_lines": [
+        "[LearningHostPayload] PASS cases=5 checks=135 host=a8e09123805b2bf30706c8dd1914b928ae6b24ca"
+      ],
+      "archive": "learning_host_payload_regression.log.gz",
+      "archive_sha256": "3757f3e46d287e7927066dccc4833c9e244e3468eaaf03037fa3465e224d2aa9"
+    },
+    {
+      "probe": "lumo_65bone_walk_gait_regression",
+      "returncode": 0,
+      "seconds": 0.556,
+      "log_sha256": "d709a54ac013e3e6e24a6c31a790d8d84b0abe00f4fbccb7fee6229947ff6cda",
+      "success_lines": [
+        "[LumoGait] PASS: real 65-bone alternating thigh/foot/toe/arm movement, pause, calm mode, neutral reset"
+      ],
+      "archive": "lumo_65bone_walk_gait_regression.log.gz",
+      "archive_sha256": "a07d300e1b1ec892e2644d3a30ae4d6e22ef70cff9a36aacabe82deb2d2be459"
+    }
+  ],
+  "runtime_inventory": {
+    "archive": "runtime-inventory.json.gz",
+    "original_sha256": "a474423df4a8ed9be010826f7ba263cc49472e8d83643ed3113cba88b6e299eb",
+    "archive_sha256": "21fcd37ecda89d279f65c03838ac73bdc64d5c403321c7fe48d0fd2f57f4f25e"
+  },
+  "runner_contracts": {
+    "passed": 6,
+    "failed": 0,
+    "scope": "Synthetic engine tests the real shell orchestration and rejects missing/invalid required raster files; no visual/gameplay claim",
+    "archive": "runner-tests-37.log.gz",
+    "original_sha256": "3f83ad2ae254a4cf38ee8334b355852738f4c6eea96a1e9bf5a50a3903513268",
+    "archive_sha256": "0250b7c2ee8806f1876ca83fc73093791b52baf1c805b0d6891df7ecae162d93"
+  }
+}

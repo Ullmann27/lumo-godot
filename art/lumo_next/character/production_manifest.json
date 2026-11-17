@@ -1,0 +1,254 @@
+{
+  "source": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+  "source_sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+  "blender_version": "4.3.2",
+  "production": "Local Blender Python; AI-assisted authored topology and poses, no new paid provider",
+  "meters_per_unit": 1.0,
+  "blender_up": "+Z",
+  "blender_front": "-Y",
+  "gltf_up": "+Y",
+  "gltf_front": "+Z",
+  "origin": "Inherited original ground-centered coordinate system; sole minimum approximately 0 m",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "SpineLower",
+    "SpineUpper",
+    "Chest",
+    "Neck",
+    "Head",
+    "Crown",
+    "Ear.L",
+    "Ear.R",
+    "Clavicle.R",
+    "UpperArm.R",
+    "Forearm.R",
+    "Wrist.R",
+    "Hand.R",
+    "Finger_036",
+    "Finger_035",
+    "Finger_034",
+    "Finger_033",
+    "Finger_040",
+    "Finger_039",
+    "Finger_038",
+    "Finger_037",
+    "Finger_044",
+    "Finger_043",
+    "Finger_042",
+    "Finger_041",
+    "Finger_048",
+    "Finger_047",
+    "Finger_046",
+    "Finger_045",
+    "Clavicle.L",
+    "UpperArm.L",
+    "Forearm.L",
+    "Wrist.L",
+    "Hand.L",
+    "Finger_052",
+    "Finger_051",
+    "Finger_050",
+    "Finger_049",
+    "Finger_056",
+    "Finger_055",
+    "Finger_054",
+    "Finger_053",
+    "Finger_060",
+    "Finger_059",
+    "Finger_058",
+    "Finger_057",
+    "Finger_064",
+    "Finger_063",
+    "Finger_062",
+    "Finger_061",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Toe.R",
+    "ToeTip.R",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Toe.L",
+    "ToeTip.L",
+    "TailBase",
+    "Tail1",
+    "Tail2",
+    "Tail3",
+    "TailTip"
+  ],
+  "bone_count": 67,
+  "added_ear_vertices": {
+    "L": 470,
+    "R": 583
+  },
+  "removed_mouth_triangles": 327,
+  "body_triangles": 29673,
+  "mouth_boundary_vertices": 54,
+  "local_weld_max_error_m": 0.0003922962911932848,
+  "local_weld_tolerance_m": 0.0008,
+  "meshes": {
+    "Mesh_0": {
+      "vertices": 21639,
+      "triangles": 30213,
+      "material_slots": 4,
+      "uv_layers": 1
+    },
+    "LumoFace": {
+      "vertices": 820,
+      "triangles": 950,
+      "material_slots": 4,
+      "uv_layers": 1
+    },
+    "LumoEyelids": {
+      "vertices": 2368,
+      "triangles": 4320,
+      "material_slots": 2,
+      "uv_layers": 1
+    }
+  },
+  "total_triangles": 35483,
+  "viseme_blending": "Convex sum <= 1; Smile + Concern <= 0.35 during speech",
+  "neutral_lid_visibility": "Hide LumoEyelids below blink 0.002; use existing four-stage curved closure",
+  "original_actions": [
+    "agree_nod",
+    "celebrate",
+    "greeting_wave",
+    "idle",
+    "kart_jump",
+    "kart_seated",
+    "kart_steer_left",
+    "kart_steer_right",
+    "point_portal"
+  ],
+  "new_actions": {
+    "idle_breathe": {
+      "seconds": 8.0,
+      "loop": true
+    },
+    "listening": {
+      "seconds": 6.4,
+      "loop": true
+    },
+    "thinking": {
+      "seconds": 5.2,
+      "loop": true
+    },
+    "answer": {
+      "seconds": 1.3,
+      "loop": false
+    },
+    "explain": {
+      "seconds": 4.6,
+      "loop": true
+    },
+    "point": {
+      "seconds": 2.8,
+      "loop": false
+    },
+    "nod": {
+      "seconds": 1.5,
+      "loop": false
+    },
+    "unsure": {
+      "seconds": 2.6,
+      "loop": false
+    },
+    "encourage": {
+      "seconds": 3.2,
+      "loop": false
+    },
+    "celebrate_step": {
+      "seconds": 2.4,
+      "loop": false
+    },
+    "interrupt": {
+      "seconds": 0.65,
+      "loop": false
+    },
+    "farewell": {
+      "seconds": 2.5,
+      "loop": false
+    },
+    "greeting": {
+      "seconds": 3.2,
+      "loop": false
+    },
+    "focused_input": {
+      "seconds": 9.0,
+      "loop": true
+    }
+  },
+  "morphs": {
+    "Mesh_0": [
+      "Basis",
+      "LookLeft",
+      "LookRight",
+      "LookUp",
+      "LookDown",
+      "JawArticulation",
+      "Neutral",
+      "AA",
+      "EE",
+      "OH",
+      "OU",
+      "MBP",
+      "FV",
+      "L",
+      "TH",
+      "Smile",
+      "Concern"
+    ],
+    "LumoFace": [
+      "Basis",
+      "Neutral",
+      "AA",
+      "EE",
+      "OH",
+      "OU",
+      "MBP",
+      "FV",
+      "L",
+      "TH",
+      "Smile",
+      "Concern"
+    ],
+    "LumoEyelids": [
+      "Basis",
+      "BlinkLeftQuarter",
+      "BlinkLeftHalf",
+      "BlinkLeftThreeQuarter",
+      "BlinkLeftClose",
+      "BlinkRightQuarter",
+      "BlinkRightHalf",
+      "BlinkRightThreeQuarter",
+      "BlinkRightClose",
+      "BlinkLeft",
+      "BlinkRight"
+    ]
+  },
+  "textures": {
+    "lumo_orm.png": {
+      "bytes": 1118352,
+      "sha256": "b74eb3404c784dc09284d3945464d824cd1947f6a1681d8ebe7dca58e44c2a5b"
+    },
+    "lumo_normal.png": {
+      "bytes": 1311280,
+      "sha256": "02fe4e8a6e876962eac9bef283e315eb64e9095b72165349d9f20d389619ff09"
+    },
+    "lumo_albedo.png": {
+      "bytes": 1614372,
+      "sha256": "5ca4e69c6420e8ce56f714e9a03fe1303d102706e4ce7b29443ec6b990b613d0"
+    }
+  },
+  "runtime_glb": "assets/lumo_next/character/Lumo-Learning.glb",
+  "runtime_bytes": 7734740,
+  "runtime_sha256": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163",
+  "blend_sha256": "7ce9c6a6b6f7e92747cf9d97eca62ab0a6917d3a85ce16c4fe1a58e731618a9d",
+  "limitations": [
+    "Physical Fold7 performance not measured here",
+    "Mouth pose library is not proof of phoneme timing",
+    "Original eye anatomy remains a painted surface with gaze morphs"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "probe": "learning_studio_regression",
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--audio-driver",
+    "Dummy",
+    "--script",
+    "res://scripts/tests/learning_studio_regression.gd"
+  ],
+  "started_at": "2026-11-13T15:46:38.280565+00:00",
+  "finished_at": "2026-11-13T15:46:46.836397+00:00",
+  "seconds": 8.556,
+  "exit_code": 0,
+  "timeout": false,
+  "pass_lines": [
+    "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning"
+  ],
+  "error_lines": [],
+  "log": "learning_studio_regression.log",
+  "log_bytes": 1799,
+  "log_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766",
+  "passed": true
+}

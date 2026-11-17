@@ -1,0 +1,103 @@
+{
+  "source_commit": "305ab1a3e61e313a26806ff1b828b049e4e07275",
+  "runtime_code_commit": "2a226ebf66c8210885a4709cfb31b1debbe64769",
+  "source_tree": "57f9c32b5d1b8c401adb7de30f1f66e4bb5bcb48",
+  "finished_utc": "2026-11-13T13:27:05.274632+00:00",
+  "head_unchanged": true,
+  "tracked_source_clean_after": true,
+  "tracked_files_hashed": 2095,
+  "source_hashes_unchanged": true,
+  "changed_paths": [],
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "cases": [
+    {
+      "name": "feedback",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/feedback.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[KartDriveFeedback] LOGIC_PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-godot",
+        "--script",
+        "scripts/tests/kart_drive_feedback_regression.gd",
+        "--",
+        "--logic-only"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[KartDriveFeedback] LOGIC_PASS 44 checks: pause, reset, bounded pools and real events"
+      ],
+      "data_directory": "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/feedback-data",
+      "source_commit": "305ab1a3e61e313a26806ff1b828b049e4e07275"
+    },
+    {
+      "name": "production",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/production.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[LumoKartProduction] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-godot",
+        "--script",
+        "scripts/tests/lumo_kart_production_regression.gd",
+        "--",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/production-output"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[LumoKartProduction] PASS actual Kart factory, physics events, pause, rebuild and finish"
+      ],
+      "data_directory": "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/production-data",
+      "source_commit": "305ab1a3e61e313a26806ff1b828b049e4e07275"
+    },
+    {
+      "name": "home",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/home.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[KartHomeExperience] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-godot",
+        "--script",
+        "scripts/tests/kart_home_experience_regression.gd"
+      ],
+      "exit_code": 0,
+      "summary": [
+        "[KartHomeExperience] PASS checks=239 cases=4/4 baseline=false renderer=headless"
+      ],
+      "data_directory": "/workspace/scratch/b3485b7bb989/pipeline-evidence/graphics-final-305ab1a/home-data",
+      "source_commit": "305ab1a3e61e313a26806ff1b828b049e4e07275"
+    }
+  ],
+  "scope": "Three requested local combination checks on root native integration including Studio, free Build world and graphics/followups. Headless logic and native UI-event checks; no renderer process or Android/pixel/FPS acceptance."
+}

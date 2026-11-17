@@ -1,0 +1,105 @@
+name: Lumo Kart Sonnenhafen darkride real Godot 3D QA
+on:
+  pull_request:
+    paths:
+      - 'scripts/games/kart_sonnenhafen_darkride.gd'
+      - 'scripts/games/kart_cavern_geology.gd'
+      - 'scripts/games/kart_cavern_mineral_kit.gd'
+      - 'scripts/games/kart_harbor_crane.gd'
+      - 'scripts/games/kart_harbor_visual_finish.gd'
+      - 'scripts/games/kart_vehicle.gd'
+      - 'scripts/games/visual/kart_*cinema*.gd'
+      - 'scripts/tests/kart_cinema_*.gd'
+      - 'scripts/tests/kart_harbor_cinema_regression.gd'
+      - 'scripts/tests/kart_cavern_mineral_kit_regression.gd'
+      - 'tools/art/*kart_mineral_kit*.py'
+      - 'tools/tests/test_kart_mineral_kit.py'
+      - 'scripts/tests/kart_cavern_detail_regression.gd'
+      - 'assets/kart/cavern/**'
+      - 'assets/shaders/kart_cavern_*.gdshader'
+      - 'assets/shaders/kart_lumo_cinema_*.gdshader'
+      - 'scripts/games/kart_world.gd'
+      - 'scripts/tests/kart_sonnenhafen_darkride_*.gd'
+      - 'assets/shaders/kart_sonnenhafen_darkride.gdshader'
+      - '.github/workflows/lumo-sonnenhafen-darkride.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  darkride-real-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3 (pinned)
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Compile full project and new darkride shader
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/darkride-import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/darkride-import.log"
+      - name: Regression with real high and low detail Sonnenhafen worlds
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/darkride-regression.log" --required '[Darkride] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_darkride_regression.gd
+      - name: Install real software OpenGL framebuffer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri
+      - name: Check original asset buffers and actual material integration
+        run: |
+          set -euo pipefail
+          python3 tools/art/verify_kart_mineral_kit.py
+          python3 -m unittest discover -s tools/tests -p test_kart_mineral_kit.py -v
+          for probe in kart_cavern_mineral_kit_regression kart_cinema_finish_regression kart_cinema_kart_regression kart_harbor_cinema_regression; do
+            python3 tools/run_godot_probe.py --timeout 180 --log "$RUNNER_TEMP/$probe.log" --required PASS -- \
+              godot --headless --audio-driver Dummy --path . --script "res://scripts/tests/$probe.gd"
+          done
+      - name: Check actual cavern meshes and mobile lane clearance
+        run: |
+          python3 tools/run_godot_probe.py --timeout 240 --log "$RUNNER_TEMP/cavern-production.log" --required '[CavernProduction] PASS:' -- \
+            xvfb-run -a -s '-screen 0 1280x720x24' godot --rendering-method gl_compatibility --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_cavern_detail_regression.gd
+      - name: Photograph generated tunnel inside running Godot
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          LUMO_CAPTURE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          timeout 300s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_darkride_capture.gd -- --cinema 2>&1 | tee "$RUNNER_TEMP/darkride-render.log"
+          timeout 300s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_darkride_capture.gd -- --cinema --low-detail --no-flat-reference \
+            --output=res://artifacts/sonnenhafen-darkride-mobile 2>&1 | tee "$RUNNER_TEMP/darkride-mobile-render.log"
+          grep -F '[DarkrideRender] PASS:' "$RUNNER_TEMP/darkride-render.log"
+          for view in entrance deep_neon exit; do
+            test -s "artifacts/sonnenhafen-darkride/$view.png"
+          done
+      - name: Upload actual high and mobile cinema screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-darkride-actual-3d-${{ github.run_id }}
+          path: |
+            artifacts/sonnenhafen-darkride/
+            artifacts/sonnenhafen-darkride-mobile/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload import and safety evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-darkride-probe-${{ github.run_id }}
+          path: ${{ runner.temp }}/darkride-*.log
+          if-no-files-found: warn

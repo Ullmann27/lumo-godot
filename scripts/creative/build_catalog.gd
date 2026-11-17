@@ -231,9 +231,14 @@ const PARTS: Array[Dictionary] = [
 		"color": Color("bc9563")
 	},
 	{
-		"id": "cottage", "name": "Häuschen", "category": "Bauen",
+		"id": "cottage", "name": "Werkstatt", "category": "Bauen",
 		"size": Vector3i(3, 3, 3), "shape": "cottage",
 		"color": Color("e7d2ac"), "premium": true
+	},
+	{
+		"id": "observatory", "name": "Sternwarte", "category": "Bauen",
+		"size": Vector3i(3, 4, 3), "shape": "observatory",
+		"color": Color("d9c49a"), "premium": true
 	},
 	{
 		"id": "windmill", "name": "Windmühle", "category": "Bauen",

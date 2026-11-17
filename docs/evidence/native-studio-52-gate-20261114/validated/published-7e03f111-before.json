@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "tracked_clean": true,
+  "source_files": [
+    {
+      "path": "assets/characters/lumo_facial/ATTRIBUTION.md",
+      "bytes": 2626,
+      "sha256": "4bf37300273f8edc20b1557f7284da30d235ed1dc4f1999af4947bbb0056aa85",
+      "git_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216",
+      "mode": "100644"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "bytes": 8408740,
+      "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+      "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "mode": "100644"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "bytes": 1162,
+      "sha256": "fb3244345f930d628253b8f687646566273c8adb77aa276b46815e5861304b15",
+      "git_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_facial_pose.gd",
+      "bytes": 6120,
+      "sha256": "2d89319ccb622cad1b54c36113bda8594706c024d77f2a0605ec057d51a0f6ef",
+      "git_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "bytes": 11313,
+      "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610",
+      "git_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "bytes": 25074,
+      "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+      "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "bytes": 45446,
+      "sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+      "git_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/connect_four_visual_capture.gd",
+      "bytes": 19435,
+      "sha256": "178bc5b179e0402f1e4cc9901b21f2592745eae20b164706ec621506350f9324",
+      "git_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/fixtures/treasure_title_86445.json",
+      "bytes": 317,
+      "sha256": "29bcc428329e2a6106f0608a3f0a53060d3073ca4c1fdffa5fd809848977ce73",
+      "git_blob": "78afb5e77187170a345940059da450eed02530cf",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "bytes": 22332,
+      "sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+      "git_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_capture.gd",
+      "bytes": 8675,
+      "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38",
+      "git_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_regression.gd",
+      "bytes": 7102,
+      "sha256": "dc98c2521543d5b28238f37ed064b0ccd105378d124e44bbefd668c1b16cc03e",
+      "git_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_rigged_animation_capture.gd",
+      "bytes": 5631,
+      "sha256": "03ce996e765947e20c32cea4b683e70b25ec07e20f8d8c844a0cb0af038df151",
+      "git_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_studio_motion_regression.gd",
+      "bytes": 8857,
+      "sha256": "f6451145eec7729f35b3aab70d9fe69ad970e171288c156de3e484213984253e",
+      "git_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_teacher_pose_regression.gd",
+      "bytes": 7298,
+      "sha256": "51b32d1cb3d3684334bb5445626cacc5b20d87471f9e0f8325f07514f23f1a26",
+      "git_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "bytes": 8982,
+      "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+      "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0",
+      "git_blob": "a22821fc87123eaa6e4fb9f68ba80d5ce6385c4c",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf",
+      "git_blob": "033564dbaaebeb1fd49adac8b1d862fd62cd2eb2",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df",
+      "git_blob": "e5c02cf83818a4fd1c958db12f56332bb8ec93de",
+      "mode": "100755"
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792",
+      "git_blob": "d410c80d11611676e589875b0f94c392911b06df",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8",
+      "git_blob": "7c9522903db13f9bd0917ef2768ddbc08e624b1d",
+      "mode": "100644"
+    }
+  ],
+  "test_view_files": [
+    {
+      "path": "tools/validate_studio.sh",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 3987,
+      "sha256": "a7c4260b1a684d1f17dacd9da26b3a62c3c988983ee5abffab4456b3ce2bf856",
+      "git_blob": "371c06bc01899439b605d2623b4e498e25c1047f"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 2934,
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    },
+    {
+      "path": "tools/verify_studio_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1872,
+      "sha256": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd",
+      "git_blob": "0278d71030e87e4e46dd04b855e77711b2759252"
+    },
+    {
+      "path": "tools/verify_puzzle_menu_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 1191,
+      "sha256": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994",
+      "git_blob": "391630e0bcd394dd0e274725cf15a7474eb41e77"
+    },
+    {
+      "path": "tools/verify_safe_area_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 8079,
+      "sha256": "7894e44fd3bc77e3bcd98489c4d5f391b400198a62d89382a0d6adad3adf4a3b",
+      "git_blob": "34fb3c4f31e476a5f29f98abc9a2ecc0337e6863"
+    },
+    {
+      "path": "tools/tests/test_safe_area_rasters.py",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 8287,
+      "sha256": "2d85982ee8be47e4e63578b44eaf980b6d96a332841ce26303edf114c9878716",
+      "git_blob": "5f601a6e2910b6026a7fe5b3a430be8073acd8d7"
+    },
+    {
+      "path": ".github/workflows/lumo-nextgen-2018.yml",
+      "origin": "27ae427029a5199699c95a79a84b0027d7571752",
+      "bytes": 18752,
+      "sha256": "e36fb64b70a20ba144dfe25441dedd7332a1919914ddc9c9fa8a65c3375810a0",
+      "git_blob": "b08fbbceb4fff3646d22ecc4754afa8053131d9b"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "origin": "frozen-v1",
+      "bytes": 40588,
+      "sha256": "5b75a07da4f2b3a289635def172cf891db5dfd256d3d025d0b563932979abdd0",
+      "git_blob": "a22821fc87123eaa6e4fb9f68ba80d5ce6385c4c"
+    },
+    {
+      "path": "tools/tests/test_studio_2020_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 30303,
+      "sha256": "7652684bc21cda590e7d451f312b3545dba49c4d97e3abb596a5e357ca8651bf",
+      "git_blob": "033564dbaaebeb1fd49adac8b1d862fd62cd2eb2"
+    },
+    {
+      "path": "tools/validate_nextgen.sh",
+      "origin": "frozen-v1",
+      "bytes": 9791,
+      "sha256": "f48fdff8bd0a96b7c81468f4a8b516fd8bcb9f2a4b1ea31b232d931aad2475df",
+      "git_blob": "e5c02cf83818a4fd1c958db12f56332bb8ec93de"
+    },
+    {
+      "path": "tools/verify_studio_2020_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 23524,
+      "sha256": "4deca56cc7f4a6751b16da8e01352044d44e5c7428bcde6594d48576e675e792",
+      "git_blob": "d410c80d11611676e589875b0f94c392911b06df"
+    },
+    {
+      "path": "tools/verify_village_rasters.py",
+      "origin": "frozen-v1",
+      "bytes": 3905,
+      "sha256": "23834a1baaaa2f98ffc3df5b0b4e2a4b3bbf23e41f402a7f051adeae9fd230a8",
+      "git_blob": "7c9522903db13f9bd0917ef2768ddbc08e624b1d"
+    }
+  ],
+  "all21_original_blobs_and_modes_exact": true,
+  "all12_test_view_files_byte_identical_to_published_checkpoint": true,
+  "historical_source_freeze_v1_mode_typo_not_used": true
+}

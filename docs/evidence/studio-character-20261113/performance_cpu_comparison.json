@@ -1,0 +1,566 @@
+{
+  "allocation_scope": "Retained Object/Resource/orphan counters and static bytes; transient allocator traffic was not profiled",
+  "baseline_commit": "ada5ed81",
+  "counter_only_zero_tick_control": {
+    "after": {
+      "objects": 1489,
+      "orphans": 0,
+      "resources": 19,
+      "static_bytes": 24680983
+    },
+    "before": {
+      "objects": 1489,
+      "orphans": 0,
+      "resources": 19,
+      "static_bytes": 24680323
+    },
+    "static_bytes_delta": 660
+  },
+  "display": "headless",
+  "failures": [],
+  "godot": "4.6.3-stable (official)",
+  "gpu_fps_measured": false,
+  "integration_snapshot_label": "9eb25fcb",
+  "leaf_shader": {
+    "actual_shader_surfaces": 2,
+    "applied_motion_weights": [
+      1.0,
+      1.0
+    ],
+    "atelier_physics_callback_enabled": false,
+    "atelier_process_callback_enabled": false,
+    "atelier_sha256": "6696a9f5604bf71efa5eb6d64fe5b6ff4ca85f76cee8553586dec8743ad7022b",
+    "gpu_time_measured": false,
+    "max_vertex_offset_length_model_metres": 0.0255538646783613,
+    "max_vertex_offset_x_model_metres": 0.022,
+    "max_vertex_offset_z_model_metres": 0.013,
+    "shader_sha256": "92e405a96eb23e5da0f12bf229e6e9227d2cc4c9b28f2aaf080f51e7ab63c410",
+    "source_audit": "TIME-driven sin/cos and smoothstep; no shader loops or texture lookups; uniforms set once during ready; no leaf CPU tick added"
+  },
+  "measured_ticks_per_pass": 240,
+  "measurement_order": "before, after in pass 1; after, before in pass 2",
+  "passes": 2,
+  "physical_android_measured": false,
+  "platform": "Linux",
+  "platform_cycle": "60 walk,60 sprint,40 ascending,40 descending,40 grounded/landing ticks",
+  "rows": [
+    {
+      "actors": 1,
+      "after": {
+        "batch_max_us": 80,
+        "batch_median_us": 19.0,
+        "batch_p95_us": 21.0,
+        "per_actor_median_us": 19.0,
+        "per_actor_p95_us": 21.0,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 143,
+        "batch_median_us": 6.0,
+        "batch_p95_us": 9.0,
+        "per_actor_median_us": 6.0,
+        "per_actor_p95_us": 9.0,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35973840
+            },
+            "before": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35973052
+            }
+          },
+          {
+            "after": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35975280
+            },
+            "before": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35974492
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35954940
+            },
+            "before": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35954152
+            }
+          },
+          {
+            "after": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35969152
+            },
+            "before": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35968364
+            }
+          }
+        ]
+      },
+      "median_ratio": 3.16666666666667,
+      "mode": "walk",
+      "p95_ratio": 2.33333333333333
+    },
+    {
+      "actors": 1,
+      "after": {
+        "batch_max_us": 130,
+        "batch_median_us": 32.0,
+        "batch_p95_us": 39.0,
+        "per_actor_median_us": 32.0,
+        "per_actor_p95_us": 39.0,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 56,
+        "batch_median_us": 12.0,
+        "batch_p95_us": 18.0,
+        "per_actor_median_us": 12.0,
+        "per_actor_p95_us": 18.0,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35984980
+            },
+            "before": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35984192
+            }
+          },
+          {
+            "after": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35986412
+            },
+            "before": {
+              "objects": 1522,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35985624
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35972920
+            },
+            "before": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35972132
+            }
+          },
+          {
+            "after": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35983008
+            },
+            "before": {
+              "objects": 1521,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 35982220
+            }
+          }
+        ]
+      },
+      "median_ratio": 2.66666666666667,
+      "mode": "platform",
+      "p95_ratio": 2.16666666666667
+    },
+    {
+      "actors": 4,
+      "after": {
+        "batch_max_us": 247,
+        "batch_median_us": 78.0,
+        "batch_p95_us": 133.0,
+        "per_actor_median_us": 19.5,
+        "per_actor_p95_us": 33.25,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 106,
+        "batch_median_us": 24.0,
+        "batch_p95_us": 27.0,
+        "per_actor_median_us": 6.0,
+        "per_actor_p95_us": 6.75,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36287355
+            },
+            "before": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36286567
+            }
+          },
+          {
+            "after": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36288787
+            },
+            "before": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36287999
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36235499
+            },
+            "before": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36234711
+            }
+          },
+          {
+            "after": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36245587
+            },
+            "before": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36244799
+            }
+          }
+        ]
+      },
+      "median_ratio": 3.25,
+      "mode": "walk",
+      "p95_ratio": 4.92592592592593
+    },
+    {
+      "actors": 4,
+      "after": {
+        "batch_max_us": 255,
+        "batch_median_us": 132.0,
+        "batch_p95_us": 181.0,
+        "per_actor_median_us": 33.0,
+        "per_actor_p95_us": 45.25,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 532,
+        "batch_median_us": 47.0,
+        "batch_p95_us": 88.0,
+        "per_actor_median_us": 11.75,
+        "per_actor_p95_us": 22.0,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36299051
+            },
+            "before": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36298263
+            }
+          },
+          {
+            "after": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36300483
+            },
+            "before": {
+              "objects": 1555,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36299695
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36258275
+            },
+            "before": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36257487
+            }
+          },
+          {
+            "after": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36268363
+            },
+            "before": {
+              "objects": 1551,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36267575
+            }
+          }
+        ]
+      },
+      "median_ratio": 2.80851063829787,
+      "mode": "platform",
+      "p95_ratio": 2.05681818181818
+    },
+    {
+      "actors": 8,
+      "after": {
+        "batch_max_us": 1579,
+        "batch_median_us": 154.0,
+        "batch_p95_us": 208.0,
+        "per_actor_median_us": 19.25,
+        "per_actor_p95_us": 26.0,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 173,
+        "batch_median_us": 49.0,
+        "batch_p95_us": 73.0,
+        "per_actor_median_us": 6.125,
+        "per_actor_p95_us": 9.125,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36697691
+            },
+            "before": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36696903
+            }
+          },
+          {
+            "after": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36699123
+            },
+            "before": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36698335
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36596407
+            },
+            "before": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36595619
+            }
+          },
+          {
+            "after": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36606499
+            },
+            "before": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36605711
+            }
+          }
+        ]
+      },
+      "median_ratio": 3.14285714285714,
+      "mode": "walk",
+      "p95_ratio": 2.84931506849315
+    },
+    {
+      "actors": 8,
+      "after": {
+        "batch_max_us": 1029,
+        "batch_median_us": 261.5,
+        "batch_p95_us": 379.0,
+        "per_actor_median_us": 32.6875,
+        "per_actor_p95_us": 47.375,
+        "samples": 480
+      },
+      "before": {
+        "batch_max_us": 2289,
+        "batch_median_us": 92.0,
+        "batch_p95_us": 150.0,
+        "per_actor_median_us": 11.5,
+        "per_actor_p95_us": 18.75,
+        "samples": 480
+      },
+      "counters": {
+        "after": [
+          {
+            "after": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36710707
+            },
+            "before": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36709919
+            }
+          },
+          {
+            "after": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36712139
+            },
+            "before": {
+              "objects": 1599,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36711351
+            }
+          }
+        ],
+        "before": [
+          {
+            "after": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36631643
+            },
+            "before": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36630855
+            }
+          },
+          {
+            "after": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36641731
+            },
+            "before": {
+              "objects": 1591,
+              "orphans": 0,
+              "resources": 36,
+              "static_bytes": 36640943
+            }
+          }
+        ]
+      },
+      "median_ratio": 2.84239130434783,
+      "mode": "platform",
+      "p95_ratio": 2.52666666666667
+    }
+  ],
+  "scope": "Pose sampling and actual 65-bone Skeleton3D update only; excludes render/GPU/physics/full-app time",
+  "simulation_delta_seconds": 0.0166666666666667,
+  "source_sha256": {
+    "assets/characters/lumo_animated/lumo_studio_clips.gd": "c0b4be7f094b4f69942d92ad25d54c8c45f01b6cb8471c00e7d5a0513ee8df18",
+    "docs/evidence/studio-character-20261113/before_platform_pose.gd.txt": "cd0a5cd4054fef04103a072df2385040271eeca2560f457c20c04d868839e65b",
+    "docs/evidence/studio-character-20261113/before_walk_locomotion.gd.txt": "5cfe0728a9aad4ed81fef9b3f560022d4a08aadf1f28541c168798cc6ceb78f2",
+    "scripts/characters/lumo/lumo_body_space_pose.gd": "043d9eb3cbd1d56f2be4ad62aff71b99753540b524f3d4b69c030fc9217dcd9e",
+    "scripts/characters/lumo/lumo_platform_pose.gd": "2f89ad0660ed3f74ff0cfe50837e18265bcf54fdccd24712de6a8b0d680c0a59",
+    "scripts/characters/lumo/lumo_rigged_actor.gd": "f262df70dd22937058b698e570eafabc8e05bba539036f89eda059166b68f3d0",
+    "scripts/characters/lumo/lumo_walk_locomotion.gd": "95366a2716a557b27383757771923ec73971a385651749c78da8f2cc14a24ec2"
+  },
+  "timer": "Time.get_ticks_usec, monotonic native microseconds",
+  "walk_cycle": "constant 1.4 metres/second; identical 60Hz delta",
+  "warmup_ticks_per_pass": 30
+}

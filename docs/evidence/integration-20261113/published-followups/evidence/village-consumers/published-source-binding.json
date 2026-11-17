@@ -1,0 +1,108 @@
+{
+  "producer_sha": "027c2535d2d69fc56fc19d8d96490f7de5be9c37",
+  "combined_head_before_staged_merge": "c88b100f2cf031f504f2a1a4e3f0b90a3d71d523",
+  "merge_head": "027c2535d2d69fc56fc19d8d96490f7de5be9c37",
+  "source_files": 756,
+  "sources_unchanged": true,
+  "all_three_probes_identical_to_published": true,
+  "headless_only": true,
+  "renderer_approval": false,
+  "binding": [
+    {
+      "path": "scripts/creative/build_settlement_economy.gd",
+      "bytes": 30681,
+      "sha256": "d0e9cf65144d3e8a9eaef2ae47eb2ea5885aaec2ce2e54609a93ae9c5b37a7e9",
+      "git_blob": "72dd5a880488a60ad6708928c212841afa587df2",
+      "published_git_blob": "72dd5a880488a60ad6708928c212841afa587df2",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_state.gd",
+      "bytes": 23948,
+      "sha256": "50dc7958ee3d1f09e70aa951da1e6a17e4f2fceabac0d336164ace771e24c7ee",
+      "git_blob": "b42d3fdb034034018ee494b96d456ade8edabe64",
+      "published_git_blob": "b42d3fdb034034018ee494b96d456ade8edabe64",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_region.gd",
+      "bytes": 9665,
+      "sha256": "b668d46ec8a72d33e34d4fa2ea7dc7b0c34abfa228af6ff65e13b06de257f56f",
+      "git_blob": "612ea82cc6494882e429a1090a64024f6c11c081",
+      "published_git_blob": "612ea82cc6494882e429a1090a64024f6c11c081",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_residents.gd",
+      "bytes": 7579,
+      "sha256": "dae474c3dd39d4d2a65af3c603a38379b213805e6ee25b92f2b1b5b2436584af",
+      "git_blob": "43fef81fab8e5abae9d84ad168470994ee416bcb",
+      "published_git_blob": "43fef81fab8e5abae9d84ad168470994ee416bcb",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_visual.gd",
+      "bytes": 9722,
+      "sha256": "dda539ef378b5dd67858bdca6a41a5cd1c740f3746b17361e34d7e0777753bd0",
+      "git_blob": "e55457b64f71968acd1fae59e8d444884e0cd22a",
+      "published_git_blob": "e55457b64f71968acd1fae59e8d444884e0cd22a",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "bytes": 43673,
+      "sha256": "cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e",
+      "git_blob": "62fb2697d7005ec20b99e09bf5aa8508e354b13c",
+      "published_git_blob": "62fb2697d7005ec20b99e09bf5aa8508e354b13c",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/tests/build_village_economy_regression.gd",
+      "bytes": 17501,
+      "sha256": "2a53c910ba56af76dd85e826a187d64ebd44ebda30be4a392dd12044c1bd832a",
+      "git_blob": "9ff2960ebaa946f9611e0509964dd0f53668e281",
+      "published_git_blob": "9ff2960ebaa946f9611e0509964dd0f53668e281",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/tests/build_village_art_regression.gd",
+      "bytes": 5026,
+      "sha256": "fad7ea14beebeeb724cc0f15ead68e33e0aed75bf3533fba105c1f99d049a720",
+      "git_blob": "58e30670eee6cde7de94810d395c4af56f4bdd70",
+      "published_git_blob": "58e30670eee6cde7de94810d395c4af56f4bdd70",
+      "identical_to_published": true
+    },
+    {
+      "path": "scripts/tests/build_village_scene_regression.gd",
+      "bytes": 4869,
+      "sha256": "e0fcc755c385d11344088d5cc1828d378e91aeaffd985c4b9ac987b636bae499",
+      "git_blob": "d9d79e54c6d73acaaf2946a7bce7d2812809e943",
+      "published_git_blob": "d9d79e54c6d73acaaf2946a7bce7d2812809e943",
+      "identical_to_published": true
+    },
+    {
+      "path": "assets/creative/village/nelli_rabbit.glb",
+      "bytes": 211272,
+      "sha256": "032a0aefce87ff1ef693369fefaee833a8e702d91163c1ea4415f76be362ed92",
+      "git_blob": "882d615280551e01e94858c6fd38486dfc2404a5",
+      "published_git_blob": "882d615280551e01e94858c6fd38486dfc2404a5",
+      "identical_to_published": true
+    },
+    {
+      "path": "assets/creative/village/bruno_beaver.glb",
+      "bytes": 205240,
+      "sha256": "1ac3ac67ba14fefa85067fe6f72f0be5d6da98d1504ce1fe53516a828b1138fc",
+      "git_blob": "b074f100197e92d5fb534a78628259d60feffdf6",
+      "published_git_blob": "b074f100197e92d5fb534a78628259d60feffdf6",
+      "identical_to_published": true
+    },
+    {
+      "path": "assets/creative/village/tilda_duck.glb",
+      "bytes": 191444,
+      "sha256": "5b862e60c42b91de5d615838c85b9b7523391792539292db85b57e0c6dbf08bd",
+      "git_blob": "89c89262728d51d5a3dff7a42d1cb02b0711a84d",
+      "published_git_blob": "89c89262728d51d5a3dff7a42d1cb02b0711a84d",
+      "identical_to_published": true
+    }
+  ]
+}

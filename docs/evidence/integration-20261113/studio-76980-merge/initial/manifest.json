@@ -1,0 +1,91 @@
+{
+  "base_commit": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "merged_studio_source": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "source_files": 1189,
+  "changed_during_run": [],
+  "renderer": false,
+  "scope": "Actual Godot headless execution on merged production/probe source. Does not establish rendered screenshots or physical Android acceptance. Workflow-only edits run independently.",
+  "results": [
+    {
+      "probe": "build_nextgen_play_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://scripts/tests/build_nextgen_play_regression.gd"
+      ],
+      "started_at": "2026-11-13T15:46:38.278694+00:00",
+      "finished_at": "2026-11-13T15:46:44.694284+00:00",
+      "seconds": 6.416,
+      "exit_code": 0,
+      "timeout": false,
+      "pass_lines": [
+        "[BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+      ],
+      "error_lines": [],
+      "log": "build_nextgen_play_regression.log",
+      "log_bytes": 685,
+      "log_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "passed": true
+    },
+    {
+      "probe": "build_dialog_density_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://scripts/tests/build_dialog_density_regression.gd"
+      ],
+      "started_at": "2026-11-13T15:46:38.280597+00:00",
+      "finished_at": "2026-11-13T15:47:15.342665+00:00",
+      "seconds": 37.062,
+      "exit_code": 1,
+      "timeout": false,
+      "pass_lines": [],
+      "error_lines": [
+        "ERROR: [BuildDialogDensity] Actual world touch still orbits the camera",
+        "ERROR: [BuildDialogDensity] Actual world touch still orbits the camera",
+        "ERROR: [BuildDialogDensity] Actual world touch still orbits the camera"
+      ],
+      "log": "build_dialog_density_regression.log",
+      "log_bytes": 2999,
+      "log_sha256": "93f5e593de518fdb3572ded9b7437a0ef1586d51a2b5075c53ce4e11801d5885",
+      "passed": false
+    },
+    {
+      "probe": "learning_studio_regression",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://scripts/tests/learning_studio_regression.gd"
+      ],
+      "started_at": "2026-11-13T15:46:38.280565+00:00",
+      "finished_at": "2026-11-13T15:46:46.836397+00:00",
+      "seconds": 8.556,
+      "exit_code": 0,
+      "timeout": false,
+      "pass_lines": [
+        "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning"
+      ],
+      "error_lines": [],
+      "log": "learning_studio_regression.log",
+      "log_bytes": 1799,
+      "log_sha256": "4c3f76fbf9eae0869b4055830f947781d98f5809e22bf7c62066dfb3d0f97766",
+      "passed": true
+    }
+  ],
+  "passed": false
+}

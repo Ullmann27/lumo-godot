@@ -1,0 +1,29 @@
+{
+  "case": "classic-settlement",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-preservation-final/classic-settlement/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[SettlementPlay] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+    "--script",
+    "res://scripts/tests/build_settlement_play_regression.gd"
+  ],
+  "exit_code": 0,
+  "seconds": 9.103,
+  "engine_sha256": "430e55f53620b8c2df1d8871f1b9763936f7d14e91ed66e383700f1dce26a8b4",
+  "png_files": [],
+  "findings": [
+    "[SettlementPlay] PASS checks=127: actual routes, plot touch, paid builds, fair visible AI, save isolation, pause and layouts"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "producerCommit": "3bb511e5e7d87130a1efa4c4cf5eb6930e518db4",
+  "producerTree": "e608e69a698e2b3b5ceb14f830ab2bf95e88bf40",
+  "initialBaseTreeEqualsPublished": "f521fc5887e98562ba89fbfeca3bb466031fdea0",
+  "runtime": "4.6.3.stable.official.7d41c59c4",
+  "before": {
+    "checks": 43,
+    "failed": 2
+  },
+  "after": {
+    "checks": 43,
+    "failed": 0
+  },
+  "realRegisteredSceneInstantiated": true,
+  "androidPlaybackProven": false,
+  "renderingChanged": false,
+  "logs": {
+    "native-capabilities-routed-before.log": {
+      "bytes": 505,
+      "sha256": "f98f887c676de74b699aa604f836d60fa528e3af331951288fcae7445b54fd79"
+    },
+    "native-capabilities-routed-after.log": {
+      "bytes": 387,
+      "sha256": "4452d44fd19c46eb8ddf89913cd2469e928831378d67879822429b96394c1986"
+    },
+    "native-capabilities-routed-style.log": {
+      "bytes": 480,
+      "sha256": "7e782dfa4a5b44a76d427049d498a2368a59176ae539b0d264ee3e424345ca9b"
+    }
+  }
+}

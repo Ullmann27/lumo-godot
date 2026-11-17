@@ -1,0 +1,129 @@
+name: Lumo Sonnenhafen coastal viaduct real 3D QA
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b-sonnenhafen-viaduct-2026-10-17
+  pull_request:
+    paths:
+      - scripts/games/kart_sonnenhafen_coastal_viaduct.gd
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_sonnenhafen_viaduct_*.gd
+      - .github/workflows/lumo-sonnenhafen-viaduct.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coastal-viaduct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install real Godot 4.6.3 and OpenGL software renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -qq update
+          sudo apt-get -y install xvfb libgl1-mesa-dri
+          curl -fL --retry 3 \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import source and reject GDScript or shader parsing errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Actual 3D geometry, road clearance, dual LOD and track isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log "$RUNNER_TEMP/viaduct-regression.log" \
+            --timeout 160 --required '[CoastalViaduct] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_viaduct_regression.gd
+      - name: Capture actual GL Compatibility images of new Sonnenhafen landmarks
+        env:
+          LUMO_CAPTURE_DIR: ${{ github.workspace }}/exports/viaduct/after
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$LUMO_CAPTURE_DIR"
+          timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_viaduct_capture.gd \
+            2>&1 | tee "$RUNNER_TEMP/after.log"
+          for pose in 01_chase_viaduct 02_coast_observation 03_second_viaduct; do
+            test -s "$LUMO_CAPTURE_DIR/$pose.png"
+          done
+      - name: Capture exactly same cameras on frozen original 1972 Godot source
+        shell: bash
+        run: |
+          set -euo pipefail
+          original="$GITHUB_WORKSPACE"
+          baseline="$RUNNER_TEMP/lumo-before-viaduct"
+          git clone --quiet --no-hardlinks . "$baseline"
+          git -C "$baseline" remote set-url origin https://github.com/Ullmann27/lumo-godot.git
+          git -C "$baseline" fetch --depth 1 origin b8f464d946f73d9b88458bf223f1b83db3975a1a
+          git -C "$baseline" checkout --detach FETCH_HEAD
+          test "$(git -C "$baseline" rev-parse HEAD)" = b8f464d946f73d9b88458bf223f1b83db3975a1a
+          cp "$original/scripts/tests/kart_sonnenhafen_viaduct_capture.gd" \
+            "$baseline/scripts/tests/kart_sonnenhafen_viaduct_capture.gd"
+          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          mkdir -p "$original/exports/viaduct/before"
+          (cd "$baseline" && LUMO_CAPTURE_DIR="$original/exports/viaduct/before" \
+            timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_sonnenhafen_viaduct_capture.gd)
+          for pose in 01_chase_viaduct 02_coast_observation 03_second_viaduct; do
+            test -s "$original/exports/viaduct/before/$pose.png"
+          done
+      - name: Machine-check actual changed visual pixels (no fake renders)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --break-system-packages Pillow==12.3.0
+          python3 - <<'PY'
+          from PIL import Image, ImageChops
+          from pathlib import Path
+          import hashlib, json
+          base = Path('exports/viaduct')
+          report = {}
+          strong = 0
+          for pose in ('01_chase_viaduct', '02_coast_observation', '03_second_viaduct'):
+              before = base / 'before' / f'{pose}.png'
+              after = base / 'after' / f'{pose}.png'
+              a = Image.open(before).convert('RGB')
+              b = Image.open(after).convert('RGB')
+              assert a.size == b.size == (1280, 720), pose
+              diff = ImageChops.difference(a, b).convert('L')
+              hist = diff.histogram()
+              changed = sum(hist[30:]) / (1280 * 720)
+              report[pose] = {
+                  'changed_pixels_over_30_ratio': changed,
+                  'sha_before': hashlib.sha256(before.read_bytes()).hexdigest(),
+                  'sha_after': hashlib.sha256(after.read_bytes()).hexdigest()
+              }
+              strong += changed > 0.01
+          (base / 'visual-evidence.json').write_text(json.dumps(report, indent=2))
+          print(json.dumps(report, indent=2))
+          assert strong >= 2, f'Less than two angles demonstrate visible scenery change: {strong}'
+          PY
+      - name: Save real before/after PNG evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sonnenhafen-viaduct-before-after-${{ github.run_id }}
+          path: exports/viaduct/
+          if-no-files-found: warn

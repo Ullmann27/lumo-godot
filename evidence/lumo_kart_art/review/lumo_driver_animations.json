@@ -1,0 +1,19 @@
+{
+  "movie": "evidence/lumo_kart_art/review/lumo_driver_animations.mp4",
+  "sha256": "68fed0e29f2a591f065f599eb533e7b34f3b5930727708124eafa476f46cec96",
+  "bytes": 3453378,
+  "capture_receipt": "evidence/lumo_kart_art/review/animation_capture.json",
+  "capture_receipt_sha256": "bf943b1a3939b95fa79be7e70bacd1927122688b11f7a400408897dc98f947c6",
+  "captured_frames": 312,
+  "encoded_frames": 312,
+  "width": 1200,
+  "height": 750,
+  "fps": "24/1",
+  "duration_seconds": 13.0,
+  "codec": "h264",
+  "pixel_format": "yuv420p",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "physical_android": false,
+  "runtime_fps_measurement": false,
+  "method": "Frame-by-frame capture of actual Godot rendering; encoded with FFmpeg, no generated concept imagery"
+}

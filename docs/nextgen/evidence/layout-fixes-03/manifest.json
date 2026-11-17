@@ -1,0 +1,141 @@
+{
+  "schema": "lumo.nextgen.layout-evidence",
+  "version": 1,
+  "baseline_commit": "0b93d806a47df4a0b4aca02461b7dcc5210ee4c8",
+  "sources": {
+    "scripts/lumo_next/learning_world_next.gd": "4f27104653a2c45b87ad778a915704f19b49793598e6b26ebe94b8fb1bebd6c9",
+    "scripts/tests/nextgen_learning_route_review.gd": "e110bd0c372f9df35fffce77ac778e3be26248ed0db4f411e53a90e1ae4aad42"
+  },
+  "checks": {
+    "layout-before.log": {
+      "status": "FAIL",
+      "checks": 1774,
+      "failure_count": 12,
+      "capture_count": 0
+    },
+    "layout-after.log": {
+      "status": "PASS",
+      "checks": 1774,
+      "failure_count": 0,
+      "capture_count": 0
+    },
+    "software-render.log": {
+      "status": "PASS",
+      "checks": 1789,
+      "failure_count": 0,
+      "capture_count": 15
+    }
+  },
+  "additional_checks": {
+    "avatar_contract": 300,
+    "original_base_fox_audio": 69,
+    "gdformat_check": "PASS: 2 files unchanged",
+    "gdlint": "PASS: no problems",
+    "validate_project": "118 PASS / 0 WARN / 0 FAIL"
+  },
+  "renderer": "Godot 4.6.3 / X11 / OpenGL Compatibility / Mesa llvmpipe (LLVM 19.1.7, 256 bits)",
+  "physical_android_verified": false,
+  "full_flutter_coverage": false,
+  "files": {
+    ".gdignore": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "avatar-contract.log": {
+      "sha256": "3632720fb95e1fd3c6a2c1e29baf21b8b177cebc5a73712a74edeec9be89a784",
+      "bytes": 4078
+    },
+    "base-audio.log": {
+      "sha256": "181656fbc11b99b2732ac482ca30a5e1ae03215cd5e2e467ef8baeaefcf9227c",
+      "bytes": 514
+    },
+    "bridge-ten-image-comparison.json": {
+      "sha256": "a23db83c072a482705fe05f5569175e59b810a3bbf69fc76b85a8c3c92804658",
+      "bytes": 2266
+    },
+    "layout-after.log": {
+      "sha256": "532196e1f0bc5e4ade5dc123be6ac729a3aa1ce8ce971676543114d913b1348e",
+      "bytes": 1061
+    },
+    "layout-before.log": {
+      "sha256": "74cfb0c35cf356742fe22689fdeb25dd10bced820bf39166f66570c4b3800f42",
+      "bytes": 11916
+    },
+    "red-green-source.json": {
+      "sha256": "54fbe5f97a6a0d44fdc0d79b49c52cbc50a4bef2ac6d76cec3d84344794ab096",
+      "bytes": 475
+    },
+    "screenshots/bridge_ten_1280x720.png": {
+      "sha256": "81fadd039a53be6eb5918dfdcf702a20cfb0df94ab2448b9eb69404e1c5f9d88",
+      "bytes": 368881
+    },
+    "screenshots/bridge_ten_412x915.png": {
+      "sha256": "a5b8459f89224d1445f043b156e9109421de9eb6efe69c81f3b0293e8bfa95e8",
+      "bytes": 144447
+    },
+    "screenshots/bridge_ten_412x960.png": {
+      "sha256": "fda64e19b35c8a4a74dcc4a3b441346dd44d1c8b6e85cedcf070759cb6136d8f",
+      "bytes": 153899
+    },
+    "screenshots/bridge_ten_750x832.png": {
+      "sha256": "b70cc130e1938e9d0a01bb03acdec16e90dc6e912dd0dcdf0e7697a9bc249aec",
+      "bytes": 225427
+    },
+    "screenshots/bridge_ten_after_two.png": {
+      "sha256": "0e0bdafa312a5284648b90d6fce281ccb147dacd358c6d174b3101d8a9ae2990",
+      "bytes": 375417
+    },
+    "screenshots/syllables_1280x720.png": {
+      "sha256": "f0c945b7b9f5e71c49ce1ccb292ac80915827bcc08eea9526bda90d83a38c46c",
+      "bytes": 349765
+    },
+    "screenshots/syllables_412x915.png": {
+      "sha256": "9ebd696a6ac0bfa0392722ab3e8f5740adfd328c7069df4c23651642d4816650",
+      "bytes": 132259
+    },
+    "screenshots/syllables_412x960.png": {
+      "sha256": "5b46d5ab17380cc6066b8520392f7112a3d466bc78714aecfd527b07cebcfc34",
+      "bytes": 136977
+    },
+    "screenshots/syllables_750x832.png": {
+      "sha256": "902ac09390bd4607547063dc620b730b74e5165f788bd661bfbbbd95a6de71cc",
+      "bytes": 213863
+    },
+    "screenshots/task_card_1280x720.png": {
+      "sha256": "c21910374187bc222813ff9137376c100b7d1df2950ec5f4e72b704c873e577a",
+      "bytes": 341822
+    },
+    "screenshots/task_card_412x915.png": {
+      "sha256": "f232482314f3079d6c291c09a817e704b8b3450a5fadc367da0e751fa13a4bfa",
+      "bytes": 126472
+    },
+    "screenshots/task_card_412x960.png": {
+      "sha256": "4434d7c9dd0d6820d2d62390b2e15328bae954671e565521e6acb4478d2b2208",
+      "bytes": 137660
+    },
+    "screenshots/task_card_750x832.png": {
+      "sha256": "43c348a520bacc5b31e06023e7ec6328fd605cd430bb9e058001ff124679f6ab",
+      "bytes": 206329
+    },
+    "screenshots/task_card_point_412x960.png": {
+      "sha256": "942e9b714860b6121054dc531cd02f93c6d623f91c01bed9fe6ed250feee214d",
+      "bytes": 137336
+    },
+    "screenshots/task_card_point_750x832.png": {
+      "sha256": "8d9d85d7ee0de7370e0e48a53017216ae5f5b6fcf6df26fd4e4d07464ba02dcb",
+      "bytes": 206371
+    },
+    "software-render.log": {
+      "sha256": "d8250f3393fe6da97590d68197ed8353470aaee8f78ededf119207b11fef6eec",
+      "bytes": 4157
+    },
+    "software-run.json": {
+      "sha256": "43cf8feabc1d50bd0e46d4798ef47a302e7bc5a63c06611671fdb7539e7f4d5f",
+      "bytes": 511
+    },
+    "README.md": {
+      "sha256": "764caa97a1883be8adf4b03904b5b24a3300f5f1558a201b6b89e99864003922",
+      "bytes": 4277
+    }
+  }
+}

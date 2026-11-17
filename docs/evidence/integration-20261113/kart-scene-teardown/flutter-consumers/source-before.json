@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "captured_at": "2026-11-13T16:24:03.752511+00:00",
+  "local_head": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "source_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "published_head": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "scope": "Six existing test consumers only. Only kart_regression.gd had an observed CI teardown failure; these six had source-proven missing release conditions.",
+  "files": [
+    {
+      "path": "scripts/tests/host_bridge_regression.gd",
+      "bytes": 11738,
+      "sha256": "032aca81ac9b8e21d3b3a72851ed02ed7d8b09813796793e0c9c2fed5c5d9a1c",
+      "git_blob": "df08510a9a6b2e1037561cc4277299bfcb0204b0",
+      "head_blob": "df08510a9a6b2e1037561cc4277299bfcb0204b0",
+      "saved": "originals/host_bridge_regression.gd.gz",
+      "saved_sha256": "45cf061d8c504a38c68120d968c97159b9666b327817f14beb6545941bea7ba5"
+    },
+    {
+      "path": "scripts/tests/kart_race_bridge_regression.gd",
+      "bytes": 7771,
+      "sha256": "efe956ea6b73b9c831d13b291cd17afe85c63691a1c8b48ddb9644ebd441030a",
+      "git_blob": "b4857e42bb12665b08b320d838e40dff0806699d",
+      "head_blob": "b4857e42bb12665b08b320d838e40dff0806699d",
+      "saved": "originals/kart_race_bridge_regression.gd.gz",
+      "saved_sha256": "afde5c24830c428fc3b9c6834b4eb54584976eb4edd87f22d3ad6bf5164d0ffe"
+    },
+    {
+      "path": "scripts/tests/kart_physics_regression.gd",
+      "bytes": 20737,
+      "sha256": "06ba3488c62f3623c3cb0e5cdae7722980e6a7628ae6f6f93035df9202eaf1bf",
+      "git_blob": "b0fda5cc6b0fc34ed93dc3657c0a8aa964d3bb38",
+      "head_blob": "b0fda5cc6b0fc34ed93dc3657c0a8aa964d3bb38",
+      "saved": "originals/kart_physics_regression.gd.gz",
+      "saved_sha256": "31c651d98e9ec33570ef16f73752085b328b3c506b42497fe44cc8afbfbec3b3"
+    },
+    {
+      "path": "scripts/tests/kart_jump_regression.gd",
+      "bytes": 8153,
+      "sha256": "3d4d8d6c2fc33ff617995128aee6c36765acc4ccd4ed199295dddcfe32a5d4af",
+      "git_blob": "bf3cd944ad2bffc0477e1b42d70f36760743d351",
+      "head_blob": "bf3cd944ad2bffc0477e1b42d70f36760743d351",
+      "saved": "originals/kart_jump_regression.gd.gz",
+      "saved_sha256": "3b7d7b1f7349a627afce76dc547501913f412cae3f1d53dd58f6c912e7c801d2"
+    },
+    {
+      "path": "scripts/tests/kart_touch_regression.gd",
+      "bytes": 5161,
+      "sha256": "336f166070875686f13e42bcc2f628462e32b61227b63c1f87776d2deb7fd436",
+      "git_blob": "be5a8c707d6f4d53cf3e180b3dfd59257eb9ca82",
+      "head_blob": "be5a8c707d6f4d53cf3e180b3dfd59257eb9ca82",
+      "saved": "originals/kart_touch_regression.gd.gz",
+      "saved_sha256": "ecaed9c515e6c3eadcd8fe3002baba2f252d803ce9f9d302cf8e362159165c84"
+    },
+    {
+      "path": "scripts/tests/kart_compact_selection_regression.gd",
+      "bytes": 7199,
+      "sha256": "5da50404d04bdc584ac5174ca8123ad9cdd4b55c895954f97d17f4cb9133b93a",
+      "git_blob": "2ef8b6b3d6acdd04bafd7b4b376738dfff6aae15",
+      "head_blob": "2ef8b6b3d6acdd04bafd7b4b376738dfff6aae15",
+      "saved": "originals/kart_compact_selection_regression.gd.gz",
+      "saved_sha256": "1a90379304f252d326baf66843bbbcb4e8954f3c52458939b8a3e69cb8f9f558"
+    }
+  ],
+  "initial_status": {
+    "file": "initial-status.txt.gz",
+    "original_sha256": "4c960a914bb5be08c777db9b84782ee98bd08e7b38eb22ebf0da213c89a0d6dc",
+    "lines": 325
+  }
+}

@@ -1,0 +1,310 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+ERROR: [CompactKartSelection] KartCard_comet fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_gecko_velo fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_boru_rally fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_glider fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_nala_comet fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_noa_tide fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_iva_aurora fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_turbo fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_zuri_volt fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_blitz fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_terra fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_koloss fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_phantom fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_stella fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+[CompactKartSelection] pixels=(640, 320) saved=false list=[P: (72.0, 243.0), S: (450.0, 67.0)] gecko=[P: (72.0, 108.0), S: (442.0, 202.5)] workshop=[P: (72.0, 324.0), S: (450.0, 108.0)] footer=[P: (63.0, 468.0), S: (1314.0, 117.0)]
+ERROR: [CompactKartSelection] actual touch selects Gecko and updates the live kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:73)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] workshop receives the selected kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:85)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+[CompactKartSelection] pixels=(800, 480) saved=false list=[P: (51.2, 262.4), S: (368.0, 214.0)] gecko=[P: (51.2, 262.4), S: (360.0, 144.0)] workshop=[P: (51.2, 486.4), S: (368.0, 76.8)] footer=[P: (44.8, 588.8), S: (1190.4, 83.20001)]
+ERROR: [CompactKartSelection] KartCard_comet fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_gecko_velo fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_boru_rally fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_glider fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_nala_comet fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_noa_tide fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_iva_aurora fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_turbo fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_zuri_volt fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_blitz fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_terra fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_koloss fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_phantom fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_stella fits the scroll viewport at (640, 320) saved=false
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+[CompactKartSelection] pixels=(640, 320) saved=false list=[P: (72.0, 243.0), S: (450.0, 67.0)] gecko=[P: (72.0, 108.0), S: (442.0, 202.5)] workshop=[P: (72.0, 324.0), S: (450.0, 108.0)] footer=[P: (63.0, 468.0), S: (1314.0, 117.0)]
+ERROR: [CompactKartSelection] actual touch selects Gecko and updates the live kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:73)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] workshop receives the selected kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:85)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_comet fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_gecko_velo fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_boru_rally fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_glider fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_nala_comet fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_noa_tide fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_iva_aurora fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_turbo fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_zuri_volt fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_blitz fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_terra fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_koloss fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_phantom fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] KartCard_stella fits the scroll viewport at (640, 320) saved=true
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:61)
+       [2] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+[CompactKartSelection] pixels=(640, 320) saved=true list=[P: (72.0, 243.0), S: (450.0, 67.0)] gecko=[P: (72.0, 108.0), S: (442.0, 202.5)] workshop=[P: (72.0, 324.0), S: (450.0, 108.0)] footer=[P: (63.0, 468.0), S: (1314.0, 117.0)]
+ERROR: [CompactKartSelection] actual touch selects Gecko and updates the live kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:73)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+ERROR: [CompactKartSelection] workshop receives the selected kart
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://scripts/tests/kart_compact_selection_regression.gd:18)
+       [1] _case (res://scripts/tests/kart_compact_selection_regression.gd:85)
+       [2] _tap (res://scripts/tests/kart_compact_selection_regression.gd:42)
+       [3] _settle (res://scripts/tests/kart_compact_selection_regression.gd:23)
+[CompactKartSelection] FAIL 175 checks; 4/4 cases; renderer=headless

@@ -1,0 +1,52 @@
+{
+  "source": {
+    "sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "mesh_definitions": 1,
+    "mesh_nodes": 1,
+    "triangles": 30000,
+    "mesh_names": [
+      "Mesh_0"
+    ]
+  },
+  "roundtrip": {
+    "sha256": "c19377fcd3b6f74931ac13d45fbd6291e4036100390cd7285f0231e4f3e10183",
+    "mesh_definitions": 1,
+    "mesh_nodes": 1,
+    "triangles": 30000,
+    "mesh_names": [
+      "Mesh_0"
+    ]
+  },
+  "before": {
+    "blender_version": "4.3.2",
+    "source_glb": "Lumo-Animated-Mobile.glb",
+    "source_glb_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "mesh_objects": 2,
+    "triangles": 30080,
+    "materials": 1,
+    "images": 3,
+    "armatures": 1,
+    "geometry_modified": false,
+    "material_fidelity_approved": false,
+    "runtime_replacement": false,
+    "animation_status": "Static source snapshot, not a new skeletal animation system",
+    "roundtrip_glb_sha256": "c19377fcd3b6f74931ac13d45fbd6291e4036100390cd7285f0231e4f3e10183"
+  },
+  "after": {
+    "blender_version": "4.3.2",
+    "source_glb": "Lumo-Animated-Mobile.glb",
+    "source_glb_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+    "mesh_objects": 1,
+    "excluded_rig_shape_meshes": 1,
+    "triangles": 30000,
+    "materials": 1,
+    "images": 3,
+    "armatures": 1,
+    "geometry_modified": false,
+    "material_fidelity_approved": false,
+    "runtime_replacement": false,
+    "animation_status": "Static source snapshot, not a new skeletal animation system",
+    "roundtrip_glb_sha256": "c19377fcd3b6f74931ac13d45fbd6291e4036100390cd7285f0231e4f3e10183"
+  },
+  "roundtrip_identical_to_baseline": true
+}

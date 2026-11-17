@@ -1,0 +1,915 @@
+{
+  "blender": "4.3.2",
+  "source_count": 19,
+  "expected_source_count": 19,
+  "passed": true,
+  "method": "Actual bpy.ops.wm.open_mainfile for each final scene; editable geometry, rigs and image dependencies inspected",
+  "sources": [
+    {
+      "path": "art/lumo_kart/blender/drivers/lion.blend",
+      "sha256": "5a027d47e6c8422d91376c1c4779f88526ce43a769bd9f8c4397a5da96ed9d26",
+      "bytes": 1646578,
+      "mesh_objects": 2,
+      "editable_vertices": 20756,
+      "materials": 25,
+      "cameras": 1,
+      "armatures": [
+        {
+          "name": "DriverRig",
+          "bones": 21
+        }
+      ],
+      "actions": [
+        "celebrate",
+        "idle",
+        "kart_jump",
+        "kart_seated",
+        "kart_steer_left",
+        "kart_steer_right"
+      ],
+      "images": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/drivers/owl.blend",
+      "sha256": "bfc91810204fd8d919a42674ed85fe0e7c36582c8becfb929942b7cf9d8c5a4f",
+      "bytes": 1720470,
+      "mesh_objects": 2,
+      "editable_vertices": 21989,
+      "materials": 24,
+      "cameras": 1,
+      "armatures": [
+        {
+          "name": "DriverRig",
+          "bones": 21
+        }
+      ],
+      "actions": [
+        "celebrate",
+        "idle",
+        "kart_jump",
+        "kart_seated",
+        "kart_steer_left",
+        "kart_steer_right"
+      ],
+      "images": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/drivers/rabbit.blend",
+      "sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16",
+      "bytes": 1597029,
+      "mesh_objects": 2,
+      "editable_vertices": 19766,
+      "materials": 25,
+      "cameras": 1,
+      "armatures": [
+        {
+          "name": "DriverRig",
+          "bones": 21
+        }
+      ],
+      "actions": [
+        "celebrate",
+        "idle",
+        "kart_jump",
+        "kart_seated",
+        "kart_steer_left",
+        "kart_steer_right"
+      ],
+      "images": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/drivers/squirrel.blend",
+      "sha256": "85b6d967e669f41df802fcf5ff4e723775b74c8706819787631b8c20d290a404",
+      "bytes": 1564082,
+      "mesh_objects": 2,
+      "editable_vertices": 19256,
+      "materials": 25,
+      "cameras": 1,
+      "armatures": [
+        {
+          "name": "DriverRig",
+          "bones": 21
+        }
+      ],
+      "actions": [
+        "celebrate",
+        "idle",
+        "kart_jump",
+        "kart_seated",
+        "kart_steer_left",
+        "kart_steer_right"
+      ],
+      "images": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/drivers/turtle.blend",
+      "sha256": "340fe30bce916df85db245a736798f7b9ab8bf85c9a33fc77473f404b927646b",
+      "bytes": 1706875,
+      "mesh_objects": 2,
+      "editable_vertices": 21845,
+      "materials": 24,
+      "cameras": 1,
+      "armatures": [
+        {
+          "name": "DriverRig",
+          "bones": 21
+        }
+      ],
+      "actions": [
+        "celebrate",
+        "idle",
+        "kart_jump",
+        "kart_seated",
+        "kart_steer_left",
+        "kart_steer_right"
+      ],
+      "images": [
+        {
+          "name": "LUMO_Fabric_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "LUMO_Organic_MicroNormal",
+          "size": [
+            512,
+            512
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_comet.blend",
+      "sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+      "bytes": 651844,
+      "mesh_objects": 161,
+      "editable_vertices": 24284,
+      "materials": 9,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [
+        "mechanical_demo_Steer_FL",
+        "mechanical_demo_Steer_FR",
+        "mechanical_demo_SteeringWheel",
+        "mechanical_demo_Wheel_FL",
+        "mechanical_demo_Wheel_FR",
+        "mechanical_demo_Wheel_RL",
+        "mechanical_demo_Wheel_RR"
+      ],
+      "images": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_glider.blend",
+      "sha256": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+      "bytes": 668001,
+      "mesh_objects": 168,
+      "editable_vertices": 24832,
+      "materials": 10,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [
+        "mechanical_demo_Steer_FL",
+        "mechanical_demo_Steer_FR",
+        "mechanical_demo_SteeringWheel",
+        "mechanical_demo_Wheel_FL",
+        "mechanical_demo_Wheel_FR",
+        "mechanical_demo_Wheel_RL",
+        "mechanical_demo_Wheel_RR"
+      ],
+      "images": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+      "sha256": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2",
+      "bytes": 669226,
+      "mesh_objects": 168,
+      "editable_vertices": 24832,
+      "materials": 10,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [
+        "mechanical_demo_Steer_FL",
+        "mechanical_demo_Steer_FR",
+        "mechanical_demo_SteeringWheel",
+        "mechanical_demo_Wheel_FL",
+        "mechanical_demo_Wheel_FR",
+        "mechanical_demo_Wheel_RL",
+        "mechanical_demo_Wheel_RR"
+      ],
+      "images": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/bergwelt_tunnel_workshop.blend",
+      "sha256": "7503ae02670047c2dc140a48d5e400918885dd0616a7329fbd13950c980d1835",
+      "bytes": 2964170,
+      "mesh_objects": 1532,
+      "editable_vertices": 97316,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "bergwelt_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "bergwelt_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/candy_cloud_tunnel_workshop.blend",
+      "sha256": "eb7bc98ce63fafa0de38c58e7c80f1d08a55ac107508e403c61d2184a1e50f9e",
+      "bytes": 2240180,
+      "mesh_objects": 966,
+      "editable_vertices": 63832,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "candy_cloud_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "candy_cloud_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_sugar_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_sugar_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/crystal_canyon_tunnel_workshop.blend",
+      "sha256": "78b6e34451b3ba1b4f87a205cbefb0681d4dcd5edf4773b71710a6a31df9d6c7",
+      "bytes": 2912891,
+      "mesh_objects": 1544,
+      "editable_vertices": 96256,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "crystal_canyon_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "crystal_canyon_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/desert_drift_tunnel_workshop.blend",
+      "sha256": "946c38f161eb1277ce575ca3e42bf76b3f68324882fecf086cae19636727f3b6",
+      "bytes": 3017640,
+      "mesh_objects": 1540,
+      "editable_vertices": 104880,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "desert_drift_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "desert_drift_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/galaxy_ringway_tunnel_workshop.blend",
+      "sha256": "c71df915c75827ccf0f88b53b7a22adfb4a0a61858c945b93e66cc40b2c88a42",
+      "bytes": 1127768,
+      "mesh_objects": 748,
+      "editable_vertices": 103020,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "galaxy_ringway_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "galaxy_ringway_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/holo_city_tunnel_workshop.blend",
+      "sha256": "5be9e650798a7d4590ac433487efbaacb021f5dcb38864c511484df8b536e38c",
+      "bytes": 1013441,
+      "mesh_objects": 648,
+      "editable_vertices": 87108,
+      "materials": 7,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "holo_city_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "holo_city_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/jungle_temple_tunnel_workshop.blend",
+      "sha256": "0af6dd3948d98987133aed59bde15617cce1b25c285d25ddd391400465806f8a",
+      "bytes": 2964187,
+      "mesh_objects": 1792,
+      "editable_vertices": 104256,
+      "materials": 10,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "jungle_temple_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "jungle_temple_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/learning_lab_tunnel_workshop.blend",
+      "sha256": "17f920824a612da0c435804640602cddeef4576b6938eb9be5325f55ab90d562",
+      "bytes": 1108533,
+      "mesh_objects": 980,
+      "editable_vertices": 92148,
+      "materials": 9,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "learning_lab_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "learning_lab_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_panel_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/volcano_night_tunnel_workshop.blend",
+      "sha256": "ca7cb89be4ea704dd4db0def772c05d1816b9a2ac4d9c2101d7cfdaaaedc5131",
+      "bytes": 2295501,
+      "mesh_objects": 1022,
+      "editable_vertices": 81364,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "Original_stone_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_stone_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "volcano_night_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "volcano_night_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/winter_sprint_tunnel_workshop.blend",
+      "sha256": "a79e39949ba3a0d40a6a0355bc23a8e27bdfca241f3840d2a8cd54c73fbc0a15",
+      "bytes": 1280815,
+      "mesh_objects": 716,
+      "editable_vertices": 58306,
+      "materials": 8,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "Original_ice_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_ice_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "winter_sprint_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "winter_sprint_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "path": "art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend",
+      "sha256": "41eb572857f50b614b142bd0f16ad60d661b2dec9088fbf2f533b9f13f75f44c",
+      "bytes": 3341207,
+      "mesh_objects": 1598,
+      "editable_vertices": 79436,
+      "materials": 10,
+      "cameras": 1,
+      "armatures": [],
+      "actions": [],
+      "images": [
+        {
+          "name": "Original_wood_normal_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "Original_wood_roughness_1024",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "zauberwald_inner_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        },
+        {
+          "name": "zauberwald_outer_albedo",
+          "size": [
+            1024,
+            1024
+          ],
+          "source": "FILE",
+          "packed": true,
+          "external_required": false
+        }
+      ],
+      "passed": true,
+      "errors": []
+    }
+  ]
+}

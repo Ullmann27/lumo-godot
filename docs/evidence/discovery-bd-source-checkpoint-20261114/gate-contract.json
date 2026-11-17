@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "status": "PUBLISHED_ADDITIONAL_GATE_REFERENCE_NOT_ACTIVE",
+  "runner": "tools/validate_discovery_connections.sh",
+  "env": {
+    "LUMO_DISCOVERY_LOG_DIR": "fresh separate output directory"
+  },
+  "producer_command": "bash tools/validate_discovery_connections.sh",
+  "reader": "tools/verify_discovery_rasters.py",
+  "reader_api": "verify(directory: pathlib.Path) -> list[dict] (pure PNG/report reader; not a full source/log verifier)",
+  "original_report": "discovery-connections.json",
+  "original_reports": [
+    "captures/hub/hub-original-identity.json",
+    "captures/wonder/captures.json"
+  ],
+  "images": {
+    "total": 38,
+    "hub": 2,
+    "learning": 25,
+    "wonder": 11
+  },
+  "modes": [
+    {
+      "probe": "learning_world_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[LearningWorld] PASS checks=5347",
+      "already_in_52": true,
+      "existing_budget": 420
+    },
+    {
+      "probe": "learning_sharing_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[LearningSharing] PASS checks=1811",
+      "already_in_52": true,
+      "existing_budget": 420
+    },
+    {
+      "probe": "learning_studio_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[LearningStudio] PASS checks=183; runtime asset, materials, reduced motion and preserved learning",
+      "already_in_52": true,
+      "existing_budget": 420
+    },
+    {
+      "probe": "game_hub_magic_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal",
+      "already_in_52": false
+    },
+    {
+      "probe": "village_host_launch_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[VillageHost] PASS Flutter village request, native boot scene and child context",
+      "already_in_52": false
+    },
+    {
+      "probe": "learning_wonder_details_regression",
+      "mode": "headless",
+      "seconds": 150,
+      "marker": "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false",
+      "already_in_52": false
+    },
+    {
+      "probe": "learning_wonder_details_regression",
+      "mode": "rendered",
+      "seconds": 420,
+      "marker": "[LearningWonder] checks=108 failures=0 renderer=X11 invalid_scene_checked=true",
+      "already_in_52": false
+    },
+    {
+      "probe": "game_hub_magic_capture",
+      "mode": "rendered",
+      "seconds": 180,
+      "marker": "[LumoHubCapture] PASS 2 original current-source rendered PNGs",
+      "already_in_52": false,
+      "output_env": "LUMO_HUB_CAPTURE_DIR=LOG_DIR/captures/hub"
+    },
+    {
+      "probe": "learning_world_capture",
+      "mode": "rendered",
+      "seconds": 900,
+      "marker": "[LearningCapture] PASS captures=25",
+      "already_in_52": true,
+      "existing_budget": 900,
+      "args": [
+        "--",
+        "--output=LOG_DIR/captures/learning"
+      ]
+    },
+    {
+      "probe": "learning_wonder_details_capture",
+      "mode": "rendered",
+      "seconds": 420,
+      "marker": "[WonderCapture] checks=136 failures=0 captures=11",
+      "already_in_52": false,
+      "args": [
+        "--",
+        "--output=LOG_DIR/captures/wonder"
+      ]
+    }
+  ],
+  "total_individual_producer_budgets_seconds": 2820,
+  "new_six_individual_budgets_seconds": 1470,
+  "final_marker": "[LumoDiscoveryConnections] PASS 10 original probes and 38 verified renderer PNGs",
+  "untouched_existing": "52/17 plus Return21/Wisp14 plus Dream5/7/2",
+  "future_gaps": [
+    "Exact combined Native SHA/tree and clean pre/post indexed source bytes must be bound before activation.",
+    "Original unique complete logs, actual run results and final same-head image bytes need independent replay.",
+    "Reusing four fresh current-head existing52 outputs may avoid duplicate execution, but requires an explicit approved original-byte mapping; no old artifacts or old source results may substitute.",
+    "An unchanged Host90-minute budget is not proven sufficient by the Producer sum. No budget was changed.",
+    "The source correction retains the published100/108 marker counts by continuing the same visual-only checks on the relocated shared effect; actual marker validation is still pending."
+  ]
+}

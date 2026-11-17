@@ -5,6 +5,8 @@
 
 # Imported resources (Godot regeneriert beim Editor-Start)
 *.import
+# Explicit production LODs and embedded textures are part of the runtime contract.
+!assets/kart/production/**/*.glb.import
 
 # Export-Output (lokale Builds nicht ins Repo)
 exports/

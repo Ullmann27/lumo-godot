@@ -61,7 +61,8 @@ func _process(_delta: float) -> bool:
 		_capture(["menu", "driver", "kart", "tracks", "difficulty"][(frame_index - 25) / 60])
 	if frame_index in [60, 120, 180, 240, 300]:
 		assert(game.menu_active, "The real setup flow must stay active until Start")
-		_tap(game.garage.next_button)
+		var next_section: int = frame_index / 60
+		_tap(game.garage.step_buttons[next_section] if next_section < 5 else game.garage.next_button)
 	if not game.menu_active and not game.finished:
 		for substep in range(2):
 			var target: Vector3 = game.world.position_at(game.previous_road_distance + 10, 0)

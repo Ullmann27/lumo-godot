@@ -3,6 +3,8 @@ extends SceneTree
 # Native method name intentionally matches the Android plugin contract.
 # gdlint: disable=function-name
 
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+
 
 class Host:
 	extends Node
@@ -231,19 +233,27 @@ func _run() -> void:
 		_inside(garage.setup_row, garage.page_margin.get_global_rect())
 		_inside(garage.back_button, garage.page_margin.get_global_rect())
 		_inside(garage.next_button, garage.page_margin.get_global_rect())
-	garage.queue_free()
+	if not await TEARDOWN.release_scene(self, garage, "[KartPauseLayoutTests] garage"):
+		push_error("[KartPauseLayoutTests] FAIL: garage teardown did not complete")
+		quit.call_deferred(1)
+		return
 	DirAccess.remove_absolute(game.SESSION)
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not await TEARDOWN.release_scene(self, game, "[KartPauseLayoutTests] race"):
+		push_error("[KartPauseLayoutTests] FAIL: race teardown did not complete")
+		quit.call_deferred(1)
+		return
+	game = null
 	bridge._host = null
-	host.queue_free()
+	if not await TEARDOWN.release_scene(self, host, "[KartPauseLayoutTests] host"):
+		push_error("[KartPauseLayoutTests] FAIL: host teardown did not complete")
+		quit.call_deferred(1)
+		return
 	print(
 		(
 			"[KartPauseLayoutTests] PASS: actual compact/Fold matrix, "
 			+ "safe-area controls, pause/results layout and touch navigation"
 		)
 	)
-	await create_timer(0.25).timeout
 	# Let the asynchronous runner release its locals before SceneTree teardown.
 	quit.call_deferred(0)

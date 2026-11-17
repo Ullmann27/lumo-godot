@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:13:12 | INFO: Starting glTF 2.0 export
+21:13:12 | INFO: Extracting primitive: ContinuousVault_Mesh.001
+21:13:13 | INFO: Primitives created: 5
+21:13:13 | INFO: Finished glTF 2.0 export in 1.1005842685699463 s
+
+21:13:14 | INFO: Starting glTF 2.0 export
+21:13:14 | INFO: Extracting primitive: ContinuousVault_Mesh.002
+21:13:15 | INFO: Primitives created: 5
+21:13:15 | INFO: Finished glTF 2.0 export in 1.033686876296997 s
+
+21:13:15 | INFO: Starting glTF 2.0 export
+21:13:15 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+21:13:15 | INFO: Primitives created: 1
+21:13:15 | INFO: Finished glTF 2.0 export in 0.01676034927368164 s
+
+LUMO_TRACK_MODULE galaxy_ringway portal_entry 13196 5
+21:13:16 | INFO: Starting glTF 2.0 export
+21:13:16 | INFO: Extracting primitive: ContinuousVault_Mesh.004
+21:13:17 | INFO: Primitives created: 5
+21:13:18 | INFO: Finished glTF 2.0 export in 1.171525001525879 s
+
+21:13:18 | INFO: Starting glTF 2.0 export
+21:13:18 | INFO: Extracting primitive: ContinuousVault_Mesh.005
+21:13:19 | INFO: Primitives created: 5
+21:13:19 | INFO: Finished glTF 2.0 export in 0.8122918605804443 s
+
+21:13:19 | INFO: Starting glTF 2.0 export
+21:13:19 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+21:13:19 | INFO: Primitives created: 1
+21:13:19 | INFO: Finished glTF 2.0 export in 0.0350193977355957 s
+
+LUMO_TRACK_MODULE galaxy_ringway portal_exit 13196 5
+21:13:20 | INFO: Starting glTF 2.0 export
+21:13:20 | INFO: Extracting primitive: ContinuousVault_Mesh.007
+21:13:21 | INFO: Primitives created: 5
+21:13:21 | INFO: Finished glTF 2.0 export in 0.9102513790130615 s
+
+21:13:22 | INFO: Starting glTF 2.0 export
+21:13:22 | INFO: Extracting primitive: ContinuousVault_Mesh.008
+21:13:22 | INFO: Primitives created: 5
+21:13:22 | INFO: Finished glTF 2.0 export in 0.8812611103057861 s
+
+21:13:23 | INFO: Starting glTF 2.0 export
+21:13:23 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+21:13:23 | INFO: Primitives created: 1
+21:13:23 | INFO: Finished glTF 2.0 export in 0.056522369384765625 s
+
+LUMO_TRACK_MODULE galaxy_ringway straight_12m 12444 5
+21:13:25 | INFO: Starting glTF 2.0 export
+21:13:25 | INFO: Extracting primitive: ContinuousVault_Mesh.010
+21:13:26 | INFO: Primitives created: 5
+21:13:26 | INFO: Finished glTF 2.0 export in 1.3373000621795654 s
+
+21:13:27 | INFO: Starting glTF 2.0 export
+21:13:27 | INFO: Extracting primitive: ContinuousVault_Mesh.011
+21:13:29 | INFO: Primitives created: 5
+21:13:29 | INFO: Finished glTF 2.0 export in 1.8104238510131836 s
+
+21:13:30 | INFO: Starting glTF 2.0 export
+21:13:30 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+21:13:30 | INFO: Primitives created: 1
+21:13:30 | INFO: Finished glTF 2.0 export in 0.0263822078704834 s
+
+LUMO_TRACK_MODULE galaxy_ringway curve_left_30 18388 5
+21:13:31 | INFO: Starting glTF 2.0 export
+21:13:31 | INFO: Extracting primitive: ContinuousVault_Mesh.013
+21:13:34 | INFO: Primitives created: 5
+21:13:34 | INFO: Finished glTF 2.0 export in 2.7913589477539062 s
+
+21:13:36 | INFO: Starting glTF 2.0 export
+21:13:36 | INFO: Extracting primitive: ContinuousVault_Mesh.014
+21:13:37 | INFO: Primitives created: 5
+21:13:37 | INFO: Finished glTF 2.0 export in 0.9720292091369629 s
+
+21:13:38 | INFO: Starting glTF 2.0 export
+21:13:38 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+21:13:38 | INFO: Primitives created: 1
+21:13:38 | INFO: Finished glTF 2.0 export in 0.09111881256103516 s
+
+LUMO_TRACK_MODULE galaxy_ringway curve_right_30 18388 5
+21:13:39 | INFO: Starting glTF 2.0 export
+21:13:39 | INFO: Extracting primitive: ContinuousVault_Mesh.016
+21:13:40 | INFO: Primitives created: 5
+21:13:41 | INFO: Finished glTF 2.0 export in 1.468914270401001 s
+
+21:13:41 | INFO: Starting glTF 2.0 export
+21:13:41 | INFO: Extracting primitive: ContinuousVault_Mesh.017
+21:13:42 | INFO: Primitives created: 5
+21:13:42 | INFO: Finished glTF 2.0 export in 0.9536912441253662 s
+
+21:13:43 | INFO: Starting glTF 2.0 export
+21:13:43 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+21:13:43 | INFO: Primitives created: 1
+21:13:43 | INFO: Finished glTF 2.0 export in 0.08048534393310547 s
+
+LUMO_TRACK_MODULE galaxy_ringway grade_down 12444 5
+21:13:45 | INFO: Starting glTF 2.0 export
+21:13:45 | INFO: Extracting primitive: ContinuousVault_Mesh.019
+21:13:46 | INFO: Primitives created: 5
+21:13:46 | INFO: Finished glTF 2.0 export in 0.7823681831359863 s
+
+21:13:47 | INFO: Starting glTF 2.0 export
+21:13:47 | INFO: Extracting primitive: ContinuousVault_Mesh.020
+21:13:47 | INFO: Primitives created: 5
+21:13:47 | INFO: Finished glTF 2.0 export in 0.6886134147644043 s
+
+21:13:48 | INFO: Starting glTF 2.0 export
+21:13:48 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+21:13:48 | INFO: Primitives created: 1
+21:13:48 | INFO: Finished glTF 2.0 export in 0.04239678382873535 s
+
+LUMO_TRACK_MODULE galaxy_ringway grade_up 12444 5
+Info: Packed 5 file(s)
+Info: Saved "galaxy_ringway_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE galaxy_ringway
+Blender 4.3.2
+
+Blender quit

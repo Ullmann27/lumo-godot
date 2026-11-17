@@ -111,7 +111,7 @@ func _run() -> void:
 	actor.apply_speech_sample(0.25, 0.8, true)
 	_check(actor.audio_active and is_equal_approx(actor.last_audio_envelope, 0.8),
 		"Playback-envelope interface accepts a synthetic test sample")
-	_check(not actor.mouth_supported, "No false lip-sync claim")
+	_check(actor.mouth_supported and not actor.phoneme_lipsync_supported, "No false lip-sync claim")
 	actor.apply_speech_sample(0.5, 0.7, false)
 	_check(is_zero_approx(actor.last_audio_envelope), "Stopping audio clears the envelope")
 	actor.set_reduced_motion(true)

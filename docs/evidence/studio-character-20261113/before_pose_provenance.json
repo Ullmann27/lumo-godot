@@ -1,0 +1,6 @@
+{
+  "revision": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "path": "scripts/characters/lumo/lumo_platform_pose.gd",
+  "sha256": "cd0a5cd4054fef04103a072df2385040271eeca2560f457c20c04d868839e65b",
+  "purpose": "Exact baseline pose source for renderer comparison on unchanged original mesh"
+}

@@ -1,0 +1,147 @@
+{
+  "local_head": "a4de0e68a76ab37109cef5fd1bf499ff94464d10",
+  "local_tree": "9cfe439e2607e3644aa7705e739fcac41e865885",
+  "source_file_count": 688,
+  "sources_unchanged": true,
+  "scope": "Local headless engine regression, not renderer or device proof",
+  "cases": [
+    {
+      "name": "puzzle_menu_lifecycle_regression",
+      "capture_requested": false,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_menu_lifecycle_regression-headless/godot.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[PuzzleMenuLifecycle] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        ".",
+        "--script",
+        "scripts/tests/puzzle_menu_lifecycle_regression.gd"
+      ],
+      "started_at_utc": "2026-11-13T17:50:30.801896+00:00",
+      "finished_at_utc": "2026-11-13T17:50:36.065462+00:00",
+      "duration_seconds": 5.263568239999586,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log_sha256": "e4abf43a73ce8a31a60e23f78730c873cd8b4a8a98c799f25d136594100d7363",
+      "pass_lines": [
+        "[PuzzleMenuLifecycle] PASS 720 behavioral checks; strict native log gate still required"
+      ],
+      "error_lines": [],
+      "pngs": []
+    },
+    {
+      "name": "puzzle_expansion_regression",
+      "capture_requested": false,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_expansion_regression-headless/godot.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[PuzzleExpansion] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        ".",
+        "--script",
+        "scripts/tests/puzzle_expansion_regression.gd"
+      ],
+      "started_at_utc": "2026-11-13T17:50:36.066386+00:00",
+      "finished_at_utc": "2026-11-13T17:50:36.988756+00:00",
+      "duration_seconds": 0.9223784329951741,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log_sha256": "924ad72d475a497fe8f5fc88e849b02c8450ef3cde3ece16d6e949c17cef1d6f",
+      "pass_lines": [
+        "[PuzzleExpansion] PASS 1103 checks: all motifs/counts, saves and two played rounds"
+      ],
+      "error_lines": [],
+      "pngs": []
+    },
+    {
+      "name": "puzzle_rotation_regression",
+      "capture_requested": false,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_rotation_regression-headless/godot.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[PuzzleRotation] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        ".",
+        "--script",
+        "scripts/tests/puzzle_rotation_regression.gd"
+      ],
+      "started_at_utc": "2026-11-13T17:50:36.989181+00:00",
+      "finished_at_utc": "2026-11-13T17:50:41.849927+00:00",
+      "duration_seconds": 4.860759211995173,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+      "pass_lines": [
+        "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+      ],
+      "error_lines": [],
+      "pngs": []
+    },
+    {
+      "name": "puzzle_menu_lifecycle_regression",
+      "capture_requested": true,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_menu_lifecycle_regression-capture-negative/godot.log",
+        "--timeout",
+        "180",
+        "--required",
+        "[PuzzleMenuLifecycle] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        ".",
+        "--script",
+        "scripts/tests/puzzle_menu_lifecycle_regression.gd",
+        "--",
+        "--capture"
+      ],
+      "started_at_utc": "2026-11-13T17:50:41.851166+00:00",
+      "finished_at_utc": "2026-11-13T17:50:42.120690+00:00",
+      "duration_seconds": 0.2695362340018619,
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "log_sha256": "b494e61359c7dc7b5464266bf7d7d516314243faed929017c4ddcbe8b23472e2",
+      "pass_lines": [],
+      "error_lines": [
+        "ERROR: [PuzzleMenuLifecycle] real renderer required for capture"
+      ],
+      "pngs": []
+    }
+  ]
+}

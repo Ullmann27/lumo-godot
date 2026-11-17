@@ -1,6 +1,7 @@
 extends SceneTree
 ## Echte Engine-Aufnahmen der Garage (Kart-Auswahl mit Werten) und der Werkstatt in mehreren Größen.
-## Aufruf: godot --rendering-method gl_compatibility --script scripts/tests/kart_garage_capture.gd -- <ordner> [sterne]
+## Aufruf: godot --rendering-method gl_compatibility
+##   --script scripts/tests/kart_garage_capture.gd -- <ordner> [sterne]
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
 var out_dir: String = "res://exports/screenshots"
 var stars: int = 60
@@ -45,11 +46,17 @@ func _run() -> void:
 		garage.step = 2
 		garage._refresh()
 		await _settle(40)
-		root.get_texture().get_image().save_png("%s/garage-kart-%dx%d.png" % [out_dir, pixels.x, pixels.y])
+		root.get_texture().get_image().save_png(
+			"%s/garage-kart-%dx%d.png" % [out_dir, pixels.x, pixels.y]
+		)
 		garage.workshop_button.pressed.emit()
 		await _settle(40)
-		root.get_texture().get_image().save_png("%s/werkstatt-%dx%d.png" % [out_dir, pixels.x, pixels.y])
+		root.get_texture().get_image().save_png(
+			"%s/werkstatt-%dx%d.png" % [out_dir, pixels.x, pixels.y]
+		)
 		garage.handle_back()
 		await _settle()
 	print("[GarageCapture] PASS: ", out_dir)
+	game.queue_free()
+	await _settle(4)
 	quit(0)

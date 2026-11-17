@@ -1,0 +1,85 @@
+{
+  "format": "lumo-studio-touch-budget-local-checks-v1",
+  "base_head": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "producer_from": "24fb85800dfb58ec11dd409449e276299aa72b06",
+  "producer_to": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "workflow_git_blob": "9dee37da9994927eb1d34fa8f7c0e6fa7fc9e3d1",
+  "workflow_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+  "only_change": "touch-density.timeout-minutes 40 -> 50",
+  "other_workflow_bytes_identical": true,
+  "source_hashes_unchanged": true,
+  "git_head_unchanged": true,
+  "new_capture_reason": "The earlier 8-test result exists in the tool transcript but not as a persisted raw log. This fresh identical focused run preserves original unfiltered output; it is not a reconstruction of the earlier run.",
+  "checks": [
+    {
+      "name": "actionlint-version",
+      "command": [
+        "/workspace/scratch/e0abce7d2838/toolchain/actionlint/actionlint",
+        "-version"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "started_at_utc": "2026-11-13T15:57:36.667547+00:00",
+      "finished_at_utc": "2026-11-13T15:57:36.675552+00:00",
+      "duration_seconds": 0.008,
+      "exit_code": 0,
+      "log": "actionlint-version.log",
+      "log_sha256": "9d34cdaec053c6005199c08f2bac628bd8c087303faa26fd8ab58c3e22216ff5",
+      "log_mode": "Unmodified stdout and stderr redirected to the same binary stream; no filtering."
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "/workspace/scratch/e0abce7d2838/toolchain/actionlint/actionlint",
+        "-no-color",
+        ".github/workflows/lumo-nextgen-2018.yml"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "started_at_utc": "2026-11-13T15:57:36.675632+00:00",
+      "finished_at_utc": "2026-11-13T15:57:36.683189+00:00",
+      "duration_seconds": 0.008,
+      "exit_code": 0,
+      "log": "actionlint.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_mode": "Unmodified stdout and stderr redirected to the same binary stream; no filtering."
+    },
+    {
+      "name": "nextgen-orchestration",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "tools.tests.test_nextgen_runner",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "started_at_utc": "2026-11-13T15:57:36.683240+00:00",
+      "finished_at_utc": "2026-11-13T15:57:58.750175+00:00",
+      "duration_seconds": 22.067,
+      "exit_code": 0,
+      "log": "nextgen-orchestration.log",
+      "log_sha256": "a04153dc6598e5c87fc31169d861b041738bb7ccbeacc7a40f9060278fae6d7b",
+      "log_mode": "Unmodified stdout and stderr redirected to the same binary stream; no filtering."
+    },
+    {
+      "name": "workflow-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "a76f26b1d19662f6429a9cff063991e994d1e19a",
+        "--",
+        ".github/workflows/lumo-nextgen-2018.yml"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "started_at_utc": "2026-11-13T15:57:58.750802+00:00",
+      "finished_at_utc": "2026-11-13T15:57:58.758781+00:00",
+      "duration_seconds": 0.008,
+      "exit_code": 0,
+      "log": "workflow-diff-check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_mode": "Unmodified stdout and stderr redirected to the same binary stream; no filtering."
+    }
+  ],
+  "scope": "Existing orchestration fixtures, workflow syntax, and exact scalar change only; not product, renderer, Android, duration-in-CI, or release acceptance.",
+  "new_tests_or_test_edits": false
+}

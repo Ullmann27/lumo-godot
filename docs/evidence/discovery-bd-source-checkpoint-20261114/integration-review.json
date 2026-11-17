@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "status": "SOURCE_REVIEW_WITH_MINIMAL_OWNER_CORRECTION_NOT_TESTED",
+  "base": {
+    "sha": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "tree": "2eb628d3e3a327ee8985385130c96168db7aa852"
+  },
+  "producer": {
+    "sha": "71a4c1e2304b52005950b12490d070c286c45438",
+    "tree": "8633c0ac611f2ba9f261cc247a60997634d43dd9",
+    "compare_base": "454e81229b0193cba75844e9985a53deb2ce5c91",
+    "compare": {
+      "bytes": 401190,
+      "sha256": "7132eb31857e62f4227ef9ed1d34768f9581b7075142f742153b3123c72d293e",
+      "git_blob": "2158e85f1f9c2e177c5368da6f9aa87c7e22755d"
+    },
+    "original_files": 19
+  },
+  "selected_files": 19,
+  "exact_producer_files": 17,
+  "corrected_files": 2,
+  "components": {
+    "hub": 6,
+    "village": 4,
+    "wonder": 6,
+    "additional_producer_gate_sources": 3
+  },
+  "duplicate_changes_already_in_bd": [
+    "scripts/creative/treasure_wisps.gd",
+    "scripts/learning/learning_world.gd",
+    "scripts/tests/learning_world_regression.gd"
+  ],
+  "actual_defect": {
+    "code": "DUPLICATE_LEARNING_AMBIENCE_OWNER",
+    "existing_owner": "LearningGardenAtelier",
+    "published_new_owner": "LearningGardenAtelier/LearningWonderGarden",
+    "existing_call": "learning_atelier.gd: AMBIENCE.attach(self, \"learning_garden\")",
+    "new_call": "learning_wonder_garden.gd: AMBIENCE.attach(self, \"learning_garden\")",
+    "reason": "attach() deduplicates only the same parent's immediate child. The published nested call allocates a second effect tree.",
+    "fix": "Pass the existing atelier parent to the existing idempotent attach(). No change to the shared ambience implementation, quality parameters or active Dream hook.",
+    "regression": "Recursively inspect the actual production atelier tree; require exactly one actual ambience script instance, the atelier as owner and the new garden reference to identify that same node. Retain existing Control/Collision/Light checks for all seven flower batches and shared effect nodes.",
+    "executed": false,
+    "observed_fps_impact": null
+  },
+  "preserved": [
+    "all existing 52 calls and budgets",
+    "17 Studio images, movie and sidecar constraints",
+    "Return21",
+    "Wisp14",
+    "Dream5/7/2 source-stamped runner and pure verifier",
+    "existing child/save/profile options",
+    "Village grain/economy and blocked-save handling",
+    "original facial GLB and shared actor",
+    "Safe-Area sources and original learning lifecycle"
+  ],
+  "review_observations": [
+    "All five modified existing files match the Producer blob after exact published hunk application to bd.",
+    "The new Hub uses the existing original facial rig adapter; no replacement model asset is introduced.",
+    "Hub decoration creates bounded meshes and 28 instanced fireflies; it stops processing for reduced motion/application pause. The camera fit runs on resize rather than every frame.",
+    "Wonder flowers use five plants, 35 petals and seven mesh batches; shared ambience adds its existing two batches. Geometry/palette setup is not rebuilt on stable frames; the new shader does not use global TIME.",
+    "Production learning model, speech and input remain in the existing base class. The scene changes to a derived presentation class, so old bd visual approval must not be reused.",
+    "Village direct-host entry requires both explicit opt-in fields. Return remains existing Save plus HostBridge ACK; internal Hub entry keeps the original Build return."
+  ],
+  "acceptance_limits": [
+    "No engine, renderer, device, benchmark or test was run for this proposed combination.",
+    "Producer final Hub replay used two fresh Hub captures plus 36 earlier Learning/Wonder images, explicitly not 38 fresh combined-head images.",
+    "Five current-head PR workflows are successful; their four added specialized workflow definitions trigger separate earlier Producer push branches, not a full Discovery collection on this head.",
+    "The new Producer runner/verifier is preserved as source reference. It lacks the existing Root-grade pre/post source/index inventory and independently replayed original-log binding; main() emits probes=10 without reading ten logs. These sources are not activated in any current workflow.",
+    "Direct Flutter/Android Village launch is a separate Host-PR497 connection; current Host32e7 must not be claimed to send the new fields.",
+    "Portrait Hub Producer review states six fully visible portals and two additional scroll entries, not eight simultaneous visible controls."
+  ],
+  "excluded_whole_tree_differences": [
+    "Producer Wisp18 test (bd Wisp14 preserved)",
+    "Producer live9 wrapper and asset-build authoring tool",
+    "Producer older Studio raster test",
+    "all four Producer workflows",
+    "historical evidence archives"
+  ],
+  "tests_executed": 0,
+  "git_mutations": false,
+  "workflow_mutations": false
+}

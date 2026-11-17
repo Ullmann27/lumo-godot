@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "status": "PASS_FOCUSED_SYNTHETIC_MOVIE_FORMAT_CONTRACT",
+  "source_freeze": {
+    "path": "source-freeze.json",
+    "bytes": 2015,
+    "sha256": "aafa5dd33267061a88e9361836abed622a517c159a4c7644ee34c33e023ac2c2"
+  },
+  "tests": 3,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "seconds_reported": 1.182,
+  "execution": {
+    "path": "local-tests/execution.json",
+    "bytes": 1284,
+    "sha256": "ec627321b4087b96c8b6fb530685c97b7c1d5d0cc7b9ba79bec6affc6e86fd48"
+  },
+  "log": {
+    "path": "local-tests/movie-format-neighbors.log",
+    "bytes": 672,
+    "sha256": "bf05e81aa3624df644730ad03ad3697f1a78673f7909014423180d848c8f3882"
+  },
+  "candidate_sources_unchanged": true,
+  "published_base_worktree_unchanged_clean": true,
+  "historical_7e03_pack_unchanged": {
+    "manifest_sha256": "7796e823a1ec25a2d3683b18a5336a3a90ef7634b4ef8312f20dc87e91e54eb8",
+    "files_rechecked": 40
+  },
+  "scope": "720x1280 is rejected despite refreshed transport hashes; 640x640 succeeds; original sidecar structures and read-only file preservation still succeed. No engine/movie/Android run."
+}

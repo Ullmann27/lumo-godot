@@ -1,0 +1,392 @@
+{
+  "schema": 1,
+  "status": "SOURCE_FROZEN",
+  "created_at": "2026-11-14T09:03:23.857899+00:00",
+  "repository": "Ullmann27/lumo-godot",
+  "base_commit": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "base_tree": "40e7a8d073de320865613152f8a027abbe025d51",
+  "producer_heads": [
+    "1b01b08abd4ff2580125d787a6150e10b2fe47b8",
+    "f2edd325142b92a534b06518f66eadad3551412b"
+  ],
+  "final_source_directory": "final-source",
+  "source_files": [
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "aae80484834823c8cf063df6bfb2607313f39ef7",
+      "base_sha256": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "final_blob": "703873a3b0fbe7e589c81bf9695fac5ecf43cd63",
+      "bytes": 27404,
+      "sha256": "f5118a5cb00670eeaa5337699c0253f6aad84bdb4b9cff18764098420ba64c3b",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 8,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 25,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 89,
+          "old_lines": 6,
+          "new_lines": 10
+        },
+        {
+          "current_start": 442,
+          "old_lines": 13,
+          "new_lines": 15
+        },
+        {
+          "current_start": 483,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 502,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 515,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 544,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/treasure_exploration_regression.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "5fae309c47082f4e182492fe0dde6ac1e3e6a7e1",
+      "base_sha256": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "final_blob": "a2fe8fd1e0a18403c396fb0ff73ec339a34e1a29",
+      "bytes": 7475,
+      "sha256": "de40f0eaed86f2ea20371b3aa0b19ceff3ad553f1751e1fbb41033fecfa770c4",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 75,
+          "old_lines": 9,
+          "new_lines": 13
+        },
+        {
+          "current_start": 102,
+          "old_lines": 13,
+          "new_lines": 15
+        }
+      ]
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890",
+      "base_sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "final_blob": "c3b1bc8c73cd764724464d8d2fe0413bdba62a96",
+      "bytes": 45953,
+      "sha256": "1aaad2fdbe53e75e44009e443cda1273d2c3bc85b2eda7446349eba466883a6b",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 5,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 19,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 264,
+          "old_lines": 6,
+          "new_lines": 11
+        },
+        {
+          "current_start": 1084,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1144,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1155,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1166,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1220,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 1230,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "mode": "100644",
+      "operation": "modify",
+      "base_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac",
+      "base_sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "8e534e78509283679889335255f39a4f7d49bb64",
+      "final_blob": "8e534e78509283679889335255f39a4f7d49bb64",
+      "bytes": 23091,
+      "sha256": "562b9812983388e396b80be698eb70a9d091b0d92997e5b58476b15b20df40f8",
+      "producer_byte_identical": true,
+      "published_hunks_applied": [
+        {
+          "current_start": 263,
+          "old_lines": 6,
+          "new_lines": 10
+        },
+        {
+          "current_start": 314,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 460,
+          "old_lines": 6,
+          "new_lines": 7
+        },
+        {
+          "current_start": 492,
+          "old_lines": 6,
+          "new_lines": 7
+        }
+      ]
+    },
+    {
+      "path": "assets/creative/shaders/treasure_wisp.gdshader",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "final_blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "bytes": 867,
+      "sha256": "9ea827c8caad1c3431be766db571ad84ab6f9398508d055230873f2f7af8af68",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    },
+    {
+      "path": "scripts/creative/treasure_wisps.gd",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "final_blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "bytes": 6446,
+      "sha256": "318b074c876eb5c4134f84eb6de387bdb4ed9ac1eef42100f4eaaf2e4c867e60",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    },
+    {
+      "path": "scripts/tests/treasure_wisp_regression.gd",
+      "mode": "100644",
+      "operation": "add",
+      "base_blob": null,
+      "base_sha256": null,
+      "producer_commit": "f2edd325142b92a534b06518f66eadad3551412b",
+      "producer_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "final_blob": "7f256c202defeeba47c8c96a577065ee2eda16c1",
+      "bytes": 3061,
+      "sha256": "dce77c62f2848c30c0086b13ec3c2a5ea4fb59a814a2ef1535d837c1e47ed218",
+      "producer_byte_identical": true,
+      "published_hunks_applied": []
+    }
+  ],
+  "source_file_count": 7,
+  "source_bytes": 114297,
+  "integration_patch": {
+    "path": "integration.patch",
+    "bytes": 21948,
+    "sha256": "4c4ab6b204ca2bda0784cfbdd7a863ce5de3514c8bb902f5d2c99228b97078a2"
+  },
+  "hunk_application": {
+    "path": "hunk-application.json",
+    "sha256": "a44d90fd4c78065e1f4eec8fc2ebc8c0e639941ce81ab95e5061162554abecae"
+  },
+  "direct_res_dependencies": [
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "assets/creative/models/lumo_treasure_chest.glb",
+      "blob": "14905eaeb1cf7a0f96172d415b06fd9a0d490e07",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "assets/fonts/Nunito-Black.ttf",
+      "blob": "9e7743ebb7efc2bda51e99eda079cb9b2061f566",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/build_catalog.gd",
+      "blob": "9a84715c5ef8d4057bb503e3b3b129f0f45024ae",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/creative_kit.gd",
+      "blob": "3408e7d270abe02f73b4fc187f8efd43a488196c",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/creative_runtime.gd",
+      "blob": "45596983292c4f7c8fbcd847a5dca671b324ba5c",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/treasure_island_art.gd",
+      "blob": "9edd945c56729e778937a6533228c8ff213d81f5",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/treasure_state.gd",
+      "blob": "d507e1fe167ce02a10bcc0d414dde291b7edcb49",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/creative/treasure_wisps.gd",
+      "blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "origin": "same_patch"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/games/kart_joystick.gd",
+      "blob": "7cba3eff104c50b3d968499d38ac85fdd7d85def",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/games/kart_touch_action.gd",
+      "blob": "22064c491ff9aec8515a188a20ed5458b7ae5226",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_world.gd",
+      "path": "scripts/games/kart_vehicle.gd",
+      "blob": "9fa9dd899d3d1f70a4db53218546282d76a041db",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/tests/treasure_exploration_regression.gd",
+      "path": "scenes/creative/treasure_world.tscn",
+      "blob": "21d837290cd35c21946207967ef53645fbc97f86",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/tests/treasure_exploration_regression.gd",
+      "path": "scripts/creative/treasure_state.gd",
+      "blob": "d507e1fe167ce02a10bcc0d414dde291b7edcb49",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/learning/learning_world.gd",
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/learning/learning_world.gd",
+      "path": "scripts/creative/treasure_wisps.gd",
+      "blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "origin": "same_patch"
+    },
+    {
+      "consumer": "scripts/learning/learning_world.gd",
+      "path": "scripts/games/visual/kart_harbor_cinema.gd",
+      "blob": "5a409d72db69d93b861576aaa2eb53052eb88e1d",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/learning/learning_world.gd",
+      "path": "scripts/learning/learning_activity.gd",
+      "blob": "c1eed0eefb4017ac4db3cb3d1d4551e2d9c601fe",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/learning/learning_world.gd",
+      "path": "scripts/learning/learning_atelier.gd",
+      "blob": "c14873748bd8ff42cc7f00bd1c39653626de4664",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/tests/learning_world_regression.gd",
+      "path": "scenes/learning/learning_world.tscn",
+      "blob": "05f835f6c87c528b64b38054c2c41adc8cbef078",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/tests/learning_world_regression.gd",
+      "path": "scripts/learning/learning_activity.gd",
+      "blob": "c1eed0eefb4017ac4db3cb3d1d4551e2d9c601fe",
+      "origin": "unchanged_base"
+    },
+    {
+      "consumer": "scripts/creative/treasure_wisps.gd",
+      "path": "assets/creative/shaders/treasure_wisp.gdshader",
+      "blob": "63fd420156242d2bea3a5a9d3ec04eac9da4974b",
+      "origin": "same_patch"
+    },
+    {
+      "consumer": "scripts/tests/treasure_wisp_regression.gd",
+      "path": "scripts/creative/treasure_wisps.gd",
+      "blob": "2d854c19869a1959f9bbc76b9aa21c1ca8947a80",
+      "origin": "same_patch"
+    }
+  ],
+  "existing_runner": {
+    "path": "tools/validate_nextgen.sh",
+    "blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+    "sha256": "fbb95e0ab5d3f60a915fdd63ff95b6e01ad3776bb67f6227df1c394b5bd64a7f",
+    "modes": 52,
+    "studio_rasters": 17,
+    "modified": false
+  },
+  "tests_executed_by_this_pack": false,
+  "worktree_or_git_mutations": false,
+  "limits": [
+    "Source integration and original Producer evidence only.",
+    "No combined engine, renderer, Android, FPS or visual acceptance.",
+    "Additional Magic gate must be connected separately without changing the 52-mode/17-raster contract."
+  ]
+}

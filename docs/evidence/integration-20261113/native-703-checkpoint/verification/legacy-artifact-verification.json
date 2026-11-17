@@ -1,0 +1,440 @@
+{
+  "status": "ORIGINAL_ARTIFACT_VERIFIED",
+  "scope": "legacy",
+  "head_sha": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "run_id": 43452284466,
+  "artifact_id": 14053856738,
+  "artifact_name": "lumo-nextgen-2018-legacy-evidence",
+  "zip_sha256": "3614e21db6afe73ad51ec1f829cd4fa1f437d6dc09c7a0341cce2f7070c78ca1",
+  "zip_bytes": 39710125,
+  "sources": {
+    "acceptance-evidence/action-stage/source-sha.txt": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+    "acceptance-evidence/source-sha.txt": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+    "acceptance-evidence/technical-art/source-sha.txt": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a"
+  },
+  "trees": {},
+  "tracked_dirty": {},
+  "images": [
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/lasso-catch.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 625983,
+      "sha256": "ff941d1f3aa89ea0f3a3d8c402e02b3500a312c72aa9ade3b22ba1df3fa2a49b",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-20.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 634232,
+      "sha256": "f4dfac29711aff32a4ebc52c099cdc118278a25486b7df60ecc258d4bfeb6409",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-48.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 627572,
+      "sha256": "c5cd578fd03639ea988eb9dccefb541416a5631abf65e8ade319bd5706d276c5",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-1544-speed-70.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 627345,
+      "sha256": "34fc70e979e3e4745fb1b2ce6e3ff40abb2dd11a27ac065ff70e2f523fa53b97",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-20.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 641666,
+      "sha256": "f883c98c1cb2d00de4f35ce6b8b4c362de8650891862e487032e9c19bb8ab66b",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-48.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 619704,
+      "sha256": "f92ea37902c34aebdc4d09dbc9f5a390c6965f8cf3b27b25cb837354ad49accb",
+      "baseline": false
+    },
+    {
+      "path": "acceptance-evidence/action-stage/action-captures/ramp-407-speed-70.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 614106,
+      "sha256": "e189e7d89e27ae58ad4d956872d96b1f46202f8c6d11fbcb5ba4159bcc1f3be4",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/garage-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 445145,
+      "sha256": "eb64918dc37e35494cb8ddb9f2e837c47aeccba671f5653f4215afa5b9299cc2",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/garage-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 792970,
+      "sha256": "3d58f88c80d8783d71ed81570d8a2664d4dc73b404aba1b27620b60bf19c2527",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/garage-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 217828,
+      "sha256": "f6acd5db04cf2b1289392a9633917526f72bb8acac337715577aa586a69b3dc0",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/garage-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 129837,
+      "sha256": "3250b6293f6c0e35d85258a1483de61b47b94829bf427c0448651ed955cc2ede",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/garage-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 320483,
+      "sha256": "72436a839f4cc09c023930933129ff5a3bca9009a425f741854e61370c65dd38",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/landing-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 587965,
+      "sha256": "14a80bf6144681f90b6fd2e4d1a662ecdf9069348287a8e18798ebacc334e26b",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/landing-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 1119254,
+      "sha256": "67187866a2488170c39b84e7a2d60a4ad9b35051dc7393fdbb62b05740ebb1c6",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/landing-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 314005,
+      "sha256": "dc9eb21060712690721da15357e1b6db418165579b138df2345d20c7b98db656",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/landing-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 143376,
+      "sha256": "8016fad8c1c8b5bf137bfccfe8f7ab7ed3d73d51206eba1adf48d7ecb21daabb",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/landing-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 472236,
+      "sha256": "611f0a54310e9cb22eecf202d786b69a086e3e3f7822e5df799f3bfa9ef20ee8",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/tracks-1280x720.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "bytes": 569323,
+      "sha256": "5ac0a5b56383e075c302db1aa9fea75bc0ea3524fc45bb49a47da10612331c9f",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/tracks-2400x1080.png",
+      "dimensions": [
+        2400,
+        1080
+      ],
+      "bytes": 736119,
+      "sha256": "e90f10ac82f68d8ad1024c83980117109a6a652470f40445b4d0152d24a29944",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/tracks-412x915.png",
+      "dimensions": [
+        412,
+        915
+      ],
+      "bytes": 210527,
+      "sha256": "80ef88453c1b95a77fe251db8f649787d33afd84cff5ad60b0eda39e2dd767df",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/tracks-640x320.png",
+      "dimensions": [
+        640,
+        320
+      ],
+      "bytes": 142463,
+      "sha256": "31e58f245939f860d50a05ab7887923bd9821b30a341d01ac09acad547ecfbaf",
+      "baseline": false
+    },
+    {
+      "path": "exports/spatial-menu/tracks-690x829.png",
+      "dimensions": [
+        690,
+        829
+      ],
+      "bytes": 381817,
+      "sha256": "5025736c9d4d9b1f0d82e573c35cf315372d8b2954f7ad92e01894605b7992ba",
+      "baseline": false
+    }
+  ],
+  "capture_counts": {},
+  "logs": {
+    "acceptance-evidence/action-stage/kart_lasso_production_regression.log": {
+      "sha256": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/kart_menu_flow_regression.log": {
+      "sha256": "b2c789a4f2d251a056ece8698005830de32934d0cd4ac9869ed693154dc1c58b",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/kart_roadside_action_regression.log": {
+      "sha256": "e582b58303683f6228689e133b1306e2d56bd35138051cce6c81e9ff91a9d57f",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/kart_lasso_regression.log": {
+      "sha256": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/kart_spatial_menu_regression.log": {
+      "sha256": "3cdab8d1981a01fe479e52770fef7058a15eaaec8b9516d1af02b4666ddd75b3",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "4b6464e36a96d41269d3fbc6cf491b51fa31d8bb4aee63d6509baf5f630b70da",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.25.30.log": {
+      "sha256": "95d9505e9aa9db3f20d26bc7b9535589aabc2a7309a048ef1bfb12255103560a",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.25.38.log": {
+      "sha256": "83aea1051cb10e8fbb46cc3834df42134196e8842a9500919a33c375ef02ef49",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.28.52.log": {
+      "sha256": "a738c832fe3f8db12f59b5a7a21f98859a486db43e3aa900bdd093abd3337cd7",
+      "error_lines": []
+    },
+    "acceptance-evidence/action-stage/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.29.01.log": {
+      "sha256": "fb49c369492a9b947bf272f11d80d5f15183a1ea46b47515c5dbd1ea7e6782f6",
+      "error_lines": []
+    },
+    "acceptance-evidence/build_sandbox_tools_regression.log": {
+      "sha256": "62b94cf9adcc2b65a0b81c0e5780af8152e2f33d92a9beee28b1658f4caa055e",
+      "error_lines": []
+    },
+    "acceptance-evidence/build_sandbox_ui_regression.log": {
+      "sha256": "df12e6cd24264f30e4b81b215caff309e233d3e0c2cf4c42e70bfe9f65070c82",
+      "error_lines": []
+    },
+    "acceptance-evidence/creative_touch_layout_regression.log": {
+      "sha256": "453eb1bb426577852ed112022cd9949220728cc89643a3fa1cafb280993e18e9",
+      "error_lines": []
+    },
+    "acceptance-evidence/existing-gameplay.log": {
+      "sha256": "05892c6f07488b9f04857e91bf5010857e82d6046b48f89e3ca7521eff6cd75d",
+      "error_lines": []
+    },
+    "acceptance-evidence/jump_extras_regression.log": {
+      "sha256": "c24e8b88950e144ef708de303cdef87c1097715c8a7e9e38f2838780840055e4",
+      "error_lines": []
+    },
+    "acceptance-evidence/import.log": {
+      "sha256": "5e0110b80ea6c372a4ded1d9002de92e923be32ae040ccd7d73f8cea136a35a7",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_full_field_regression.log": {
+      "sha256": "557e3e230e39ee285fdd1620bfeb39a4c21b8a9326e9a496ca93d945272cd24c",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_garage_3d_touch_regression.log": {
+      "sha256": "adeb83e795ccb602c9f4b1d2b4147d5c490c9f4b1bc4c3ede4763ff9c16fbd9e",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_harbor_race_hook_regression.log": {
+      "sha256": "698a79a5cd09890b222b963b9203aeb09c1983b2ebeb7e6f23bf84ae8c8afdc0",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_harbor_attraction_regression.log": {
+      "sha256": "00a5c14f0534e154c87619cb3ad1c4427dad6ceb531e290f2ef00e70d5dd9bd3",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_loop_contact_regression.log": {
+      "sha256": "408a8cf775584f33c18813904806183e6565b54d5d931b2f72ff2cd4f46677fd",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_menu_depth_2013_regression.log": {
+      "sha256": "2baaeaf7ea0626ab2aea84ddae6b1ab727f4001b14803619c9fe449b67d57611",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_player_full_route_regression.log": {
+      "sha256": "e81a96beaa46ba89d795c2a12eaf3bd463d8adf4301c3bfa5c14eb3767a6c989",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_racecraft_regression.log": {
+      "sha256": "985a489fa509cb72e0c90b7e313dfffd4e0a3beae42b13f1a06870cc680baa43",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_rival_drift_items_regression.log": {
+      "sha256": "1cc71a403019368af7446c4c2e6500f1e3c7838f2719d9b7efe194b5a8188576",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_rival_flight_regression.log": {
+      "sha256": "812ac50b1731f00047e2d0c1498782e2d45d2acf9f604200b015663ff95aec27",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_sonnenhafen_generation_regression.log": {
+      "sha256": "9c807752c572e15d411562104cea5ae42470c5381fa122672d7af7015a384aad",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_stunt_continuity_regression.log": {
+      "sha256": "47810688cee982ffc2339e3fa7bb650e9eac48cf948618220f9ef587ff122ca6",
+      "error_lines": []
+    },
+    "acceptance-evidence/kart_zauberwald_library_regression.log": {
+      "sha256": "83bb911a70a054f7cd068868a401a911b2a16308b0cf6915c23e8e2c2e4ad50d",
+      "error_lines": []
+    },
+    "acceptance-evidence/project-validation.log": {
+      "sha256": "9ce4cc5c5d80ff2abf463f3328ea7ffa1aa612ad10f867910e7fc370f571da5e",
+      "error_lines": []
+    },
+    "acceptance-evidence/puzzle_expansion_regression.log": {
+      "sha256": "15e66dba4f57135ff127300eff8f6457f9a837ebe383a2528b3d3a32ce5075f4",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/kart_air_trick_regression.log": {
+      "sha256": "65af3dd144ebf0e2404429f8c8ab85c17894b293d8eb34abc596c636fc76ebc4",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/kart_garage_presentation_regression.log": {
+      "sha256": "ba5e0cdba9674ea37191b8f44d513df91fc5c53f7cf85fd5af6716e68ae36f7a",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/kart_harbor_race_hook_regression.log": {
+      "sha256": "67dc0b1eb329385bf9ec27bf1220b1410f5556b386f695a043461ffc17feedb1",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_regression.log": {
+      "sha256": "d36e9e933970ad56bb374bfd132e0d0571a0e23e1f302e4c483fbc2abadae749",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/kart_sonnenhafen_streetfronts_world_regression.log": {
+      "sha256": "50cbfbb16c1e6b786eaf620b0a7121caacf4e66b71fb4c2f2216877008392cc4",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/lumo_gesture_contact_regression.log": {
+      "sha256": "36d049bea6a7d04aa9053b0429f69b2d88187e29a1b07abb15a7cd7e17ed2352",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/lumo_attention_landing_regression.log": {
+      "sha256": "237ed83a00e02270f0176c02a4e0d7df638fc691754a50c0bdceadb84fdf4bc9",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/lumo_kart_tick_cadence_regression.log": {
+      "sha256": "a6e31559d2e5dbb33f509ec7751f1979272660e4425994c5aaad6dbd9b541e77",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "65af3dd144ebf0e2404429f8c8ab85c17894b293d8eb34abc596c636fc76ebc4",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.37.21.log": {
+      "sha256": "863ef0d562c94139d12e49fc04b8699516110381e2c46cc6bda40f2758fa0e1e",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.37.25.log": {
+      "sha256": "237ed83a00e02270f0176c02a4e0d7df638fc691754a50c0bdceadb84fdf4bc9",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.37.26.log": {
+      "sha256": "36d049bea6a7d04aa9053b0429f69b2d88187e29a1b07abb15a7cd7e17ed2352",
+      "error_lines": []
+    },
+    "acceptance-evidence/technical-art/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.37.39.log": {
+      "sha256": "db1f8ef357639724ecad4048edf8e0a1f75f2df16967704d33791655514d462b",
+      "error_lines": []
+    },
+    "acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot.log": {
+      "sha256": "076e5f872a465df17eb71d4faf84528c1253e6a5b373387340bc71309b0c10f2",
+      "error_lines": []
+    },
+    "acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.36.27.log": {
+      "sha256": "e983bac9828f0676c14da31fca90736e35810b181178ad5f194cfdc3bd7fb3f3",
+      "error_lines": []
+    },
+    "acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.36.39.log": {
+      "sha256": "611de1d79446166d4729acf5b1ecdbc9d8d5ee1921d5b17e638fe13ccf720b01",
+      "error_lines": []
+    },
+    "acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.36.40.log": {
+      "sha256": "47f65c921bbb489cfe694f28d0774cf929d9f10fad196c91471c0f62a981696e",
+      "error_lines": []
+    },
+    "acceptance-evidence/user-data/godot/app_userdata/Lumo 3D/logs/godot2026-11-13T15.37.12.log": {
+      "sha256": "951a6559772e1f95885a98395a201c286293f37df9f0c60e5da8cfb1f449329b",
+      "error_lines": []
+    }
+  },
+  "no_visual_or_android_approval_claim": true
+}

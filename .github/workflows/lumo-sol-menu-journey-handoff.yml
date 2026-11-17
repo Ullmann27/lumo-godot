@@ -1,0 +1,73 @@
+name: Lumo SOL handoff - real four-screen menu journey
+
+on:
+  push:
+    branches:
+      - chatgpt/lumo-sol-portrait-menu-recovery-20261021
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-menu-journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Validate source and import all art without suppressing errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/validate_project.py
+          timeout 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit > "$RUNNER_TEMP/import.log" 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' "$RUNNER_TEMP/import.log"; then
+            cat "$RUNNER_TEMP/import.log"
+            exit 1
+          fi
+      - name: Actual touch journey across compact, portrait, Fold and landscape
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p exports/sol-menu-journey
+          python3 tools/run_godot_probe.py \
+            --log exports/sol-menu-journey/journey.log \
+            --timeout 420 --required '[CompleteMenuJourney] PASS:' -- \
+            xvfb-run -a -s '-screen 0 2500x2500x24' \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --audio-driver Dummy --path . --rendering-method gl_compatibility \
+            --script res://scripts/tests/kart_complete_menu_journey.gd \
+            -- --output=res://exports/sol-menu-journey
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('exports/sol-menu-journey/journey.json')
+          entries=json.loads(p.read_text())
+          sizes={(x['size'][0],x['size'][1]) for x in entries}
+          assert sizes=={(640,360),(320,740),(840,960),(1280,720)}, sizes
+          assert len(entries)==24, len(entries)
+          for row in entries:
+              assert Path('exports/sol-menu-journey',row['image']).stat().st_size>5000
+              assert row['physical_android'] is False
+          print('PASS: 24 genuine GL screenshots, five garage pages plus settings on four screens')
+          PY
+      - name: Upload screenshots and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-sol-real-menu-journey-handoff
+          path: |
+            exports/sol-menu-journey/
+          retention-days: 30

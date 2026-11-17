@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "tool": "Blender 4.3.2",
+  "provenance": "Original LUMO geometry authored locally by this deterministic generator",
+  "source": "tools/art/build_dream_garden.py",
+  "units": "metres; glTF Y up",
+  "materials": "Original opaque PBR; existing atelier palette; no downloaded textures",
+  "assets": [
+    {
+      "file": "dream_storybook.glb",
+      "bytes": 115136,
+      "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+      "triangles": 5156,
+      "surfaces": 7,
+      "mesh_count": 7,
+      "material_count": 5,
+      "texture_count": 0,
+      "animated_part_names": [
+        "DreamOrbit00",
+        "DreamOrbit01",
+        "DreamOrbit02"
+      ],
+      "editable_source": "docs/design/dream-garden-20261114/dream_storybook.blend",
+      "blend_sha256": "7e506a7f5627b519190b7c915c056ad686ea1b988caf47c72fe8977533f198a7"
+    },
+    {
+      "file": "dream_blossom.glb",
+      "bytes": 115408,
+      "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+      "triangles": 6884,
+      "surfaces": 9,
+      "mesh_count": 6,
+      "material_count": 5,
+      "texture_count": 0,
+      "animated_part_names": [
+        "DreamFlower00",
+        "DreamFlower01",
+        "DreamFlower02"
+      ],
+      "editable_source": "docs/design/dream-garden-20261114/dream_blossom.blend",
+      "blend_sha256": "ec70f9b70bd74db704f16792bfb1cc6952f2390ca9f9ce27f99bbcdf26b34fc0"
+    }
+  ],
+  "physical_android_performance_measured": false,
+  "preview_scope": "Blender render of exported GLBs; separate Godot evidence is required"
+}

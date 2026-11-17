@@ -1,0 +1,370 @@
+{
+  "pin": "332307fafa2f68a1aa3667d81b7c90d3683c5c45",
+  "started_utc": "2026-11-15T20:08:46.270666+00:00",
+  "workflow_sha256": "81efac9d4866a74129e1c62ff5990e30067286de31ed5226fdc189ceddc6a0a3",
+  "disk_free_start_bytes": 1066799104,
+  "disk_guard_bytes": 471859200,
+  "required_reserve_bytes": 367001600,
+  "results": [
+    {
+      "case": "00-import",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "180s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "elapsed_seconds": 36.08617237999715,
+      "min_free_bytes": 548200448,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "0dd41ec3f9c8ab3c74ba041d4f1098aee2527010897ae1b4236d7fc06f9ea680",
+      "summary_lines": []
+    },
+    {
+      "case": "01-learning_pattern_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_pattern_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 0.8021291450022545,
+      "min_free_bytes": 548188160,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "218cf9af10b3a0b0840b6da9cc5b2ae2a0a29a155e2b343571e1254fed4a9f9b",
+      "summary_lines": [
+        "[LearningPattern] PASS checks=33077 failures=0"
+      ]
+    },
+    {
+      "case": "02-learning_world_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_world_regression.gd"
+      ],
+      "exit_code": 124,
+      "timeout_seconds": 90,
+      "timed_out": true,
+      "elapsed_seconds": 90.07397362700067,
+      "min_free_bytes": 547049472,
+      "stop_reason": null,
+      "error_count": 1,
+      "errors": [
+        "SCRIPT ERROR: Invalid access to property or key 'teacher_enabled' on a base object of type 'Node3D (learning_lumo_actor.gd)'."
+      ],
+      "log_sha256": "748ecf023db890581702bd8c9c6e2ad1831789533eebb4b82702d981b212b2f8",
+      "summary_lines": []
+    },
+    {
+      "case": "03-learning_sharing_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_sharing_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 3.214422912998998,
+      "min_free_bytes": 586694656,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "46611a9b8519f2137a9ce2a5cf8dab5b11b66b298a062b70a5bf8e039f138b3e",
+      "summary_lines": [
+        "[LearningSharing] PASS checks=1811"
+      ]
+    },
+    {
+      "case": "04-learning_host_payload_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_host_payload_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 0.4018024979995971,
+      "min_free_bytes": 586686464,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "c763d84b6655eadfffb6b9fbbd62ab446baf0468976b0630248786ccb1e69387",
+      "summary_lines": [
+        "[LearningHostPayload] PASS cases=5 checks=135 host=a8e09123805b2bf30706c8dd1914b928ae6b24ca"
+      ]
+    },
+    {
+      "case": "05-learning_generation_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_generation_regression.gd"
+      ],
+      "exit_code": 124,
+      "timeout_seconds": 90,
+      "timed_out": true,
+      "elapsed_seconds": 90.15879690900329,
+      "min_free_bytes": 586108928,
+      "stop_reason": null,
+      "error_count": 2,
+      "errors": [
+        "ERROR: [LearningGeneration] pattern without possible next choice rejected",
+        "SCRIPT ERROR: Invalid call. Nonexistent function '_process' in base 'Node3D (learning_lumo_actor.gd)'."
+      ],
+      "log_sha256": "d5b203d12c7716e7ad3413f59e44859dbdc2e09fda0a27c0280fd7dd03554275",
+      "summary_lines": []
+    },
+    {
+      "case": "06-learning_companion_scope_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_companion_scope_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 0.40592338499845937,
+      "min_free_bytes": 586100736,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "aa30c2986ff93d43dbeeecc52e991bdc1da8a781282f4bf9067cf5478b33996c",
+      "summary_lines": [
+        "{\"checks\":56,\"failures\":[],\"status\":\"PASS\",\"test\":\"learning_companion_scope\"}"
+      ]
+    },
+    {
+      "case": "07-learning_wonder_details_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_wonder_details_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 6.488142046000576,
+      "min_free_bytes": 583303168,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "c1e35122735bf052d21f7665d9614b26ed6260852819c3fa73b8562d505b39b9",
+      "summary_lines": [
+        "[LearningWonder] checks=100 failures=0 renderer=headless invalid_scene_checked=false"
+      ]
+    },
+    {
+      "case": "08-nextgen_avatar_contract_review",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/nextgen_avatar_contract_review.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 0.6021255950035993,
+      "min_free_bytes": 583299072,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "7cdc1026e8940d00365aeb27ff9ca6deef4dcd5baf6c5c12c1915fff2dd8ef14",
+      "summary_lines": [
+        "[NextgenAvatarReview] PASS checks=300 failures=0"
+      ]
+    },
+    {
+      "case": "09-nextgen_learning_route_review",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/nextgen_learning_route_review.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 17.426248748000944,
+      "min_free_bytes": 583299072,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "216e19d5ae314153b8d005feb9999bd4acee39039f1fa53e34701bb327db574e",
+      "summary_lines": [
+        "[NextgenLearningReview] PASS {\"captures\":[],\"checks\":7324,\"failures\":[],\"full_flutter_coverage\":false,\"native_activity_kinds\":[\"bridge_ten\",\"addition\",\"subtract_ten\",\"equal_groups\",\"equal_sharing\",\"bridge_hundred\",\"fraction_parts\",\"syllables\",\"plant_parts\",\"english_objects\",\"pattern\",\"task_card\"],\"physical_android_audio_verified\":false}"
+      ]
+    },
+    {
+      "case": "10-nextgen_learning_base_audio_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/nextgen_learning_base_audio_regression.gd"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 1.021864859998459,
+      "min_free_bytes": 585969664,
+      "stop_reason": null,
+      "error_count": 0,
+      "errors": [],
+      "log_sha256": "181656fbc11b99b2732ac482ca30a5e1ae03215cd5e2e467ef8baeaefcf9227c",
+      "summary_lines": [
+        "[NextgenBaseAudio] PASS checks=69 failures=0"
+      ]
+    },
+    {
+      "case": "11-learning_english_regression",
+      "command": [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "90s",
+        "godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "res://scripts/tests/learning_english_regression.gd",
+        "--",
+        "--output=/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/learning-english"
+      ],
+      "exit_code": 1,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "elapsed_seconds": 30.64693391200126,
+      "min_free_bytes": 585043968,
+      "stop_reason": null,
+      "error_count": 26,
+      "errors": [
+        "ERROR: [LearningEnglish] english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-ruler-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-ruler-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] ruler: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] ruler: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] ruler: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] ruler: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-rubber-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-rubber-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] rubber: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] rubber: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] rubber: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] rubber: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] english-chair-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-chair-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-chair-640x360-start: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] english-chair-640x360-start: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] chair: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] chair: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] chair: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] chair: first hint layout: original Lumo stays at a readable projected height rather than a thumbnail",
+        "ERROR: [LearningEnglish] paper: first hint layout: real object projection remains at least48dp across both axes",
+        "ERROR: [LearningEnglish] paper: first hint layout: real object projection remains at least48dp across both axes"
+      ],
+      "log_sha256": "74e928c631e5c515fe679f9448ab95b29bdf5509452a68705e133e2a072fd67b",
+      "summary_lines": [
+        "LEARNING_ENGLISH_FAIL checks=7239 failures=26"
+      ]
+    }
+  ],
+  "cache_cleanup": {
+    "removed": true,
+    "freed_bytes_observed": 319488,
+    "free_bytes_after": 585359360
+  },
+  "tracked_changes_after": [],
+  "finished_utc": "2026-11-15T20:13:23.953551+00:00"
+}

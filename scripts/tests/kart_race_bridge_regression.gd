@@ -17,6 +17,7 @@ class Host:
 		rewards.append(JSON.parse_string(value))
 		return 1
 
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const LEARNING_FIELDS: Array[String] = ["learning_events", "grade", "subject", "question_open"]
 var scene: PackedScene
 
@@ -48,10 +49,13 @@ func _fresh_game():
 	return game
 
 
-func _drop(game) -> void:
+func _drop(game) -> bool:
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartRaceBridge]")):
+		push_error("[KartRaceBridge] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return false
+	return true
 
 
 func _run() -> void:
@@ -83,7 +87,8 @@ func _run() -> void:
 	assert(host.returns.size() == 1 and host.returns[0].status == "paused")
 	assert(FileAccess.file_exists(game.SESSION), "Failed native ACK must keep the race save")
 	bridge._return_pending = false
-	await _drop(game)
+	if not (await _drop(game)):
+		return
 	# 2) Resume keeps the identity, the finish is rewarded once, the return succeeds.
 	game = await _fresh_game()
 	assert(game.menu_active and game.saved_session_available)
@@ -112,7 +117,8 @@ func _run() -> void:
 	example.store_string(host.raw[-1])
 	example.close()
 	bridge._return_pending = false
-	await _drop(game)
+	if not (await _drop(game)):
+		return
 	# 3) Star cup: no task between races, every race starts with one boost, the cup save stays.
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	game = await _fresh_game()
@@ -143,7 +149,8 @@ func _run() -> void:
 	assert(host.returns[-1].status == "abandoned")
 	assert(not FileAccess.file_exists(game.SESSION))
 	bridge._return_pending = false
-	await _drop(game)
+	if not (await _drop(game)):
+		return
 	# 5) A version-3 save from the removed learning cup, stored after the finish line while its
 	#    question was open, resumes as a plain star-cup result instead of a stuck task.
 	game = await _fresh_game()
@@ -164,7 +171,8 @@ func _run() -> void:
 	legacy.set_value("race", "checkpoint_index", 16)
 	legacy.set_value("race", "learning_events", [{"id": legacy_id + "_learning_1", "type": "started"}])
 	assert(legacy.save(game.SESSION) == OK)
-	await _drop(game)
+	if not (await _drop(game)):
+		return
 	var rewards_before: int = host.rewards.size()
 	game = await _fresh_game()
 	assert(game.saved_session_available, "A version-3 save is still offered")
@@ -172,7 +180,8 @@ func _run() -> void:
 	assert(game.mode == "cup" and game.finished and game.result_id == legacy_id)
 	assert(game.modal.visible and host.rewards.size() == rewards_before + 1)
 	_no_learning_data(game.result_payload)
-	await _drop(game)
+	if not (await _drop(game)):
+		return
 	_host_json_is_integer(host)
 	assert(host.raw.size() >= 8, "Every pause, return, reward and abandonment reached the host")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
@@ -180,8 +189,8 @@ func _run() -> void:
 	bridge._options = {}
 	host.queue_free()
 	scene = null
-	# Five scenes played garage music; the audio mix thread releases those playbacks late.
-	await create_timer(0.5).timeout
+	# Flush the fake host's queued deletion; Kart audio is already released.
+	await process_frame
 	print(
 		(
 			"[KartRaceBridge] PASS: no learning data, stable pause/return/resume ID, one reward, "

@@ -1,0 +1,127 @@
+{
+  "engine": "4.6.3-stable (official)",
+  "environments": [
+    {
+      "adjustments": false,
+      "ambient_color": "bfd9f2",
+      "ambient_energy": 0.300000011920929,
+      "contrast": 1.12000000476837,
+      "exposure": 0.949999988079071,
+      "tonemapper": 3
+    }
+  ],
+  "light_mount_count": 8,
+  "light_pool_count": 3,
+  "lights": [
+    {
+      "active": true,
+      "attenuation": 0.600000023841858,
+      "color_srgb": "f9c896",
+      "distance_to_road_sample_m": 6.88675355911255,
+      "energy": 4.80000019073486,
+      "height_above_road_m": 6.19316577911377,
+      "range_m": 15.0,
+      "shadows": false,
+      "world_position": [
+        -74.1784515380859,
+        12.722074508667,
+        -82.4306259155273
+      ]
+    },
+    {
+      "active": true,
+      "attenuation": 0.600000023841858,
+      "color_srgb": "f9c896",
+      "distance_to_road_sample_m": 10.9234933853149,
+      "energy": 4.80000019073486,
+      "height_above_road_m": 6.19302988052368,
+      "range_m": 15.0,
+      "shadows": false,
+      "world_position": [
+        -68.3052444458008,
+        12.9997215270996,
+        -83.5792999267578
+      ]
+    },
+    {
+      "active": true,
+      "attenuation": 0.600000023841858,
+      "color_srgb": "f9c896",
+      "distance_to_road_sample_m": 6.88671398162842,
+      "energy": 4.80000019073486,
+      "height_above_road_m": 6.19235944747925,
+      "range_m": 15.0,
+      "shadows": false,
+      "world_position": [
+        -80.0435638427734,
+        12.4539651870728,
+        -81.2363586425781
+      ]
+    }
+  ],
+  "low_detail": true,
+  "materials": [
+    {
+      "albedo": "242a3d",
+      "emission": "000000",
+      "emission_energy": 1.0,
+      "metallic": 0.0,
+      "name": "volcano_night_trim",
+      "normal_enabled": false,
+      "roughness": 0.769999980926514,
+      "shading_mode": 1
+    },
+    {
+      "albedo": "ffffff",
+      "emission": "000000",
+      "emission_energy": 1.0,
+      "metallic": 0.0,
+      "name": "volcano_night_inner",
+      "normal_enabled": true,
+      "roughness": 1.0,
+      "shading_mode": 1
+    },
+    {
+      "albedo": "ffffff",
+      "emission": "000000",
+      "emission_energy": 1.0,
+      "metallic": 0.0,
+      "name": "volcano_night_outer",
+      "normal_enabled": true,
+      "roughness": 1.0,
+      "shading_mode": 1
+    },
+    {
+      "albedo": "ee9548",
+      "emission": "ffa04e",
+      "emission_energy": 1.53898668289185,
+      "metallic": 0.0,
+      "name": "volcano_night_light",
+      "normal_enabled": false,
+      "roughness": 0.180000007152557,
+      "shading_mode": 1
+    },
+    {
+      "albedo": "947462",
+      "emission": "000000",
+      "emission_energy": 1.0,
+      "metallic": 0.0,
+      "name": "volcano_night_accent",
+      "normal_enabled": false,
+      "roughness": 0.769999980926514,
+      "shading_mode": 1
+    },
+    {
+      "albedo": "ffffff",
+      "emission": "000000",
+      "emission_energy": 1.0,
+      "metallic": 0.0,
+      "name": "volcano_night_TerrainVertexPBR",
+      "normal_enabled": false,
+      "roughness": 0.910000026226044,
+      "shading_mode": 1
+    }
+  ],
+  "notes": "Actual runtime state; native screenshot required for visual brightness judgement",
+  "theme": "volcano_night"
+}

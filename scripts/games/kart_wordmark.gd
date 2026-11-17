@@ -20,13 +20,13 @@ func _draw() -> void:
 	var origin := (size - DESIGN_SIZE * factor) * 0.5
 	draw_set_transform(origin, 0.0, Vector2.ONE * factor)
 	# Dark extrusion, warm gold face and a cyan second line, like the original.
-	_word("Lumo", 72, 61, Color("ffd449"), Color("bf661b"))
+	_word("LUMO", 72, 61, Color("f7fcff"), Color("2b62d8"))
 	_flag(Vector2(16, 80), -0.16)
 	_flag(Vector2(199, 80), 0.16)
-	_word("Kart", 59, 110, Color("64e9ff"), Color("127caf"))
+	_word("KART", 59, 110, Color("ffc052"), Color("bd550e"))
 	# The star belongs inside the final o, not beside the word.
-	var word_width := UI.HEADING.get_string_size("Lumo", HORIZONTAL_ALIGNMENT_LEFT, -1, 72).x
-	var prefix_width := UI.HEADING.get_string_size("Lum", HORIZONTAL_ALIGNMENT_LEFT, -1, 72).x
+	var word_width := UI.HEADING.get_string_size("LUMO", HORIZONTAL_ALIGNMENT_LEFT, -1, 72).x
+	var prefix_width := UI.HEADING.get_string_size("LUM", HORIZONTAL_ALIGNMENT_LEFT, -1, 72).x
 	var o_width := word_width - prefix_width
 	_star(Vector2((244 - word_width) * 0.5 + prefix_width + o_width * 0.5, 42), 9.5, Color("123e69"))
 	var motto := StyleBoxFlat.new()
@@ -35,8 +35,7 @@ func _draw() -> void:
 	motto.set_border_width_all(1)
 	motto.set_corner_radius_all(5)
 	draw_style_box(motto, Rect2(49, 118, 147, 21))
-	_small_text("KLEINE SCHRITTE", 126)
-	_small_text("GROSSE ZIELE", 135)
+	_small_text("DAS RENNABENTEUER", 132)
 	draw_set_transform(Vector2.ZERO)
 
 

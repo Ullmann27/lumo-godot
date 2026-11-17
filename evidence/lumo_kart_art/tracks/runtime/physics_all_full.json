@@ -1,0 +1,927 @@
+{
+  "device_fps_measured": false,
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "failures": 0,
+  "passed": true,
+  "tracks": [
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 919,
+      "camera_wall_clip_m": 6.4084677696228,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.174387216567993,
+            -0.978589534759521,
+            -0.10932344943285
+          ],
+          "position": [
+            -59.7000274658203,
+            11.7905530929565,
+            -17.3445568084717
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.961851239204407,
+            0.0273031964898109,
+            -0.272207230329514
+          ],
+          "position": [
+            -64.7495269775391,
+            5.9151029586792,
+            -14.273904800415
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.976245522499084,
+            -0.0234072543680668,
+            0.215399295091629
+          ],
+          "position": [
+            -53.6384696960449,
+            6.80949974060059,
+            -18.8080863952637
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.980741739273071,
+            0.0219367276877165,
+            -0.194073423743248
+          ],
+          "position": [
+            -65.1722412109375,
+            5.9326605796814,
+            -16.5837097167969
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.000000387430191040039,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.000000387430191040039,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 291.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 8,
+        "start": 247.0,
+        "terrain_apron_triangles": 176,
+        "theme": "zauberwald",
+        "triangles": 89984
+      },
+      "track": "zauberwald"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 1120,
+      "camera_wall_clip_m": 6.24555158615112,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.188254192471504,
+            -0.969761610031128,
+            0.155315488576889
+          ],
+          "position": [
+            63.3563652038574,
+            25.4519367218018,
+            -53.6368179321289
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            -0.577540218830109,
+            0.121616192162037,
+            0.807252645492554
+          ],
+          "position": [
+            65.0635604858398,
+            19.3307590484619,
+            -59.1024551391602
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            0.705279409885406,
+            -0.123896673321724,
+            -0.698019027709961
+          ],
+          "position": [
+            58.6418571472168,
+            20.9042797088623,
+            -48.9853172302246
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            -0.702757835388184,
+            0.123884581029415,
+            0.700559794902802
+          ],
+          "position": [
+            66.7850341796875,
+            19.2401695251465,
+            -57.315845489502
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 195.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 151.0,
+        "theme": "bergwelt",
+        "triangles": 96376
+      },
+      "track": "bergwelt"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 896,
+      "camera_wall_clip_m": 6.34390497207642,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.0248326230794191,
+            -0.975710988044739,
+            0.217649862170219
+          ],
+          "position": [
+            -43.9142379760742,
+            20.9104499816895,
+            -59.6131896972656
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.535249471664429,
+            0.0557175949215889,
+            0.84285444021225
+          ],
+          "position": [
+            -50.1427040100098,
+            15.5595331192017,
+            -62.2865028381348
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.463289350271225,
+            -0.0656331479549408,
+            -0.883773326873779
+          ],
+          "position": [
+            -41.4741287231445,
+            15.9534339904785,
+            -53.6478576660156
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.463499546051025,
+            0.0656054690480232,
+            0.883665204048157
+          ],
+          "position": [
+            -47.0548858642578,
+            15.1064443588257,
+            -64.0204696655273
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.0009765625,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 287.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 5,
+        "start": 243.0,
+        "theme": "holo_city",
+        "triangles": 96904
+      },
+      "track": "holo_city"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 1471,
+      "camera_wall_clip_m": 6.43828535079956,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.111806705594063,
+            -0.993190824985504,
+            -0.0327297225594521
+          ],
+          "position": [
+            109.18856048584,
+            21.5622501373291,
+            -10.1014938354492
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            -0.971879780292511,
+            0.0170046612620354,
+            -0.234862834215164
+          ],
+          "position": [
+            115.688720703125,
+            16.1030426025391,
+            -12.5985641479492
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            0.969619810581207,
+            -0.0169978961348534,
+            0.244025766849518
+          ],
+          "position": [
+            103.234573364258,
+            16.1507186889648,
+            -11.5711145401001
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            -0.970185220241547,
+            0.016999676823616,
+            -0.241767808794975
+          ],
+          "position": [
+            114.745559692383,
+            16.0942554473877,
+            -8.74853610992432
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.000000476837158203125,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.000000476837158203125,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 203.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 159.0,
+        "terrain_apron_triangles": 176,
+        "theme": "crystal_canyon",
+        "triangles": 95232
+      },
+      "track": "crystal_canyon"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 1224,
+      "camera_wall_clip_m": 6.50872039794922,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.0469908230006695,
+            -0.995636940002441,
+            0.0806166157126427
+          ],
+          "position": [
+            -42.3941612243652,
+            16.0306091308594,
+            -82.5923233032227
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            -0.115037053823471,
+            0.000560499669518322,
+            0.993361055850983
+          ],
+          "position": [
+            -46.2360610961914,
+            10.9036779403687,
+            -88.827262878418
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            0.0853971466422081,
+            0.0282287988811731,
+            -0.995947003364563
+          ],
+          "position": [
+            -43.0989303588867,
+            10.5619106292725,
+            -76.6064300537109
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            -0.0904920622706413,
+            -0.0280482079833746,
+            0.995502173900604
+          ],
+          "position": [
+            -42.1350975036621,
+            10.616491317749,
+            -88.421012878418
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 411.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 8,
+        "start": 367.0,
+        "terrain_apron_triangles": 176,
+        "theme": "jungle_temple",
+        "triangles": 102592
+      },
+      "track": "jungle_temple"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 777,
+      "camera_wall_clip_m": 6.42973947525024,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.0222574658691883,
+            -0.991208493709564,
+            0.130423560738564
+          ],
+          "position": [
+            -53.5343627929688,
+            14.1460952758789,
+            -98.2661285400391
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            -0.176051244139671,
+            0.032828763127327,
+            0.983833432197571
+          ],
+          "position": [
+            -56.0368995666504,
+            8.43670845031738,
+            -104.458618164062
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            0.198223426938057,
+            -0.0316516198217869,
+            -0.979645669460297
+          ],
+          "position": [
+            -54.4260673522949,
+            8.79446983337402,
+            -92.1017456054688
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            -0.194662734866142,
+            0.031842116266489,
+            0.980353236198425
+          ],
+          "position": [
+            -52.2046012878418,
+            8.63495635986328,
+            -103.743804931641
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.0009765625,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 471.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 427.0,
+        "theme": "candy_cloud",
+        "triangles": 69608
+      },
+      "track": "candy_cloud"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 958,
+      "camera_wall_clip_m": 6.43311929702759,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.0682609304785728,
+            -0.991103768348694,
+            0.114253014326096
+          ],
+          "position": [
+            -77.1108245849609,
+            11.8640270233154,
+            -82.0076904296875
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.224890172481537,
+            0.0218198969960213,
+            0.974139809608459
+          ],
+          "position": [
+            -81.8898162841797,
+            6.17138004302979,
+            -86.7407913208008
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.206761404871941,
+            -0.0210036765784025,
+            -0.978165924549103
+          ],
+          "position": [
+            -75.5604095458984,
+            6.51319551467896,
+            -76.0104370117188
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.208252370357513,
+            0.0210709571838379,
+            0.97784811258316
+          ],
+          "position": [
+            -78.0742034912109,
+            6.34488391876221,
+            -87.5912246704102
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.0,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 467.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 423.0,
+        "terrain_apron_triangles": 176,
+        "theme": "volcano_night",
+        "triangles": 86752
+      },
+      "track": "volcano_night"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 701,
+      "camera_wall_clip_m": 6.36013269424438,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.0386680327355862,
+            -0.987305283546448,
+            0.154055520892143
+          ],
+          "position": [
+            -45.1808586120605,
+            10.4058589935303,
+            -109.033386230469
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.216154560446739,
+            0.047144953161478,
+            0.975220263004303
+          ],
+          "position": [
+            -48.8865737915039,
+            4.6573052406311,
+            -113.992088317871
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.160374715924263,
+            -0.0464637167751789,
+            -0.98596203327179
+          ],
+          "position": [
+            -44.0593795776367,
+            5.25532579421997,
+            -102.837104797363
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.161074951291084,
+            0.0464731529355049,
+            0.985847413539886
+          ],
+          "position": [
+            -46.0268898010254,
+            4.69418811798096,
+            -114.467079162598
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.0,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 463.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 419.0,
+        "terrain_apron_triangles": 176,
+        "theme": "winter_sprint",
+        "triangles": 65792
+      },
+      "track": "winter_sprint"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 875,
+      "camera_wall_clip_m": 6.51015377044678,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.00250151799991727,
+            -0.991278409957886,
+            -0.131760850548744
+          ],
+          "position": [
+            -15.6592988967896,
+            10.2914867401123,
+            -113.359031677246
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.140957906842232,
+            -0.0179763287305832,
+            0.989852368831635
+          ],
+          "position": [
+            -20.5708255767822,
+            4.85818004608154,
+            -118.857116699219
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.161293312907219,
+            0.0163995195180178,
+            -0.986770272254944
+          ],
+          "position": [
+            -14.6279611587524,
+            4.74526119232178,
+            -107.776794433594
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.161620795726776,
+            -0.0163911543786526,
+            0.98671680688858
+          ],
+          "position": [
+            -16.5132751464844,
+            4.96120309829712,
+            -119.475303649902
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.00000095367431640625,
+      "joint_rotation_error_rad": 0.0,
+      "passed": true,
+      "socket_position_error_m": 0.00000095367431640625,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 407.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 363.0,
+        "theme": "galaxy_ringway",
+        "triangles": 119512
+      },
+      "track": "galaxy_ringway"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 1504,
+      "camera_wall_clip_m": 6.42509269714355,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.00319614517502487,
+            -0.989859521389008,
+            0.142013847827911
+          ],
+          "position": [
+            -66.9856948852539,
+            12.1738710403442,
+            -108.54434967041
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.285059571266174,
+            0.03090432099998,
+            0.958011507987976
+          ],
+          "position": [
+            -72.3474273681641,
+            6.74310302734375,
+            -112.859085083008
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.254108995199203,
+            -0.0321979187428951,
+            -0.966639518737793
+          ],
+          "position": [
+            -65.5566787719727,
+            6.88621854782104,
+            -102.454658508301
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.255897402763367,
+            0.0321243777871132,
+            0.966170072555542
+          ],
+          "position": [
+            -68.6468200683594,
+            6.59399890899658,
+            -113.892753601074
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 463.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 6,
+        "start": 419.0,
+        "terrain_apron_triangles": 176,
+        "theme": "desert_drift",
+        "triangles": 103744
+      },
+      "track": "desert_drift"
+    },
+    {
+      "active_lights": 4,
+      "build_milliseconds_on_headless_host": 914,
+      "camera_wall_clip_m": 6.50098180770874,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            -0.0337860696017742,
+            -0.992935419082642,
+            -0.113744586706161
+          ],
+          "position": [
+            -20.502290725708,
+            14.9900321960449,
+            -106.410697937012
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.0565359517931938,
+            -0.00323024508543313,
+            0.998395383358002
+          ],
+          "position": [
+            -25.0704936981201,
+            9.69873428344727,
+            -112.254997253418
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.0641936361789703,
+            0.00647172657772899,
+            -0.997916460037231
+          ],
+          "position": [
+            -20.2832660675049,
+            9.52630043029785,
+            -100.672622680664
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.0635911822319031,
+            -0.00645595882087946,
+            0.997955143451691
+          ],
+          "position": [
+            -21.0436172485352,
+            9.57308387756348,
+            -112.49951171875
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.0,
+      "joint_rotation_error_rad": 0.0,
+      "passed": true,
+      "socket_position_error_m": 0.0,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 427.0,
+        "light_mounts": 8,
+        "low_detail": false,
+        "maximum_live_lights": 4,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 7,
+        "start": 383.0,
+        "terrain_apron_triangles": 176,
+        "theme": "learning_lab",
+        "triangles": 102920
+      },
+      "track": "learning_lab"
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 extends RefCounted
 ## Matching jigsaw pieces, original shared edges and validated per-child snapshots.
-const COUNTS = [12, 24, 48, 96]
-const GRIDS = [Vector2i(4, 3), Vector2i(6, 4), Vector2i(8, 6), Vector2i(12, 8)]
+const COUNTS = [6, 12, 24, 48, 96]
+const GRIDS = [Vector2i(3, 2), Vector2i(4, 3), Vector2i(6, 4), Vector2i(8, 6), Vector2i(12, 8)]
+const DIFFICULTY_NAMES = ["Mini", "Leicht", "Mittel", "Schwer", "Meister"]
+const MOTIF_COUNT := 5
 var count: int = 12
 var columns: int = 4
 var rows: int = 3
@@ -11,16 +13,18 @@ var result_id: String = ""
 var hints: int = 0
 var moves: int = 0
 var elapsed: float = 0
+var rotation_enabled: bool = false
 
 
-func setup(total: int, image: int) -> void:
+func setup(total: int, image: int, with_rotation: bool = false) -> void:
 	var choice: int = COUNTS.find(total)
 	if choice < 0:
-		choice = 0
+		choice = 1
 	count = COUNTS[choice]
 	columns = GRIDS[choice].x
 	rows = GRIDS[choice].y
-	motif = clampi(image, 0, 2)
+	motif = clampi(image, 0, MOTIF_COUNT - 1)
+	rotation_enabled = with_rotation
 	pieces.clear()
 	hints = 0
 	moves = 0
@@ -31,10 +35,26 @@ func setup(total: int, image: int) -> void:
 				"id": i,
 				"locked": false,
 				"tray": true,
+				"turn": posmod(i * 3 + motif + 1, 4) if rotation_enabled else 0,
 				"x": -7.0 if i % 2 == 0 else 7.0,
 				"z": -2.5 + (i % 12) * 0.5
 			}
 		)
+
+
+static func difficulty_name_for(total: int) -> String:
+	var choice: int = COUNTS.find(total)
+	return DIFFICULTY_NAMES[choice] if choice >= 0 else "Leicht"
+
+
+static func tray_per_side(total: int) -> int:
+	var choice: int = COUNTS.find(total)
+	var sides: Array[int] = [3, 3, 3, 4, 5]
+	return sides[choice] if choice >= 0 else 3
+
+
+func difficulty_name() -> String:
+	return difficulty_name_for(count)
 
 
 func board_size() -> Vector2:
@@ -110,6 +130,34 @@ func outline(id: int) -> PackedVector2Array:
 	return shape
 
 
+func snap_limit() -> float:
+	return minf(cell_size().x, cell_size().y) * 0.32
+
+
+func hover_limit() -> float:
+	return minf(cell_size().x, cell_size().y) * 0.48
+
+
+func is_near_target(id: int, at: Vector2) -> bool:
+	if id < 0 or id >= pieces.size() or pieces[id].locked:
+		return false
+	return orientation_matches(id) and at.distance_to(target(id)) <= hover_limit()
+
+
+func orientation_matches(id: int) -> bool:
+	return id >= 0 and id < pieces.size() and int(pieces[id].get("turn", 0)) == 0
+
+
+func rotate_piece(id: int, quarters: int = 1) -> bool:
+	if not rotation_enabled or id < 0 or id >= pieces.size() or pieces[id].locked:
+		return false
+	if posmod(quarters, 4) == 0:
+		return false
+	pieces[id]["turn"] = posmod(int(pieces[id].get("turn", 0)) + quarters, 4)
+	moves += 1
+	return true
+
+
 func try_snap(id: int, at: Vector2) -> bool:
 	if id < 0 or id >= pieces.size() or pieces[id].locked:
 		return false
@@ -117,7 +165,7 @@ func try_snap(id: int, at: Vector2) -> bool:
 	pieces[id].x = at.x
 	pieces[id].z = at.y
 	pieces[id]["tray"] = absf(at.x) > board_size().x * 0.5 or absf(at.y) > board_size().y * 0.5
-	if at.distance_to(target(id)) > minf(cell_size().x, cell_size().y) * 0.32:
+	if not orientation_matches(id) or at.distance_to(target(id)) > snap_limit():
 		return false
 	pieces[id].locked = true
 	pieces[id].x = target(id).x
@@ -142,6 +190,7 @@ func to_data() -> Dictionary:
 		"version": 1,
 		"count": count,
 		"motif": motif,
+		"rotation_enabled": rotation_enabled,
 		"pieces": pieces.duplicate(true),
 		"result_id": result_id,
 		"hints": hints,
@@ -151,13 +200,18 @@ func to_data() -> Dictionary:
 
 
 func restore(data: Dictionary) -> bool:
+	var image: int = int(data.get("motif", -1))
 	if (
 		int(data.get("version", 0)) != 1
 		or int(data.get("count", 0)) not in COUNTS
-		or int(data.get("motif", -1)) not in [0, 1, 2]
+		or image < 0
+		or image >= MOTIF_COUNT
 	):
 		return false
 	var total: int = int(data.count)
+	var saved_rotation = data.get("rotation_enabled", false)
+	if not saved_rotation is bool:
+		return false
 	if not data.get("pieces") is Array or data.pieces.size() != total:
 		return false
 	var restored: Array[Dictionary] = []
@@ -174,17 +228,28 @@ func restore(data: Dictionary) -> bool:
 		var z: float = float(raw.get("z", INF))
 		if not is_finite(x) or not is_finite(z) or absf(x) > 10 or absf(z) > 8:
 			return false
+		# JSON decodes numbers as floats. Accept only exact quarter turns;
+		# old version-1 saves without these optional fields remain unchanged.
+		var saved_turn = raw.get("turn", 0)
+		if not (saved_turn is int or saved_turn is float):
+			return false
+		if not is_finite(float(saved_turn)) or float(saved_turn) != floorf(float(saved_turn)):
+			return false
+		var turn := int(saved_turn)
+		if turn < 0 or turn > 3 or ((not saved_rotation or bool(raw.get("locked", false))) and turn != 0):
+			return false
 		seen[int(raw.id)] = true
 		restored.append(
 			{
 				"id": int(raw.id),
 				"locked": bool(raw.get("locked", false)),
 				"tray": bool(raw.get("tray", true)),
+				"turn": turn,
 				"x": x,
 				"z": z
 			}
 		)
-	setup(total, int(data.motif))
+	setup(total, image, saved_rotation)
 	restored.sort_custom(func(a, b): return int(a.id) < int(b.id))
 	pieces = restored
 	for piece in pieces:

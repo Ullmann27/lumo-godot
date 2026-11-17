@@ -1,0 +1,10 @@
+{"theme": "bergwelt", "stage": "build", "elapsed_seconds": 70.1}
+{"theme": "bergwelt", "stage": "verify", "elapsed_seconds": 88.9}
+Traceback (most recent call last):
+  File "/workspace/scratch/eb2882c140f8/lumo-kart-art/tools/lumo_kart_art/tracks/produce_verified_tracks.py", line 42, in <module>
+    main()
+  File "/workspace/scratch/eb2882c140f8/lumo-kart-art/tools/lumo_kart_art/tracks/produce_verified_tracks.py", line 32, in main
+    subprocess.run(command, cwd=repo, stdout=log, stderr=subprocess.STDOUT, check=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['blender', '-b', '-t', '3', '--python-exit-code', '1', '--python', 'tools/lumo_kart_art/tracks/build_tunnel_kit.py', '--', '--repo', '/workspace/scratch/eb2882c140f8/lumo-kart-art', '--themes', 'holo_city']' returned non-zero exit status 1.

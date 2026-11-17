@@ -1,0 +1,41 @@
+SOURCE PASS lion.blend
+SOURCE PASS owl.blend
+SOURCE PASS rabbit.blend
+SOURCE PASS squirrel.blend
+SOURCE PASS turtle.blend
+SOURCE PASS aurora_comet.blend
+SOURCE PASS aurora_glider.blend
+SOURCE PASS aurora_turbo.blend
+SOURCE PASS bergwelt_tunnel_workshop.blend
+SOURCE PASS candy_cloud_tunnel_workshop.blend
+SOURCE PASS crystal_canyon_tunnel_workshop.blend
+SOURCE PASS desert_drift_tunnel_workshop.blend
+SOURCE PASS galaxy_ringway_tunnel_workshop.blend
+SOURCE PASS holo_city_tunnel_workshop.blend
+SOURCE PASS jungle_temple_tunnel_workshop.blend
+SOURCE PASS learning_lab_tunnel_workshop.blend
+SOURCE PASS volcano_night_tunnel_workshop.blend
+SOURCE PASS winter_sprint_tunnel_workshop.blend
+SOURCE PASS zauberwald_tunnel_workshop.blend
+Blender 4.3.2
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/lion.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/owl.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/rabbit.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/squirrel.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/turtle.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/karts/aurora_comet.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/karts/aurora_glider.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/karts/aurora_turbo.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/bergwelt_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/candy_cloud_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/crystal_canyon_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/desert_drift_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/galaxy_ringway_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/holo_city_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/jungle_temple_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/learning_lab_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/volcano_night_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/winter_sprint_tunnel_workshop.blend"
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend"
+
+Blender quit

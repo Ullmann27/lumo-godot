@@ -1,0 +1,54 @@
+name: LUMO 3D Lernwerkstatt – echte Aufgaben und Uhr
+on:
+  push:
+    branches: [repair/lumo-learning-workshop-3d-20261116]
+    paths:
+      - scripts/learning/**
+      - scripts/tests/learning_workshop_relevance_regression.gd
+      - .github/workflows/lumo-learning-workshop-qa.yml
+  pull_request:
+    branches: [integration/lumo-2031-nextgen-jungle-20261116]
+    paths:
+      - scripts/learning/**
+      - scripts/tests/learning_workshop_relevance_regression.gd
+      - .github/workflows/lumo-learning-workshop-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-learning-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 -o "$RUNNER_TEMP/godot.zip"             https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import actual learning scenes
+        run: |
+          set -euo pipefail
+          mkdir -p exports/learning-workshop
+          godot --headless --editor --import --quit 2>&1 | tee exports/learning-workshop/import.log
+          if grep -E 'SCRIPT ERROR|Parse Error' exports/learning-workshop/import.log; then exit 1; fi
+      - name: Run native clock, answer and choice regression
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py             --log exports/learning-workshop/relevance.log --timeout 180             --required '[LearningWorkshop] PASS' --             xvfb-run -a -s '-screen 0 1280x900x24'             godot --rendering-method gl_compatibility               --audio-driver Dummy --script scripts/tests/learning_workshop_relevance_regression.gd
+      - name: Run existing learning-world regressions
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py             --log exports/learning-workshop/world.log --timeout 720             --required '[LearningWorld] PASS' --             xvfb-run -a -s '-screen 0 1280x900x24'             godot --rendering-method gl_compatibility               --audio-driver Dummy --script scripts/tests/learning_world_regression.gd
+      - name: Save machine-verifiable logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-learning-workshop-qa
+          path: exports/learning-workshop/
+          retention-days: 14

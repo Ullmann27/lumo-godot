@@ -3,7 +3,9 @@ extends RefCounted
 ## Missing/unvalidated rigs never silently replace an existing animated driver.
 
 const PATH := "res://assets/characters/rivals/roster.json"
+const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
 static var _cache: Array[Dictionary] = []
+static var _validated_scenes: Dictionary = {}
 
 
 static func all() -> Array[Dictionary]:
@@ -29,6 +31,8 @@ static func all() -> Array[Dictionary]:
 			ids[id] = true
 			var entry: Dictionary = row.duplicate(true)
 			entry["games"].make_read_only()
+			if entry.get("godotLods") is Array:
+				entry["godotLods"].make_read_only()
 			entry.make_read_only()
 			entries.append(entry)
 		entries.make_read_only()
@@ -55,11 +59,46 @@ static func rotation(game: String, round_index: int = 0) -> Array[Dictionary]:
 	return result
 
 
-static func can_use_racing_model(id: String) -> bool:
+static func racing_scene(id: String) -> PackedScene:
 	for entry in all():
-		if str(entry.id) == id:
-			return bool(entry.get("runtimeReady", false)) and ResourceLoader.exists(str(entry.get("godotModel", "")))
-	return false
+		if str(entry.id) != id:
+			continue
+		var path: String = str(entry.get("godotModel", ""))
+		if not bool(entry.get("runtimeReady", false)) or not CONTRACT.model_path_allowed(path):
+			return null
+		if _validated_scenes.has(id):
+			return _validated_scenes[id]
+		if not ResourceLoader.exists(path, "PackedScene"):
+			return null
+		var scene: PackedScene = load(path) as PackedScene
+		if scene == null:
+			return null
+		var candidate: Node = scene.instantiate()
+		var verified: Dictionary = CONTRACT.inspect(candidate)
+		candidate.free()
+		if bool(verified.get("valid", false)):
+			_validated_scenes[id] = scene
+			return scene
+		return null
+	return null
+
+
+static func can_use_racing_model(id: String) -> bool:
+	return racing_scene(id) != null
+
+
+static func racing_model_path(id: String, level: int = 0) -> String:
+	for entry in all():
+		if str(entry.id) != id or not bool(entry.get("runtimeReady", false)):
+			continue
+		var paths: Variant = entry.get("godotLods", [])
+		if not paths is Array or paths.size() != 3:
+			return ""
+		var selected: String = str(paths[clampi(level, 0, 2)])
+		var filename := "driver.glb" if level <= 0 else "driver_lod%d.glb" % clampi(level, 1, 2)
+		var expected := "res://assets/kart/production/drivers/%s/%s" % [id, filename]
+		return selected if selected == expected else ""
+	return ""
 
 
 static func ready_for_race() -> bool:

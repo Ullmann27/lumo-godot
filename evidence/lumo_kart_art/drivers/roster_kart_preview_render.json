@@ -1,0 +1,46 @@
+{
+  "inputs": [
+    {
+      "species": "lion",
+      "blend": "art/lumo_kart/blender/drivers/lion.blend",
+      "sha256": "fba717b6e255eac3fe345a95cb2ed51a08dcd6000175cb7fd7d6f6849960d580"
+    },
+    {
+      "species": "owl",
+      "blend": "art/lumo_kart/blender/drivers/owl.blend",
+      "sha256": "55378acdd8ada40185f8c7a611ea59ab7cc8cf7e64a644f5a25480c1b2206650"
+    },
+    {
+      "species": "rabbit",
+      "blend": "art/lumo_kart/blender/drivers/rabbit.blend",
+      "sha256": "44b921c71d51d0dc88195363662f7e71103aaf6a496e83e1f08b4a39297332a5"
+    },
+    {
+      "species": "squirrel",
+      "blend": "art/lumo_kart/blender/drivers/squirrel.blend",
+      "sha256": "f3721453d377caaa5873b7d3a6e00996fe3c96c8276957eb0edf6a8ebe7cdfb4"
+    },
+    {
+      "species": "turtle",
+      "blend": "art/lumo_kart/blender/drivers/turtle.blend",
+      "sha256": "97b330bfe9ab1f8809ff1ad1f90879bc22478bd4ac833d6d4e625d1f9f6efa63"
+    }
+  ],
+  "engine": "Blender Cycles CPU",
+  "resolution": [
+    1900,
+    700
+  ],
+  "samples_max": 8,
+  "angles_degrees": {
+    "rear_three_quarter": 135.0,
+    "rear": 180.0
+  },
+  "shared_camera": true,
+  "shared_lighting": true,
+  "placement": "Driver and kart retain identity-relative attachment transforms. Each pair rotates about its own vertical axis.",
+  "kart": {
+    "file": "assets/kart/production/karts/aurora_comet.glb",
+    "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f"
+  }
+}

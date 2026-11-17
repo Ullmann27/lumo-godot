@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "source_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+  "source_tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+  "run_attempt": 1,
+  "completed_utc": "2026-11-13T17:54:50.848143+00:00",
+  "totals": {
+    "workflows": 13,
+    "jobs": 14,
+    "steps": 158,
+    "success_steps": 156,
+    "skipped_steps": 2,
+    "failed_steps": 0
+  },
+  "objects": [
+    {
+      "path": "README.md",
+      "bytes": 2152,
+      "sha256": "72c10fc52e4c3a1674e98b3f2ecbb31f1f53b7aa05e72a319790c1f256ca9f93"
+    },
+    {
+      "path": "bauwelt-source-observations.json",
+      "bytes": 2868,
+      "sha256": "be7ec7beb8c2f9a5d89d254882dba6871cd7e55f6244455cf4969e0e35ac1393"
+    },
+    {
+      "path": "checkpoint-manifest.json",
+      "bytes": 6497,
+      "sha256": "4d8a0708399d2003e591a3c556d00728ce8fc5f68fd73a37d5b8040fc51d1ad4"
+    },
+    {
+      "path": "job-132054800134.log.gz",
+      "bytes": 10335,
+      "sha256": "1314dff2e6beeb81cbfba4f2e94c8b6b52e58e90ff4203e75f4b6dc1494270f7",
+      "original_bytes": 36006,
+      "original_sha256": "17da1bf789bffeb132b3bba40cf0f390665d745810db8a6ce66d546ae9999453"
+    },
+    {
+      "path": "job-132054800937.log.gz",
+      "bytes": 30035,
+      "sha256": "b884812a5303dde0d301dd12edc59a6bbedac25440b1d72184d8ed2ad0b1c41d",
+      "original_bytes": 261577,
+      "original_sha256": "1f877e7616ad7bf1a098404987f0370012f8cf6648b416382a0dc32621861aa4"
+    },
+    {
+      "path": "jobs-43474541060.json.gz",
+      "bytes": 897,
+      "sha256": "8b6b8de08da14c0ccdebb231f877812a1ce9ac1c114173155d22280f11c37daa",
+      "original_bytes": 5114,
+      "original_sha256": "f2522a200da13c7fe154aa983d5dfd1ce2b7ec51682e852b70b995d573ef279a"
+    },
+    {
+      "path": "jobs-43474541133.json.gz",
+      "bytes": 819,
+      "sha256": "380bdf6391f585a4e889eb8227ef6ce0fbe899c47f408d73d6f26a354e2b5668",
+      "original_bytes": 2785,
+      "original_sha256": "875a4071417866cd8efe9764a7d5fb800565df47af25f6428e24241d21da3d2a"
+    },
+    {
+      "path": "jobs-43474541227.json.gz",
+      "bytes": 634,
+      "sha256": "26b720b9f09dfedab2414e6cd9fa0eff087209e7e92c8161862ae7315c52b2c5",
+      "original_bytes": 1979,
+      "original_sha256": "cb17a37ff2be9c4109c3c6eefb0948ad779cd0c0157e6c0935285c223f069bc6"
+    },
+    {
+      "path": "jobs-43474541263.json.gz",
+      "bytes": 799,
+      "sha256": "64584e0eb9b0f37a1b842eb1220b55d4db385aac28731b7a818bb1df7dc4dbf6",
+      "original_bytes": 2593,
+      "original_sha256": "7ea1565959d1e65a28516243a9e222a21536edd20bc7fa7a2f0571c18a5e0634"
+    },
+    {
+      "path": "jobs-43474541276.json.gz",
+      "bytes": 784,
+      "sha256": "5a68bcc65e90989daa98e3c7ece94ec2461f6960c5e18356797f891fc94f77a5",
+      "original_bytes": 2714,
+      "original_sha256": "f2e5fb56df107acbcaee4c22d415b3cccaac9ca900c2159e385a0ba017c5249e"
+    },
+    {
+      "path": "jobs-43474541277.json.gz",
+      "bytes": 736,
+      "sha256": "e90f7d8d438bc009e2f2dcaa100ab1c9a8c4c4be37e497f21361c6ecd45fd56e",
+      "original_bytes": 2766,
+      "original_sha256": "a4ed9d1e36883dadfbc76e6182f3e38cf0e58f1066e32a02754e80da9a394e42"
+    },
+    {
+      "path": "jobs-43474541368.json.gz",
+      "bytes": 794,
+      "sha256": "9103a9bbe65fd7300b2c9b67cdb818cf19a4c6d698ce56d30dcf11173a18062f",
+      "original_bytes": 2599,
+      "original_sha256": "4781c3f4cae4a056142016455e06cfe345da333806bedd1c624859a79cfe0a9f"
+    },
+    {
+      "path": "jobs-43474541400.json.gz",
+      "bytes": 839,
+      "sha256": "7f537f723ea9c1953ca4c19ebbc23dcbc9f0ea318cd659cd3fa299b871ebd084",
+      "original_bytes": 2796,
+      "original_sha256": "c26048badecf946068de054d2f6cc2e4d1d377eb85313e15a47631119ef7f306"
+    },
+    {
+      "path": "jobs-43474541406.json.gz",
+      "bytes": 878,
+      "sha256": "3f3e916b26ef36f1c2b64b7baecb3a8ea8517c89aa7f318a98483402de0d86e7",
+      "original_bytes": 3124,
+      "original_sha256": "ee8df4fc96627095e63394f54b2d2813008b46cead3f8ef4dcc7d3e9496461c7"
+    },
+    {
+      "path": "jobs-43474541496.json.gz",
+      "bytes": 1425,
+      "sha256": "d6d8570af223946d33c0f11df492bcf71d117ba6e37c6524b860abfcabe20875",
+      "original_bytes": 6088,
+      "original_sha256": "7473c7ba023c1ea29d55ff42adc0f5965653502a903e9c556cacb6e0a417eb4c"
+    },
+    {
+      "path": "jobs-43474541511.json.gz",
+      "bytes": 873,
+      "sha256": "e04cd61090c30b5aaf1f828a281be7b46ae5e79c835df9f548dcf38edf7e214c",
+      "original_bytes": 3113,
+      "original_sha256": "b19fe824d29dda850c755bcca31c74d62505578196efe30544f41ad6e83194f6"
+    },
+    {
+      "path": "jobs-43474541556.json.gz",
+      "bytes": 877,
+      "sha256": "bce823f88c7631bec8346e7eeaf70e6d8f75358224337acc7c48d98b3cb94585",
+      "original_bytes": 3284,
+      "original_sha256": "36f988392bd644e1b9fb62ba095b1262695070ca64638189a3bba808ec646eb8"
+    },
+    {
+      "path": "jobs-43474541765.json.gz",
+      "bytes": 754,
+      "sha256": "6d009f761162dc1f5f70ce72469b73a3a5355baa59eb93fa01490f6b7f55e80f",
+      "original_bytes": 2657,
+      "original_sha256": "d6402feb06295ad75b02ecaffe058e12b04aa4b8dd2e580be2c14086a7bd707c"
+    },
+    {
+      "path": "pr-merge-commit.json.gz",
+      "bytes": 1252,
+      "sha256": "8811c091c25a0fbe8586bd6ee4ccb88ab9828a90fe8fe1b87e00f64ea42372d9",
+      "original_bytes": 2667,
+      "original_sha256": "2bc221af232422d7886553970a8b867e5bf30b1d318ea312b73f5ed1e7539cda"
+    },
+    {
+      "path": "pull-160.json.gz",
+      "bytes": 4498,
+      "sha256": "fb2785487fc16e18fa715c11e6f9ca8c7cbd8e1a46ac81d8710a860905b32b81",
+      "original_bytes": 20904,
+      "original_sha256": "50a4588d795eff14e946f309a2fdcf21a1ad2b0f1705720e1fb9e71b705a08bc"
+    },
+    {
+      "path": "run-43474541276-final.json.gz",
+      "bytes": 1941,
+      "sha256": "e8eefbed108ecc9032de6a94a388d5d6d731d13e1b3f565345ecf158cf79bfce",
+      "original_bytes": 13264,
+      "original_sha256": "e1bb5ab707dd1a91de795d3a4d25a0d5ac5a39888228f2a7d8e83120eacf35b4"
+    },
+    {
+      "path": "run-43474541496-final.json.gz",
+      "bytes": 1945,
+      "sha256": "8eff44f8bf3010552c769a057792c4055d895fd749f29fe7e5436783f24e5c9e",
+      "original_bytes": 13242,
+      "original_sha256": "3f6e93dbc45afb1bb5ca8fdce2f6d3448bf044cccdeebbd4eabdf1d80fd51cc5"
+    },
+    {
+      "path": "source-build_village_scene_regression.gd.gz",
+      "bytes": 5241,
+      "sha256": "9aa6e48f79d0eaf5451c9409c5c89253ba4de8e2cd3dadf9c4c257b9ae0f1bf7",
+      "original_bytes": 16705,
+      "original_sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde"
+    },
+    {
+      "path": "source-commit.json.gz",
+      "bytes": 808,
+      "sha256": "66ee6d9c8ad34591c0a626aa727b5f6090f5662b56bc0e0f09f4d2959e1955e2",
+      "original_bytes": 2085,
+      "original_sha256": "827b47ecc9cd426dcf44736478507bd784d085a157ee4560f00dc12de4252ceb"
+    },
+    {
+      "path": "source-lumo-kart-bauwelt-integration.yml.gz",
+      "bytes": 1191,
+      "sha256": "1bdeedcdffc5546c06e6fe4077b1b081f7e3d80dcd929058efd85aee448507e2",
+      "original_bytes": 4328,
+      "original_sha256": "0af8d072df7388f13706cb0db6a41d39adceb66a4b992e819e959eda9a861b2b"
+    },
+    {
+      "path": "source-ref.json.gz",
+      "bytes": 276,
+      "sha256": "df08acb0f0ea03bdcd98c4258cb99e6b5323d198d32c88d2c38e1e0de40db041",
+      "original_bytes": 451,
+      "original_sha256": "bf09f0d3664694ff56fa946af547f232bd673ea96de2af48f9ba030f270de29d"
+    },
+    {
+      "path": "verification-summary.json",
+      "bytes": 13939,
+      "sha256": "c006c5123b04509c35442214e3f0b7092874543ae89a7b5c773bfc511f7dffc5"
+    },
+    {
+      "path": "workflow-runs-checkpoint.json.gz",
+      "bytes": 5180,
+      "sha256": "8641cb3b9d8dbc99c193bab89b965b4d97e523e21747e9a0a4dede925eb25fc1",
+      "original_bytes": 198945,
+      "original_sha256": "c9a2083078d4c2eb86563b0c9abc3b360159b738c0f1abf02395ba3c7345cda4"
+    },
+    {
+      "path": "workflow-runs-final.json.gz",
+      "bytes": 5178,
+      "sha256": "662b0e0e38fa29422c4e1135ab3d4e9eadfbeb048b4e21eef9241ed76b4d9144",
+      "original_bytes": 198957,
+      "original_sha256": "1a4583e42ec3fe19ee5ab274215ab08e0a1fab28e4ab5b45654ca2d6862f658b"
+    },
+    {
+      "path": "workflow-runs-initial.json.gz",
+      "bytes": 5166,
+      "sha256": "f63191f68ac72daad8233165a46b162014b1282ee29e2bc223dde608f4662cd0",
+      "original_bytes": 198966,
+      "original_sha256": "dd1d6095fa314b6c507362abd9bd9a38eb2cbdd120729f79ff63bf34e00c0e98"
+    }
+  ]
+}
