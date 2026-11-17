@@ -50,8 +50,8 @@ func _capture() -> void:
 	var views: Array = []
 	var karts: Array = []
 	for index in range(ANIMALS.size()):
-		for shot in range(2):
-			var pair: Array = _view(Color("13213a") if shot == 0 else Color("1b2c47"))
+		for shot in range(3):
+			var pair: Array = _view([Color("13213a"), Color("1b2c47"), Color("223a52")][shot])
 			var kart = VEHICLE.new()
 			kart.configure(ANIMALS[index], COLORS[index], "comet")
 			pair[1].add_child(kart)
@@ -62,20 +62,23 @@ func _capture() -> void:
 			if shot == 0:
 				camera.fov = 26.0
 				camera.look_at_from_position(Vector3(-1.05, 2.05, -2.55), Vector3(0, 1.62, -0.05))
-			else:
+			elif shot == 1:
 				camera.fov = 30.0
 				camera.look_at_from_position(Vector3(-3.6, 1.45, -0.35), Vector3(0, 1.05, -0.12))
+			else:
+				camera.fov = 34.0
+				camera.look_at_from_position(Vector3(0.9, 2.6, 3.4), Vector3(0, 1.0, -0.4))
 			camera.current = true
 			views.append(pair[0])
 	for frame in range(12):
 		await process_frame
 	await RenderingServer.frame_post_draw
-	var sheet := Image.create(CELL.x * ANIMALS.size(), CELL.y * 2, false, Image.FORMAT_RGBA8)
+	var sheet := Image.create(CELL.x * ANIMALS.size(), CELL.y * 3, false, Image.FORMAT_RGBA8)
 	for index in range(views.size()):
 		var image: Image = views[index].get_texture().get_image()
 		image.convert(Image.FORMAT_RGBA8)
-		var column: int = index / 2
-		var row: int = index % 2
+		var column: int = index / 3
+		var row: int = index % 3
 		sheet.blit_rect(image, Rect2i(Vector2i.ZERO, CELL), Vector2i(column * CELL.x, row * CELL.y))
 	DirAccess.make_dir_recursive_absolute(output.get_base_dir())
 	assert(sheet.save_png(output) == OK)

@@ -2138,8 +2138,12 @@ func _update_vehicles(_delta: float) -> void:
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
-	for kart in opponents:
-		kart.set_driver_runtime_state(false, false, paused)
+	for index in range(opponents.size()):
+		var spun: bool = (
+			(index < opponent_spin_times.size() and opponent_spin_times[index] > 0.0)
+			or (index < opponent_stuns.size() and opponent_stuns[index] > 0.0)
+		)
+		opponents[index].set_driver_runtime_state(false, spun and enabled, paused)
 
 
 func _update_camera(delta: float, snap: bool = false) -> void:
@@ -3928,6 +3932,8 @@ func _apply_item_event(event: Dictionary) -> void:
 		_spin_player(float(event.spin))
 		_fx("hit_spin", player.global_position + Vector3.UP * 0.8)
 		message.text = "Huch, gedreht! Gleich geht's weiter."
+		if source >= 0 and source < opponents.size():
+			opponents[source].cheer_briefly(1.2)
 	elif target >= 0 and target < opponents.size():
 		_spin_rival(target, float(event.spin))
 		_fx("hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
@@ -3974,13 +3980,14 @@ func _update_track_triggers() -> void:
 		var key: String = str(trigger.get_instance_id())
 		match str(trigger.get("trigger_kind")):
 			"boost_ring":
-				if trigger.crossed(player_previous_position, player.global_position):
+				# A jump of more than 6 m in one frame is a reset/restore teleport, not a pass.
+				if player_previous_position.distance_to(player.global_position) < 6.0 and trigger.crossed(player_previous_position, player.global_position):
 					if _trigger_once(key, "boost_ring", float(trigger.boost_seconds)):
 						trigger.celebrate()
 						_stat("rings")
 						message.text = "Durch den Turbo-Ring!"
 				for i in range(opponents.size()):
-					if trigger.crossed(opponent_previous_positions[i], opponents[i].global_position):
+					if opponent_previous_positions[i].distance_to(opponents[i].global_position) < 6.0 and trigger.crossed(opponent_previous_positions[i], opponents[i].global_position):
 						opponent_boost_times[i] = maxf(opponent_boost_times[i], 1.2)
 			"boost_pad":
 				if trigger.contains(player.global_position):
