@@ -42,6 +42,9 @@ var time: float = 0
 var save_clock: float = 0
 var save_path: String
 var last_saved: Vector3
+var hunt_map: Control
+var fanfare: GPUParticles3D
+var discovery_beacons: Dictionary = {}
 
 
 func _ready() -> void:
@@ -206,6 +209,8 @@ func _landscape() -> void:
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
 	ISLAND_ART.apply(self)
 	_branch_trails()
+	_place_discovery_beacons()
+	_make_fanfare()
 
 
 func _branch_trails() -> void:
@@ -287,6 +292,12 @@ func _ui() -> void:
 	toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	safe_ui.add_child(toast)
 	toast.minimum_size_changed.connect(func(): _layout.call_deferred())
+	hunt_map = Control.new()
+	hunt_map.name = "TreasureHuntMap"
+	hunt_map.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hunt_map.draw.connect(_draw_hunt_map)
+	hunt_map.resized.connect(hunt_map.queue_redraw)
+	safe_ui.add_child(hunt_map)
 	joystick = STICK.new()
 	joystick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	joystick.position = Vector2(20, -208)
@@ -336,11 +347,20 @@ func _layout() -> void:
 	action.position = Vector2(available.x - 16 - action_side, available.y - 16 - action_side)
 	jump_button.size = Vector2(110, 48)
 	jump_button.position = Vector2(available.x - 126, available.y - 76 - action_side)
+	var map_side := 168.0 if not short_landscape else 112.0
+	map_side = minf(map_side, maxf(96.0, available.x * 0.28))
+	if is_instance_valid(hunt_map):
+		hunt_map.size = Vector2.ONE * map_side
+		var map_top := 76.0 if not short_landscape else maxf(68.0, top.position.y + maxf(48.0, top.size.y) + 8.0)
+		hunt_map.position = Vector2(available.x - 14.0 - map_side, map_top)
+		hunt_map.queue_redraw()
 	var clue_width := minf(380, available.x - 28)
+	if is_instance_valid(hunt_map):
+		clue_width = minf(clue_width, hunt_map.position.x - 26.0)
 	if short_landscape:
 		clue_width = minf(clue_width, available.x * 0.53)
 	clue_panel.position = Vector2(14, 76)
-	clue_panel.size = Vector2(clue_width, 0)
+	clue_panel.size = Vector2(maxf(160, clue_width), 0)
 	# A full quest card covers the avatar in a short landscape view. Keep the
 	# same complete text behind a real 48dp control instead of shrinking it.
 	clue_panel.visible = not short_landscape
@@ -451,6 +471,8 @@ func _physics_process(delta: float) -> void:
 		alternate_marker.position = available_goals[1].at + Vector3.UP * (3.5 + sin(time * 2 + 1) * 0.2)
 		alternate_marker.rotate_y(-delta)
 	wonder.set_routes(player.position, available_goals)
+	if is_instance_valid(hunt_map):
+		hunt_map.queue_redraw()
 	action.disabled = not model.can_interact(player.position)
 	save_clock += delta
 	if save_clock > 3:
@@ -497,6 +519,9 @@ func _update() -> void:
 			lead
 		]
 	)
+	_refresh_discovery_beacons()
+	if is_instance_valid(hunt_map):
+		hunt_map.queue_redraw()
 	_layout.call_deferred()
 
 
@@ -545,6 +570,7 @@ func _answer(choice: int) -> void:
 	_update()
 	_close_modal()
 	wonder.celebrate(player.position + Vector3.UP * 1.7)
+	_play_fanfare(player.position + Vector3.UP * 1.4, false)
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."
 	if model.last_cheer == 3:
 		toast.text = "Gefunden: %s! Super-Serie: 3 Hinweise hintereinander!" % model.inventory[-1]
@@ -617,22 +643,17 @@ func _win() -> void:
 			"xp": xp
 		}
 	)
+	wonder.celebrate(Vector3(0, 2.2, -65))
+	_play_fanfare(Vector3(0, 1.6, -65), true)
 	_open_modal("Der Sternenschatz gehört euch!")
-	(
-		modal_box
-		. add_child(
-			(
-				KIT
-				. label(
-					(
-						"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und %d Erfahrungspunkte!"
-						% xp
-					),
-					19
-				)
-			)
-		)
+	var finds: int = model.discoveries.size()
+	var summary := (
+		"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und %d Erfahrungspunkte!"
+		% xp
 	)
+	if finds > 0:
+		summary += "\nZusätzlich %d Entdeckungen auf der Insel." % finds
+	modal_box.add_child(KIT.label(summary, 19))
 	modal_box.add_child(KIT.button("Insel weiter erkunden", _close_modal))
 	modal_box.add_child(KIT.button("Neues Abenteuer", _new_adventure))
 	modal_box.add_child(KIT.button("Zur Spielewelt", _leave))
@@ -738,3 +759,164 @@ func _terrain_mesh() -> ArrayMesh:
 	st.generate_normals()
 	st.generate_tangents()
 	return st.commit()
+
+
+func _place_discovery_beacons() -> void:
+	for spot in STATE.DISCOVERIES:
+		var sid := str(spot.id)
+		if sid in ["arch", "compass", "falls"]:
+			# These landmarks are already part of the start vista.
+			continue
+		var glow: MeshInstance3D = kit.mesh(
+			self, kit.SHAPES.star(), spot.at + Vector3(0, 1.55, 0), Color("ffe7a1"), true
+		)
+		glow.name = "DiscoveryBeacon_%s" % sid
+		glow.scale = Vector3.ONE * 0.42
+		glow.set_meta("discovery", sid)
+		discovery_beacons[sid] = glow
+
+
+func _refresh_discovery_beacons() -> void:
+	for sid in discovery_beacons:
+		var glow: MeshInstance3D = discovery_beacons[sid]
+		if is_instance_valid(glow):
+			glow.visible = sid not in model.discoveries
+
+
+func _make_fanfare() -> void:
+	fanfare = GPUParticles3D.new()
+	fanfare.name = "TreasureFanfare"
+	fanfare.emitting = false
+	fanfare.one_shot = true
+	fanfare.explosiveness = 0.92
+	fanfare.lifetime = 1.15
+	fanfare.visibility_aabb = AABB(Vector3(-8, -2, -8), Vector3(16, 14, 16))
+	var process := ParticleProcessMaterial.new()
+	process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	process.emission_sphere_radius = 0.35
+	process.direction = Vector3(0, 1, 0)
+	process.spread = 70.0
+	process.initial_velocity_min = 2.4
+	process.initial_velocity_max = 5.8
+	process.gravity = Vector3(0, -2.2, 0)
+	process.scale_min = 0.08
+	process.scale_max = 0.18
+	process.color = Color("ffe08a")
+	fanfare.process_material = process
+	var star := SphereMesh.new()
+	star.radius = 0.12
+	star.height = 0.24
+	star.radial_segments = 8
+	star.rings = 4
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color("ffd56a")
+	mat.emission_enabled = true
+	mat.emission = Color("ffe08a")
+	mat.emission_energy_multiplier = 2.2
+	star.material = mat
+	fanfare.draw_pass_1 = star
+	add_child(fanfare)
+	_tune_fanfare(false)
+
+
+func _tune_fanfare(grand: bool) -> void:
+	if not is_instance_valid(fanfare):
+		return
+	var budget: Dictionary = LumoQuality.budget()
+	var density: float = clampf(float(budget.get("decor_density", 1.0)), 0.35, 1.0)
+	var amount := 36 if grand else 18
+	fanfare.amount = maxi(10, int(round(float(amount) * density)))
+
+
+func _play_fanfare(at: Vector3, grand: bool) -> void:
+	if not is_instance_valid(fanfare):
+		return
+	_tune_fanfare(grand)
+	fanfare.global_position = at
+	fanfare.restart()
+	fanfare.emitting = true
+
+
+func _world_to_map(at: Vector3, rect: Rect2) -> Vector2:
+	var u := clampf(inverse_lerp(-35.0, 35.0, at.x), 0.0, 1.0)
+	var v := clampf(inverse_lerp(-71.0, 13.0, at.z), 0.0, 1.0)
+	return Vector2(rect.position.x + u * rect.size.x, rect.position.y + v * rect.size.y)
+
+
+func _draw_hunt_map() -> void:
+	if not is_instance_valid(hunt_map) or hunt_map.size.x < 8.0:
+		return
+	var size: Vector2 = hunt_map.size
+	var pad := 7.0
+	var rect := Rect2(Vector2.ONE * pad, size - Vector2.ONE * pad * 2.0)
+	# Glass plate
+	hunt_map.draw_rect(Rect2(Vector2.ZERO, size), Color(0.03, 0.07, 0.14, 0.88), true)
+	hunt_map.draw_rect(Rect2(Vector2.ZERO, size), Color(0.85, 0.72, 0.35, 0.95), false, 2.0)
+	# Water
+	hunt_map.draw_rect(rect, Color(0.28, 0.55, 0.72, 0.85), true)
+	# Island body
+	var island := rect.grow(-rect.size.x * 0.08)
+	hunt_map.draw_rect(island, Color(0.42, 0.62, 0.34, 0.95), true)
+	# Shore highlight
+	hunt_map.draw_rect(island, Color(0.75, 0.82, 0.45, 0.55), false, 1.2)
+	# Main path toward the castle
+	var path := PackedVector2Array()
+	for point in [
+		Vector3(0, 0, 6),
+		Vector3(0, 0, 1),
+		Vector3(0, 0, -14),
+		Vector3(0, 0, -28),
+		Vector3(0, 0, -57),
+		Vector3(0, 0, -65)
+	]:
+		path.append(_world_to_map(point, rect))
+	if path.size() >= 2:
+		hunt_map.draw_polyline(path, Color(0.86, 0.72, 0.32, 0.95), 2.2, true)
+	# Discoveries
+	for spot in STATE.DISCOVERIES:
+		var mark := _world_to_map(spot.at, rect)
+		var found: bool = str(spot.id) in model.discoveries
+		var color := Color("ffe08a") if found else Color(0.95, 0.9, 0.7, 0.55)
+		hunt_map.draw_circle(mark, 2.4 if found else 2.0, color)
+	# Clues
+	for clue in STATE.CLUES:
+		var mark := _world_to_map(clue.at, rect)
+		var solved: bool = str(clue.id) in model.found
+		if solved:
+			hunt_map.draw_circle(mark, 2.6, Color(0.55, 0.72, 0.42, 0.9))
+		else:
+			var active := false
+			for goal in available_goals:
+				if str(goal.get("id", "")) == str(clue.id):
+					active = true
+					break
+			hunt_map.draw_circle(mark, 3.2 if active else 2.4, Color("ffd56a") if active else Color(1, 1, 1, 0.45))
+	# Player
+	if is_instance_valid(player):
+		var here := _world_to_map(player.position, rect)
+		var heading := fox.rotation.y if is_instance_valid(fox) else 0.0
+		# Fox yaw 0 looks toward -Z, which is up on the map (smaller y).
+		var tip := here + Vector2(sin(heading), -cos(heading)) * 7.0
+		var left := here + Vector2(sin(heading + 2.5), -cos(heading + 2.5)) * 5.0
+		var right := here + Vector2(sin(heading - 2.5), -cos(heading - 2.5)) * 5.0
+		hunt_map.draw_colored_polygon(PackedVector2Array([tip, left, right]), Color("ff9a3c"))
+		hunt_map.draw_polyline(PackedVector2Array([tip, left, right, tip]), Color("fff4e0"), 1.1, true)
+		# Compass needle from player to the next hint.
+		if not available_goals.is_empty():
+			var goal := _world_to_map(available_goals[0].at, rect)
+			var reach: Vector2 = (goal - here).limit_length(rect.size.x * 0.28)
+			if reach.length() > 4.0:
+				hunt_map.draw_line(here, here + reach, Color("ffe08a"), 1.6, true)
+	# North label (into the island)
+	var font := ThemeDB.fallback_font
+	if font:
+		hunt_map.draw_string(
+			font,
+			Vector2(size.x * 0.5 - 5.0, 16.0),
+			"N",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			12,
+			Color(0.95, 0.9, 0.7, 0.95)
+		)
+	hunt_map.draw_line(Vector2(size.x * 0.5, 18.0), Vector2(size.x * 0.5, 26.0), Color("ffe08a"), 1.4, true)
