@@ -171,7 +171,7 @@ class Stats:
 		return height + float(maxi(0, get_child_count() - 1)) * get_theme_constant("separation")
 
 
-## Cup-Gesamtwertung als kompakte Tafel in zwei Spalten; das Kind ist golden markiert.
+## Cup-Gesamtwertung als kompakte Tafel in drei Spalten; das Kind ist golden markiert.
 class Standings:
 	extends PanelContainer
 	var _title: Label
@@ -185,17 +185,17 @@ class Standings:
 		var column := VBoxContainer.new()
 		add_child(column)
 		_title = Label.new()
-		_title.text = "GESAMTWERTUNG"
+		_title.text = "GESAMTWERTUNG · PUNKTE"
 		_title.add_theme_font_override("font", KIT.spaced_font())
 		_title.add_theme_color_override("font_color", Color("9fdcff"))
 		column.add_child(_title)
 		_grid = GridContainer.new()
-		_grid.columns = 2
+		_grid.columns = 3
 		column.add_child(_grid)
 		for index in range(entries.size()):
 			var cell := Label.new()
 			var mine: bool = bool(entries[index].get("me", false))
-			cell.text = "%d. %s  ·  %d Punkte%s" % [
+			cell.text = "%d. %s  %d%s" % [
 				index + 1, str(entries[index].name), int(entries[index].points), "  ← DU" if mine else ""
 			]
 			cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
