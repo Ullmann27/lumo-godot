@@ -6,7 +6,9 @@ extends SceneTree
 ## Aufruf: godot --rendering-method gl_compatibility --script
 ##   res://scripts/tests/kart_result_capture.gd -- <zielordner>
 ##   [--track=id] [--mode=race] [--places=1,2,3] [--sizes=1600x720@2,2400x1080@2.625]
-##   [--reduced]
+##   [--reduced] [--cheer=0.3] [--drive]
+## --drive fährt das ganze Rennen ohne Lenkeingabe (Auto-Gas); das Kart rollt
+## dann wie bei einem echten Kind am Rand aus und der Platz ist der gefahrene.
 const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const STEP: float = 1.0 / 60.0
 var game
@@ -15,6 +17,7 @@ var race_mode: String = "race"
 var out_dir: String = "user://kart_result_capture"
 var places: Array[int] = [1, 2, 3]
 var reduced: bool = false
+var drive: bool = false
 ## Anteil der Jubelbewegung, an dem das Bild entsteht.
 var cheer_phase: float = 0.45
 ## Fenster in Pixeln und die Gerätedichte, die die App auf so einem Gerät meldet.
@@ -36,6 +39,8 @@ func _parse_arguments() -> void:
 			race_mode = arg.trim_prefix("--mode=")
 		elif arg == "--reduced":
 			reduced = true
+		elif arg == "--drive":
+			drive = true
 		elif arg.begins_with("--cheer="):
 			cheer_phase = float(arg.trim_prefix("--cheer="))
 		elif arg.begins_with("--places="):
@@ -53,6 +58,35 @@ func _parse_arguments() -> void:
 				])
 		elif not arg.begins_with("--"):
 			out_dir = arg
+
+
+## Lumo im Kart steht in der freien Fläche neben bzw. über der Tafel, vor der
+## Kamera und im Bild; das Ergebnis dunkelt die Szene nicht ab.
+func _check_framing(window: Vector2i) -> void:
+	var screen: Rect2 = root.get_visible_rect()
+	var dialog: Rect2 = game.modal.get_global_rect()
+	var body: Vector3 = game.player.global_position + Vector3.UP * 0.9
+	var head: Vector3 = game.player.global_position + Vector3.UP * 1.7
+	var problems: PackedStringArray = []
+	for point in [body, head]:
+		var at: Vector2 = game.camera.unproject_position(point)
+		if game.camera.is_position_behind(point) or not screen.has_point(at):
+			problems.append("Lumo is outside the picture at %s" % at)
+		elif dialog.has_point(at):
+			problems.append("Lumo is hidden behind the panel at %s" % at)
+	var centre: Vector2 = game.camera.unproject_position(body)
+	if float(window.x) >= float(window.y) * 1.3:
+		if centre.x >= dialog.position.x:
+			problems.append("kart is not left of the panel")
+	elif centre.y >= dialog.position.y:
+		problems.append("kart is not above the panel")
+	if game.modal_backdrop.visible:
+		problems.append("result dims the scene")
+	if game.hud_content.visible:
+		problems.append("race HUD still covers the result")
+	for problem in problems:
+		failures += 1
+		push_error("[KartResultCapture] FAIL: %s %s" % [window, problem])
 
 
 func _run() -> void:
@@ -80,20 +114,29 @@ func _run() -> void:
 		game.countdown = 0
 		game.racing = true
 		await process_frame
-		# Ein kurzes echtes Stück fahren, damit das Kart mit Schwung über die Linie rollt.
-		for frame in range(90):
-			game.gas_held = true
-			game._physics_process(STEP)
-		game.gas_held = false
-		game.elapsed = 98.4 + float(place) * 2.137
-		game.checkpoint_index = 16
-		game.lap_times.assign([50.312 + float(place), 48.088 + float(place) * 1.137])
-		game.lap_started_at = -1.0
-		# _place() zählt die Gegner, die weiter sind: genau place - 1 liegen vorn.
-		game.distance = game.track_length * 2.0
-		for i in range(game.opponent_distances.size()):
-			game.opponent_distances[i] = game.distance + (5.0 if i < place - 1 else -5.0 - float(i))
-		game._finish()
+		if drive:
+			for frame in range(20000):
+				if game.finished:
+					break
+				game._physics_process(STEP)
+				if frame % 240 == 0:
+					await process_frame
+			place = int(game.result_payload.get("place", 0))
+		else:
+			# Ein kurzes echtes Stück fahren, damit das Kart mit Schwung über die Linie rollt.
+			for frame in range(90):
+				game.gas_held = true
+				game._physics_process(STEP)
+			game.gas_held = false
+			game.elapsed = 98.4 + float(place) * 2.137
+			game.checkpoint_index = 16
+			game.lap_times.assign([50.312 + float(place), 48.088 + float(place) * 1.137])
+			game.lap_started_at = -1.0
+			# _place() zählt die Gegner, die weiter sind: genau place - 1 liegen vorn.
+			game.distance = game.track_length * 2.0
+			for i in range(game.opponent_distances.size()):
+				game.opponent_distances[i] = game.distance + (5.0 if i < place - 1 else -5.0 - float(i))
+			game._finish()
 		var cine_frames: int = 0
 		while game.finish_cine_left > 0.0 and cine_frames < 600:
 			game._physics_process(STEP)
@@ -128,10 +171,11 @@ func _run() -> void:
 					game._physics_process(STEP)
 					game.player._process(STEP)
 				await process_frame
+			_check_framing(window)
 			await RenderingServer.frame_post_draw
 			var image: Image = root.get_texture().get_image()
-			var name: String = "ziel_platz%d_%dx%d%s" % [
-				place, window.x, window.y, "_ruhig" if reduced else ""
+			var name: String = "ziel_platz%d_%dx%d%s%s" % [
+				place, window.x, window.y, "_ruhig" if reduced else "", "_gefahren" if drive else ""
 			]
 			if race_mode != "race":
 				name = race_mode + "_" + name
