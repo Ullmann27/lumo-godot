@@ -1,0 +1,272 @@
+{
+  "kind": "isolated_puzzle_menu_release_lifecycle_fix",
+  "created_at_utc": "2026-11-13T17:12:39.244821+00:00",
+  "status": "locally_verified_followup_candidate_not_integrated",
+  "base_native_commit": "76980a941fa05d047574d8cc386d3249d93ffca3",
+  "base_native_tree": "8df22766bd0dbae31aacaa26c0228811c027686e",
+  "isolated_worktree": "/workspace/scratch/5987865ae883/lumo-godot-puzzle-menu-followup-76980",
+  "initial_worktree_clean": true,
+  "active_native_file_unchanged": true,
+  "active_host_files_written_by_this_work": false,
+  "original_product_sha256": "016b93b1a934f2ccf5d13972f431d2d098274009d33ef72f270385c6e20ea2af",
+  "candidate_product_sha256": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+  "regression_probe_sha256": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+  "probe_identical_for_red_and_green": true,
+  "tracked_product_changes": [
+    "scripts/creative/puzzle_world.gd"
+  ],
+  "new_test": "scripts/tests/puzzle_menu_lifecycle_regression.gd",
+  "root_cause": "The synchronous menu_box.remove_child(child) detaches the Button that is still being traversed during its release/pressed dispatch. Godot then calls can_process() on a Node outside the tree.",
+  "minimal_change": "Hide obsolete Control children immediately, retain the existing queue_free(), and let deletion occur after current input dispatch. No count/motif/mode/gameplay/save/reward logic is changed.",
+  "red": {
+    "native_exit_code": 0,
+    "behavioral_checks": 732,
+    "behavioral_failures": [],
+    "native_can_process_errors": 46,
+    "strict_status": "FAIL",
+    "strict_verifier_exit": 1,
+    "renderer_seconds": 29.89835907700035
+  },
+  "green": {
+    "native_exit_code": 0,
+    "behavioral_checks": 732,
+    "behavioral_failures": [],
+    "native_errors": 0,
+    "strict_status": "PASS",
+    "strict_verifier_exit": 0,
+    "renderer_seconds": 30.028325152001344
+  },
+  "identical_before_after_input_and_state_json_sha256": "f0fd4f759aca7be0a5d3f1dbf2d5118fd0dbe9e70d0a813c7b507568020a6c11",
+  "coverage": {
+    "real_renderer": "Godot 4.6.3, isolated X11 display 98, Mesa llvmpipe Compatibility",
+    "sizes": [
+      [
+        960,
+        540
+      ],
+      [
+        640,
+        360
+      ]
+    ],
+    "simulated_display_density": 1.0,
+    "root_touch_dispatch": "InputEventScreenTouch/InputEventScreenDrag via Input.parse_input_event and Input.flush_buffered_events; no pressed.emit or direct menu callbacks",
+    "actions": "Production-default 12-piece setup; slow count cycle to 6; six rapid mode toggles, all five motifs, all five counts; real rotation start; piece picking and actual rotate button; header pause; Anderes Puzzle; classic start; drag/drop into a matching real slot; pause/save and resume.",
+    "rapid_press_hold_frames": 0,
+    "normal_post_release_frames": 3,
+    "no_scene_state_or_piece_position_injection": true,
+    "desktop_precondition": "root.warp_mouse enters the real X11 window before touch emulation, without replacing any tested button event.",
+    "scroll_helper_limit": "ensure_control_visible may reveal a clipped menu target. This is not a new natural scroll-gesture acceptance test.",
+    "touch_event_count": 124,
+    "drag_event_count": 16,
+    "capture_count": 6
+  },
+  "unchanged_existing_tests": [
+    {
+      "test": "puzzle_expansion_regression",
+      "exit_code": 0,
+      "native_errors": [],
+      "pass_lines": [
+        "[PuzzleExpansion] PASS 1103 checks: all motifs/counts, saves and two played rounds"
+      ],
+      "success": true
+    },
+    {
+      "test": "puzzle_rotation_regression",
+      "exit_code": 0,
+      "native_errors": [],
+      "pass_lines": [
+        "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+      ],
+      "success": true
+    }
+  ],
+  "images": [
+    {
+      "file": "960x540-rotation-menu.png",
+      "sha256": "019829e52fb69907e3929b4a0430b95bf850a34af77258230512aca220199db0",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Drehpuzzle, Leuchtturm-Bucht und sechs Teile korrekt sichtbar; keine doppelten alten Menüeinträge."
+      ]
+    },
+    {
+      "file": "960x540-rotation-play.png",
+      "sha256": "f9f2eb9d5f640962bc0491efb21abe81ec655017cb5eeace1fbb42cc382d2100",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Menü vollständig verschwunden; reale Auswahl und Vierteldrehung eines Teils, sichtbarer Drehpuzzle-Modus und erreichbare Drehen-Fläche."
+      ]
+    },
+    {
+      "file": "960x540-classic-play.png",
+      "sha256": "cd5d4a764149de95acf06657966f9f633069a614e09a4bbe8b809bf68485dc8f",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Klassikmodus ohne Drehen-Fläche; 1/6 korrekt abgelegte Teile und echte Platzierungsrückmeldung sichtbar."
+      ]
+    },
+    {
+      "file": "640x360-rotation-menu.png",
+      "sha256": "28603301581a5c0827d7c99aaecc355fba3d4cfa0194da86c84f6c5f488be1a9",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Drehpuzzle, Leuchtturm-Bucht und sechs Teile korrekt sichtbar; keine doppelten alten Menüeinträge.",
+        "Der letzte Menüeintrag Zur Spielewelt liegt teilweise unterhalb des sichtbaren Scrollausschnitts; dieses unveränderte kompakte Layout ist keine neue vollständige Sichtbarkeitsbehauptung."
+      ]
+    },
+    {
+      "file": "640x360-rotation-play.png",
+      "sha256": "fa1a6a0c48f9fb86ef5dd12ac10f499479e0a5e3383e696ba499da59d9587230",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Menü vollständig verschwunden; reale Auswahl und Vierteldrehung eines Teils, sichtbarer Drehpuzzle-Modus und erreichbare Drehen-Fläche.",
+        "Tisch und Teile bleiben zwischen Kopfbereich und horizontal scrollbarer Werkzeugleiste sichtbar; weitere Aktionen liegen außerhalb des anfänglichen horizontalen Ausschnitts."
+      ]
+    },
+    {
+      "file": "640x360-classic-play.png",
+      "sha256": "ec67936b6e18f7470f2e7d2efb2eaf90ebb5978ac52d8bfefcd1193b7c0bedd2",
+      "actually_opened_with_view_image": true,
+      "observations": [
+        "Klassikmodus ohne Drehen-Fläche; 1/6 korrekt abgelegte Teile und echte Platzierungsrückmeldung sichtbar.",
+        "Tisch und Teile bleiben zwischen Kopfbereich und horizontal scrollbarer Werkzeugleiste sichtbar; weitere Aktionen liegen außerhalb des anfänglichen horizontalen Ausschnitts."
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": ".gdignore",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "640x360-classic-play.png",
+      "sha256": "ec67936b6e18f7470f2e7d2efb2eaf90ebb5978ac52d8bfefcd1193b7c0bedd2",
+      "bytes": 109721
+    },
+    {
+      "file": "640x360-rotation-menu.png",
+      "sha256": "28603301581a5c0827d7c99aaecc355fba3d4cfa0194da86c84f6c5f488be1a9",
+      "bytes": 73009
+    },
+    {
+      "file": "640x360-rotation-play.png",
+      "sha256": "fa1a6a0c48f9fb86ef5dd12ac10f499479e0a5e3383e696ba499da59d9587230",
+      "bytes": 109713
+    },
+    {
+      "file": "960x540-classic-play.png",
+      "sha256": "cd5d4a764149de95acf06657966f9f633069a614e09a4bbe8b809bf68485dc8f",
+      "bytes": 302164
+    },
+    {
+      "file": "960x540-rotation-menu.png",
+      "sha256": "019829e52fb69907e3929b4a0430b95bf850a34af77258230512aca220199db0",
+      "bytes": 152116
+    },
+    {
+      "file": "960x540-rotation-play.png",
+      "sha256": "f9f2eb9d5f640962bc0491efb21abe81ec655017cb5eeace1fbb42cc382d2100",
+      "bytes": 301141
+    },
+    {
+      "file": "README.md",
+      "sha256": "31ebedddf5739b78034b74e5e507b4709edc59af81cb6c1e41b6cc2599db773d",
+      "bytes": 4843
+    },
+    {
+      "file": "after-godot.log",
+      "sha256": "e3b609e4e30e6a1d5d00eda4083cbb569fa06560e3e71d716aab2429f13d2155",
+      "bytes": 3725
+    },
+    {
+      "file": "after-run.json",
+      "sha256": "bfcb736a13a0febb15ce75b83cb4d77b19a2129accf2e28f9a5f6dfc18cd85eb",
+      "bytes": 450
+    },
+    {
+      "file": "after-source-bindings.json",
+      "sha256": "46da228e368b72886e140076c6c459cd04f3f3f6111b7bd246a8ebcbc2a654a9",
+      "bytes": 288
+    },
+    {
+      "file": "after-strict-result.json",
+      "sha256": "5552bf05d05301ea2d0851fe73afc75134a58e5a0c00b2470c68fc28db29201e",
+      "bytes": 628
+    },
+    {
+      "file": "baseline-identity.json",
+      "sha256": "724d25f3045339f94295c1af71606b68db9814c75c09afc931f24fac1f145eb1",
+      "bytes": 383
+    },
+    {
+      "file": "before-godot.log",
+      "sha256": "3dcfbf4351e9ffc3f747733ccaa3d260257f2828b61a8e9008006c15f690e875",
+      "bytes": 27837
+    },
+    {
+      "file": "before-run.json",
+      "sha256": "8341d8e820a9e9f473266ba2ec65a3d7a47948399ce0a66b8c8985515e74c0a4",
+      "bytes": 449
+    },
+    {
+      "file": "before-source-bindings.json",
+      "sha256": "41ab26ba4a9190ac734961665e06aaefad1747d68aa909187580ab8c6e9dbe34",
+      "bytes": 247
+    },
+    {
+      "file": "before-strict-result.json",
+      "sha256": "a97a15d6d640baeddaabdd4a97d2ba4c3a861d78967f7de36b9c5087d0f64a97",
+      "bytes": 3944
+    },
+    {
+      "file": "existing-tests.json",
+      "sha256": "81d76c6eb4da11a1aa3c931ca5f5a3f6c8f04c07054a3040646f7d6bf29e268a",
+      "bytes": 491
+    },
+    {
+      "file": "identical-input-state-report.json",
+      "sha256": "f0fd4f759aca7be0a5d3f1dbf2d5118fd0dbe9e70d0a813c7b507568020a6c11",
+      "bytes": 37700
+    },
+    {
+      "file": "puzzle_expansion_regression.log",
+      "sha256": "924ad72d475a497fe8f5fc88e849b02c8450ef3cde3ece16d6e949c17cef1d6f",
+      "bytes": 550
+    },
+    {
+      "file": "puzzle_rotation_regression.log",
+      "sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+      "bytes": 569
+    },
+    {
+      "file": "verify_renderer_result.py",
+      "sha256": "38c122e4d4e8bde6e4888bb5d7f3de9e3f9d996d5673a0806cdb7d2df99e00b8",
+      "bytes": 2130
+    }
+  ],
+  "patches": [
+    {
+      "file": "/workspace/scratch/5987865ae883/qa/puzzle-menu-followup-76980/product.patch",
+      "sha256": "d94bba2aaff1a9936ff73f3c065c194fe7e590ed9ac6ac9d9353e07827779999"
+    },
+    {
+      "file": "/workspace/scratch/5987865ae883/qa/puzzle-menu-followup-76980/candidate-code.patch",
+      "sha256": "e0f60af894fd2007edb57381f70af3935cce15d068ce83e4145baa4b7ae4c368"
+    }
+  ],
+  "first_harness_diagnostic": {
+    "accepted_as_regression_evidence": false,
+    "directory": "/workspace/scratch/5987865ae883/qa/puzzle-menu-followup-76980/diagnostic-selector",
+    "reason": "Initial count lookup also matched the visible previous-piece toolbar caption. Scoped lookup to menu_box before the accepted red run; thereafter probe remained byte-identical through green."
+  },
+  "import_generated_untracked_uid_files_removed": 312,
+  "limits": [
+    "No new GitHub commit, branch push or merge.",
+    "Not integrated into frozen Native76980 or Hoste3d.",
+    "No API35/API37 or physical Fold7 measurement for this followup.",
+    "The visual checks cover six final frames, not continuous movie playback.",
+    "The new regression exercises touch input and two density-1 sizes; it does not claim exhaustive keyboard/gamepad or density coverage."
+  ]
+}

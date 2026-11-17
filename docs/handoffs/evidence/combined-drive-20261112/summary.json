@@ -1,0 +1,68 @@
+{
+  "production_base_commit": "0547fd26c736e90c9dc412858a53e931980faaf7",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "production_physics": true,
+  "field": {
+    "scenarios": 6,
+    "finishers": 30,
+    "landings": 241,
+    "rescues": 0,
+    "failed_loops": 0,
+    "stalled_windows": 0,
+    "lasso_catches": 21,
+    "lasso_crossings": 120,
+    "max_lasso_hold_seconds": 0.65,
+    "max_frame_step_m": 1.17189359664917,
+    "last_finish_seconds": [
+      {
+        "difficulty": "gemuetlich",
+        "stopped_player": false,
+        "seconds": 126.066666666667
+      },
+      {
+        "difficulty": "flott",
+        "stopped_player": false,
+        "seconds": 88.75
+      },
+      {
+        "difficulty": "pro",
+        "stopped_player": false,
+        "seconds": 77.25
+      },
+      {
+        "difficulty": "gemuetlich",
+        "stopped_player": true,
+        "seconds": 127.1
+      },
+      {
+        "difficulty": "flott",
+        "stopped_player": true,
+        "seconds": 91.1
+      },
+      {
+        "difficulty": "pro",
+        "stopped_player": true,
+        "seconds": 79.4666666666667
+      }
+    ]
+  },
+  "player": {
+    "status": "PASS",
+    "seconds": 98.5166666666624,
+    "jumps": 8,
+    "landings": 8,
+    "loops": 2,
+    "checkpoints": 16,
+    "resets": 0,
+    "max_step_m": 0.714345932006836,
+    "lasso_catches": 1,
+    "lasso_dodges": 3,
+    "longest_lasso_hold_seconds": 0.65
+  },
+  "sha256": {
+    "scripts/games/kart_island.gd": "901aa59e482a32209658946241e364052b44727d148d7df6b7b04615e8cc6166",
+    "scripts/tests/kart_full_field_regression.gd": "c8a8b42a534605286a6537a3fdb22f4edacccee35c5bcd4028e077b4cce5fdf8",
+    "scripts/tests/kart_player_full_route_regression.gd": "d5dff504a3e3f9256445601e38f4b11b013a49081c6916ac8e68f3c59dccec5e"
+  },
+  "device_performance": "NOT TESTED"
+}

@@ -27,6 +27,8 @@ if mode == "offline_once" and n == 1:
 if mode == "always_offline":
     print("adb: device offline", file=sys.stderr)
     sys.exit(1)
+if mode in ("silent255_once", "silent255_always") and (n == 1 or mode == "silent255_always"):
+    sys.exit(255)
 if mode == "nontransient":
     print("unsupported logcat argument", file=sys.stderr)
     sys.exit(23)
@@ -82,6 +84,22 @@ class AndroidLogcatContract(unittest.TestCase):
         self.assertIn("[EventBus] online", capture)
         self.assertIn("[Router] loaded:kart", capture)
         self.assertIn("logcat attempt 1/3 failed", audit)
+
+    def test_silent_exit_255_after_deep_link_is_retried_once(self):
+        result, count, capture, audit = self.run_scenario("silent255_once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(count, 2)
+        self.assertIn("[Router] loaded:kart", capture)
+        self.assertIn("Empty-stderr adb 255", audit)
+        self.assertIn("logcat attempt 1/3 failed (exit 255)", audit)
+
+    def test_silent_exit_255_never_masks_persistent_failure(self):
+        result, count, capture, audit = self.run_scenario("silent255_always")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(count, 3)
+        self.assertEqual(capture, "")
+        self.assertIn("Could not capture logcat after 3 bounded attempts", result.stderr)
+        self.assertIn("logcat attempt 3/3 failed (exit 255)", audit)
 
     def test_real_runtime_crash_still_fails(self):
         result, count, capture, _ = self.run_scenario("crash")

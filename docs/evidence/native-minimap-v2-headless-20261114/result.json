@@ -1,0 +1,16 @@
+{
+  "actionlint": 0,
+  "mobile_headless": 0,
+  "source_invariant": true,
+  "generated_counts": {
+    "generated_uid": 357,
+    "generated_import_metadata": 604,
+    "other_untracked": 0
+  },
+  "marker": "MOBILE_SAFE_AREA_PASS checks=380 failures=0 controls=15 images=0 scope=platform_boundary_fixture",
+  "checks": 380,
+  "layouts": 7,
+  "hint_transitions": 2,
+  "original_images": 0,
+  "scope": "Actual headless production regression with asynchronous Android boundary fixture; not Android or renderer acceptance"
+}

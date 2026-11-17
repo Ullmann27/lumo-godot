@@ -1,0 +1,119 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+20:58:36 | INFO: Starting glTF 2.0 export
+20:58:36 | INFO: Extracting primitive: Cube.023
+20:58:37 | INFO: Primitives created: 5
+20:58:37 | INFO: Finished glTF 2.0 export in 1.4918994903564453 s
+
+20:58:39 | INFO: Starting glTF 2.0 export
+20:58:39 | INFO: Extracting primitive: Cube.043
+20:58:40 | INFO: Primitives created: 5
+20:58:40 | INFO: Finished glTF 2.0 export in 1.469543218612671 s
+
+20:58:40 | INFO: Starting glTF 2.0 export
+20:58:40 | INFO: Extracting primitive: TunnelShellCollision_Mesh
+20:58:40 | INFO: Primitives created: 1
+20:58:40 | INFO: Finished glTF 2.0 export in 0.0369415283203125 s
+
+LUMO_TRACK_MODULE bergwelt portal_entry 8002 5
+20:58:41 | INFO: Starting glTF 2.0 export
+20:58:41 | INFO: Extracting primitive: Cube.086
+20:58:43 | INFO: Primitives created: 5
+20:58:43 | INFO: Finished glTF 2.0 export in 1.6044459342956543 s
+
+20:58:44 | INFO: Starting glTF 2.0 export
+20:58:44 | INFO: Extracting primitive: Cube.106
+20:58:45 | INFO: Primitives created: 5
+20:58:45 | INFO: Finished glTF 2.0 export in 1.5693516731262207 s
+
+20:58:46 | INFO: Starting glTF 2.0 export
+20:58:46 | INFO: Extracting primitive: TunnelShellCollision_Mesh.001
+20:58:46 | INFO: Primitives created: 1
+20:58:46 | INFO: Finished glTF 2.0 export in 0.047447919845581055 s
+
+LUMO_TRACK_MODULE bergwelt portal_exit 8002 5
+20:58:47 | INFO: Starting glTF 2.0 export
+20:58:47 | INFO: Extracting primitive: Cube.150
+20:58:49 | INFO: Primitives created: 4
+20:58:49 | INFO: Finished glTF 2.0 export in 1.7235488891601562 s
+
+20:58:50 | INFO: Starting glTF 2.0 export
+20:58:50 | INFO: Extracting primitive: Cube.174
+20:58:52 | INFO: Primitives created: 4
+20:58:52 | INFO: Finished glTF 2.0 export in 1.5128579139709473 s
+
+20:58:52 | INFO: Starting glTF 2.0 export
+20:58:52 | INFO: Extracting primitive: TunnelShellCollision_Mesh.002
+20:58:52 | INFO: Primitives created: 1
+20:58:52 | INFO: Finished glTF 2.0 export in 0.06672143936157227 s
+
+LUMO_TRACK_MODULE bergwelt straight_12m 13100 4
+20:58:56 | INFO: Starting glTF 2.0 export
+20:58:56 | INFO: Extracting primitive: Cube.234
+20:58:58 | INFO: Primitives created: 4
+20:58:58 | INFO: Finished glTF 2.0 export in 2.1844606399536133 s
+
+20:59:01 | INFO: Starting glTF 2.0 export
+20:59:01 | INFO: Extracting primitive: Cube.270
+20:59:03 | INFO: Primitives created: 4
+20:59:03 | INFO: Finished glTF 2.0 export in 2.0737054347991943 s
+
+20:59:04 | INFO: Starting glTF 2.0 export
+20:59:04 | INFO: Extracting primitive: TunnelShellCollision_Mesh.003
+20:59:04 | INFO: Primitives created: 1
+20:59:04 | INFO: Finished glTF 2.0 export in 0.08741617202758789 s
+
+LUMO_TRACK_MODULE bergwelt curve_left_30 19372 4
+20:59:07 | INFO: Starting glTF 2.0 export
+20:59:07 | INFO: Extracting primitive: Cube.342
+20:59:08 | INFO: Primitives created: 4
+20:59:08 | INFO: Finished glTF 2.0 export in 1.1134088039398193 s
+
+20:59:10 | INFO: Starting glTF 2.0 export
+20:59:10 | INFO: Extracting primitive: Cube.378
+20:59:11 | INFO: Primitives created: 4
+20:59:11 | INFO: Finished glTF 2.0 export in 0.7540347576141357 s
+
+20:59:11 | INFO: Starting glTF 2.0 export
+20:59:11 | INFO: Extracting primitive: TunnelShellCollision_Mesh.004
+20:59:11 | INFO: Primitives created: 1
+20:59:11 | INFO: Finished glTF 2.0 export in 0.022983312606811523 s
+
+LUMO_TRACK_MODULE bergwelt curve_right_30 19372 4
+20:59:13 | INFO: Starting glTF 2.0 export
+20:59:13 | INFO: Extracting primitive: Cube.438
+20:59:13 | INFO: Primitives created: 4
+20:59:14 | INFO: Finished glTF 2.0 export in 0.9741137027740479 s
+
+20:59:15 | INFO: Starting glTF 2.0 export
+20:59:15 | INFO: Extracting primitive: Cube.462
+20:59:16 | INFO: Primitives created: 4
+20:59:16 | INFO: Finished glTF 2.0 export in 0.7765910625457764 s
+
+20:59:16 | INFO: Starting glTF 2.0 export
+20:59:16 | INFO: Extracting primitive: TunnelShellCollision_Mesh.005
+20:59:16 | INFO: Primitives created: 1
+20:59:16 | INFO: Finished glTF 2.0 export in 0.04880833625793457 s
+
+LUMO_TRACK_MODULE bergwelt grade_down 13100 4
+20:59:18 | INFO: Starting glTF 2.0 export
+20:59:18 | INFO: Extracting primitive: Cube.510
+20:59:19 | INFO: Primitives created: 4
+20:59:19 | INFO: Finished glTF 2.0 export in 0.8632171154022217 s
+
+20:59:20 | INFO: Starting glTF 2.0 export
+20:59:20 | INFO: Extracting primitive: Cube.534
+20:59:21 | INFO: Primitives created: 4
+20:59:21 | INFO: Finished glTF 2.0 export in 0.8983559608459473 s
+
+20:59:22 | INFO: Starting glTF 2.0 export
+20:59:22 | INFO: Extracting primitive: TunnelShellCollision_Mesh.006
+20:59:22 | INFO: Primitives created: 1
+20:59:22 | INFO: Finished glTF 2.0 export in 0.09505701065063477 s
+
+LUMO_TRACK_MODULE bergwelt grade_up 13100 4
+Info: Packed 5 file(s)
+Info: Saved "bergwelt_tunnel_workshop.blend"
+LUMO_TRACK_THEME_DONE bergwelt
+Blender 4.3.2
+
+Blender quit

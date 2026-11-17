@@ -1,0 +1,209 @@
+{
+  "passed": true,
+  "recorded_at_utc": "2026-11-15T04:59:32.965552+00:00",
+  "engine": "Godot 4.6.3 stable",
+  "blender": "4.3.2",
+  "runtime_contract": "evidence/lumo_kart_runtime/karts/runtime_contract.json",
+  "gates": [
+    {
+      "name": "kart_production_vehicle_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_production_vehicle_regression.gd",
+      "script_sha256": "70658ab90f90aec9169c951be40440f5f08770c1095ce8c1e136cec96c8a3bd9",
+      "log": "evidence/lumo_kart_runtime/karts/kart_production_vehicle_regression.log",
+      "log_sha256": "80418ee54fcd6eeb17705b07fd948395fe2a364295f7f51aa4b3d9a4fc385f85",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_vehicle_detail_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_vehicle_detail_regression.gd",
+      "script_sha256": "abd81eebfcf1172f5b9301541b957126751004eba4f5d32c07660c4aa8865c10",
+      "log": "evidence/lumo_kart_runtime/karts/kart_vehicle_detail_regression.log",
+      "log_sha256": "d32f0521f1e14588d51a8167d7b2c1d6109ed31c7d3b65b447e1f6b33eb6e721",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_fleet_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_fleet_regression.gd",
+      "script_sha256": "2be504abaf35fabc456fef1ecb77d85db5aaa3297ec71d16c44d0066cecc3b74",
+      "log": "evidence/lumo_kart_runtime/karts/kart_fleet_regression.log",
+      "log_sha256": "cdaefbc0ba446a51619c88e267be11d04549e1e4a9433e5f99884fb2de4f9ff0",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_cinema_kart_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_cinema_kart_regression.gd",
+      "script_sha256": "d8de321d8d6bdac72400cd12bc6c397ca6d1c8ae61925090e8df7d0d12b4412e",
+      "log": "evidence/lumo_kart_runtime/karts/kart_cinema_kart_regression.log",
+      "log_sha256": "b67dc45a04c9259ced05c692504e31569da0a3b4065eb091c11aa1d81dc600d5",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_brake_reverse_feedback_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_brake_reverse_feedback_regression.gd",
+      "script_sha256": "f318392f09b764da7c30329871e73d4f69ae3dd4dbe2708f0312a834fe23d4a6",
+      "log": "evidence/lumo_kart_runtime/karts/kart_brake_reverse_feedback_regression.log",
+      "log_sha256": "372ee96747020d9110fdf79777ca07c6e13fa988ec601aa887b92accd6d6ceb2",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_production_race_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_production_race_regression.gd",
+      "script_sha256": "8dd6a4c04e5b4c2d147332fd1dd36a87d499a8ef9ec3266cc71fcdf0e0431856",
+      "log": "evidence/lumo_kart_runtime/karts/kart_production_race_regression.log",
+      "log_sha256": "42228ec0c70fd6887b1ea8330355383ea5efe00359c26261add3b75955da882b",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "tail_correction_before_final_yaw"
+    },
+    {
+      "name": "lumo_kart_production_driver_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/lumo_kart_production_driver_regression.gd",
+      "script_sha256": "f38c1ebb48a15c94cf7f692bc863aea2dd2d27cfb1e0e5221c65bf7505d5a872",
+      "log": "evidence/lumo_kart_runtime/karts/lumo_kart_production_driver_regression.log",
+      "log_sha256": "1c84ce53456fe972146e28a25218f28c11304e2cd5cdd5c8a9db21ecb16d41db",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_production_tunnel_layout_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_production_tunnel_layout_regression.gd",
+      "script_sha256": "1eb4e9d95f217bc6efb77b34fb74b3cac5def148df743a3182b49ecff5b4c413",
+      "log": "evidence/lumo_kart_runtime/karts/kart_production_tunnel_layout_regression.log",
+      "log_sha256": "f9904f8d2da519354140210d18d10ab6e0b67a0e19f810fcc8b5c9d93baa0486",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "runtime_5d0b2af"
+    },
+    {
+      "name": "kart_production_lumo_seat_regression",
+      "passed": true,
+      "exit_code": 0,
+      "script": "scripts/tests/kart_production_lumo_seat_regression.gd",
+      "script_sha256": "68f794d627fc27e7007eb6027ba60d726746cc396d893376ec0cc74c5deb4683",
+      "log": "evidence/lumo_kart_runtime/karts/kart_production_lumo_seat_regression.log",
+      "log_sha256": "efa705d2cb670afb930cf9cb46c4aae6c927cc6c1f93a2ae0b4c325bce1cc736",
+      "xdg_data_home_isolated": true,
+      "source_snapshot": "final_tail_correction"
+    },
+    {
+      "name": "original_lumo_independent_blender_bvh",
+      "passed": true,
+      "exit_code": 0,
+      "script": "tools/lumo_kart_art/review/verify_original_lumo_seat.py",
+      "script_sha256": "42e24ba316189cfa7342fc2642c3c099caa2fe54f3662384c53f07c94edad3e1",
+      "log": "evidence/lumo_kart_runtime/karts/original_lumo_seat_bvh.log",
+      "log_sha256": "36a843f9efa3db37aaf273e6e3912e1f33215ca01a0a6cc1bb0f836f814fe569",
+      "evaluated_skin_samples": 54,
+      "source_snapshot": "final_tail_correction"
+    },
+    {
+      "name": "kart_production_lumo_tail_regression",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 148,
+      "script": "scripts/tests/kart_production_lumo_tail_regression.gd",
+      "script_sha256": "27aaf38f524b7fea0d3a4854e934181c3dbb46c9996b800399400d349a34b59f",
+      "log": "evidence/lumo_kart_runtime/karts/kart_production_lumo_tail_regression.log",
+      "log_sha256": "3db1c0ec468fe14f0b247e21819a09e70346d37fd3daf114a9e01691386ee530",
+      "report": "evidence/lumo_kart_runtime/karts/original_lumo_tail_contacts.json",
+      "report_sha256": "25ce41717fb0c8aee82d50c8aae5594b24667b048d671b1aab659d84de4204fc",
+      "evaluated_skin_samples": 72,
+      "source_snapshot": "final_tail_correction"
+    },
+    {
+      "name": "original_lumo_tail_independent_blender_bvh",
+      "passed": true,
+      "exit_code": 0,
+      "checks": 290,
+      "script": "tools/lumo_kart_art/review/verify_original_lumo_tail.py",
+      "script_sha256": "0de68c949f0f9432cf4a9c1385f5eea21c02000998660b0a5ea5324c4415af6a",
+      "log": "evidence/lumo_kart_runtime/karts/original_lumo_tail_bvh.log",
+      "log_sha256": "e66b73c8c13b8d51ed531e6e6c4aa57607dac0ad7596202b7c09d55f6e6657a7",
+      "report": "evidence/lumo_kart_runtime/karts/original_lumo_tail_surfaces.json",
+      "report_sha256": "fe2ad7de6a8cfbd99c260d0f4e31541aaa5b38b43d87e876dacae309a1c989bb",
+      "evaluated_skin_samples": 72,
+      "source_snapshot": "final_tail_correction"
+    }
+  ],
+  "source_sha256": {
+    "scripts/games/kart_production_vehicle.gd": "52cd767090ce05df07daaf26c1a4cb1d6f042fc786a48752b43abca790a80d54",
+    "scripts/games/kart_production_lumo_seat.gd": "2101365d20e3dea9040bc96d88d825b6f57a2e35b5da6469fe110c1ed21bd1c0",
+    "scripts/games/kart_vehicle.gd": "061b5f0c448000a50e11f5e58736229a2301681e5d3cb68c2d8a94878774abe8",
+    "scripts/games/kart_garage_menu.gd": "508a62f512e06b3a1060811a7844b11b72c842215af68fd50e369c433996e2c7",
+    "scripts/games/kart_workshop.gd": "62bb99d7b18b72d1bf2e15d047f4f1e6f5c8317253d6e4ad0db324732bf1f08a",
+    "scripts/games/kart_production_driver.gd": "7e45062c7c60b9137f8b12d153344fbc4da355853c2d53461a4d74cc7fbe9fa0",
+    "scripts/characters/lumo/lumo_kart_animation_adapter.gd": "afe2bc4f6b3a1753d64e536878754fcfa52d0c5758cf6adfdccdaa38ea779edc",
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+    "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5"
+  },
+  "kart_asset_sha256": {
+    "assets/kart/production/karts/aurora_comet.glb": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "assets/kart/production/karts/aurora_comet_lod1.glb": "25e89ab45e62ad8f62235db3e3e81632f85a348c0c19d6f11094bb95baac449e",
+    "assets/kart/production/karts/aurora_comet_lod2.glb": "76820a7193022768702f25b0b621c54e23f8241dd27d8f4d2a62a6b930a63b3c",
+    "assets/kart/production/karts/aurora_glider.glb": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "assets/kart/production/karts/aurora_glider_lod1.glb": "0257090e8c8f7316a10734b9ef3b72e2aeea9057f955d61aed138b3ea31b9dee",
+    "assets/kart/production/karts/aurora_glider_lod2.glb": "e91a9d83379e776396a346277820dc7334da208dd383680de35f376e34f42421",
+    "assets/kart/production/karts/aurora_turbo.glb": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+    "assets/kart/production/karts/aurora_turbo_lod1.glb": "d4e8545fd4555fa02e32741be604848c6fe9083681cea4731a74ab4bd70ecf99",
+    "assets/kart/production/karts/aurora_turbo_lod2.glb": "db58cd4ee6c5a74689618acd748da41aa0a69f68b7069a7eddb0684954685a2b"
+  },
+  "limits": [
+    "Headless game/controller and UI-signal checks. Native screen renders are a separate QA gate.",
+    "No APK installation or physical Fold7 frame-rate measurement by this Godot gate."
+  ],
+  "notes": [
+    "Original Lumo source GLBs and original animation adapter remain byte-identical.",
+    "The seat gate evaluates all three imported karts across six real animation states and three sample times.",
+    "The independent Blender BVH checks the evaluated skin against the unchanged original coachwork and bucket-seat shell.",
+    "The final tail correction changes two original joint orientations only; source GLBs, original clips, bone lengths and chassis remain unchanged.",
+    "The tail gate checks 72 paired runtime poses against the same body/animation with the unmodified original tail.",
+    "Anatomical tail-root skin overlap is classified separately; free tail/body and full tail/chassis intersections are zero in all 72 checked poses.",
+    "Each gate identifies its source snapshot; preserved integration gates are not represented as fresh runs of the final tail correction."
+  ],
+  "source_snapshots": {
+    "runtime_5d0b2af": {
+      "commit": "5d0b2af3b2d1c6f66840495f4cd047d865f5be14",
+      "tree": "7628a571ca37a349877fe1585c25dae3fb5bfddd",
+      "scope": "Preserved integration gates recorded before the tail follow-up."
+    },
+    "tail_correction_before_final_yaw": {
+      "source_sha256": {
+        "scripts/games/kart_production_lumo_seat.gd": "5f8c9753a9106d619916a214f3c050455850f3cf5c1f90ae3bb11c0bd543f34c",
+        "scripts/games/kart_vehicle.gd": "061b5f0c448000a50e11f5e58736229a2301681e5d3cb68c2d8a94878774abe8"
+      },
+      "scope": "Race gate rerun after stable tail sampling was added; Tail1 yaw was subsequently refined by the final geometry gates."
+    },
+    "final_tail_correction": {
+      "source_sha256": {
+        "scripts/games/kart_production_lumo_seat.gd": "2101365d20e3dea9040bc96d88d825b6f57a2e35b5da6469fe110c1ed21bd1c0",
+        "scripts/games/kart_vehicle.gd": "061b5f0c448000a50e11f5e58736229a2301681e5d3cb68c2d8a94878774abe8"
+      },
+      "scope": "Final constant tail correction; 72 tail poses and 54 leg/sole poses were recaptured and independently checked."
+    }
+  },
+  "reports_sha256": {
+    "evidence/lumo_kart_runtime/karts/original_lumo_seat_contacts.json": "0b46e931bf063eb6104b37194ab1378c9c1ca8df2b21a9a00e8443be2364e87c",
+    "evidence/lumo_kart_runtime/karts/original_lumo_seat_clearance.json": "ca07bc2c1a134552e22801aed3c64eb94628ffe650e9c8272d6fc673ada34c43",
+    "evidence/lumo_kart_runtime/karts/original_lumo_tail_contacts.json": "25ce41717fb0c8aee82d50c8aae5594b24667b048d671b1aab659d84de4204fc",
+    "evidence/lumo_kart_runtime/karts/original_lumo_tail_surfaces.json": "fe2ad7de6a8cfbd99c260d0f4e31541aaa5b38b43d87e876dacae309a1c989bb"
+  }
+}

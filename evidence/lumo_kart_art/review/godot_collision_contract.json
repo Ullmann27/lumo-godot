@@ -1,0 +1,28 @@
+{
+  "collision_sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+  "curve_sha256": "f4792072529d753379071f3f5cb93c55685ba5a256e8a2a8443dfb6a958f473c",
+  "godot": "4.6.3-stable (official)",
+  "passed": true,
+  "physical_android": false,
+  "physics_rays": {
+    "left_wall": {
+      "collided": true,
+      "expected": true
+    },
+    "right_wall": {
+      "collided": true,
+      "expected": true
+    },
+    "roof": {
+      "collided": true,
+      "expected": true
+    },
+    "travel_lane": {
+      "collided": false,
+      "expected": false
+    }
+  },
+  "socket_basis_error": 0.0,
+  "socket_position_error_m": 0.0,
+  "straight_sha256": "99cb3c00516f27c23473e005540a638f3700be7452b0744abeead4f8c2ff734a"
+}

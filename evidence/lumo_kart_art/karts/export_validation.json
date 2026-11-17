@@ -1,0 +1,1447 @@
+{
+  "schema_version": 1,
+  "method": "Independent binary geometry/UV/animation and marker checks plus evaluated Blender tyre sweep; no hardware FPS claim.",
+  "assets": [
+    {
+      "path": "assets/kart/production/karts/aurora_comet.glb",
+      "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+      "bytes": 1614724,
+      "mesh_resources": 12,
+      "surfaces": 38,
+      "triangles_unique_meshes": 47996,
+      "triangles_instanced_scene": 47996,
+      "vertices": 40227,
+      "degenerate_triangles": 0,
+      "materials": 8,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.3170043788868213e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.0049999505281448,
+        0.0,
+        -1.2208051681518555
+      ],
+      "static_bounds_max": [
+        1.0049999505281448,
+        1.1986066917986151,
+        1.1749999523162842
+      ],
+      "static_dimensions_m": [
+        2.0099999010562897,
+        1.1986066917986151,
+        2.3958051204681396
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_comet": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "comet",
+      "lod": 0,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 50000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
+      "sha256": "25e89ab45e62ad8f62235db3e3e81632f85a348c0c19d6f11094bb95baac449e",
+      "bytes": 889416,
+      "mesh_resources": 12,
+      "surfaces": 38,
+      "triangles_unique_meshes": 23030,
+      "triangles_instanced_scene": 23030,
+      "vertices": 22373,
+      "degenerate_triangles": 0,
+      "materials": 8,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.287950379680325e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.004681184887886,
+        0.0,
+        -1.2208051681518555
+      ],
+      "static_bounds_max": [
+        1.004681184887886,
+        1.1984922347604412,
+        1.1749999523162842
+      ],
+      "static_dimensions_m": [
+        2.009362369775772,
+        1.1984922347604412,
+        2.3958051204681396
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_comet": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "comet",
+      "lod": 1,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 25000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
+      "sha256": "76820a7193022768702f25b0b621c54e23f8241dd27d8f4d2a62a6b930a63b3c",
+      "bytes": 653756,
+      "mesh_resources": 12,
+      "surfaces": 38,
+      "triangles_unique_meshes": 15352,
+      "triangles_instanced_scene": 15352,
+      "vertices": 16381,
+      "degenerate_triangles": 0,
+      "materials": 8,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.004681184887886,
+        -0.001437842845916748,
+        -1.2208051681518555
+      ],
+      "static_bounds_max": [
+        1.0054081082344055,
+        1.1984922347604412,
+        1.1749999523162842
+      ],
+      "static_dimensions_m": [
+        2.0100892931222916,
+        1.199930077606358,
+        2.3958051204681396
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_comet": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.77,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.77,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.77,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "comet",
+      "lod": 2,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 17000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider.glb",
+      "sha256": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+      "bytes": 1652492,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 49064,
+      "triangles_instanced_scene": 49064,
+      "vertices": 41240,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2487601108723823e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -0.9357000142335892,
+        0.0,
+        -1.220805338964142
+      ],
+      "static_bounds_max": [
+        0.9357000142335892,
+        1.1986066917986151,
+        1.17500002707048
+      ],
+      "static_dimensions_m": [
+        1.8714000284671783,
+        1.1986066917986151,
+        2.395805366034622
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_glider": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "glider",
+      "lod": 0,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 50000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
+      "sha256": "0257090e8c8f7316a10734b9ef3b72e2aeea9057f955d61aed138b3ea31b9dee",
+      "bytes": 919260,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 23542,
+      "triangles_instanced_scene": 23542,
+      "vertices": 22981,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2545427652277397e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -0.9356953203678131,
+        0.0,
+        -1.2208053389855245
+      ],
+      "static_bounds_max": [
+        0.9356953203678131,
+        1.1984922347604412,
+        1.1750000270940726
+      ],
+      "static_dimensions_m": [
+        1.8713906407356262,
+        1.1984922347604412,
+        2.395805366079597
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_glider": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "glider",
+      "lod": 1,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 25000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
+      "sha256": "e91a9d83379e776396a346277820dc7334da208dd383680de35f376e34f42421",
+      "bytes": 678472,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 15694,
+      "triangles_instanced_scene": 15694,
+      "vertices": 16910,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -0.9356953203678131,
+        -0.001437842845916748,
+        -1.22080533896411
+      ],
+      "static_bounds_max": [
+        0.9356953203678131,
+        1.1984922347604412,
+        1.175000027070448
+      ],
+      "static_dimensions_m": [
+        1.8713906407356262,
+        1.199930077606358,
+        2.395805366034558
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_glider": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.7007,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.7007,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.7007,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "glider",
+      "lod": 2,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 17000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo.glb",
+      "sha256": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+      "bytes": 1649432,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 49064,
+      "triangles_instanced_scene": 49064,
+      "vertices": 41073,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.3170043788868213e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.0819999724626541,
+        0.0,
+        -1.2208055572289283
+      ],
+      "static_bounds_max": [
+        1.0819999724626541,
+        1.1986066917986151,
+        1.1750000665213074
+      ],
+      "static_dimensions_m": [
+        2.1639999449253082,
+        1.1986066917986151,
+        2.3958056237502356
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_turbo": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "turbo",
+      "lod": 0,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 50000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
+      "sha256": "d4e8545fd4555fa02e32741be604848c6fe9083681cea4731a74ab4bd70ecf99",
+      "bytes": 915688,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 23542,
+      "triangles_instanced_scene": 23542,
+      "vertices": 22870,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2487601108723823e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.0816812068223953,
+        0.0,
+        -1.2208055572481564
+      ],
+      "static_bounds_max": [
+        1.0816812068223953,
+        1.1984922347604412,
+        1.1750000665424896
+      ],
+      "static_dimensions_m": [
+        2.1633624136447906,
+        1.1984922347604412,
+        2.395805623790646
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_turbo": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "turbo",
+      "lod": 1,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 25000
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
+      "sha256": "db58cd4ee6c5a74689618acd748da41aa0a69f68b7069a7eddb0684954685a2b",
+      "bytes": 672436,
+      "mesh_resources": 12,
+      "surfaces": 39,
+      "triangles_unique_meshes": 15694,
+      "triangles_instanced_scene": 15694,
+      "vertices": 16722,
+      "degenerate_triangles": 0,
+      "materials": 9,
+      "textures": [],
+      "surfaces_without_uv": 0,
+      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_skin_weight_sum_error": 0.0,
+      "static_bounds_min": [
+        -1.0816812068223953,
+        -0.001437842845916748,
+        -1.2208055572918024
+      ],
+      "static_bounds_max": [
+        1.0824081301689148,
+        1.1984922347604412,
+        1.1750000665841815
+      ],
+      "static_dimensions_m": [
+        2.16408933699131,
+        1.199930077606358,
+        2.395805623875984
+      ],
+      "skins": [],
+      "animations": [
+        {
+          "name": "mechanical_demo",
+          "duration_seconds": 2.0,
+          "channels": 7,
+          "changing_channels": 7
+        }
+      ],
+      "node_positions_m": {
+        "Aurora_turbo": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Boost_L": [
+          -0.12,
+          0.467,
+          1.13
+        ],
+        "Boost_R": [
+          0.12,
+          0.467,
+          1.13
+        ],
+        "Coachwork": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "BonnetBadge": [
+          0.0,
+          0.766,
+          -0.62
+        ],
+        "DriverOrigin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "DriverSeat": [
+          0.0,
+          0.69,
+          0.07
+        ],
+        "Foot_L": [
+          -0.18,
+          0.8,
+          -0.24
+        ],
+        "Foot_R": [
+          0.18,
+          0.8,
+          -0.24
+        ],
+        "FrontAxle": [
+          0.0,
+          0.35,
+          -0.66
+        ],
+        "RearAxle": [
+          0.0,
+          0.35,
+          0.66
+        ],
+        "Steer_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FL": [
+          -0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Wheel_FR": [
+          0.847,
+          0.35,
+          -0.66
+        ],
+        "Steer_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RL": [
+          -0.847,
+          0.35,
+          0.66
+        ],
+        "Steer_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "Wheel_RR": [
+          0.847,
+          0.35,
+          0.66
+        ],
+        "SteeringWheel": [
+          0.0,
+          1.035,
+          -0.33
+        ],
+        "Grip_L": [
+          -0.16,
+          1.055,
+          -0.34
+        ],
+        "Grip_R": [
+          0.16,
+          1.055,
+          -0.34
+        ]
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true,
+      "variant": "turbo",
+      "lod": 2,
+      "degenerate_uv_triangles": 0,
+      "authored_non_manifold_edges": 0,
+      "triangle_budget": 17000
+    }
+  ],
+  "passed": true
+}

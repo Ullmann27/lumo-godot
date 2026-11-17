@@ -1,0 +1,41 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+[Mobile] actual Android View insets { "view_size": (640.0, 360.0), "decor_size": (640.0, 360.0), "render_rect": [P: (0.0, 0.0), S: (640.0, 360.0)], "system_insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "window_size": (640, 360) }
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":2,"frame_ms":{"max":4990.956,"mean":2531.343,"over_16_7_count":2,"over_16_7_fraction":1.0,"p50":71.73,"p95":4990.956,"p99":4990.956},"kind":"english_objects","platform":"Linux","process_ms":{"max":4989.326,"mean":2557.7875,"p95":4989.326},"reduced_motion":true,"render":{"draw_calls_mean":263.0,"nodes_mean":198.0,"objects_mean":2139.0,"primitives_mean":165790.0,"render_objects_mean":342.0},"renderer":"gl_compatibility","sample_count":2,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":5062.686}
+[LearningEnglish] choice=1 attempts=1 complete=false
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":53,"frame_ms":{"max":859.875,"mean":96.1314905660377,"over_16_7_count":53,"over_16_7_fraction":1.0,"p50":74.812,"p95":138.138,"p99":859.875},"kind":"english_objects","platform":"Linux","process_ms":{"max":4989.326,"mean":650.56758490566,"p95":4989.326},"reduced_motion":true,"render":{"draw_calls_mean":273.301886792453,"nodes_mean":198.0,"objects_mean":2169.16981132075,"primitives_mean":169888.113207547,"render_objects_mean":357.660377358491},"renderer":"gl_compatibility","sample_count":53,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":2,"window_ms":5094.969}
+[LearningEnglish] choice=0 attempts=2 complete=true
+[LumoHost] return: learn
+[Mobile] actual Android View insets { "view_size": (640.0, 360.0), "decor_size": (640.0, 360.0), "render_rect": [P: (0.0, 0.0), S: (640.0, 360.0)], "system_insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "window_size": (640, 360) }
+[LearningEnglish] choice=1 attempts=1 complete=false
+[LearningEnglish] choice=0 attempts=2 complete=true
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":79,"frame_ms":{"max":118.672,"mean":63.5171898734177,"over_16_7_count":79,"over_16_7_fraction":1.0,"p50":60.071,"p95":84.125,"p99":118.672},"kind":"english_objects","platform":"Linux","process_ms":{"max":116.363,"mean":87.1170126582279,"p95":116.363},"reduced_motion":true,"render":{"draw_calls_mean":221.987341772152,"nodes_mean":184.0,"objects_mean":2124.08860759494,"primitives_mean":149002.329113924,"render_objects_mean":311.240506329114},"renderer":"gl_compatibility","sample_count":79,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":5017.858}
+[LumoHost] return: learn
+[Mobile] actual Android View insets { "view_size": (640.0, 360.0), "decor_size": (640.0, 360.0), "render_rect": [P: (0.0, 0.0), S: (640.0, 360.0)], "system_insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "insets": [P: (0.0, 0.0), S: (0.0, 0.0)], "window_size": (640, 360) }
+[LearningEnglish] choice=2 attempts=1 complete=false
+[LearningEnglish] choice=1 attempts=2 complete=true
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":78,"frame_ms":{"max":107.203,"mean":64.5778846153846,"over_16_7_count":78,"over_16_7_fraction":1.0,"p50":61.262,"p95":80.436,"p99":107.203},"kind":"english_objects","platform":"Linux","process_ms":{"max":105.876,"mean":89.1796025641025,"p95":105.876},"reduced_motion":true,"render":{"draw_calls_mean":262.730769230769,"nodes_mean":196.0,"objects_mean":2144.0,"primitives_mean":151826.358974359,"render_objects_mean":347.551282051282},"renderer":"gl_compatibility","sample_count":78,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":5037.075}
+[LumoHost] return: learn
+[Mobile] actual Android View insets { "view_size": (2400.0, 1080.0), "decor_size": (2400.0, 1080.0), "render_rect": [P: (0.0, 0.0), S: (2400.0, 1080.0)], "system_insets": [P: (136.0, 0.0), S: (0.0, 63.0)], "insets": [P: (136.0, 0.0), S: (0.0, 63.0)], "window_size": (2400, 1080) }
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":25,"frame_ms":{"max":468.725,"mean":213.7114,"over_16_7_count":25,"over_16_7_fraction":1.0,"p50":191.783,"p95":404.905,"p99":468.725},"kind":"english_objects","platform":"Linux","process_ms":{"max":467.205,"mean":255.80056,"p95":467.205},"reduced_motion":true,"render":{"draw_calls_mean":226.0,"nodes_mean":184.0,"objects_mean":2102.96,"primitives_mean":190837.0,"render_objects_mean":305.0},"renderer":"gl_compatibility","sample_count":25,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":5342.785}
+[LearningEnglish] choice=1 attempts=1 complete=false
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":23,"frame_ms":{"max":258.865,"mean":227.196043478261,"over_16_7_count":23,"over_16_7_fraction":1.0,"p50":225.927,"p95":246.478,"p99":258.865},"kind":"english_objects","platform":"Linux","process_ms":{"max":403.528,"mean":261.677913043478,"p95":403.528},"reduced_motion":true,"render":{"draw_calls_mean":233.130434782609,"nodes_mean":184.0,"objects_mean":2133.52173913043,"primitives_mean":193552.652173913,"render_objects_mean":323.869565217391},"renderer":"gl_compatibility","sample_count":23,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":2,"window_ms":5225.509}
+[LearningEnglish] choice=0 attempts=2 complete=true
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":23,"frame_ms":{"max":408.384,"mean":223.690565217391,"over_16_7_count":23,"over_16_7_fraction":1.0,"p50":210.888,"p95":285.584,"p99":408.384},"kind":"english_objects","platform":"Linux","process_ms":{"max":407.395,"mean":275.71147826087,"p95":407.395},"reduced_motion":true,"render":{"draw_calls_mean":242.434782608696,"nodes_mean":184.0,"objects_mean":2133.95652173913,"primitives_mean":197432.565217391,"render_objects_mean":345.739130434783},"renderer":"gl_compatibility","sample_count":23,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":3,"window_ms":5144.883}
+[LumoHost] return: learn
+ENGLISH_REVIEW_PASS checks=2395 failures=0

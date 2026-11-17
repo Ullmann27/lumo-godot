@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "source-freeze.json",
+      "bytes": 3357,
+      "sha256": "f70b86d269d09353505dd94db08a5c24cba2da4eae2e5b8c72afea51f4f4cdf1",
+      "source": "/tmp/native173-discovery-strict-gate-20261114/source-freeze.json"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 2861,
+      "sha256": "934d86a84f38c229381813206bbab8e9c1dbfea4d2f95959c116410a4339f9ba",
+      "source": "/tmp/native173-discovery-strict-gate-20261114/handoff.json"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 8503,
+      "sha256": "7aea1777bbf1d93f6f0f248df63d6ea7c1b0e7efdb9d5246dd324c7712de5e2c",
+      "source": "/tmp/native173-discovery-strict-gate-20261114/gate-contract.json"
+    },
+    {
+      "path": "independent-review.json",
+      "bytes": 13844,
+      "sha256": "79b41498f6e0413ee28b25e18097e5f42a74fec555a9d4476846922ea077fce7",
+      "source": "/workspace/scratch/b3485b7bb989/native173-discovery-strict-independent-review-20261114/review.json"
+    },
+    {
+      "path": "independent-manifest.json",
+      "bytes": 269,
+      "sha256": "5dfbedb17730086e6be287b9ee0ec706fcef96c5dfcedb6560a501c11d6ad271",
+      "source": "/workspace/scratch/b3485b7bb989/native173-discovery-strict-independent-review-20261114/manifest.json"
+    },
+    {
+      "path": "four-source-originals.tar.gz",
+      "bytes": 250165,
+      "sha256": "36db6eb0829c96f0269b4e523adc6118176f9851cf14be3b5ccbc567c64b1020",
+      "source": "/tmp/native173-discovery-strict-gate-20261114",
+      "members": 23,
+      "original_manifest_sha256": "c79ef507dd14f468d2e45185d2b11dcdaa15616b0340e4553027c9055deb1016",
+      "all_members_read_back_equal": true
+    }
+  ]
+}

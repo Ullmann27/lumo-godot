@@ -1,0 +1,21 @@
+{
+  "base_revision": "f5b2950c31e6c376c24a6a5819814c728e4e8b3d",
+  "base_tree": "e3d5a5503394ff5b830db41950d8cf3981a0a2ec",
+  "producer_fix_revision": "3c26573d070a131ed5215fbdbff2517e719b3bbd",
+  "producer_fix_published": false,
+  "scope": "Isolated review only; no producer or integration files changed",
+  "files": [
+    {
+      "path": "scripts/games/cards/cards_table.gd",
+      "before_blob": "9de98a6dd4c0fd9dfad5e199ba91fc243433c44f",
+      "git_blob": "8b5f60aae8be647cee9b8a5c18ccf00819ddbcaa",
+      "sha256": "6bdf5350dc9e03076ca56590516196961de01cd7743f6a78d8e62828b0d04332"
+    },
+    {
+      "path": "scripts/tests/cards_table_regression.gd",
+      "before_blob": "dbd87e1167969b35985be97b4b04840b8376a0f4",
+      "git_blob": "67d0b664f51abfae8680da478029d02bf32d3a19",
+      "sha256": "4497487dd6cdf27a04e53452fc772d8833061e6586b3c7ef371be2edf4d35371"
+    }
+  ]
+}

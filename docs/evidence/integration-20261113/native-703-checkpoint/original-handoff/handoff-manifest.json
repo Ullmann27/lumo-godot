@@ -1,0 +1,225 @@
+{
+  "schema": 1,
+  "status": "SOURCE_AND_CI_VERIFIED_ACTUAL_VISUAL_REVIEW_PENDING",
+  "source": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+  "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "run_id": 43452284466,
+  "event": "pull_request",
+  "run_attempt": 1,
+  "run_conclusion": "success",
+  "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/43452284466",
+  "jobs": [
+    {
+      "id": 131977254690,
+      "name": "new-worlds",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:45:35Z"
+    },
+    {
+      "id": 131977255114,
+      "name": "learning-preview",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:31:54Z"
+    },
+    {
+      "id": 131977255197,
+      "name": "touch-build",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:39:44Z"
+    },
+    {
+      "id": 131977255202,
+      "name": "touch-treasure",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:42:04Z"
+    },
+    {
+      "id": 131977255334,
+      "name": "touch-workshop",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:46:57Z"
+    },
+    {
+      "id": 131977255402,
+      "name": "gameplay",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:38:17Z"
+    },
+    {
+      "id": 131990313427,
+      "name": "bundle-evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:47:18Z"
+    },
+    {
+      "id": 131990514434,
+      "name": "archive-evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-11-13T15:47:56Z"
+    }
+  ],
+  "core_probe_count": 37,
+  "studio_png_count": 24,
+  "touch_probe_count": 6,
+  "touch_png_count": 28,
+  "capture_tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+  "touch_capture_trees": {
+    "touch-evidence/workshop": "049c8a5be914b9babad0e9af8712ada777e5a077",
+    "touch-evidence/treasure": "049c8a5be914b9babad0e9af8712ada777e5a077",
+    "touch-evidence/build": "049c8a5be914b9babad0e9af8712ada777e5a077"
+  },
+  "dirty_stamps": {
+    "nextgen-evidence/nextgen/source-dirty.txt": "",
+    "touch-evidence/build/source-dirty-after.txt": "",
+    "touch-evidence/build/source-dirty.txt": "",
+    "touch-evidence/treasure/source-dirty-after.txt": "",
+    "touch-evidence/treasure/source-dirty.txt": "",
+    "touch-evidence/workshop/source-dirty.txt": "",
+    "touch-evidence/workshop/source-dirty-after.txt": ""
+  },
+  "native_original_pngs": 132,
+  "native_baseline_pngs": 10,
+  "native_strict_clean_log_count": 96,
+  "original_archives": {
+    "preview": {
+      "artifact_id": 14053671218,
+      "zip_sha256": "57d26f8e11e8d72d9f16176d406b736fc3bfb1fd3e7fbe288d7c9fd7685e7f4d",
+      "zip_bytes": 13130253,
+      "image_count": 25,
+      "log_count": 3
+    },
+    "legacy": {
+      "artifact_id": 14053856738,
+      "zip_sha256": "3614e21db6afe73ad51ec1f829cd4fa1f437d6dc09c7a0341cce2f7070c78ca1",
+      "zip_bytes": 39710125,
+      "image_count": 22,
+      "log_count": 49
+    },
+    "native": {
+      "artifact_id": 14054081246,
+      "zip_sha256": "c3c0b856b3236c7288640cf27f390833b7cf9f2ac3b49ee32a4fff922ada898e",
+      "zip_bytes": 163275110,
+      "image_count": 132,
+      "log_count": 96
+    }
+  },
+  "archive": {
+    "status": "ORIGINAL_ARTIFACT_AND_ARCHIVE_DIGEST_MATCH",
+    "source": "703a8f3ff7714d079223c7f0a03ab2400ba6a36a",
+    "tree": "049c8a5be914b9babad0e9af8712ada777e5a077",
+    "run_id": 43452284466,
+    "archive_job_id": 131990514434,
+    "release_id": 444416762,
+    "tag": "integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246",
+    "release_url": "https://github.com/Ullmann27/lumo-godot/releases/tag/integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246",
+    "artifact_id": 14054081246,
+    "zip_asset_id": 744207951,
+    "zip_digest": "sha256:c3c0b856b3236c7288640cf27f390833b7cf9f2ac3b49ee32a4fff922ada898e",
+    "zip_bytes": 163275110,
+    "ci_public_redownload_cmp": "Present in original successful archive job; no APK step",
+    "original_artifact_zip_downloaded_locally": true,
+    "release_zip_downloaded_locally": false,
+    "log_lines": [
+      "2026-11-13T15:47:38.3803141Z native-evidence.zip: OK",
+      "2026-11-13T15:47:48.0069190Z https://github.com/Ullmann27/lumo-godot/releases/tag/integration-evidence-703a8f3ff7714d079223c7f0a03ab2400ba6a36a-14054081246"
+    ],
+    "raw_metadata": {
+      "workflow-run.json": "eec4305bbcb806d842a81563ec1d1643ae150a2d9947ac10a8f5010112a69fc6",
+      "workflow-jobs.json": "1e28daa1a92ccf54f2b7571a4a52113f61733f1796cc7a39b612f4028b921bbe",
+      "workflow-artifacts.json": "0cc361688f62800869b498e716596a5781b9eb4d2aab887db44b8a75d51d2c3e",
+      "archive-release.json": "c31fb2294d6297802d74288bd0fe9c012ddb69d078095ad7154819353113791d",
+      "archive-ref.json": "d0b2fb1d34f4c8a09544c3e775d95b59340784545349670ff1283d576b8ceb0a",
+      "archive-evidence-job-131990514434.log": "1a3a1f3ed031c2cffa63203902fe6babf6a449170d070bdc7d8fff01d87fc5d1"
+    },
+    "no_visual_or_android_approval_claim": true
+  },
+  "actual_build_and_touch_log_markers": {
+    "new-worlds-job-131977254690.log": [
+      "2026-11-13T15:29:08.2867849Z [BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout",
+      "2026-11-13T15:42:05.2803612Z [BuildNextgen] PASS checks=70: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+    ],
+    "touch-build-job-131977255197.log": [
+      "2026-11-13T15:25:43.0991046Z [BuildDialogDensity] PASS 1637 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore",
+      "2026-11-13T15:33:39.0855252Z [BuildDialogDensity] NATIVE_POINTER before=(1280, 1280) window=(920, 640) target=(30.0, 12.5) hovered=false",
+      "2026-11-13T15:33:39.1854151Z [BuildDialogDensity] NATIVE_POINTER after=(950, 652) hovered=true",
+      "2026-11-13T15:38:25.2054341Z [BuildDialogDensity] NATIVE_POINTER before=(950, 652) window=(920, 640) target=(30.0, 12.5) hovered=false",
+      "2026-11-13T15:38:25.3053664Z [BuildDialogDensity] NATIVE_POINTER after=(950, 652) hovered=true",
+      "2026-11-13T15:39:39.6604523Z [BuildDialogDensity] PASS 1656 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore",
+      "2026-11-13T15:39:40.0425585Z [StudioTouchRasterRoster] PASS build_dialog_density_regression 8 original renderer PNGs"
+    ],
+    "touch-workshop-job-131977255334.log": [
+      "2026-11-13T15:27:40.5631118Z [WorkshopDensity] PASS 4129 checks: eight layouts, actual >=48dp canvas targets, all palette/upgrade/purchase/refund/return touches",
+      "2026-11-13T15:46:52.2606953Z [WorkshopDensity] PASS 4148 checks: eight layouts, actual >=48dp canvas targets, all palette/upgrade/purchase/refund/return touches",
+      "2026-11-13T15:46:52.6072157Z [StudioTouchRasterRoster] PASS kart_workshop_density_regression 6 original renderer PNGs"
+    ],
+    "touch-treasure-job-131977255202.log": [
+      "2026-11-13T15:25:44.4999965Z [TreasureDensity] PASS checks=1085 captures=0; actual dp, edge touches, scroll, rotation, unchanged quests/saves/rewards",
+      "2026-11-13T15:41:59.4471358Z [TreasureDensity] PASS checks=1114 captures=14; actual dp, edge touches, scroll, rotation, unchanged quests/saves/rewards",
+      "2026-11-13T15:41:59.8032491Z [StudioTouchRasterRoster] PASS treasure_density_regression 14 original renderer PNGs"
+    ]
+  },
+  "frozen_validator": {
+    "source_revision": "f80fe6b3d6a3c58c89f8507853dcbfc15a84525e",
+    "status": "UNCHANGED_EXISTING_VALIDATOR_SNAPSHOT",
+    "modules": {
+      "verify_studio_delivery": {
+        "path": "scripts/verify_studio_delivery.py",
+        "blob": "55f600365a5158e3deca8514a88f952a7608547d",
+        "sha256": "074fa561e078b56476f539827db516e27a815104d51b74ea898644a1cb0bba8a"
+      },
+      "verify_nextgen_delivery": {
+        "path": "scripts/verify_nextgen_delivery.py",
+        "blob": "aa2ddd6c6c868a43927736274f8d6a3086446029",
+        "sha256": "db8810928b482e06b786dc20c4683c7a75ec4da1e5dd16c8d1f128c25a62a196"
+      },
+      "verify_legacy_release_pin": {
+        "path": "scripts/verify_legacy_release_pin.py",
+        "blob": "cb5b14104e261553790178eceb5b0ce1ffe22bc7",
+        "sha256": "d739fea9f9dc7986c0149bc645dca795fa3841ed26b639754b97bbd7947933c6"
+      },
+      "release_pipeline_gates": {
+        "path": "scripts/release_pipeline_gates.py",
+        "blob": "4c8097ce7643e189f37815c38214dd650e022d8c",
+        "sha256": "400e54f2952f0d8aae07fc964e4688c48f16c9213ea022fa8754731004551946"
+      }
+    }
+  },
+  "limits": [
+    "No visual approval or Android/JNI/APK validation is created by this pack.",
+    "This 703 result proves the 8-Build/28-Touch PNG contract; it is not acceptance of the later 76980a 12-Build/32-Touch source.",
+    "The clean 703 Gameplay logs do not establish a source repair for a separately reported Producer Lasso teardown failure."
+  ],
+  "file_hashes": {
+    "workflow-run.json": "eec4305bbcb806d842a81563ec1d1643ae150a2d9947ac10a8f5010112a69fc6",
+    "workflow-jobs.json": "1e28daa1a92ccf54f2b7571a4a52113f61733f1796cc7a39b612f4028b921bbe",
+    "workflow-artifacts.json": "0cc361688f62800869b498e716596a5781b9eb4d2aab887db44b8a75d51d2c3e",
+    "archive-release.json": "c31fb2294d6297802d74288bd0fe9c012ddb69d078095ad7154819353113791d",
+    "archive-ref.json": "d0b2fb1d34f4c8a09544c3e775d95b59340784545349670ff1283d576b8ceb0a",
+    "archive-verification.json": "690ec6da0abafbfaeddc228980184e37020ecba47134b5e08f4145517fcd910a",
+    "expected-contract.json": "2caaf9abf033067089b11aa3879b3bd1b2e595de7f5db167f7441c9105d13605",
+    "host-verifier-identity.json": "8aa4a164177ab096bc0635ff1b4a5e6da7e9a0044a814dcf8c54a8786dcb2ba0",
+    "validator-f80-source-manifest.json": "a71bb5de38b79bf21c57bcf57e9654226507af1e052b8bfb60202a0e78f07c15",
+    "review-index.json": "400feb20c095507216a47a851daaa2478384e08c192028880b4c98f8d29dd89a",
+    "review-index.md": "0f2b6666c29edeccd52a5d58e3d1d33a63cd1dc447e66167cdd03aa62bd87a34",
+    "verify_original_artifact.py": "301d08a47425ee5e06fd423673f62d74ac568af948b7f0e6d5a083294d25d1fc",
+    "archive-evidence-job-131990514434.log": "1a3a1f3ed031c2cffa63203902fe6babf6a449170d070bdc7d8fff01d87fc5d1",
+    "bundle-evidence-job-131990313427.log": "f2d955aff375a3964c15f6dfe64c74f0bf04137ca8baa9839afac93c4332ce97",
+    "gameplay-job-131977255402.log": "21e2048fe99c3d39e7c1b464a02855d87cfcc57bcde174b230989072ed9e2409",
+    "learning-preview-job-131977255114.log": "2c0eeb03b68c764056454ea09b92ef29a50237228275a718ce0d79d3c509bf8e",
+    "new-worlds-job-131977254690.log": "f1a5e55adfa60e6b4cca5622e1b625d9456e1ac2b468c5f4eb98a2303b831d0a",
+    "touch-build-job-131977255197.log": "778a69f9a8522d6a137687bd313d1b774103c9b88b70ce57b3bca2afb85866f4",
+    "touch-treasure-job-131977255202.log": "b5ed4dafff6cd2f085abc60d9d1016e1565fbe7517ae2d5bc420827b9cead62e",
+    "touch-workshop-job-131977255334.log": "fe5ab5fe5caa93015abf65eb63f93e25a36dec2a8035b9c06550c6b91219291f",
+    "preview-artifact-verification.json": "029c15cd3bf40460e1771fe4f7e03ed174d28634a52280f358822398887a234b",
+    "legacy-artifact-verification.json": "c89edf5e76ae2c5e70f57ab40767f4e9fe77f8f426186bbbb4bb1691173db480",
+    "native-artifact-verification.json": "b24693812048e090697b2081584a18a81883a0c4e5df0278868d984a1cccf2e6"
+  }
+}

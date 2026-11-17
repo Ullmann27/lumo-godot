@@ -1,0 +1,75 @@
+name: Lumo Kart original cinema rock materials and mobile fallback
+on:
+  push:
+    branches:
+      - chatgpt/lumo-sonnenhafen-cinema-rock-material-2026-10-18
+  pull_request:
+    paths:
+      - 'assets/shaders/kart_cinema_stylized.gdshader'
+      - 'scripts/games/kart_world.gd'
+      - 'scripts/tests/kart_cinema_rock_material_regression.gd'
+      - '.github/workflows/lumo-cinema-rock.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-godot-cinema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Godot 4.6.3 plus actual GL Compatibility display
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import and compile the complete original Godot project
+        run: |
+          set -euo pipefail
+          mkdir -p exports/cinema-rock
+          timeout -k 5s 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/cinema-rock/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' exports/cinema-rock/import.log; then
+            cat exports/cinema-rock/import.log
+            exit 1
+          fi
+      - name: Validate actually batched cinematic and mobile materials
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log exports/cinema-rock/material-test.log --timeout 130 \
+            --required '[KartCinemaRock] PASS' -- \
+            Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . \
+            --script res://scripts/tests/kart_cinema_rock_material_regression.gd
+      - name: Render original Godot Sonnenhafen scene on Mesa GL compatibility
+        run: |
+          set -euo pipefail
+          mkdir -p exports/screenshots
+          python3 tools/run_godot_probe.py \
+            --log exports/cinema-rock/actual-world-render.log --timeout 170 \
+            --required '[WorldRender] captured world-sonnenhafen' -- \
+            xvfb-run -a -s '-screen 0 1280x720x24' \
+            Godot_v4.6.3-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/kart_world_showcase.gd -- \
+            --track=sonnenhafen
+          test -s exports/screenshots/world-sonnenhafen.png
+      - name: Archive source images and engine result, even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-cinema-rock-real-godot-${{ github.run_id }}
+          path: |
+            exports/cinema-rock/
+            exports/screenshots/world-sonnenhafen.png
+          retention-days: 14
+          if-no-files-found: warn

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "producerRepository": "Ullmann27/lumo-godot",
+  "producerBranch": "art/lumo-nextgen-avatar-20261115-54fe",
+  "producerHead": "20fb9f71939f4acdb7dd87cbca54a5d9da36e504",
+  "producerFilesWereUncommitted": true,
+  "characterRuntimeSha256": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163",
+  "runtimeLearningAssetsVerified": 15,
+  "files": [
+    {
+      "path": "art/lumo_next/character/Lumo-Learning.blend",
+      "bytes": 8564938,
+      "sha256": "7ce9c6a6b6f7e92747cf9d97eca62ab0a6917d3a85ce16c4fe1a58e731618a9d"
+    },
+    {
+      "path": "art/lumo_next/character/production_manifest.json",
+      "bytes": 5308,
+      "sha256": "76665079cfb7453b8aaf8a30d77087ebce087f262a32919b05ed12eb2c608379"
+    },
+    {
+      "path": "art/lumo_next/learning/lumo_learning_assets.blend",
+      "bytes": 2401996,
+      "sha256": "fca96aebd372a75842acfeff8845fb0099d22652451d16e5d28c0c8f1af71cf0"
+    },
+    {
+      "path": "art/lumo_next/learning/source_validation.json",
+      "bytes": 16221,
+      "sha256": "ef0a181364d1ecee9d09df69dd61540f9134aa9609cdaf41d795436e28890ddf"
+    },
+    {
+      "path": "art/lumo_next/learning/import_validation.json",
+      "bytes": 4460,
+      "sha256": "e824fb7b16583f1dcf23681680c75274b648ce035fc116ba16acbf64243feb1f"
+    },
+    {
+      "path": "art/lumo_next/learning/provenance.json",
+      "bytes": 1265,
+      "sha256": "d3cbea77b1047b3b6049dd2f3efda879835d129389c0c3c23daea8a7ab0cf367"
+    },
+    {
+      "path": "art/lumo_next/learning/manifest.json",
+      "bytes": 21346,
+      "sha256": "3788b5d924d366b6b639bd497de38f6f8d8578b1e618804a9f679cd9809435d6"
+    },
+    {
+      "path": "art/lumo_next/learning/README.md",
+      "bytes": 1863,
+      "sha256": "1ba996037bb1045179f75240e48ed7af742e0ba09ad0622f9b5a5fb242217291"
+    },
+    {
+      "path": "art/lumo_next/learning/textures/lumo_learning_atlas.png",
+      "bytes": 53315,
+      "sha256": "5240b4db503235198283356cc96432a4224ae884069febe19546a97ef3c427af"
+    },
+    {
+      "path": "art/lumo_next/learning/textures/lumo_learning_roughness.png",
+      "bytes": 33419,
+      "sha256": "31408719a6df9371484c594937209065165ee877874d0aff68fe983ce15b0f13"
+    },
+    {
+      "path": "tools/lumo_next/build_character.py",
+      "bytes": 44378,
+      "sha256": "986bfded892e55f9bfc188302c8409d5a4050b2edb4354fc45fae4e9136023c8"
+    },
+    {
+      "path": "tools/lumo_next/build_learning_assets.py",
+      "bytes": 32178,
+      "sha256": "e44ccc3cc5440ade3bd416900ffe5be2111f36d22cef9814b505d3d5d3dbc39d"
+    },
+    {
+      "path": "tools/lumo_next/create_review_project.py",
+      "bytes": 3608,
+      "sha256": "3ec373e4e724415e987c05cc490c13832ca70d4903410c5dee69ad9a92bfeaef"
+    },
+    {
+      "path": "tools/lumo_next/capture_learning_scene.gd",
+      "bytes": 6106,
+      "sha256": "5210eabf3114f2dbe427b2ff0f985b2adfafd8876a53ddc2e3c9c59bf87a5c44"
+    }
+  ]
+}

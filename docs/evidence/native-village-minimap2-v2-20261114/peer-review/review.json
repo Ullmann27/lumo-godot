@@ -1,0 +1,298 @@
+{
+  "schema": 1,
+  "kind": "Independent read-only V2 delta and original report/capture contract review",
+  "created_at": "2026-11-14T13:27:46.693601+00:00",
+  "verdict": "NO_CONCRETE_SOURCE_BLOCKER_FOUND",
+  "finding_count": 0,
+  "pack": "/workspace/scratch/b3485b7bb989/native-village-gate-minimap2-c040-20261114-v2",
+  "freeze": {
+    "bytes": 2126,
+    "sha256": "0f4276593f986af91ba726c7e0859ea382372ea01d7c8132f7a92ade362cd3de",
+    "git_blob": "9e3f1511b731a2716a4e6c36c7a026da6b02f542"
+  },
+  "patch": {
+    "bytes": 13031,
+    "sha256": "db21aaddeab3bf699f070591a0d3c4756727dc660d20e152aa80f97366cc0f6f",
+    "git_blob": "13e30f5cfb35b6af8ad27e4d81998bdafb4714ad"
+  },
+  "sources": [
+    {
+      "path": ".github/workflows/lumo-discovery-connections.yml",
+      "bytes": 35914,
+      "sha256": "7808349f14aa39259edaee1d5b832c8660f45a8c7065af65f8e285ff99104a0f",
+      "git_blob": "a806855cf51ab7f63b14163596488fc1d3746dc1",
+      "scope": "new step and budget review"
+    },
+    {
+      "path": "scripts/games/kart_island.gd",
+      "bytes": 175088,
+      "sha256": "7f916fcf8ea2d17876500e0063d91809db4a608dbc8bf945287231e6d76231d5",
+      "git_blob": "83b3b6b548cffa2790c582e061a74e37bbfcf356",
+      "scope": "original producer identity; MobileSafeArea report/capture functions read, no full new product review"
+    },
+    {
+      "path": "scripts/tests/mobile_safe_area_regression.gd",
+      "bytes": 26254,
+      "sha256": "8188911d6f91deaec924fdc7857feec876af075a8d04522b49dd14429d501aa5",
+      "git_blob": "6c58c08b8c47a7bf7c957c448b88474a984b9509",
+      "scope": "original producer identity; MobileSafeArea report/capture functions read, no full new product review"
+    }
+  ],
+  "historical_v1_review": {
+    "path": "/workspace/scratch/b3485b7bb989/native-village-workflow-independent-review-c040-20261114/review.json",
+    "sha256": "db7c8f30b4d75a9271d9a44ef1432cd8fd52deba250df36c30f2d370b4b3d278",
+    "unchanged": true
+  },
+  "delta_proof": {
+    "stored_patch_equals_recomputed_complete_diff": true,
+    "all_v1_bytes_recovered_by_removing_new_step_and_restoring_budget_comment_block": true,
+    "producer_product_and_probe_bytes_identical_to_v1": true,
+    "old_47_python_4_headless_dream5_7_2_discovery10_38_2_village_339_42_46_and_always_steps_unchanged": true
+  },
+  "scope_and_budget": {
+    "only_native_job_minutes_before": 120,
+    "only_native_job_minutes_after": 130,
+    "new_renderer_seconds": 420,
+    "original_mode_deadline_preserved": true,
+    "explicit_total_probe_and_import_seconds": 7230,
+    "remaining_native_job_seconds": 570,
+    "host_budgets_changed": false,
+    "full_52_and_17_contract_replaced": false
+  },
+  "new_execution": {
+    "script": "res://scripts/tests/mobile_safe_area_regression.gd",
+    "display": "xvfb-run -a -s \"-screen 0 2400x1080x24\"",
+    "godot_arguments": [
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "$GITHUB_WORKSPACE",
+      "--rendering-method",
+      "gl_compatibility",
+      "--resolution",
+      "2400x1080",
+      "--script",
+      "res://scripts/tests/mobile_safe_area_regression.gd",
+      "--",
+      "--capture"
+    ],
+    "output": "Fresh mobile-minimap root; separate captures/mobile and captures/minimap; no reused or symlink root; separate XDG state.",
+    "source": "Exact expected HEAD/tree, hard-bound current Kart/test blobs, unchanged runner and reader SHA256/Git blobs before execution/import. Complete original source/index snapshots before/after plus unchanged always-final binding.",
+    "logs": "Original/runner byte equality, exactly one real engine banner, no error/timeout/leak pattern. Exactly one complete MOBILE_SAFE_AREA_PASS marker, controls=15/images=4, positive check count equal to the original report and empty failures."
+  },
+  "original_contract_pairing": {
+    "original_report": "captures/mobile/mobile-safe-area.json",
+    "source_run_report_order": "The actual GDScript records checks after all cache/scene/minimap calls and file-open check, writes the report, then prints that same checks/failures/targets/images state.",
+    "targets": "Exactly 15 actual original targets, finite exposed dimensions >=47.95dp and fully_inside_true_safe_area true.",
+    "seven_profiles": [
+      {
+        "label": "dense-left-cutout",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "density": 2.625,
+        "visible": true
+      },
+      {
+        "label": "dense-right-cutout",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "density": 2.625,
+        "visible": true
+      },
+      {
+        "label": "same-pixels-density-one",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "density": 1.0,
+        "visible": true
+      },
+      {
+        "label": "expanded-inner-display",
+        "pixels": [
+          2176,
+          1812
+        ],
+        "density": 2.0,
+        "visible": true
+      },
+      {
+        "label": "compact-portrait",
+        "pixels": [
+          360,
+          800
+        ],
+        "density": 1.0,
+        "visible": false
+      },
+      {
+        "label": "short-landscape",
+        "pixels": [
+          1280,
+          640
+        ],
+        "density": 2.0,
+        "visible": false
+      },
+      {
+        "label": "dense-restored",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "density": 2.625,
+        "visible": true
+      }
+    ],
+    "two_live_hint_transitions": [
+      {
+        "label": "expanded-hint-visible",
+        "pixels": [
+          2176,
+          1812
+        ],
+        "density": 2.0,
+        "visible": true
+      },
+      {
+        "label": "expanded-hint-hidden",
+        "pixels": [
+          2176,
+          1812
+        ],
+        "density": 2.0,
+        "visible": true
+      }
+    ],
+    "hint_source_behavior": "Source uses real show_for/hide_hint and settled process frames without resizing; it asserts map displacement on show and restoration on hide, captures after frame_post_draw.",
+    "old_images": [
+      {
+        "name": "jump-landscape-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "name": "build-landscape-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "name": "puzzle-landscape-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "name": "treasure-landscape-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      }
+    ],
+    "minimap_images": [
+      {
+        "label": "dense-left-cutout",
+        "name": "dense-left-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "label": "dense-right-cutout",
+        "name": "dense-right-cutout.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "label": "same-pixels-density-one",
+        "name": "same-pixels-density-one.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "label": "expanded-inner-display",
+        "name": "expanded-inner-display.png",
+        "pixels": [
+          2176,
+          1812
+        ]
+      },
+      {
+        "label": "compact-portrait",
+        "name": "compact-portrait.png",
+        "pixels": [
+          360,
+          800
+        ]
+      },
+      {
+        "label": "short-landscape",
+        "name": "short-landscape.png",
+        "pixels": [
+          1280,
+          640
+        ]
+      },
+      {
+        "label": "dense-restored",
+        "name": "dense-restored.png",
+        "pixels": [
+          2400,
+          1080
+        ]
+      },
+      {
+        "label": "expanded-hint-visible",
+        "name": "expanded-hint-visible.png",
+        "pixels": [
+          2176,
+          1812
+        ]
+      },
+      {
+        "label": "expanded-hint-hidden",
+        "name": "expanded-hint-hidden.png",
+        "pixels": [
+          2176,
+          1812
+        ]
+      }
+    ],
+    "path_pairing": "Old image report paths are basenames; minimap report paths are original absolute paths under the explicitly supplied separate capture root. The workflow matches each actual source convention exactly.",
+    "verification": "Exact unique label/module inventories and directory contents; seven/two ordered report rows with exact size/density/visibility; all 13 originals have report SHA/size correspondence and full existing PNG verify/load with correct dimensions, nontransparent/nonuniform pixel checks and decoded RGB SHA256."
+  },
+  "reader_bindings": [
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105"
+    }
+  ],
+  "execution_by_reviewer": "No tests, actionlint, renderer, Android, additional downloads, source/checkout/index/ref edits. Only static reads, exact-byte comparisons and this separate review output.",
+  "limits": [
+    "Actual combined rendered success and all 13 resulting PNG bytes remain pending the future exact-source CI.",
+    "The asynchronous Android boundary is a fixture; this step does not establish Android/JNI execution or device FPS.",
+    "This is a V2 delta review, not a new full product review. The V1 report stays historical and unchanged."
+  ]
+}

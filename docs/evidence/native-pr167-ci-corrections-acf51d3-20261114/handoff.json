@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "status": "FROZEN",
+  "frozen_at": "2026-11-14T06:52:56.947362+00:00",
+  "base_native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "base_native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "producer_commit": "acf51d3bd2997c4b731e9a48e1791e05e756a132",
+  "producer_tree": "625d501c8517fa88787a0a415cd5d5b2e75ac845",
+  "source_freeze": {
+    "path": "source-freeze.json",
+    "bytes": 2015,
+    "sha256": "aafa5dd33267061a88e9361836abed622a517c159a4c7644ee34c33e023ac2c2"
+  },
+  "source_binding": {
+    "path": "source-binding.json",
+    "bytes": 5256,
+    "sha256": "9064ce58b728ae40d3067a04e4edb5e8dc48cb59cf99f58bc871e2d09292322c"
+  },
+  "source_count": 4,
+  "exact_published_source_count": 3,
+  "additional_test_method_count": 1,
+  "target_paths": [
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+    "scripts/tests/lumo_attention_landing_regression.gd",
+    "scripts/tests/lumo_facial_capture.gd",
+    "tools/tests/test_studio_2020_rasters.py"
+  ],
+  "patch": {
+    "path": "integration.patch",
+    "bytes": 5618,
+    "sha256": "1f5951b5bdec159e0716ca17e163d899be7764402bf583fb8ad1173d1a8df351"
+  },
+  "focused_validation": {
+    "path": "focused-validation.json",
+    "bytes": 1103,
+    "sha256": "ff2003fe6f40e8c56ddfec4f3113d0d563d33359b31b5f54a87210826dfe6f30"
+  },
+  "helper_and_runner_unchanged": true,
+  "all_old_tests_preserved": true,
+  "actual_engine_or_renderer_run": false,
+  "requires_fresh_combined_native_acceptance": true,
+  "prior_frozen_pack": "/tmp/native-studio-52-gate-integration-20261114/manifest.json",
+  "prior_frozen_manifest_sha256": "7796e823a1ec25a2d3683b18a5336a3a90ef7634b4ef8312f20dc87e91e54eb8"
+}

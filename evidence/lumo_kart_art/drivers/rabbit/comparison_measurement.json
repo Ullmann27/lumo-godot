@@ -1,0 +1,22 @@
+{
+  "source": "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb",
+  "source_modified": false,
+  "same_camera_and_lighting": true,
+  "comparison_normalization": "Uniform scale from visible skinned mesh foot minimum to central head crown; long rabbit ears and hidden Blender custom-bone display Icosphere excluded. No nonuniform scaling.",
+  "original_lumo_scale": 0.886306842674283,
+  "original_lumo_measured_body_height": 1.6145651868985738,
+  "target_body_height_m": 1.4310001730918884,
+  "post_transform_floor_m": -8.526512829121202e-14,
+  "post_transform_body_height_m": 1.431000113487329,
+  "visible_source_meshes": [
+    "Mesh_0"
+  ],
+  "driver_source": "art/lumo_kart/blender/drivers/rabbit.blend",
+  "driver_source_sha256": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16",
+  "source_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+  "resolution": [
+    1900,
+    1500
+  ],
+  "samples_max": 48
+}

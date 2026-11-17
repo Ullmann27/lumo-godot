@@ -1,0 +1,101 @@
+{
+  "device_fps_measured": false,
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "failures": 0,
+  "passed": true,
+  "tracks": [
+    {
+      "active_lights": 3,
+      "build_milliseconds_on_headless_host": 502,
+      "camera_wall_clip_m": 6.4084677696228,
+      "contacts": {
+        "ceiling": {
+          "collided": true,
+          "normal": [
+            0.174387216567993,
+            -0.978589534759521,
+            -0.10932344943285
+          ],
+          "position": [
+            -59.7000274658203,
+            11.7905530929565,
+            -17.3445568084717
+          ]
+        },
+        "diagonal_slide": {
+          "collided": true,
+          "normal": [
+            0.961851239204407,
+            0.0273031964898109,
+            -0.272207230329514
+          ],
+          "position": [
+            -64.7495269775391,
+            5.9151029586792,
+            -14.273904800415
+          ]
+        },
+        "left_wall": {
+          "collided": true,
+          "normal": [
+            -0.976245522499084,
+            -0.0234072543680668,
+            0.215399295091629
+          ],
+          "position": [
+            -53.6384696960449,
+            6.80949974060059,
+            -18.8080863952637
+          ]
+        },
+        "right_wall": {
+          "collided": true,
+          "normal": [
+            0.980741739273071,
+            0.0219367276877165,
+            -0.194073423743248
+          ],
+          "position": [
+            -65.1722412109375,
+            5.9326605796814,
+            -16.5837097167969
+          ]
+        }
+      },
+      "free_capsule_sweeps": 90,
+      "free_road_camera_rays": 90,
+      "joint_position_error_m": 0.000000387430191040039,
+      "joint_rotation_error_rad": 0.000690533954184502,
+      "passed": true,
+      "socket_position_error_m": 0.000000387430191040039,
+      "statistics": {
+        "body_height": 2.0,
+        "body_radius": 0.85,
+        "collision_layer": 1048576,
+        "collision_triangles": 1368,
+        "end": 291.0,
+        "light_mounts": 8,
+        "low_detail": true,
+        "maximum_live_lights": 3,
+        "module_count": 5,
+        "runtime_deformation": "Existing baked road curve and bank frame; once during build",
+        "shared_materials": 8,
+        "start": 247.0,
+        "terrain_apron_triangles": 176,
+        "theme": "zauberwald",
+        "triangles": 37628
+      },
+      "track": "zauberwald"
+    }
+  ]
+}

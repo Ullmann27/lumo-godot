@@ -1,0 +1,1341 @@
+{
+  "method": "Blender source or actual GLB import (see source_format and kart_source_format), real skin/clip evaluation; rigid Tail weight > .999; turtle disconnected rigid Chest components seeded by local Blender Y < -.24 and expanded to full connected components (selection reconnects duplicated GLB seam positions at 1e-6 m precision); triangle BVH against frozen kart Coachwork. Surface intersections only; this is not a whole-driver clearance claim.",
+  "source_format": "glb",
+  "kart_source_format": "glb",
+  "driver_sha256": {
+    "rabbit": "90b7da0c9ae5a6b165a3e8e3f9603fe3fd8e47e77f2a050154c8ba5be7a8cfdb"
+  },
+  "kart_blend_sha256": {
+    "comet": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+    "glider": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+    "turbo": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2"
+  },
+  "kart_glb_sha256": {
+    "comet": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+    "glider": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+    "turbo": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639"
+  },
+  "cases": [
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_seated",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_seated",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_seated",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_seated",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08609077334403992,
+          0.9837024211883545,
+          0.2299654483795166
+        ],
+        "max": [
+          0.12271605432033539,
+          1.1343436241149902,
+          0.3099648356437683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_seated",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08609077334403992,
+          0.9837024211883545,
+          0.2299654483795166
+        ],
+        "max": [
+          0.12271605432033539,
+          1.1343436241149902,
+          0.3099648356437683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_seated",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08609077334403992,
+          0.9837024211883545,
+          0.2299654483795166
+        ],
+        "max": [
+          0.12271605432033539,
+          1.1343436241149902,
+          0.3099648356437683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_seated",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499994456768036,
+          0.9848353266716003,
+          0.2304653376340866
+        ],
+        "max": [
+          0.10500004887580872,
+          1.13483464717865,
+          0.3104650378227234
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_seated",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499994456768036,
+          0.9848353266716003,
+          0.2304653376340866
+        ],
+        "max": [
+          0.10500004887580872,
+          1.13483464717865,
+          0.3104650378227234
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_seated",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499994456768036,
+          0.9848353266716003,
+          0.2304653376340866
+        ],
+        "max": [
+          0.10500004887580872,
+          1.13483464717865,
+          0.3104650378227234
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_seated",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12261257320642471,
+          0.9837223887443542,
+          0.22996588051319122
+        ],
+        "max": [
+          0.08620867878198624,
+          1.1343473196029663,
+          0.3099652826786041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_seated",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12261257320642471,
+          0.9837223887443542,
+          0.22996588051319122
+        ],
+        "max": [
+          0.08620867878198624,
+          1.1343473196029663,
+          0.3099652826786041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_seated",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12261257320642471,
+          0.9837223887443542,
+          0.22996588051319122
+        ],
+        "max": [
+          0.08620867878198624,
+          1.1343473196029663,
+          0.3099652826786041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_seated",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_seated",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_seated",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_left",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_left",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_left",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_left",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08620020747184753,
+          0.9837207198143005,
+          0.2299664169549942
+        ],
+        "max": [
+          0.12262000888586044,
+          1.1343469619750977,
+          0.3099658489227295
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10502453148365021,
+          0.9848368763923645,
+          0.23046071827411652
+        ],
+        "max": [
+          0.10497546195983887,
+          1.1348363161087036,
+          0.3104603886604309
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_right",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12246270477771759,
+          0.9837509393692017,
+          0.2299669086933136
+        ],
+        "max": [
+          0.0863792672753334,
+          1.134352445602417,
+          0.3099662959575653
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_steer_right",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_steer_right",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_steer_right",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_jump",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_jump",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_jump",
+      "clip_fraction": 0,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_jump",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08628717809915543,
+          0.9837350845336914,
+          0.2299674153327942
+        ],
+        "max": [
+          0.12254360318183899,
+          1.1343493461608887,
+          0.3099668323993683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_jump",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08628717809915543,
+          0.9837350845336914,
+          0.2299674153327942
+        ],
+        "max": [
+          0.12254360318183899,
+          1.1343493461608887,
+          0.3099668323993683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_jump",
+      "clip_fraction": 0.25,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.08628717809915543,
+          0.9837350845336914,
+          0.2299674153327942
+        ],
+        "max": [
+          0.12254360318183899,
+          1.1343493461608887,
+          0.3099668323993683
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_jump",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10505882650613785,
+          0.9848384857177734,
+          0.23045633733272552
+        ],
+        "max": [
+          0.10494115203619003,
+          1.1348378658294678,
+          0.3104560375213623
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_jump",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10505882650613785,
+          0.9848384857177734,
+          0.23045633733272552
+        ],
+        "max": [
+          0.10494115203619003,
+          1.1348378658294678,
+          0.3104560375213623
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_jump",
+      "clip_fraction": 0.5,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10505882650613785,
+          0.9848384857177734,
+          0.23045633733272552
+        ],
+        "max": [
+          0.10494115203619003,
+          1.1348378658294678,
+          0.3104560375213623
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_jump",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12225577235221863,
+          0.9837904572486877,
+          0.22996783256530762
+        ],
+        "max": [
+          0.08661448210477829,
+          1.1343588829040527,
+          0.3099672794342041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_jump",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12225577235221863,
+          0.9837904572486877,
+          0.22996783256530762
+        ],
+        "max": [
+          0.08661448210477829,
+          1.1343588829040527,
+          0.3099672794342041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_jump",
+      "clip_fraction": 0.75,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.12225577235221863,
+          0.9837904572486877,
+          0.22996783256530762
+        ],
+        "max": [
+          0.08661448210477829,
+          1.1343588829040527,
+          0.3099672794342041
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "comet",
+      "clip": "kart_jump",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "glider",
+      "clip": "kart_jump",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    },
+    {
+      "driver": "rabbit",
+      "kart": "turbo",
+      "clip": "kart_jump",
+      "clip_fraction": 1,
+      "triangles": 720,
+      "appendage": "tail",
+      "bounds_godot_m": {
+        "min": [
+          -0.10499999672174454,
+          0.9851423501968384,
+          0.22959564626216888
+        ],
+        "max": [
+          0.10499999672174454,
+          1.1351418495178223,
+          0.30959537625312805
+        ]
+      },
+      "intersecting_triangle_pairs": 0,
+      "coachwork_parts": {}
+    }
+  ],
+  "passed": true
+}

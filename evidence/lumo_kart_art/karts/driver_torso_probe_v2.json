@@ -1,0 +1,247 @@
+{
+  "method": "Actual Blender source skin evaluation; Rabbit kart_seated at its first frame; largest connected component whose weights sum to >.999 exclusively on Pelvis/Spine/Chest; actual triangle BVH against Comet BucketSeatShell. No geometry or rig changes.",
+  "source_sha256": {
+    "art/lumo_kart/blender/karts/aurora_comet.blend": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+    "art/lumo_kart/blender/drivers/rabbit.blend": "7ced91480bc62203d12db89f4c0d31f1972aa3fed4655d4945da3416280b4e16",
+    "assets/kart/production/drivers/rabbit/driver.glb": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3"
+  },
+  "component_vertex_counts": [
+    324,
+    182,
+    146,
+    146,
+    128,
+    120,
+    86,
+    86,
+    32,
+    32,
+    32,
+    32,
+    24
+  ],
+  "selected_vertices": 324,
+  "selected_triangles": 644,
+  "bounds_godot_m": {
+    "min": [
+      -0.2619999945163727,
+      0.7699999809265137,
+      -0.11499995738267899
+    ],
+    "max": [
+      0.2619999945163727,
+      1.2999998331069946,
+      0.24000000953674316
+    ]
+  },
+  "intersecting_triangle_pairs": 0,
+  "intersecting_driver_triangle_count": 0,
+  "intersecting_driver_triangle_bounds_godot_m": null,
+  "other_exclusively_torso_weighted_components": [
+    {
+      "vertices": 182,
+      "triangles": 360,
+      "bounds_godot_m": {
+        "min": [
+          -0.05999999865889549,
+          0.8199999928474426,
+          -0.1290000081062317
+        ],
+        "max": [
+          0.05999999865889549,
+          0.89000004529953,
+          -0.0949999988079071
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 146,
+      "triangles": 288,
+      "bounds_godot_m": {
+        "min": [
+          0.0,
+          1.191999912261963,
+          -0.14899995923042297
+        ],
+        "max": [
+          0.02800000086426735,
+          1.2379999160766602,
+          -0.1369999647140503
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 146,
+      "triangles": 288,
+      "bounds_godot_m": {
+        "min": [
+          -0.03500000014901161,
+          0.8339999914169312,
+          -0.1340000033378601
+        ],
+        "max": [
+          0.03500000014901161,
+          0.8760000467300415,
+          -0.12200000882148743
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 128,
+      "triangles": 252,
+      "bounds_godot_m": {
+        "min": [
+          -0.2240000069141388,
+          0.824999988079071,
+          -0.10300000011920929
+        ],
+        "max": [
+          0.2240000069141388,
+          0.8859999775886536,
+          0.1828640103340149
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 120,
+      "triangles": 236,
+      "bounds_godot_m": {
+        "min": [
+          -0.12600000202655792,
+          0.9399999380111694,
+          -0.12999995052814484
+        ],
+        "max": [
+          0.12600000202655792,
+          1.2699998617172241,
+          -0.07799994945526123
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 86,
+      "triangles": 168,
+      "bounds_godot_m": {
+        "min": [
+          -0.14299999177455902,
+          0.8230000138282776,
+          -0.10199999809265137
+        ],
+        "max": [
+          -0.11699999868869781,
+          0.890999972820282,
+          -0.07199999690055847
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 86,
+      "triangles": 168,
+      "bounds_godot_m": {
+        "min": [
+          0.11699999868869781,
+          0.8230000138282776,
+          -0.10199999809265137
+        ],
+        "max": [
+          0.14299999177455902,
+          0.890999972820282,
+          -0.07199999690055847
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 32,
+      "triangles": 60,
+      "bounds_godot_m": {
+        "min": [
+          -0.2279829978942871,
+          0.816228449344635,
+          -0.08899980783462524
+        ],
+        "max": [
+          -0.1323995590209961,
+          1.2357817888259888,
+          -0.06501632928848267
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 32,
+      "triangles": 60,
+      "bounds_godot_m": {
+        "min": [
+          -0.1869966685771942,
+          0.828975260257721,
+          -0.10399989038705826
+        ],
+        "max": [
+          -0.12208815664052963,
+          1.240264654159546,
+          -0.0770164281129837
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 32,
+      "triangles": 60,
+      "bounds_godot_m": {
+        "min": [
+          0.1323995590209961,
+          0.816228449344635,
+          -0.08899980783462524
+        ],
+        "max": [
+          0.2279829978942871,
+          1.2357817888259888,
+          -0.06501632928848267
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 32,
+      "triangles": 60,
+      "bounds_godot_m": {
+        "min": [
+          0.12208815664052963,
+          0.828975260257721,
+          -0.10399989038705826
+        ],
+        "max": [
+          0.1869966685771942,
+          1.240264654159546,
+          -0.0770164281129837
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    },
+    {
+      "vertices": 24,
+      "triangles": 44,
+      "bounds_godot_m": {
+        "min": [
+          -0.0044999998062849045,
+          0.9098062515258789,
+          -0.13299986720085144
+        ],
+        "max": [
+          0.0044999998062849045,
+          1.250140905380249,
+          -0.1160062700510025
+        ]
+      },
+      "intersecting_triangle_pairs": 0
+    }
+  ],
+  "passed": true
+}

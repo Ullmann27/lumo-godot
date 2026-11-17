@@ -1,0 +1,8 @@
+["/workspace/scratch/4fa97167812c/native-capabilities-lint/bin/gdformat", "--check", "scripts/lumo_next/learning_world_next.gd", "scripts/tests/learning_android_host_capability_regression.gd"]
+2 files would be left unchanged
+exit=0
+["/workspace/scratch/4fa97167812c/native-capabilities-lint/bin/gdlint", "scripts/lumo_next/learning_world_next.gd", "scripts/tests/learning_android_host_capability_regression.gd"]
+Success: no problems found
+exit=0
+["git", "diff", "--check"]
+exit=0

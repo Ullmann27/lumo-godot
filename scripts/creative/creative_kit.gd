@@ -52,18 +52,20 @@ func castle(root: Node3D, at: Vector3, scale_factor: float = 1.0) -> void:
 	castle_root.position = at
 	castle_root.scale = Vector3.ONE * scale_factor
 	for x in [-4.0, 4.0]:
-		var tower := cylinder(castle_root, Vector3(x, 2.9, 0), 1.25, 5.8, Color("91a9cf"))
-		tower.material_override = textured("stone", Color("98b0d5"))
-		cylinder(castle_root, Vector3(x, 7.25, 0), 1.8, 3.0, Color("3e78b7"), 0)
+		var tower := cylinder(castle_root, Vector3(x, 2.9, 0), 1.25, 5.8, Color.WHITE)
+		tower.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
+		var spire := cylinder(castle_root, Vector3(x, 7.25, 0), 1.8, 3.0, Color.WHITE, 0)
+		spire.material_override = BuildVoxelStyle.material("roof", Color("355fbc"))
 		for y in [2.0, 4.0]:
 			box(castle_root, Vector3(x, y, 1.23), Vector3(0.38, 0.7, 0.06), Color("ffdca0"), true)
 		box(castle_root, Vector3(x, 8.7, 0), Vector3(0.06, 1.8, 0.06), Color("ded7b7"))
 		box(castle_root, Vector3(x + 0.48, 9.3, 0), Vector3(0.9, 0.55, 0.08), Color("5bc7e8"))
 	var hall := box(castle_root, Vector3(0, 1.9, 0), Vector3(6.8, 3.8, 2.8), Color.WHITE)
-	hall.material_override = textured("stone", Color("b2c7db"))
+	hall.material_override = BuildVoxelStyle.material("sand", Color("d9a86c"))
 	var roof := PrismMesh.new()
 	roof.size = Vector3(7.4, 2.0, 3.4)
-	mesh(castle_root, roof, Vector3(0, 4.8, 0), Color("4077b2"))
+	var hall_roof: MeshInstance3D = mesh(castle_root, roof, Vector3(0, 4.8, 0), Color.WHITE)
+	hall_roof.material_override = BuildVoxelStyle.material("roof", Color("355fbc"))
 	box(castle_root, Vector3(0, 1.15, 1.42), Vector3(1.3, 2.3, 0.1), Color("354777"))
 	for x in [-2.0, 2.0]:
 		box(castle_root, Vector3(x, 2.2, 1.42), Vector3(0.65, 1.05, 0.06), Color("ffdca0"), true)
@@ -133,11 +135,7 @@ func part_node(item: Dictionary) -> StaticBody3D:
 		return body
 	match str(item.shape):
 		"door":
-			box(body, mid, size * 0.98, color)
-			box(body, Vector3(0.5, 0.9, 0.995), Vector3(0.64, 1.72, 0.05), Color("655276"))
-			box(body, Vector3(0.5, 1.42, 1.035), Vector3(0.32, 0.36, 0.03), Color("ffd896"), true)
-			sphere(body, Vector3(0.73, 0.8, 1.05), Vector3.ONE * 0.10, Color("eac785"))
-			collision(body, mid, size * 0.98)
+			BuildLandmarks.add_improved_door(self, body, item)
 		"arch":
 			for x in [0.4, 2.6]:
 				box(body, Vector3(x, 1.1, 0.5), Vector3(0.8, 2.2, 0.92), color)
@@ -164,9 +162,7 @@ func part_node(item: Dictionary) -> StaticBody3D:
 				box(body, at, Vector3(0.96, height, 0.96), color)
 				collision(body, at, Vector3(0.96, height, 0.96))
 		"tree":
-			cylinder(body, Vector3(1, 1.1, 1), 0.20, 2.2, Color("886647"))
-			for at in [Vector3(1, 2.7, 1), Vector3(0.5, 2.4, 0.8), Vector3(1.5, 2.9, 1.2)]:
-				sphere(body, at, Vector3(1.2, 1.3, 1.2), color)
+			BuildLandmarks.add_branched_tree(body)
 			collision(body, Vector3(1, 1, 1), Vector3(0.4, 2, 0.4))
 		"lantern":
 			var lamp: Node3D = LANTERN_MODEL.instantiate()
@@ -199,15 +195,10 @@ func part_node(item: Dictionary) -> StaticBody3D:
 				box(body, Vector3(x, 0.2, 0.5), Vector3(0.15, 0.4, 0.7), Color("4a5d76"))
 			collision(body, mid, size * 0.95)
 		"bridge":
-			box(body, Vector3(1.5, 0.55, 0.5), Vector3(2.98, 0.3, 0.98), color)
-			for z in [0.07, 0.93]:
-				box(body, Vector3(1.5, 0.86, z), Vector3(2.98, 0.18, 0.12), color.darkened(0.15))
+			BuildLandmarks.add_arch_bridge(body, item)
 			collision(body, Vector3(1.5, 0.55, 0.5), Vector3(2.98, 0.3, 0.98))
 		"waterfall":
-			var water: MeshInstance3D = box(body, mid, Vector3(0.85, 2.95, 0.3), color)
-			var mat := ShaderMaterial.new()
-			mat.shader = preload("res://assets/shaders/kart_waterfall.gdshader")
-			water.material_override = mat
+			BuildLandmarks.add_waterfall(body, item)
 		"grass":
 			box(body, Vector3(0.5, 0.4, 0.5), Vector3(0.98, 0.8, 0.98), Color("8c7359"))
 			box(body, Vector3(0.5, 0.9, 0.5), Vector3(0.99, 0.2, 0.99), color)
@@ -217,57 +208,26 @@ func part_node(item: Dictionary) -> StaticBody3D:
 			shape.size = size * 0.98
 			mesh(body, shape, mid, color, glow, item.shape == "glass")
 			collision(body, mid, size * 0.98)
-	if item.id in ["stone", "sand"] or item.shape in ["wall", "arch", "pillar", "stairs"]:
-		for child in body.get_children():
-			if child is MeshInstance3D:
-				child.material_override = textured("stone", color.lightened(0.45))
-	if item.id == "wood" or item.shape in ["bridge", "bench"]:
-		for child in body.get_children():
-			if child is MeshInstance3D:
-				child.material_override = textured("wood", color.lightened(0.5))
+	if str(item.shape) not in ["tree", "door", "bridge", "waterfall"]:
+		BuildVoxelStyle.style_unique_part(body, item)
 	if item.shape == "wall":
-		box(body, Vector3(0.5, 1.18, 1.005), Vector3(0.55, 0.72, 0.025), Color("476c9d"))
-		box(body, Vector3(0.5, 1.18, 1.022), Vector3(0.40, 0.55, 0.015), Color("ffe4aa"), true)
-		box(body, Vector3(0.5, 1.18, 1.035), Vector3(0.035, 0.56, 0.02), Color("7587a8"))
-	if item.shape in ["wall", "stone", "sand"]:
-		for y in range(int(size.y) * 3):
-			box(
-				body,
-				Vector3(size.x * 0.5, (y + 1) / 3.0, 0.006),
-				Vector3(size.x * 0.95, 0.013, 0.012),
-				color.darkened(0.22)
-			)
+		var pane: MeshInstance3D = box(
+			body, Vector3(0.5, 1.18, 1.02), Vector3(0.40, 0.55, 0.03), Color("c8f4ff"), true
+		)
+		pane.material_override = BuildVoxelStyle.material("glass", Color("9ae8ff"))
 	return body
 
 
-func environment(root: Node3D) -> void:
-	var world := WorldEnvironment.new()
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("081537")
-	sky_mat.sky_horizon_color = Color("1a3264")
-	sky_mat.ground_horizon_color = Color("1a3264")
-	sky_mat.ground_bottom_color = Color("07152d")
-	sky.sky_material = sky_mat
-	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("a8c7fa")
-	env.ambient_light_energy = 0.36
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.glow_enabled = true
-	env.glow_intensity = 0.75
-	env.glow_bloom = 0.04
-	world.environment = env
-	root.add_child(world)
-	var light := DirectionalLight3D.new()
-	light.rotation_degrees = Vector3(-48, -30, 0)
-	light.light_color = Color("d9e8ff")
-	light.light_energy = 0.80
-	light.shadow_enabled = true
-	light.directional_shadow_max_distance = 70.0
-	root.add_child(light)
+func environment(root: Node3D, preset: String = "creative_night") -> void:
+	if not LumoEnvironmentCreativePresets.describe(preset).is_empty():
+		LumoEnvironmentCreativePresets.apply(root, preset)
+		if preset in [
+			LumoEnvironmentCreativePresets.PRESET_BAUWELT_DAY,
+			LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY
+		]:
+			BuildVoxelStyle.add_clouds(root, int(LumoQuality.budget().get("cloud_count", 30)))
+		return
+	LumoEnvironment.apply(root, "creative_night")
 	sphere(root, Vector3(-35, 36, -48), Vector3.ONE * 5.5, Color("c1d9ff"), true)
 	var stars := MultiMeshInstance3D.new()
 	var multi := MultiMesh.new()

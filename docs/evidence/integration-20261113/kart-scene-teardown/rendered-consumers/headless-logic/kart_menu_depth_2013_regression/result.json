@@ -1,0 +1,40 @@
+{
+  "probe": "kart_menu_depth_2013_regression",
+  "kind": "headless-logic",
+  "actual_renderer_tested": false,
+  "command": [
+    "python3",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/godot-kart-teardown-graphics-six-evidence/headless-logic/kart_menu_depth_2013_regression/engine.log",
+    "--timeout",
+    "420",
+    "--required",
+    "[MenuDepth] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "res://scripts/tests/kart_menu_depth_2013_regression.gd"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "started_at_utc": "2026-11-13T16:33:42.444333+00:00",
+  "finished_at_utc": "2026-11-13T16:33:44.551764+00:00",
+  "duration_seconds": 2.107,
+  "exit_code": 0,
+  "strict_error_lines": [],
+  "scoped_sources_unchanged": true,
+  "local_head_at_end": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "source_count": 858,
+  "runner_log_sha256": "8c39f68c014d001185df0f91927f5f7cfb18dd9320b77124c80125b58ef1451c",
+  "success": true,
+  "runtime_markers": [
+    "[MenuDepth] teardown tracked=1 scene_released=true audio_released=true elapsed_ms=51",
+    "[MenuDepth] PASS: 41 checks"
+  ],
+  "scope": "Unmodified headless logic/input and real resource cleanup only; the existing CI rendered gate remains required."
+}

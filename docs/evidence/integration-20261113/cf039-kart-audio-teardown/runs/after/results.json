@@ -1,0 +1,150 @@
+{
+  "phase": "after",
+  "source_files_unchanged": true,
+  "changed_files": [],
+  "head_before": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "head_after": "97b91e312eb982ab1fe9083b7415d11085385235",
+  "results": [
+    {
+      "phase": "after",
+      "test": "kart_ai_behavior_regression",
+      "started_utc": "2026-11-13T15:10:58.528099+00:00",
+      "finished_utc": "2026-11-13T15:10:58.749935+00:00",
+      "elapsed_seconds": 0.222,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[KartAI] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "cdede7585837706cacc964380e4eaa7a69ff1655d593a777ec6d903032c8f973",
+      "strict_runner_exit": 1,
+      "required_marker": "[KartAI] PASS",
+      "marker_present": false,
+      "errors": [
+        "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+      ],
+      "cleanup_lines": [],
+      "engine_log_sha256": "256319c0f44d9046118ec4fcc744d14aa550690cf2612e78ff8c33817dbf9a01",
+      "runner_log_sha256": "3dcada55614011ded8974f6f2aff81e3a12043d72c7cb0a14ea1b30062c67100"
+    },
+    {
+      "phase": "after",
+      "test": "kart_garage_touch_targets_regression",
+      "started_utc": "2026-11-13T15:10:58.750590+00:00",
+      "finished_utc": "2026-11-13T15:10:58.973819+00:00",
+      "elapsed_seconds": 0.223,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[GarageTargets] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_touch_targets_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "b90bf2d8a1217ce026506781e87753206c821b9fe4876f8673b4bd8e8dfbdbd5",
+      "strict_runner_exit": 1,
+      "required_marker": "[GarageTargets] PASS",
+      "marker_present": false,
+      "errors": [
+        "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+      ],
+      "cleanup_lines": [],
+      "engine_log_sha256": "ee686e93fa6acc53968d4e2af8089b15c719a4c958c753f0c1e5b72be306b636",
+      "runner_log_sha256": "dc54b53dbb3e3f45f5c7a5517751270239ef3a71781f74f6991ebbf4bbf2cd1b"
+    },
+    {
+      "phase": "after",
+      "test": "kart_full_field_regression",
+      "started_utc": "2026-11-13T15:10:58.974442+00:00",
+      "finished_utc": "2026-11-13T15:10:59.192791+00:00",
+      "elapsed_seconds": 0.218,
+      "command": [
+        "python3",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/engine.log",
+        "--timeout",
+        "240",
+        "--required",
+        "[KartFullField] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_full_field_regression.gd",
+        "--fixed-fps",
+        "60"
+      ],
+      "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "xdg": {
+        "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-data",
+        "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-config",
+        "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_full_field_regression/xdg-cache",
+        "XDG_STATE_HOME": "/home/agent/.local/state",
+        "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+      },
+      "script_sha256": "3347fc096890b51a885a1a76cb1a987d1534176c38325363f71ce69a4418c530",
+      "strict_runner_exit": 1,
+      "required_marker": "[KartFullField] PASS",
+      "marker_present": false,
+      "errors": [
+        "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+      ],
+      "cleanup_lines": [],
+      "engine_log_sha256": "cfe99a48301d3e40cab7f9f74b3951b8edcca37750640689d0ec8887792d83eb",
+      "runner_log_sha256": "70b2bbe5ac1392c54350c1fd360011b9c59bdc28646727fa758b49b5d3999936"
+    }
+  ]
+}

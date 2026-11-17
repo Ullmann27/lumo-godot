@@ -3,6 +3,9 @@ extends RefCounted
 const TRACKS = preload("res://scripts/games/kart_expansion_tracks.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SKY = preload("res://scripts/games/kart_sky_islands.gd")
+const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
+const WINTER_ALPINE = preload("res://scripts/games/kart_winter_alpine_world.gd")
+const CRYSTAL_RESONANCE = preload("res://scripts/games/kart_crystal_resonance_world.gd")
 
 
 static func prepare(world) -> void:
@@ -23,12 +26,11 @@ static func prepare(world) -> void:
 
 
 static func environment(world) -> void:
-	var floating: bool = world.track_id in ["candy_cloud", "galaxy_ringway"]
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(900, 900)
 	var ground := MeshInstance3D.new()
 	ground.mesh = plane
-	ground.position.y = -12 if floating else -2
+	ground.position.y = GROUND_PROFILE.surface_height(world.track_id)
 	if world.track_id == "volcano_night":
 		var lava := ShaderMaterial.new()
 		lava.shader = preload("res://assets/shaders/kart_lava.gdshader")
@@ -82,8 +84,12 @@ static func build(world) -> void:
 	rng.seed = world.definition.seed
 	# The landmarks repeat around the whole course, with a clear navigable roadway.
 	var count: int = 32 if world.low_detail else 56
+	if not world.adventure_tunnel.is_empty():
+		count = clampi(ceili(world.length / (30.0 if world.low_detail else 17.0)), count, 76 if world.low_detail else 128)
 	for i in range(count):
 		var d: float = (float(i) + 0.25) * world.length / count
+		if world.ADVENTURE_TUNNELS.contains(world, d, 25.0):
+			continue
 		var basis: Basis = world.frame(d)
 		var side: float = -1 if i % 2 == 0 else 1
 		var at: Vector3 = world.position_at(d, side * rng.randf_range(15, 29))
@@ -231,6 +237,8 @@ static func build(world) -> void:
 		)
 	if world.track_id in ["jungle_temple", "desert_drift"]:
 		world._suspension_bridge(world.length * 0.30, 45)
+	WINTER_ALPINE.build(world)
+	CRYSTAL_RESONANCE.build(world)
 
 
 static func _palm(world, at: Vector3, height: float, basis: Basis) -> void:

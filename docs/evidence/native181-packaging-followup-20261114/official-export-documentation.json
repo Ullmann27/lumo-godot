@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "Primary documentation reference and bounded paraphrase, not a local export observation.",
+  "url": "https://docs.godotengine.org/en/4.6/tutorials/export/exporting_projects.html",
+  "retrieval_ref": "turn570808470view0",
+  "version_boundary": "Godot4.6 documentation family; deployed engine pin is4.6.3. No actual export run inferred.",
+  "sections": [
+    "Resource options",
+    "Exporting from the command line"
+  ],
+  "summary": "Godot distinguishes project resources from non-resource files; an include filter adds the latter to an export. A command-line pack export still uses its named export preset.",
+  "direct_quote_words": 0
+}

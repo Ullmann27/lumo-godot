@@ -1,0 +1,148 @@
+{
+  "local_head": "3db8ffcedf0e7bc5bddf58867d9cfa13e83bde4e",
+  "source_sha256": {
+    "scripts/tests/kart_racecraft_regression.gd": "3fa8ea8049e85bc10a732d06397b741da217f27ea64a53f7357ff8d1a4ae1452",
+    "scripts/tests/kart_rival_drift_items_regression.gd": "2292668211e1a87dcf65ab82f1f9104696911e49693852e255c5d6d72ee5f64e",
+    "scripts/tests/kart_harbor_race_hook_regression.gd": "cacd735e67368908756fd839adf7085b3b3c5bfa46a5155c253d6df912835e93"
+  },
+  "production_audio_unchanged": true,
+  "probe_sources_unchanged_during_green_and_negative_checks": true,
+  "green_results": [
+    {
+      "probe": "kart_racecraft_regression",
+      "returncode": 0,
+      "elapsed_seconds": 4.757,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_racecraft_regression-green.log",
+        "--timeout",
+        "120",
+        "--required",
+        "[KartRacecraft] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_racecraft_regression.gd"
+      ],
+      "log": "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_racecraft_regression-green.log",
+      "findings": [
+        "[KartRacecraft] audio_release tracked=2 elapsed_ms=50",
+        "[KartRacecraft] PASS: styles, traffic, curve braking, safe boost and real cone overtake"
+      ]
+    },
+    {
+      "probe": "kart_rival_drift_items_regression",
+      "returncode": 0,
+      "elapsed_seconds": 4.948,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_rival_drift_items_regression-green.log",
+        "--timeout",
+        "120",
+        "--required",
+        "[KartRivalDrift] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_rival_drift_items_regression.gd"
+      ],
+      "log": "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_rival_drift_items_regression-green.log",
+      "findings": [
+        "[KartRivalDrift] audio_release tracked=2 elapsed_ms=148",
+        "[KartRivalDrift] PASS: earned drift, gold pickup, fair pulse, shield and mini-turbo"
+      ]
+    },
+    {
+      "probe": "kart_harbor_race_hook_regression",
+      "returncode": 0,
+      "elapsed_seconds": 4.94,
+      "command": [
+        "python3",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_harbor_race_hook_regression-green.log",
+        "--timeout",
+        "120",
+        "--required",
+        "[HarborRaceHook] PASS",
+        "--",
+        "/usr/local/bin/godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--verbose",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+        "--script",
+        "scripts/tests/kart_harbor_race_hook_regression.gd"
+      ],
+      "log": "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/kart_harbor_race_hook_regression-green.log",
+      "findings": [
+        "[HarborRaceHook] audio_release tracked=3 elapsed_ms=101",
+        "[HarborRaceHook] PASS: actual race physics, position, pause, resume, reduced motion, finish"
+      ]
+    }
+  ],
+  "negative_result": {
+    "expected_failure_confirmed": true,
+    "returncode": 1,
+    "elapsed_seconds": 6.719,
+    "fault": "Strong reference to one actual production AudioStreamPlayback retained after game.queue_free().",
+    "deadline_ms": 2000,
+    "fixture": "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained_audio_negative_fixture.gd",
+    "fixture_sha256": "8bb136538b18b70b0bda1d94d386eb68735df323242de90bed6e5b751f3a77fb",
+    "command": [
+      "python3",
+      "tools/run_godot_probe.py",
+      "--log",
+      "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained-audio-negative.log",
+      "--timeout",
+      "120",
+      "--required",
+      "[KartRacecraft] PASS",
+      "--",
+      "/usr/local/bin/godot",
+      "--headless",
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+      "--script",
+      "/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained_audio_negative_fixture.gd"
+    ],
+    "findings": [
+      "[KartRacecraft] retained_audio_playbacks=1",
+      "ERROR: [KartRacecraft] Audio playback retained after scene teardown",
+      "       [0] _check (/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained_audio_negative_fixture.gd:23)",
+      "       [1] _run (/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained_audio_negative_fixture.gd:182)",
+      "       [2] _release_audio (/workspace/scratch/b3485b7bb989/pipeline-evidence/legacy-audio-teardown-20261113/retained_audio_negative_fixture.gd:207)"
+    ],
+    "scope": "Isolated diagnostic copy outside repository; production sources not mutated by this fault."
+  },
+  "old_ci": {
+    "head": "2eb6c9ae388b1d79e4ac970088f9235a6aab59f7",
+    "run": 43434091038,
+    "job": 131914649192,
+    "artifact": 14042932453,
+    "github_conclusion": "success",
+    "three_probe_logs_contain_resource_exit_errors": true,
+    "legacy_exception": "validate_2014.sh and validate_technical_art.sh exclude resources still in use at exit; unchanged by this repair."
+  },
+  "scope": "Only the three probe teardown scripts changed. All repaired probes executed headless with real production audio and separate XDG directories. Renderer rerun of repaired Harbor teardown remains for subsequent exact-head CI; no new renderer or device proof is claimed."
+}

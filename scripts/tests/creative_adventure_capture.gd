@@ -73,7 +73,8 @@ func _run() -> void:
 	game.model.result_id = "creative-treasure-qa"
 	game.save_path = "user://lumo_treasure_qa.json"
 	game.player.position = Vector3(-9, 0.2, -4)
-	game.camera.position = game.player.position + Vector3(10, 14, 19)
+	game.camera.position = game.player.position + game.CAMERA_OFFSET
+	game.camera.look_at(game.player.position + game.CAMERA_LOOK_OFFSET, Vector3.UP)
 	game._update()
 	await _capture("07_treasure_exploration")
 	game.player.position = TREASURE.CLUES[0].at

@@ -1,0 +1,37 @@
+{
+  "sources": [
+    {
+      "upstream": "godotengine/godot",
+      "tag": "4.6.3-stable",
+      "path": "scene/main/viewport.cpp",
+      "url": "https://raw.githubusercontent.com/godotengine/godot/4.6.3-stable/scene/main/viewport.cpp",
+      "bytes": 191767,
+      "sha256": "8499322e9bba800abbd4e930a5dd578c549a950c7f993ce5c2dd207f58b93cf2"
+    },
+    {
+      "upstream": "godotengine/godot",
+      "tag": "4.6.3-stable",
+      "path": "scene/main/window.cpp",
+      "url": "https://raw.githubusercontent.com/godotengine/godot/4.6.3-stable/scene/main/window.cpp",
+      "bytes": 129959,
+      "sha256": "51b253a12011693f897026be8b391c9f73ea71018d730ee0dbfba3abaf7b5a76"
+    },
+    {
+      "upstream": "godotengine/godot",
+      "tag": "4.6.3-stable",
+      "path": "scene/gui/base_button.cpp",
+      "url": "https://raw.githubusercontent.com/godotengine/godot/4.6.3-stable/scene/gui/base_button.cpp",
+      "bytes": 20489,
+      "sha256": "8170e23159c7cf3466e078b40fad7668f85f14f9257830b1564c4fd1710c9ed0"
+    },
+    {
+      "upstream": "godotengine/godot",
+      "tag": "4.6.3-stable",
+      "path": "platform/linuxbsd/x11/display_server_x11.cpp",
+      "url": "https://raw.githubusercontent.com/godotengine/godot/4.6.3-stable/platform/linuxbsd/x11/display_server_x11.cpp",
+      "bytes": 233751,
+      "sha256": "189a01efade3f5f6d75521b2e584351c6008ab1a570fcd55bf67b4c0518a6846"
+    }
+  ],
+  "scope": "SHA256 of full UTF-8 source text returned by the approved GitHub file fetch. No upstream source files are included in the repository handoff."
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "area": "winter_sprint",
+    "artifact_entry": "images/winter_sprint/02_world_landmark.png",
+    "findings": "Die neue Originalaufnahme zeigt die Winterstraße mit klaren Begrenzungen, Schneebergen, Gondeln und der sichtbaren Talstation auf Stützen. Strecke, Karte und Fahrbedienelemente bleiben im Bild; die Perspektive zeigt die stehende Landmarkansicht."
+  },
+  {
+    "area": "crystal_canyon",
+    "artifact_entry": "images/crystal_canyon/02_world_landmark.png",
+    "findings": "Die neue Originalaufnahme zeigt die Kurve unter dem dunklen Felsbogen zwischen türkisfarbenen und violetten Kristallen. Spurmarkierungen und seitliche Begrenzungen bleiben auch im Schatten erkennbar; die sichtbaren HUD- und Fahrbedienelemente sind vollständig lesbar."
+  },
+  {
+    "area": "feedback",
+    "artifact_entry": "images/03_drift_release.png",
+    "findings": "Die neue Drift-Release-Aufnahme zeigt das vollständige Kart mit Lumo sowie zwei helle Auslässe und lange gelbe Turbo-Schweife. Farbige Geschwindigkeitslinien rahmen die sichtbare Fahrbahn; Hinweis, Karte, Pause und Fahraktionen bleiben lesbar. Dies ist ein tatsächlich gesichteter Einzelmoment, keine Bildratenmessung."
+  },
+  {
+    "area": "home",
+    "artifact_entry": "images/home-1280x720.png",
+    "findings": "Die neue originale Querformataufnahme zeigt Lumo vollständig im Kart auf der beleuchteten Plattform vor Hafen und Insel. Die drei Rennarten sowie Fahrer, Garage, Strecken, Tempo, Mehr Modi, Rückweg und Start sind getrennt und lesbar angeordnet."
+  },
+  {
+    "area": "home",
+    "artifact_entry": "images/home-412x915.png",
+    "findings": "Die neue originale Hochformataufnahme zeigt Lumo und das Kart vollständig im mittleren Bereich. Solo, Pokal und Zeit liegen in einer Reihe; Fahrer, Garage, Strecken, Tempo, Mehr Modi und Start sind darunter lesbar angeordnet. Keine sichtbare Überlagerung der Bedienelemente im geöffneten Originalbild."
+  }
+]

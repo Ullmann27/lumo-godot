@@ -7,14 +7,26 @@ const FOX = preload("res://scripts/games/kart_vehicle.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
+const ISLAND_ART = preload("res://scripts/creative/treasure_island_art.gd")
+const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
+const CAMERA_OFFSET := Vector3(8.5, 6.8, 14.0)
+const CAMERA_LOOK_OFFSET := Vector3(0.0, 1.15, -2.0)
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
 var safe_ui: Control
+var top: HBoxContainer
+var title_label: Label
+var clue_panel: PanelContainer
+var clue_button: Button
+var jump_button: Button
 var player: CharacterBody3D
 var fox: Node3D
 var camera: Camera3D
 var marker: MeshInstance3D
+var alternate_marker: MeshInstance3D
+var wonder: Node3D
+var available_goals: Array[Dictionary] = []
 var gate: StaticBody3D
 var joystick: Control
 var action: Control
@@ -22,6 +34,7 @@ var inventory_label: Label
 var clue_label: Label
 var toast: Label
 var modal: PanelContainer
+var modal_scroll: ScrollContainer
 var modal_box: VBoxContainer
 var paused: bool = false
 var jumping: bool = false
@@ -32,7 +45,7 @@ var last_saved: Vector3
 
 
 func _ready() -> void:
-	previous = RUNTIME.enter(self)
+	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "treasure"
 	var child: String = (
 		str(SceneRouter.launch_options.get("childKey", "standalone"))
@@ -46,7 +59,7 @@ func _ready() -> void:
 			model.restore(saved)
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
-	kit.environment(self)
+	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
 	_landscape()
 	player = CharacterBody3D.new()
 	player.name = "LumoExplorer"
@@ -68,37 +81,62 @@ func _ready() -> void:
 	add_child(camera)
 	camera.fov = 55
 	camera.current = true
-	camera.position = player.position + Vector3(10, 14, 19)
+	camera.position = player.position + CAMERA_OFFSET
+	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
+	alternate_marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("9de9ff"), true)
+	alternate_marker.name = "AlternateExplorationGoal"
+	alternate_marker.scale = Vector3.ONE * 0.65
+	alternate_marker.hide()
+	wonder = WISPS.new()
+	wonder.name = "MagicalGuidance"
+	wonder.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
+	add_child(wonder)
 	_ui()
-	get_viewport().size_changed.connect(func(): RUNTIME.safe_area(self, safe_ui))
-	RUNTIME.safe_area(self, safe_ui)
+	get_viewport().size_changed.connect(_layout)
+	RUNTIME.watch_safe_area(self, _layout)
+	_layout()
 	_update()
 	if model.completed:
 		_win()
 
 
 func _exit_tree() -> void:
+	RUNTIME.unwatch_safe_area(self)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)
 	RUNTIME.restore(self, previous)
 
 
 func _landscape() -> void:
 	var ground := StaticBody3D.new()
 	add_child(ground)
-	var mesh := kit.box(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88), Color.WHITE)
-	mesh.material_override = kit.textured("grass", Color("81b4ad"))
+	var terrain := MeshInstance3D.new()
+	terrain.name = "TreasureTerrain"
+	terrain.mesh = _terrain_mesh()
+	terrain.material_override = _terrain_material()
+	terrain.extra_cull_margin = 80.0
+	terrain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	ground.add_child(terrain)
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	# A continuous promenade lets younger children return to any clue without getting lost.
+	var path_xforms: Array[Transform3D] = []
 	for i in range(39):
 		var z: float = 8 - i * 2
-		var path := kit.box(self, Vector3(0, 0.025, z), Vector3(4.5, 0.05, 1.94), Color.WHITE)
-		path.material_override = kit.textured("stone", Color("89b0ce"))
+		path_xforms.append(
+			Transform3D(Basis.from_scale(Vector3(4.5, 0.05, 1.94)), Vector3(0, 0.025, z))
+		)
 		if i % 4 == 0:
 			for x in [-3.5, 3.5]:
 				var lamp := kit.part_node(CATALOG.part("lantern"))
 				lamp.position = Vector3(x, 0, z)
 				add_child(lamp)
+	var paver := BoxMesh.new()
+	paver.size = Vector3.ONE
+	BuildVoxelStyle.multimesh(
+		self, "TreasurePath", paver, BuildVoxelStyle.material("paving", Color("c9a06a")), path_xforms
+	)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 71882
 	for i in range(55):
@@ -120,7 +158,8 @@ func _landscape() -> void:
 	tree.scale = Vector3.ONE * 2
 	add_child(tree)
 	for i in range(3):
-		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color("73869d"))
+		var rock := kit.mesh(self, kit.SHAPES.rock(), Vector3(13 + i * 3, 2, -22), Color.WHITE)
+		rock.material_override = BuildVoxelStyle.material("stone", Color("c4bba8"))
 		rock.scale = Vector3(4, 5 + i, 3)
 		var fall := kit.part_node(CATALOG.part("waterfall"))
 		fall.position = Vector3(13 + i * 3, 0, -20.4)
@@ -128,16 +167,28 @@ func _landscape() -> void:
 		add_child(fall)
 	gate = StaticBody3D.new()
 	add_child(gate)
-	kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color("4f6896"))
+	var door: MeshInstance3D = kit.box(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28), Color.WHITE)
+	door.material_override = BuildVoxelStyle.material("wood", Color("c99558"))
+	kit.box(gate, Vector3(-1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(1.15, 1.75, -30.84), Vector3(1.7, 2.15, 0.08), Color("b88850"))
+	kit.box(gate, Vector3(0, 3.05, -30.84), Vector3(4.4, 0.2, 0.08), Color("d6b25a"))
 	kit.collision(gate, Vector3(0, 1.6, -31), Vector3(5, 3.2, 0.28))
-	for x in [-3.4, 3.4]:
-		kit.cylinder(self, Vector3(x, 2.1, -31), 0.55, 4.2, Color("adb9d0"))
-		kit.sphere(self, Vector3(x, 4.5, -31), Vector3.ONE * 0.8, Color("7fe8ce"), true)
+	for x in [-3.45, 3.45]:
+		var pillar: MeshInstance3D = kit.cylinder(self, Vector3(x, 2.15, -31), 0.62, 4.3, Color.WHITE)
+		pillar.material_override = BuildVoxelStyle.material("stone", Color("6a645a"))
+		var cap: MeshInstance3D = kit.sphere(self, Vector3(x, 4.55, -31), Vector3.ONE * 0.85, Color.WHITE)
+		cap.material_override = BuildVoxelStyle.material("stone", Color("7a7468"))
+	var lintel: MeshInstance3D = kit.box(self, Vector3(0, 4.5, -31), Vector3(8.2, 0.75, 1.15), Color.WHITE)
+	lintel.material_override = BuildVoxelStyle.material("stone", Color("6a645a"))
+	lintel.visible = false
+	var keystone: MeshInstance3D = kit.box(self, Vector3(0, 5.15, -31), Vector3(1.5, 0.7, 1.25), Color.WHITE)
+	keystone.material_override = BuildVoxelStyle.material("stone", Color("7a7468"))
+	keystone.visible = false
 	for i in range(4):
-		var node := kit.mesh(
-			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("a9b7ff"), true
+		var crystal := kit.mesh(
+			self, kit.SHAPES.crystal(), Vector3(-17.5 + i * 1.65, 1.2, -40.2), Color("7ee7ff"), true
 		)
-		node.scale = Vector3(1, 2.4, 1)
+		crystal.scale = Vector3(1, 2.4, 1)
 	for i in range(12):
 		var flowers := kit.part_node(CATALOG.part("flowers"))
 		flowers.position = Vector3(13.0 + i % 4 * 1.4, 0, -50.5 + i / 4 * 1.3)
@@ -149,9 +200,48 @@ func _landscape() -> void:
 	add_child(chest)
 	for i in range(7):
 		var mountain := kit.mesh(
-			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color("354d78")
+			self, kit.SHAPES.mountain(), Vector3(-48 + i * 16, 0, -91), Color.WHITE
 		)
+		mountain.material_override = BuildVoxelStyle.material("stone", Color("8fa07a"))
 		mountain.scale = Vector3(18, 25 + (i % 3) * 8, 16)
+	ISLAND_ART.apply(self)
+	_branch_trails()
+
+
+func _branch_trails() -> void:
+	# Both paths are part of the playable terrain and lead to independently
+	# answerable locations after the bridge. Shared meshes keep their cost low.
+	var paths := Node3D.new()
+	paths.name = "TreasureBranchPaths"
+	add_child(paths)
+	var pavers := BoxMesh.new()
+	pavers.size = Vector3.ONE
+	for route in [
+		{"index": 3, "start": Vector3(-2, 0, -33), "sign": Vector3(-6.0, 0, -34.0), "text": "← Kristallwächter", "color": Color("85dce5")},
+		{"index": 4, "start": Vector3(2, 0, -33), "sign": Vector3(6.0, 0, -34.0), "text": "Mondgarten →", "color": Color("d7bc80")}
+	]:
+		var target: Vector3 = STATE.CLUES[int(route.index)].at
+		var start: Vector3 = route.start
+		var direction := (target - start).normalized()
+		var distance := start.distance_to(target)
+		var count := ceili(distance / 1.2)
+		var tiles: Array[Transform3D] = []
+		var basis := Basis(Vector3.UP, atan2(direction.x, direction.z)) * Basis.from_scale(Vector3(2.2, 0.055, distance / count * 0.94))
+		for i in range(count):
+			tiles.append(Transform3D(basis, start.lerp(target, (i + 0.5) / count) + Vector3.UP * 0.04))
+		BuildVoxelStyle.multimesh(paths, "Path_" + str(STATE.CLUES[int(route.index)].id), pavers, BuildVoxelStyle.material("paving", route.color), tiles)
+		var sign_at: Vector3 = route.sign
+		kit.box(paths, sign_at + Vector3.UP * 0.9, Vector3(0.18, 1.8, 0.18), Color("775d40"))
+		kit.box(paths, sign_at + Vector3.UP * 1.9, Vector3(4.6, 0.9, 0.16), Color("283b43"))
+		var label := Label3D.new()
+		label.name = "RouteSign_" + str(STATE.CLUES[int(route.index)].id)
+		label.text = route.text
+		label.font = preload("res://assets/fonts/Nunito-Black.ttf")
+		label.font_size = 38
+		label.pixel_size = 0.01
+		label.modulate = route.color
+		label.position = sign_at + Vector3(0, 1.9, 0.10)
+		paths.add_child(label)
 
 
 func _ui() -> void:
@@ -161,34 +251,42 @@ func _ui() -> void:
 	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(safe_ui)
-	var top := HBoxContainer.new()
+	top = HBoxContainer.new()
 	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	top.offset_left = 14
 	top.offset_top = 12
 	top.offset_right = -14
 	safe_ui.add_child(top)
 	top.add_child(KIT.button("‹ Spiele", _leave))
-	top.add_child(KIT.label("LUMOS STERNENSCHATZ", 24))
-	var gap := Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(gap)
+	title_label = KIT.label("LUMOS STERNENSCHATZ", 24)
+	# Bright clouds can sit directly behind the white title after restoring a
+	# saved position. Keep the original caption legible against every view.
+	var title_backdrop := KIT.panel()
+	title_backdrop.set_content_margin_all(4)
+	title_label.add_theme_stylebox_override("normal", title_backdrop)
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_label.clip_text = true
+	title_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	top.add_child(title_label)
 	top.add_child(KIT.button("Rucksack", _inventory))
 	top.add_child(KIT.button("Ⅱ", _pause_menu, 52))
-	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", KIT.panel())
-	panel.position = Vector2(14, 82)
-	panel.custom_minimum_size = Vector2(380, 0)
-	safe_ui.add_child(panel)
+	clue_panel = PanelContainer.new()
+	clue_panel.add_theme_stylebox_override("panel", KIT.panel())
+	safe_ui.add_child(clue_panel)
 	clue_label = KIT.label("", 18)
-	clue_label.custom_minimum_size.x = 350
 	clue_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	panel.add_child(clue_label)
+	clue_panel.add_child(clue_label)
+	clue_button = KIT.button("Hinweis", _show_clue, 110)
+	safe_ui.add_child(clue_button)
 	toast = KIT.label("Erkunde die Insel. Folge dem goldenen Stern!", 17)
-	toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	toast.position = Vector2(-280, -45)
-	toast.custom_minimum_size.x = 560
+	var toast_backdrop := KIT.panel()
+	toast_backdrop.set_content_margin_all(8)
+	toast.add_theme_stylebox_override("normal", toast_backdrop)
+	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	safe_ui.add_child(toast)
+	toast.minimum_size_changed.connect(func(): _layout.call_deferred())
 	joystick = STICK.new()
 	joystick.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	joystick.position = Vector2(20, -208)
@@ -202,20 +300,108 @@ func _ui() -> void:
 	action.size = Vector2(152, 152)
 	action.pressed.connect(_interact)
 	safe_ui.add_child(action)
-	var jump := KIT.button("Springen", _jump, 110)
-	jump.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-	jump.position = Vector2(-165, -250)
-	safe_ui.add_child(jump)
+	jump_button = KIT.button("Springen", _jump, 110)
+	jump_button.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	safe_ui.add_child(jump_button)
 	modal = PanelContainer.new()
 	modal.add_theme_stylebox_override("panel", KIT.panel())
-	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	modal.position = Vector2(-260, -180)
-	modal.custom_minimum_size = Vector2(520, 360)
 	safe_ui.add_child(modal)
+	modal_scroll = ScrollContainer.new()
+	modal_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	modal.add_child(modal_scroll)
 	modal_box = VBoxContainer.new()
+	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_box.add_theme_constant_override("separation", 12)
-	modal.add_child(modal_box)
+	modal_scroll.add_child(modal_box)
+	modal_box.minimum_size_changed.connect(func(): _layout_modal.call_deferred())
 	modal.hide()
+
+
+func _layout() -> void:
+	if not is_inside_tree() or not is_instance_valid(modal):
+		return
+	RUNTIME.safe_area(self, safe_ui)
+	var available := safe_ui.size
+	if available.x <= 0 or available.y <= 0:
+		return
+	var short_landscape := available.y < 480 and available.x >= 600
+	var stick_side := minf(188, minf(available.x * 0.38, available.y * 0.38))
+	stick_side = maxf(120, stick_side)
+	var action_side := minf(152, minf(available.x * 0.32, available.y * 0.30))
+	action_side = maxf(96, action_side)
+	joystick.custom_minimum_size = Vector2.ONE * stick_side
+	joystick.size = Vector2.ONE * stick_side
+	joystick.position = Vector2(16, available.y - 16 - stick_side)
+	action.size = Vector2.ONE * action_side
+	action.position = Vector2(available.x - 16 - action_side, available.y - 16 - action_side)
+	jump_button.size = Vector2(110, 48)
+	jump_button.position = Vector2(available.x - 126, available.y - 76 - action_side)
+	var clue_width := minf(380, available.x - 28)
+	if short_landscape:
+		clue_width = minf(clue_width, available.x * 0.53)
+	clue_panel.position = Vector2(14, 76)
+	clue_panel.size = Vector2(clue_width, 0)
+	# A full quest card covers the avatar in a short landscape view. Keep the
+	# same complete text behind a real 48dp control instead of shrinking it.
+	clue_panel.visible = not short_landscape
+	clue_button.visible = short_landscape
+	title_label.add_theme_font_size_override("font_size", 19 if available.x < 600 else 24)
+	var toast_font_size := 15 if short_landscape else 17
+	if toast.get_theme_font_size("font_size") != toast_font_size:
+		toast.add_theme_font_size_override("font_size", toast_font_size)
+	if short_landscape:
+		var info_top := maxf(68, top.position.y + maxf(48, top.size.y) + 8)
+		clue_button.position = Vector2(14, info_top)
+		clue_button.size = Vector2(110, 48)
+		toast.position = Vector2(136, info_top)
+		toast.size = Vector2(available.x - 150, 48)
+	else:
+		var width := minf(560, available.x - 28)
+		var gap_left := joystick.position.x + stick_side + 12
+		var gap_right := action.position.x - 12
+		if gap_right - gap_left >= 360:
+			# Wide/tall views have room between the thumb controls. Keep the
+			# message below the companion instead of across its lower body.
+			width = minf(width, gap_right - gap_left)
+			toast.size = Vector2(width, 48)
+			toast.position = Vector2((gap_left + gap_right - width) * 0.5, available.y - 16 - toast.size.y)
+		else:
+			toast.size = Vector2(width, 0)
+			var controls_top := minf(joystick.position.y, jump_button.position.y)
+			var preferred_top := available.y - maxf(stick_side, action_side + 60) - 80
+			toast.position = Vector2((available.x - width) * 0.5,
+				minf(preferred_top, controls_top - toast.size.y - 12))
+	_layout_modal()
+
+
+func _show_clue() -> void:
+	if paused:
+		return
+	_open_modal("Dein nächster Hinweis")
+	var text := KIT.label(clue_label.text, 19)
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	modal_box.add_child(text)
+	modal_box.add_child(KIT.button("Weiter erkunden", _close_modal))
+
+
+func _layout_modal() -> void:
+	if not is_instance_valid(modal) or not modal.visible:
+		return
+	# The scroll viewport, not the content minimum, bounds every dialog.
+	# Long inventories, questions and results retain full 48dp touch targets.
+	for child in modal_box.get_children():
+		if child is Label or child is Button:
+			child.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			child.custom_minimum_size.x = 0 if child is Label else 48
+			if child is Button:
+				# A drag starting on an answer must reach the scroll container.
+				child.mouse_filter = Control.MOUSE_FILTER_PASS
+	var available := safe_ui.size
+	var width := minf(560, available.x - 28)
+	var height := minf(available.y - 28, maxf(120, modal_box.get_combined_minimum_size().y + 24))
+	modal.size = Vector2(width, height)
+	modal.position = (available - modal.size) * 0.5
 
 
 func _physics_process(delta: float) -> void:
@@ -250,11 +436,21 @@ func _physics_process(delta: float) -> void:
 		fox.rotation.y = lerp_angle(fox.rotation.y, atan2(-axis.x, -axis.y), delta * 10)
 	fox.set_companion_pose(time, "walk" if axis.length() > 0.12 else "idle")
 	camera.position = camera.position.lerp(
-		player.position + Vector3(10, 14, 19), minf(1, delta * 4)
+		player.position + CAMERA_OFFSET, minf(1, delta * 4)
 	)
-	camera.look_at(player.position + Vector3.UP)
-	marker.position = model.current().at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
+	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
+	var found := model.try_discover(player.position)
+	if not found.is_empty():
+		toast.text = "Entdeckung: %s!" % found
+		wonder.celebrate(player.position + Vector3.UP * 1.7)
+		_update()
+	if not available_goals.is_empty():
+		marker.position = available_goals[0].at + Vector3.UP * (3.5 + sin(time * 2) * 0.2)
 	marker.rotate_y(delta)
+	if available_goals.size() > 1:
+		alternate_marker.position = available_goals[1].at + Vector3.UP * (3.5 + sin(time * 2 + 1) * 0.2)
+		alternate_marker.rotate_y(-delta)
+	wonder.set_routes(player.position, available_goals)
 	action.disabled = not model.can_interact(player.position)
 	save_clock += delta
 	if save_clock > 3:
@@ -285,24 +481,41 @@ func _update() -> void:
 		if child is CollisionShape3D:
 			child.set_deferred("disabled", not gate.visible)
 	marker.visible = not model.completed
+	available_goals = model.available_clues()
+	alternate_marker.visible = available_goals.size() > 1
+	wonder.set_routes(player.position, available_goals)
+	var lead: String = model.current().lead
+	if available_goals.size() > 1:
+		lead = "Wähle deinen Weg: Kristallwächter oder Mondgarten. Für das Schloss brauchst du beide Funde."
 	clue_label.text = (
-		"Hinweis %d / %d\n%s"
-		% [mini(model.chapter + 1, STATE.CLUES.size()), STATE.CLUES.size(), model.current().lead]
+		"Hinweise gelöst: %d / %d · Entdeckungen %d / %d\n%s"
+		% [
+			model.found.size(),
+			STATE.CLUES.size(),
+			model.discoveries.size(),
+			STATE.DISCOVERIES.size(),
+			lead
+		]
 	)
+	_layout.call_deferred()
 
 
 func _open_modal(title: String) -> void:
 	paused = true
+	wonder.set_paused(true)
 	joystick.set_enabled(false)
 	for child in modal_box.get_children():
 		modal_box.remove_child(child)
 		child.queue_free()
 	modal.show()
 	modal_box.add_child(KIT.label(title, 25))
+	modal_scroll.scroll_vertical = 0
+	_layout_modal.call_deferred()
 
 
 func _close_modal() -> void:
 	paused = false
+	wonder.set_paused(false)
 	modal.hide()
 	joystick.set_enabled(true)
 
@@ -310,10 +523,9 @@ func _close_modal() -> void:
 func _interact() -> void:
 	if paused or not model.can_interact(player.position):
 		return
-	var clue: Dictionary = model.current()
+	var clue: Dictionary = model.clue_at(player.position)
 	_open_modal(clue.name)
 	var text := KIT.label(clue.question, 19)
-	text.custom_minimum_size.x = 480
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(text)
 	for i in range(clue.answers.size()):
@@ -332,9 +544,17 @@ func _answer(choice: int) -> void:
 		return
 	_update()
 	_close_modal()
+	wonder.celebrate(player.position + Vector3.UP * 1.7)
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."
+	if model.last_cheer == 3:
+		toast.text = "Gefunden: %s! Super-Serie: 3 Hinweise hintereinander!" % model.inventory[-1]
+	elif model.last_cheer == 7:
+		toast.text = "Gefunden: %s! 7er-Serie! Du bist ein Schatz-Profi!" % model.inventory[-1]
+	model.last_cheer = 0
 	if model.completed:
-		_win()
+		# Rebuild the dialog after the answer button's input dispatch finishes.
+		# The completed progress was already saved above; reward rules stay intact.
+		_win.call_deferred()
 
 
 func _save() -> bool:
@@ -365,6 +585,12 @@ func _inventory() -> void:
 			19
 		)
 	)
+	if not model.discoveries.is_empty():
+		var names: Array[String] = []
+		for spot in STATE.DISCOVERIES:
+			if str(spot.id) in model.discoveries:
+				names.append(str(spot.name))
+		modal_box.add_child(KIT.label("Entdeckungen: " + ", ".join(names), 17))
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_modal))
 
 
@@ -381,13 +607,14 @@ func _pause_menu() -> void:
 func _win() -> void:
 	if not _save():
 		return
+	var xp: int = model.reward_xp()
 	HostBridge.reward(
 		{
 			"resultId": model.result_id,
 			"game": "treasure",
 			"status": "completed",
 			"stars": 3,
-			"xp": 40
+			"xp": xp
 		}
 	)
 	_open_modal("Der Sternenschatz gehört euch!")
@@ -397,7 +624,10 @@ func _win() -> void:
 			(
 				KIT
 				. label(
-					"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und 40 Erfahrungspunkte!",
+					(
+						"Sieben Hinweise gelöst und alle Schlüssel gefunden.\n3 Sterne und %d Erfahrungspunkte!"
+						% xp
+					),
 					19
 				)
 			)
@@ -430,3 +660,81 @@ func _notification(what: int) -> void:
 func _leave() -> void:
 	if _save():
 		SceneRouter.goto("games")
+
+
+func _terrain_material() -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = BuildVoxelStyle.material("grass_top").albedo_texture
+	mat.normal_enabled = true
+	mat.normal_texture = BuildVoxelStyle.material("grass_top").normal_texture
+	mat.normal_scale = 0.55
+	mat.albedo_color = Color("c5c08a")
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.92
+	mat.metallic = 0.0
+	mat.uv1_triplanar = true
+	mat.uv1_world_triplanar = true
+	mat.uv1_triplanar_sharpness = 4.0
+	mat.uv1_scale = Vector3(0.08, 0.08, 0.08)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	# Compatibility zeichnet große ArrayMeshes sonst teils unsichtbar,
+	# wenn Tangenten fehlen oder die Fläche zu flach zum Licht steht.
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return mat
+
+
+func _terrain_mesh() -> ArrayMesh:
+	var noise := FastNoiseLite.new()
+	noise.seed = 71882
+	noise.frequency = 0.045
+	noise.fractal_octaves = 3
+	var cols := 52
+	var rows := 68
+	var origin := Vector3(-42.0, 0.0, -78.0)
+	var step := Vector2(84.0 / float(cols - 1), 122.0 / float(rows - 1))
+	var verts: Array[Vector3] = []
+	var colors: PackedColorArray = PackedColorArray()
+	verts.resize(cols * rows)
+	colors.resize(cols * rows)
+	for row in range(rows):
+		for col in range(cols):
+			var x: float = origin.x + float(col) * step.x
+			var z: float = origin.z + float(row) * step.y
+			var nx: float = absf(x) / 37.0
+			# Südufer weiter draußen, damit die Startkamera über Gras/Strand steht.
+			# Collision bleibt 74×1.3×88 bei (0, -0.65, -29).
+			var nz: float = absf(z + 29.0) / (44.0 if z <= -29.0 else 58.0)
+			var radial: float = pow(nx * nx * nx * nx + nz * nz * nz * nz, 0.25)
+			var rim: float = clampf((radial - 0.78) / 0.28, 0.0, 1.0)
+			var path: float = 1.0 - clampf((absf(x) - 2.15) / 1.7, 0.0, 1.0)
+			var wave: float = noise.get_noise_2d(x, z) * 0.34 * (1.0 - path) * (1.0 - rim)
+			var mound: float = absf(noise.get_noise_2d(x * 0.37, z * 0.37)) * 0.22 * (1.0 - path) * (1.0 - rim)
+			var y: float = wave + mound - rim * rim * 2.35
+			var moss_n: float = 0.5 + 0.5 * noise.get_noise_2d(x + 40.0, z - 12.0)
+			var grass := Color("4a6a30").lerp(Color("6a8438"), moss_n)
+			grass = grass.lerp(Color("3a5a34"), clampf(0.2 + noise.get_noise_2d(x - 18.0, z + 9.0), 0.0, 0.5))
+			var dirt := Color("7a6244")
+			var sand := Color("c4b48a")
+			var rock := Color("6a6560")
+			var color: Color = grass.lerp(dirt, path * 0.85)
+			color = color.lerp(sand, clampf(rim * 1.45, 0.0, 1.0))
+			if rim > 0.72:
+				color = color.lerp(rock, (rim - 0.72) / 0.28)
+			var idx: int = row * cols + col
+			verts[idx] = Vector3(x, y, z)
+			colors[idx] = color
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for row in range(rows - 1):
+		for col in range(cols - 1):
+			var a: int = row * cols + col
+			var b: int = a + 1
+			var c: int = a + cols
+			var d: int = c + 1
+			for idx in [a, c, b, b, c, d]:
+				st.set_color(colors[idx])
+				st.set_uv(Vector2(verts[idx].x * 0.08, verts[idx].z * 0.08))
+				st.add_vertex(verts[idx])
+	st.generate_normals()
+	st.generate_tangents()
+	return st.commit()

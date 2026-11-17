@@ -1,0 +1,778 @@
+{
+  "blender": "4.3.2",
+  "checks": [
+    "closed mesh edge connectivity",
+    "nonzero polygon area",
+    "UV layer presence",
+    "packed texture source"
+  ],
+  "meshes": [
+    {
+      "name": "BackdropCap",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.005",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.006",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.007",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.008",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.009",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.010",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf.011",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.005",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.006",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.007",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.008",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.009",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.010",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLeaf_midrib.011",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropLowRail",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BackdropStem.005",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BananaBody",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BananaStem",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "BlossomEnd",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ColumnRail",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ColumnRail.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ColumnRail.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ColumnRail.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "FineLowerEdge",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "FineLowerEdge.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "LeafStemLeft",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "LeafStemRight",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "LowerPlinth",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "MiddleRail",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.005",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.006",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.007",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.008",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.009",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.010",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.011",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.012",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.013",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.014",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakFloorBoard.015",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OakTrayBase",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OuterLongRail",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OuterLongRail.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OuterShortRail",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "OuterShortRail.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PedestalColumn",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PeelRidge",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PeelRidge.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlanterBody",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlanterBody.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlanterInset",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlanterInset.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantFlowerCentre",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantLeafLeft",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantLeafLeft_midrib",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantLeafRight",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantLeafRight_midrib",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.005",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.006",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantPetal.007",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantRoot",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantRoot.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantRoot.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantRoot.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantRoot.004",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "PlantStem",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "QuietCarpet",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "QuietCarpetBorder",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ReadingEdge",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "ReadingEdge.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "RoundedCarrierBody",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "RoundedCarrierBody.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleCountableBody",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleCountableBody.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleShapeBody",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleShapeBody.001",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleShapeBody.002",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SingleShapeBody.003",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_00",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_01",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_02",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_03",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_04",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_05",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_06",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_07",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_08",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SlotWell_09",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SoftTop",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "SoilSection",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "StonePlinth",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_0",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_1",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_2",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_3",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_4",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_5",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_6",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_7",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_8",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    },
+    {
+      "name": "unit_9",
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "has_uv": true
+    }
+  ],
+  "errors": [],
+  "packed_images": [
+    "lumo_learning_atlas.png",
+    "lumo_learning_roughness.png"
+  ]
+}

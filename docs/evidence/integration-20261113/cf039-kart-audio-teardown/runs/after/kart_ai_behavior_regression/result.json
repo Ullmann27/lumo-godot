@@ -1,0 +1,47 @@
+{
+  "phase": "after",
+  "test": "kart_ai_behavior_regression",
+  "started_utc": "2026-11-13T15:10:58.528099+00:00",
+  "finished_utc": "2026-11-13T15:10:58.749935+00:00",
+  "elapsed_seconds": 0.222,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartAI] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_ai_behavior_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_ai_behavior_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "cdede7585837706cacc964380e4eaa7a69ff1655d593a777ec6d903032c8f973",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartAI] PASS",
+  "marker_present": false,
+  "errors": [
+    "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+  ],
+  "cleanup_lines": [],
+  "engine_log_sha256": "256319c0f44d9046118ec4fcc744d14aa550690cf2612e78ff8c33817dbf9a01",
+  "runner_log_sha256": "3dcada55614011ded8974f6f2aff81e3a12043d72c7cb0a14ea1b30062c67100"
+}

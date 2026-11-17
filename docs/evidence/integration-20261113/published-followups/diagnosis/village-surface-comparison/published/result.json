@@ -1,0 +1,32 @@
+{
+  "case": "published",
+  "command": [
+    "python",
+    "tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-comparison/published/engine.log",
+    "--timeout",
+    "210",
+    "--required",
+    "[VillageScene] PASS",
+    "--",
+    "godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-village-touch-baseline",
+    "--script",
+    "res://scripts/tests/build_village_scene_regression.gd"
+  ],
+  "exit_code": 1,
+  "seconds": 0.505,
+  "source_files": 1224,
+  "changed_during_run": [],
+  "probe_sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde",
+  "product_sha256": "cd5e7a41991ac8591408b86094db182be85124a8ef4a48b28bf3717011bf576e",
+  "engine_sha256": "2ed9f3fc919feb928cff2b8326b748a88153e0c5cf6baeb4eae1f1f600fbb4ca",
+  "findings": [
+    "SCRIPT ERROR: Parse Error: Preload file \"res://assets/fonts/Nunito-Black.ttf\" has no resource loaders (unrecognized file extension)."
+  ]
+}

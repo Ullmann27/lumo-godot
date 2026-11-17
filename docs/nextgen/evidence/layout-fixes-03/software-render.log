@@ -1,0 +1,24 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+WARNING: Screen-space AA is only available when using the Forward+ or Mobile renderer.
+     at: viewport_set_screen_space_aa (servers/rendering/renderer_viewport.cpp:1400)
+WARNING: Volumetric fog is only available when using the Forward+ renderer.
+     at: environment_set_volumetric_fog (servers/rendering/storage/environment_storage.cpp:458)
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(720, 1280) safe-area:[P: (0.0, 32.0), S: (0.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Perf] quality_profile:medium
+LUMO_LEARNING_PERF {"adapter":"llvmpipe (LLVM 19.1.7, 256 bits)","display_driver":"X11","effects_active_samples":0,"fox_usable_samples":1,"frame_ms":{"max":8187.926,"mean":8187.926,"over_16_7_count":1,"over_16_7_fraction":1.0,"p50":8187.926,"p95":8187.926,"p99":8187.926},"kind":"bridge_ten","platform":"Linux","process_ms":{"max":8186.5,"mean":8186.5,"p95":8186.5},"reduced_motion":true,"render":{"draw_calls_mean":263.0,"nodes_mean":197.0,"objects_mean":2077.0,"primitives_mean":314559.0,"render_objects_mean":401.0},"renderer":"gl_compatibility","sample_count":1,"schema":"lumo.learning.perf","speech_fox_effects_samples":0,"speech_playing_audible_samples":0,"speech_playing_samples":0,"version":1,"window_index":1,"window_ms":8187.926}
+[LearningWorld] move kind=bridge_ten token=0 target=8 placed=1 complete=false
+[LearningWorld] move kind=bridge_ten token=1 target=9 placed=2 complete=false
+[LearningWorld] move kind=syllables token=0 target=0 placed=1 complete=false
+[LearningWorld] move kind=syllables token=1 target=1 placed=2 complete=false
+[LearningWorld] move kind=syllables token=2 target=2 placed=3 complete=true
+[NextgenLearningReview] PASS {"captures":["/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/bridge_ten_412x915.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/bridge_ten_412x960.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/bridge_ten_750x832.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/bridge_ten_1280x720.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/bridge_ten_after_two.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/syllables_412x915.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/syllables_412x960.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/syllables_750x832.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/syllables_1280x720.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_412x915.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_412x960.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_750x832.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_1280x720.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_point_412x960.png","/workspace/scratch/4fa97167812c/avatar-qa/layout-fix-03/software-route-final/screenshots/task_card_point_750x832.png"],"checks":1789,"failures":[],"full_flutter_coverage":false,"native_activity_kinds":["bridge_ten","syllables","task_card"],"physical_android_audio_verified":false}

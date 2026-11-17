@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only original invocation evidence; no new engine/test execution",
+  "source_pack": {
+    "path": "..",
+    "freeze_sha256": "01d3fc898bb3dc9ba79d598378625a935cc2d05a9fb40b7d18649090aa6b6c23"
+  },
+  "producer": {
+    "repository": "Ullmann27/lumo-godot",
+    "head": "be58fe0afcbbd8bf982592d05d83f0e7742e8934",
+    "tree": "faffacb93be479c3b8d3534cc056370c69e1407e",
+    "run": 43588464614,
+    "attempt": 1,
+    "job": 132427908321,
+    "actual_checkout": "a0e11ac03245d164e09db8825c6f2fd2cb74f878",
+    "checkout_tree_equals_head": true,
+    "job_status": "completed",
+    "job_conclusion": "success"
+  },
+  "economy": {
+    "path": "scripts/tests/build_village_economy_regression.gd",
+    "blob": "9dd8ff269e266dd73ad5207febd87aab367a4986",
+    "actual_original_shell_line": "timeout 300 /tmp/godot --headless --script res://scripts/tests/build_village_economy_regression.gd 2>&1 | tee /tmp/village-economy.log",
+    "actual_log": "originals/job-132427908321.log",
+    "command_line_number": 2744,
+    "engine_banner_line_number": 2749,
+    "engine_pass_line_number": 2753,
+    "grep_echo_pass_line_number": 2762,
+    "marker": "[VillageEconomy] PASS 339 checks",
+    "engine_banner": "Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org",
+    "step": {
+      "name": "Verify living village economy and historical refund preservation",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-14T11:07:49Z",
+      "completed_at": "2026-11-14T11:07:49Z"
+    },
+    "raw_output_error_timeout_leak_markers_found": [],
+    "existing_combined_52_runner": {
+      "blob": "3255c2e6bd6cfd4b7bb6e50e6dc9b4aaf67e5946",
+      "path": "tools/validate_nextgen.sh",
+      "call": "check_probe build_village_economy_regression '[VillageEconomy] PASS' headless",
+      "timeout_seconds": 420,
+      "unchanged": true
+    }
+  },
+  "scaling": {
+    "path": "scripts/tests/build_village_scaling_regression.gd",
+    "blob": "c6abdb5f9576c0b48db7bd59716da52ea5fac036",
+    "original_local_argv": null,
+    "original_local_timeout_seconds": null,
+    "original_local_argv_status": "Not available in retrieved original evidence. The two local repair commit IDs referenced by the published PR/commit returned API 422. The actual be58 combined job does not invoke this probe.",
+    "source_supported_headless_arguments": [
+      "--headless",
+      "--script",
+      "res://scripts/tests/build_village_scaling_regression.gd"
+    ],
+    "source_supported_render_arguments": [
+      "--script",
+      "res://scripts/tests/build_village_scaling_regression.gd",
+      "--",
+      "--capture"
+    ],
+    "required_render_environment": [
+      "LUMO_CAPTURE_DIR"
+    ],
+    "headless_marker": "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+    "rendered_marker": "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer",
+    "count_provenance": "Published producer declaration and source check paths; no original scaling execution log retrieved and no combined execution claimed",
+    "images": [
+      {
+        "path": "01-home-region.png",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "path": "02-river-boundary.png",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "existing_52_runner_contains_scaling": false,
+    "integration_scope": "Additional strict probe gate to be wired by Root; preserve all existing 52 invocations and 17 raster assertions"
+  },
+  "limits": [
+    "No original local Scaling42/46 command or log has been obtained.",
+    "Published producer declarations for 924 checks and renderer46 are not reclassified as independently read execution evidence.",
+    "No new combined-source, renderer, Android, signed APK, device FPS or complete delivery acceptance.",
+    "No TitleContrast 600-to-900 change and no existing budget change."
+  ]
+}

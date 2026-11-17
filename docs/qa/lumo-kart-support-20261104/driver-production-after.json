@@ -1,0 +1,11 @@
+{
+	"android_test": false,
+	"checks": 2069,
+	"failures": 0,
+	"finish_preconditions_are_fixture": true,
+	"model_load_kind": "imported_packed_scene",
+	"real_product_scene": true,
+	"real_ramp_flight": 36,
+	"screenshots": 0,
+	"worst_hand_contact_mm": 1.14524911623448
+}

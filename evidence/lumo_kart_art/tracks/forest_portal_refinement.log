@@ -1,0 +1,28 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:05:04 | INFO: Starting glTF 2.0 export
+21:05:04 | INFO: Extracting primitive: Icosphere.060
+21:05:05 | INFO: Primitives created: 7
+21:05:05 | INFO: Finished glTF 2.0 export in 1.1146888732910156 s
+
+21:05:06 | INFO: Starting glTF 2.0 export
+21:05:06 | INFO: Extracting primitive: Icosphere.118
+21:05:07 | INFO: Primitives created: 7
+21:05:07 | INFO: Finished glTF 2.0 export in 0.7313132286071777 s
+
+21:05:07 | INFO: Starting glTF 2.0 export
+21:05:08 | INFO: Extracting primitive: Icosphere.220
+21:05:08 | INFO: Primitives created: 7
+21:05:08 | INFO: Finished glTF 2.0 export in 0.6451992988586426 s
+
+21:05:09 | INFO: Starting glTF 2.0 export
+21:05:09 | INFO: Extracting primitive: Icosphere.250
+21:05:09 | INFO: Primitives created: 7
+21:05:09 | INFO: Finished glTF 2.0 export in 0.48938846588134766 s
+
+Info: No new files have been packed
+Info: Saved "zauberwald_tunnel_workshop.blend"
+PORTAL_REFINEMENT_PASS 4 changed 17 byte-identical
+Blender 4.3.2
+Read blend: "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend"
+
+Blender quit

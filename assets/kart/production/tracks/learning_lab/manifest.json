@@ -1,0 +1,825 @@
+{
+  "schema": 1,
+  "theme": "learning_lab",
+  "label": "Funkel Passage",
+  "source_blend": "art/lumo_kart/blender/tracks/learning_lab_tunnel_workshop.blend",
+  "blender": "4.3.2",
+  "units": "meters",
+  "axes": {
+    "blender_forward": "+Y",
+    "blender_up": "+Z",
+    "godot_forward": "-Z",
+    "godot_up": "+Y"
+  },
+  "existing_road_width_m": 10.8,
+  "reserved_clear_width_m": 11.8,
+  "reserved_clear_height_m": 4.5,
+  "inner_wall_half_width_m": 6.8,
+  "central_ceiling_height_m": 7.5,
+  "texture_size_px": [
+    1024,
+    1024
+  ],
+  "texture_density_texels_per_meter": 512,
+  "material_policy": "seven theme materials; original texture maps embedded in GLB",
+  "modules": {
+    "portal_entry": {
+      "file": "portal_entry.glb",
+      "length_m": 4.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        4.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 12012,
+            "vertices": 6184,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 12012,
+        "materials": [
+          "learning_lab_accent",
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 6,
+        "bounds_blender_m": {
+          "min": [
+            -8.439231872558594,
+            -1.0075000524520874,
+            -1.1699999570846558
+          ],
+          "max": [
+            8.669232368469238,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6464,
+            "vertices": 3394,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6464,
+        "materials": [
+          "learning_lab_accent",
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 6,
+        "bounds_blender_m": {
+          "min": [
+            -8.426773071289062,
+            -1.0075000524520874,
+            -1.1699999570846558
+          ],
+          "max": [
+            8.656773567199707,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision",
+            "triangles": 228,
+            "vertices": 114,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 228,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "portal_exit": {
+      "file": "portal_exit.glb",
+      "length_m": 4.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        4.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 12012,
+            "vertices": 6184,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 12012,
+        "materials": [
+          "learning_lab_accent",
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 6,
+        "bounds_blender_m": {
+          "min": [
+            -8.439231872558594,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            8.669232368469238,
+            4.949999809265137,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6464,
+            "vertices": 3394,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6464,
+        "materials": [
+          "learning_lab_accent",
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 6,
+        "bounds_blender_m": {
+          "min": [
+            -8.426773071289062,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            8.656773567199707,
+            4.949999809265137,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.001",
+            "triangles": 228,
+            "vertices": 114,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 228,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "straight_12m": {
+      "file": "straight_12m.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 10556,
+            "vertices": 5402,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 10556,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 7388,
+            "vertices": 3818,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 7388,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.002",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_left_30": {
+      "file": "curve_left_30.glb",
+      "length_m": 18.84955592153876,
+      "centerline_radius_m": 36,
+      "turn_degrees": -30,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        -4.823085308074951,
+        18.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 15556,
+            "vertices": 7958,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 15556,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            -0.0009817457757890224,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 10804,
+            "vertices": 5582,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 10804,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            -0.0009817457757890224,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.003",
+            "triangles": 456,
+            "vertices": 228,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 456,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_right_30": {
+      "file": "curve_right_30.glb",
+      "length_m": 18.84955592153876,
+      "centerline_radius_m": 36,
+      "turn_degrees": 30,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        4.823085308074951,
+        18.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 15556,
+            "vertices": 7958,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 15556,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0009817457757890224,
+            -1.1699999570846558
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 10804,
+            "vertices": 5582,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 10804,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0009817457757890224,
+            -1.1699999570846558
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.004",
+            "triangles": 456,
+            "vertices": 228,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 456,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_down": {
+      "file": "grade_down.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": -1.5,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        -1.5
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 10556,
+            "vertices": 5402,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 10556,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011837381171062589,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.650000095367432,
+            12.001184463500977,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 7388,
+            "vertices": 3818,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 7388,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011837381171062589,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.650000095367432,
+            12.001184463500977,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.005",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_up": {
+      "file": "grade_up.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 1.5,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        1.5
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 10556,
+            "vertices": 5402,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 10556,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011840275255963206,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.00118350982666,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 7388,
+            "vertices": 3818,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 7388,
+        "materials": [
+          "learning_lab_inner",
+          "learning_lab_light",
+          "learning_lab_outer",
+          "learning_lab_secondary",
+          "learning_lab_trim"
+        ],
+        "material_count": 5,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011840275255963206,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.00118350982666,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.006",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    }
+  },
+  "source_provenance": "Original procedural geometry and original baked images, authored for LUMO; no external assets or Nintendo content",
+  "runtime_integration": false,
+  "physical_device_fps_verified": false
+}

@@ -1,0 +1,71 @@
+[
+  {
+    "script": "learning_world_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_world_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 21.043,
+    "minimum_free_bytes": 846479360,
+    "termination_reason": "",
+    "markers": [
+      "[LearningWorld] PASS checks=5351"
+    ]
+  },
+  {
+    "script": "learning_english_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_english_regression.gd",
+      "--",
+      "--output=/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/layout-first/learning-english"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 27.892,
+    "minimum_free_bytes": 845684736,
+    "termination_reason": "",
+    "markers": [
+      "ERROR: [LearningEnglish] ruler: first hint layout: real object projection remains at least48dp across both axes",
+      "LEARNING_ENGLISH_FAIL checks=7239 failures=1"
+    ]
+  },
+  {
+    "script": "nextgen_learning_route_review",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/nextgen_learning_route_review.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 16.501,
+    "minimum_free_bytes": 844591104,
+    "termination_reason": "",
+    "markers": [
+      "[NextgenLearningReview] PASS {\"captures\":[],\"checks\":7324,\"failures\":[],\"full_flutter_coverage\":false,\"native_activity_kinds\":[\"bridge_ten\",\"addition\",\"subtract_ten\",\"equal_groups\",\"equal_sharing\",\"bridge_hundred\",\"fraction_parts\",\"syllables\",\"plant_parts\",\"english_objects\",\"pattern\",\"task_card\"],\"physical_android_audio_verified\":false}"
+    ]
+  }
+]

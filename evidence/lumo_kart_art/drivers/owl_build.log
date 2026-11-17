@@ -1,0 +1,22 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:17:00 | INFO: Starting glTF 2.0 export
+21:17:00 | INFO: Extracting primitive: DriverSurface
+21:17:00 | INFO: Primitives created: 6
+21:17:03 | INFO: Finished glTF 2.0 export in 2.925771951675415 s
+
+21:17:03 | INFO: Starting glTF 2.0 export
+21:17:03 | INFO: Extracting primitive: DriverSurface.001
+21:17:04 | INFO: Primitives created: 6
+21:17:06 | INFO: Finished glTF 2.0 export in 2.672205924987793 s
+
+21:17:07 | INFO: Starting glTF 2.0 export
+21:17:07 | INFO: Extracting primitive: DriverSurface.002
+21:17:07 | INFO: Primitives created: 6
+21:17:09 | INFO: Finished glTF 2.0 export in 2.3953187465667725 s
+
+Info: Saved "owl.blend"
+Info: Saved "owl.blend"
+DRIVER_BUILD_COMPLETE {"species": "owl", "files": {"lod0": {"vertices": 21985, "triangles": 43462, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 2.9802322387695312e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.6599999070167542, 1.3331164121627808], "file": "assets/kart/production/drivers/owl/driver.glb", "sha256": "bcd5db41efc1b25928c7fa7acea760bf6f6d8b2fe6e459f9fd11864a84bcbfcc"}, "lod1": {"vertices": 12640, "triangles": 24772, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.6599999070167542, 1.3329423666000366], "file": "assets/kart/production/drivers/owl/driver_lod1.glb", "sha256": "daeebb3aa49a807acb9d2e8771eb1b4b1fb982f16c61420d6bf664af9dbf3178"}, "lod2": {"vertices": 6555, "triangles": 12602, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.6584092974662781, 1.3328900337219238], "file": "assets/kart/production/drivers/owl/driver_lod2.glb", "sha256": "a61dbfe88f6851d69f2618630b3499cf04124095e01aff5b76906b9efded1653"}}, "blend": "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/owl.blend"}
+Blender 4.3.2
+
+Blender quit

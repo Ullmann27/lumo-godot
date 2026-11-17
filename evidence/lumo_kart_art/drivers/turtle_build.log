@@ -1,0 +1,22 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:18:13 | INFO: Starting glTF 2.0 export
+21:18:13 | INFO: Extracting primitive: DriverSurface
+21:18:13 | INFO: Primitives created: 6
+21:18:16 | INFO: Finished glTF 2.0 export in 3.4610354900360107 s
+
+21:18:17 | INFO: Starting glTF 2.0 export
+21:18:17 | INFO: Extracting primitive: DriverSurface.001
+21:18:18 | INFO: Primitives created: 6
+21:18:23 | INFO: Finished glTF 2.0 export in 6.039838075637817 s
+
+21:18:25 | INFO: Starting glTF 2.0 export
+21:18:25 | INFO: Extracting primitive: DriverSurface.002
+21:18:25 | INFO: Primitives created: 6
+21:18:31 | INFO: Finished glTF 2.0 export in 6.349895715713501 s
+
+Info: Saved "turtle.blend"
+Info: Saved "turtle.blend"
+DRIVER_BUILD_COMPLETE {"species": "turtle", "files": {"lod0": {"vertices": 21841, "triangles": 43286, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 2.9802322387695312e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.8202457427978516, 1.1552799940109253], "file": "assets/kart/production/drivers/turtle/driver.glb", "sha256": "5bac786259df9a7d221a62050ef67e980695a36705f01318daf433d512bab451"}, "lod1": {"vertices": 12534, "triangles": 24672, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.8203302621841431, 1.1552799940109253], "file": "assets/kart/production/drivers/turtle/driver_lod1.glb", "sha256": "fcc9edcba4200728214177e509159802cdd1205207ea0f035f578ab240f4bd77"}, "lod2": {"vertices": 6474, "triangles": 12552, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 0.8203209638595581, 1.1550877094268799], "file": "assets/kart/production/drivers/turtle/driver_lod2.glb", "sha256": "0d321853607d97087fcec952b7a7531348bc666192f24f4aada7b688a51c1f10"}}, "blend": "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/turtle.blend"}
+Blender 4.3.2
+
+Blender quit

@@ -1,0 +1,22 @@
+ERROR Draco mesh compression is not available because library could not be found at /usr/bin/4.3/python/lib/python3.13/site-packages/libextern_draco.so
+21:17:30 | INFO: Starting glTF 2.0 export
+21:17:30 | INFO: Extracting primitive: DriverSurface
+21:17:30 | INFO: Primitives created: 6
+21:17:33 | INFO: Finished glTF 2.0 export in 3.0199062824249268 s
+
+21:17:34 | INFO: Starting glTF 2.0 export
+21:17:34 | INFO: Extracting primitive: DriverSurface.001
+21:17:34 | INFO: Primitives created: 6
+21:17:37 | INFO: Finished glTF 2.0 export in 2.7891950607299805 s
+
+21:17:37 | INFO: Starting glTF 2.0 export
+21:17:37 | INFO: Extracting primitive: DriverSurface.002
+21:17:37 | INFO: Primitives created: 6
+21:17:40 | INFO: Finished glTF 2.0 export in 2.68992018699646 s
+
+Info: Saved "squirrel.blend"
+Info: Saved "squirrel.blend"
+DRIVER_BUILD_COMPLETE {"species": "squirrel", "files": {"lod0": {"vertices": 19252, "triangles": 38092, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 2.9802322387695312e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0900448560714722, 1.2876232862472534], "file": "assets/kart/production/drivers/squirrel/driver.glb", "sha256": "f76a8c8be100c0398f3d420b1e099d004cfaf813dc0f92fb6746ccb513e5f1e4"}, "lod1": {"vertices": 11062, "triangles": 21712, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0900448560714722, 1.2876452207565308], "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb", "sha256": "2cc4780cfbba645344a092c6cdf420a193d22399ec74b515fed2bdc6b2b793a6"}, "lod2": {"vertices": 5729, "triangles": 11046, "materials": 6, "nonmanifold_edges": 0, "zero_weight_vertices": 0, "max_weight_sum_error": 8.940696716308594e-08, "max_influences": 2, "evaluated_dimensions_blender_m": [0.8279998898506165, 1.0897384881973267, 1.287592887878418], "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb", "sha256": "5ca3c8f6935ace4f15bd809c76251c9c98c9867c7b776a4f3b6ef996650db451"}}, "blend": "/workspace/scratch/eb2882c140f8/lumo-kart-art/art/lumo_kart/blender/drivers/squirrel.blend"}
+Blender 4.3.2
+
+Blender quit

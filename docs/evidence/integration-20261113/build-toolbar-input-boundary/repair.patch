@@ -1,0 +1,13 @@
+diff --git a/scripts/creative/build_world.gd b/scripts/creative/build_world.gd
+index a775d7d..a063665 100644
+--- a/scripts/creative/build_world.gd
++++ b/scripts/creative/build_world.gd
+@@ -224,6 +224,8 @@ func _ui() -> void:
+ 	hud.add_child(tools)
+ 	editor_controls.append(tools)
+ 	var scroll := ScrollContainer.new()
++	# PASS children can scroll; the toolbar owns their events before the 3D world.
++	scroll.mouse_filter = Control.MOUSE_FILTER_STOP
+ 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+ 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+ 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL

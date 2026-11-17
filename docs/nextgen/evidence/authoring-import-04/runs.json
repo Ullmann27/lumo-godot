@@ -1,0 +1,100 @@
+{
+  "commit": "3ea2e3777aa97e8a44ae2aacba7ff9d60ab360f8",
+  "upstream_authoring_commit": "5a289a1",
+  "results": [
+    {
+      "case": "import",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.019960194000305,
+      "disk_free_start_bytes": 702164992,
+      "disk_free_min_bytes": 702160896,
+      "disk_growth_peak_bytes": 4096,
+      "godot_rss_peak_bytes": 689971200,
+      "stop_reason": null,
+      "art_gdignore_present": true,
+      "errors": [],
+      "warnings": [
+        "WARNING: Detected another project.godot at res://tools/lumo_kart_art/review. The folder will be ignored."
+      ],
+      "log_sha256": "4fe38538d296fc116e759f30db845eb8416cfc4dfd42bdaa94a71e324a876ef7"
+    },
+    {
+      "case": "authoring-parser",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--check-only",
+        "--script",
+        "tools/lumo_next/capture_learning_scene.gd"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5074579930005712,
+      "disk_free_start_bytes": 702156800,
+      "disk_free_min_bytes": 702144512,
+      "disk_growth_peak_bytes": 12288,
+      "godot_rss_peak_bytes": 49082368,
+      "stop_reason": null,
+      "art_gdignore_present": true,
+      "errors": [],
+      "warnings": [],
+      "log_sha256": "a9912b85473f126d3f4f63ec824170c828df3473a292f866dde86cafda5b66da"
+    },
+    {
+      "case": "route",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "scripts/tests/nextgen_learning_route_review.gd",
+        "--",
+        "--review-kind=bridge_ten,syllables,task_card"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.267349077999825,
+      "disk_free_start_bytes": 702140416,
+      "disk_free_min_bytes": 702124032,
+      "disk_growth_peak_bytes": 16384,
+      "godot_rss_peak_bytes": 154329088,
+      "stop_reason": null,
+      "art_gdignore_present": true,
+      "errors": [],
+      "warnings": [],
+      "log_sha256": "532196e1f0bc5e4ade5dc123be6ac729a3aa1ce8ce971676543114d913b1348e"
+    },
+    {
+      "case": "scope",
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/workspace/scratch/4fa97167812c/agent-avatar",
+        "--script",
+        "scripts/tests/learning_companion_scope_regression.gd"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5014391980002983,
+      "disk_free_start_bytes": 702119936,
+      "disk_free_min_bytes": 702103552,
+      "disk_growth_peak_bytes": 16384,
+      "godot_rss_peak_bytes": 64315392,
+      "stop_reason": null,
+      "art_gdignore_present": true,
+      "errors": [],
+      "warnings": [],
+      "log_sha256": "aa30c2986ff93d43dbeeecc52e991bdc1da8a781282f4bf9067cf5478b33996c"
+    }
+  ]
+}

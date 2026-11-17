@@ -1,0 +1,12 @@
+{
+  "base_head": "a76f26b1d19662f6429a9cff063991e994d1e19a",
+  "path": ".github/workflows/lumo-nextgen-2018.yml",
+  "before_sha256": "2dc506d818f2d6c3f2f11ea56ccfdf8c0e45a3a87d22645d1cfe6753b651c5bc",
+  "after_sha256": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+  "only_change": "touch-density.timeout-minutes 40 -> 50",
+  "other_workflow_bytes_identical": true,
+  "workshop_render_budget_seconds": 2100,
+  "headless_budget_seconds": 600,
+  "job_budget_seconds": 3000,
+  "setup_import_artifact_headroom_seconds": 300
+}

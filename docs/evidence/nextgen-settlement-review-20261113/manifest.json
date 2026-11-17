@@ -1,0 +1,27 @@
+{
+  "created_utc": "2026-11-13T03:05:00.316496+00:00",
+  "branch": "chatgpt/lumo-nextgen-20261113",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "local_renderer": "headless",
+  "current_ui_checks": 127,
+  "current_model_checks": 194,
+  "final_ui_renderer": "PENDING: explicit relocation dialog postdates 096c9d20 capture",
+  "android_device": "NOT TESTED",
+  "sources_sha256": {
+    "scripts/creative/build_settlement_state.gd": "99b99b58e3f6358ee03de365c48fa351ce036cd49e92dd767627bec440eee904",
+    "scripts/creative/build_settlement_world.gd": "fc7dc36f64ad03076e4230ef06f6a70710f2349c70e4bc5a7a68ef4f025af8ed",
+    "scripts/creative/build_settlement_visual.gd": "d7d967ab666bafe15cf38298dfd708e9b491038139ce1f9773de328bf6a04662",
+    "scripts/creative/creative_nextgen_environment.gd": "5e1c03e14141380553e2543bcdcb678217b72180425a572a05ff1a467267cf0d",
+    "scripts/tests/build_settlement_regression.gd": "3ab58e21def44b072f01d56409e4227d48e0ada046b8ae331e0733d750dd59bc",
+    "scripts/tests/build_settlement_play_regression.gd": "f275ddd14386092807cf2f850f9898075bd5ad9d25724a823cebd25125cf71ad"
+  },
+  "evidence_sha256": {
+    "model-194.log": "33275feb62e4b45e22b1e5baf628116c26e14ded822012c4d71ba5b72a3cdb5c",
+    "before-review.log": "4285ddf5107ea67822268600e3276604475a46e8314a722e522667fa69830f4f",
+    "before-housing-deadlock.log": "e4d508d3ae62d7e1f26b0fe024a01f2c8ab764ee142a613c8425e77399ba1b6f",
+    "historical-housing-repro.gd.txt": "8b9ffb576952f94d05fd176211e47aeed45eeec4517588edbf0209171e1a82fe",
+    "before-expansion-deadlock.log": "835f2e294c2cacfc55d89a6bd35a01a76cb043388076f7c6802b140cb3b2d5fd",
+    "production-ui-127.log": "430e55f53620b8c2df1d8871f1b9763936f7d14e91ed66e383700f1dce26a8b4",
+    "historical-expansion-repro.gd.txt": "3e0afab2624d4426e05502bacdbd1b9b5a7af4ff70c184de35b11ff541dc77fa"
+  }
+}

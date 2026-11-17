@@ -1,0 +1,47 @@
+{
+  "phase": "after",
+  "test": "kart_garage_touch_targets_regression",
+  "started_utc": "2026-11-13T15:10:58.750590+00:00",
+  "finished_utc": "2026-11-13T15:10:58.973819+00:00",
+  "elapsed_seconds": 0.223,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[GarageTargets] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/scripts/tests/kart_garage_touch_targets_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/after/kart_garage_touch_targets_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "b90bf2d8a1217ce026506781e87753206c821b9fe4876f8673b4bd8e8dfbdbd5",
+  "strict_runner_exit": 1,
+  "required_marker": "[GarageTargets] PASS",
+  "marker_present": false,
+  "errors": [
+    "SCRIPT ERROR: Parse Error: The variable type is being inferred from a Variant value, so it will be typed as Variant. (Warning treated as error.)"
+  ],
+  "cleanup_lines": [],
+  "engine_log_sha256": "ee686e93fa6acc53968d4e2af8089b15c719a4c958c753f0c1e5b72be306b636",
+  "runner_log_sha256": "dc54b53dbb3e3f45f5c7a5517751270239ef3a71781f74f6991ebbf4bbf2cd1b"
+}

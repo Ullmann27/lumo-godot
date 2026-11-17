@@ -1,0 +1,244 @@
+[
+  {
+    "script": "learning_pattern_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_pattern_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.802,
+    "minimum_free_bytes": 860549120,
+    "termination_reason": "",
+    "markers": [
+      "[LearningPattern] PASS checks=33077 failures=0"
+    ]
+  },
+  {
+    "script": "learning_world_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_world_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 21.48,
+    "minimum_free_bytes": 849833984,
+    "termination_reason": "",
+    "markers": [
+      "[LearningWorld] PASS checks=5351"
+    ]
+  },
+  {
+    "script": "learning_sharing_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_sharing_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 3.425,
+    "minimum_free_bytes": 849809408,
+    "termination_reason": "",
+    "markers": [
+      "[LearningSharing] PASS checks=1811"
+    ]
+  },
+  {
+    "script": "learning_host_payload_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_host_payload_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.403,
+    "minimum_free_bytes": 849801216,
+    "termination_reason": "",
+    "markers": [
+      "[LearningHostPayload] PASS cases=5 checks=135 host=a8e09123805b2bf30706c8dd1914b928ae6b24ca"
+    ]
+  },
+  {
+    "script": "learning_generation_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_generation_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.012,
+    "minimum_free_bytes": 849653760,
+    "termination_reason": "",
+    "markers": [
+      "LEARNING_GENERATION_PASS checks=47 environment=headless-desktop actual_microphone=false"
+    ]
+  },
+  {
+    "script": "learning_companion_scope_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_companion_scope_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.403,
+    "minimum_free_bytes": 849649664,
+    "termination_reason": "",
+    "markers": [
+      "{\"checks\":56,\"failures\":[],\"status\":\"PASS\",\"test\":\"learning_companion_scope\"}"
+    ]
+  },
+  {
+    "script": "learning_wonder_details_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_wonder_details_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 6.43,
+    "minimum_free_bytes": 849465344,
+    "termination_reason": "",
+    "markers": []
+  },
+  {
+    "script": "nextgen_avatar_contract_review",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/nextgen_avatar_contract_review.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.812,
+    "minimum_free_bytes": 849514496,
+    "termination_reason": "",
+    "markers": [
+      "[NextgenAvatarReview] PASS checks=300 failures=0"
+    ]
+  },
+  {
+    "script": "nextgen_learning_route_review",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/nextgen_learning_route_review.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 17.105,
+    "minimum_free_bytes": 831676416,
+    "termination_reason": "",
+    "markers": [
+      "[NextgenLearningReview] PASS {\"captures\":[],\"checks\":7324,\"failures\":[],\"full_flutter_coverage\":false,\"native_activity_kinds\":[\"bridge_ten\",\"addition\",\"subtract_ten\",\"equal_groups\",\"equal_sharing\",\"bridge_hundred\",\"fraction_parts\",\"syllables\",\"plant_parts\",\"english_objects\",\"pattern\",\"task_card\"],\"physical_android_audio_verified\":false}"
+    ]
+  },
+  {
+    "script": "nextgen_learning_base_audio_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/nextgen_learning_base_audio_regression.gd"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.807,
+    "minimum_free_bytes": 831291392,
+    "termination_reason": "",
+    "markers": [
+      "[NextgenBaseAudio] PASS checks=69 failures=0"
+    ]
+  },
+  {
+    "script": "learning_english_regression",
+    "command": [
+      "timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "90s",
+      "godot",
+      "--headless",
+      "--path",
+      "/workspace/scratch/4fa97167812c/agent-avatar",
+      "--script",
+      "res://scripts/tests/learning_english_regression.gd",
+      "--",
+      "--output=/workspace/scratch/4fa97167812c/avatar-qa/ci-hang-05/final-eleven/learning-english"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 28.051,
+    "minimum_free_bytes": 800120832,
+    "termination_reason": "",
+    "markers": [
+      "LEARNING_ENGLISH_PASS checks=7239 captures=17 input_events=196 fixture=native_catalogue_fixture"
+    ]
+  }
+]

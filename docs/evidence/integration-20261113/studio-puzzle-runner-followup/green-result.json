@@ -1,0 +1,54 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_nextgen_runner.py",
+    "-v"
+  ],
+  "started_at_utc": "2026-11-13T18:21:12.670260+00:00",
+  "duration_seconds": 49.01691906599444,
+  "exit_code": 0,
+  "sources_unchanged_during_run": true,
+  "unchanged_from_original_scope": [
+    "native/tools/validate_nextgen.sh",
+    "native/tools/verify_studio_rasters.py",
+    "native/tools/verify_village_rasters.py",
+    "native/tools/verify_puzzle_menu_rasters.py",
+    "native/tools/run_godot_probe.py",
+    "native/.github/workflows/lumo-nextgen-2018.yml",
+    "native/.github/workflows/lumo-studio-2019.yml",
+    "host/scripts/verify_studio_delivery.py",
+    "host/scripts/record_studio_visual_review.py",
+    "host/scripts/tests/test_nextgen_2019_review.py"
+  ],
+  "checks": {
+    "bash-syntax": {
+      "command": [
+        "bash",
+        "-n",
+        "tools/validate_studio.sh"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "tools/validate_studio.sh",
+        "tools/tests/test_nextgen_runner.py"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "scope": "Actual copied acceptance shell and strict Python validators with explicitly synthetic engine/PNG fixtures. No Godot, renderer or Android execution. Full existing runner suite once after bounded implementation.",
+  "log_sha256": "db821ee1c88e6a40ba1fe0ce559bb49bb40f95802ce15fc0598a41d4e2f9601b"
+}

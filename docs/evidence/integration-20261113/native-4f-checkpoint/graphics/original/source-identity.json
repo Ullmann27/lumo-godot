@@ -1,0 +1,17 @@
+{
+  "head_sha": "4f3449253fd59023a2544432a178eb9efcafe4f9",
+  "head_tree": "189b7a66c731067559469e2503e3a190b337031d",
+  "baseline_sha": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "baseline_tree": "2e93cc5587b477ceee2d159c8aa981ff5188171b",
+  "run_id": 43466005184,
+  "run_attempt": 1,
+  "workflow_git_blob": "b59973a9c9437450452fbe1a13dd0c125cba6174",
+  "workflow_sha256": "fbc70c9353a65804f42b3083414e7aff753eb9c48f8e167c121b1bac762b515d",
+  "immutable_source_manifest_sha256": "847dc67f450f2df8d8efbe9bcc14d11a56bf18e4de8bf158fb43d47a510b5b72",
+  "original_metadata": {
+    "initial/run.json": "766925a2a5014f33fa960b269f5d635a335b27edb003a71f555deeb6ec1f5c90",
+    "initial/commit.json": "5003d29548b2ecab466f4b66ebc3e2ca91b94983b19339209a3bfb1384c38a5d",
+    "initial/baseline-commit.json": "0e9f4792ae6b2c891fc4301fba47dbf5e2721db1ddc12716b363f510a33debbf"
+  },
+  "scope": "Fresh original GitHub responses for this run and immutable commits; no previous-run proof reused."
+}

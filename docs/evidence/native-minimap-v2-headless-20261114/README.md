@@ -1,0 +1,9 @@
+# Native V2 targeted validation on 4d2cbb6
+
+Exactly one Actionlint invocation and one real MobileSafeArea headless probe were executed on commit 4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b, tree 4d50f5652b43846516f759be300d9b50a960f692, parent c04078541fa553094d6868454d19e9fe5f5f871c. Both exited 0. The original complete marker reports 380 checks, zero failures, 15 controls and zero images; the original JSON contains seven minimap layouts and two hint transitions. Engine and runner logs are byte-identical with exactly one engine banner and no error, timeout or leak marker.
+
+The unchanged 420-second strict runner completed the headless probe in 19.881693733999782 seconds. This is an asynchronous Android-boundary fixture using production code, not Android or renderer execution. The existing c040 import cache was retained; no new editor/import pass and no renderer attempt occurred. Scaling46, two Village PNGs and the four preserved plus nine new mobile PNGs require the new CI on the final activation head. The prior c040 Economy339/Scaling42 proof remains a separately bound historical original.
+
+HEAD, tree, full index bytes and all 3,683 materialized tracked paths/modes were identical before and after both gates. All 357 generated UID files and 604 generated import metadata files were separately inventoried and archived; no cleanup was performed. Original XDG saves and logs from this probe are retained. A preparation-script Python syntax error occurred before any checkout or test command; that non-test error is separately recorded. No test or engine retry occurred.
+
+The forthcoming activation changes only STATUS.md and CONTINUE.md prefixes plus documentation/evidence files. Existing historical document bytes are preserved as exact suffixes. It does not change any workflow, product, probe, pin, existing 52/17 gate or Host timeout.

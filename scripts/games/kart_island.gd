@@ -8,23 +8,41 @@ const KART_AUDIO = preload("res://scripts/games/kart_audio.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
-const GARAGE = preload("res://scripts/games/kart_garage_menu.gd")
+const GARAGE = preload("res://scripts/games/kart_spatial_menu.gd")
+const REFERENCE_LANDING = preload("res://scripts/games/kart_neon_hub.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
+const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const RIVAL_STUNTS = preload("res://scripts/games/kart_rival_stunts.gd")
+const RIVAL_FLIGHT = preload("res://scripts/games/kart_rival_flight.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
+const RIVAL_RACECRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
+const RIVAL_RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
+const DRIVE_FEEDBACK = preload("res://scripts/games/kart_drive_feedback.gd")
+const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const AIR_TRICK = preload("res://scripts/games/kart_air_trick.gd")
+const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
+## The jump speed hint appears this many metres before the ramp starts.
+const JUMP_HINT_LEAD_M: float = 70.0
+## Maximum intentional lateral displacement during a precision flight.
+const PRECISION_AIR_LATERAL_M: float = 2.0
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -45,6 +63,8 @@ const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
 ## turbo speed lands before the crystal cave.
 const JUMP_GRAVITY: float = 30.0
 const JUMP_MAX_LIFT: float = 4.0
+## The hero ramp has a longer arc; all other launches retain their baseline gravity.
+var current_jump_gravity: float = JUMP_GRAVITY
 ## AI pulse is deliberately telegraphed: children get a readable dodge/shield window.
 const RIVAL_PULSE_WARNING_SECONDS: float = 0.65
 const RIVAL_PULSE_RADIUS: float = 9.5
@@ -62,6 +82,8 @@ const PREVIEW_SECONDS: float = 5.0
 const PREVIEW_BLEND_SECONDS: float = 1.1
 var curve: Curve3D
 var world: LumoRaceWorld
+var roadside_lasso: Node3D
+var darkride_event = DARKRIDE_EVENT.new()
 var track_length: float
 var distance: float = 0.0
 var lane: float = 0.0
@@ -92,6 +114,8 @@ const START_GREEN_SECONDS: float = 0.9
 var start_lights: PanelContainer
 var start_lamps: Array[Panel] = []
 var start_green_left: float = 0.0
+var start_light_state: int = -1
+var start_light_diameter: float = -1.0
 var countdown_label: Label
 ## Titelkarte der Streckenvorschau (Name, Weltmotto, Überspringen-Hinweis).
 var preview_card: PanelContainer
@@ -118,11 +142,23 @@ var drift_charge: float = 0.0
 var drift_tier_count: Array[int] = [0, 0]
 var wall_contacts: int = 0
 var airborne: bool = false
+var air_trick: Dictionary = {}
 var vertical_speed: float = 0.0
 var air_time: float = 0.0
 var jump_count: int = 0
 var landing_count: int = 0
+## Brief post-landing settle so hard touchdowns don't yank the kart sideways.
+var landing_settle: float = 0.0
+## Camera FOV punch for mini-turbo and item bursts (visual only).
+var camera_punch: float = 0.0
 var gap_falls: int = 0
+## Sonnenhafen precision jump: the kicker in flight, and the measured results.
+var precision_kicker: Dictionary = {}
+var precision_launch_lateral: float = 0.0
+var last_precision_landing: String = ""
+var last_precision_flown: float = 0.0
+var precision_results: Dictionary = {}
+var jump_hint: Control
 ## Action-Parcours: genutzte Turbo-Felder (je Runde einmal), Slalom-Fortschritt, Schanzen, Stürze.
 var action_pads_used: Dictionary = {}
 var action_gates_hit: int = 0
@@ -145,6 +181,7 @@ var rng := RandomNumberGenerator.new()
 var player: LumoRaceKart
 var camera: Camera3D
 var speed_fx: Node3D
+var drive_feedback: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -157,6 +194,7 @@ var gem_distances: Array[float] = []
 var collected: Dictionary = {}
 var item_boxes: Array[Node3D] = []
 var item_box_distances: Array[float] = []
+var item_box_laterals: Array[float] = []
 var item_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
@@ -199,6 +237,7 @@ var crystal_mesh: ArrayMesh
 var star_mesh: ArrayMesh
 var race_root: Node3D
 var garage: Control
+var reference_landing: Control
 var menu_active: bool = true
 var mode: String = "race"
 var track_id: String = "sonnenhafen"
@@ -214,6 +253,7 @@ var player_heading: float = 0.0
 var physical_velocity := Vector3.ZERO
 var previous_road_distance: float = 0.0
 var offroad_seconds: float = 0.0
+var open_edge_fall: bool = false
 var reset_count: int = 0
 var shield_time: float = 0.0
 var shield_visual: MeshInstance3D
@@ -240,6 +280,8 @@ var cup_results: Array = []
 var pending_cup_next: bool = false
 var completed_race: bool = false
 var records = RECORDS.new()
+var track_pass
+var _track_pass_owner := ""
 var ghost: LumoRaceKart
 var ghost_valid: bool = true
 var best_record: bool = false
@@ -251,6 +293,7 @@ var brake_visual_amount: float = 0.0
 var reverse_hold_time: float = 0.0
 var map: Control
 var map_panel: PanelContainer
+var _minimap_layout_pending := false
 var hud_content: MarginContainer
 var controls_row: HBoxContainer
 var controls_gap: Control
@@ -261,6 +304,8 @@ var top_pause_button: Button
 var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
+var menu_settings_open: bool = false
+var menu_settings_navigation: HBoxContainer
 var previous_scale := Vector2i(720, 1280)
 var previous_size := Vector2i(720, 1280)
 var previous_orientation: int = DisplayServer.SCREEN_PORTRAIT
@@ -273,6 +318,9 @@ func _ready() -> void:
 	set_physics_process(false)
 	rng.randomize()
 	result_id = HostBridge.new_result_id()
+	# Capture the owner at entry; changing host options later cannot attribute
+	# the current child's already-running race to another child.
+	track_pass = TRACK_PASS.new(str(HostBridge.launch_options().get("childKey", "standalone")))
 	previous_auto_accept_quit = get_tree().auto_accept_quit
 	previous_quit_on_go_back = get_tree().quit_on_go_back
 	get_tree().auto_accept_quit = false
@@ -300,7 +348,7 @@ func _ready() -> void:
 	)
 	_show_garage()
 	set_physics_process(true)
-	print("[Kart] Holographic garage ready: five modes, twelve worlds, free steering")
+	print("[Kart] Holographic garage ready: five modes, %d worlds, free steering" % CATALOG.TRACKS.size())
 
 
 func _wait_for_landscape() -> bool:
@@ -333,6 +381,7 @@ func _build_world() -> void:
 	gem_distances.clear()
 	item_boxes.clear()
 	item_box_distances.clear()
+	item_box_laterals.clear()
 	item_box_collected.clear()
 	obstacle_distances.clear()
 	opponents.clear()
@@ -348,6 +397,10 @@ func _build_world() -> void:
 	opponent_targets.clear()
 	arena_pickup_timers.clear()
 	ghost = null
+	darkride_event.bind_world(null)
+	if is_instance_valid(kart_audio):
+		kart_audio.bind_world(null)
+	roadside_lasso = null
 	world = null
 	arena = null
 	crystal_mesh = _gem_mesh()
@@ -364,6 +417,13 @@ func _build_world() -> void:
 		world = WORLD.new()
 		race_root.add_child(world)
 		world.build(lightweight, track_id)
+		if is_instance_valid(kart_audio):
+			kart_audio.bind_world(world)
+		roadside_lasso = ROADSIDE_LASSO.new()
+		roadside_lasso.name = "RoadsideLasso"
+		world.add_child(roadside_lasso)
+		roadside_lasso.setup(world)
+		darkride_event.bind_world(world)
 		curve = world.curve
 		track_length = world.length
 		for i in range(24):
@@ -375,6 +435,13 @@ func _build_world() -> void:
 			token.material_override = _glow_material(Color("ffc94a"), 0.6)
 			gems.append(token)
 			gem_distances.append(d)
+		# Stunt stars on the loop's riding line and over its boost pad (Sonnenhafen).
+		for at in STUNT.star_positions(world):
+			var stunt_star: MeshInstance3D = _mesh(race_root, star_mesh, at, Color("ffc94a"))
+			stunt_star.scale = Vector3.ONE * 0.55
+			stunt_star.material_override = _glow_material(Color("ffc94a"), 0.6)
+			gems.append(stunt_star)
+			gem_distances.append(STUNT.loop_start(world))
 		for fraction in [0.12, 0.42, 0.74]:
 			_turbo_pad(fraction * track_length)
 		var item_layout: Array = [
@@ -384,9 +451,16 @@ func _build_world() -> void:
 			[0.69, -2.7],
 			[0.86, 2.7],
 		]
+		if track_id == "jungle_emerald_3600":
+			item_layout = [
+				[0.045, -3.0], [0.13, 3.0], [0.21, 0.0], [0.29, -3.0],
+				[0.365, 2.7], [0.455, 0.0], [0.535, -2.7], [0.63, 0.0],
+				[0.705, 2.7], [0.795, -3.0], [0.875, 0.0], [0.95, 3.0]
+			]
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
 	player = VEHICLE.new()
+	player.set_meta("roadside_speed_factor", 1.0)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
 	player.set_look(_ensure_workshop().look(selected_kart))
 	player.configure(selected_driver, driver.color, selected_kart)
@@ -394,6 +468,10 @@ func _build_world() -> void:
 	player.reduced_motion = reduced_motion
 	player.set_graphics_quality(graphics_profile)
 	race_root.add_child(player)
+	drive_feedback = DRIVE_FEEDBACK.new()
+	drive_feedback.reduced_motion = reduced_motion
+	race_root.add_child(drive_feedback)
+	drive_feedback.bind_vehicle(player)
 	shield_visual = MeshInstance3D.new()
 	var bubble := SphereMesh.new()
 	bubble.radius = 1.7
@@ -404,7 +482,10 @@ func _build_world() -> void:
 	shield_visual.position.y = 1.0
 	var shield_material := StandardMaterial3D.new()
 	shield_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	shield_material.albedo_color = Color(0.45, 0.88, 1.0, 0.15)
+	shield_material.albedo_color = Color(0.45, 0.88, 1.0, 0.24)
+	shield_material.emission_enabled = true
+	shield_material.emission = Color("66e8ff")
+	shield_material.emission_energy_multiplier = 1.25
 	shield_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	shield_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	shield_visual.material_override = shield_material
@@ -413,14 +494,17 @@ func _build_world() -> void:
 	player.add_child(shield_visual)
 	pulse_visual = MeshInstance3D.new()
 	var pulse_mesh := TorusMesh.new()
-	pulse_mesh.inner_radius = 0.92
-	pulse_mesh.outer_radius = 1.08
+	pulse_mesh.inner_radius = 0.82
+	pulse_mesh.outer_radius = 1.28
 	pulse_mesh.rings = 48
 	pulse_mesh.ring_segments = 8
 	pulse_visual.mesh = pulse_mesh
 	var pulse_material := StandardMaterial3D.new()
 	pulse_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	pulse_material.albedo_color = Color("a8eaff")
+	pulse_material.albedo_color = Color("d4b8ff")
+	pulse_material.emission_enabled = true
+	pulse_material.emission = Color("c58cff")
+	pulse_material.emission_energy_multiplier = 2.6
 	pulse_visual.material_override = pulse_material
 	pulse_visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	pulse_visual.visible = false
@@ -437,8 +521,10 @@ func _build_world() -> void:
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
 		var opponent: LumoRaceKart = VEHICLE.new()
+		opponent.set_meta("roadside_speed_factor", 1.0)
 		opponent.set_meta("reference_rival", reference_rivals)
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
+		opponent.set_reference_rival_enabled(reference_rivals)
 		opponent.reduced_motion = reduced_motion
 		opponent.set_graphics_quality(graphics_profile)
 		race_root.add_child(opponent)
@@ -460,7 +546,7 @@ func _build_world() -> void:
 	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
-	camera.far = 450 if graphics_profile == "high" else (340 if graphics_profile == "medium" else 260)
+	camera.far = float(LumoQuality.budget(graphics_profile).camera_far)
 	race_root.add_child(camera)
 	speed_fx = SPEED_FX.new()
 	speed_fx.name = "CameraSpeedFx"
@@ -488,6 +574,9 @@ func _build_world() -> void:
 				ghost = VEHICLE.new()
 				ghost.configure(selected_driver, Color("d3faff"), selected_kart)
 				ghost.reduced_motion = reduced_motion
+				# Lock the replay skin before applying transparency; a later driver
+				# LOD replacement would otherwise reintroduce opaque materials.
+				ghost.set_graphics_quality("low")
 				race_root.add_child(ghost)
 				_set_ghost_materials(ghost)
 	_update_vehicles(0)
@@ -532,14 +621,20 @@ func _show_garage() -> void:
 	garage.has_saved_race = saved_session_available
 	garage.reduced_motion = reduced_motion
 	garage.graphics_profile = graphics_profile
+	garage.track_pass = track_pass
 	if not setup_snapshot.is_empty():
 		var restored: Dictionary = setup_snapshot.duplicate(true)
 		restored["mode"] = _known_mode(str(restored.get("mode", "race")))
 		garage.setup = restored
 	garage.start_requested.connect(_start_selected_race)
 	garage.resume_requested.connect(_resume_saved_race)
+	garage.main_menu_requested.connect(func(): _show_reference_landing(true))
 	garage.exit_requested.connect(_return_to_app)
 	safe_ui.add_child(garage)
+	# Art-directed landing is the first screen in an actual Android launch.
+	# Keep CLI headless gameplay tests deterministic and unchanged.
+	if not OS.get_cmdline_args().has("--script"):
+		_show_reference_landing(not setup_snapshot.is_empty())
 	if not intro_done:
 		intro_done = true
 		if _intro_wanted():
@@ -548,6 +643,122 @@ func _show_garage() -> void:
 			intro.reduced_motion = reduced_motion
 			intro.finished.connect(func(): intro = null)
 			safe_ui.add_child(intro)
+
+
+func _show_reference_landing(preserve_setup: bool = false) -> void:
+	if not is_instance_valid(garage) or not is_instance_valid(safe_ui):
+		return
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
+	reference_landing = REFERENCE_LANDING.new()
+	reference_landing.total_stars = ProgressStore.total_stars()
+	if not preserve_setup:
+		garage.setup.mode = "cup"
+	reference_landing.current_mode = _known_mode(str(garage.setup.mode))
+	reference_landing.mode_selected.connect(_reference_select_mode)
+	reference_landing.quick_start.connect(_reference_quick_start)
+	reference_landing.open_settings.connect(_reference_open_settings)
+	reference_landing.return_to_games.connect(func(): _return_to_app("games"))
+	reference_landing.stage_region_changed.connect(garage.set_landing_stage_region)
+	reference_landing.preview_rotate_requested.connect(_reference_rotate_kart)
+	garage.show()
+	garage.set_landing_active(true)
+	safe_ui.add_child(reference_landing)
+
+
+func _hide_reference_landing() -> void:
+	if is_instance_valid(reference_landing):
+		reference_landing.hide()
+	if is_instance_valid(garage):
+		garage.show()
+		garage.set_landing_active(false)
+		garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+
+
+func _reference_select_mode(selected: String) -> void:
+	if not is_instance_valid(garage):
+		return
+	match selected:
+		"race", "cup", "time_trial", "training", "arena":
+			# Mode selection updates the actual next race on the same live stage.
+			garage.setup["mode"] = selected
+			return
+		"volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen":
+			garage.setup["track"] = selected
+			return
+		"driver":
+			garage.step = 1
+		"garage":
+			garage.step = 2
+		"world":
+			garage.step = 3
+		"difficulty":
+			garage.step = 4
+		"modes":
+			garage.step = 0
+		_:
+			return
+	_hide_reference_landing()
+	garage._refresh()
+	garage._apply_responsive_layout.call_deferred()
+
+
+
+func _reference_rotate_kart(radians: float) -> void:
+	if not is_instance_valid(garage) or not is_instance_valid(garage.preview_pivot):
+		return
+	if not is_finite(radians):
+		return
+	garage.preview_angle = fposmod(garage.preview_angle + clampf(radians, -PI * 0.5, PI * 0.5), TAU)
+	garage.preview_pivot.rotation.y = garage.preview_angle
+	garage._fit_welcome_camera()
+
+func _reference_open_settings() -> void:
+	if not menu_active or not is_instance_valid(garage):
+		return
+	menu_settings_open = true
+	difficulty = str(garage.setup.difficulty)
+	_clear_column(modal_column)
+	modal_scroll.scroll_vertical = 0
+	pause_navigation.hide()
+	modal_column.add_child(_label("Deine Kart-Einstellungen", 28))
+	modal_column.add_child(_label("Ton, Steuerung und Darstellung für deine nächste Fahrt.", 18))
+	_append_preferences()
+	menu_settings_navigation.show()
+	modal.show()
+	modal_backdrop.move_to_front()
+	modal.move_to_front()
+	_apply_responsive_layout()
+	_apply_responsive_layout.call_deferred()
+
+
+func _close_menu_settings() -> void:
+	menu_settings_open = false
+	menu_settings_navigation.hide()
+	modal.hide()
+
+
+func _menu_back() -> void:
+	if menu_settings_open:
+		_close_menu_settings()
+	elif is_instance_valid(garage) and garage.handle_back():
+		return
+	elif is_instance_valid(reference_landing) and reference_landing.visible:
+		_return_to_world()
+	elif is_instance_valid(garage):
+		garage._back()
+	else:
+		_return_to_world()
+
+
+func _reference_quick_start() -> void:
+	if not is_instance_valid(garage):
+		return
+	var selection: Dictionary = garage.setup.duplicate(true)
+	var requested: String = str(reference_landing.current_mode) if is_instance_valid(reference_landing) else "cup"
+	selection["mode"] = _known_mode(requested) if requested in MODE_IDS else _known_mode(str(garage.setup.mode))
+	_hide_reference_landing()
+	_start_selected_race(selection)
 
 
 func _intro_wanted() -> bool:
@@ -585,12 +796,15 @@ static func _known_mode(requested: String) -> String:
 
 func _begin_race() -> void:
 	_session_handed_off = false
+	_track_pass_owner = track_pass.child_key.sha256_text()
 	_refresh_kart_factors()
 	_reset_action_course()
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
 	if is_instance_valid(garage):
 		garage.queue_free()
+	if is_instance_valid(reference_landing):
+		reference_landing.queue_free()
 	menu_active = false
 	hud_content.show()
 	modal.hide()
@@ -632,11 +846,17 @@ func _begin_race() -> void:
 	drift_tier_count = [0, 0]
 	wall_contacts = 0
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0
 	air_time = 0
 	jump_count = 0
 	landing_count = 0
 	gap_falls = 0
+	precision_kicker = {}
+	precision_launch_lateral = 0.0
+	last_precision_landing = ""
+	last_precision_flown = 0.0
+	precision_results = {}
 	wrong_way = false
 	wrong_way_seconds = 0
 	drifting = false
@@ -647,6 +867,7 @@ func _begin_race() -> void:
 	arena_scores = 0
 	reset_count = 0
 	offroad_seconds = 0
+	open_edge_fall = false
 	ghost_valid = true
 	best_record = false
 	collected.clear()
@@ -659,9 +880,9 @@ func _begin_race() -> void:
 		kart_audio.set_paused(false)
 		kart_audio.play_track("arena" if mode == "arena" else track_id)
 	message.text = (
-		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, ITEM"
+		"Stick links lenkt · rechts GAS halten, BREMSE, DRIFT, SPEED, TAKTIK"
 		if OS.has_feature("android") or OS.has_feature("ios")
-		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Item"
+		else "W: Gas · S: Bremse · A/D: lenken · Umschalt: Drift · Leertaste: Boost · E: Taktik"
 	)
 	_save_preferences()
 	_save_session()
@@ -669,11 +890,26 @@ func _begin_race() -> void:
 	# world also changes minimap visibility; resolve both for the actual surface.
 	_apply_responsive_layout()
 	_apply_responsive_layout.call_deferred()
+	# The real Android acceptance test must distinguish the actual 3D race
+	# from the visually rich five-step garage. Only emit this marker after
+	# _build_world() has completed and the race HUD has been shown.
+	if not is_instance_valid(race_root) or not is_instance_valid(player) or not is_instance_valid(camera):
+		push_error("[Kart] Failed to assemble the playable 3D race")
+	else:
+		print("[Kart] race_world_ready: ", track_id, " mode=", mode)
 
 
 func _resume_saved_race() -> void:
+	# _ready already parsed SESSION into session_config. A second disk load can
+	# fail while that in-memory copy is still valid (tmp-dir collision, tear
+	# during queue_free). Falling through silently left the garage up, so tests
+	# saw paused=false and a freshly minted result_id.
 	if session_config.load(SESSION) != OK:
-		return
+		if (
+			not saved_session_available
+			or int(session_config.get_value("race", "version", 0)) not in SESSION_VERSIONS
+		):
+			return
 	mode = _known_mode(str(session_config.get_value("race", "mode", "race")))
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
@@ -695,6 +931,11 @@ func _resume_saved_race() -> void:
 		if is_instance_valid(kart_audio):
 			kart_audio.play_track("arena" if mode == "arena" else track_id)
 		_pause()
+		# _pause() no-ops when finished, already paused, or menu_active. A
+		# restored unfinished race must still report paused so resume identity
+		# cannot fall through to a freshly minted _ready result_id check.
+		if not finished and not paused:
+			paused = true
 		if not finished:
 			message.text = "Deine Fahrt ist gespeichert. Fahre weiter, wenn du bereit bist."
 	else:
@@ -791,7 +1032,7 @@ func _build_pedal_pad() -> Control:
 	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
 	boost_button.icon_id = "boost"
-	item_button = _action("ITEM\n◇", _use_item, Color("a7c5ff"), 94)
+	item_button = _action("TAKTIK\n◇", _use_item, Color("a7c5ff"), 94)
 	item_button.name = "ItemAction"
 	item_button.icon_id = "item"
 	var layout: Array = [
@@ -856,6 +1097,8 @@ func _build_ui() -> void:
 	message.add_theme_constant_override("shadow_offset_y", 2)
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(message)
+	jump_hint = JUMP_HINT.new()
+	column.add_child(jump_hint)
 	call_deferred("_build_start_lights")
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -878,12 +1121,8 @@ func _build_ui() -> void:
 	pedal_pad = _build_pedal_pad()
 	controls_row.add_child(pedal_pad)
 	map_panel = PanelContainer.new()
-	# Top right, below the HUD bar, so it never covers the right-thumb pedal pad.
-	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	map_panel.offset_left = -210
-	map_panel.offset_right = -22
-	map_panel.offset_top = 104
-	map_panel.offset_bottom = 260
+	# The settled HUD and pedal rectangles determine the available map space.
+	map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	map_panel.add_theme_stylebox_override("panel", _style(Color(0.025, 0.065, 0.13, 0.78)))
 	map_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(map_panel)
@@ -891,6 +1130,13 @@ func _build_ui() -> void:
 	map.custom_minimum_size = Vector2(160, 128)
 	map.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_panel.add_child(map)
+	for control in [top, message, jump_hint, joystick, pedal_pad]:
+		control.item_rect_changed.connect(_queue_minimap_layout)
+		control.visibility_changed.connect(_queue_minimap_layout)
+	for action in pedal_pad.get_children():
+		action.item_rect_changed.connect(_queue_minimap_layout)
+		action.visibility_changed.connect(_queue_minimap_layout)
+	hud_content.visibility_changed.connect(_queue_minimap_layout)
 	modal_backdrop = ColorRect.new()
 	modal_backdrop.color = Color(0.015, 0.045, 0.09, 0.46)
 	modal_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -904,7 +1150,7 @@ func _build_ui() -> void:
 	modal.offset_bottom = 260
 	modal.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 24))
 	safe_ui.add_child(modal)
-	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible and not menu_active)
+	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
 	# Settings and result buttons pass touch drags to their ScrollContainer.
@@ -942,8 +1188,17 @@ func _build_ui() -> void:
 		button.custom_minimum_size.y = 76
 		pause_navigation.add_child(button)
 	pause_navigation.hide()
+	menu_settings_navigation = HBoxContainer.new()
+	menu_settings_navigation.name = "MenuSettingsNavigation"
+	var settings_close := _button("Zurück zum Kart-Menü", _close_menu_settings, Color("166580"))
+	settings_close.name = "CloseKartSettings"
+	settings_close.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	menu_settings_navigation.add_child(settings_close)
+	modal_body.add_child(menu_settings_navigation)
+	menu_settings_navigation.hide()
 	modal.hide()
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
+	MobileRuntime.safe_area_changed.connect(_on_viewport_size_changed)
 	_update_safe_area()
 
 
@@ -976,20 +1231,23 @@ func _apply_safe_area(insets: Rect2, physical_size: Vector2) -> void:
 
 
 func _on_viewport_size_changed() -> void:
+	if not is_inside_tree():
+		return
 	_update_safe_area()
 	_apply_responsive_layout()
 
 
 func _update_safe_area() -> void:
-	if not is_instance_valid(safe_ui):
+	if not is_inside_tree() or not is_instance_valid(safe_ui):
 		return
+	safe_ui.visible = MobileRuntime.safe_area_is_ready()
 	var insets := Rect2()
-	if OS.has_feature("android") or OS.has_feature("ios"):
+	if OS.has_feature("android") or OS.has_feature("ios") or MobileRuntime.requires_safe_area_observation():
 		insets = MobileRuntime.get_safe_area_insets()
 		# Usable screen bounds alone can omit camera cutouts in immersive mode.
 		var screen: Vector2i = DisplayServer.screen_get_size()
 		var unobscured: Rect2i = DisplayServer.get_display_safe_area()
-		if screen.x > 0 and screen.y > 0 and unobscured.has_area():
+		if not MobileRuntime.requires_safe_area_observation() and screen.x > 0 and screen.y > 0 and unobscured.has_area():
 			insets.position.x = maxf(insets.position.x, unobscured.position.x)
 			insets.position.y = maxf(insets.position.y, unobscured.position.y)
 			insets.size.x = maxf(insets.size.x, screen.x - unobscured.end.x)
@@ -1170,7 +1428,6 @@ func _apply_responsive_layout() -> void:
 					if button.name == "ReturnToGames"
 					else "Zum Lernen"
 				)
-	map_panel.visible = mode != "arena" and not compact and not short_landscape
 	modal.offset_left = -modal_width * 0.5
 	modal.offset_right = modal_width * 0.5
 	modal.offset_top = -modal_height * 0.5
@@ -1178,11 +1435,91 @@ func _apply_responsive_layout() -> void:
 	# A Container can grow its offsets while an old minimum size is being
 	# rescaled. Restore the anchored rectangle after all new minimums are set.
 	hud_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_queue_minimap_layout()
 
+
+func _queue_minimap_layout() -> void:
+	if _minimap_layout_pending or not is_inside_tree():
+		return
+	_minimap_layout_pending = true
+	_apply_minimap_layout.call_deferred()
+
+
+func _apply_minimap_layout() -> void:
+	_minimap_layout_pending = false
+	if not is_inside_tree() or not is_instance_valid(map_panel):
+		return
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var display_size: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	if minf(viewport_size.x, viewport_size.y) <= 0.0 or minf(display_size.x, display_size.y) <= 0.0:
+		map_panel.hide()
+		return
+	var ui_scale: float = maxf(viewport_size.x / display_size.x, viewport_size.y / display_size.y)
+	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
+	var short_landscape: bool = display_size.x >= display_size.y and safe_ui.size.y / ui_scale < 360.0
+	if mode == "arena" or compact or short_landscape or not hud_content.is_visible_in_tree():
+		map_panel.hide()
+		return
+	# Container sorting can finish after _apply_responsive_layout. Observe its
+	# final rectangles, including changed instructions and a live jump hint.
+	var safe_rect: Rect2 = safe_ui.get_global_rect()
+	var gap: float = 6.0 * ui_scale
+	var safe_left: float = safe_rect.position.x + maxf(gap, float(hud_content.get_theme_constant("margin_left")))
+	var safe_right: float = safe_rect.end.x - maxf(gap, float(hud_content.get_theme_constant("margin_right")))
+	var safe_bottom: float = safe_rect.end.y - maxf(gap, float(hud_content.get_theme_constant("margin_bottom")))
+	var top_bar: Control = top_pause_button.get_parent()
+	var top: float = maxf(safe_rect.position.y + gap, top_bar.get_global_rect().end.y + gap)
+	for notice in [message, jump_hint]:
+		if notice.is_visible_in_tree():
+			top = maxf(top, notice.get_global_rect().end.y + gap)
+	var padding: Vector2 = map_panel.get_theme_stylebox("panel").get_minimum_size()
+	var preferred_content: Vector2 = Vector2(160.0, 128.0) * ui_scale
+	var occupied_rects: Array[Rect2] = []
+	var candidate_rights: Array[float] = [safe_right]
+	var controls: Array = [top_menu_button, top_reset_button, top_pause_button, joystick]
+	controls.append_array(pedal_pad.get_children())
+	for control in controls:
+		if not control.is_visible_in_tree():
+			continue
+		var occupied: Rect2 = control.get_global_rect()
+		if control.get_parent() == pedal_pad:
+			# The production action artwork is 1.12 times the hit rectangle.
+			occupied = occupied.grow(maxf(occupied.size.x, occupied.size.y) * 0.06)
+		occupied_rects.append(occupied)
+		if occupied.end.y + gap > top:
+			candidate_rights.append(minf(safe_right, occupied.position.x - gap))
+	# Try the right edge first, then only the real control edges. Dense views
+	# can use the free space left of SPEED/DRIFT without covering instructions.
+	candidate_rights.sort()
+	candidate_rights.reverse()
+	for right in candidate_rights:
+		var left: float = maxf(safe_left, right - preferred_content.x - padding.x)
+		var bottom: float = safe_bottom
+		for occupied in occupied_rects:
+			if occupied.end.y + gap <= top:
+				continue
+			if occupied.end.x + gap > left and occupied.position.x - gap < right:
+				bottom = minf(bottom, occupied.position.y - gap)
+		var available: Vector2 = Vector2(right - left, bottom - top) - padding
+		var fit: float = minf(1.0, minf(available.x / preferred_content.x, available.y / preferred_content.y))
+		# Keep a readable passive overview; never shrink a driving control.
+		if fit < 0.5:
+			continue
+		var content_size: Vector2 = preferred_content * fit
+		map.custom_minimum_size = content_size
+		map_panel.custom_minimum_size = Vector2.ZERO
+		map_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		map_panel.position = Vector2(right - content_size.x - padding.x, top) - safe_rect.position
+		map_panel.size = content_size + padding
+		map_panel.show()
+		return
+	map_panel.hide()
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
-	# The garage owns its responsive typography and preview sizing.
-	if control == garage:
+	# These controls own their device-dp layout. In particular, the minimap
+	# fits its child minimum to the actual gap between the HUD and pedals.
+	# Recursing here would restore a larger cached minimum after a resize.
+	if control == garage or control == reference_landing or control == map_panel:
 		return
 	if control is Control:
 		var ui_control: Control = control
@@ -1201,9 +1538,32 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 		_apply_ui_scale(child, ui_scale)
 
 
+## Per-course contact width; every legacy track keeps its original values.
+func _road_width_at(at: float) -> float:
+	return world.road_width_at(at) if is_instance_valid(world) else ROAD_WIDTH
+
+
+func _wall_lateral_at(at: float) -> float:
+	return world.wall_lateral_at(at) if is_instance_valid(world) else WORLD.WALL_LATERAL
+
+
+func _advance_jungle_world(delta: float) -> void:
+	if track_id != "jungle_emerald_3600" or not is_instance_valid(world):
+		return
+	if is_instance_valid(kart_audio):
+		kart_audio.update_course_state(
+			delta, distance, track_length, distance >= track_length * float(TOTAL_LAPS - 1),
+			finished, player.global_position
+		)
+	var jungle_environment = world.get_node_or_null("DschungelherzEnvironment")
+	if jungle_environment != null and jungle_environment.has_method("advance"):
+		jungle_environment.advance(delta, player.global_position, not paused, reduced_motion)
+
+
 func _physics_process(delta: float) -> void:
 	if menu_active or not is_instance_valid(player):
 		return
+	_advance_jungle_world(delta)
 	if finished and finish_cine_left > 0.0:
 		if not paused:
 			_update_finish_cine(delta)
@@ -1256,6 +1616,9 @@ func _physics_process(delta: float) -> void:
 		else:
 			_drive_opponents(delta)
 			_track_events()
+			if is_instance_valid(roadside_lasso):
+				roadside_lasso.advance(self, delta)
+			darkride_event.tick(distance, track_length, delta, reduced_motion)
 			_update_checkpoints()
 			if mode == "time_trial":
 				records.capture(delta, elapsed, player.position, player.rotation, axis, speed)
@@ -1267,25 +1630,34 @@ func _physics_process(delta: float) -> void:
 			save_timer = 0
 			first_active_snapshot_pending = false
 			_save_session()
+	if is_instance_valid(world):
+		var attraction = world.get_node_or_null("SonnenhafenHarborAttraction")
+		if attraction != null:
+			attraction.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
+		var streetfronts = world.get_node_or_null("SonnenhafenStreetfronts")
+		if streetfronts != null:
+			streetfronts.advance(delta, player.position, racing and not paused and not finished, reduced_motion)
 	for i in range(gems.size()):
 		if mode != "arena":
-			var key: int = int(distance / track_length) * 24 + i
+			var key: int = _gem_key(int(distance / track_length), i)
 			gems[i].visible = not collected.has(key)
 		if gems[i].visible and not paused and not reduced_motion:
 			gems[i].rotation.y += delta * 1.7
 	if mode != "arena":
 		_sync_item_box_visibility()
 		for i in range(item_boxes.size()):
-			if item_boxes[i].visible and not paused and not reduced_motion:
-				item_boxes[i].rotation.y += delta * 1.35
-				item_boxes[i].rotation.x = sin(elapsed * 2.0 + float(i)) * 0.08
+			if item_boxes[i].visible:
+				RESONANCE.advance_ring(item_boxes[i], elapsed + float(i) * 0.37, reduced_motion)
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
+		if shield_visual.visible and not reduced_motion:
+			var shield_pulse: float = 1.0 + sin(elapsed * 4.2) * 0.045
+			shield_visual.scale = Vector3.ONE * shield_pulse
 	if is_instance_valid(pulse_visual):
 		if not paused:
 			pulse_age += delta
 		pulse_visual.visible = pulse_age < 0.65
-		pulse_visual.scale = Vector3.ONE * (1.0 + pulse_age * 18.0)
+		pulse_visual.scale = Vector3.ONE * (1.0 + pulse_age * 22.0)
 	_update_vehicles(delta)
 	_update_camera(delta)
 	_update_hud()
@@ -1336,12 +1708,13 @@ func _boost_for(seconds: float) -> float:
 
 
 func _drive_player(delta: float, axis: float, braking: float) -> void:
-	if mode != "arena" and _drive_loop(delta, axis, braking):
+	if mode != "arena" and not open_edge_fall and _drive_loop(delta, axis, braking):
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	if kart_factors.is_empty():
 		_refresh_kart_factors()
 	var target: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
+	target *= clampf(float(player.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
 	if mode != "arena":
 		target *= world.dive_factor(previous_road_distance)
 	var manual_gas: bool = _manual_gas_active()
@@ -1373,10 +1746,10 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if mode != "arena":
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
-		if absf(lane) > ROAD_WIDTH * 0.48:
+		if absf(lane) > _road_width_at(float(road.distance)) * 0.48:
 			target *= _factor("offroad", 0.54)
 		# Beginner assistance nudges the steering at the shoulder; movement stays physical.
-		if difficulty == "gemuetlich" and absf(lane) > ROAD_WIDTH * 0.31:
+		if difficulty == "gemuetlich" and absf(lane) > _road_width_at(float(road.distance)) * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
@@ -1384,19 +1757,39 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
-	var grip_turn: float = clampf(absf(speed) / 8.0, 0, 1)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn
+	var grip_turn: float = clampf(absf(speed) / (8.0 * POWERTRAIN.PACE_SCALE), 0, 1)
+	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn * POWERTRAIN.PACE_SCALE
 	if speed < 0.0:
 		turn_rate = -turn_rate
 	if airborne:
 		turn_rate *= 0.35
+	if landing_settle > 0.0:
+		turn_rate *= lerpf(1.0, 0.62, clampf(landing_settle / 0.32, 0.0, 1.0))
+		landing_settle = maxf(0.0, landing_settle - delta)
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var grip: float = 3.1 if drifting else 9.0 * _factor("grip")
+	var grip: float = (3.1 if drifting else 9.0 * _factor("grip")) * POWERTRAIN.PACE_SCALE
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
+	# Child-friendly precision flight: velocity-only boundary, measured from
+	# the SAME curving road frame as the game's lane value. The lip frame alone
+	# cannot constrain a long curved flight (it drifted 2.98 m in CI).
+	# Clip the next *velocity* before integration, never teleport the player
+	# or alter vertical ballistics / the landing rescue.
+	if airborne and not precision_kicker.is_empty():
+		var next_position: Vector3 = player.position + physical_velocity * delta
+		var next_road: Dictionary = world.sample_road(next_position, previous_road_distance)
+		var moved_sideways: float = float(next_road.lateral) - precision_launch_lateral
+		var excess: float = moved_sideways - clampf(
+			moved_sideways, -PRECISION_AIR_LATERAL_M, PRECISION_AIR_LATERAL_M
+		)
+		if absf(excess) > 0.0001:
+			var side: Vector3 = (next_road.basis as Basis).x
+			physical_velocity -= side * (excess / maxf(delta, 0.0001))
+	var before_horizontal: Vector3 = player.position
 	player.position += physical_velocity * delta
-	if drifting and speed > 6:
-		drift_charge = minf(3, drift_charge + delta * absf(axis))
+	_constrain_tunnel_motion(before_horizontal)
+	if drifting and speed > 6 and not airborne:
+		drift_charge = minf(3, drift_charge + delta * absf(axis) * POWERTRAIN.PACE_SCALE)
 	if mode == "arena":
 		player.position.y = 0.035
 		var radius: float = Vector2(player.position.x, player.position.z).length()
@@ -1416,7 +1809,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
-	if absf(lane) > WORLD.WALL_LATERAL and world.open_edge_side(float(road.distance)) != signf(lane):
+	if not open_edge_fall and absf(lane) > _wall_lateral_at(float(road.distance)) and world.open_edge_side(float(road.distance)) != signf(lane):
 		_collide_with_rail(road)
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
@@ -1426,13 +1819,19 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
 	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
-	if absf(lane) < ROAD_WIDTH * 0.5 + edge_margin:
+	if not open_edge_fall and absf(lane) < _road_width_at(road_distance) * 0.5 + edge_margin:
+		var before_vertical: Vector3 = player.position
 		if not _move_vertically(road, road_distance, delta):
 			return
+		_constrain_tunnel_motion(before_vertical)
 		offroad_seconds = 0
 		if absf(travel) <= maxf(3.0, speed * delta * 2.5):
 			distance = maxf(0.0, distance + travel)
 	else:
+		# A fast kart can pass the end of an open section before its fall timer
+		# expires. Once over the void, the next rail must not lift it onto road.
+		if world.open_edge_side(road_distance) != 0.0 and world.open_edge_side(road_distance) == signf(lane):
+			open_edge_fall = true
 		offroad_seconds += delta
 		player.position.y -= offroad_seconds * delta * 10.0
 		if offroad_seconds > 1.15:
@@ -1452,6 +1851,18 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		pitch = world.alternate_route_pitch(road_distance, lane)
 	if pitch != 0.0:
 		player.basis = player.basis.rotated(right, pitch).orthonormalized()
+	if airborne and not air_trick.is_empty() and not reduced_motion:
+		player.basis = (
+			player.basis * Basis.from_euler(AIR_TRICK.visual_euler(air_trick))
+		).orthonormalized()
+
+
+## Collection key of a course star. The 24 classic stars keep their saved keys;
+## extra stunt stars use their own range so laps never collide.
+static func _gem_key(lap: int, index: int) -> int:
+	if index < 24:
+		return lap * 24 + index
+	return 1000000 + lap * 256 + index
 
 
 func _drive_loop(delta: float, axis: float, braking: float) -> bool:
@@ -1462,16 +1873,23 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	if not loop_state.active:
 		var road: Dictionary = world.sample_road(player.position, previous_road_distance)
 		var entry_offset: float = float(road.distance) - float(layout.start)
-		if absf(entry_offset) > 1.0 or absf(float(road.lateral) - float(layout.lane)) > 0.9 or speed < 16.0 or physical_velocity.dot(road.forward) < 8:
+		var window: float = float(layout.get("entry_window", 1.0))
+		var lane_tolerance: float = float(layout.get("lane_tolerance", 0.9))
+		var min_speed: float = float(layout.get("min_entry_speed", 16.0))
+		var off_lane: bool = absf(float(road.lateral) - float(layout.lane)) > lane_tolerance
+		var too_slow: bool = speed < min_speed or physical_velocity.dot(road.forward) < 8
+		# Enter only after reaching the lip. The old symmetric window pulled the
+		# kart forward before entry and discarded its lateral position.
+		if entry_offset < 0.0 or entry_offset > maxf(window, speed * delta + 0.2) or off_lane or too_slow or airborne:
 			return false
-		loop_state.enter(layout, speed, distance - entry_offset)
+		loop_state.enter(layout, speed, distance - entry_offset, float(road.lateral) - float(layout.lane), entry_offset)
 		airborne = false
 		message.text = "Loop! Halte deinen Schwung."
 	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())
 	speed = loop_state.speed
 	if loop_state.active:
 		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
-		distance = loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE
+		distance = maxf(distance, loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE)
 		lane = float(layout.lane) + loop_state.lateral
 		physical_velocity = -player.basis.z * speed
 		return true
@@ -1479,7 +1897,9 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
-	player.transform = world.reset_transform(exit_distance, float(layout.lane))
+	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane) + loop_state.lateral
+	player.transform = world.reset_transform(exit_distance, exit_lane)
+	lane = exit_lane
 	if loop_state.failed:
 		speed = 8
 		ghost_valid = false
@@ -1506,15 +1926,19 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		)
 		if leaving_ramp:
 			airborne = true
+			air_trick = {}
 			jump_count += 1
 			air_time = 0.0
+			current_jump_gravity = JUMP_GRAVITY
 			vertical_speed = minf(speed * sin(float(jump.angle)), JUMP_MAX_LIFT)
 			message.text = "Sprung!"
-		elif world.in_gap(road_distance):
-			# Rolled or reversed into the gap without take-off: there is no road here.
-			airborne = true
-			vertical_speed = 0.0
-			air_time = 0.0
+	if not airborne and world.in_gap(road_distance):
+		# Rolled or reversed into a gap without take-off: there is no road here.
+		airborne = true
+		air_trick = {}
+		current_jump_gravity = JUMP_GRAVITY
+		vertical_speed = 0.0
+		air_time = 0.0
 	if not airborne:
 		var kicker: Dictionary = ACTION.kicker_crossed(
 			world.action, fposmod(previous_road_distance, track_length), fposmod(road_distance, track_length)
@@ -1522,33 +1946,116 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 		if not kicker.is_empty() and speed > 6.0:
 			# Sprungschanze: abheben, kurz fliegen und mit Turbo landen.
 			airborne = true
+			air_trick = {}
 			action_kicker_jumps += 1
 			air_time = 0.0
 			player.position.y = ground + float(kicker.height)
-			vertical_speed = minf(speed * sin(float(kicker.angle)) + 1.6, JUMP_MAX_LIFT)
-			message.text = "Schanze!"
+			current_jump_gravity = float(kicker.get("flight_gravity", JUMP_GRAVITY))
+			if bool(kicker.get("precision_jump", false)):
+				# Same numbers as the speed hint; nothing is corrected in flight.
+				precision_kicker = kicker
+				precision_launch_lateral = lane
+				vertical_speed = PRECISION.launch_vertical(speed, kicker)
+				message.text = "Sprung! Ziel: die grüne Landezone."
+				return true
+			var lift: float = speed * sin(float(kicker.angle)) + float(kicker.get("lift_bonus", 1.6))
+			vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
+			message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
 			return true
 	if not airborne:
 		player.position.y = ground
 		return true
-	vertical_speed -= JUMP_GRAVITY * delta
+	vertical_speed -= current_jump_gravity * delta
 	player.position.y += vertical_speed * delta
 	air_time += delta
+	_update_air_trick(delta)
 	if world.in_gap(road_distance):
 		if player.position.y < float(road.height) - 2.5:
+			_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
 			_rescue_from_gap()
 			return false
+	elif not precision_kicker.is_empty() and player.position.y < ground - 0.5:
+		# Too short: the kart meets the far edge of the gap below the road.
+		# It is not lifted onto the road; it falls and the cloud takes over.
+		_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
+		_rescue_from_gap()
+		return false
 	elif player.position.y <= ground:
+		var impact: float = maxf(0.0, -vertical_speed)
 		player.position.y = ground
 		airborne = false
+		current_jump_gravity = JUMP_GRAVITY
 		landing_count += 1
-		if air_time > 0.35:
+		var precision_result: String = ""
+		if not precision_kicker.is_empty():
+			var flown: float = fposmod(road_distance - float(precision_kicker.take_off), track_length)
+			precision_result = PRECISION.classify_landing(flown, precision_kicker)
+			_record_precision_landing(precision_result, road_distance)
+		if precision_result == PRECISION.LANDING_LONG:
+			# Overshot the zone: a hard landing costs speed and gives no turbo.
+			speed *= 0.6
+			physical_velocity *= 0.6
+			message.text = "Zu weit geflogen! Nächstes Mal etwas bremsen."
+			_sound_effect("collision")
+		elif precision_result == PRECISION.LANDING_ZONE:
+			boost_time = maxf(boost_time, _boost_for(1.2))
+			message.text = "Perfekt in der Landezone! Turbo!"
+			_sound_effect("drift")
+		elif air_time > 0.35:
 			boost_time = maxf(boost_time, _boost_for(1.2))
 			message.text = "Super gelandet! Turbo!"
 			_sound_effect("drift")
+		var trick_reward: Dictionary = AIR_TRICK.landing_bonus(air_trick, precision_result)
+		if bool(trick_reward.get("rewarded", false)):
+			boost_time += _boost_for(float(trick_reward.boost))
+			message.text = str(trick_reward.label)
+			_sound_effect("boost")
+		if is_instance_valid(drive_feedback):
+			drive_feedback.landed(
+				impact,
+				precision_result == PRECISION.LANDING_ZONE
+				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35),
+				race_root.global_basis * (road.basis as Basis)
+			)
+		air_trick = {}
+		# Settle sideways slide after a firm landing. Precision zone/long
+		# outcomes already apply their own speed rules and stay untouched.
+		if (
+			impact > 4.5
+			and precision_result != PRECISION.LANDING_ZONE
+			and precision_result != PRECISION.LANDING_LONG
+		):
+			landing_settle = maxf(landing_settle, clampf((impact - 4.5) * 0.05, 0.10, 0.32))
+			var along := Vector3(-sin(player_heading), 0, -cos(player_heading))
+			var sideways: Vector3 = physical_velocity - along * physical_velocity.dot(along)
+			physical_velocity -= sideways * 0.42
 		air_time = 0.0
 		vertical_speed = 0.0
 	return true
+
+
+## The race integrates position itself; imported tunnel bodies therefore need
+## the same swept collision query for horizontal movement and ballistic lift.
+func _constrain_tunnel_motion(previous_position: Vector3) -> void:
+	if mode == "arena" or not is_instance_valid(world):
+		return
+	var contact: Dictionary = world.resolve_tunnel_motion(previous_position, player.position)
+	player.position = contact.position
+	if not bool(contact.collided):
+		return
+	var normal: Vector3 = contact.normal
+	physical_velocity = physical_velocity.slide(normal)
+	if vertical_speed > 0.0 and normal.y < -0.25:
+		vertical_speed = 0.0
+
+
+func _record_precision_landing(result: String, road_distance: float) -> void:
+	if precision_kicker.is_empty():
+		return
+	last_precision_landing = result
+	last_precision_flown = fposmod(road_distance - float(precision_kicker.take_off), track_length)
+	precision_results[result] = int(precision_results.get(result, 0)) + 1
+	precision_kicker = {}
 
 
 func _reset_action_course() -> void:
@@ -1627,9 +2134,21 @@ func _update_dive_tint() -> void:
 	dive_tint.visible = action_in_dive
 
 
+func _update_air_trick(delta: float) -> void:
+	if not airborne:
+		return
+	if air_trick.is_empty() and drifting and air_time > 0.05:
+		air_trick = AIR_TRICK.start(steering)
+		if not reduced_motion:
+			message.text = "Rolle!" if str(air_trick.get("kind", "")) == AIR_TRICK.KIND_ROLL else "Salto!"
+	if not air_trick.is_empty():
+		air_trick = AIR_TRICK.advance(air_trick, delta)
+
+
 func _rescue_from_gap() -> void:
 	# A cloud carries the kart just past the gap: no repeated falls, no shortcut.
-	var target: float = float(world.jump.gap_end) + 3.0
+	var precision: bool = world.jump.is_empty() and last_precision_landing == PRECISION.LANDING_SHORT
+	var target: float = world.gap_exit_distance(previous_road_distance)
 	distance += fposmod(target - previous_road_distance, track_length)
 	previous_road_distance = target
 	player.transform = world.reset_transform(target)
@@ -1637,12 +2156,16 @@ func _rescue_from_gap() -> void:
 	speed = 8.0
 	physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0.0
 	air_time = 0.0
 	gap_falls += 1
 	reset_count += 1
 	ghost_valid = false
-	message.text = "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+	message.text = (
+		"Zu kurz! Eine Wolke trägt dich rüber. Nächstes Mal mehr Gas!" if precision
+		else "Eine Wolke trägt dich weiter. Mehr Schwung beim nächsten Sprung!"
+	)
 
 
 func _manual_gas_active() -> bool:
@@ -1657,17 +2180,18 @@ func _collide_with_rail(road: Dictionary) -> void:
 	# The rail is a wall: stay on its inner face and slide along it.
 	var road_basis: Basis = road.basis
 	var side: float = signf(lane)
-	player.position -= road_basis.x * (lane - side * WORLD.WALL_LATERAL)
+	player.position -= road_basis.x * (lane - side * _wall_lateral_at(float(road.distance)))
 	var into_wall: float = physical_velocity.dot(road_basis.x) * side
 	if into_wall <= 0.0:
 		return
 	wall_contacts += 1
-	physical_velocity -= road_basis.x * side * into_wall * 1.3
-	speed *= clampf(1.0 - into_wall * 0.03, 0.72, 0.98)
+	# Slide along the curb instead of bouncing off it and spinning out.
+	physical_velocity -= road_basis.x * side * into_wall * 1.08
+	speed *= clampf(1.0 - into_wall * 0.022, 0.80, 0.99)
 	var along: float = _heading(float(road.distance))
 	if absf(angle_difference(player_heading, along)) > PI / 2:
 		along += PI
-	player_heading = lerp_angle(player_heading, along, minf(1.0, 0.25 + into_wall * 0.04))
+	player_heading = lerp_angle(player_heading, along, minf(1.0, 0.38 + into_wall * 0.05))
 	if wall_sound_timer <= 0.0 and into_wall > 2.0:
 		wall_sound_timer = 0.4
 		_sound_effect("collision")
@@ -1725,6 +2249,13 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 		if warning_before > 0.0 and opponent_pulse_warning_times[index] <= 0.0:
 			if index < opponent_item_fx.size():
 				opponent_item_fx[index].fire_pulse()
+			# The same telegraphed pulse hits every nearby unshielded racer,
+			# not a coordinated AI-only attack against the child.
+			for other in range(opponents.size()):
+				if other == index or opponent_shield_times[other] > 0.0:
+					continue
+				if opponents[index].position.distance_to(opponents[other].position) <= RIVAL_PULSE_RADIUS:
+					opponent_stuns[other] = maxf(opponent_stuns[other], 0.38)
 			if local_gap.length() <= RIVAL_PULSE_RADIUS:
 				if shield_time > 0.0:
 					message.text = "Sternenschild blockt den Rivalen-Impuls!"
@@ -1743,8 +2274,25 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				fposmod(local_distance - box_distance + track_length * 0.5, track_length)
 				- track_length * 0.5
 			)
-			if absf(offset) < 1.4:
-				opponent_items[index] = _roll_item_for_place(_opponent_place(index))
+			if (
+				absf(offset) < 1.4
+				and absf(opponents[index].motion_speed) >= RESONANCE.MIN_PICKUP_SPEED
+				and opponents[index].position.distance_to(
+					item_boxes[item_box_distances.find(box_distance)].position
+				) < 2.65
+			):
+				var rival_road: Dictionary = world.sample_road(
+					opponents[index].position, local_distance
+				)
+				var rival_score: Dictionary = RESONANCE.award(
+					absf(opponents[index].motion_speed), RIVAL_RACECRAFT.cruise_speed(
+						opponents[index].kart_style, CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+					),
+					float(rival_road.lateral) - item_box_laterals[item_box_distances.find(box_distance)],
+					float(opponents[index].get_meta("racecraft_drift_charge", 0.0)),
+					opponent_stuns[index] > 0.0
+				)
+				opponent_items[index] = str(rival_score.item)
 				opponent_item_cooldowns[index] = 1.8
 				break
 
@@ -1752,78 +2300,254 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 		_sync_rival_item_fx(index)
 		return
 
-	var progress_gap: float = distance - opponent_distances[index]
 	match opponent_items[index]:
 		"boost":
-			if progress_gap > 1.0 and progress_gap < 28.0:
+			if _rival_can_boost(index):
 				opponent_boost_times[index] = 2.2
 				opponent_items[index] = ""
 		"pulse":
-			if local_gap.length() < RIVAL_PULSE_RADIUS + 1.5:
+			if _rival_target_near(index, RIVAL_PULSE_RADIUS + 1.5):
 				opponent_pulse_warning_times[index] = RIVAL_PULSE_WARNING_SECONDS
 				opponent_items[index] = ""
-				message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
-				_sound_effect("item")
+				if local_gap.length() < 30.0:
+					message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
+					_sound_effect("item")
 		"shield":
-			if local_gap.length() < 7.0:
+			if _rival_target_near(index, 7.0):
 				opponent_shield_times[index] = 5.0
 				opponent_items[index] = ""
 	_sync_rival_item_fx(index)
 
 
+func _rival_target_near(index: int, radius: float) -> bool:
+	var origin: Vector3 = opponents[index].position
+	if origin.distance_to(player.position) < radius:
+		return true
+	for other in range(opponents.size()):
+		if other == index:
+			continue
+		if origin.distance_to(opponents[other].position) < radius:
+			return true
+	return false
+
+
+func _update_rival_drift(index: int, road: Dictionary, pace: float, delta: float) -> bool:
+	var rival: LumoRaceKart = opponents[index]
+	var charge: float = float(rival.get_meta("racecraft_drift_charge", 0.0))
+	var at: float = float(road.distance)
+	var now_forward: Vector3 = world.forward(at)
+	var next_forward: Vector3 = world.forward(at + 3.0)
+	var turn_rate: float = absf(angle_difference(
+		atan2(now_forward.x, now_forward.z), atan2(next_forward.x, next_forward.z)
+	)) * pace / 3.0
+	var aligned: bool = absf(angle_difference(opponent_headings[index], _heading(at))) < 0.30
+	var controlled: bool = aligned and absf(float(road.lateral)) < 4.0 and opponent_stuns[index] <= 0.0
+	var drifting_now: bool = difficulty != "gemuetlich" and controlled and pace >= 10.0 and turn_rate > 0.09
+	if drifting_now:
+		charge = minf(2.2, charge + delta * POWERTRAIN.PACE_SCALE * clampf(turn_rate * 3.2, 0.0, 1.0))
+	else:
+		# Same time tiers as the player's held drift. Charge is earned only by
+		# a sustained controlled turn, and a collision cancels it completely.
+		if controlled and pace >= 8.0 and charge >= DRIFT_TIERS[0] and _rival_can_boost(index):
+			var tier: int = 1 if charge >= DRIFT_TIERS[1] else 0
+			opponent_boost_times[index] = maxf(opponent_boost_times[index], DRIFT_BOOST_SECONDS[tier])
+		charge = 0.0
+	rival.set_meta("racecraft_drift_charge", charge)
+	return drifting_now
+
+
+func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
+	var traffic := PackedVector3Array()
+	var origin: Vector3 = opponents[index].position
+	var basis: Basis = road.basis
+	for other in range(opponents.size()):
+		if other == index:
+			continue
+		var gap: Vector3 = opponents[other].position - origin
+		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
+			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), absf(opponents[other].motion_speed)))
+	var player_gap: Vector3 = player.position - origin
+	if player_gap.length_squared() < 10000.0 and absf(player_gap.dot(basis.y)) < 3.0:
+		traffic.append(Vector3(player_gap.dot(-basis.z), float(road.lateral) + player_gap.dot(basis.x), maxf(0.0, speed)))
+	for obstacle in world.action_obstacles:
+		var gap: Vector3 = obstacle - origin
+		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
+			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), 0.0))
+	return traffic
+
+
+func _rival_can_boost(index: int) -> bool:
+	var road: Dictionary = world.sample_road(opponents[index].position, fposmod(opponent_distances[index], track_length))
+	var road_distance: float = float(road.distance)
+	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+	var cruise: float = RIVAL_RACECRAFT.cruise_speed(opponents[index].kart_style, rules)
+	var precision_ahead: bool = false
+	for kicker in world.action.get("kickers", []):
+		if bool(kicker.get("precision_jump", false)):
+			var remaining: float = float(kicker.take_off) - road_distance
+			if remaining >= -5.0 and remaining < cruise * 3.2:
+				precision_ahead = true
+	var heading_error: float = angle_difference(opponent_headings[index], _heading(road_distance + 10.0))
+	return RIVAL_RACECRAFT.may_boost(
+		RIVAL_RACECRAFT.curvature(world, road_distance), heading_error,
+		float(road.lateral), _rival_traffic(index, road), cruise,
+		precision_ahead, opponent_stuns[index] > 0.0
+	)
+
+
+func _rival_profile() -> Dictionary:
+	# Entdecken / Abenteuer / Extrem. Speed still comes only from the
+	# catalog multipliers — never from the gap to the player.
+	match difficulty:
+		"gemuetlich":
+			return {
+				"look_ahead": 6.5,
+				"turn_rate": 1.08 * POWERTRAIN.PACE_SCALE,
+				"wobble": 1.15,
+				"wobble_hz": 0.55,
+				"mistake": 0.85,
+				"mistake_hz": 0.31,
+				"overtake": 11.0,
+				"lane_spread": 1.15,
+			}
+		"pro":
+			return {
+				"look_ahead": 18.0,
+				"turn_rate": 2.45 * POWERTRAIN.PACE_SCALE,
+				"wobble": 0.025,
+				"wobble_hz": 2.1,
+				"mistake": 0.0,
+				"mistake_hz": 1.0,
+				"overtake": 36.0,
+				"lane_spread": 1.55,
+			}
+		_:
+			return {
+				"look_ahead": 10.0,
+				"turn_rate": 1.55 * POWERTRAIN.PACE_SCALE,
+				"wobble": 0.32,
+				"wobble_hz": 0.35,
+				"mistake": 0.22,
+				"mistake_hz": 0.62,
+				"overtake": 20.0,
+				"lane_spread": 1.35,
+			}
+
+
 func _drive_opponents(delta: float) -> void:
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+	var profile: Dictionary = _rival_profile()
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
+		if RIVAL_STUNTS.update_loop(self, i, delta):
+			continue
+		if RIVAL_FLIGHT.update(self, i, delta):
+			continue
 		var sampled: Dictionary = world.sample_road(rival.position, fposmod(opponent_distances[i], track_length))
-		var target_lane: float = clampf(-2.8 + i * 1.35 + sin(elapsed * 0.35 + i) * 0.3, -3.4, 3.4)
+		var bend: float = RIVAL_RACECRAFT.curvature(world, float(sampled.distance))
+		var target_lane: float = -2.8 + float(i) * 1.35
+		target_lane += sin(elapsed * float(profile.wobble_hz) + float(i)) * float(profile.wobble)
+		if float(profile.mistake) > 0.0:
+			target_lane += sin(elapsed * float(profile.mistake_hz) + float(i) * 2.3) * float(profile.mistake)
+		# A small measured apex bias improves the line without cutting across
+		# the verge. Every driver keeps an individual risk/clearance preference.
+		if difficulty != "gemuetlich":
+			target_lane -= clampf(bend * 35.0, -1.0, 1.0) * float(RIVAL_RACECRAFT.style(i).line)
+		if difficulty != "gemuetlich" and opponent_items[i].is_empty():
+			# Earn the next resonance gate by actually driving through it. Traffic
+			# safety still wins over a pickup, and stunt lane choice is applied later.
+			for ring in range(item_box_distances.size()):
+				var ahead: float = fposmod(item_box_distances[ring] - float(sampled.distance), track_length)
+				if ahead > 1.0 and ahead < maxf(26.0, absf(rival.motion_speed) * 1.35):
+					target_lane = item_box_laterals[ring]
+					break
+		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
+		target_lane = RIVAL_RACECRAFT.choose_lane(
+			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
+		)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
-		if local_gap.length() < 7 and absf(float(sampled.lateral) - lane) < 1.3:
-			target_lane = clampf(lane + (1.8 if i % 2 == 0 else -1.8), -3.8, 3.8)
-		var aim: Vector3 = world.position_at(float(sampled.distance) + 10.0, target_lane)
+		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
+		var look_ahead: float = float(profile.look_ahead)
+		if absf(rival.motion_speed) < 4.0 and absf(target_lane - float(sampled.lateral)) > 0.6:
+			look_ahead = 1.5
+		var aim: Vector3 = world.position_at(float(sampled.distance) + look_ahead, target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
-		opponent_headings[i] += clampf(angle, -1.55 * delta, 1.55 * delta)
-		var target_speed: float = 20.5 * float(rules.speed) * float(rules.rival) * (0.97 + i * 0.014)
+		var turn_cap: float = float(profile.turn_rate) * delta
+		opponent_headings[i] += clampf(angle, -turn_cap, turn_cap)
+		# Same fleet performance figures as the human kart, without tuning or
+		# a player-gap multiplier. Strong drivers brake for actual upcoming bends.
+		var target_speed: float = RIVAL_RACECRAFT.cruise_speed(rival.kart_style, rules)
 		if opponent_boost_times[i] > 0.0:
 			target_speed *= 1.32
+		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
+		target_speed = RIVAL_RAMP_PLAN.target_speed(
+			world, float(sampled.distance), rival.kart_style, float(rules.speed),
+			absf(rival.motion_speed), target_speed, opponent_boost_times[i] > 0.0, delta
+		)
+		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
+		target_speed *= clampf(float(rival.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
+		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
-		if local_gap.length() < 2.6 and forward.dot(local_gap.normalized()) > 0.6:
-			target_speed = minf(target_speed, maxf(4, speed - 1))
+		if opponent_stuns[i] <= 0.0:
+			target_speed = RIVAL_RACECRAFT.manoeuvre_speed(
+				float(sampled.lateral), target_lane, traffic, target_speed,
+				Vector2(forward.dot(-(sampled.basis as Basis).z), forward.dot((sampled.basis as Basis).x)), delta
+			)
 		rival.position += forward * target_speed * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
 		opponent_distances[i] += travel
 		opponent_lanes[i] = float(next.lateral)
+		if RIVAL_FLIGHT.try_launch(self, i, sampled, next, target_speed):
+			continue
 		var rival_lateral: float = float(next.lateral)
-		if absf(rival_lateral) > WORLD.WALL_LATERAL and absf(rival_lateral) <= ROAD_WIDTH * 0.5 + 1:
+		if absf(rival_lateral) > _wall_lateral_at(float(next.distance)) and absf(rival_lateral) <= _road_width_at(float(next.distance)) * 0.5 + 1:
 			# Rivals respect the same rail wall as the player.
 			var rail_side: float = signf(rival_lateral)
-			var overlap: float = rival_lateral - rail_side * WORLD.WALL_LATERAL
+			var overlap: float = rival_lateral - rail_side * _wall_lateral_at(float(next.distance))
 			rival.position -= (next.basis as Basis).x * overlap
-			opponent_lanes[i] = rail_side * WORLD.WALL_LATERAL
+			opponent_lanes[i] = rail_side * _wall_lateral_at(float(next.distance))
 		rival.position.y = (
 			float(next.height)
 			+ 0.035
-			+ world.rival_arc(float(next.distance))
+			+ world.ramp_height(float(next.distance))
 			+ world.alternate_route_height(float(next.distance), rival_lateral)
 		)
-		if absf(float(next.lateral)) > ROAD_WIDTH * 0.5 + 1:
-			rival.transform = world.reset_transform(opponent_distances[i], target_lane)
-			opponent_headings[i] = _heading(opponent_distances[i])
+		if absf(float(next.lateral)) > _road_width_at(float(next.distance)) * 0.5 + 1:
+			# Steer back onto the asphalt. Never teleport with reset_transform.
+			var overflow: float = absf(float(next.lateral)) - (_road_width_at(float(next.distance)) * 0.5 + 0.85)
+			var recover: float = minf(overflow, maxf(target_speed, 8.0) * delta * 1.15)
+			rival.position -= (next.basis as Basis).x * signf(float(next.lateral)) * recover
+			opponent_lanes[i] = float(next.lateral) - signf(float(next.lateral)) * recover
+			opponent_headings[i] = lerp_angle(
+				opponent_headings[i], _heading(opponent_distances[i]), minf(1.0, 2.6 * delta)
+			)
+			var recovered: Dictionary = world.sample_road(rival.position, float(next.distance))
+			rival.position.y = (
+				float(recovered.height)
+				+ 0.035
+				+ world.ramp_height(float(recovered.distance))
+				+ world.alternate_route_height(float(recovered.distance), float(recovered.lateral))
+			)
+			var rec_forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
+			var rec_normal: Vector3 = (recovered.basis as Basis).y
+			var rec_right: Vector3 = rec_forward.cross(rec_normal).normalized()
+			if rec_right.length() > 0.001:
+				rival.basis = Basis(rec_right, rec_normal, -rec_normal.cross(rec_right)).orthonormalized()
 		else:
 			var normal: Vector3 = (next.basis as Basis).y
 			var right: Vector3 = forward.cross(normal).normalized()
 			var rival_basis: Basis = Basis(right, normal, -normal.cross(right)).orthonormalized()
-			var route_pitch: float = world.alternate_route_pitch(
-				float(next.distance), rival_lateral
-			)
+			var route_pitch: float = world.ramp_pitch(float(next.distance))
+			if absf(route_pitch) < 0.001:
+				route_pitch = world.alternate_route_pitch(float(next.distance), rival_lateral)
 			if absf(route_pitch) > 0.001:
 				rival_basis = rival_basis.rotated(right, route_pitch).orthonormalized()
 			rival.basis = rival_basis
@@ -1831,18 +2555,22 @@ func _drive_opponents(delta: float) -> void:
 			target_speed,
 			clampf(-angle, -1, 1),
 			opponent_boost_times[i] > 0.0,
-			false
+			rival_drifting
 		)
 
 
 func _reset_kart() -> void:
 	loop_state.active = false
+	precision_kicker = {}
 	if menu_active or not is_instance_valid(player) or finished:
 		return
 	var fell_from_edge: bool = (
-		mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
-		and absf(lane) > ROAD_WIDTH * 0.5
+		open_edge_fall or (
+			mode != "arena" and world.open_edge_side(previous_road_distance) != 0.0
+			and absf(lane) > _road_width_at(previous_road_distance) * 0.5
+		)
 	)
+	open_edge_fall = false
 	if mode == "arena":
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0
@@ -1859,6 +2587,7 @@ func _reset_kart() -> void:
 	physical_velocity = Vector3.ZERO
 	offroad_seconds = 0
 	airborne = false
+	air_trick = {}
 	vertical_speed = 0.0
 	air_time = 0.0
 	reset_count += 1
@@ -1905,13 +2634,32 @@ func _update_hud() -> void:
 		drift_state = "BLAU!"
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
-	item_button.text = {"": "ITEM\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "WIND\n➜"}.get(item, "ITEM")
+	item_button.text = {"": "TAKTIK\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "SCHUB\n➜"}.get(item, "TAKTIK")
 	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
 	gas_button.disabled = not enabled
 	brake_button.disabled = not enabled
 	gas_button.visible = not auto_gas
+	_update_jump_hint(enabled)
+
+
+## Speed hint on the run-up to a precision jump (prediction only, no assist).
+func _update_jump_hint(enabled: bool) -> void:
+	if not is_instance_valid(jump_hint):
+		return
+	var kicker: Dictionary = {}
+	if enabled and mode != "arena" and is_instance_valid(world) and not airborne and not loop_state.active:
+		var d: float = fposmod(previous_road_distance, track_length)
+		for candidate in world.action.get("kickers", []):
+			if not bool(candidate.get("precision_jump", false)):
+				continue
+			if d >= float(candidate.start) - JUMP_HINT_LEAD_M and d < float(candidate.take_off):
+				kicker = candidate
+	if kicker.is_empty():
+		jump_hint.hide_hint()
+	else:
+		jump_hint.show_for(speed, kicker)
 
 
 func _place() -> int:
@@ -1947,24 +2695,38 @@ func _track_events() -> void:
 				player.position += away.normalized() * 0.18
 	var lap: int = int(distance / track_length)
 	for i in range(gems.size()):
-		var key: int = lap * 24 + i
+		var key: int = _gem_key(lap, i)
 		if not collected.has(key) and player.position.distance_to(gems[i].position) < 1.75:
 			collected[key] = true
 			if collected.size() % 3 == 0:
 				boosts = mini(3, boosts + 1)
-			if collected.size() % 2 == 0 and item.is_empty():
-				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+			# Gem collection rewards the existing boost charges, never random weapons.
+			# All tactical items come from a measured resonance-ring crossing.
 	for i in range(item_boxes.size()):
 		var item_key: int = lap * item_boxes.size() + i
 		if (
 			not item_box_collected.has(item_key)
-			and player.position.distance_to(item_boxes[i].position) < 2.0
+			and item.is_empty() and speed >= RESONANCE.MIN_PICKUP_SPEED
+			and not airborne
+			and player.position.distance_to(item_boxes[i].position) < 2.65
 		):
+			# Every lap offers the same rings. No ranking, RNG or unknown loot.
+			var reference_speed: float = POWERTRAIN.top_speed(
+				kart_factors, float(CATALOG.entry(CATALOG.DIFFICULTIES, difficulty).speed)
+			)
+			var reward: Dictionary = RESONANCE.award(
+				speed, reference_speed, lane - item_box_laterals[i],
+				drift_charge, hit_timer > 0.0
+			)
 			item_box_collected[item_key] = true
-			if item.is_empty():
-				item = _roll_item_for_place(_place())
-				message.text = "Überraschungs-Item!"
-				_sound_effect("item")
+			item = str(reward.item)
+			if is_instance_valid(drive_feedback):
+				drive_feedback.collect_item(item_boxes[i].global_position, item)
+			message.text = "Resonanz %d%%: %s!" % [
+				roundi(float(reward.score) * 100.0),
+				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
+			]
+			_sound_effect("item")
 	for fraction in [0.12, 0.42, 0.74]:
 		if absf(fposmod(distance, track_length) - fraction * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
 			boost_time = maxf(boost_time, _boost_for(1.0))
@@ -1977,12 +2739,15 @@ func _use_item() -> void:
 	match item:
 		"boost":
 			boost_time = maxf(boost_time, _boost_for(3.0))
+			camera_punch = maxf(camera_punch, 0.30)
 			message.text = "Rückenwind!"
 		"shield":
 			shield_time = 6.0
+			camera_punch = maxf(camera_punch, 0.14)
 			message.text = "Sternenschild: sechs Sekunden geschützt."
 		"pulse":
 			pulse_age = 0
+			camera_punch = maxf(camera_punch, 0.36)
 			pulse_visual.position = player.position + Vector3.UP * 0.15
 			for i in range(opponents.size()):
 				if (
@@ -2004,7 +2769,8 @@ func _update_arena(delta: float) -> void:
 			if arena_scores % 3 == 0:
 				boosts = mini(3, boosts + 1)
 			if arena_scores % 2 == 0 and item.is_empty():
-				item = ["shield", "pulse", "boost"][rng.randi_range(0, 2)]
+				# Arena rewards now follow actual gems secured, not a roulette.
+				item = ["boost", "shield", "pulse"][(arena_scores / 2 - 1) % 3]
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
 	for i in range(opponents.size()):
 		var rival: LumoRaceKart = opponents[i]
@@ -2050,7 +2816,7 @@ func _update_arena(delta: float) -> void:
 
 
 func _update_checkpoints() -> void:
-	if absf(lane) > ROAD_WIDTH * 0.5 + 0.8:
+	if absf(lane) > _road_width_at(distance) * 0.5 + 0.8:
 		return
 	var spacing: float = track_length / 8.0
 	var target: float = (checkpoint_index + 1) * spacing
@@ -2069,13 +2835,31 @@ func _update_vehicles(_delta: float) -> void:
 		return
 	var enabled: bool = racing and not paused and not finished
 	player.set_motion(speed if enabled else 0, steering, boost_time > 0 and enabled, drifting and enabled)
+	var spark_tier := 0
+	if drifting and enabled:
+		if drift_charge >= DRIFT_TIERS[1]:
+			spark_tier = 2
+		elif drift_charge >= DRIFT_TIERS[0]:
+			spark_tier = 1
+	player.set_drift_spark_tier(spark_tier)
 	player.set_braking(brake_visual_amount if enabled else 0.0)
 	player.set_driver_runtime_state(airborne, hit_timer > 0.0, paused)
+	if is_instance_valid(drive_feedback):
+		drive_feedback.advance(
+			_delta, racing and not finished and not menu_active, paused, airborne, reduced_motion
+		)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
-	for kart in opponents:
-		kart.set_driver_runtime_state(false, false, paused)
+	for i in range(opponents.size()):
+		var kart: LumoRaceKart = opponents[i]
+		var flight: Variant = kart.get_meta(RIVAL_FLIGHT.STATE_KEY) if kart.has_meta(RIVAL_FLIGHT.STATE_KEY) else null
+		var rival_airborne: bool = flight != null and bool(flight.active)
+		var rival_stunned: bool = i < opponent_stuns.size() and opponent_stuns[i] > 0.0
+		kart.set_driver_runtime_state(rival_airborne, rival_stunned, paused)
+	for fx in opponent_item_fx:
+		if is_instance_valid(fx):
+			fx.advance(_delta, paused or not racing or finished, reduced_motion)
 
 
 func _update_camera(delta: float, snap: bool = false) -> void:
@@ -2086,9 +2870,30 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	if loop_state.active:
 		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
 		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
+		var radius: float = PHYSICAL_LOOP.radius_of(world.loop_layout)
 		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
-		camera.position = camera.position.lerp(desired_loop, minf(1, delta * 4))
-		camera.look_at(player.position + Vector3.UP * 0.6)
+		var focus: Vector3 = player.position + Vector3.UP * 0.6
+		if bool(world.loop_layout.get("stunt", false)):
+			# Cinematic side view through the open ring: the kart stays visible
+			# on the inner deck all the way round, also upside down at the top.
+			var hub: Vector3 = (
+				world.position_at(
+					float(world.loop_layout.start) + PHYSICAL_LOOP.ADVANCE * 0.5,
+					float(world.loop_layout.lane)
+				)
+				+ entry_basis.y * radius
+			)
+			desired_loop = (
+				hub - entry_basis.x * radius * 2.7 + entry_basis.z * radius * 0.45
+				- entry_basis.y * radius * 0.15
+			)
+			focus = focus.lerp(hub, 0.35)
+		camera.position = (
+			desired_loop if snap else camera.position.lerp(desired_loop, minf(1.0, delta * 4.0))
+		)
+		camera.look_at(focus)
+		# The loop camera must not freeze boost FOV, speed streaks or reduced-motion preferences.
+		_update_camera_speed_effects(delta, snap, clampf(absf(speed) / 25.0, 0.0, 1.0))
 		return
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
@@ -2115,6 +2920,8 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	if finished:
 		target = player.position + Vector3.UP * 1.25
 		camera.position = _clear_finish_camera(camera.position, target)
+	if mode != "arena" and is_instance_valid(world):
+		camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
 	camera.look_at(target)
 	if not reduced_motion:
 		var roll: float = (
@@ -2123,6 +2930,10 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 			* (0.35 + speed_ratio * 0.65)
 		)
 		camera.rotate_object_local(Vector3(0, 0, 1), roll)
+	_update_camera_speed_effects(delta, snap, speed_ratio)
+
+
+func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) -> void:
 	var baseline_fov: float = VISUAL_GRADE.camera_fov(
 		speed_ratio, boost_time > 0.0 and not paused, reduced_motion
 	)
@@ -2134,6 +2945,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if snap
 		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
 	)
+	if camera_punch > 0.0 and not reduced_motion:
+		camera.fov += camera_punch * 9.5
+		camera_punch = maxf(0.0, camera_punch - delta * 2.2)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
@@ -2161,8 +2975,11 @@ func _release_drift() -> void:
 		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
 		drift_tier_count[tier] += 1
 		boost_time = maxf(boost_time, _boost_for(DRIFT_BOOST_SECONDS[tier]))
+		camera_punch = maxf(camera_punch, 0.20 if tier == 0 else 0.34)
 		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
 		_sound_effect("drift")
+		if is_instance_valid(drive_feedback):
+			drive_feedback.boost_release(tier + 1)
 	drift_charge = 0
 
 
@@ -2298,6 +3115,7 @@ func _build_start_lights() -> void:
 		lamp.name = "StartLamp%d" % (i + 1)
 		lamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		lamp.custom_minimum_size = Vector2(46, 46)
+		lamp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(lamp)
 		start_lamps.append(lamp)
 	countdown_label = Label.new()
@@ -2363,6 +3181,8 @@ func _lamp_style(color: Color, lit: bool, diameter: float) -> StyleBoxFlat:
 	style.bg_color = color if lit else Color(0.10, 0.13, 0.20, 0.95)
 	style.set_corner_radius_all(int(diameter * 0.5))
 	style.set_border_width_all(3)
+	style.border_width_top = 5
+	style.border_width_bottom = 2
 	style.border_color = color.lightened(0.35) if lit else Color(0.25, 0.32, 0.44, 0.9)
 	if lit:
 		style.shadow_color = Color(color, 0.65)
@@ -2387,6 +3207,12 @@ func _update_start_lights(delta: float) -> void:
 	var area: Vector2 = safe_ui.size
 	var diameter: float = clampf(minf(area.x, area.y) * 0.085, 30.0, 70.0)
 	var red_lit: int = 3 if countdown <= 0.0 else clampi(4 - ceili(countdown), 0, 3)
+	var state: int = 4 if countdown <= 0.0 else red_lit
+	# Materials change only on a countdown beat or viewport resize.
+	# No per-frame StyleBox allocation on the Android render loop.
+	var refresh: bool = state != start_light_state or not is_equal_approx(diameter, start_light_diameter)
+	start_light_state = state
+	start_light_diameter = diameter
 	countdown_label.text = "LOS!" if countdown <= 0.0 else str(ceili(countdown))
 	countdown_label.add_theme_font_size_override("font_size", int(diameter * 0.95))
 	countdown_label.custom_minimum_size = Vector2(diameter * (2.3 if countdown <= 0.0 else 1.1), diameter)
@@ -2394,9 +3220,15 @@ func _update_start_lights(delta: float) -> void:
 		start_lamps[i].custom_minimum_size = Vector2(diameter, diameter)
 		var green: bool = countdown <= 0.0
 		var color: Color = Color("44f08a") if green else Color("ff4b55")
-		start_lamps[i].add_theme_stylebox_override("panel", _lamp_style(color, green or i < red_lit, diameter))
+		if refresh:
+			start_lamps[i].add_theme_stylebox_override("panel", _lamp_style(color, green or i < red_lit, diameter))
 	start_lights.reset_size()
 	start_lights.position = Vector2((area.x - start_lights.size.x) * 0.5, area.y * 0.2)
+	start_lights.pivot_offset = start_lights.size * 0.5
+	# One small settling motion per beat, never a repeating ambient animation.
+	var beat_age: float = ceili(countdown) - countdown if counting else START_GREEN_SECONDS - start_green_left
+	var pulse: float = 0.0 if reduced_motion else maxf(0.0, 1.0 - beat_age / 0.22)
+	start_lights.scale = Vector2.ONE * (1.0 + 0.045 * pulse * pulse)
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -2454,12 +3286,22 @@ func _pause() -> void:
 	_save_session()
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
+	menu_settings_navigation.hide()
 	pause_navigation.show()
 	modal_column.add_child(_label("Eine kleine Pause", 28))
 	modal_column.add_child(_label("Dein Rennen wartet. Du kannst später hier weiterfahren.", 19))
 	modal_column.add_child(_button("Weiterfahren", _resume))
 	if mode == "training":
 		modal_column.add_child(_button("Training abschließen", _finish))
+	_append_preferences()
+	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
+	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
+	modal.show()
+	_apply_responsive_layout()
+	call_deferred("_apply_responsive_layout")
+
+
+func _append_preferences() -> void:
 	var motion := _button(
 		"Ruhige Bewegung: an (App)" if host_reduce_motion else ("Ruhige Bewegung: an" if reduced_motion else "Ruhige Bewegung: aus"), func(): pass
 	)
@@ -2467,10 +3309,16 @@ func _pause() -> void:
 		func():
 			preferred_reduced_motion = not preferred_reduced_motion
 			reduced_motion = preferred_reduced_motion or host_reduce_motion
-			player.reduced_motion = reduced_motion
+			if is_instance_valid(player):
+				player.reduced_motion = reduced_motion
+			if is_instance_valid(garage):
+				garage.reduced_motion = reduced_motion
+				if is_instance_valid(garage.preview_kart):
+					garage.preview_kart.reduced_motion = reduced_motion
 			motion.text = "Ruhige Bewegung: an" if reduced_motion else "Ruhige Bewegung: aus"
 			_save_preferences()
 	)
+	motion.name = "MotionToggle"
 	motion.disabled = host_reduce_motion
 	modal_column.add_child(motion)
 	var sound := _button("Ton: aus (App)" if not host_sound_enabled else ("Ton: aus" if muted else "Ton: an"), func(): pass)
@@ -2480,6 +3328,7 @@ func _pause() -> void:
 			sound.text = "Ton: aus" if muted else "Ton: an"
 			_save_preferences()
 	)
+	sound.name = "AudioToggle"
 	sound.disabled = not host_sound_enabled
 	modal_column.add_child(sound)
 	var detail := _button("Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}.get(graphics_profile, "Hoch"), func(): pass)
@@ -2487,10 +3336,19 @@ func _pause() -> void:
 		func():
 			graphics_profile = {"high": "medium", "medium": "low", "low": "high"}.get(graphics_profile, "high")
 			lightweight = graphics_profile == "low"
+			# Apply the user-selected visual tier across all Godot game worlds.
+			LumoQuality.set_tier(graphics_profile)
 			_save_preferences()
-			_save_session()
-			_rebuild_graphics()
+			detail.text = "Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}[graphics_profile]
+			if menu_active:
+				garage.graphics_profile = graphics_profile
+				garage.preview_signature = ""
+				garage._refresh_preview()
+			else:
+				_save_session()
+				_rebuild_graphics()
 	)
+	detail.name = "GraphicsProfileToggle"
 	modal_column.add_child(detail)
 	var challenge := _button(
 		"Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott", func(): pass
@@ -2498,9 +3356,12 @@ func _pause() -> void:
 	challenge.pressed.connect(
 		func():
 			difficulty = "flott" if difficulty == "gemuetlich" else "gemuetlich"
+			if menu_active:
+				garage.setup.difficulty = difficulty
 			challenge.text = "Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott"
 			_save_preferences()
 	)
+	challenge.name = "DifficultyToggle"
 	modal_column.add_child(challenge)
 	var gas_mode := _button("Gas: automatisch" if auto_gas else "Gas: GAS-Taste halten", func(): pass)
 	gas_mode.name = "GasModeToggle"
@@ -2518,12 +3379,6 @@ func _pause() -> void:
 	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
 		effects_volume = value
 		_apply_volumes()))
-	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
-	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
-	modal.show()
-	_apply_responsive_layout()
-	call_deferred("_apply_responsive_layout")
-
 
 func _resume() -> void:
 	if menu_active:
@@ -2593,6 +3448,8 @@ func _abandon() -> void:
 func _finish(cinematic: bool = true) -> void:
 	if finished or menu_active:
 		return
+	if is_instance_valid(drive_feedback):
+		drive_feedback.reset()
 	completed_race = true
 	racing = false
 	_update_audio()
@@ -2601,6 +3458,10 @@ func _finish(cinematic: bool = true) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
 	_sound_effect("finish")
+	if track_id == "jungle_emerald_3600" and is_instance_valid(world):
+		var jungle_environment = world.get_node_or_null("DschungelherzEnvironment")
+		if jungle_environment != null and jungle_environment.has_method("celebrate_finish"):
+			jungle_environment.celebrate_finish()
 	var place: int = _place()
 	var earned: int = 3
 	if mode == "training":
@@ -2634,9 +3495,16 @@ func _finish(cinematic: bool = true) -> void:
 		lap_times.append(elapsed - lap_started_at)
 	result_payload["bestLapSeconds"] = snappedf(_best_lap(), 0.001)
 	result_payload["starTokens"] = collected.size()
+	var pass_result := result_payload.duplicate(true)
+	pass_result["difficulty"] = difficulty
+	# Legacy race checkpoints had no child owner. Keep those races resumable,
+	# but never attribute their objectives to the next child who opens Kart.
+	if _track_pass_owner == track_pass.child_key.sha256_text():
+		result_payload["trackPass"] = track_pass.complete(pass_result, distance, track_length)
 	# Belohnung und Ergebnis-ID gehen sofort an der Linie raus; die Zielfahrt ist nur Bild.
 	var reward_accepted: bool = HostBridge.reward(result_payload)
 	_save_session()
+	_celebrate_opponents()
 	var save_failed: bool = HostBridge.is_embedded() and not reward_accepted
 	if cinematic and not save_failed:
 		_start_finish_cine(place)
@@ -2648,6 +3516,18 @@ func _finish(cinematic: bool = true) -> void:
 	if save_failed:
 		_show_host_save_failure()
 	print("[Kart] completed: mode=%s track=%s stars=%d place=%d" % [mode, track_id, earned, place])
+
+
+func _celebrate_opponents() -> void:
+	for i in range(opponents.size()):
+		var rival: LumoRaceKart = opponents[i]
+		var place: int = _opponent_place(i)
+		if mode == "arena" and i < opponent_scores.size():
+			place = 1 + int(arena_scores > opponent_scores[i])
+			for j in range(opponent_scores.size()):
+				if j != i and opponent_scores[j] > opponent_scores[i]:
+					place += 1
+		rival.celebrate(place)
 
 
 func _show_result() -> void:
@@ -2686,6 +3566,14 @@ func _show_result() -> void:
 	var stats: Label = _label(_result_stats_text(), 21)
 	stats.name = "ResultStats"
 	modal_column.add_child(stats)
+	var mastery: Variant = result_payload.get("trackPass", {})
+	if mastery is Dictionary and bool(mastery.get("eligible", false)):
+		var mastery_text := "Streckenpass · %d/3 Ziele\n%s" % [int(mastery.get("stage", 0)), TRACK_PASS.goal_text(int(mastery.get("stage", 0)))]
+		if not bool(mastery.get("saved", true)):
+			mastery_text = "Der Streckenpass konnte nicht gespeichert werden. Dein Rennergebnis bleibt erhalten."
+		var mastery_label := _label(mastery_text, 20)
+		mastery_label.name = "TrackPassResult"
+		modal_column.add_child(mastery_label)
 	var details: String = ""
 	if ranked:
 		details = "Platz %d von 6" % place_now
@@ -2825,6 +3713,8 @@ func _update_finish_cine(delta: float) -> void:
 			var desired: Vector3 = player.position + offset + Vector3.UP * lerpf(3.5, 1.7, blend)
 			desired = camera.position.lerp(desired, minf(1.0, delta * 6.0))
 			camera.position = _clear_finish_camera(desired, target)
+			if mode != "arena" and is_instance_valid(world):
+				camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
 			camera.look_at(target)
 	_update_hud()
 	if finish_cine_left <= 0.0:
@@ -2836,7 +3726,9 @@ func _coast_finished_kart(delta: float) -> void:
 	var magnitude: float = physical_velocity.length()
 	var damped: float = move_toward(magnitude, 0.0, delta * maxf(6.0, magnitude * 0.55))
 	physical_velocity *= damped / magnitude if magnitude > 0.0 else 0.0
+	var before_horizontal: Vector3 = player.position
 	player.position += physical_velocity * delta
+	_constrain_tunnel_motion(before_horizontal)
 	if mode != "arena" and is_instance_valid(world):
 		var road: Dictionary = world.sample_road(player.position, finish_road_distance)
 		lane = float(road.lateral)
@@ -2854,7 +3746,7 @@ func _coast_finished_kart(delta: float) -> void:
 				)
 				road = world.sample_road(player.position, finish_road_distance)
 				lane = float(road.lateral)
-			if absf(lane) > WORLD.WALL_LATERAL:
+			if absf(lane) > _wall_lateral_at(float(road.distance)):
 				_collide_with_rail(road)
 			road = world.sample_road(player.position, finish_road_distance)
 			lane = float(road.lateral)
@@ -2867,7 +3759,9 @@ func _coast_finished_kart(delta: float) -> void:
 		if airborne or world.in_gap(finish_road_distance):
 			airborne = true
 			vertical_speed -= JUMP_GRAVITY * delta
+			var before_vertical: Vector3 = player.position
 			player.position.y += vertical_speed * delta
+			_constrain_tunnel_motion(before_vertical)
 			if not world.in_gap(finish_road_distance) and player.position.y <= ground:
 				player.position.y = ground
 				airborne = false
@@ -3094,6 +3988,7 @@ func _save_session() -> void:
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", SESSION_VERSION)
+	config.set_value("race", "track_pass_owner", _track_pass_owner)
 	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
 		"lap_times", "lap_started_at",
@@ -3114,25 +4009,35 @@ func _save_session() -> void:
 		config.set_value("race", "player_position", world.reset_transform(float(world.loop_layout.start), float(world.loop_layout.lane)).origin)
 	else:
 		config.set_value("race", "player_position", player.position)
-	var positions: Array[Vector3] = []
-	for rival in opponents:
-		positions.append(rival.position)
-	config.set_value("race", "opponent_positions", positions)
-	if config.save(SESSION + ".tmp") == OK:
-		var error: Error = DirAccess.rename_absolute(SESSION + ".tmp", SESSION)
-		if error != OK:
-			push_warning("Race checkpoint could not be saved: %s" % error)
+	RIVAL_STUNTS.save_positions(self, config)
+	RIVAL_FLIGHT.save_positions(self, config)
+	var tmp_path: String = SESSION + ".tmp"
+	if config.save(tmp_path) != OK:
+		push_warning("Race checkpoint tmp write failed")
+		return
+	var error: Error = DirAccess.rename_absolute(tmp_path, SESSION)
+	if error != OK:
+		push_warning("Race checkpoint could not be saved: %s" % error)
 
 
 func _restore_session() -> bool:
 	var config := ConfigFile.new()
 	if config.load(SESSION) != OK:
-		return false
+		# Reuse the copy _ready / _resume_saved_race already parsed.
+		if (
+			saved_session_available
+			and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
+		):
+			config = session_config
+		else:
+			return false
 	if int(config.get_value("race", "version", 0)) not in SESSION_VERSIONS:
 		return false
 	var saved_distance: float = float(config.get_value("race", "distance", -1))
 	if saved_distance < 0 or not is_finite(saved_distance):
 		return false
+	_track_pass_owner = str(config.get_value("race", "track_pass_owner", ""))
+	RIVAL_FLIGHT.clear(self)
 	_session_handed_off = false
 	var keys: Array[String] = [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed", "boost_time", "boosts",
@@ -3143,6 +4048,10 @@ func _restore_session() -> bool:
 	]
 	for key in keys:
 		set(key, config.get_value("race", key, get(key)))
+	if _track_pass_owner != track_pass.child_key.sha256_text():
+		result_payload.erase("trackPass")
+	# Explicit typed write: a generic set() must not leave the _ready identity.
+	result_id = str(config.get_value("race", "result_id", result_id))
 	for key in [
 		"opponent_distances", "opponent_lanes", "cup_points", "cup_results",
 		"arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings"
@@ -3280,10 +4189,7 @@ func _notification(what: int) -> void:
 			intro.leave()
 			return
 		if menu_active:
-			# Die Werkstatt schließt sich zuerst; erst danach verlässt Zurück den Kart.
-			if is_instance_valid(garage) and garage.has_method("handle_back") and garage.handle_back():
-				return
-			_return_to_world()
+			_menu_back()
 		elif finished or paused:
 			_return_to_world()
 		else:
@@ -3297,6 +4203,10 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_on_viewport_size_changed):
+		MobileRuntime.safe_area_changed.disconnect(_on_viewport_size_changed)
+	if get_viewport().size_changed.is_connected(_on_viewport_size_changed):
+		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 	get_tree().auto_accept_quit = previous_auto_accept_quit
 	get_tree().quit_on_go_back = previous_quit_on_go_back
 	if is_instance_valid(engine_player):
@@ -3396,30 +4306,27 @@ func _turbo_pad(distance_on_track: float) -> void:
 			piece.material_override = cyan
 
 
-static func _item_pool_for_place(place: int) -> Array[String]:
-	if place >= 5:
-		return ["boost", "boost", "boost", "shield", "shield", "pulse"]
-	if place >= 3:
-		return ["boost", "boost", "shield", "shield", "pulse", "pulse"]
-	return ["boost", "shield", "shield", "pulse", "pulse", "pulse"]
+static func _item_pool_for_place(_place: int) -> Array[String]:
+	# Historical API retained for save and test compatibility. Former rank-
+	# dependent lottery cannot be invoked in the new skill-only race system.
+	return ["boost"]
 
 
-func _roll_item_for_place(place: int) -> String:
-	var pool: Array[String] = _item_pool_for_place(place)
-	return pool[rng.randi_range(0, pool.size() - 1)]
+func _roll_item_for_place(_place: int) -> String:
+	# Never infer an item from the race position. Real ring items are awarded
+	# only by RESONANCE.award from line, speed and drift.
+	return "boost"
 
 
 func _item_box(distance_on_track: float, lateral: float) -> void:
 	var basis: Basis = world.frame(distance_on_track)
-	var node := Node3D.new()
-	node.name = "MysteryItemBox"
-	node.position = _track_position(distance_on_track, lateral) + basis.y * 0.85
-	node.basis = basis
-	node.scale = Vector3.ONE * (1.18 if world.track_id == "bergwelt" else 1.0)
-	race_root.add_child(node)
-	MYSTERY_PRISM.build(node)
+	var transform := Transform3D(
+		basis, _track_position(distance_on_track, lateral) + basis.y * 1.9
+	)
+	var node: Node3D = RESONANCE.build_ring(race_root, transform)
 	item_boxes.append(node)
 	item_box_distances.append(distance_on_track)
+	item_box_laterals.append(lateral)
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:

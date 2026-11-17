@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "scope": "Separate retention update; frozen runtime evidence pack is not rewritten.",
+  "artifact": {
+    "all_members_crc_sha_checked": 397,
+    "artifact_api": "https://api.github.com/repos/Ullmann27/lumo-lernen/actions/artifacts/14103697718",
+    "artifact_id": 14103697718,
+    "artifact_name": "lumo-connect-four-2020-desktop-runtime",
+    "bytes": 22154206,
+    "evidence_link": "original-runtime.zip",
+    "expires_at": "2026-12-14T07:23:10Z",
+    "member_index": "original-zip-member-index.json",
+    "resolved_path": "/tmp/lumo-c4-runtime-43570629751-14103697718.zip",
+    "sha256": "9d26916c3033b78e0a519e0b086a7f38d415d30e4239ae8396de3924e771ef06",
+    "uncompressed_member_bytes": 28592613
+  },
+  "local_complete_zip_present_now": false,
+  "local_complete_zip_was_verified_before_loss": true,
+  "previous_frozen_manifest": {
+    "path": "/workspace/scratch/b3485b7bb989/host-pr485-682f5991-c4-runtime-evidence/manifest.json",
+    "bytes": 10141,
+    "sha256": "f57acf53694c37100a03cc9f1fca1e0ebb819669a9957c4927901013108f44d6"
+  },
+  "previous_frozen_handoff": {
+    "path": "/workspace/scratch/b3485b7bb989/host-pr485-682f5991-c4-runtime-evidence/handoff.json",
+    "bytes": 3936,
+    "sha256": "a2395fe0a7197be5305bff48cac57da5976bbb6098d4b013cf30631db5b79588"
+  },
+  "retained_selected_originals": {
+    "count": 31,
+    "bytes": 2489817,
+    "directory": "/workspace/scratch/b3485b7bb989/host-pr485-682f5991-c4-runtime-evidence/originals"
+  },
+  "reason": "The executor temporary filesystem was lost during recovery. Original /tmp ZIP is absent and its old evidence symlink is dangling.",
+  "external_retention": "Original Actions artifact14103697718 remains subject to its recorded expiry. No new download was performed. Its current external availability was not re-queried.",
+  "claims_not_changed": "Historical complete ZIP/CRC/SHA/decode verification is retained as its historical record, not a claim that the full ZIP remains locally accessible."
+}

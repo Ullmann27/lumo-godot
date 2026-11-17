@@ -1,0 +1,181 @@
+{
+  "scope": "Six actual Blender Cycles images from the frozen editable kart sources; source and image hashes independently verified. Additional underside, steering, chase and moving views belong to the separate Godot review.",
+  "image_count": 6,
+  "passed": true,
+  "images": [
+    {
+      "variant": "comet",
+      "view": "front_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/comet/front_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/comet/front_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_comet.blend",
+      "source_sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+      "image_sha256": "18ed3a71ebbb3442961f120cbb3b416ecead49a6554e72a05eb0e03d893d893b",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        3.1,
+        2.25,
+        -3.7
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    },
+    {
+      "variant": "comet",
+      "view": "rear_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/comet/rear_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/comet/rear_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_comet.blend",
+      "source_sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+      "image_sha256": "e138fa116a3d1141b8c2964c970be6a1168237fadbd65d4c874c3a12ca602535",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        -3.2,
+        2.0,
+        3.9
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    },
+    {
+      "variant": "glider",
+      "view": "front_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/glider/front_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/glider/front_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_glider.blend",
+      "source_sha256": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+      "image_sha256": "a713364058ba7602deadbf685fe44588532158e012556eb2fd597a11cbe6a95f",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        3.1,
+        2.25,
+        -3.7
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    },
+    {
+      "variant": "glider",
+      "view": "rear_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/glider/rear_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/glider/rear_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_glider.blend",
+      "source_sha256": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+      "image_sha256": "68ffae20a79a22ede1b4a2324b146262a35b0a06ac6e3127e50fb9cc47707361",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        -3.2,
+        2.0,
+        3.9
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    },
+    {
+      "variant": "turbo",
+      "view": "front_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/turbo/front_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/turbo/front_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+      "source_sha256": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2",
+      "image_sha256": "b22f1d420e7a56b42a1c8bf735bade531e308ca795393faf35d233e1984ede63",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        3.1,
+        2.25,
+        -3.7
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    },
+    {
+      "variant": "turbo",
+      "view": "rear_three_quarter",
+      "image": "evidence/lumo_kart_art/karts/turbo/rear_three_quarter.png",
+      "camera_record": "evidence/lumo_kart_art/karts/turbo/rear_three_quarter.camera.json",
+      "source": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+      "source_sha256": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2",
+      "image_sha256": "b528fde3f19b3e3d17036efed79db85a0b4ae1418301b35461fe7f0296ad93c5",
+      "engine": "Blender Cycles CPU",
+      "samples": 32,
+      "resolution": [
+        1440,
+        1080
+      ],
+      "camera_godot_m": [
+        -3.2,
+        2.0,
+        3.9
+      ],
+      "target_godot_m": [
+        0,
+        0.54,
+        0
+      ],
+      "lens_mm": 48,
+      "frame": 1,
+      "production_race_camera": false,
+      "postprocess": "Blender AgX only; no AI image generation"
+    }
+  ]
+}

@@ -1,0 +1,474 @@
+{
+  "status": "EXPECTED_CONTRACT_ONLY_NOT_CI_EVIDENCE",
+  "head": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "local_equal_tree_commit": "a59dca033d1ad6afa4afbf0b51b03e04fe8c4ef9",
+  "run_id": 43458898046,
+  "required_jobs": [
+    "learning-preview",
+    "gameplay",
+    "new-worlds",
+    "touch-workshop",
+    "touch-treasure",
+    "touch-build",
+    "bundle-evidence"
+  ],
+  "archive_job": "archive-evidence",
+  "core_probe_modes_and_markers": [
+    {
+      "probe": "learning_world_regression",
+      "marker": "[LearningWorld] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_sharing_regression",
+      "marker": "[LearningSharing] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_studio_regression",
+      "marker": "[LearningStudio] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_host_payload_regression",
+      "marker": "[LearningHostPayload] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "jump_nextgen_regression",
+      "marker": "[JumpNextgen] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "jump_expeditions_regression",
+      "marker": "[JumpExpeditions] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_teacher_pose_regression",
+      "marker": "[LumoTeacherPose] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_studio_motion_regression",
+      "marker": "[LumoStudioMotion] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_65bone_walk_gait_regression",
+      "marker": "[LumoGait] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "lumo_original_jump_visual_regression",
+      "marker": "[JumpOriginalLumo] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "bauwelt_identity_2013_regression",
+      "marker": "[BauweltIdentity2013] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_frontier_regression",
+      "marker": "[BuildFrontier] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_transform_regression",
+      "marker": "[BuildTransform] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_settlement_regression",
+      "marker": "[Settlement] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "kart_track_pass_regression",
+      "marker": "[KartTrackPass] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "cards_table_regression",
+      "marker": "CARDS_TABLE_RUNTIME_PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "rhythm_tour_regression",
+      "marker": "[RhythmTour] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "headless"
+    },
+    {
+      "probe": "learning_world_capture",
+      "marker": "[LearningCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "learning_sharing_capture",
+      "marker": "[LearningSharingCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "lumo_studio_motion_capture",
+      "marker": "[LumoStudioCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "puzzle_rotation_regression",
+      "marker": "[PuzzleRotation] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "treasure_exploration_regression",
+      "marker": "[TreasureExploration] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "jump_nextgen_capture",
+      "marker": "[JumpNextgenCapture] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "build_nextgen_play_regression",
+      "marker": "[BuildNextgen] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "build_settlement_play_regression",
+      "marker": "[SettlementPlay] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "creative_nextgen_environment_regression",
+      "marker": "[CreativeNextgenEnvironment] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "kart_nextgen_garage_regression",
+      "marker": "[NextGenGarage] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "cards_table_capture",
+      "marker": "CARDS_TABLE_RENDER_PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "rhythm_tour_play_regression",
+      "marker": "[RhythmTourPlay] PASS",
+      "mode": "rendered"
+    },
+    {
+      "probe": "kart_player_full_route_regression",
+      "marker": "[PlayerFullRoute] PASS",
+      "mode": "rendered"
+    }
+  ],
+  "core_studio_images": [
+    "captures/learning_sharing_capture/sharing-complete-1280x720.png",
+    "captures/learning_sharing_capture/sharing-complete-412x915.png",
+    "captures/learning_sharing_capture/sharing-first-round-1280x720.png",
+    "captures/learning_sharing_capture/sharing-first-round-412x915.png",
+    "captures/learning_sharing_capture/sharing-start-1280x720.png",
+    "captures/learning_sharing_capture/sharing-start-412x915.png",
+    "captures/lumo_studio_motion_capture/after_jump_rise.png",
+    "captures/lumo_studio_motion_capture/after_land.png",
+    "captures/lumo_studio_motion_capture/after_sprint.png",
+    "captures/lumo_studio_motion_capture/after_walk.png",
+    "captures/lumo_studio_motion_capture/before_jump_rise.png",
+    "captures/lumo_studio_motion_capture/before_land.png",
+    "captures/lumo_studio_motion_capture/before_sprint.png",
+    "captures/lumo_studio_motion_capture/before_walk.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_412x915.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_640x360.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_840x760.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_compact_menu.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_hint.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_placed.png",
+    "captures/puzzle_rotation_regression/puzzle_rotation_table.png",
+    "captures/treasure_exploration_regression/treasure_choose_route.png",
+    "captures/treasure_exploration_regression/treasure_garden_first.png",
+    "captures/treasure_exploration_regression/treasure_route_complete.png"
+  ],
+  "touch_images": {
+    "touch-evidence/workshop": {
+      "captures/kart_workshop_density_regression/workshop-1080x2400-paint-purchase.png": [
+        1080,
+        2400
+      ],
+      "captures/kart_workshop_density_regression/workshop-1080x2400-performance.png": [
+        1080,
+        2400
+      ],
+      "captures/kart_workshop_density_regression/workshop-1080x2400-refund.png": [
+        1080,
+        2400
+      ],
+      "captures/kart_workshop_density_regression/workshop-2400x1080-paint-purchase.png": [
+        2400,
+        1080
+      ],
+      "captures/kart_workshop_density_regression/workshop-2400x1080-performance.png": [
+        2400,
+        1080
+      ],
+      "captures/kart_workshop_density_regression/workshop-2400x1080-refund.png": [
+        2400,
+        1080
+      ]
+    },
+    "touch-evidence/treasure": {
+      "captures/treasure_density_regression/treasure-1080x2400-complete.png": [
+        1080,
+        2400
+      ],
+      "captures/treasure_density_regression/treasure-1080x2400-inventory.png": [
+        1080,
+        2400
+      ],
+      "captures/treasure_density_regression/treasure-1080x2400-play.png": [
+        1080,
+        2400
+      ],
+      "captures/treasure_density_regression/treasure-1080x2400-question.png": [
+        1080,
+        2400
+      ],
+      "captures/treasure_density_regression/treasure-2176x1812-complete.png": [
+        2176,
+        1812
+      ],
+      "captures/treasure_density_regression/treasure-2176x1812-play.png": [
+        2176,
+        1812
+      ],
+      "captures/treasure_density_regression/treasure-2400x1080-complete.png": [
+        2400,
+        1080
+      ],
+      "captures/treasure_density_regression/treasure-2400x1080-inventory.png": [
+        2400,
+        1080
+      ],
+      "captures/treasure_density_regression/treasure-2400x1080-play.png": [
+        2400,
+        1080
+      ],
+      "captures/treasure_density_regression/treasure-2400x1080-question.png": [
+        2400,
+        1080
+      ],
+      "captures/treasure_density_regression/treasure-640x320-complete.png": [
+        640,
+        320
+      ],
+      "captures/treasure_density_regression/treasure-640x320-inventory.png": [
+        640,
+        320
+      ],
+      "captures/treasure_density_regression/treasure-640x320-play.png": [
+        640,
+        320
+      ],
+      "captures/treasure_density_regression/treasure-640x320-question.png": [
+        640,
+        320
+      ]
+    },
+    "touch-evidence/build": {
+      "captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png": [
+        1080,
+        2400
+      ],
+      "captures/build_dialog_density_regression/build-dialog-1080x2400-templates-bottom.png": [
+        1080,
+        2400
+      ],
+      "captures/build_dialog_density_regression/build-dialog-1080x2400-templates-top.png": [
+        1080,
+        2400
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2176x1812-current-goal.png": [
+        2176,
+        1812
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2176x1812-templates-bottom.png": [
+        2176,
+        1812
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2176x1812-templates-top.png": [
+        2176,
+        1812
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2400x1080-current-goal.png": [
+        2400,
+        1080
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2400x1080-templates-bottom.png": [
+        2400,
+        1080
+      ],
+      "captures/build_dialog_density_regression/build-dialog-2400x1080-templates-top.png": [
+        2400,
+        1080
+      ],
+      "captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png": [
+        640,
+        360
+      ],
+      "captures/build_dialog_density_regression/build-dialog-640x360-templates-bottom.png": [
+        640,
+        360
+      ],
+      "captures/build_dialog_density_regression/build-dialog-640x360-templates-top.png": [
+        640,
+        360
+      ]
+    }
+  },
+  "source_prefixes": [
+    "nextgen-evidence/nextgen",
+    "touch-evidence/workshop",
+    "touch-evidence/treasure",
+    "touch-evidence/build"
+  ],
+  "native_artifact_name": "lumo-nextgen-2018-native-evidence",
+  "source_blobs": {
+    ".github/workflows/lumo-nextgen-2018.yml": "9dee37da9994927eb1d34fa8f7c0e6fa7fc9e3d1",
+    "scripts/creative/build_world.gd": "6d81ac47bec01fa68c69f9886c5d356b6647fc1a",
+    "scripts/learning/learning_world.gd": "c89a9b28c74e591611c4e8c72c28ec125e9bb3fa",
+    "scripts/tests/bauwelt_identity_2013_regression.gd": "204c5e25fc258a7c39da223f35915c2bb1844774",
+    "scripts/tests/build_dialog_density_regression.gd": "f8ccce81b4f92b07eb383fdaccb86b400d22a1c1",
+    "scripts/tests/build_frontier_regression.gd": "ae5b3da43f2566b1f67d4b185fbaeac625395602",
+    "scripts/tests/build_nextgen_play_regression.gd": "f7d87b2f103042bd82eeecddf956d8385a70d0a7",
+    "scripts/tests/build_settlement_play_regression.gd": "d18125af1e280738a458fbda087b4a38490913bf",
+    "scripts/tests/build_settlement_regression.gd": "46598b497b64c88c9bc4f8f44567a25f92df6804",
+    "scripts/tests/build_transform_regression.gd": "5e055e7adc210d777d7b400d33dc1f6497b2b660",
+    "scripts/tests/cards_table_capture.gd": "c6bb8b8417cf87ccd068e7df167d27962f6f7141",
+    "scripts/tests/cards_table_regression.gd": "67d0b664f51abfae8680da478029d02bf32d3a19",
+    "scripts/tests/creative_nextgen_environment_regression.gd": "cd2e7e0d8401ddaa7d2122a5225eef31e04d6529",
+    "scripts/tests/jump_expeditions_regression.gd": "9f058645aad6cdcc679b0dc656087311a66f8ad0",
+    "scripts/tests/jump_nextgen_capture.gd": "3e1f86499c2fc1a64389f3207d8a7d66174b7ffe",
+    "scripts/tests/jump_nextgen_regression.gd": "4d3e19f19050fbb0df5338b51ee02dd886c90c58",
+    "scripts/tests/kart_nextgen_garage_regression.gd": "0368843eacc8f41cce53f81f5dbf8becc220b422",
+    "scripts/tests/kart_player_full_route_regression.gd": "4c5909e270506a2792652e178342af2d44a01dcf",
+    "scripts/tests/kart_track_pass_regression.gd": "bbdd16768342b55616a677b95fa730cb89c19014",
+    "scripts/tests/kart_workshop_density_regression.gd": "df50ac4c3df74d3c4937cb0f0ef93d9af317182c",
+    "scripts/tests/learning_host_payload_regression.gd": "c2ab1d716446820414bd8ebf286325b548b5154a",
+    "scripts/tests/learning_sharing_capture.gd": "71b5331f10f1fb60a8eda1ef762d55c2ad1fccd9",
+    "scripts/tests/learning_sharing_regression.gd": "0825be1375f3adbbaa4578a84877082b4599edc0",
+    "scripts/tests/learning_studio_regression.gd": "2d38ac5b5363f3c5c6322c9c307bd7e83c33dac6",
+    "scripts/tests/learning_world_capture.gd": "835686106584b6f1b1c03b0f5d4e55551e695f61",
+    "scripts/tests/learning_world_regression.gd": "e4526f35b78188022fd5bcad94e943fc7b7a5b00",
+    "scripts/tests/lumo_65bone_walk_gait_regression.gd": "c79273aca9f5b9dc40c4f5739fda13661557c250",
+    "scripts/tests/lumo_original_jump_visual_regression.gd": "6f0f477ccc668660be36060bcdc346fe104e7aa7",
+    "scripts/tests/lumo_studio_motion_capture.gd": "0fa3acec2c46d867bee62fe3fb2040b17be74d57",
+    "scripts/tests/lumo_studio_motion_regression.gd": "b3f1fa0c3bf6c7d47cac6665039ccb7fc891a146",
+    "scripts/tests/lumo_teacher_pose_regression.gd": "e04b3bd36cdaaa34ce07dd599e86bb24c5908575",
+    "scripts/tests/puzzle_rotation_regression.gd": "0bc372d9fe00c872208d032d4d02b13b5096fc2e",
+    "scripts/tests/rhythm_tour_play_regression.gd": "e41f77a482a830130dc08581fa1343853aaf6f3a",
+    "scripts/tests/rhythm_tour_regression.gd": "de16781ad95f6a9810284c089b230a7c168ac847",
+    "scripts/tests/treasure_density_regression.gd": "22f3cf0b4203edaa98887c4af159f826c56923ed",
+    "scripts/tests/treasure_exploration_regression.gd": "5fae309c47082f4e182492fe0dde6ac1e3e6a7e1",
+    "tools/run_godot_probe.py": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+    "tools/validate_nextgen.sh": "3ae4198baa652eb17c1361887ac9397618e1617e",
+    "tools/validate_studio_touch.sh": "7adda6cc0e8682bb6f9c89507343ea6e998b0ed8",
+    "tools/verify_studio_rasters.py": "0278d71030e87e4e46dd04b855e77711b2759252"
+  },
+  "source_sha256": {
+    ".github/workflows/lumo-nextgen-2018.yml": "501c295868c41453a74f1b65601bbca904b5bc8220fc83d31f284a50175c8add",
+    "scripts/creative/build_world.gd": "12fb662ba096154f41d4f4deb63c5837b1b3197398927418afb60d5d6246e00e",
+    "scripts/learning/learning_world.gd": "327d222133c076a3cf5c7242e933bad2b9376c6c24a4179b03156a3fc71f411d",
+    "scripts/tests/bauwelt_identity_2013_regression.gd": "d799323cda367e1f0b04245a2d90b62bb640e46ba2590129eb4e196cac52efce",
+    "scripts/tests/build_dialog_density_regression.gd": "fc978b94c927965888088e5b5fc4a6abdbd7eb8052323ab30b10faa418a9cb94",
+    "scripts/tests/build_frontier_regression.gd": "65f2cb0cbb62aa3dd71fd28b1d06718f789da87c99d9b50534c223411be772d5",
+    "scripts/tests/build_nextgen_play_regression.gd": "dab756a7e255029eec566dd26b16fdd4e3ba624188cd790b5434ea3883fa2dff",
+    "scripts/tests/build_settlement_play_regression.gd": "69857a76ecc995ccd89e8c4cf791e93baf7729a4957d4f24b322d2349c8a30d1",
+    "scripts/tests/build_settlement_regression.gd": "d96bbb1ec0468aab68a105ce9755932660f2657e456e00d5a5790ceb7b1cc7f7",
+    "scripts/tests/build_transform_regression.gd": "a91d4f6abbb0a0937fa449ec46063fd8844b46f5cbb5f466bedb931f1f831fbe",
+    "scripts/tests/cards_table_capture.gd": "87671c3ada828016da98c98a63d6606dc591483422ee9eccfe20760451e0f84b",
+    "scripts/tests/cards_table_regression.gd": "4497487dd6cdf27a04e53452fc772d8833061e6586b3c7ef371be2edf4d35371",
+    "scripts/tests/creative_nextgen_environment_regression.gd": "b4885cec438b4abeb5ed2e2b46f0061208c7763bbac58ffdba368fa3e9510df7",
+    "scripts/tests/jump_expeditions_regression.gd": "ae4ebf4469ee97714afc3cbba52ac530dd5b48ca4fbef8695f8c0fdae5f204cc",
+    "scripts/tests/jump_nextgen_capture.gd": "675f85891e83cecb453f822fd71469f40723760e0bc59caf8868521507472f89",
+    "scripts/tests/jump_nextgen_regression.gd": "e3269ad43683ba893b7bf5179ec31aa889af4ea7c833c1747d51fc803c70732f",
+    "scripts/tests/kart_nextgen_garage_regression.gd": "2e62efa99c66c686f3edd1eba955acd8897a130e692980d9ff52fb0c5afb0c78",
+    "scripts/tests/kart_player_full_route_regression.gd": "6caa096bd489cccec530c0ab4c3fe98ad2e38333897741f16c12297b43d9b906",
+    "scripts/tests/kart_track_pass_regression.gd": "e2980da3e8223cdc9bf1c4d41e004fd650fe38de1bf4c46c63d6d08b5ade7a9e",
+    "scripts/tests/kart_workshop_density_regression.gd": "06ec58fa89036a66eb1d15f8e90c8a03b0f947119a2b327a479521adc034c61d",
+    "scripts/tests/learning_host_payload_regression.gd": "53b39da402746d7998e707e07f2ff7bf4803c0c332be5fd0dbd9dc48ad4b7eea",
+    "scripts/tests/learning_sharing_capture.gd": "e0af1934e3b40b49dbcc8f14050c80f0c28f0868cfb01719e13d047e9d37a89a",
+    "scripts/tests/learning_sharing_regression.gd": "2d829cf28cd7b9fdd1396d0dda7e9dd20d14c5285d25940943c15bccc55fa9f3",
+    "scripts/tests/learning_studio_regression.gd": "db69f9b6f2b629b655534f5d11610709a15eee5d76317cc55e8a88e0c1b74c1c",
+    "scripts/tests/learning_world_capture.gd": "edbb07b69d3909c9b9ea99e165d69173acc7f67381f8c8798e10284893d053c3",
+    "scripts/tests/learning_world_regression.gd": "c7b2a45da230b0dc736a03fe59cb13ce66a5f8fc791b1d6115935923b15c374c",
+    "scripts/tests/lumo_65bone_walk_gait_regression.gd": "81c04d59fe070fa0e8f92c451f116f12863e03e2adbcc6d6752e4f8426bdfa49",
+    "scripts/tests/lumo_original_jump_visual_regression.gd": "74c52e8836f3d42065acd6170f288c557462c5ea1038fe0fc90ea6ff089297d0",
+    "scripts/tests/lumo_studio_motion_capture.gd": "123a66c89c4be028cb322836e3b81f62658cdd8c64eaa1237f375ec0f9eb8c60",
+    "scripts/tests/lumo_studio_motion_regression.gd": "eee791939d9664c8473d623d182d69180847af11e4a8ad05b98063d001bc7453",
+    "scripts/tests/lumo_teacher_pose_regression.gd": "70258ad79e59dd1c7b34323bef0bc602541ab27db6202555dd80bfc5d42584b8",
+    "scripts/tests/puzzle_rotation_regression.gd": "4b02e343cc1bf0faad44b99f03c99c5d4dedfc5b76c8454fd37a17c2754a4e30",
+    "scripts/tests/rhythm_tour_play_regression.gd": "65adcadc421d0683e211a378350ef3cb384fa41999fe0493db5aa43dd122b1f7",
+    "scripts/tests/rhythm_tour_regression.gd": "402ce92c7147c9ef77677eee72f84aa50b74129e1d3cc12bedc9f0588ee0e19e",
+    "scripts/tests/treasure_density_regression.gd": "b3be76fa9caa6da23490fb2de684397f21afac7c21b02e65a3a137c16d655f70",
+    "scripts/tests/treasure_exploration_regression.gd": "2fff6b5359237626dbb402e46482aac0e15697491f8790ef0e6fb89d0ac00384",
+    "tools/run_godot_probe.py": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+    "tools/validate_nextgen.sh": "6c509c4ec559abcf9cb11bbd68142a306cabafa08012bdb75f14fea4c767ba23",
+    "tools/validate_studio_touch.sh": "4a517be7f757c16bd724c4fa9aa3b34b4e89cc873d32b4acc60f0c1f3408dc53",
+    "tools/verify_studio_rasters.py": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd"
+  },
+  "host_validator_revision": "233cdf4029edb30f007ef7be19693388b17145fe",
+  "pointer_block_sha256": "da369265e956da28c7d4679e29158061738b732f1ed17b1ba1dac93559d2c86f",
+  "pointer_block_bytes": 1107,
+  "pointer_block_byte_identical_to_703": true,
+  "focus_images": {
+    "current_goal": [
+      "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-1080x2400-current-goal.png",
+      "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-2176x1812-current-goal.png",
+      "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-2400x1080-current-goal.png",
+      "touch-evidence/build/captures/build_dialog_density_regression/build-dialog-640x360-current-goal.png"
+    ],
+    "bridge_hundred": [
+      "nextgen-evidence/nextgen/captures/learning_world_capture/bridge_hundred-complete-2400x1080.png",
+      "images/bridge_hundred-complete-2400x1080.png"
+    ]
+  },
+  "capture_contract_note": "Fresh source/Host parser comparison only. No older PASS, picture review or receipt is adopted."
+}

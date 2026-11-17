@@ -1,0 +1,22 @@
+{
+  "native_commit": "7e03f1113073e2f941b052028a649aa144eefe64",
+  "native_tree": "a79d41272a55b1bf1ffb82e656ea34556b3a0a83",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_studio_2020_rasters",
+    "test_nextgen_runner",
+    "test_safe_area_rasters"
+  ],
+  "cwd": "/tmp/native-studio-52-gate-integration-20261114/test-view",
+  "started_at": "2026-11-14T06:44:54.126510+00:00",
+  "ended_at": "2026-11-14T06:46:43.680679+00:00",
+  "seconds": 109.5541782729997,
+  "exit_code": 0,
+  "log": "/tmp/native-studio-52-gate-integration-20261114/local-tests/focused-v1.log",
+  "log_bytes": 7873,
+  "log_sha256": "4d0ad842aaaedebd154317225d86c8e0884f9bfbefaa4ca3eb66ff91fee76ced",
+  "scope": "Synthetic runner/raster/movie-boundary contracts plus byte-exact original report structures; no engine/renderer/Android execution"
+}

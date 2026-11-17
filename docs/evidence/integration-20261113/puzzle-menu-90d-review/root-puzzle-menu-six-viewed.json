@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "reviewer": "root",
+  "reviewed_at_utc": "2026-11-13T19:08:28.887201+00:00",
+  "catalog_sha256": "011d989e53d813cd9b701fc3fcdb173cb436a5176657a9b9f5a90491587f0a12",
+  "scope": "Six current90d originals actually opened by root. Bounded static visual observations only; no Android, FPS, natural-scroll or complete Native approval. Separate geometry workflow defect remains. No transfer to a later source.",
+  "source_catalog": {
+    "schema": 1,
+    "head_sha": "90d34181409c15d1b1ad3a6a9643539453155c1d",
+    "tree": "9b407d61633a6421dc47b6858e6a6fb3fa60bea5",
+    "run_id": 43483977169,
+    "artifact_id": 14068726721,
+    "zip_sha256": "97ba64c611eec350055a352cee8e21c854c0ac2844ef4e637317b1911d7b7ad6",
+    "verification_report": "worlds-artifact-verification.json",
+    "verification_report_sha256": "30b2ea73b025fbadc5e4d94335af64597735794a5cdaf4a0e0e489796f9f91ed",
+    "scope": "Six newly produced original Puzzle menu rasters; candidates for actual Root inspection. No visual approval asserted.",
+    "images": [
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+        "dimensions": [
+          640,
+          360
+        ],
+        "bytes": 109552,
+        "sha256": "29f67d6baa2165f4fd9cc7b572193b0f8ec50290ca9fdac5efb0f158d126df4a",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-classic-play.png",
+        "root_directly_viewed": true,
+        "observation": "The classic stage shows1/6 parts with a piece placed on the central board, visible textured remaining pieces and the Das passt progress instruction. At640x360 the horizontal toolbar clips its trailing content and has a visible scrollbar; no claim of all controls being simultaneously exposed."
+      },
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+        "dimensions": [
+          640,
+          360
+        ],
+        "bytes": 72841,
+        "sha256": "7e927fa5fa6fd0e3375a4e5e3d70cd888c90920b13fdeb26c9368b43bcb66fec",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-menu.png",
+        "root_directly_viewed": true,
+        "observation": "One current selection dialog is visibly present, with motif Leuchtturm-Bucht, Mini6 and Drehpuzzle selection plus the new-puzzle action. No duplicated older menu controls are visible in this static frame. At640x360 the final Zur Spielewelt item is partly below the viewport and a vertical scrollbar is visibly present; this review does not claim all items are simultaneously exposed or prove a natural scroll gesture."
+      },
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+        "dimensions": [
+          640,
+          360
+        ],
+        "bytes": 109589,
+        "sha256": "d1eb675bc182b34fa7b1b385119ba0e35faa267d6dc0fd87922f12c4d092b07d",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/640x360-rotation-play.png",
+        "root_directly_viewed": true,
+        "observation": "The rotation-mode stage shows0/6 parts, the quarter-turn instruction, board and textured piece trays. The Drehen control and neighbour controls are readable. At640x360 the bottom toolbar is horizontally scrollable and trailing controls are outside the current viewport; this image does not establish their gesture accessibility."
+      },
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+        "dimensions": [
+          960,
+          540
+        ],
+        "bytes": 151982,
+        "sha256": "d75d39cc24109f5692d386e0a484677086a5c5b01f30694b0ac1a8c87585a9eb",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-menu.png",
+        "root_directly_viewed": true,
+        "observation": "One current selection dialog is visibly present, with motif Leuchtturm-Bucht, Mini6 and Drehpuzzle selection plus the new-puzzle action. No duplicated older menu controls are visible in this static frame. At960x540 all five menu buttons and the full title are visible within the dialog."
+      },
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+        "dimensions": [
+          960,
+          540
+        ],
+        "bytes": 302144,
+        "sha256": "e8b4e454a362225047c2c6afbe2150a430644a38e1b19193058ba0a83fb45912",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-classic-play.png",
+        "root_directly_viewed": true,
+        "observation": "The classic stage shows1/6 parts with a piece placed on the central board, visible textured remaining pieces and the Das passt progress instruction. At960x540 the complete seven-control classic toolbar is visible."
+      },
+      {
+        "path": "nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+        "dimensions": [
+          960,
+          540
+        ],
+        "bytes": 300994,
+        "sha256": "91be337390698ba57edff371853d570d5e54cd0b29b3f2aabab89d056705c36f",
+        "baseline": false,
+        "local_path": "/workspace/scratch/b3485b7bb989/godot-pr160-90d34181-nextgen-evidence/worlds-14068726721/nextgen-evidence/nextgen/captures/puzzle_menu_lifecycle_regression/960x540-rotation-play.png",
+        "root_directly_viewed": true,
+        "observation": "The rotation-mode stage shows0/6 parts, the quarter-turn instruction, board and textured piece trays. The Drehen control and neighbour controls are readable. At960x540 the full eight-control toolbar is visible in the current view."
+      }
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY_BEFORE_ROOT_CHECKPOINT",
+  "created_utc": "2026-11-14T15:25:12.843550+00:00",
+  "repository": "Ullmann27/lumo-godot",
+  "base_commit": "baf148b03a7a32c6ad9f737d731f900eb9113ea1",
+  "base_tree": "0c18a0ca5200ade267cfedb4c12d5c4b0a761a00",
+  "producer_commit": "3213d2aca377476cf4959f380701d87177cec959",
+  "producer_tree": "c48a59897b13afdf67e4b45675579cfac4d5fec6",
+  "source_count": 3,
+  "sources": [
+    {
+      "path": "assets/manifests/assets.json",
+      "before": {
+        "mode": "100644",
+        "bytes": 22295,
+        "sha256": "170c162ccd67158ee12409b3bdca23a1af287438d1093e19490c11c19423e185",
+        "git_blob": "d1d8130bf5652aae3d23f651011a4872e19c10c9"
+      },
+      "after": {
+        "mode": "100644",
+        "bytes": 20907,
+        "sha256": "6df3a52fe25f388d9472919c0313951e716059824d4507aac812e58fadb19c19",
+        "git_blob": "0ea85bdd7f4492eda8aeb05dd3a86a5c3ecb35f0"
+      },
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/assets/manifests/assets.json",
+      "producer_head": "3213d2aca377476cf4959f380701d87177cec959",
+      "reuse_existing_repository_blob": true
+    },
+    {
+      "path": "export_presets.cfg",
+      "before": {
+        "mode": "100644",
+        "bytes": 4344,
+        "sha256": "901a1a919d816895888a58921db557b3f47812950975fc9e04e1b4ab2fbd074c",
+        "git_blob": "9bea54cf996ac3fecb4c8027d5eb8e98e40b69bc"
+      },
+      "after": {
+        "mode": "100644",
+        "bytes": 4458,
+        "sha256": "2b1833f731cd0335711052d12679f6a0605dedf66526b466ae7f6f385496c36e",
+        "git_blob": "6df845e568e8a1573233ab3ad93b96b46c457ddd"
+      },
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/export_presets.cfg",
+      "producer_head": "3213d2aca377476cf4959f380701d87177cec959",
+      "reuse_existing_repository_blob": true
+    },
+    {
+      "path": "tools/build_web_bundle.sh",
+      "before": {
+        "mode": "100644",
+        "bytes": 5134,
+        "sha256": "604aa5c53955329b0d373c61819994c11a905bdb4eb3dcaa557550794336cae2",
+        "git_blob": "07b2b8d0e7341d57a9567996a7a446ff6536195e"
+      },
+      "after": {
+        "mode": "100755",
+        "bytes": 5134,
+        "sha256": "604aa5c53955329b0d373c61819994c11a905bdb4eb3dcaa557550794336cae2",
+        "git_blob": "07b2b8d0e7341d57a9567996a7a446ff6536195e"
+      },
+      "source": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/final-source/tools/build_web_bundle.sh",
+      "producer_head": "3213d2aca377476cf4959f380701d87177cec959",
+      "reuse_existing_repository_blob": true
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/integration.patch",
+    "bytes": 2957,
+    "sha256": "b3d20e052f29a18c8fc7d22f741b4cf29e65811317f7dcd9fd3cb45680f7ada8",
+    "git_blob": "9ba070f1b83c82e0bddccf509858ff3622c359e0"
+  },
+  "packaging_report": {
+    "path": "/workspace/scratch/b3485b7bb989/native181-packaging-followup-baf-20261114/packaging-report.json",
+    "bytes": 6268,
+    "sha256": "386ca82e5b6baeed1d5507b34365276939ccc60100a55039ee2ae80b657ef8fd",
+    "git_blob": "094d2b817cc0b7beb845447aa44d51530433990b"
+  },
+  "scope": "Separate external followup source pack only. Active baf/C4/Host untouched. Exactly two published content blobs and one unchanged-content executable mode.",
+  "tests_imports_exports_runs": [],
+  "git_index_commit_ref_pin_mutations": false,
+  "source_preimages_equal_published_baf": true,
+  "all_other_source_leaves": "No proposed change. Existing52/17, Dream, Discovery, Village, Mobile, Wisp, C4Return and PCM paths remain outside this three-path proposal."
+}

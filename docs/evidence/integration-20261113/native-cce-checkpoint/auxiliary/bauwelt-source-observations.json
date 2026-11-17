@@ -1,0 +1,53 @@
+{
+  "source_sha": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+  "source_tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+  "local_tree_equal_commit": "197f4058736150a755adc9ec0ef8b98565af636b",
+  "combined_job": 132054800937,
+  "actual_checkout": "dd021859aece3c79bf2e79cd701e3687863003c6",
+  "actual_checkout_tree": "8409dc27958dc102d7fc84b413f28642782668aa",
+  "actual_checkout_role": "GitHub pull request merge; tree exactly equals published source head",
+  "direct_bauwelt_lifecycle_job": 132054800134,
+  "direct_checkout": "ccebbe24b489ba7971c605a2bc5187fcfea26f9e",
+  "source_files": {
+    "scripts/tests/build_village_scene_regression.gd": {
+      "archive": "source-build_village_scene_regression.gd.gz",
+      "sha256": "1ac6dcd8ba6c72d637ad575802fb46654d28ea541c865c053eb478fed7b1ffde",
+      "git_blob": "739032f05e558c197a633e4a1b01ab8f61248a0f",
+      "remote_bytes_equal_tree_bound_local_blob": true
+    },
+    ".github/workflows/lumo-kart-bauwelt-integration.yml": {
+      "archive": "source-lumo-kart-bauwelt-integration.yml.gz",
+      "sha256": "0af8d072df7388f13706cb0db6a41d39adceb66a4b992e819e959eda9a861b2b",
+      "git_blob": "7d25420ba2774cd80ae777053207f051cfcd5786",
+      "remote_bytes_equal_tree_bound_local_blob": true
+    }
+  },
+  "actual_pass_lines_including_grep_echo_duplicates": [
+    "2026-11-13T17:37:36.2234481Z [VillageEconomy] PASS 337 checks",
+    "2026-11-13T17:37:36.2775086Z [VillageEconomy] PASS 337 checks",
+    "2026-11-13T17:37:41.4335954Z [VillageScene] PASS checks=222 : production village, chapter, economy and resume",
+    "2026-11-13T17:37:41.6504573Z [VillageScene] PASS checks=222 : production village, chapter, economy and resume",
+    "2026-11-13T17:37:47.5860731Z [BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout",
+    "2026-11-13T17:37:47.6954850Z [BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+  ],
+  "actual_assertion_counts": {
+    "village_economy": 337,
+    "village_scene": 222,
+    "build_nextgen": 71
+  },
+  "scene_count_boundary": {
+    "workflow_sets_LUMO_EVIDENCE_DIR": false,
+    "original_job_log_mentions_LUMO_EVIDENCE_DIR": false,
+    "one_additional_check_only_when_environment_value_nonempty": "Village touch evidence can be written",
+    "additional_check_source_lines": [
+      276,
+      283
+    ],
+    "statement": "222 is the actual current direct-workflow result. The optional evidence-file-open check adds one assertion only when LUMO_EVIDENCE_DIR is nonempty; no historical count is forced."
+  },
+  "limits": [
+    "No local test was repeated for this read-only comparison.",
+    "No assertion about the separately owned Nextgen or Graphics workflows.",
+    "Successful PNG production in the lifecycle log is not a subjective image review."
+  ]
+}

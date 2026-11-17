@@ -1,0 +1,55 @@
+diff --git a/tools/validate_2014.sh b/tools/validate_2014.sh
+index 4fb01fd..82ff8b7 100644
+--- a/tools/validate_2014.sh
++++ b/tools/validate_2014.sh
+@@ -28,8 +28,7 @@ run_probe() {
+   fi
+   timeout 240s "${command[@]}" "${args[@]}" 2>&1 | tee "$log"
+   grep -F "$marker" "$log" >/dev/null
+-  if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log" \
+-      | grep -v 'resources still in use at exit' | grep -q .; then
++  if grep -qE 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log"; then
+     echo "2014 acceptance failed: $name" >&2
+     return 1
+   fi
+diff --git a/tools/validate_project.sh b/tools/validate_project.sh
+index c518204..4becf6b 100755
+--- a/tools/validate_project.sh
++++ b/tools/validate_project.sh
+@@ -2,10 +2,7 @@
+ set -euo pipefail
+ GODOT="${GODOT_BIN:-godot}"
+ 
+-# After a PASS line, ignore Godot's known teardown line
+-#   ERROR: N resources still in use at exit
+-# so a green suite is not flipped to failure. SCRIPT ERROR, Parse Error,
+-# and any other ERROR: still fail. Missing PASS still fails.
++# A PASS marker cannot approve engine errors emitted during teardown.
+ godot_log_ok() {
+   local log=$1
+   local pass=$2
+@@ -13,9 +10,7 @@ godot_log_ok() {
+     echo "missing PASS marker '$pass' in $log" >&2
+     return 1
+   fi
+-  if grep -E 'SCRIPT ERROR|Parse Error|ERROR:' "$log" \
+-    | grep -v 'resources still in use at exit' \
+-    | grep -q .; then
++  if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' "$log"; then
+     echo "errors in $log" >&2
+     return 1
+   fi
+diff --git a/tools/validate_technical_art.sh b/tools/validate_technical_art.sh
+index f3e102c..8248835 100755
+--- a/tools/validate_technical_art.sh
++++ b/tools/validate_technical_art.sh
+@@ -32,8 +32,7 @@ run_probe() {
+   fi
+   timeout 240s "${command[@]}" "${args[@]}" 2>&1 | tee "$log"
+   grep -F "$marker" "$log" >/dev/null
+-  if grep -E 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log" \
+-      | grep -v 'resources still in use at exit' | grep -q .; then
++  if grep -qE 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' "$log"; then
+     echo "Technical art acceptance failed: $name" >&2
+     return 1
+   fi
