@@ -28,9 +28,14 @@ var _elapsed: float = 0.0
 func configure(world: Node3D) -> void:
 	name = "DschungelherzSpatialAudio"
 	for entry in SOURCES:
-		var stream := load(PATH % str(entry.kind)) as AudioStreamOggVorbis
+		var path: String = PATH % str(entry.kind)
+		# The original ambience loops ship with the external Dschungelherz audio
+		# package; without them the course stays silent instead of failing.
+		var stream: AudioStreamOggVorbis = null
+		if ResourceLoader.exists(path):
+			stream = load(path) as AudioStreamOggVorbis
 		if stream == null:
-			push_error("[Dschungelherz] Missing original ambience: " + str(entry.kind))
+			push_warning("[Dschungelherz] Original ambience not packaged: " + str(entry.kind))
 			continue
 		stream.loop = true
 		var emitter := AudioStreamPlayer3D.new()
