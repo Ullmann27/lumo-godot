@@ -220,12 +220,9 @@ func _ui() -> void:
 	bottom.add_theme_constant_override("separation", 8)
 	safe_ui.add_child(bottom)
 	for lane in range(4):
-		var button: Button = KIT.button(
-			str(lane + 1), func(): pass, 64
-		)
+		var button: Button = KIT.button(str(lane + 1), func(): pass, 64, COLORS[lane])
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.add_theme_color_override("font_color", COLORS[lane])
-		button.add_theme_font_size_override("font_size", 23)
+		button.add_theme_font_size_override("font_size", 26)
 		# Real pointer ownership is handled below; mouse emulation cannot leave
 		# a ghost-held lane or prevent a second finger from holding another.
 		button.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -263,6 +260,7 @@ func _clear_menu() -> void:
 		node.queue_free()
 	menu.show()
 	goal_banner.hide()
+	_set_play_hud_visible(false)
 	call_deferred("_layout")
 
 
@@ -288,7 +286,7 @@ func _show_start() -> void:
 	][difficulty], _next_difficulty))
 	if progress_read_only:
 		menu_box.add_child(_menu_text("Dein bisheriger Spielstand ist nicht lesbar und bleibt unverändert. Freies Spielen ist möglich.", 15))
-	var play := KIT.button("Los geht’s!", start)
+	var play := KIT.button("Los geht’s!", start, 82, Color(0, 0, 0, 0), "primary")
 	play.disabled = progress_read_only and tour_mode
 	menu_box.add_child(play)
 	menu_box.add_child(KIT.button("‹ Zur Spielewelt", _leave))
@@ -391,6 +389,11 @@ func start() -> void:
 	menu.hide()
 	goal_banner.visible = round_stage >= 0
 	feedback.text = "Mach dich bereit!"
+	info.text = (
+		"0 Punkte · 0× Combo · %s" % STATE.DIFFICULTY_NAMES[round_difficulty]
+	)
+	progress_bar.value = 0
+	_set_play_hud_visible(true)
 
 
 func _press(lane: int) -> void:
@@ -559,7 +562,13 @@ func _finish() -> void:
 			}
 		)
 	_clear_menu()
-	menu_box.add_child(_menu_text("Deine Sterne funkeln!", 28))
+	menu_box.add_child(_star_row(earned))
+	menu_box.add_child(
+		_menu_text(
+			"Deine Sterne funkeln!" if earned > 0 else "Nächster Versuch – du schaffst das!",
+			26
+		)
+	)
 	if round_stage >= 0:
 		var result_text := "Geschafft! Die nächste Bühne ist offen." if bool(last_tour_result.get("passed", false)) else "Übe in deinem Tempo. Dein bester Versuch bleibt gespeichert."
 		if bool(last_tour_result.get("complete", false)):
@@ -572,15 +581,16 @@ func _finish() -> void:
 			menu_box.add_child(KIT.button("Speichern erneut versuchen", _retry_save))
 	menu_box.add_child(
 		_menu_text(
-			(
-				"%d Sterne · %d Punkte · %d%% getroffen"
-				% [earned, points, roundi(model.accuracy() * 100)]
-			),
-			20
+			"%d Punkte · %d%% getroffen" % [points, roundi(model.accuracy() * 100)],
+			22
 		)
 	)
 	menu_box.add_child(
-		_menu_text("Längste Combo: %d · Bestwert: %d" % [model.best_combo, maxi(old, points)], 17)
+		_menu_text(
+			"%d von 3 Sternen · Längste Combo: %d · Bestwert: %d"
+			% [earned, model.best_combo, maxi(old, points)],
+			17
+		)
 	)
 	if model.combo_bonus > 0:
 		menu_box.add_child(
@@ -588,7 +598,9 @@ func _finish() -> void:
 				"Combo-Bonus: +%d Punkte · +%d XP" % [int(model.combo_bonus), model.combo_xp()], 17
 			)
 		)
-	menu_box.add_child(KIT.button("Noch einmal spielen", start))
+	menu_box.add_child(
+		KIT.button("Noch einmal spielen", start, 82, Color(0, 0, 0, 0), "primary")
+	)
 	menu_box.add_child(KIT.button("Zur Tourkarte" if tour_mode else "Anderes Lied", _return_to_map))
 	menu_box.add_child(KIT.button("Zur Spielewelt", _leave))
 
@@ -605,12 +617,15 @@ func _pause(value: bool) -> void:
 		resume_countdown = 0.0
 		_clear_menu()
 		menu_box.add_child(KIT.label("Dein Lied wartet", 27))
-		menu_box.add_child(KIT.button("Weiter im Takt", func(): _pause(false)))
+		menu_box.add_child(
+			KIT.button("Weiter im Takt", func(): _pause(false), 82, Color(0, 0, 0, 0), "primary")
+		)
 		menu_box.add_child(KIT.button("Lied neu starten", start))
 		menu_box.add_child(KIT.button("Zur Spielewelt", _leave))
 	else:
 		resume_countdown = 2.0
 		menu.hide()
+		_set_play_hud_visible(true)
 		goal_banner.visible = round_stage >= 0
 
 
@@ -783,16 +798,68 @@ func _note_disc(root: Node3D, at: Vector3, color: Color, radius: float) -> MeshI
 	return kit.mesh(root, disc, at, color, true)
 
 
+func _set_play_hud_visible(playing: bool) -> void:
+	info.visible = playing
+	feedback.visible = playing
+	progress_bar.visible = playing
+	if not playing:
+		goal_banner.visible = false
+
+
+func _star_row(earned: int) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 16)
+	for i in range(3):
+		row.add_child(_star_icon(i < earned))
+	return row
+
+
+func _star_icon(filled: bool) -> Control:
+	var icon := Control.new()
+	icon.custom_minimum_size = Vector2(48, 48)
+	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon.set_meta("filled", filled)
+	icon.draw.connect(_draw_star.bind(icon))
+	icon.resized.connect(icon.queue_redraw)
+	return icon
+
+
+func _draw_star(icon: Control) -> void:
+	var filled := bool(icon.get_meta("filled"))
+	var center := icon.size * 0.5
+	var radius := minf(icon.size.x, icon.size.y) * 0.46
+	var points := PackedVector2Array()
+	for i in range(10):
+		var angle := deg_to_rad(-90.0 + float(i) * 36.0)
+		var ring := radius if i % 2 == 0 else radius * 0.42
+		points.append(center + Vector2(cos(angle), sin(angle)) * ring)
+	if filled:
+		icon.draw_colored_polygon(points, Color("ffd56a"))
+		icon.draw_polyline(points + PackedVector2Array([points[0]]), Color("ffe9a8"), 1.6, true)
+	else:
+		icon.draw_colored_polygon(points, Color(0.16, 0.22, 0.34, 0.95))
+		icon.draw_polyline(points + PackedVector2Array([points[0]]), Color(0.62, 0.74, 0.9, 0.7), 1.8, true)
+
+
 func _batch_speakers(specs: Array[Dictionary]) -> void:
 	var box := BoxMesh.new()
 	box.size = Vector3.ONE
+	# Unit dish: larger radius on +Y faces the audience after the 90° X tilt,
+	# matching the pre-batch MeshInstance rotation of the membranes.
 	var cyl := CylinderMesh.new()
 	cyl.top_radius = 1.0
-	cyl.bottom_radius = 1.0
+	cyl.bottom_radius = 0.62
 	cyl.height = 1.0
 	cyl.radial_segments = 20
+	var cap_mesh := CylinderMesh.new()
+	cap_mesh.top_radius = 1.0
+	cap_mesh.bottom_radius = 1.0
+	cap_mesh.height = 1.0
+	cap_mesh.radial_segments = 16
 	var cabinets: Array[Transform3D] = []
 	var tweeters: Array[Transform3D] = []
+	var caps: Array[Transform3D] = []
 	var woofers: Array = [[], [], [], []]
 	var tops: Array = [[], [], [], []]
 	for spec in specs:
@@ -813,6 +880,12 @@ func _batch_speakers(specs: Array[Dictionary]) -> void:
 		woofers[lane].append(
 			Transform3D(woofer_basis, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor))
 		)
+		var cap_basis := (
+			face * Basis.from_scale(Vector3(0.22 * scale_factor, 0.07, 0.22 * scale_factor))
+		)
+		caps.append(
+			Transform3D(cap_basis, at + Vector3(0, 1.15 * scale_factor, 0.80 * scale_factor))
+		)
 		var tweeter_basis := (
 			face * Basis.from_scale(Vector3(0.32 * scale_factor, 0.14, 0.32 * scale_factor))
 		)
@@ -829,7 +902,10 @@ func _batch_speakers(specs: Array[Dictionary]) -> void:
 		self, "RhythmCabinets", box, BuildVoxelStyle.material("plain", Color("1a142c")), cabinets
 	)
 	BuildVoxelStyle.multimesh(
-		self, "RhythmTweeters", cyl, kit.material(Color("e6f8ff"), true), tweeters
+		self, "RhythmTweeters", cap_mesh, kit.material(Color("e6f8ff"), true), tweeters
+	)
+	BuildVoxelStyle.multimesh(
+		self, "RhythmCaps", cap_mesh, BuildVoxelStyle.material("plain", Color("141018")), caps
 	)
 	for lane in range(4):
 		var woofer_x: Array[Transform3D] = []

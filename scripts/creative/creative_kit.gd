@@ -250,25 +250,58 @@ func environment(root: Node3D, preset: String = "creative_night") -> void:
 
 
 static func panel() -> StyleBoxFlat:
+	return tinted_panel(Color(0.025, 0.07, 0.18, 0.94), Color("56bcf3"))
+
+
+static func tinted_panel(bg: Color, border: Color, radius: int = 14) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.025, 0.07, 0.18, 0.94)
-	style.border_color = Color("56bcf3")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(14)
+	style.bg_color = bg
+	style.border_color = border
+	style.set_border_width_all(2 if border.a > 0.5 else 1)
+	style.set_corner_radius_all(radius)
 	style.set_content_margin_all(12)
+	style.shadow_color = Color(0, 0, 0, 0.28)
+	style.shadow_size = 3
+	style.shadow_offset = Vector2(0, 1)
 	return style
 
 
-static func button(text: String, callback: Callable, min_width: float = 82) -> Button:
+static func button(
+	text: String,
+	callback: Callable,
+	min_width: float = 82,
+	accent: Color = Color(0, 0, 0, 0),
+	emphasis: String = ""
+) -> Button:
 	var control := Button.new()
 	control.text = text
 	control.custom_minimum_size = Vector2(min_width, 48)
-	control.add_theme_stylebox_override("normal", panel())
-	var hover: StyleBoxFlat = panel()
+	var normal := panel()
+	var hover := panel()
 	hover.bg_color = Color("205083")
+	var font := Color("e4f5ff")
+	if emphasis == "primary":
+		normal = tinted_panel(Color("146a86"), Color("7aebff"), 16)
+		hover = tinted_panel(Color("1b88a8"), Color("c5f7ff"), 16)
+		font = Color("f3fdff")
+		control.add_theme_font_size_override("font_size", 18)
+	elif accent.a > 0.0:
+		var fill := accent.lerp(Color(0.03, 0.05, 0.12), 0.38)
+		fill.a = 1.0
+		var fill_hot := accent.lerp(Color(0.04, 0.06, 0.14), 0.18)
+		fill_hot.a = 1.0
+		normal = tinted_panel(fill, accent.lightened(0.08), 18)
+		hover = tinted_panel(fill_hot, accent.lightened(0.22), 18)
+		font = Color.WHITE
+		control.add_theme_font_size_override("font_size", 22)
+	else:
+		control.add_theme_font_size_override("font_size", 16)
+	control.add_theme_stylebox_override("normal", normal)
 	control.add_theme_stylebox_override("hover", hover)
 	control.add_theme_stylebox_override("pressed", hover)
-	control.add_theme_font_size_override("font_size", 16)
+	control.add_theme_color_override("font_color", font)
+	control.add_theme_color_override("font_hover_color", font)
+	control.add_theme_color_override("font_pressed_color", font)
 	control.pressed.connect(callback)
 	return control
 
