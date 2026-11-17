@@ -217,13 +217,10 @@ var modal: PanelContainer
 var modal_column: VBoxContainer
 var modal_scroll: ScrollContainer
 var modal_padding: MarginContainer
-var modal_body: VBoxContainer
 var pause_navigation: HBoxContainer
 ## Zieleinlauf: Tafel rechts (quer) bzw. unten (hoch), ohne Abdunklung; die
-## Kamera stellt das Kart in die freie Fläche. Aktionen stehen außerhalb des
-## Scrollbereichs und sind deshalb immer ohne Scrollen erreichbar.
+## Kamera stellt das Kart in die freie Fläche.
 var result_view: bool = false
-var result_actions: VBoxContainer
 var result_scale: float = 1.0
 var result_camera_time: float = 0.0
 ## Bildschirmanteil (0..1), in dessen Mitte das Kart stehen soll, und der Anteil
@@ -1178,7 +1175,7 @@ func _build_ui() -> void:
 			if child is Button:
 				child.mouse_filter = Control.MOUSE_FILTER_PASS
 	)
-	modal_body = VBoxContainer.new()
+	var modal_body := VBoxContainer.new()
 	modal_body.add_theme_constant_override("separation", 10)
 	modal.add_child(modal_body)
 	modal_scroll = ScrollContainer.new()
@@ -1193,11 +1190,6 @@ func _build_ui() -> void:
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_padding.add_child(modal_column)
 	modal_column.sort_children.connect(modal.queue_redraw)
-	# Die Ergebnis-Aktionen liegen unter dem Scrollbereich: nie wegscrollbar.
-	result_actions = VBoxContainer.new()
-	result_actions.name = "ResultActions"
-	modal_body.add_child(result_actions)
-	result_actions.hide()
 	# Return actions stay outside the scrolling settings on compact landscapes.
 	pause_navigation = HBoxContainer.new()
 	pause_navigation.name = "PauseNavigation"
@@ -1546,6 +1538,9 @@ func _apply_minimap_layout() -> void:
 ## hoch und fast quadratisch unten. Der Inhalt ist ein Entwurf von 560 Einheiten
 ## Breite, der mit der Tafel skaliert. Reicht die Höhe nicht, weicht zuerst die
 ## Schlusszeile, dann schrumpft der Maßstab; Knöpfe bleiben mindestens 48 dp hoch.
+## Passt selbst der kleinste Maßstab nicht (sehr flache Fenster, viele
+## Zusatzzeilen), rücken die Aktionen direkt unter die Wertzeilen: Sie bleiben
+## ohne Scrollen erreichbar, nur die Zusatzzeilen liegen dann im Scrollbereich.
 func _layout_result(ui_scale: float, margin_dp: float, display_size: Vector2) -> void:
 	var margin: float = margin_dp * ui_scale
 	var area: Vector2 = safe_ui.size
@@ -1559,7 +1554,7 @@ func _layout_result(ui_scale: float, margin_dp: float, display_size: Vector2) ->
 		# Über der Tafel bleibt Platz für Lumo im Kart.
 		available = minf(available, maxf(area.y * 0.6, 340.0 * ui_scale))
 	var factor: float = clampf(panel_width / (RESULT_KIT.DESIGN_WIDTH * ui_scale), 0.42, 2.2)
-	var cheer: Control = result_actions.get_node_or_null("ResultCheer")
+	var cheer: Control = modal_column.get_node_or_null("ResultCheer")
 	if cheer != null:
 		cheer.visible = true
 	var needed: float = _apply_result_scale(factor * ui_scale, ui_scale, panel_width)
@@ -1577,6 +1572,7 @@ func _layout_result(ui_scale: float, margin_dp: float, display_size: Vector2) ->
 			panel_width = fitted_width
 			needed = _apply_result_scale(factor * ui_scale, ui_scale, panel_width)
 	var height: float = minf(needed, area.y - margin * 2.0)
+	_order_result_actions(needed > height)
 	if landscape:
 		modal.offset_right = area.x * 0.5 - margin
 		modal.offset_left = modal.offset_right - panel_width
@@ -1613,23 +1609,36 @@ func _apply_result_scale(unit: float, dp: float, panel_width: float) -> float:
 	modal.add_theme_stylebox_override("panel", frame)
 	for side in ["left", "right", "top", "bottom"]:
 		modal_padding.add_theme_constant_override("margin_" + side, 0)
-	modal_body.add_theme_constant_override("separation", roundi(10.0 * unit))
 	modal_column.add_theme_constant_override("separation", roundi(8.0 * unit))
-	result_actions.add_theme_constant_override("separation", roundi(9.0 * unit))
 	var inner: float = maxf(1.0, panel_width - frame.get_minimum_size().x)
-	var total: float = frame.get_minimum_size().y + float(modal_body.get_theme_constant("separation"))
-	for column in [modal_column, result_actions]:
-		var rows: int = 0
-		for child in column.get_children():
-			if not (child is Control) or child.is_queued_for_deletion():
-				continue
-			var height: float = _scale_result_node(child, unit, dp, inner)
-			if child.visible:
-				total += height
-				rows += 1
-		total += float(maxi(0, rows - 1) * column.get_theme_constant("separation"))
+	var total: float = frame.get_minimum_size().y
+	var rows: int = 0
+	for child in modal_column.get_children():
+		if not (child is Control) or child.is_queued_for_deletion():
+			continue
+		var height: float = _scale_result_node(child, unit, dp, inner)
+		if child.visible:
+			total += height
+			rows += 1
+	total += float(maxi(0, rows - 1) * modal_column.get_theme_constant("separation"))
 	# Ein Pixel Luft, damit Rundungen keinen Scrollbalken erzeugen.
 	return ceilf(total) + 2.0
+
+
+## Normal stehen die Aktionen am Ende der Tafel. Bei Platzmangel (`early`)
+## folgen sie direkt auf die Wertzeilen, vor Streckenpass, Bestzeit und Cup-Wertung.
+func _order_result_actions(early: bool) -> void:
+	var rows: Array[Node] = []
+	for row_name in ["ResultMainActions", "ResultMoreActions", "ResultCheer"]:
+		if modal_column.has_node(row_name):
+			rows.append(modal_column.get_node(row_name))
+	var stats: Node = modal_column.get_node_or_null("ResultStats")
+	var first: int = modal_column.get_child_count() - rows.size()
+	if early and stats != null:
+		first = stats.get_index() + 1
+	for index in range(rows.size()):
+		if rows[index].get_index() != first + index:
+			modal_column.move_child(rows[index], first + index)
 
 
 func _scale_result_node(node: Control, unit: float, dp: float, width: float) -> float:
@@ -1687,10 +1696,7 @@ func _end_result_view() -> void:
 		var animator = player.get("lumo_animation")
 		if is_instance_valid(animator):
 			animator.clear_attention_target()
-	_clear_column(result_actions)
-	result_actions.hide()
 	modal.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 24))
-	modal_body.add_theme_constant_override("separation", 10)
 	modal_column.add_theme_constant_override("separation", 10)
 	modal.queue_redraw()
 
@@ -1702,7 +1708,7 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 	if control == garage or control == reference_landing or control == map_panel:
 		return
 	# Die Ergebnistafel skaliert ihre Bausteine selbst (_apply_result_scale).
-	if control == result_actions or (result_view and control == modal_column):
+	if result_view and control == modal_column:
 		return
 	if control is Control:
 		var ui_control: Control = control
@@ -3151,14 +3157,8 @@ func _update_result_camera(delta: float, snap: bool) -> void:
 		subject_width / (2.0 * tan_horizontal * result_free.x * 0.92),
 		2.5 / (2.0 * tan_vertical * result_free.y * 0.86)
 	), 2.8, 9.5)
-	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var side := Vector3(-ahead.z, 0, ahead.x)
 	var target: Vector3 = player.position + Vector3.UP * 1.0
-	var desired: Vector3 = (
-		player.position
-		+ (ahead * cos(0.62) + side * sin(0.62)) * view_distance
-		+ Vector3.UP * (0.6 + view_distance * 0.2)
-	)
+	var desired: Vector3 = _result_camera_position(view_distance, target)
 	if not immediate:
 		desired = camera.position.lerp(desired, minf(1.0, delta * 4.5))
 	camera.position = _clear_finish_camera(desired, target)
@@ -3171,6 +3171,30 @@ func _update_result_camera(delta: float, snap: bool) -> void:
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(0.0, false, reduced_motion)
 	_keep_result_cheer()
+
+
+## Bevorzugt vorn rechts vor dem Kart. Steht dort eine Leitplanke oder ein
+## Gebäude im Weg (das Kart rollt oft am Rand aus), folgt die nächste freie
+## Richtung: vorn links, gerade von vorn, dann seitlich.
+func _result_camera_position(view_distance: float, target: Vector3) -> Vector3:
+	_cache_finish_camera_boxes()
+	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
+	var side := Vector3(-ahead.z, 0, ahead.x)
+	var best: Vector3 = target
+	var best_clear: float = -1.0
+	for angle in [0.62, -0.62, 0.0, 1.25, -1.25]:
+		var candidate: Vector3 = (
+			player.position
+			+ (ahead * cos(angle) + side * sin(angle)) * view_distance
+			+ Vector3.UP * (0.6 + view_distance * 0.2)
+		)
+		var clear: float = _finish_camera_segment_fraction(target, candidate)
+		if clear >= 0.9:
+			return candidate
+		if clear > best_clear:
+			best_clear = clear
+			best = candidate
+	return best
 
 
 ## Lumo schaut zur Kamera und jubelt, solange das Ergebnis eines Treppchenplatzes
@@ -3799,7 +3823,6 @@ func _show_result() -> void:
 	_update_hud()
 	message.text = _place_title(int(result_payload.get("place", 1))) if _ranked() else "Ziel!"
 	_clear_column(modal_column)
-	_clear_column(result_actions)
 	modal_scroll.scroll_vertical = 0
 	pause_navigation.hide()
 	menu_settings_navigation.hide()
@@ -3874,17 +3897,21 @@ func _show_result() -> void:
 	main_row.name = "ResultMainActions"
 	main_row.add_child(primary)
 	main_row.add_child(secondary)
-	result_actions.add_child(main_row)
+	modal_column.add_child(main_row)
 	var more_row := BoxContainer.new()
 	more_row.name = "ResultMoreActions"
 	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Neue Fahrt auswählen", _leave_race_for_menu))
 	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Zum Lernen", func(): _return_to_app("learn")))
-	result_actions.add_child(more_row)
+	modal_column.add_child(more_row)
+	for row in [main_row, more_row]:
+		for action in row.get_children():
+			# Wie alle Dialogknöpfe: Ein Wischen, das auf dem Knopf beginnt, scrollt
+			# die Tafel und löst die Aktion nicht aus.
+			action.mouse_filter = Control.MOUSE_FILTER_PASS
 	if ranked:
-		result_actions.add_child(RESULT_WIDGETS.Tagline.new().setup(_place_cheer(place_now)))
+		modal_column.add_child(RESULT_WIDGETS.Tagline.new().setup(_place_cheer(place_now)))
 	result_view = true
 	result_camera_time = 0.0
-	result_actions.show()
 	# Das Ergebnis steht frei über der Szene: keine Renn-Anzeige, keine Abdunklung.
 	hud_content.hide()
 	modal.show()
@@ -3902,7 +3929,9 @@ func _play_result_entrance(badge: Control, stats: Control) -> void:
 		return
 	badge.play_in()
 	var rows: Array = stats.get_children()
-	rows.append_array(result_actions.get_children())
+	for row_name in ["ResultMainActions", "ResultMoreActions", "ResultCheer"]:
+		if modal_column.has_node(row_name):
+			rows.append(modal_column.get_node(row_name))
 	for index in range(rows.size()):
 		var row: Control = rows[index]
 		row.modulate.a = 0.0

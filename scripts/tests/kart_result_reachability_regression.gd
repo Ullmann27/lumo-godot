@@ -12,7 +12,7 @@ const WINDOWS: Array = [
 	[Vector2i(1280, 720), 1.0], [Vector2i(2400, 1080), 1.0], [Vector2i(800, 480), 1.0],
 	[Vector2i(1812, 2176), 1.0], [Vector2i(904, 2316), 1.0],
 	[Vector2i(1600, 720), 2.0], [Vector2i(2400, 1080), 2.625], [Vector2i(1812, 2176), 2.625],
-	[Vector2i(904, 2316), 2.625]
+	[Vector2i(904, 2316), 2.625], [Vector2i(2316, 904), 2.625], [Vector2i(2176, 1812), 2.625]
 ]
 ## Primary and secondary first, then the smaller second row.
 const ACTIONS: Array[String] = [
@@ -30,6 +30,43 @@ func _check(condition: bool, text: String) -> void:
 	if not condition:
 		failures += 1
 		push_error("[KartResultReach] FAIL: " + text)
+
+
+## "Ruhige Bewegung": nothing pops, fades, twinkles or keeps animating.
+func _reduced_motion_case() -> void:
+	root.size = Vector2i(1280, 720)
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await process_frame
+	game.preferred_reduced_motion = true
+	game.reduced_motion = true
+	game._start_selected_race(
+		{"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"}
+	)
+	game._end_preview()
+	game.countdown = 0
+	game.racing = true
+	await process_frame
+	_check(game.reduced_motion, "reduced motion stays set for the race")
+	game.elapsed = 98.4
+	game.checkpoint_index = 16
+	game._finish(false)
+	for frame in range(3):
+		var badge: Control = game.modal_column.get_node("ResultTitle")
+		_check(
+			badge.reduced_motion and badge.appear == 1.0 and badge.modulate.a == 1.0 and not badge.is_processing(),
+			"reduced motion: badge stands still (frame %d)" % frame
+		)
+		for row in game.modal_column.get_children():
+			_check(row.modulate.a == 1.0, "reduced motion: '%s' is shown at once" % row.name)
+		for row in game.modal_column.get_node("ResultStats").get_children():
+			_check(row.modulate.a == 1.0, "reduced motion: row '%s' is shown at once" % row.label.text)
+		await process_frame
+	game.abandoned = true
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartResultReach]")):
+		failures += 1
 
 
 func _run() -> void:
@@ -56,6 +93,12 @@ func _run() -> void:
 		game.elapsed = 98.4
 		game.checkpoint_index = 16
 		game._finish(false)
+		# Without "Ruhige Bewegung" the badge pops in and the rows fade in.
+		_check(
+			game.modal_column.get_node("ResultTitle").appear < 1.0
+			and game.modal_column.get_node("ResultStats").get_child(0).modulate.a < 1.0,
+			"%s result entrance is animated by default" % label
+		)
 		for frame in range(4):
 			await process_frame
 		var clip: Rect2 = game.modal_scroll.get_global_rect()
@@ -87,12 +130,8 @@ func _run() -> void:
 			found.append(child.text)
 			var box: Rect2 = child.get_global_rect()
 			_check(
-				dialog.grow(0.5).encloses(box) and screen.encloses(box),
+				clip.grow(0.5).encloses(box) and screen.encloses(box),
 				"%s '%s' is inside the visible dialog area" % [label, child.text]
-			)
-			_check(
-				not game.modal_scroll.is_ancestor_of(child),
-				"%s '%s' cannot be scrolled out of view" % [label, child.text]
 			)
 			_check(
 				child.size.y + 0.5 >= child.custom_minimum_size.y and child.custom_minimum_size.y > 0.0,
@@ -149,6 +188,7 @@ func _run() -> void:
 		if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartResultReach]")):
 			failures += 1
 	bridge._options.erase("displayDensity")
+	await _reduced_motion_case()
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if failures > 0:
 		print("[KartResultReach] FAIL: %d checks" % failures)
