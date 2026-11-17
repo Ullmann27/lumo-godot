@@ -1,11 +1,12 @@
 extends "res://scripts/games/kart_spatial_landing.gd"
-## Real native LUMO Kart home. All cards are Controls/Buttons with genuine routes.
-## No baked reference screenshot and no fabricated purchases/season levels.
+## Real native LUMO Kart home. All controls retain their original game routes.
+## No reference-image overlay, fictitious season progress or fabricated rewards.
 signal preview_rotate_requested(radians: float)
 
 const THEME = preload("res://scripts/games/kart_ui_theme.gd")
 const MODES = preload("res://scripts/games/kart_home_mode_choice.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const ADAPTIVE_LAYOUT = preload("res://scripts/games/kart_neon_layout.gd")
 const NEON := Color("21ccff")
 const AMBER := Color("ffb52d")
 const VIOLET := Color("9658ff")
@@ -41,18 +42,18 @@ var _rotation_right: Button
 var _reward_popup: AcceptDialog
 var _season_stars: int = 0
 var _neon_veil: ColorRect
+var _stage_bounds := Rect2()
 
 
 func _ready() -> void:
 	super._ready()
-	# Keep the original native source's selection contract for actual races.
 	for id in _mode_buttons:
 		var button = _mode_buttons[id]
 		button.title = {"race": "Rennen", "cup": "Turniere", "time_trial": "Zeitfahren"}[id]
 		button.caption = {"race": "Schnelle Rennen", "cup": "Gegen die Besten", "time_trial": "Bestzeit jagen"}[id]
 		button.accent = {"race": AMBER, "cup": VIOLET, "time_trial": NEON}[id]
 		button.update_selected(id == current_mode)
-	_header_profile = _action("LumoFox  ·  Fahrer", NEON, func(): mode_selected.emit("driver"), "PlayerCard")
+	_header_profile = _action("Lumo · Fahrer", NEON, func(): mode_selected.emit("driver"), "PlayerCard")
 	var avatar_path := "res://assets/kart/landing/lumo_avatar.webp"
 	if ResourceLoader.exists(avatar_path, "Texture2D"):
 		_header_profile.icon = load(avatar_path)
@@ -61,7 +62,7 @@ func _ready() -> void:
 	_header.move_child(_header_profile, 1)
 	_neon_veil = ColorRect.new()
 	_neon_veil.name = "NeonGlassVeil"
-	_neon_veil.color = Color("020a24", 0.30)
+	_neon_veil.color = Color("020a24", 0.14)
 	_neon_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_layout_root.add_child(_neon_veil)
 	_layout_root.move_child(_neon_veil, 0)
@@ -75,7 +76,6 @@ func _ready() -> void:
 	_reward_popup.title = "Deine Sterne"
 	_reward_popup.dialog_text = "Du hast %d Sterne gesammelt. Spiele Rennen, um weitere Sterne zu verdienen." % total_stars
 	add_child(_reward_popup)
-	# The existing footer and all original choices remain usable.
 	_hub_ready = true
 	_layout()
 
@@ -85,8 +85,10 @@ func _action(title: String, accent: Color, callback: Callable, node_name: String
 	button.name = node_name if not node_name.is_empty() else "Action_" + title
 	button.text = title
 	button.custom_minimum_size = Vector2(48, 48)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	button.focus_mode = Control.FOCUS_ALL
-	button.clip_text = true
+	button.clip_text = false
 	button.pressed.connect(callback)
 	button.add_theme_font_override("font", THEME.HEADING)
 	_skin(button, accent)
@@ -135,22 +137,21 @@ func _build_featured_tracks() -> void:
 	stack.add_theme_constant_override("separation", 4)
 	_highlight.add_child(stack)
 	_highlight_title = Label.new()
-	_highlight_title.text = "⌁  Strecken-Highlight"
+	_highlight_title.text = "Strecken-Highlight"
 	_highlight_title.add_theme_color_override("font_color", Color.WHITE)
 	_highlight_title.add_theme_font_override("font", THEME.HEADING)
 	stack.add_child(_highlight_title)
-	var hero := HBoxContainer.new()
-	hero.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stack.add_child(hero)
 	_highlight_image = TextureRect.new()
 	_highlight_image.name = "FeaturedTrackArtwork"
 	_highlight_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_highlight_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_highlight_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_highlight_image.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hero.add_child(_highlight_image)
+	_highlight_image.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	stack.add_child(_highlight_image)
+	# Track name belongs beneath the image, not in a narrow upright side button.
 	_highlight_pick = _action("Vulkan  ❯", AMBER, func(): _track_select(_featured_track), "PlayFeaturedTrack")
-	hero.add_child(_highlight_pick)
+	stack.add_child(_highlight_pick)
 	_track_scroll = ScrollContainer.new()
 	_track_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	_track_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -194,6 +195,8 @@ func _feature_track(id: String) -> void:
 	for key in _track_buttons:
 		var button: Button = _track_buttons[key]
 		_skin(button, AMBER if key == id else NEON)
+	if _hub_ready:
+		call_deferred("_layout")
 
 
 func _track_select(id: String) -> void:
@@ -206,8 +209,9 @@ func _build_extra_modes() -> void:
 	_extra_modes = GridContainer.new()
 	_extra_modes.name = "NeonExtraModes"
 	_layout_root.add_child(_extra_modes)
-	_season_card = _action("✦  Saison", NEON, func(): mode_selected.emit("modes"), "OpenSeason")
-	_arena_card = _action("✧  Event", MAGENTA, func(): _choose("arena"), "OpenEvent")
+	# Keep the genuine routes; do not advertise nonexistent season/event systems.
+	_season_card = _action("Spielmodi", NEON, func(): mode_selected.emit("modes"), "OpenSeason")
+	_arena_card = _action("Arena", MAGENTA, func(): _choose("arena"), "OpenEvent")
 	_extra_modes.add_child(_season_card)
 	_extra_modes.add_child(_arena_card)
 
@@ -221,7 +225,7 @@ func _build_features() -> void:
 		["Strecken", "world", NEON],
 	]:
 		_features.add_child(_action(row[0], row[2], func(): mode_selected.emit(row[1]), "Feature_" + row[1]))
-	_reward_card = _action("Geschenke", MAGENTA, _show_rewards, "Feature_rewards")
+	_reward_card = _action("Sterne", MAGENTA, _show_rewards, "Feature_rewards")
 	_features.add_child(_reward_card)
 
 
@@ -236,7 +240,7 @@ func _build_progress() -> void:
 	_layout_root.add_child(_progress)
 	_progress_label = Label.new()
 	_progress_label.name = "ActualStarsProgress"
-	_progress_label.text = "✦ Sternenpfad  ·  %d gesammelte Sterne" % total_stars
+	_progress_label.text = "✦ %d gesammelte Sterne" % total_stars
 	_progress_label.add_theme_font_override("font", THEME.HEADING)
 	_progress_label.add_theme_color_override("font_color", Color("ffd568"))
 	_progress_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -252,8 +256,7 @@ func _build_dock() -> void:
 	_dock.mouse_filter = Control.MOUSE_FILTER_PASS
 	_layout_root.add_child(_dock)
 	_navigation.reparent(_dock, false)
-	# Eight genuine routes. The navigation scrolls on narrow screens so targets
-	# stay at least 48dp and never overlap the Android system inset.
+	# Nine genuine routes, horizontally scrollable rather than abbreviated labels.
 	for child in _navigation.get_children():
 		if child.name not in ["Open_garage", "Open_world"]:
 			_navigation.remove_child(child)
@@ -269,9 +272,9 @@ func _build_dock() -> void:
 		["Garage", "garage", NEON],
 		["Strecken", "world", NEON],
 		["Turniere", "cup", VIOLET],
-		["✦ Saison", "season", NEON],
-		["Geschenke", "rewards", MAGENTA],
-		["Event", "arena", MAGENTA],
+		["Spielmodi", "season", NEON],
+		["Sterne", "rewards", MAGENTA],
+		["Arena", "arena", MAGENTA],
 		["⚙ Optionen", "settings", NEON],
 	]:
 		var target: String = entry[1]
@@ -325,131 +328,15 @@ func _choose(id: String) -> void:
 
 
 func _layout() -> void:
-	super._layout()
-	if not _hub_ready or not is_inside_tree():
+	if not _hub_ready:
+		super._layout()
 		return
-	var viewport_size := get_viewport_rect().size
-	# Autoload is absent when this scene is evaluated by a standalone
-	# SceneTree probe. Resolve the same production object at runtime instead.
-	var mobile_runtime: Node = get_tree().root.get_node_or_null("MobileRuntime")
-	var density := 1.0
-	if mobile_runtime != null and mobile_runtime.has_method("get_ui_density"):
-		density = maxf(float(mobile_runtime.call("get_ui_density")), 0.25)
-	var window_dp := Vector2(get_window().size) / density
-	if window_dp.x <= 0.0 or window_dp.y <= 0.0 or size.x <= 0.0 or size.y <= 0.0:
-		return
-	var factor := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
-	var available := size / factor
-	var portrait := available.y > available.x
-	var compact := available.y < 460.0
-	var margin := 10.0 if compact else 13.0
-	var gap := 7.0
-	_neon_veil.position = Vector2.ZERO
-	_neon_veil.size = size
-	_header.visible = available.y >= 280.0
-	var header_h := 62.0 if not compact else 48.0
-	_rect(_header, Rect2(margin, margin, available.x - margin * 2, header_h), factor)
-	_header_profile.custom_minimum_size = Vector2(76 if compact else 136, 48) * factor
-	_header_profile.text = "LumoFox" if compact else "LumoFox  ·  Fahrer"
-	_header_profile.add_theme_font_size_override("font_size", roundi((13 if compact else 16) * factor))
-	# The logo is drawn by the actual native LumoKartWordmark Control.
-	_logo.custom_minimum_size = Vector2(128 if compact else 180, header_h) * factor
-	var header_bottom := margin + (header_h + gap if _header.visible else 0.0)
-	var dock_h := 56.0
-	var footer_h := 48.0 if compact else 54.0
-	var dock_y := available.y - margin - dock_h
-	var footer_y := dock_y - gap - footer_h
-	_dock.position = Vector2(margin, dock_y) * factor
-	_dock.size = Vector2(available.x - margin * 2, dock_h) * factor
-	_navigation.columns = 9
-	_navigation.custom_minimum_size = Vector2(9 * (68 if compact else 94), dock_h) * factor
-	_navigation.position = Vector2.ZERO
-	_navigation.add_theme_constant_override("h_separation", roundi(5 * factor))
-	for child in _navigation.get_children():
-		if child is Button:
-			child.custom_minimum_size = Vector2(68 if compact else 94, 48) * factor
-			child.add_theme_font_size_override("font_size", roundi((12 if compact else 15) * factor))
-			child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_rect(_footer, Rect2(margin, footer_y, available.x - margin * 2, footer_h), factor)
-	_back.add_theme_font_size_override("font_size", roundi(16 * factor))
-	_start.add_theme_font_size_override("font_size", roundi((21 if available.x < 520 else 25) * factor))
-	_start.text = "▶ START"
-	_back.text = "← Spielewelt" if available.x >= 440 else "← Spiele"
-	_skin(_start, AMBER)
-	_skin(_back, NEON)
-	# The live Godot SubViewport fills the model slot, never a screenshot.
-	var hero_top := header_bottom
-	var hero_bottom: float
-	# The real track preview must remain discoverable also on compact phones.
-	_highlight.visible = true
-	_progress.visible = not compact
-	_features.visible = not compact
-	if portrait:
-		hero_bottom = minf(available.y * 0.48, footer_y - 252.0)
-		var track_x := available.x * 0.53
-		_rect(_highlight, Rect2(track_x, hero_top + 7, available.x - track_x - margin, maxf(120.0, hero_bottom - hero_top - 15)), factor)
-		var mode_y := hero_bottom + gap
-		var cards_h := 76.0 if available.x >= 390.0 else 124.0
-		_modes.columns = 3
-		_extra_modes.columns = 1 if available.x < 390.0 else 2
-		_rect(_modes, Rect2(margin, mode_y, (available.x - margin * 2) * 0.73, cards_h), factor)
-		_rect(_extra_modes, Rect2(margin + (available.x - margin * 2) * 0.74, mode_y, (available.x - margin * 2) * 0.26, cards_h), factor)
-		_rect(_features, Rect2(margin, mode_y + cards_h + gap, available.x - margin * 2, 77), factor)
-		_rect(_progress, Rect2(margin, mode_y + cards_h + 84 + gap, available.x - margin * 2, 62), factor)
-	else:
-		hero_bottom = minf(available.y * 0.66, footer_y - 128.0)
-		var feature_w := minf(available.x * 0.36, 450.0)
-		_rect(_highlight, Rect2(available.x - margin - feature_w, hero_top, feature_w, maxf(90.0, hero_bottom - hero_top - 7)), factor)
-		var mode_y := hero_bottom + gap
-		if compact:
-			mode_y = footer_y - 57.0
-		_modes.columns = 3
-		_extra_modes.columns = 2
-		_rect(_modes, Rect2(margin, mode_y, available.x * 0.52, 63), factor)
-		_rect(_extra_modes, Rect2(margin + available.x * 0.53, mode_y, available.x * 0.45 - margin, 63), factor)
-		_rect(_features, Rect2(margin, mode_y + 68, available.x * 0.54, 54), factor)
-		_rect(_progress, Rect2(margin + available.x * 0.56, mode_y + 68, available.x * 0.43 - margin, 54), factor)
-	for id in _mode_buttons:
-		var card = _mode_buttons[id]
-		card.apply_size(factor, true)
-		card.custom_minimum_size = Vector2(48, 48) * factor
-		card.caption_label.hide()
-		card.title_label.add_theme_font_size_override("font_size", roundi(13 * factor))
-	for child in _extra_modes.get_children():
-		child.custom_minimum_size = Vector2(48, 48) * factor
-		child.add_theme_font_size_override("font_size", roundi(12 * factor))
-	for child in _features.get_children():
-		child.custom_minimum_size = Vector2(48, 48) * factor
-		child.add_theme_font_size_override("font_size", roundi(13 * factor))
-	_highlight_title.add_theme_font_size_override("font_size", roundi((12 if compact else 16) * factor))
-	_highlight_pick.custom_minimum_size = Vector2(60 if compact else 85, 48) * factor
-	_highlight_pick.add_theme_font_size_override("font_size", roundi(12 * factor))
-	_track_scroll.visible = not compact
-	for item in _track_buttons.values():
-		item.custom_minimum_size = Vector2(62, 48) * factor
-		item.add_theme_font_size_override("font_size", roundi((10 if compact else 12) * factor))
-	_progress_label.add_theme_font_size_override("font_size", roundi((12 if compact else 16) * factor))
-	_rotation_left.add_theme_font_size_override("font_size", roundi(19 * factor))
-	_rotation_right.add_theme_font_size_override("font_size", roundi(19 * factor))
-	var rot_y := hero_bottom - 58
-	_rect(_rotation_left, Rect2(margin + 3, rot_y, 48, 48), factor)
-	_rect(_rotation_right, Rect2(available.x * (0.47 if portrait else 0.59) - 48, rot_y, 48, 48), factor)
-	# The old five-button strip is now the real nine-item scroll dock.
-	# All model, track, reward and settings controls are native touch surfaces.
-	call_deferred("_publish_stage_region")
+	if is_inside_tree():
+		ADAPTIVE_LAYOUT.apply(self)
 
 
 func _publish_stage_region() -> void:
-	if not _hub_ready or size.x <= 0.0 or size.y <= 0.0:
+	if not _hub_ready or size.x <= 0.0 or size.y <= 0.0 or not _stage_bounds.has_area():
 		return
-	var factor := _layout_scale
-	var available := size / factor
-	var portrait := available.y > available.x
-	var top := _header.position.y + _header.size.y + 8.0 * factor if _header.visible else 12.0 * factor
-	var height := maxf(48.0 * factor, _rotation_left.position.y - top + 8.0 * factor)
-	var left := 12.0 * factor
-	var width := _highlight.position.x - left - 12.0 * factor if portrait else size.x - _highlight.size.x - left - 30.0 * factor
-	if not _highlight.visible:
-		width = size.x - left - 24.0 * factor
-	var region := Rect2(Vector2(left, top), Vector2(maxf(48.0 * factor, width), height))
-	stage_region_changed.emit(Rect2(region.position / size, region.size / size))
+	# Exact reserved live-preview region: no camera framing under the menu columns.
+	stage_region_changed.emit(Rect2(_stage_bounds.position / size, _stage_bounds.size / size))
