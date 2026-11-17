@@ -1890,14 +1890,18 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	if loop_state.active:
 		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
 		distance = maxf(distance, loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE)
-		lane = float(layout.lane) + loop_state.lateral
+		lane = (
+			float(layout.lane)
+			+ PHYSICAL_LOOP.exit_shift_of(layout) * PHYSICAL_LOOP.shift_fraction(loop_state.progress)
+			+ loop_state.lateral
+		)
 		physical_velocity = -player.basis.z * speed
 		return true
 	var exit_distance: float = float(layout.start) + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
-	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else float(layout.lane) + loop_state.lateral
+	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else PHYSICAL_LOOP.exit_lane(layout) + loop_state.lateral
 	player.transform = world.reset_transform(exit_distance, exit_lane)
 	lane = exit_lane
 	if loop_state.failed:
@@ -2879,7 +2883,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 			var hub: Vector3 = (
 				world.position_at(
 					float(world.loop_layout.start) + PHYSICAL_LOOP.ADVANCE * 0.5,
-					float(world.loop_layout.lane)
+					float(world.loop_layout.lane) + PHYSICAL_LOOP.exit_shift_of(world.loop_layout) * 0.5
 				)
 				+ entry_basis.y * radius
 			)
