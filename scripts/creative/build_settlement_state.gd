@@ -727,6 +727,10 @@ func campaign_status() -> Dictionary:
 	return VILLAGE.campaign_status(self, _player) if living_village else {}
 
 
+func campaign_overview() -> Array:
+	return VILLAGE.campaign_overview(self, _player) if living_village else []
+
+
 func economy_status() -> Dictionary:
 	return VILLAGE.economy_status(self, _player) if living_village else {}
 

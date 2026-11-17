@@ -9,6 +9,12 @@ const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP_BUTTON = preload("res://scripts/games/jump_touch_button.gd")
 const FRONTIER = preload("res://scripts/creative/build_frontier_landscape.gd")
+const HUD = preload("res://scripts/creative/build_hud_style.gd")
+const MINIMAP = preload("res://scripts/creative/build_hud_minimap.gd")
+const GOAL_IDS: Array[String] = ["house", "bridge", "tower", "garden", "castle", "village"]
+const CATEGORY_VARIANTS := {
+	"Bauen": "primary", "Dächer": "rose", "Wege": "sky", "Natur": "leaf", "Deko": "teal"
+}
 var model = STATE.new()
 var kit = KIT.new()
 var world: Node3D
@@ -39,7 +45,12 @@ var pointer_id: int = -1
 var dragged: bool = false
 var status: Label
 var goal_label: Label
-var count_label: Label
+var hud_chips: Dictionary = {}
+var minimap: Control
+var hud_title: Label
+var dock_backdrop: Panel
+var category_buttons: Dictionary = {}
+var part_buttons: Dictionary = {}
 var palette: HBoxContainer
 var goal: String = "bridge"
 var slot: int = 1
@@ -75,7 +86,7 @@ var tool_actions: HBoxContainer
 var camera_tools: HBoxContainer
 var goal_panel: PanelContainer
 var goal_access_button: Button
-var lower_hud: VBoxContainer
+var lower_hud: Control
 var upper_hud: MarginContainer
 var editor_camera: Dictionary = {}
 var walk_orbit := 0.48
@@ -194,6 +205,7 @@ func _resize() -> void:
 		_layout_choice_dialog()
 		_layout_camera_tools.call_deferred()
 		_layout_goal_access.call_deferred()
+		_layout_hud_extras.call_deferred()
 
 
 func _exit_tree() -> void:
@@ -220,18 +232,53 @@ func _ui() -> void:
 	margin.add_theme_constant_override("margin_top", 10)
 	root.add_child(margin)
 	var hud := VBoxContainer.new()
+	hud.add_theme_constant_override("separation", 6)
 	margin.add_child(hud)
+	var top_bar := PanelContainer.new()
+	top_bar.name = "BuildTopBar"
+	var top_style := HUD.bar()
+	top_style.set_content_margin_all(5)
+	top_bar.add_theme_stylebox_override("panel", top_style)
+	hud.add_child(top_bar)
 	var top := HBoxContainer.new()
-	hud.add_child(top)
-	top.add_child(_day_button("‹ Spiele", _leave))
-	var title := _day_label("LUMO BAUWELT", 22)
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_theme_constant_override("separation", 8)
+	top_bar.add_child(top)
+	var back_button := _day_button("‹ Spiele", _leave)
+	HUD.style_button(back_button, "dark")
+	top.add_child(back_button)
+	var title := HUD.label("LUMO BAUWELT", 22, HUD.INK_LIGHT)
+	title.name = "BuildTitle"
+	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hud_title = title
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title.clip_text = true
 	top.add_child(title)
-	count_label = _day_label("", 15)
-	top.add_child(_day_button("Ⅱ", func(): _pause(true), 52))
-	hud.add_child(count_label)
+	var chips_scroll := ScrollContainer.new()
+	chips_scroll.name = "BuildResourceBar"
+	chips_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	chips_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	chips_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chips_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	top.add_child(chips_scroll)
+	var pause_button := _day_button("Ⅱ", func(): _pause(true), 52)
+	HUD.style_button(pause_button, "dark")
+	top.add_child(pause_button)
+	var chips := HBoxContainer.new()
+	chips.alignment = BoxContainer.ALIGNMENT_CENTER
+	chips.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chips.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chips.add_theme_constant_override("separation", 8)
+	chips_scroll.add_child(chips)
+	for chip_spec in [
+		["world", "world", Color("8fd3ff")],
+		["pieces", "block", Color("ffd25a")],
+		["layer", "layer", Color("6fe0cf")],
+		["turn", "day", Color("ffb3c1")],
+		["goals", "star", Color("ffe08a")]
+	]:
+		var chip := HUD.chip(chip_spec[1], chip_spec[2], "")
+		chips.add_child(chip)
+		hud_chips[chip_spec[0]] = chip
 	var tools := HBoxContainer.new()
 	hud.add_child(tools)
 	editor_controls.append(tools)
@@ -242,6 +289,7 @@ func _ui() -> void:
 	tools.add_child(pinned_tools)
 	for pinned_spec in [["Verschieben", _toggle_move], ["Drehen ↻", _rotate]]:
 		var pinned_button := _day_button(pinned_spec[0], pinned_spec[1])
+		HUD.style_button(pinned_button, "teal")
 		# Primary actions are not world gestures; consuming the touch prevents
 		# a rotate tap from also committing the selected piece.
 		pinned_button.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -258,6 +306,7 @@ func _ui() -> void:
 		["Wettbau", _open_settlement.bind("rival")],
 		["Siedlung", _open_settlement.bind("settlement")],
 		["Dorf & Wirtschaft", _open_settlement.bind("settlement", true)],
+		["Kampagne", _open_campaign],
 		["Entfernen", _toggle_erase],
 		["Rückgängig", _undo],
 		["Wiederholen", _redo],
@@ -273,12 +322,14 @@ func _ui() -> void:
 	]:
 		var action_button := _day_button(spec[0], spec[1])
 		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		HUD.style_button(action_button, _tool_variant(str(spec[0])))
 		actions.add_child(action_button)
 	goal_access_button = _day_button("Aktuelles Bauziel", _current_goal)
 	goal_access_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	goal_access_button.visible = false
 	actions.add_child(goal_access_button)
 	mode_button = _day_button("Mit Lumo laufen", _toggle_explore)
+	HUD.style_button(mode_button, "primary")
 	top.add_child(mode_button)
 	var layer_down: Button = _day_button(
 		"Ebene −",
@@ -309,16 +360,38 @@ func _ui() -> void:
 	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	goal_label.custom_minimum_size.x = 260
 	goal_box.add_child(goal_label)
-	goal_box.add_child(_day_button("Mein Bauwerk testen", _test_challenge))
+	var test_button := _day_button("Mein Bauwerk testen", _test_challenge)
+	HUD.style_button(test_button, "primary")
+	goal_box.add_child(test_button)
+	minimap = MINIMAP.new()
+	minimap.name = "BuildMiniMap"
+	minimap.world_rect = Rect2(
+		-float(STATE.HALF) - 0.5, -float(STATE.HALF) - 0.5, float(STATE.HALF) * 2.0 + 1.0,
+		float(STATE.HALF) * 2.0 + 1.0
+	)
+	minimap.picked.connect(_minimap_picked)
+	root.add_child(minimap)
+	editor_controls.append(minimap)
+	dock_backdrop = Panel.new()
+	dock_backdrop.name = "BuildDockBackdrop"
+	dock_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dock_backdrop.add_theme_stylebox_override("panel", HUD.bar())
+	root.add_child(dock_backdrop)
+	editor_controls.append(dock_backdrop)
 	var lower := VBoxContainer.new()
 	lower_hud = lower
 	lower.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	lower.offset_top = -162
-	lower.offset_left = 12
-	lower.offset_right = -12
+	lower.offset_top = -170
+	lower.offset_left = 18
+	lower.offset_right = -18
+	lower.offset_bottom = -8
+	lower.add_theme_constant_override("separation", 6)
 	root.add_child(lower)
 	editor_controls.append(lower)
-	status = _day_label("Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14)
+	lower.resized.connect(_layout_dock_backdrop)
+	status = HUD.label(
+		"Tippe zum Bauen. Ziehe zum Drehen der Kamera. Zwei Finger: zoomen.", 14, HUD.INK_LIGHT
+	)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lower.add_child(status)
 	var category_scroll := ScrollContainer.new()
@@ -327,21 +400,24 @@ func _ui() -> void:
 	lower.add_child(category_scroll)
 	var categories := HBoxContainer.new()
 	category_scroll.add_child(categories)
+	categories.add_theme_constant_override("separation", 8)
 	for name in ["Bauen", "Dächer", "Wege", "Natur", "Deko"]:
-		categories.add_child(
-			_day_button(
-				name,
-				func():
-					category = name
-					_palette(),
-				64
-			)
+		var category_button := _day_button(
+			name,
+			func():
+				category = name
+				_palette()
+				_refresh_hud_selection(),
+			72
 		)
+		category_buttons[name] = category_button
+		categories.add_child(category_button)
 	var parts_scroll := ScrollContainer.new()
 	parts_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	parts_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lower.add_child(parts_scroll)
 	palette = HBoxContainer.new()
+	palette.add_theme_constant_override("separation", 6)
 	parts_scroll.add_child(palette)
 	_palette()
 	camera_tools = HBoxContainer.new()
@@ -388,8 +464,11 @@ func _ui() -> void:
 	root.add_child(pause_panel)
 	var pause_box := VBoxContainer.new()
 	pause_panel.add_child(pause_box)
+	pause_box.add_theme_constant_override("separation", 10)
 	pause_box.add_child(_day_label("Deine Welt wartet auf dich", 22))
-	pause_box.add_child(_day_button("Weiterbauen", func(): _pause(false)))
+	var resume_button := _day_button("Weiterbauen", func(): _pause(false))
+	HUD.style_button(resume_button, "primary")
+	pause_box.add_child(resume_button)
 	pause_box.add_child(_day_button("Speichern", save_world))
 	pause_box.add_child(_day_button("Zur Spielewelt", _leave))
 	_build_explore_controls(root)
@@ -439,6 +518,7 @@ func _palette() -> void:
 	for child in palette.get_children():
 		palette.remove_child(child)
 		child.queue_free()
+	part_buttons.clear()
 	for item in CATALOG.PARTS:
 		if item.category != category:
 			continue
@@ -452,9 +532,11 @@ func _palette() -> void:
 				_update_labels(),
 			96
 		)
-		button.add_theme_color_override("font_color", item.color.darkened(0.35))
 		button.tooltip_text = "%s · %d×%d×%d" % [item.name, item.size.x, item.size.y, item.size.z]
+		button.icon = _swatch(item.color)
 		palette.add_child(button)
+		part_buttons[str(item.id)] = button
+	_refresh_hud_selection()
 
 
 func _rebuild() -> void:
@@ -597,6 +679,8 @@ func _camera_update() -> void:
 		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * radius
 	)
 	camera.look_at(focus + Vector3.UP * 1.2)
+	if is_instance_valid(minimap):
+		minimap.set_view(Vector2(focus.x, focus.z), radius * 0.38)
 
 
 func _ray(at: Vector2) -> Dictionary:
@@ -674,7 +758,7 @@ func _tap(at: Vector2) -> void:
 
 
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [upper_hud, lower_hud, goal_panel, camera_tools]:
+	for control in [upper_hud, lower_hud, goal_panel, camera_tools, minimap]:
 		if not is_instance_valid(control) or not control.is_visible_in_tree():
 			continue
 		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
@@ -940,11 +1024,19 @@ func _redo() -> void:
 
 
 func _update_labels() -> void:
-	if not is_instance_valid(count_label):
+	if hud_chips.is_empty():
 		return
-	count_label.text = (
-		"Welt %d · %d Teile · Ebene %d · %d°" % [slot, model.pieces.size(), layer, turn * 90]
-	)
+	HUD.set_chip(hud_chips.world, "Welt %d" % slot, "Welt %d von 6" % slot)
+	HUD.set_chip(hud_chips.pieces, str(model.pieces.size()), "%d Bauteile" % model.pieces.size())
+	HUD.set_chip(hud_chips.layer, "Ebene %d" % layer, "Baue auf Ebene %d" % layer)
+	HUD.set_chip(hud_chips.turn, "%d°" % (turn * 90), "Drehung %d Grad" % (turn * 90))
+	var solved := 0
+	for goal_id in GOAL_IDS:
+		if model.completed.has(goal_id):
+			solved += 1
+	HUD.set_chip(hud_chips.goals, "%d/%d" % [solved, GOAL_IDS.size()], "Geschaffte Bauziele")
+	_refresh_hud_selection()
+	_refresh_minimap()
 	var texts: Dictionary = {
 		"bridge": "Verbinde die Inseln\nBaue einen durchgehenden Weg über den Fluss.",
 		"house": "Ein Zuhause für Lumo\nBaue Wände, eine Haustür und ein getragenes Dach.",
@@ -1013,7 +1105,7 @@ func load_world(show_message: bool = true) -> bool:
 		return false
 	_cancel_selection()
 	goal = str(raw.get("goal", "bridge"))
-	if goal not in ["house", "bridge", "tower", "garden", "castle", "village"]:
+	if goal not in GOAL_IDS:
 		goal = "bridge"
 	if raw.get("camera") is Dictionary:
 		orbit = float(raw.camera.get("orbit", 0.62))
@@ -1218,43 +1310,104 @@ func _leave() -> void:
 		SceneRouter.goto("games")
 
 func _day_panel() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.96, 0.93, 0.84, 0.92)
-	style.border_color = Color("2f8a96")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(14)
-	style.set_content_margin_all(12)
-	style.shadow_color = Color(0.12, 0.18, 0.16, 0.18)
-	style.shadow_size = 4
-	style.shadow_offset = Vector2(0, 1)
-	return style
+	return HUD.card()
 
 
 func _day_button(text: String, callback: Callable, min_width: float = 82) -> Button:
-	var control := Button.new()
-	control.text = text
-	control.custom_minimum_size = Vector2(min_width, 48)
-	control.add_theme_stylebox_override("normal", _day_panel())
-	var hover: StyleBoxFlat = _day_panel()
-	hover.bg_color = Color("d7efe8")
-	control.add_theme_stylebox_override("hover", hover)
-	control.add_theme_stylebox_override("pressed", hover)
-	control.add_theme_font_size_override("font_size", 16)
-	control.add_theme_color_override("font_color", Color("243038"))
-	control.add_theme_color_override("font_hover_color", Color("1a3c42"))
-	control.pressed.connect(callback)
-	return control
+	return HUD.button(text, callback, min_width)
 
 
 func _day_label(text: String, size: int = 18) -> Label:
-	var control := Label.new()
-	control.text = text
-	control.add_theme_font_size_override("font_size", size)
-	control.add_theme_color_override("font_color", Color("243038"))
-	control.add_theme_color_override("font_shadow_color", Color(1, 1, 1, 0.35))
-	control.add_theme_constant_override("shadow_offset_x", 0)
-	control.add_theme_constant_override("shadow_offset_y", 1)
-	return control
+	return HUD.label(text, size)
+
+
+func _tool_variant(caption: String) -> String:
+	if caption in ["Wettbau", "Siedlung", "Dorf & Wirtschaft", "Kampagne"]:
+		return "leaf"
+	if caption in ["Füllen", "Kopieren", "Spiegel X", "Spiegel Z"]:
+		return "teal"
+	if caption in ["Welten (6)", "Speichern", "Laden", "Vorlagen"]:
+		return "sky"
+	if caption == "Bauziele":
+		return "primary"
+	if caption == "Entfernen":
+		return "rose"
+	return "cream"
+
+
+func _swatch(color: Color) -> ImageTexture:
+	var image := Image.create(18, 18, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0, 0, 0, 0))
+	for y in range(18):
+		for x in range(18):
+			var d := Vector2(x - 8.5, y - 8.5).length()
+			if d <= 8.5:
+				image.set_pixel(x, y, color.darkened(0.35) if d > 6.5 else color)
+	return ImageTexture.create_from_image(image)
+
+
+## Highlights the active category, part and tool state with the raised gold
+## tile so a child always sees what a tap will do.
+func _refresh_hud_selection() -> void:
+	for name in category_buttons:
+		var category_button: Button = category_buttons[name]
+		HUD.style_button(category_button, CATEGORY_VARIANTS[name] if name == category else "cream")
+	for id in part_buttons:
+		var part_button: Button = part_buttons[id]
+		HUD.style_button(part_button, "primary" if id == chosen and not erase_mode else "cream")
+
+
+func _refresh_minimap() -> void:
+	if not is_instance_valid(minimap):
+		return
+	var half := float(STATE.HALF) + 0.5
+	var bands: Array = [
+		[Rect2(0.0, -half, 4.0, half * 2.0), Color("3d9ad6")],
+	]
+	# One marker per column, coloured by its highest part, keeps the overview
+	# readable even for large castles.
+	var columns: Dictionary = {}
+	for piece in model.pieces:
+		var column := Vector2i(int(piece.x), int(piece.z))
+		if columns.has(column) and int(columns[column].y) >= int(piece.y):
+			continue
+		columns[column] = piece
+	var markers: Array = []
+	for column in columns:
+		var item: Dictionary = CATALOG.part(str(columns[column].part))
+		if not item.is_empty():
+			markers.append([Vector2(column), item.color, 1.8])
+	minimap.set_content(bands, markers)
+	minimap.set_view(Vector2(focus.x, focus.z), radius * 0.38)
+
+
+func _minimap_picked(world_xz: Vector2) -> void:
+	if paused or exploring:
+		return
+	focus.x = world_xz.x
+	focus.z = world_xz.y
+	_clamp_focus()
+	_camera_update()
+
+
+func _layout_hud_extras() -> void:
+	if not is_instance_valid(minimap) or not is_instance_valid(safe_ui):
+		return
+	hud_title.visible = safe_ui.size.x >= 760.0
+	var side := clampf(minf(safe_ui.size.x * 0.24, safe_ui.size.y * 0.24), 96.0, 150.0)
+	minimap.size = Vector2.ONE * side
+	var top_edge := upper_hud.get_global_rect().end.y - safe_ui.get_global_rect().position.y + 8.0
+	minimap.position = Vector2(safe_ui.size.x - side - 12.0, top_edge)
+	var lower_top := lower_hud.position.y
+	minimap.visible = not exploring and top_edge + side + 8.0 < lower_top
+	_layout_dock_backdrop()
+
+
+func _layout_dock_backdrop() -> void:
+	if not is_instance_valid(dock_backdrop) or not is_instance_valid(lower_hud):
+		return
+	dock_backdrop.position = lower_hud.position - Vector2(8, 6)
+	dock_backdrop.size = lower_hud.size + Vector2(16, 10)
 
 
 func _clamp_focus() -> void:
@@ -1281,6 +1434,16 @@ func _open_settlement(mode: String, living_village := false) -> void:
 	SceneRouter.launch_options["livingVillage"] = living_village and mode == "settlement"
 	SceneRouter.launch_options["buildSlot"] = slot
 	SceneRouter.goto("settlement")
+
+
+## Jumps into the living village and opens its 3D chapter map right away.
+func _open_campaign() -> void:
+	if paused:
+		return
+	SceneRouter.launch_options["openCampaignMap"] = true
+	_open_settlement("settlement", true)
+	if SceneRouter.current_scene_id == "build":
+		SceneRouter.launch_options.erase("openCampaignMap")
 
 
 func _cancel_selection() -> void:

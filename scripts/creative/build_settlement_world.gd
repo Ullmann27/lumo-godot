@@ -12,6 +12,8 @@ const EXPLORER = preload("res://scripts/creative/build_explorer.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP = preload("res://scripts/games/jump_touch_button.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+const HUD = preload("res://scripts/creative/build_hud_style.gd")
+const CAMPAIGN_MAP = preload("res://scripts/creative/build_campaign_map.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -28,7 +30,9 @@ var top: VBoxContainer
 var bottom: VBoxContainer
 var top_backdrop: Panel
 var bottom_backdrop: Panel
-var resource_label: Label
+var resource_chips: Dictionary = {}
+var campaign_map: Control
+var map_hidden_3d := false
 var goal_label: Label
 var feedback: Label
 var rival_label: Label
@@ -146,6 +150,9 @@ func _ready() -> void:
 	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
 	print("[SettlementWorld] ready mode=", mode, " save=", save_path)
+	if model.living_village and bool(SceneRouter.launch_options.get("openCampaignMap", false)):
+		SceneRouter.launch_options.erase("openCampaignMap")
+		open_campaign_map.call_deferred()
 	if model.living_village and is_instance_valid(village_region) and is_instance_valid(village_residents):
 		# Device acceptance consumes actual initialized state, after UI, plots
 		# and residents exist. Requested launch options alone are not evidence.
@@ -167,6 +174,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	if map_hidden_3d:
+		get_viewport().disable_3d = false
+		map_hidden_3d = false
 	RUNTIME.unwatch_safe_area(self)
 	if get_viewport().size_changed.is_connected(_layout):
 		get_viewport().size_changed.disconnect(_layout)
@@ -360,16 +370,36 @@ func _build_ui() -> void:
 	walk_button = _button("Lumo", _toggle_walk, 70)
 	heading.add_child(walk_button)
 	heading.add_child(_button("Ⅱ", _toggle_pause, 48))
-	resource_label = _label("", 16)
-	resource_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	top.add_child(resource_label)
+	var chips_scroll := ScrollContainer.new()
+	chips_scroll.name = "VillageResourceBar"
+	chips_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	chips_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	top.add_child(chips_scroll)
+	var chips := HBoxContainer.new()
+	chips.add_theme_constant_override("separation", 8)
+	chips_scroll.add_child(chips)
+	var chip_specs: Array = [
+		["wood", "wood", Color("e6b27a")], ["stone", "stone", Color("b9c6cf")],
+		["food", "food", Color("ff8f7a")], ["coins", "coin", Color("ffd25a")],
+		["population", "people", Color("8fd3ff")], ["plots", "block", Color("b6ec8c")],
+		["day", "day", Color("ffe08a")]
+	]
+	if model.living_village:
+		chip_specs.append_array([
+			["treasury", "treasury", Color("e0b070")], ["happiness", "heart", Color("ffb3c1")],
+			["water", "water", Color("7fd6ff")]
+		])
+	for chip_spec in chip_specs:
+		var chip := HUD.chip(chip_spec[1], chip_spec[2], "")
+		chips.add_child(chip)
+		resource_chips[chip_spec[0]] = chip
 	goal_label = _label("", 15)
 	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	top.add_child(goal_label)
 	rival_label = _label("", 14)
 	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	top.add_child(rival_label)
-	for info_label in [title, resource_label, goal_label, rival_label]:
+	for info_label in [title, goal_label, rival_label]:
 		info_label.add_theme_color_override("font_color", Color("f6fcff"))
 	bottom_backdrop = Panel.new()
 	bottom_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -397,6 +427,11 @@ func _build_ui() -> void:
 		chapter_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		chapter_action.mouse_filter = Control.MOUSE_FILTER_STOP
 		primary.add_child(chapter_action)
+		var map_action := _button("Karte", open_campaign_map, 110)
+		map_action.name = "VillageCampaignMap"
+		HUD.style_button(map_action, "teal", 15)
+		map_action.mouse_filter = Control.MOUSE_FILTER_STOP
+		primary.add_child(map_action)
 	var find_action := _button("Freier Bauplatz", _focus_next_free_plot, 140)
 	find_action.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	find_action.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -453,6 +488,7 @@ func _build_ui() -> void:
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(expand_button)
 	day_button = _button("Nächster Tag ☀", _day_action, 148)
+	HUD.style_button(day_button, "primary", 15)
 	row.add_child(day_button)
 	feedback = _label(
 		"Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14
@@ -500,47 +536,18 @@ func _label(text: String, size := 17) -> Label:
 
 
 func _panel() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.96, 0.94, 0.85, 0.96)
-	style.border_color = Color("438f96")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(12)
-	style.set_content_margin_all(10)
-	return style
+	return HUD.card()
 
 
-
-# A calm, readable HUD over the actual 3D village; dialogs retain their
-# existing light accessibility style and established touch geometry.
+# A calm, readable HUD over the actual 3D village; dialogs use the shared
+# parchment card with the same touch geometry.
 func _hud_panel() -> StyleBoxFlat:
-	var style := _panel()
-	style.bg_color = Color(0.035, 0.16, 0.25, 0.93)
-	style.border_color = Color("64d7c8")
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(18)
-	style.shadow_color = Color(0.015, 0.07, 0.12, 0.36)
-	style.shadow_size = 8
-	return style
+	return HUD.bar()
 
 
 func _button(text: String, action: Callable, width := 100) -> Button:
-	var button := Button.new()
-	button.text = text
-	button.custom_minimum_size = Vector2(width, 48)
+	var button := HUD.button(text, action, width)
 	button.add_theme_font_size_override("font_size", 15)
-	for state in ["", "hover_", "pressed_", "hover_pressed_", "focus_"]:
-		button.add_theme_color_override("font_" + state + "color", Color("183d4c"))
-	button.add_theme_stylebox_override("normal", _panel())
-	var pressed := _panel()
-	pressed.bg_color = Color("bddfc7")
-	button.add_theme_stylebox_override("pressed", pressed)
-	button.add_theme_stylebox_override("hover", pressed)
-	var disabled := _panel()
-	disabled.bg_color = Color("dce5dc")
-	disabled.border_color = Color("9cab9f")
-	button.add_theme_stylebox_override("disabled", disabled)
-	button.add_theme_color_override("font_disabled_color", Color("45616a"))
-	button.pressed.connect(action)
 	return button
 
 
@@ -748,18 +755,13 @@ func _refresh_labels() -> void:
 	var town: Dictionary = model.player()
 	var resources: Dictionary = town.resources
 	var summary: Dictionary = model.status()
-	resource_label.text = (
-		"Holz %d · Stein %d · Essen %d · Münzen %d\nBewohner %d · Grundstücke %d · Tag %d"
-		% [
-			int(resources.wood),
-			int(resources.stone),
-			int(resources.food),
-			int(resources.coins),
-			int(town.population),
-			int(town.plots),
-			int(model.day)
-		]
-	)
+	HUD.set_chip(resource_chips.wood, str(int(resources.wood)), "Holz")
+	HUD.set_chip(resource_chips.stone, str(int(resources.stone)), "Stein")
+	HUD.set_chip(resource_chips.food, str(int(resources.food)), "Essen")
+	HUD.set_chip(resource_chips.coins, str(int(resources.coins)), "Münzen")
+	HUD.set_chip(resource_chips.population, str(int(town.population)), "Bewohner")
+	HUD.set_chip(resource_chips.plots, str(int(town.plots)), "Grundstücke")
+	HUD.set_chip(resource_chips.day, "Tag %d" % int(model.day), "Dorftag")
 	var goals := PackedStringArray()
 	for objective in summary.get("goals", []):
 		goals.append(
@@ -785,9 +787,10 @@ func _refresh_labels() -> void:
 		if not compact_hud:
 			goal_label.text += "\nFortschritt: " + " · ".join(next_steps)
 		var economy: Dictionary = model.economy_status()
-		resource_label.text += (
-			"\nStadtkasse %d · Zufriedenheit %d%% · Wasser für %d"
-			% [int(economy.treasury), int(economy.happiness), int(economy.water_capacity)]
+		HUD.set_chip(resource_chips.treasury, str(int(economy.treasury)), "Stadtkasse")
+		HUD.set_chip(resource_chips.happiness, "%d%%" % int(economy.happiness), "Zufriedenheit")
+		HUD.set_chip(
+			resource_chips.water, str(int(economy.water_capacity)), "Wasser für so viele Bewohner"
 		)
 	if mode == "rival":
 		var rival: Dictionary = model.rival()
@@ -1147,6 +1150,33 @@ func _chapter_dialog() -> void:
 		_village_caption(body, "Du kannst dein Dorf weiterhin frei aufbauen.")
 
 
+## Opens the 3D chapter map over the village. The village's own 3D view is
+## paused meanwhile so only the diorama is rendered.
+func open_campaign_map() -> void:
+	if not model.living_village or is_instance_valid(campaign_map) or _transactions_blocked():
+		return
+	if is_instance_valid(village_window) or is_instance_valid(trade_window):
+		return
+	campaign_map = CAMPAIGN_MAP.new()
+	campaign_map.setup(model.campaign_overview(), LumoQuality.tier())
+	campaign_map.enter_requested.connect(_enter_campaign_chapter)
+	campaign_map.closed.connect(_campaign_map_closed)
+	safe_ui.add_child(campaign_map)
+	map_hidden_3d = not get_viewport().disable_3d
+	get_viewport().disable_3d = true
+
+
+func _campaign_map_closed() -> void:
+	if map_hidden_3d and is_inside_tree():
+		get_viewport().disable_3d = false
+	map_hidden_3d = false
+
+
+func _enter_campaign_chapter(_index: int) -> void:
+	_focus_next_free_plot.call_deferred()
+	_chapter_dialog.call_deferred()
+
+
 func _tilda_dialog() -> void:
 	var view: Dictionary = _village_dialog("Tildas Lieferwagen")
 	if view.is_empty():
@@ -1354,6 +1384,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
 	if event.is_action_pressed("ui_cancel"):
+		if is_instance_valid(campaign_map):
+			campaign_map.close_map()
+			return
 		_toggle_pause()
 		return
 	if paused:
