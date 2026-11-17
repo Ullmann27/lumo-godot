@@ -151,6 +151,8 @@ void fragment() {
 	float fine = 0.5 + 0.5 * sin(world.y * 41.0 + world.x * 3.0);
 	vec3 col = mix(dark_wood.rgb, light_wood.rgb, ring * 0.75 + fine * 0.25);
 	ALBEDO = col;
+	// A little self-light keeps the rim warm on LOW without extra lights.
+	EMISSION = col * 0.22;
 	ROUGHNESS = 0.55;
 	SPECULAR = 0.3;
 }

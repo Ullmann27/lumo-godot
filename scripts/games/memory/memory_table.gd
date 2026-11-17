@@ -82,6 +82,7 @@ var _fill: DirectionalLight3D
 var turn_chip: Label
 var progress: ProgressBar
 var _scoreboard: HBoxContainer
+var _selected_style: StyleBoxFlat
 
 
 func _ready() -> void:
@@ -665,6 +666,7 @@ func _build_ui() -> void:
 	_theme.set_stylebox("pressed","Button",_button_style(Color("168999"),Color("0a4c59"),true))
 	_theme.set_stylebox("disabled","Button",_button_style(Color("3b5660"),Color("27393f")))
 	ui.theme = _theme
+	_selected_style = _button_style(Color("ffd25e"),Color("b9822a"))
 	safe = Control.new()
 	safe.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ui.add_child(safe)
@@ -857,7 +859,8 @@ func _layout() -> void:
 		card.size = target.size/100.0
 		card.root.position = camera.project_position(target.get_center()*pixel_factor,14.0)
 		card.body.mesh = _rounded_mesh(card.size.x,card.size.y,0.11)
-		card.front.mesh.size = card.size*0.92
+		# The motif sits inset so the gold frame stays visible all around it.
+		card.front.mesh.size = card.size*0.86
 		card.back.mesh.size = card.size*0.92
 		card.matched.position.y = -card.size.y*0.35
 		card.matched.scale = Vector3.ONE*minf(card.size.x/0.95,1.4)
@@ -913,12 +916,24 @@ func _update_ui() -> void:
 	restart_button.disabled = waiting or (complete and not bool(_state.rewarded))
 	for i in range(level_buttons.size()):
 		level_buttons[i].disabled = waiting or _state.difficulty == LEVELS[i] or (complete and not bool(_state.rewarded))
+		_mark_selected(level_buttons[i],_state.difficulty == LEVELS[i])
 	for i in range(pack_buttons.size()):
 		pack_buttons[i].disabled = waiting or _state.pack == PACKS[i] or (complete and not bool(_state.rewarded))
+		_mark_selected(pack_buttons[i],_state.pack == PACKS[i])
 	for i in range(_cards.size()):
 		_cards[i].button.disabled = waiting or paused or complete or not bool(_state.canFlip) or _animating() or bool(_state.cards[i].faceUp) or bool(_state.cards[i].matched)
 	fox.set("reduced_motion",bool(_state.reduceMotion))
 	fox.set("suspended",paused)
+
+
+## The current board size and motif pack read as a golden, chosen tile.
+func _mark_selected(button: Button,selected: bool) -> void:
+	if selected:
+		button.add_theme_stylebox_override("disabled",_selected_style)
+		button.add_theme_color_override("font_disabled_color",Color("5a3208"))
+	else:
+		button.remove_theme_stylebox_override("disabled")
+		button.remove_theme_color_override("font_disabled_color")
 
 
 func _invalidate() -> void:
