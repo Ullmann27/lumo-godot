@@ -1,3 +1,29 @@
+# TEST_RESULTS – lumo-2040/tutor-godot-20261117 (Lumo-Nachhilfe, 3D-Szene)
+
+Stand: 17.11.2026 (Europe/Vienna), Abschluss wegen Wochenlimit (WIP M1).
+
+## Grün
+- Headless-Smoke (Godot 4.6.3): `scenes/learning/tutor_world.tscn` und alle
+  `scripts/learning/tutor/*.gd` laden ohne Parse-Fehler (Typ-Inferenz-Fehler in
+  `tutor_world.gd:678` behoben); ungültiger Payload (`{"kind":"tutor"}` ohne Pläne) wird
+  abgelehnt (fail-closed, `valid=false`).
+
+## NOT RUN
+- Szene mit gültigem Payload aus Flutter (Fixtures 8+5 / 6+7) – NOT RUN: Fixture-Erzeugung
+  lief in ein Zeitlimit; kein neuer Teilschritt mehr begonnen.
+- Regressionstest für `tutor_plan.gd` (Stufen, Vorzeigen/Üben, Drag-Zählung) – NOT RUN, noch nicht geschrieben.
+- Captures (Rechenrahmen, Zahlenstrahl, Zerlegen; Hoch/Quer) – NOT RUN.
+- gdlint, Android-Export, Gerätetest – NOT RUN.
+
+## Offene Punkte
+1. Fixtures aus Flutter erzeugen, headless-Regression für `tutor_plan.gd` schreiben.
+2. Captures je Weg/Stufe, Performance auf low-Profil.
+3. Routing `app_boot.gd` (learning + kind=tutor → tutor-Szene) ist eingebaut, in der App aber
+   unerreichbar, solange der Flutter-Einstieg verborgen ist.
+
+---
+## Früherer Stand (aus Basis übernommen, unverändert)
+
 # TEST_RESULTS – lumo-2013/bauwelt-sandbox-20261110 (PR #144)
 
 Stand: 10.11.2026 19:55 (Europe/Vienna), Abschluss nach Nutzungslimit. Basis fe493ea1 (#140).
