@@ -32,7 +32,13 @@ func _run() -> void:
 	for level in ["gemuetlich", "flott", "pro"]:
 		game.race_seed = 5
 		game._start_selected_race(
-			{"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": level}
+			{
+				"mode": "race",
+				"driver": "fox",
+				"kart": "comet",
+				"track": "sonnenhafen",
+				"difficulty": level
+			}
 		)
 		await process_frame
 		game.countdown = 0.0
@@ -52,8 +58,12 @@ func _run() -> void:
 			var at: float = start - 40.0 * float(index)
 			game.opponent_distances[index] = at
 			game.opponent_headings[index] = game._heading(at)
-			game.opponents[index].transform = game.world.reset_transform(at, -1.7 + 0.85 * float(index % 4))
-			game.opponents[index].set_motion(RACECRAFT.cruise_speed(game.opponents[index].kart_style, rules), 0, false, false)
+			game.opponents[index].transform = game.world.reset_transform(
+				at, -1.7 + 0.85 * float(index % 4)
+			)
+			game.opponents[index].set_motion(
+				RACECRAFT.cruise_speed(game.opponents[index].kart_style, rules), 0, false, false
+			)
 		var worst_ratio: float = 0.0
 		var worst_gain: float = 0.0
 		for _frame in range(240):
@@ -63,17 +73,38 @@ func _run() -> void:
 			game.distance = start + 150.0
 			game._drive_opponents(STEP)
 			for index in range(game.opponents.size()):
-				var top: float = POWERTRAIN.top_speed(RACECRAFT.factors(game.opponents[index].kart_style), float(rules.speed))
+				var top: float = POWERTRAIN.top_speed(
+					RACECRAFT.factors(game.opponents[index].kart_style), float(rules.speed)
+				)
 				# Obergrenze: Turbo 1,32 x Nordlicht 1,2 x voller Gummiband-Schub 1,10.
 				var ceiling: float = top * 1.32 * 1.2 * 1.1
-				worst_ratio = maxf(worst_ratio, absf(float(game.opponents[index].motion_speed)) / ceiling)
-				worst_gain = maxf(worst_gain, (float(game.opponent_distances[index]) - before[index]) / (ceiling * STEP))
-		_check(worst_ratio <= 1.0, "%s: Rivalen-Tempo an der Rampe bleibt unter der Obergrenze (%.2f)" % [level, worst_ratio])
-		_check(worst_gain <= 1.05, "%s: kein Streckensprung im Rampenfenster (%.2f)" % [level, worst_gain])
+				worst_ratio = maxf(
+					worst_ratio, absf(float(game.opponents[index].motion_speed)) / ceiling
+				)
+				worst_gain = maxf(
+					worst_gain,
+					(float(game.opponent_distances[index]) - before[index]) / (ceiling * STEP)
+				)
+		_check(
+			worst_ratio <= 1.0,
+			(
+				"%s: Rivalen-Tempo an der Rampe bleibt unter der Obergrenze (%.2f)"
+				% [level, worst_ratio]
+			)
+		)
+		_check(
+			worst_gain <= 1.05,
+			"%s: kein Streckensprung im Rampenfenster (%.2f)" % [level, worst_gain]
+		)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
 	await create_timer(0.4).timeout
-	var report := {"test": "kart_rival_ramp_speed", "checks": checks, "failures": failures, "status": "PASS" if failures.is_empty() else "FAIL"}
+	var report := {
+		"test": "kart_rival_ramp_speed",
+		"checks": checks,
+		"failures": failures,
+		"status": "PASS" if failures.is_empty() else "FAIL"
+	}
 	print(JSON.stringify(report))
 	quit(0 if failures.is_empty() else 1)
