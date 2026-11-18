@@ -203,7 +203,7 @@ func _frame_camera() -> void:
 	var portrait := aspect < 1.0
 	var ladder := game == "leiter" and screen == "play"
 	if portrait:
-		room.frame(aspect, 1.42 if ladder else 1.9, 1.6, 54.0 if ladder else 40.0, 0.16 if ladder else 0.10)
+		room.frame(aspect, 1.52 if ladder else 1.9, 1.6, 52.0 if ladder else 40.0, 0.2 if ladder else 0.10)
 	else:
 		room.frame(aspect, 2.4, 1.5 if ladder else 1.95, 50.0 if ladder else 37.0, 0.26 if ladder else 0.22)
 	hand_root.global_transform = camera.get_camera_transform()
@@ -804,17 +804,13 @@ func _cancel_drag() -> void:
 func _hand_card_at(point: Vector2) -> int:
 	var origin := camera.project_ray_origin(point)
 	var direction := camera.project_ray_normal(point)
-	var best := -1
-	var nearest := INF
-	for id: int in cards:
-		var node: Node3D = cards[id]
-		if node.zone != "hand":
-			continue
-		var distance: float = node.ray_hit(origin, direction, 0.004)
-		if distance > 0.0 and distance < nearest:
-			nearest = distance
-			best = id
-	return best
+	# Von oben nach unten im Fächer: die zuletzt gelegte Karte liegt obenauf.
+	var order := _hand_order()
+	for index in range(order.size() - 1, -1, -1):
+		var node: Node3D = cards[int(order[index])]
+		if node.ray_hit(origin, direction, 0.004) > 0.0:
+			return int(order[index])
+	return -1
 
 
 func _seat_at(point: Vector2) -> int:
@@ -1002,7 +998,7 @@ func _jitter(card: int, amount: float) -> float:
 func _hand_basis(roll: float, scale: float) -> Basis:
 	# Karte steht vor der Kamera: Bild zur Kamera, Oberkante nach oben, leicht gekippt.
 	var facing := Basis(Vector3.RIGHT, Vector3(0, 0, 1), Vector3(0, -1, 0))
-	return (Basis(Vector3.BACK, roll) * Basis(Vector3.RIGHT, deg_to_rad(-9.0)) * facing).scaled(Vector3.ONE * scale)
+	return (Basis(Vector3.BACK, roll) * Basis(Vector3.RIGHT, deg_to_rad(-6.0)) * facing).scaled(Vector3.ONE * scale)
 
 
 func _hand_order() -> Array:
@@ -1036,7 +1032,7 @@ func _slot(node: Node3D, index: int, count: int) -> Transform3D:
 			elif _legal_cards.has(card) and _can_act():
 				lift = float(m.card_px) * 0.05
 			var drop := absf(offset) * absf(offset) * float(m.card_px) * 0.004
-			var at := Vector3(float(m.centre_x) + offset * spacing * unit, float(m.base_y) + (lift - drop) * unit, -HAND_DEPTH + 0.002 * index)
+			var at := Vector3(float(m.centre_x) + offset * spacing * unit, float(m.base_y) + (lift - drop) * unit, -HAND_DEPTH + 0.004 * index)
 			return Transform3D(_hand_basis(roll, float(m.scale) * (1.06 if _selected.has(card) else 1.0)), at)
 		"fan":
 			var seat: Node3D = seats[node.owner_seat]
@@ -1499,8 +1495,10 @@ func _refresh_hud() -> void:
 				var left: int = rules.s.r.hands[player].size()
 				detail = "%d Karte%s" % [left, "" if left == 1 else "n"]
 			"quartett":
-				detail = "%d Quartett%s · %d K." % [rules.s.r.sets[player].size(), "" if rules.s.r.sets[player].size() == 1 else "e",
-					rules.s.r.hands[player].size()]
+				var own: int = rules.s.r.sets[player].size()
+				detail = "%d Quartett%s" % [own, "" if own == 1 else "e"]
+				if player > 0:
+					detail = "%d Qu. · %d Karten" % [own, rules.s.r.hands[player].size()]
 		var target: bool = (game == "quartett" and _pick_rank > 0 and player > 0 and _can_act()
 			and rules.is_legal(0, {"ask": _pick_rank, "from": player}))
 		plates.append({

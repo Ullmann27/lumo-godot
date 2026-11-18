@@ -88,8 +88,8 @@ static func material(kind: String) -> StandardMaterial3D:
 			mat.emission_energy_multiplier = 0.30
 			mat.albedo_color = Color(0.36, 0.38, 0.46)
 		_:
-			mat.emission_energy_multiplier = 0.34
-			mat.albedo_color = Color(0.86, 0.86, 0.86)
+			mat.emission_energy_multiplier = 0.22
+			mat.albedo_color = Color(0.72, 0.72, 0.72)
 	_materials[kind] = mat
 	return mat
 

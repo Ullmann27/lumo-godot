@@ -42,6 +42,7 @@ var _stars := 0
 var _bubble_state: Dictionary = {}
 var _overlay_state: Dictionary = {}
 var _pulse := 0.0
+var _retired := 0
 
 
 func _ready() -> void:
@@ -65,8 +66,7 @@ func _process(delta: float) -> void:
 func rebuild(new_density: float, insets: Rect2) -> void:
 	density = new_density
 	for child: Node in get_children():
-		remove_child(child)
-		child.queue_free()
+		_retire(child)
 	plates.clear()
 	safe = Control.new()
 	safe.name = "Safe"
@@ -101,6 +101,20 @@ func rebuild(new_density: float, insets: Rect2) -> void:
 
 func dp(value: float) -> float:
 	return value * density
+
+
+## Nimmt ein Element aus dem Spiel, ohne es mitten in seiner eigenen
+## Berührung aus dem Baum zu reißen: verstecken, umbenennen, später löschen.
+func _retire(node: Node) -> void:
+	if not is_instance_valid(node):
+		return
+	_retired += 1
+	node.name = "Retired%d" % _retired
+	if node is CanvasItem:
+		node.hide()
+	if node is Control:
+		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	node.queue_free()
 
 
 func _build_top() -> void:
@@ -262,7 +276,7 @@ func set_hint(text: String) -> void:
 	if not is_instance_valid(hint_panel):
 		return
 	hint_label.text = text
-	hint_panel.visible = not text.is_empty() and overlay_kind.is_empty()
+	hint_panel.visible = not text.is_empty() and overlay_kind.is_empty() and not is_instance_valid(bubble)
 	_place_fixed()
 
 
@@ -287,7 +301,7 @@ func set_plates(data: Array) -> void:
 		plates.append(plate)
 	for index in range(plates.size()):
 		plates[index].visible = index + 1 < data.size() and overlay_kind in ["", "bubble"]
-	me_plate.visible = not data.is_empty() and overlay_kind in ["", "bubble"]
+	me_plate.visible = not data.is_empty() and overlay_kind.is_empty() and not is_instance_valid(bubble)
 	for player in range(data.size()):
 		var plate: Button = me_plate if player == 0 else plates[player - 1]
 		var entry: Dictionary = data[player]
@@ -368,23 +382,33 @@ func _open(kind: String, dim: float) -> VBoxContainer:
 	shade.mouse_filter = Control.MOUSE_FILTER_STOP
 	overlay.add_child(shade)
 	var area := safe.size if safe.size.x > 0 else size
-	var panel := KIT.panel("panel_glass_navy.webp", density, 18.0)
+	var panel := KIT.panel("panel_glass_navy.webp", density, 16.0)
 	panel.name = "Panel"
-	var width := minf(area.x - dp(24), dp(430 if not wide else 520))
-	var max_height := area.y - dp(24)
+	var width := minf(area.x - dp(24), dp(430 if not (wide or compact) else 560))
 	overlay.add_child(panel)
+	var frame := VBoxContainer.new()
+	frame.name = "Frame"
+	frame.add_theme_constant_override("separation", int(dp(8)))
+	panel.add_child(frame)
 	var scroll := ScrollContainer.new()
 	scroll.name = "Scroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.custom_minimum_size = Vector2(width - dp(36), 0)
-	panel.add_child(scroll)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	frame.add_child(scroll)
 	var column := VBoxContainer.new()
 	column.name = "Column"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.add_theme_constant_override("separation", int(dp(10)))
+	column.add_theme_constant_override("separation", int(dp(6 if compact else 10)))
 	scroll.add_child(column)
+	# Knöpfe stehen fest unter dem Rollbereich und bleiben immer erreichbar.
+	var footer := GridContainer.new()
+	footer.name = "Footer"
+	footer.columns = 1
+	footer.add_theme_constant_override("h_separation", int(dp(8)))
+	footer.add_theme_constant_override("v_separation", int(dp(6 if compact else 8)))
+	frame.add_child(footer)
 	panel.set_meta("width", width)
-	panel.set_meta("max_height", max_height)
+	panel.set_meta("max_height", area.y - dp(20))
 	hint_panel.hide()
 	action_button.hide()
 	for plate: Button in plates:
@@ -394,18 +418,30 @@ func _open(kind: String, dim: float) -> VBoxContainer:
 	return column
 
 
+func _footer(columns: int = 1) -> GridContainer:
+	var footer: GridContainer = overlay.get_node("Panel/Frame/Footer")
+	footer.columns = columns
+	return footer
+
+
 func _fit_panel() -> void:
 	if not is_instance_valid(overlay) or not overlay.has_node("Panel"):
 		return
 	var panel: PanelContainer = overlay.get_node("Panel")
-	var scroll: ScrollContainer = panel.get_node("Scroll")
+	var scroll: ScrollContainer = panel.get_node("Frame/Scroll")
 	var column: VBoxContainer = scroll.get_node("Column")
+	var footer: GridContainer = panel.get_node("Frame/Footer")
 	var area := safe.size if safe.size.x > 0 else size
 	var width: float = panel.get_meta("width")
-	var wanted := column.get_combined_minimum_size().y + dp(36)
-	var height := minf(wanted, float(panel.get_meta("max_height")))
-	scroll.custom_minimum_size = Vector2(width - dp(36), height - dp(36))
-	panel.size = Vector2(width, height)
+	var inner := width - dp(32)
+	scroll.custom_minimum_size = Vector2(inner, 0)
+	column.custom_minimum_size = Vector2(inner, 0)
+	var fixed := footer.get_combined_minimum_size().y + dp(32 + 8)
+	var wanted := column.get_combined_minimum_size().y
+	var room := maxf(dp(40), float(panel.get_meta("max_height")) - fixed)
+	scroll.custom_minimum_size = Vector2(inner, minf(wanted, room))
+	panel.size = Vector2(width, 0)
+	panel.size = Vector2(width, panel.get_combined_minimum_size().y)
 	panel.position = ((area - panel.size) * 0.5).round()
 
 
@@ -413,8 +449,7 @@ func close_overlay(restore: bool = true) -> void:
 	if not is_instance_valid(overlay):
 		return
 	for child: Node in overlay.get_children():
-		overlay.remove_child(child)
-		child.queue_free()
+		_retire(child)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay_kind = ""
 	if restore:
@@ -463,7 +498,7 @@ func _text(column: VBoxContainer, text: String, size: float = 15.0, color: Color
 
 
 func _button(column: Container, text: String, kind: String, id: String, payload: Dictionary = {}) -> Button:
-	var node := KIT.button(text, kind, density, 120.0, 19.0)
+	var node := KIT.button(text, kind, density, 96.0, 18.0)
 	node.name = "Button_" + id
 	node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	node.pressed.connect(_emit(id, payload))
@@ -602,8 +637,9 @@ func show_setup(data: Dictionary) -> void:
 	_overlay_state = {"kind": "setup", "data": data}
 	var column := _open("setup", 0.5)
 	top_bar.hide()
-	_heading(column, str(data.title))
-	_text(column, str(data.text), 14.0, Color("d5e6ff"))
+	_heading(column, str(data.title), 24.0 if not compact else 20.0)
+	if not compact:
+		_text(column, str(data.text), 14.0, Color("d5e6ff"))
 	if not str(data.get("resume", "")).is_empty():
 		_button(column, str(data.resume), "gold", "resume", {"game": data.game})
 	for row: Array in [
@@ -624,13 +660,11 @@ func show_setup(data: Dictionary) -> void:
 			pick.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			pick.pressed.connect(_emit("pref", {"key": row[1], "value": int(option[0])}))
 			line.add_child(pick)
-	var start_text := "Neue Partie" if not str(data.get("resume", "")).is_empty() else "Los geht's!"
-	_button(column, start_text, "blue" if not str(data.get("resume", "")).is_empty() else "gold", "start", {"game": data.game})
-	var foot := HBoxContainer.new()
-	foot.add_theme_constant_override("separation", int(dp(8)))
-	column.add_child(foot)
+	var has_resume := not str(data.get("resume", "")).is_empty()
+	var foot := _footer(3)
 	_button(foot, "Zurück", "blue", "back")
 	_button(foot, "So geht's", "blue", "intro", {"game": data.game})
+	_button(foot, "Neue Partie" if has_resume else "Los geht's!", "blue" if has_resume else "gold", "start", {"game": data.game})
 
 
 func show_pause(data: Dictionary) -> void:
@@ -638,10 +672,11 @@ func show_pause(data: Dictionary) -> void:
 	var column := _open("pause", 0.6)
 	_heading(column, "Pause")
 	_text(column, str(data.get("text", "Deine Partie wartet auf dich.")), 14.0, Color("d5e6ff"))
-	_button(column, "Weiterspielen", "gold", "continue")
-	_button(column, "Regeln", "blue", "rules")
-	_button(column, "Neu starten", "blue", "restart")
-	_button(column, "Beenden", "blue", "quit")
+	var foot := _footer(2 if compact else 1)
+	_button(foot, "Weiterspielen", "gold", "continue")
+	_button(foot, "Regeln", "blue", "rules")
+	_button(foot, "Neu starten", "blue", "restart")
+	_button(foot, "Beenden", "blue", "quit")
 
 
 ## data: title, lines (Array[String]), back (id des Rück-Knopfs).
@@ -660,7 +695,7 @@ func show_rules(data: Dictionary) -> void:
 		row.add_child(badge)
 		row.add_child(KIT.wrapped(line, 14.5, density))
 		number += 1
-	_button(column, "Verstanden", "gold", str(data.get("back", "rules_done")))
+	_button(_footer(1), "Verstanden", "gold", str(data.get("back", "rules_done")))
 
 
 ## data: text, yes (id), no (id), yes_text, no_text.
@@ -669,18 +704,19 @@ func show_confirm(data: Dictionary) -> void:
 	var column := _open("confirm", 0.6)
 	_heading(column, str(data.get("title", "Sicher?")), 22.0)
 	_text(column, str(data.text))
-	_button(column, str(data.get("yes_text", "Ja")), "gold", str(data.yes))
-	_button(column, str(data.get("no_text", "Nein")), "blue", str(data.no))
+	var foot := _footer(2 if compact else 1)
+	_button(foot, str(data.get("yes_text", "Ja")), "gold", str(data.yes))
+	_button(foot, str(data.get("no_text", "Nein")), "blue", str(data.no))
 
 
 func _score_rows(column: VBoxContainer, rows: Array) -> void:
 	for row: Dictionary in rows:
-		var line := KIT.panel("plate_nav_active.webp" if bool(row.get("winner", false)) else "row_stat.webp", density, 8.0)
+		var line := KIT.panel("plate_nav_active.webp" if bool(row.get("winner", false)) else "row_stat.webp", density, 8.0 if not compact else 4.0)
 		column.add_child(line)
 		var items := HBoxContainer.new()
 		items.add_theme_constant_override("separation", int(dp(8)))
 		line.add_child(items)
-		items.add_child(KIT.picture(PORTRAITS % str(row.portrait), 40, density))
+		items.add_child(KIT.picture(PORTRAITS % str(row.portrait), 40 if not compact else 30, density))
 		var names := VBoxContainer.new()
 		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		names.add_theme_constant_override("separation", -int(dp(2)))
@@ -702,7 +738,7 @@ func show_round(data: Dictionary) -> void:
 	_heading(column, str(data.title), 24.0)
 	_text(column, str(data.text), 14.0, Color("d5e6ff"))
 	_score_rows(column, data.rows)
-	_button(column, str(data.get("next_text", "Nächste Runde")), "gold", "next_round")
+	_button(_footer(1), str(data.get("next_text", "Nächste Runde")), "gold", "next_round")
 
 
 ## Endstand. data: title, text, place, rows, stars, saved.
@@ -711,11 +747,18 @@ func show_final(data: Dictionary) -> void:
 	var column := _open("final", 0.55)
 	var place := clampi(int(data.get("place", 1)), 1, 4)
 	var badge_file := "badge_place_%d.webp" % place if place <= 3 else "badge_place_other.webp"
-	var badge := KIT.picture(ICONS + badge_file, 104 if not compact else 64, density)
-	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	column.add_child(badge)
-	_heading(column, str(data.title), 24.0)
-	_text(column, str(data.text), 14.0, Color("d5e6ff"))
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", int(dp(10)))
+	head.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_child(head)
+	head.add_child(KIT.picture(ICONS + badge_file, 84 if not compact else 56, density))
+	var words := VBoxContainer.new()
+	words.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	words.alignment = BoxContainer.ALIGNMENT_CENTER
+	head.add_child(words)
+	_heading(words, str(data.title), 24.0 if not compact else 20.0).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	if not compact:
+		_text(words, str(data.text), 14.0, Color("d5e6ff")).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_score_rows(column, data.rows)
 	var reward := HBoxContainer.new()
 	reward.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -725,12 +768,10 @@ func show_final(data: Dictionary) -> void:
 	reward.add_child(KIT.label(str(data.get("reward", "")), 18, density, KIT.GOLD, true))
 	if not str(data.get("warning", "")).is_empty():
 		_text(column, str(data.warning), 13.0, Color("ffb39a"))
-	_button(column, "Nochmal spielen", "gold", "again")
-	var foot := HBoxContainer.new()
-	foot.add_theme_constant_override("separation", int(dp(8)))
-	column.add_child(foot)
-	_button(foot, "Anderes Spiel", "blue", "menu")
+	var foot := _footer(3)
 	_button(foot, "Spielewelt", "blue", "leave")
+	_button(foot, "Anderes Spiel", "blue", "menu")
+	_button(foot, "Nochmal", "gold", "again")
 
 
 func show_top(value: bool) -> void:
@@ -771,27 +812,30 @@ func show_bubble(text: String, buttons: Array, anchor: Vector2 = Vector2.ZERO) -
 	var width := minf(area.x - dp(20), dp(400))
 	bubble.custom_minimum_size = Vector2(width, 0)
 	bubble.size = Vector2(width, 0)
+	hint_panel.hide()
+	me_plate.hide()
 	_place_bubble.call_deferred()
 
 
 func _place_bubble() -> void:
 	if not is_instance_valid(bubble):
 		return
+	# Über der eigenen Hand: Tisch, Mitspieler und ihre Schilder bleiben frei.
 	var area := safe.size if safe.size.x > 0 else size
 	bubble.size = Vector2(bubble.custom_minimum_size.x, bubble.get_combined_minimum_size().y)
-	var top := dp(74)
+	var bottom := area.y - hand_height - dp(8)
+	var left := (area.x - bubble.size.x) * 0.5
 	if compact:
-		bubble.position = Vector2(area.x - bubble.size.x - dp(10), top)
-	else:
-		bubble.position = Vector2((area.x - bubble.size.x) * 0.5, top)
+		left = area.x - bubble.size.x - dp(10)
+	bubble.position = Vector2(left, maxf(dp(70), bottom - bubble.size.y))
 
 
 func hide_bubble() -> void:
 	_bubble_state.clear()
-	if is_instance_valid(bubble):
-		bubble.get_parent().remove_child(bubble)
-		bubble.queue_free()
+	_retire(bubble)
 	bubble = null
+	set_hint(_hint_text)
+	set_plates(_plate_data)
 
 
 ## Sichtbare Knöpfe (für Bedien- und Safe-Area-Prüfungen).

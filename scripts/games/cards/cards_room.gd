@@ -522,7 +522,7 @@ func _build_lights() -> void:
 	key_light.position = lamp_at + Vector3(0, -0.1, 0)
 	key_light.rotation_degrees = Vector3(-90, 0, 0)
 	key_light.light_color = Color("ffe2b0")
-	key_light.light_energy = 2.4
+	key_light.light_energy = 2.1
 	key_light.spot_range = 7.5
 	key_light.spot_angle = 62.0
 	key_light.spot_angle_attenuation = 0.7
