@@ -291,15 +291,25 @@ def render_thumbs(roots):
     cam_o = bpy.data.objects.new("Cam", cam)
     bpy.context.collection.objects.link(cam_o)
     scene.camera = cam_o
-    for name, root in roots.items():
+    shots = [(name, Vector((0, 0, 0)), root) for name, root in roots.items()]
+    # Serie: das echte Originalrad bzw. die Originalöffnung des Komet-Karts, gleiche Kamera.
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(ROOT / "assets/kart/production/karts/aurora_comet.glb"))
+    kart_objects = [o for o in bpy.data.objects if o not in before]
+    by_name = {o.name: o for o in kart_objects}
+    shots.append(("Serie_wheel_cover", by_name["Wheel_FR"].matrix_world.translation.copy(), None))
+    shots.append(("Serie_exhaust", by_name["Boost_R"].matrix_world.translation.copy(), None))
+    for name, origin, root in shots:
         for other in roots.values():
             for child in other.children:
                 child.hide_render = other is not root
-        wheel = name.startswith("WheelCover")
+        for o in kart_objects:
+            o.hide_render = root is not None
+        wheel = "WheelCover" in name or name.endswith("wheel_cover")
         # Einheitliche Kamera je Teileart: Dreiviertel von vorn auf die Aufsatzfläche.
-        target = g((0.22, 0, 0)) if wheel else g((0, 0, 0.04))
+        target = origin + (g((0.22, 0, 0)) if wheel else g((0, 0, 0.04)))
         view = g((1.0, 0.35, -0.45)).normalized() if wheel else g((0.55, 0.35, 1.0)).normalized()
-        cam.ortho_scale = 0.50 if wheel else 0.26
+        cam.ortho_scale = 0.50 if wheel else (0.46 if root is None else 0.26)
         cam_o.location = target + view * 2.0
         direction = target - cam_o.location
         cam_o.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
