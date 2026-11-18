@@ -14,9 +14,7 @@ static func apply(root: Node3D) -> void:
 	_backdrop(root, box, density)
 	_hit_rail(root, box)
 	_stage_lip(root, box)
-	_spotlights(root, sparkles)
 	_stars(root, box, sparkles)
-	_podium(root, box)
 
 
 static func _mat(
@@ -37,7 +35,7 @@ static func _xform(origin: Vector3, size: Vector3, yaw: float = 0.0) -> Transfor
 	return Transform3D(Basis.from_euler(Vector3(0.0, yaw, 0.0)).scaled(size), origin)
 
 
-static func _backdrop(root: Node3D, mesh: BoxMesh, density: float) -> void:
+static func _backdrop(root: Node3D, mesh: BoxMesh, _density: float) -> void:
 	var panel := MeshInstance3D.new()
 	panel.name = "RhythmBackdrop"
 	var slab := BoxMesh.new()
@@ -46,34 +44,9 @@ static func _backdrop(root: Node3D, mesh: BoxMesh, density: float) -> void:
 	panel.position = Vector3(0.0, 5.6, -33.55)
 	panel.material_override = _mat(Color("14081f"))
 	root.add_child(panel)
-	var palette: Array[Color] = [
-		Color("62dcff"), Color("b997ff"), Color("ffc985"), Color("77efbd"), Color("ff8ad4")
-	]
-	var rows: int = 6 if density > 0.55 else 4
-	var cols: int = 16 if density > 0.55 else 12
-	# Eine MultiMesh-Farbe: violett-cyan Mischton; Akzente als zweite Charge.
-	var tiles: Array[Transform3D] = []
-	var accents: Array[Transform3D] = []
-	for row in range(rows):
-		for col in range(cols):
-			var x: float = (float(col) - float(cols - 1) * 0.5) * 1.02
-			var y: float = 1.15 + float(row) * 1.55
-			var pulse: float = 0.22 + 0.10 * float((row + col) % 3)
-			var xform := _xform(Vector3(x, y, -33.28), Vector3(0.84, 1.22, pulse))
-			if (row + col) % 4 == 0:
-				accents.append(xform)
-			else:
-				tiles.append(xform)
-	BuildVoxelStyle.multimesh(
-		root, "RhythmLeds", mesh, _mat(Color("5a3cff"), Color("7a5cff"), 0.85), tiles
-	)
-	BuildVoxelStyle.multimesh(
-		root, "RhythmLedAccents", mesh, _mat(Color("ff8ad4"), Color("ffa0e0"), 1.05), accents
-	)
 	var curtain: Array[Transform3D] = []
 	for side in [-1.0, 1.0]:
 		curtain.append(_xform(Vector3(side * 8.55, 5.8, -33.1), Vector3(1.15, 11.4, 0.55)))
-		curtain.append(_xform(Vector3(side * 8.55, 11.3, -22.0), Vector3(1.05, 0.42, 22.4)))
 	curtain.append(_xform(Vector3(0.0, 11.35, -33.0), Vector3(18.2, 0.48, 0.7)))
 	BuildVoxelStyle.multimesh(
 		root, "RhythmTruss", mesh, _mat(Color("241436"), Color("3a2460"), 0.25), curtain
@@ -109,29 +82,6 @@ static func _stage_lip(root: Node3D, mesh: BoxMesh) -> void:
 	)
 
 
-static func _spotlights(root: Node3D, sparkles: int) -> void:
-	var cone := CylinderMesh.new()
-	cone.top_radius = 0.08
-	cone.bottom_radius = 1.85
-	cone.height = 7.2
-	cone.radial_segments = 12
-	cone.rings = 1
-	var xforms: Array[Transform3D] = []
-	var positions: Array[Vector3] = [
-		Vector3(-4.6, 8.4, -6.0), Vector3(0.0, 8.8, -10.5), Vector3(4.6, 8.4, -6.0)
-	]
-	if sparkles > 0:
-		positions.append(Vector3(-2.2, 8.6, -16.0))
-		positions.append(Vector3(2.2, 8.6, -16.0))
-	for at in positions:
-		var basis := Basis.from_euler(Vector3(deg_to_rad(18.0), 0.0, 0.0)).scaled(Vector3.ONE)
-		xforms.append(Transform3D(basis, at))
-	var mat := _mat(Color(1.0, 0.92, 0.75, 0.16), Color("ffe9b0"), 0.45)
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	BuildVoxelStyle.multimesh(root, "RhythmSpots", cone, mat, xforms)
-
-
 static func _stars(root: Node3D, mesh: BoxMesh, sparkles: int) -> void:
 	if sparkles <= 0:
 		return
@@ -144,14 +94,4 @@ static func _stars(root: Node3D, mesh: BoxMesh, sparkles: int) -> void:
 		xforms.append(_xform(Vector3(x, y, z), Vector3(0.22, 0.22, 0.08), float(i) * 0.4))
 	BuildVoxelStyle.multimesh(
 		root, "RhythmStars", mesh, _mat(Color("ffe1a2"), Color("ffe9b8"), 1.2), xforms
-	)
-
-
-static func _podium(root: Node3D, mesh: BoxMesh) -> void:
-	var xforms: Array[Transform3D] = [
-		_xform(Vector3(0.0, 0.16, -21.8), Vector3(2.4, 0.32, 2.0)),
-		_xform(Vector3(0.0, 0.38, -21.8), Vector3(1.7, 0.16, 1.45)),
-	]
-	BuildVoxelStyle.multimesh(
-		root, "RhythmPodium", mesh, _mat(Color("3a2468"), Color("6a40b8"), 0.55), xforms
 	)
