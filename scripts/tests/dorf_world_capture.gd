@@ -120,6 +120,18 @@ func _run() -> void:
 				await _frames(20)
 				entry["dorf_abend_" + size_spec[1]] = await _save(dir, "dorf_abend_" + suffix)
 				village.set_time_of_day(0.35)
+			if village.get("neighbors") != null and tier == 2:
+				for _day in range(14):
+					village._next_day()
+				village.focus = Vector3(105, 0, 4)
+				village.radius = 92.0
+				village.tilt = 0.5
+				village.orbit = -0.2
+				village._camera_update(true)
+				await _frames(40)
+				entry["nachbarn_" + size_spec[1]] = await _save(dir, "nachbarn_" + suffix)
+				village.focus = village._start_focus()
+				village.radius = 58.0
 			if "--close" in args or tier == 2:
 				village.radius = 18.0
 				village.tilt = 0.5

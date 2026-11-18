@@ -123,6 +123,47 @@ func _adopt_level(level) -> void:
 	chase = level.chase.duplicate(true)
 	cart = level.cart.duplicate(true)
 	bonus = level.bonus.duplicate(true)
+	_speed_pads(level)
+
+
+## Speed pads (Sonic-like) at the start of long stretches with nothing to dodge
+## or jump: no hole, log, enemy, platform, pad, ride, wait or gate for
+## PATH_PAD_CLEAR metres. Deterministic; a few dozen metres apart at least.
+func _speed_pads(level) -> void:
+	var busy: Array[Vector2] = []
+	for gap in level.gaps:
+		busy.append(Vector2(gap.x - 6.0, gap.y + 2.0))
+	for list in [level.hurdles, level.blockers, level.bounces, level.waits]:
+		for item in list:
+			busy.append(Vector2(float(item.s) - 6.0, float(item.s) + 3.0))
+	for enemy in level.enemies:
+		var reach: float = absf(float(enemy.get("span", 0.0))) + 4.0
+		busy.append(Vector2(float(enemy.s) - reach - 6.0, float(enemy.s) + reach))
+	for platform in level.platforms:
+		busy.append(Vector2(float(platform.s0) - 8.0, float(platform.s1) + 2.0))
+	for ride in level.rides:
+		busy.append(Vector2(float(ride.s) - 8.0, float(ride.get("ts", ride.s)) + 4.0))
+	for point in level.checkpoints:
+		busy.append(Vector2(float(point.s) - 8.0, float(point.s) + 4.0))
+	for surface in level.surfaces:
+		if str(surface.kind) in ["rail", "gap"]:
+			busy.append(Vector2(float(surface.s0) - 4.0, float(surface.s1) + 4.0))
+	if not level.chase.is_empty():
+		busy.append(Vector2(float(level.chase.s0) - 10.0, float(level.chase.s1) + 4.0))
+	var at: float = maxf(float(level.intro_end) + 10.0, 40.0)
+	var last: float = -INF
+	while at < float(level.finish_s) - TUNING.PATH_PAD_CLEAR:
+		var clear: bool = at - last >= TUNING.PATH_PAD_SPACING
+		if clear:
+			for span in busy:
+				if span.x < at + TUNING.PATH_PAD_CLEAR and span.y > at:
+					clear = false
+					break
+		if clear:
+			boosts.append({"s0": at, "s1": at + TUNING.PATH_PAD_LENGTH, "lat": 0.0, "half": 3.0, "pad": true, "seconds": TUNING.PATH_PAD_SECONDS})
+			last = at
+			at += TUNING.PATH_PAD_LENGTH
+		at += 2.0
 
 
 ## Index of the last rescue point at or behind `at` (on the main path or in the bonus hall).

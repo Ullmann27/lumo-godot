@@ -33,6 +33,7 @@ const GENERATION = preload("res://scripts/games/kart_sonnenhafen_generation.gd")
 const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.gd")
 const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
 const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
+const DETAIL_LAYER = preload("res://scripts/games/visual/kart_detail_layer.gd")
 const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
@@ -111,6 +112,7 @@ func build(
 	track_name = definition.name
 	road_width = float(definition.get("road_width_m", WIDTH))
 	_rng.seed = definition.seed
+	DETAIL_LAYER.schedule(self)  # Detail-Schicht (Verwitterung, Kleinteile, Publikum, Licht, Start/Ziel-Bühne) – läuft deferred, also nach dem gesamten Weltaufbau aller Zweige.
 	_make_curve()
 	jump={}
 	loop_layout={}

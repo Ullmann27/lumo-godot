@@ -69,6 +69,7 @@ func build(race_world, course_plan, calm: bool) -> void:
 		_build_ride(index, plan.rides[index])
 	for index in range(plan.letters.size()):
 		_build_letter(index, plan.letters[index])
+	_build_pads()
 	for index in range(plan.checkpoints.size()):
 		if bool(plan.checkpoints[index].question):
 			_build_gate(index, float(plan.checkpoints[index].s) + 1.8)
@@ -237,6 +238,36 @@ func _build_log(hurdle: Dictionary) -> void:
 
 func _quiet(node: GeometryInstance3D) -> void:
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## Speed pads: three glowing chevrons on the path that point the way.
+func _build_pads() -> void:
+	var kit := MESHES.Kit.new()
+	for k in range(3):
+		var z: float = 1.6 - float(k) * 1.6
+		for side in [-1.0, 1.0]:
+			var tip := Vector3(0.0, 0.04, z - 0.7)
+			var outer := Vector3(side * 1.25, 0.04, z + 0.15)
+			var inner := Vector3(side * 0.95, 0.04, z + 0.45)
+			var mid := Vector3(0.0, 0.04, z - 0.3)
+			var colour := Color("ffd23a") if k != 1 else Color("ff8a3d")
+			if side > 0.0:
+				kit.quad(tip, outer, inner, mid, colour)
+			else:
+				kit.quad(tip, mid, inner, outer, colour)
+	var mesh: Mesh = kit.mesh()
+	var glow: ShaderMaterial = SHADERS.material(SHADERS.GLOW.replace("render_mode unshaded,", "render_mode unshaded, cull_disabled,"), {"pulse": 0.6, "strength": 2.2})
+	for strip in plan.boosts:
+		if not bool(strip.get("pad", false)):
+			continue
+		var pad := MeshInstance3D.new()
+		pad.name = "SpeedPad%d" % int(strip.s0)
+		pad.mesh = mesh
+		pad.material_override = glow
+		pad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		pad.visibility_range_end = NEAR
+		add_child(pad)
+		_place(pad, (float(strip.s0) + float(strip.s1)) * 0.5, float(strip.lat), 0.0)
 
 
 func _build_rubble(blocker: Dictionary) -> void:

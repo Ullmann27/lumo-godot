@@ -251,7 +251,7 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	var output := {"wood": 0, "stone": 0, "food": 0, "coins": 0}
 	var wells := water_capacity(model, town)
 	var enough_water := wells >= int(town.population)
-	var farms: int = model._count(town, "farm")
+	var farms: int = model._working(town, "farm")
 	var carrots := farms * (5 if enough_water else 3)
 	if int(town.region) >= 1:
 		carrots += farms
@@ -261,9 +261,9 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	town.crops.carrots = int(town.crops.carrots) + carrots
 	town.resources.food = int(town.resources.food) + carrots
 	output.food = carrots
-	var grain: int = model._count(town, "grain") * (4 if enough_water else 2)
+	var grain: int = model._working(town, "grain") * (4 if enough_water else 2)
 	town.crops.grain = mini(MAX_RESOURCE, int(town.crops.grain) + grain)
-	var batches := mini(model._count(town, "bakery"), int(town.crops.grain) / 3)
+	var batches := mini(model._working(town, "bakery"), int(town.crops.grain) / 3)
 	batches = mini(batches, (MAX_RESOURCE - int(town.resources.food)) / 4)
 	town.crops.grain = int(town.crops.grain) - batches * 3
 	town.crops.bread = int(town.crops.bread) + batches * 4
@@ -271,16 +271,16 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	town.bread_batches = mini(MAX_COUNTER, int(town.bread_batches) + batches)
 	output.food = int(output.food) + batches * 4
 	var bridge_bonus := 1 if bool(town.city_projects.get("bridge", false)) else 0
-	output.wood = model._count(town, "lumber") * (4 + bridge_bonus)
+	output.wood = model._working(town, "lumber") * (4 + bridge_bonus)
 	output.stone = (
-		model._count(town, "quarry") * (3 + bridge_bonus + (1 if int(town.region) >= 2 else 0))
+		model._working(town, "quarry") * (3 + bridge_bonus + (1 if int(town.region) >= 2 else 0))
 	)
 	for resource in ["wood", "stone"]:
 		output[resource] = mini(int(output[resource]), MAX_RESOURCE - int(town.resources[resource]))
 		town.resources[resource] = int(town.resources[resource]) + int(output[resource])
-	var gross: int = model._count(town, "market") * 2
+	var gross: int = model._working(town, "market") * 2
 	if model._count(town, "road") > 0:
-		gross += model._count(town, "market")
+		gross += model._working(town, "market")
 	var paid := credit_income(town, gross)
 	output.coins = int(paid.net_income)
 	var needs := int(town.population)

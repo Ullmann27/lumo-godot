@@ -352,16 +352,32 @@ func place_plate(player: int, at: Vector2) -> void:
 	var target := Vector2(local.x - extent.x * 0.5, local.y - extent.y)
 	target.x = clampf(target.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
 	var limit := _top_limit(target.x, extent.x)
-	if side and limit > target.y + 0.5:
-		# Über dem Kopf ist kein Platz: das Schild steht außen neben dem Kopf.
+	if limit > target.y + 0.5:
+		# Über dem Kopf ist kein Platz: das Schild steht neben dem Kopf – außen,
+		# oder auf der anderen Seite, wenn dort schon ein anderes Schild steht.
 		var left := local.x < safe.size.x * 0.5
-		var beside := Vector2(local.x - extent.x - dp(34) if left else local.x + dp(34), local.y + dp(4))
-		beside.x = clampf(beside.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
-		beside.y = clampf(beside.y, _top_limit(beside.x, extent.x), maxf(dp(6), safe.size.y - extent.y - dp(6)))
-		plate.position = beside
+		var chosen := Vector2.ZERO
+		for attempt: bool in [left, not left]:
+			var beside := Vector2(local.x - extent.x - dp(34) if attempt else local.x + dp(34), local.y + dp(4))
+			beside.x = clampf(beside.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
+			beside.y = clampf(beside.y, _top_limit(beside.x, extent.x), maxf(dp(6), safe.size.y - extent.y - dp(6)))
+			if attempt == left:
+				chosen = beside
+			if not _hits_other_plate(plate, Rect2(beside, extent)):
+				chosen = beside
+				break
+		plate.position = chosen
 		return
 	target.y = clampf(target.y, limit, maxf(dp(6), safe.size.y - extent.y - dp(6)))
 	plate.position = target
+
+
+## Trifft dieses Rechteck ein anderes sichtbares Namensschild?
+func _hits_other_plate(own: Button, rect: Rect2) -> bool:
+	for other: Button in plates:
+		if other != own and other.visible and Rect2(other.position, other.size).grow(dp(4)).intersects(rect):
+			return true
+	return false
 
 
 ## Oberste freie Höhe für ein Schild in diesem Streifen: unter Kopfzeile und Trumpf-Hinweis.
@@ -399,6 +415,10 @@ func spread_plates() -> void:
 			var overlap := ra.end.x - rb.position.x
 			a.position.x = maxf(dp(6), a.position.x - overlap * 0.5)
 			b.position.x = minf(safe.size.x - b.size.x - dp(6), a.position.x + a.size.x + dp(6))
+			# Steht b schon an der Kante, rückt a den Rest nach links.
+			var rest := a.position.x + a.size.x + dp(6) - b.position.x
+			if rest > 0.0:
+				a.position.x = maxf(dp(6), a.position.x - rest)
 			a.position.y = maxf(a.position.y, _top_limit(a.position.x, a.size.x))
 			b.position.y = maxf(b.position.y, _top_limit(b.position.x, b.size.x))
 

@@ -91,8 +91,34 @@ static func reward(solved: int, stars_rating: int) -> int:
 
 # ------------------------------------------------------------------ adventure path (Dschungelherz)
 
-## Lumo runs a little slower on the narrow path; pulling back stops him completely.
+## Lumo's pace on the narrow path as the level was laid out; pulling back stops
+## him completely. Every jump, mushroom, platform and creature is built for this.
 const PATH_CRUISE: float = 8.5
+## Tempo update of 18.11.2026: the whole path plays this much faster than it was
+## laid out - Lumo, creatures, platforms, vines and jumps alike. On screen Lumo
+## runs PATH_CRUISE * PATH_TIME_SCALE (about 11 m/s) and every jump still lands
+## where it was built to land.
+const PATH_TIME_SCALE: float = 1.3
+## Sonic-like momentum: running on without braking or bumping builds "flow"
+## over PATH_FLOW_SECONDS, which adds up to PATH_FLOW_BONUS m/s (sprint).
+const PATH_FLOW_BONUS: float = 3.0
+const PATH_FLOW_SECONDS: float = 2.2
+## Faster pick-up on the path, and kinder jump windows than on the roads
+## (in path time; on screen they are PATH_TIME_SCALE times shorter).
+const PATH_ACCELERATION: float = 9.0
+const PATH_COYOTE_SECONDS: float = 0.2
+const PATH_JUMP_BUFFER_SECONDS: float = 0.28
+## Speed pads on the long safe stretches of the path. The path is dense, so a
+## pad's push is short: Lumo is back at his own pace before the next thing to
+## jump or dodge (PATH_PAD_CLEAR metres are free).
+const PATH_PAD_LENGTH: float = 5.0
+const PATH_PAD_CLEAR: float = 22.0
+const PATH_PAD_SPACING: float = 70.0
+const PATH_PAD_SECONDS: float = 1.0
+## Camera on the path: metres per second above Lumo's own pace that count as
+## "full speed" for the pull-back, and the widening of the view in degrees.
+const PATH_PACE_RANGE: float = 8.0
+const PATH_FOV_KICK: float = 13.0
 const PATH_LATERAL_SPEED: float = 6.0
 const PATH_SLOW_FACTOR: float = 0.0
 ## Second, smaller push in the air (FLITZEN while jumping), once per jump.
