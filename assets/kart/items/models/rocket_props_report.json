@@ -1,0 +1,46 @@
+{
+  "generator": "tools/lumo_kart_art/items/build_rocket_props.py",
+  "units": "metres",
+  "axes": "Godot -Z forward, +Y up",
+  "texture_images": [],
+  "authorship": "Original procedural Lumo geometry; no third-party assets.",
+  "lumo_star_rocket": {
+    "triangles": 888,
+    "vertices": 488,
+    "materials": 1,
+    "dimensions_godot_m": [
+      0.24041630327701569,
+      0.24041630327701569,
+      0.6400000154972076
+    ],
+    "bytes": 68680
+  },
+  "lumo_rocket_pod": {
+    "triangles": 1338,
+    "vertices": 706,
+    "materials": 1,
+    "dimensions_godot_m": [
+      0.5010000132024288,
+      0.2694740705192089,
+      0.5570000112056732
+    ],
+    "bytes": 93688
+  },
+  "pod_slots_godot_m": {
+    "Slot_A": [
+      0.16,
+      0.135,
+      0.0
+    ],
+    "Slot_B": [
+      0.34,
+      0.135,
+      0.0
+    ]
+  },
+  "rocket_nozzle_godot_m": [
+    0.0,
+    0.0,
+    0.31
+  ]
+}
