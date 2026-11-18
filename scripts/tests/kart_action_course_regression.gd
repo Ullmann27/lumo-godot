@@ -191,7 +191,7 @@ func _check_kicker_and_dive() -> void:
 		game._physics_process(STEP)
 		if game.action_in_dive:
 			top = maxf(top, game.speed)
-	assert(top <= POWERTRAIN.top_speed({}) * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
+	assert(top <= POWERTRAIN.top_speed({}, POWERTRAIN.race_pace()) * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
 	_place(float(dive.end) + 8.0, 0.0, 16.0)
 	game._physics_process(STEP)
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")
