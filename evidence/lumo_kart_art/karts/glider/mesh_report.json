@@ -1,5 +1,5 @@
 {
-  "triangles": 49064,
+  "triangles": 49910,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -17,19 +17,19 @@
   "bounds_blender_m": {
     "min": [
       -0.935699999332428,
-      -1.1749999523162842,
+      -1.215933918952942,
       0.0
     ],
     "max": [
       0.935699999332428,
-      1.2208049297332764,
-      1.1915662288665771
+      1.245999813079834,
+      1.114999771118164
     ]
   },
   "dimensions_godot_m": [
     1.871399998664856,
-    1.1915662288665771,
-    2.3958048820495605
+    1.114999771118164,
+    2.461933732032776
   ],
   "meshes": [
     {
@@ -48,8 +48,8 @@
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 16160,
-      "vertices": 8214,
+      "triangles": 16814,
+      "vertices": 8567,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
@@ -111,8 +111,8 @@
     },
     {
       "node": "SteeringWheel_Mesh",
-      "triangles": 1188,
-      "vertices": 602,
+      "triangles": 1380,
+      "vertices": 698,
       "material_slots": 3,
       "non_manifold_edges": 0
     }
@@ -129,8 +129,8 @@
   "attachments_godot_m": {
     "DriverSeat": [
       0,
-      0.69,
-      0.07
+      0.31,
+      0.2
     ],
     "DriverOrigin": [
       0,
@@ -139,23 +139,23 @@
     ],
     "Grip_L": [
       -0.16,
-      1.055,
-      -0.34
+      0.7,
+      -0.04
     ],
     "Grip_R": [
       0.16,
-      1.055,
-      -0.34
+      0.7,
+      -0.04
     ],
     "Foot_L": [
-      -0.18,
-      0.8,
-      -0.24
+      -0.15,
+      0.31,
+      -0.34
     ],
     "Foot_R": [
-      0.18,
-      0.8,
-      -0.24
+      0.15,
+      0.31,
+      -0.34
     ],
     "FrontAxle": [
       0,

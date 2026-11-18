@@ -62,7 +62,7 @@ def inspect(variant):
             pivot.rotation_euler.z=0
     for side,label in ((-1,'L'),(1,'R')):
         marker=bpy.data.objects['Grip_'+label]
-        expected=G_TO_B@Vector((side*.16,1.055,-.34))
+        expected=G_TO_B@Vector((side*.16,.70,-.04))
         result['grip_rest_errors_m'][label]=(marker.matrix_world.translation-expected).length
     result['passed']=all(x['triangle_pairs']==0 for x in result['tyre_coachwork_intersections']) and max(result['pivot_errors_m'].values())<1e-6 and max(result['grip_rest_errors_m'].values())<1e-6
     out=ROOT/'evidence/lumo_kart_art/karts'/variant/'mechanical_clearance.json'

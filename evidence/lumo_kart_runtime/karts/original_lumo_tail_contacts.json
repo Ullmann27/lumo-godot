@@ -9,7 +9,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "bf8517dc3f349794edc4ad6c4fe231ecf9274d747898d3b2347a14891e849a3e",
+			"file_sha256": "f10d2796fafbd20056e0256c266f93a0b042a79245ecec0ce154ca387c09e5d4",
 			"frame": 12,
 			"geometry": "comet_driving_012.bin",
 			"phase": "driving",
@@ -19,7 +19,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "cfad559232a5aa05c677df89773b5f6bdc17d9bcebba0a26f1c03b7c3fa179bf",
+			"file_sha256": "fa02815b42b2dcf41783d511f5d1685a10c2d53d01672883ae8d622771bb1fb7",
 			"frame": 13,
 			"geometry": "comet_driving_013.bin",
 			"phase": "driving",
@@ -29,7 +29,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 1.0,
-			"file_sha256": "5b62a6a40a046d0f6fe7cb44185e7a1b854134e40e52d569d9c08adefbd27074",
+			"file_sha256": "57364e3e16fc0b505265d6f1ad08199789c6213b5d36e1998982852e08ebcfd9",
 			"frame": 42,
 			"geometry": "comet_driving_042.bin",
 			"phase": "driving",
@@ -39,7 +39,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.76666669845581,
-			"file_sha256": "808feaf691fbfbf375c3d7c7e34f0aaf95cb94d8bd4227ae3fb3bc30ca35b5c5",
+			"file_sha256": "509484635371b4281702b8cc6336f5bc9537a8a1a23451c181af1d17f37365b2",
 			"frame": 90,
 			"geometry": "comet_driving_090.bin",
 			"phase": "driving",
@@ -49,7 +49,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "be9dee83f1c81261fc0297d84e2bfac38c6660ac7e5413d9541209048b6f4398",
+			"file_sha256": "c298abe06097c332b9069f35cb1384fcd88b3b8a3f91e55c93382f8762157a54",
 			"frame": 12,
 			"geometry": "comet_left_012.bin",
 			"phase": "left",
@@ -59,7 +59,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "f0f8d676062d6b3979a71769a538d67770cda74b54ef290b45088a2d063b81d1",
+			"file_sha256": "8f008a1fc72c18acc5b494de9a71a8d14708966c359327a967a6ec578cd1b7b2",
 			"frame": 13,
 			"geometry": "comet_left_013.bin",
 			"phase": "left",
@@ -69,7 +69,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.433333396911621,
-			"file_sha256": "d37875437c320824deae4e9066769413e4d1bece7fc2b7fce8401d1085504f3a",
+			"file_sha256": "024e4aedf5b250b66e4a606865ff5402c57fb3863f6961018d1d508af922f230",
 			"frame": 42,
 			"geometry": "comet_left_042.bin",
 			"phase": "left",
@@ -79,7 +79,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.200000095367432,
-			"file_sha256": "14f9e129e8afc4c2e1484c328845400a891ff5287c907681af745eadd018ede3",
+			"file_sha256": "ec17b7b32b249d76dabdb16105ea7b8d44c379513c16c2f5aab30d2faec51556",
 			"frame": 90,
 			"geometry": "comet_left_090.bin",
 			"phase": "left",
@@ -89,7 +89,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "82dabe4549ad42a4fd91a16ab3d57763e302d52cc78fdd4480a8648c60c96b01",
+			"file_sha256": "d0ff7664ea2bbbf39f0529d206025436c8937b8d08089e3a352db67ac4b15e31",
 			"frame": 12,
 			"geometry": "comet_right_012.bin",
 			"phase": "right",
@@ -99,7 +99,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "d99087cce7222df629bd81358cb5b97109756e404b8cf6ee35dd52319f02e8ef",
+			"file_sha256": "0674debc5375dfc99af88aca83d812ac807f9ea5f755fc7cc4df9590b8a8a5a6",
 			"frame": 13,
 			"geometry": "comet_right_013.bin",
 			"phase": "right",
@@ -109,7 +109,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.900000095367432,
-			"file_sha256": "3c60b54a755b1edc2c65d3fcb86cb5fc77ea6ecfe45cbc2ebd0f5cfda027db17",
+			"file_sha256": "8ecc15c26e819e270284d2fd75ba1602d271e3eec2c8f2ada61d5a5a71fa1c0f",
 			"frame": 42,
 			"geometry": "comet_right_042.bin",
 			"phase": "right",
@@ -119,7 +119,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.666666793823242,
-			"file_sha256": "1d328297ca37bf9c1670dd074a69b821b5d48d979594cc428c7675ce1c171d71",
+			"file_sha256": "f914950f1b8c1e6bdeffd6507e8c8295c57d96aacb176d962eaa79abe994b6f9",
 			"frame": 90,
 			"geometry": "comet_right_090.bin",
 			"phase": "right",
@@ -129,7 +129,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "50ad25f5533d848cd2b1bef5e855aae526e95b42792099cdfe23ac282e6f33a5",
+			"file_sha256": "886222505dc77d2eda3d68a1877a3b328cf7ec98f2cba928eb91530b34137128",
 			"frame": 12,
 			"geometry": "comet_jump_012.bin",
 			"phase": "jump",
@@ -139,7 +139,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "ab5b33a2c57d514fe26beb163f4d88eea102c11470b6a378c7f39d43bb8dda2c",
+			"file_sha256": "c16a442545c14b7aba79d0c5832828c38c626c75905ea49e9a96f185187903d1",
 			"frame": 13,
 			"geometry": "comet_jump_013.bin",
 			"phase": "jump",
@@ -149,7 +149,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.7,
-			"file_sha256": "185fa6f99456e0ef4718b42c5d50a6ea7bb21f52ec96f4a64601c61718cc2585",
+			"file_sha256": "2f83e96147348eb48b1a203648e0b05b4f9328f5e63beeca0167a71937309aac",
 			"frame": 42,
 			"geometry": "comet_jump_042.bin",
 			"phase": "jump",
@@ -159,7 +159,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.466666666666667,
-			"file_sha256": "ac542a398948fafd94bb4a8d3dea52f2b2861952340ce9035671db9ea8c24aa0",
+			"file_sha256": "71e8f78afca4fb84d5ba23740c364c77fa7e210c8f58b592628c526b8fdfaf64",
 			"frame": 90,
 			"geometry": "comet_jump_090.bin",
 			"phase": "jump",
@@ -169,7 +169,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "b171b5b8cb9bd7c666b99ec7f181a88450cdf4752373981341c77673528d5336",
+			"file_sha256": "2f15700b9a77656bbbd8bfbe39fbbb157f8fd7861bec0b354979a1cde87fc169",
 			"frame": 12,
 			"geometry": "comet_landing_012.bin",
 			"phase": "landing",
@@ -179,7 +179,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "d1325fd33062f5aa0a396d7958ad46f0d82829da0c163715e2baef4d0e28456b",
+			"file_sha256": "8f4b840f4e556592b64525bdd9c82b21341229c01600ab4d8de446c9d4f39c69",
 			"frame": 13,
 			"geometry": "comet_landing_013.bin",
 			"phase": "landing",
@@ -189,7 +189,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.7,
-			"file_sha256": "227e9394d68a41dfd00a4ff207553bac1238402f3b4df985731c7c8e9809d0a7",
+			"file_sha256": "222f859c96cb3ba7abc637bc4bc5bef5e78cd760acfee35af1c52a107ebe3513",
 			"frame": 42,
 			"geometry": "comet_landing_042.bin",
 			"phase": "landing",
@@ -199,7 +199,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.46666669845581,
-			"file_sha256": "bb7c71d1cb9d1e0e0febf2b0fe1de406b1f9790193e9f4808ca61824af298980",
+			"file_sha256": "3f87d018416ba77bdfa7ed9bc2d611454e539e10682aaed1a76d33d1e8c2696c",
 			"frame": 90,
 			"geometry": "comet_landing_090.bin",
 			"phase": "landing",
@@ -209,7 +209,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "de099d76940cdd308c8c03138a2370426a3ba68c9638dee144ca57ce0de314f2",
+			"file_sha256": "5f72a80d1cc4a448a62b820f7a5990ede0621aa7a5df7c838447170231952988",
 			"frame": 12,
 			"geometry": "comet_finish_012.bin",
 			"phase": "finish",
@@ -219,7 +219,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "de099d76940cdd308c8c03138a2370426a3ba68c9638dee144ca57ce0de314f2",
+			"file_sha256": "4f0063e9930aaab2176d6e0aa8f61cd6e784ba73c46ba7b5224462aa71ae73cd",
 			"frame": 13,
 			"geometry": "comet_finish_013.bin",
 			"phase": "finish",
@@ -229,7 +229,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.7,
-			"file_sha256": "53af7c879cec2042b08fe0027989e1e6441bf58ea665ec2708ce691ac1869a40",
+			"file_sha256": "b82eec9b5a564a7b2438bf9a8e8723ff65dd7c9c456f30d6211f491ea46e8c2d",
 			"frame": 42,
 			"geometry": "comet_finish_042.bin",
 			"phase": "finish",
@@ -239,7 +239,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 1.5,
-			"file_sha256": "7d740ac8e4203dd5a82f4e7df7d2c935b7fed535ab51cae25d6e111cdb0e6947",
+			"file_sha256": "94206b02a61f46a49f5b508783eeef6d48c5d2a14dd5d808e66aad7d7f213eac",
 			"frame": 90,
 			"geometry": "comet_finish_090.bin",
 			"phase": "finish",
@@ -249,7 +249,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "9c5ad5888ec6d009cbeb65b91ce015879e1637cfd7d8a763af13be1543dbd466",
+			"file_sha256": "861639e7c6ec3aa3ecdab20b368da948ae75d551eae08b6809f4a1d75c1ca057",
 			"frame": 12,
 			"geometry": "glider_driving_012.bin",
 			"phase": "driving",
@@ -259,7 +259,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "b4db97d9ec7b52226970aeb22972c6fad0b016dfac819178454f0bd2ce09d43f",
+			"file_sha256": "141b12579d755147d30aa3d5a899eb626f4a88f194cd7a8faa04bbd7390034f8",
 			"frame": 13,
 			"geometry": "glider_driving_013.bin",
 			"phase": "driving",
@@ -269,7 +269,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 1.0,
-			"file_sha256": "ace76f78fa221903912534cf71647a98426f58b171d724a6979a6bf2c45b1cbe",
+			"file_sha256": "0130c228f71939fa6e916239453cc5a9e81a8c506e19fe4466254271e290591c",
 			"frame": 42,
 			"geometry": "glider_driving_042.bin",
 			"phase": "driving",
@@ -279,7 +279,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.76666669845581,
-			"file_sha256": "92d8ae306d482137af2f0105d7563163e1343c6a65319edce5d19bf3efa80e71",
+			"file_sha256": "79e1c0d647f365ea39eb042c6ba05a9553734cd441ab05c3286b930532593be5",
 			"frame": 90,
 			"geometry": "glider_driving_090.bin",
 			"phase": "driving",
@@ -289,7 +289,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "6583494b23bd2c709b4dc7e528a339d3f26297ff9cb96b8684865d9e410f1be9",
+			"file_sha256": "eda2087a60c6ba756db1f6676aee5119480c0d22787b313d405a8a10ddb1ef39",
 			"frame": 12,
 			"geometry": "glider_left_012.bin",
 			"phase": "left",
@@ -299,7 +299,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "f9be2dabad32ea8613563f375962ae4dd8fe7d7014e7a490fdec32699f82924c",
+			"file_sha256": "2d0f4ad7f31408dbeb33bffceec7e1faf71b0f1e877fe29329614f2834f73237",
 			"frame": 13,
 			"geometry": "glider_left_013.bin",
 			"phase": "left",
@@ -309,7 +309,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.433333396911621,
-			"file_sha256": "fe486539f96a45bc6f7343ef16d7108cf2386b12b18d333a8d0b912abe1ef5b3",
+			"file_sha256": "39cfe6f5139bc702b2524b4697b472782eba658d8165fbea6da9cf98de1a7b47",
 			"frame": 42,
 			"geometry": "glider_left_042.bin",
 			"phase": "left",
@@ -319,7 +319,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.200000095367432,
-			"file_sha256": "12ef85a6cb5e21d00df71b23f1753a057b311acf0bffca47918d090493f39176",
+			"file_sha256": "223ff947aceca99a83672fec9b244c33022ab09f9378dcea43c9625f2a317a01",
 			"frame": 90,
 			"geometry": "glider_left_090.bin",
 			"phase": "left",
@@ -329,7 +329,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "00b5a6056bfefbd8242545b5191d5731b3cbd97e84ac6bc7bd7fff444d4f766e",
+			"file_sha256": "2db6e74551ba49b5931e7b62816dadff7cd98ed8c4131836af782a535ae16fee",
 			"frame": 12,
 			"geometry": "glider_right_012.bin",
 			"phase": "right",
@@ -339,7 +339,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "011e86d3eae32fd86a7c1988a693c680a3993b6e540c42f0c70e10c77790eaaa",
+			"file_sha256": "959ef610c6473e853725c9548b113435b838cc2f373e85f0914a9e8f12535822",
 			"frame": 13,
 			"geometry": "glider_right_013.bin",
 			"phase": "right",
@@ -349,7 +349,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.900000095367432,
-			"file_sha256": "e959c0c6e6276ce5d9b698395825e6974f1e0dbd27c8e31b2cf3e9d52217cfda",
+			"file_sha256": "1b324eb13ca5b1f719211d7e4d2167d54f0d84b920d790eb3a778c3cb1d5fcc6",
 			"frame": 42,
 			"geometry": "glider_right_042.bin",
 			"phase": "right",
@@ -359,7 +359,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.666666793823242,
-			"file_sha256": "05307d20d2654aad8773dc463810df87c9263465f7a1b9c0239231f55e00effa",
+			"file_sha256": "27b6aa414e9fa72ecfa190241b0fc9bea901a5f467e756f9c5d899c0344f6d13",
 			"frame": 90,
 			"geometry": "glider_right_090.bin",
 			"phase": "right",
@@ -369,7 +369,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "6c1d9b7b44eef73ff3264efb9a8d1d23fa9ec1bdac786116749fe75ae8ad3b85",
+			"file_sha256": "6b8118f78ef178c938246331b0188af44bfbdd0047064f7cb445540e1a0dd58f",
 			"frame": 12,
 			"geometry": "glider_jump_012.bin",
 			"phase": "jump",
@@ -379,7 +379,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "7914dc4b4a60e67985731cc709c6c9284f4ea773ad39e4eb248b02ab0acdc5cd",
+			"file_sha256": "0df91e738b9789f6b92fb7da86340639327b95f48d49703a629bcc682839db38",
 			"frame": 13,
 			"geometry": "glider_jump_013.bin",
 			"phase": "jump",
@@ -389,7 +389,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.7,
-			"file_sha256": "212716c87a36b8595a75e52a51b772276dd4f18f3f2b60bc8f50970260c12de1",
+			"file_sha256": "e4ab9953cc530c9721ee4a6f60de89864436a861a4459288e778644c6c414fd7",
 			"frame": 42,
 			"geometry": "glider_jump_042.bin",
 			"phase": "jump",
@@ -399,7 +399,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.466666666666667,
-			"file_sha256": "b76627c4ba60edcb7903028d11d49abf43ecfd17b22286fc01828a5d61f929da",
+			"file_sha256": "7fc652b5d26a7a4af7a3b8a0844adcdf3dc7e48308ad30ee07bfb6e47a9b0480",
 			"frame": 90,
 			"geometry": "glider_jump_090.bin",
 			"phase": "jump",
@@ -409,7 +409,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "7c34902e6017cc05720eb34b3dd45b7e3a0414dc7caf982dc076576bdc7b206d",
+			"file_sha256": "7cead4d5505c0854d5b650f9f186d9b9371cba8530e85b3dfd18b15253ef6f2f",
 			"frame": 12,
 			"geometry": "glider_landing_012.bin",
 			"phase": "landing",
@@ -419,7 +419,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "dc32d85bb90d461fdeaf6562421b8d3ca00f1c5400fd276308bfa8fc85ec75f3",
+			"file_sha256": "0f20c68ba4a2ad926afd0bc363d716b8de455418ddda1a38eaf15b4c2c66dcb4",
 			"frame": 13,
 			"geometry": "glider_landing_013.bin",
 			"phase": "landing",
@@ -429,7 +429,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.7,
-			"file_sha256": "c1ccea31770d8d838637bd807d12e33ee6f7e94fdeb98116dd72ed8913748e12",
+			"file_sha256": "c6b6b6b71a3e31356a70b24360d977631e1275240c95651b99f091b2cf2c9b72",
 			"frame": 42,
 			"geometry": "glider_landing_042.bin",
 			"phase": "landing",
@@ -439,7 +439,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.46666669845581,
-			"file_sha256": "23afed9b72ff574b3306cb49058b354dbf4cc7c820fd4872fd85252530243789",
+			"file_sha256": "0964881559107cc41d9007e980dd4c84d379dd51fe85cebb50d26f226da022d7",
 			"frame": 90,
 			"geometry": "glider_landing_090.bin",
 			"phase": "landing",
@@ -449,7 +449,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "a4774147949ba0a989ea6b94fe6af0c7d3340db14e38d4a65daf9af53331c99d",
+			"file_sha256": "4fe9ae7c5084781c87ae1fb7b23860d125ab0fc51cc89d5ba8a4eb9d4f6935cf",
 			"frame": 12,
 			"geometry": "glider_finish_012.bin",
 			"phase": "finish",
@@ -459,7 +459,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "4227ed4ae534158475a490076495b399d76dd7a2cba72cdc6c391b6c765bee70",
+			"file_sha256": "6f536eb6d3b505d5cc4ea500ec1e588fd36713586cad05e0b98dee80b11288be",
 			"frame": 13,
 			"geometry": "glider_finish_013.bin",
 			"phase": "finish",
@@ -469,7 +469,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.7,
-			"file_sha256": "cb8b82b4ae0819c577de5fe53106c09d342863735e6fce4e825b1af2cfd5a36d",
+			"file_sha256": "d72c1e6f8d4153b56e642e9915b67154802b25bf954a9d049c4ee0ef229e684c",
 			"frame": 42,
 			"geometry": "glider_finish_042.bin",
 			"phase": "finish",
@@ -479,7 +479,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 1.5,
-			"file_sha256": "32a8be8cdd8d8857873432967bc7ae5a7acf21b394b8ea1584f336f5f3d0af41",
+			"file_sha256": "2f3b54572ad91c2795624a16cb11080e450ef8d92f2cd9226d10db423f9c4f7b",
 			"frame": 90,
 			"geometry": "glider_finish_090.bin",
 			"phase": "finish",
@@ -489,7 +489,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "602b1e814035e90f39a06e0613a72b5ef4e0088cae83e55c43268009276fd8c4",
+			"file_sha256": "987e8be5ee156fdaf6d7abc2552ec7b80c8afb93e6dc3db29e327c0f3b66d170",
 			"frame": 12,
 			"geometry": "turbo_driving_012.bin",
 			"phase": "driving",
@@ -499,7 +499,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.5,
-			"file_sha256": "ea6953eec754d91a596b60d8086ade732a537460baf9a61ba5e8d5bc131f4125",
+			"file_sha256": "32e6a673fb973a11dce7333af052e5e3c61b5c51a22f9e06a11716c5c06f6377",
 			"frame": 13,
 			"geometry": "turbo_driving_013.bin",
 			"phase": "driving",
@@ -509,7 +509,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 1.0,
-			"file_sha256": "3e956dde578c39817522085a50061bad24b3fcbfe23862da282487260d1189a8",
+			"file_sha256": "ba6ec40b61ab5ca7145bd35d85946deff3397390be9d24cfe3e3899c1a4b1889",
 			"frame": 42,
 			"geometry": "turbo_driving_042.bin",
 			"phase": "driving",
@@ -519,7 +519,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.76666669845581,
-			"file_sha256": "34f642c3714fb4a3d3d2d4dcfa2dfde5af04699d4b28fce403d6465ffda14197",
+			"file_sha256": "559c927b538b7661ae9e73b68b7525f6d948936398bf388de984e52315da67d8",
 			"frame": 90,
 			"geometry": "turbo_driving_090.bin",
 			"phase": "driving",
@@ -529,7 +529,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "4b037dc3de73c88687a9be7eb261bb75c26d00024b2ccbe2c029ef1503ee9e7a",
+			"file_sha256": "ac266f63ade660b5b3a39437dc7c91a7b6a905849f00c99e664c37a3a397f14f",
 			"frame": 12,
 			"geometry": "turbo_left_012.bin",
 			"phase": "left",
@@ -539,7 +539,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.96666669845581,
-			"file_sha256": "4f02ac4a0e7727ede6818c4753cba1de887ebde819affe6175fc4554fa01082d",
+			"file_sha256": "8df212986a47f88266f6472ba0506016f22ccd5ed8878664cab6da52179a1856",
 			"frame": 13,
 			"geometry": "turbo_left_013.bin",
 			"phase": "left",
@@ -549,7 +549,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.433333396911621,
-			"file_sha256": "59dfd91fdb41e73e7945febc6e9e1c5a0cdff7f75654c9aafd3c1144918487a8",
+			"file_sha256": "47735cd0c4ee39b1973762197fe5fb9cd8e431a0adf36940828f06175a92c8de",
 			"frame": 42,
 			"geometry": "turbo_left_042.bin",
 			"phase": "left",
@@ -559,7 +559,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.200000095367432,
-			"file_sha256": "46651a5a6f7123f3b06e5d410c906b81630f3971626c7de681469cbc86cc5480",
+			"file_sha256": "93835174c4befde63672a257e239122ae4a790600d53c395423973becba51c81",
 			"frame": 90,
 			"geometry": "turbo_left_090.bin",
 			"phase": "left",
@@ -569,7 +569,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "c148b0deba3e5944143c833fbc42d85be39401c5da228c3d242f3c3ad1f3024f",
+			"file_sha256": "959e51ad935928bb342a4c7c7f34e22c96e61be658e4deccdfc181ff2cb4b8ce",
 			"frame": 12,
 			"geometry": "turbo_right_012.bin",
 			"phase": "right",
@@ -579,7 +579,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.400000095367432,
-			"file_sha256": "d2c1f514222be499f2cbb0c5e5dcaec7b71ccedea9bb7e9bbf91648de0e494a0",
+			"file_sha256": "ebd391dbaaf1a3caa0db25d298c0feb2fa9013118bdb2653e928436de1e38f7a",
 			"frame": 13,
 			"geometry": "turbo_right_013.bin",
 			"phase": "right",
@@ -589,7 +589,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.900000095367432,
-			"file_sha256": "5d993113113259a4b6fa0e30899bd56ce524fe36f313c0050ef1950bac3c2738",
+			"file_sha256": "92fcd308655a6b4c2a114477e5463b03b579de45a8a3f74c96af4a4078032043",
 			"frame": 42,
 			"geometry": "turbo_right_042.bin",
 			"phase": "right",
@@ -599,7 +599,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.666666793823242,
-			"file_sha256": "3c1115bb9756c3ced72be0df40893de239333c21603b2315fccdcbba79fbffa8",
+			"file_sha256": "0f9047f339a7f5c51289b21bfdb3fef161320822019b8c449b0a169b2a7e7c78",
 			"frame": 90,
 			"geometry": "turbo_right_090.bin",
 			"phase": "right",
@@ -609,7 +609,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "b203ad640f46335d5760342501870555ab0b810fe5babe8727b1ae39f60a5b9a",
+			"file_sha256": "7a7fd2575e848545a51c6ffbcaafba87f45a38df5cdea0a40fec55df8b519416",
 			"frame": 12,
 			"geometry": "turbo_jump_012.bin",
 			"phase": "jump",
@@ -619,7 +619,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.2,
-			"file_sha256": "0bf7cdedb421615a96d50938bf81fb3b2639f298aaa2f776d5a3f9f0be90b6a4",
+			"file_sha256": "8c04143b75d6c35c3300e4b8ec6196a46265d188ddf0a2e8287a48959c6b4114",
 			"frame": 13,
 			"geometry": "turbo_jump_013.bin",
 			"phase": "jump",
@@ -629,7 +629,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.7,
-			"file_sha256": "0154644ec068d5380d033107a4cc00638bcd68d0ff723db03ffebb34c8969d7b",
+			"file_sha256": "774cbc7019b92e21a2bc40fe1a72582d2db2c684cf05c3a6a103f07699397870",
 			"frame": 42,
 			"geometry": "turbo_jump_042.bin",
 			"phase": "jump",
@@ -639,7 +639,7 @@
 		{
 			"clip": "kart_jump",
 			"clip_seconds": 0.466666666666667,
-			"file_sha256": "cc944e42e86abcc9a9cacde9a6c042e9e8c0d1e6b906d49e21ebe99fe59a37ea",
+			"file_sha256": "bc50e1d12af3885d5d6a4ffc24cee3e73d48d14d59189a82ab00ace4f9327530",
 			"frame": 90,
 			"geometry": "turbo_jump_090.bin",
 			"phase": "jump",
@@ -649,7 +649,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "6989fb453a3a3aa4a3f1a982990c5ab5044ad884df93a886b90742c1c0ad1836",
+			"file_sha256": "e1123a4e132b5dcfd44c8d9168e0d36bef36f7257ac094613b321af18fc05e6a",
 			"frame": 12,
 			"geometry": "turbo_landing_012.bin",
 			"phase": "landing",
@@ -659,7 +659,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.2,
-			"file_sha256": "bebf496e3a8d85e9778be76ced7bc6c97c9636e32d1f41cb7b3f2a655a265602",
+			"file_sha256": "47460d03ce1bf6ce7a9e2dd412da25702ae07cc7b370ee9f30a0b22878d18de6",
 			"frame": 13,
 			"geometry": "turbo_landing_013.bin",
 			"phase": "landing",
@@ -669,7 +669,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.7,
-			"file_sha256": "3f14df90e99684b7ca71f61e1d23c0c99f255cf1fa4a63ed0d6ac29620575a19",
+			"file_sha256": "91ab8dd1a175576f7cd3ff85f97c7dae7d05914950422206757522324434c630",
 			"frame": 42,
 			"geometry": "turbo_landing_042.bin",
 			"phase": "landing",
@@ -679,7 +679,7 @@
 		{
 			"clip": "kart_seated",
 			"clip_seconds": 0.46666669845581,
-			"file_sha256": "4be382b413d0034d8b7fad038e6542c26be4204f0eb58e078088f0ebf9506d21",
+			"file_sha256": "297af9fdfaa2b42e40fc2b26b1dcdc612c6edba570738a9ad951c01d5fb632e8",
 			"frame": 90,
 			"geometry": "turbo_landing_090.bin",
 			"phase": "landing",
@@ -689,7 +689,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "68c626b31362143c8a50a1dc7357c1254a8b7d8682f5a70446f2e6469195c66a",
+			"file_sha256": "460669364e9ea93bd07e3833f66899d7ba38a3cccb302eb6dd028698d2dce4c9",
 			"frame": 12,
 			"geometry": "turbo_finish_012.bin",
 			"phase": "finish",
@@ -699,7 +699,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.2,
-			"file_sha256": "68c626b31362143c8a50a1dc7357c1254a8b7d8682f5a70446f2e6469195c66a",
+			"file_sha256": "28a69ff4383777761604d83b73f070b917901564c57d4756cbd3a54bc3b932e4",
 			"frame": 13,
 			"geometry": "turbo_finish_013.bin",
 			"phase": "finish",
@@ -709,7 +709,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 0.7,
-			"file_sha256": "adf076b3a608c0decc8dc94aab6e657da58c91e0182de5ce88dda524cdfefd4c",
+			"file_sha256": "3268504d4df82bc09d560495a14928c497c50cf94d3fb008e9f06f66928b4f22",
 			"frame": 42,
 			"geometry": "turbo_finish_042.bin",
 			"phase": "finish",
@@ -719,7 +719,7 @@
 		{
 			"clip": "celebrate",
 			"clip_seconds": 1.5,
-			"file_sha256": "af2b302ee46ae57824eeea5c33db80257b094984787c3eda7d5be089f7e1a51c",
+			"file_sha256": "bebf5d92d77af5a1ea70992b70ffbd324777583d9bc23ae5c697654a98f0cf53",
 			"frame": 90,
 			"geometry": "turbo_finish_090.bin",
 			"phase": "finish",
@@ -728,8 +728,8 @@
 		}
 	],
 	"scope": "Actual runtime skin with final adapter, paired with exact same body/animation pose after removing only adapter tail deltas. BVH evaluated separately.",
-	"seat_adapter_sha256": "2101365d20e3dea9040bc96d88d825b6f57a2e35b5da6469fe110c1ed21bd1c0",
+	"seat_adapter_sha256": "a52e2aad5a0d6df17dfc3f1abe14115afcbd0571d17da1e0450ee6b84bf43eaa",
 	"status": "PASS",
 	"topology_sha256": "4a266e5d5d47627a4c634a4629fa2109cb1777361e5de2686f8afee48f7efbbe",
-	"vehicle_script_sha256": "061b5f0c448000a50e11f5e58736229a2301681e5d3cb68c2d8a94878774abe8"
+	"vehicle_script_sha256": "404ef0b24d6a4bf2b71ddfe9efe9daf98a90c6c9d8e630c9795e8269d0bf5c6b"
 }
