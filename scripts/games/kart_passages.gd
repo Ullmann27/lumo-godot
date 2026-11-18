@@ -320,10 +320,7 @@ static func gate_hits(
 	var band: Vector2 = gate_band(entry, state)
 	if str(entry.get("object", "")) == "robot":
 		# The transport robot only blocks where it actually is on its crossing.
-		var width: float = band.y - band.x
-		var x: float = lerpf(-width * 0.5 - 1.8, width * 0.5 + 1.8, float(state.progress))
-		var robot_lateral: float = (band.x + band.y) * 0.5 + x * float(state.direction)
-		return absf(lateral - robot_lateral) < 1.8
+		return absf(lateral - robot_lateral(world, entry, state)) < 1.8
 	return lateral > band.x - 0.9 and lateral < band.y + 0.9
 
 
@@ -534,3 +531,18 @@ static func arch_lines(world, entry: Dictionary, arch: Array) -> Vector2:
 	var narrow_centre: float = (pillar + side * (half - 0.2)) * 0.5
 	var wide_centre: float = -side * (half - 2.2)
 	return Vector2(narrow_centre, wide_centre)
+
+
+## Transport robot Bolti: parked beside the road, during the closed phase it rolls into its
+## band and back out (sin path). It never reaches further than 0,9 m into the band edge next
+## to the open lane, so the open lane stays 1,8 m + kart half width clear (18.11.2026: the
+## old straight crossing ran 1,8 m past the band and hit rivals in the open lane).
+static func robot_lateral(world, entry: Dictionary, state: Dictionary) -> float:
+	var band: Vector2 = gate_band(entry, state)
+	var half: float = world.road_width_at(float(entry.plane)) * 0.5 - 1.2
+	var free_left: bool = band.x - (-half) >= half - band.y
+	var near: float = band.x + 0.9 if free_left else band.y - 0.9
+	var far: float = band.y + 1.8 if free_left else band.x - 1.8
+	if str(state.phase) == "swing":
+		return lerpf(far, near, sin(clampf(float(state.progress), 0.0, 1.0) * PI))
+	return far

@@ -136,6 +136,33 @@ const SPECS: Dictionary = {
 			"hit_text": "Autsch, das Steintor! Bei Rot innen kurz warten.",
 		},
 	],
+	"learning_lab":
+	[
+		{
+			"kind": "gate",
+			"id": "transportroboter",
+			"name": "Transportroboter Bolti",
+			"theme": "lab",
+			"object": "robot",
+			"cue": "robot_beep",
+			"effect": "bump",
+			"wait_start": 392.0,
+			"wait_line": 418.0,
+			"plane": 426.0,
+			"respawn": 400.0,
+			"lat_min": 0.6,
+			"lat_max": 5.0,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 3.0,
+			"sign": "ROBOTER BOLTI\nWarten oder links vorbei",
+			"approach_text": "Roboter Bolti fährt quer – warten oder links vorbei!",
+			"warn_text": "Piep-piep! Bolti rollt los. Warten oder links vorbei.",
+			"hit_text": "Huch, Bolti! Bei Rot kurz warten oder links vorbei.",
+		},
+	],
 	"volcano_night":
 	[
 		{

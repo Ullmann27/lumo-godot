@@ -297,12 +297,8 @@ static func update(world, entry: Dictionary, t: float) -> void:
 				lava.emission_energy_multiplier = energy
 			_:
 				var robot: Node3D = object.get_node("Mover")
-				var x: float = -width * 0.5 - 1.8
-				if shown == "swing":
-					var p2: float = float(state.progress)
-					x = lerpf(-width * 0.5 - 1.8, width * 0.5 + 1.8, p2) * float(state.direction)
-				elif shown == "warn":
-					x = (-width * 0.5 - 1.8) * float(state.direction) + 0.15 * sin(t * 20.0)
-				else:
-					x = (-width * 0.5 - 1.8) * float(state.direction)
+				# Same path as the hit test (PASSAGES.robot_lateral), relative to the band centre.
+				var x: float = PASSAGES.robot_lateral(world, entry, state) - (band.x + band.y) * 0.5
+				if shown == "warn":
+					x += 0.15 * sin(t * 20.0)  # Bolti wiggles and beeps before he rolls.
 				robot.position.x = x
