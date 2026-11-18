@@ -13,6 +13,18 @@ on:
       - scripts/games/kart_production_vehicle.gd
       - scripts/games/kart_production_lumo_seat.gd
       - scripts/games/kart_production_driver.gd
+      - scripts/games/kart_vehicle_finish.gd
+      - scripts/games/kart_tuning.gd
+      - scripts/games/kart_powertrain.gd
+      - scripts/games/kart_catalog.gd
+      - scripts/games/kart_expansion_tracks.gd
+      - scripts/games/kart_adventure_routes.gd
+      - scripts/games/kart_coachwork_finish.gd
+      - scripts/games/kart_modular_aero_kit.gd
+      - scripts/games/kart_rival_character_finish.gd
+      - scripts/games/kart_rival_visual_adapter.gd
+      - scripts/games/kart_rival_model_contract.gd
+      - assets/fonts/Nunito-Black.ttf
       - scripts/games/lumo_opponent_roster.gd
       - scripts/games/visual/kart_cinema_materials.gd
       - assets/shaders/kart_lumo_cinema_*.gdshader
@@ -31,6 +43,18 @@ on:
       - scripts/games/kart_production_vehicle.gd
       - scripts/games/kart_production_lumo_seat.gd
       - scripts/games/kart_production_driver.gd
+      - scripts/games/kart_vehicle_finish.gd
+      - scripts/games/kart_tuning.gd
+      - scripts/games/kart_powertrain.gd
+      - scripts/games/kart_catalog.gd
+      - scripts/games/kart_expansion_tracks.gd
+      - scripts/games/kart_adventure_routes.gd
+      - scripts/games/kart_coachwork_finish.gd
+      - scripts/games/kart_modular_aero_kit.gd
+      - scripts/games/kart_rival_character_finish.gd
+      - scripts/games/kart_rival_visual_adapter.gd
+      - scripts/games/kart_rival_model_contract.gd
+      - assets/fonts/Nunito-Black.ttf
       - scripts/games/lumo_opponent_roster.gd
       - scripts/games/visual/kart_cinema_materials.gd
       - assets/shaders/kart_lumo_cinema_*.gdshader
