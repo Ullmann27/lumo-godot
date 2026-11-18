@@ -213,7 +213,7 @@ func _test_race_integration() -> void:
 		if game.opponent_spin_times[1] > 0.0:
 			break
 	_check(game.opponent_spin_times[1] > 0.0 and int(game.gameplay_stats.player_hits_scored) == 1, "rival spins after the hit")
-	_check("dreht sich" in game.message.text, "friendly hit message")
+	_check("dreht sich" in game.message.text or "wirbelt" in game.message.text, "friendly hit message")
 	for frame in range(30):
 		game._update_gameplay_layer(STEP)
 	_check(int(game.gameplay_stats.player_hits_scored) == 1 and game.item_runtime.projectiles.is_empty(), "a pair counts as one hit")

@@ -158,6 +158,12 @@ static func simple_help(raids, model) -> String:
 	var target := float(view.need) * 1.1
 	var gap := target - float(view.have)
 	var per_guard: float = float(raids.UNIT.guard) * float(raids.THREATS[threat].weights.guard)
+	# Neue Wachen stehen als Schildwachen in der Stadtmitte und zählen dort nicht voll
+	# (Aufstellung, build_village_guards.gd): mit dem echten Wert je Wache rechnen.
+	if int(raids.guards) > 0:
+		per_guard = minf(per_guard, raids.GUARDS.defense(raids, threat) / float(raids.guards))
+	else:
+		per_guard *= 0.5
 	var guards_needed := int(ceil(gap / maxf(0.1, per_guard)))
 	var free_guards: int = raids.max_guards(model) - int(raids.guards)
 	var troop := troop_word(raids, threat)
