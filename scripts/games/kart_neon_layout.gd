@@ -119,23 +119,23 @@ static func _highlight(hub: Control, r: Rect2, k: float, strip: bool) -> void:
 	_place(hub._highlight, r, k)
 	var pad := 5.0 if strip else 9.0
 	var inner := Rect2(pad, pad, r.size.x - 2 * pad, r.size.y - 2 * pad)
-	var thumbs: Array = []
-	for id in hub._track_buttons:
-		# Wie im Zielbild: groß die gewählte Strecke, klein die übrigen drei.
-		var thumb: Control = hub._track_buttons[id]
-		thumb.visible = id != hub._featured_track
-		if thumb.visible:
-			thumbs.append(thumb)
+	# Wie im Zielbild: groß die gewählte Strecke, klein die nächsten im Katalog. Der
+	# Katalog hat mehr Strecken, als nebeneinander passen – die Pfeile blättern weiter.
+	var ids: Array = hub._track_buttons.keys()
+	var start: int = maxi(ids.find(hub._featured_track), 0)
+	var others: Array = []
+	for step in range(1, ids.size()):
+		others.append(hub._track_buttons[ids[(start + step) % ids.size()]])
+	for id in ids:
+		hub._track_buttons[id].visible = false
 	hub._highlight_icon.visible = not strip
 	if strip:
 		hub._highlight_title.visible = false
 		hub._dots.visible = false
 		var big_w := inner.size.x * 0.36
 		_place(hub._highlight_pick, Rect2(inner.position, Vector2(big_w, inner.size.y)), k)
-		var tw := (inner.size.x - big_w - 6.0 * thumbs.size()) / maxf(thumbs.size(), 1)
-		_thumb_labels(thumbs, tw - 14.0, k)
-		for i in range(thumbs.size()):
-			_place(thumbs[i], Rect2(inner.position.x + big_w + 6 + i * (tw + 6), inner.position.y, tw, inner.size.y), k)
+		_track_arrows(hub, Rect2(inner.position, Vector2(big_w, inner.size.y)), k)
+		_thumb_row(hub, others, Rect2(inner.position.x + big_w + 6, inner.position.y, inner.size.x - big_w - 6, inner.size.y), 6.0, k)
 		return
 	hub._highlight_title.visible = true
 	hub._dots.visible = true
@@ -157,12 +157,39 @@ static func _highlight(hub: Control, r: Rect2, k: float, strip: bool) -> void:
 	var thumb_h := clampf(inner.size.y * 0.26, 48.0, 84.0)
 	var big_h := inner.size.y - title_h - thumb_h - dots_h - 12
 	_place(hub._highlight_pick, Rect2(inner.position.x, inner.position.y + title_h + 2, inner.size.x, big_h), k)
+	_track_arrows(hub, Rect2(inner.position.x, inner.position.y + title_h + 2, inner.size.x, big_h), k)
 	var ty := inner.position.y + title_h + 2 + big_h + 6
-	var tw2 := (inner.size.x - 5.0 * (thumbs.size() - 1)) / maxf(thumbs.size(), 1)
-	_thumb_labels(thumbs, tw2 - 14.0, k)
-	for i in range(thumbs.size()):
-		_place(thumbs[i], Rect2(inner.position.x + i * (tw2 + 5), ty, tw2, thumb_h), k)
+	_thumb_row(hub, others, Rect2(inner.position.x, ty, inner.size.x, thumb_h), 5.0, k)
 	_place(hub._dots, Rect2(inner.position.x, ty + thumb_h + 2, inner.size.x, dots_h), k)
+
+
+## Kleinste Breite eines Streckenbilds (dp); mindestens drei stehen nebeneinander.
+const THUMB_MIN_W := 66.0
+
+
+## Die kleinen Bilder zeigen die nächsten Strecken nach der gewählten (im Kreis).
+static func _thumb_row(hub: Control, others: Array, area: Rect2, gap: float, k: float) -> void:
+	var total := others.size()
+	if total == 0:
+		return
+	var fit := clampi(maxi(3, int(floor((area.size.x + gap) / (THUMB_MIN_W + gap)))), 1, total)
+	var shown: Array = others.slice(0, fit)
+	var tw := (area.size.x - gap * (shown.size() - 1)) / maxf(shown.size(), 1)
+	_thumb_labels(shown, tw - 14.0, k)
+	for i in range(shown.size()):
+		shown[i].visible = true
+		_place(shown[i], Rect2(area.position.x + i * (tw + gap), area.position.y, tw, area.size.y), k)
+
+
+## Pfeile links und rechts auf dem großen Streckenbild: vorige / nächste Strecke.
+static func _track_arrows(hub: Control, big: Rect2, k: float) -> void:
+	var b := clampf(minf(big.size.x * 0.28, big.size.y - 8.0), 36.0, MIN_TOUCH)
+	var y := big.position.y + (big.size.y - b) * 0.5
+	_place(hub._thumb_prev, Rect2(big.position.x + 4.0, y, b, b), k)
+	_place(hub._thumb_next, Rect2(big.end.x - b - 4.0, y, b, b), k)
+	for arrow: Button in [hub._thumb_prev, hub._thumb_next]:
+		arrow.visible = hub._track_buttons.size() > 1
+		arrow.add_theme_font_size_override("font_size", roundi(b * 0.62 * k))
 
 
 ## Platz über jeder Kachelreihe, in den die großen 3D-Icons der Modus-Kacheln hineinragen.
