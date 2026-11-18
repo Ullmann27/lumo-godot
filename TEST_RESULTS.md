@@ -1,5 +1,18 @@
 # TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
 
+## Nachtrag 18.11.2026 (Stand `786f3fa`, alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS)
+
+Zusammengeführt und geprüft:
+- **Kartentisch** (`e80a4cb`): drei eigene Spiele statt UNO. `cards_rules_regression` 212 968 Prüfungen / 0 Fehler, `cards_table_regression` 595, `cards_safe_area_regression` 2 176 (9 Bildschirmformen), `native_table_boot_regression` 26, `game_hub_magic_regression` und `host_bridge_regression` grün; 32 Engine-Bilder gesichtet.
+- **Lumo Lauf – Dschungelherz** (`3b3b16e`, `5c23f67`): `lumo_run_regression` 490 Prüfungen, 30/30 Testläufe im Ziel (Mittel 180 s); Messung im Renderer: höchstens 316 Zeichenaufrufe, 382 320 Dreiecke; 48 Engine-Bilder nach Aufhellung gesichtet.
+- **Karts** (`5b42231`, `353ea2b`): alle 14 Karts auf den drei in Blender gebauten Karosserien, neuer Frontflügel. `kart_fleet_regression`, `kart_production_vehicle_regression` (495), `kart_vehicle_detail_regression`, `kart_cinema_kart_regression`, `lumo_kart_production_regression`, `kart_character_pose_regression` (2 306) grün; Blender-Prüfungen `inspect_mechanics.py` (Reifen frei bei sieben Lenkwinkeln) und `verify_kart_exports.py` bestanden; Dreiecke 48 450 / 49 166 / 49 166 (Grenze 50 000).
+- **Echter Lumo im Kart** (`786f3fa`): `kart_real_lumo_regression` 13 Prüfungen; `kart_modes_regression` grün.
+- CI auf `3b3b16e`: keine fehlgeschlagene Prüfung (zuvor rot: `kart-stage2` wegen zweier Tests, die noch die Ersatzfiguren erwarteten – angepasst; Vorher-Importe der Küsten-Workflows stürzten am Referenz-CSV ab – behoben).
+
+Bekannt veraltet, nicht in der CI, nicht behoben: `kart_modular_parts_regression`, `kart_rival_finish_regression` (prüfen die im Code gebauten Ersatzfiguren/-karosserien, die nur noch Notfall-Ersatz sind), `kart_track_pass_regression`, `kart_adventure_regression` (erwarten 12 statt 13 Strecken).
+
+In Arbeit (noch nicht in diesem Stand): Item-System mit Raketen/Zielerfassung/Schild, Grafik-Durchgang Dschungelherz, echter Lumo in Schatzsuche und Rhythmus-Spiel.
+
 Basis `lumo-nullpunkt/integration-20261117` @ `ebd3401`. Nicht nach main gemergt, kein Release, keine APK aus diesem Stand.
 Alle Angaben: in dieser Sitzung selbst ausgeführt, Linux, Godot 4.6.3. Renderer-Tests unter Xvfb mit Software-GL. Keine Geräte- und keine FPS-Aussage.
 
