@@ -118,6 +118,8 @@ func _run() -> void:
 	var old_density: Variant = bridge._options.get("displayDensity")
 	bridge._options["displayDensity"] = DENSITY
 	var only_size: String = OS.get_environment("LUMO_RUN_SIZE")
+	if OS.get_environment("LUMO_RUN_MEASURE_ONLY") == "1":
+		only_size = "none"
 	for size in SIZES:
 		if not only_size.is_empty() and only_size != "%dx%d" % [size.x, size.y]:
 			continue
@@ -150,6 +152,9 @@ func _run() -> void:
 			await _capture("%s_%s_4_learning" % [id, tag])
 			if extras:
 				await _extras(game, bot, id, tag)
+			if OS.get_environment("LUMO_RUN_QUICK") == "1":
+				await _free_game(game)
+				continue
 			_drive_on(game, bot, func() -> bool: return game.phase == game.Phase.FINISHED)
 			_check(game.phase == game.Phase.FINISHED, id + " reaches the finish")
 			for _i in range(150):
@@ -186,41 +191,46 @@ func _next_jump(game) -> float:
 	return best
 
 
+## Set pieces in the order they come on the course.
 func _extras(game, bot, id: String, tag: String) -> void:
 	var player = game.player
 	var plan = game.plan
+	var shots: Array[Dictionary] = []
 	for platform in plan.platforms:
-		if float(platform.s0) > player.s + 30.0:
-			_drive_on(game, bot, func() -> bool: return player.s > float(platform.s0) - 20.0)
-			await _live(game, bot, func() -> bool: return player.s > float(platform.s0) + 7.0)
-			await _capture("%s_%s_x_highpath" % [id, tag])
+		if float(platform.s0) > player.s + 40.0:
+			shots.append({"name": "highpath", "from": float(platform.s0) - 22.0, "at": float(platform.s0) + 7.0})
 			break
-	for blocker in plan.blockers:
-		if str(blocker.kind) == "rock" and float(blocker.s) > player.s + 40.0:
-			_drive_on(game, bot, func() -> bool: return player.s > float(blocker.s) - 30.0)
-			await _live(game, bot, func() -> bool: return player.s > float(blocker.s) - 14.0)
-			await _capture("%s_%s_x_rocks" % [id, tag])
-			break
+	for kind in ["rock", "crate", "roller"]:
+		for blocker in plan.blockers:
+			if str(blocker.kind) == kind and float(blocker.s) > player.s + 40.0:
+				shots.append({"name": kind, "from": float(blocker.s) - 30.0, "at": float(blocker.s) - 13.0})
+				break
 	for hurdle in plan.hurdles:
 		if float(hurdle.s) > player.s + 40.0:
-			_drive_on(game, bot, func() -> bool: return player.s > float(hurdle.s) - 26.0)
-			await _live(game, bot, func() -> bool: return player.s > float(hurdle.s) - 11.0)
-			await _capture("%s_%s_x_hurdle" % [id, tag])
+			shots.append({"name": "hurdle", "from": float(hurdle.s) - 26.0, "at": float(hurdle.s) - 11.0})
 			break
-	if not plan.loop.is_empty() and float(plan.loop.start) > player.s:
-		_drive_on(game, bot, func() -> bool: return player.s > float(plan.loop.start) - 14.0)
-		await _live(game, bot, func() -> bool: return player.loop_u > 0.42)
-		await _capture("%s_%s_x_loop" % [id, tag])
+	for pad in plan.bounces:
+		if not bool(pad.get("band", false)) and float(pad.s) > player.s + 40.0:
+			shots.append({"name": "bounce", "from": float(pad.s) - 24.0, "at": float(pad.s) + 5.0})
+			break
+	if not plan.loop.is_empty() and float(plan.loop.start) > player.s + 20.0:
+		shots.append({"name": "loop", "from": float(plan.loop.start) - 14.0, "loop": true})
 	for gap in plan.channels:
-		if bool(gap.real) and float(gap.s0) > player.s:
-			_drive_on(game, bot, func() -> bool: return player.s > float(gap.s0) - 26.0)
-			await _live(game, bot, func() -> bool: return player.s > float(gap.s0) + 4.0)
-			await _capture("%s_%s_x_bigjump" % [id, tag])
-	if not plan.covered.is_empty() and plan.covered[0].y > player.s + 20.0:
-		var inside: float = maxf(player.s + 10.0, (plan.covered[0].x + plan.covered[0].y) * 0.5)
-		_drive_on(game, bot, func() -> bool: return player.s > inside - 14.0)
-		await _live(game, bot, func() -> bool: return player.s > inside)
-		await _capture("%s_%s_x_covered" % [id, tag])
+		if bool(gap.real) and float(gap.s0) > player.s + 40.0:
+			shots.append({"name": "bigjump", "from": float(gap.s0) - 26.0, "at": float(gap.s0) + 4.0})
+	if not plan.covered.is_empty() and plan.covered[0].y > player.s + 40.0:
+		var inside: float = maxf(player.s + 30.0, (plan.covered[0].x + plan.covered[0].y) * 0.5)
+		shots.append({"name": "covered", "from": inside - 14.0, "at": inside})
+	shots.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a.from) < float(b.from))
+	for shot in shots:
+		if float(shot.from) < player.s:
+			continue
+		_drive_on(game, bot, func() -> bool: return player.s > float(shot.from))
+		if shot.has("loop"):
+			await _live(game, bot, func() -> bool: return player.loop_u > 0.42)
+		else:
+			await _live(game, bot, func() -> bool: return player.s > float(shot.at))
+		await _capture("%s_%s_x_%s" % [id, tag, str(shot.name)])
 
 
 ## Draw calls and primitives of one running frame per course and profile.
