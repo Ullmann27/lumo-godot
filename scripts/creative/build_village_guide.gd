@@ -171,11 +171,16 @@ func start_flow(kind: String, amount: int) -> void:
 	flow_time = 0.0
 	flow_label.text = ("+%d" if kind == "hof_vorrat" else "−%d") % amount
 	flow_label.visible = amount > 0
+	# Freie Sicht auf den Weg der Karotten: die Kapitel-Tafel macht kurz Platz.
+	if is_instance_valid(world.goal_card):
+		world.goal_card.visible = false
 	set_meta("flow", kind)
 	queue_redraw()
 
 
 func stop_flow() -> void:
+	if not flow.is_empty() and is_instance_valid(world.goal_card) and not flying:
+		world.goal_card.visible = true
 	flow = ""
 	flow_label.hide()
 	set_meta("flow", "")
