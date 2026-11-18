@@ -18,6 +18,7 @@ var label := "vorher"
 var tracks: Array[String] = []
 var sheet := false
 var formats: Array[String] = []
+var measure := false
 
 
 func _initialize() -> void:
@@ -64,6 +65,8 @@ func _run() -> void:
 		elif text.begins_with("--formats="):
 			for part in text.trim_prefix("--formats=").split(",", false):
 				formats.append(part)
+		elif text == "--measure":
+			measure = true
 		elif text == "--sheet":
 			sheet = true
 	if out.is_empty():
@@ -101,6 +104,8 @@ func _run() -> void:
 			await _choose(id)
 			await _settle(30)
 			await _save("%s_%s" % [sample[2], id])
+		if measure and sample[2] == "fold":
+			await _measure()
 		if sheet and sample[2] == "fold":
 			await _contact_sheet()
 	game.queue_free()
@@ -161,3 +166,80 @@ func _contact_sheet() -> void:
 				Vector2i(4 + (index % 3) * (tile.x + 4), 4 + (index / 3) * (tile.y + 4))
 			)
 		board.save_png(out.path_join("%s_vorschau_%s_kontaktbogen.png" % [label, id]))
+
+
+## Container-Messung (Desktop-GL unter xvfb, Software-Rendering): Bildzeit, Speicher,
+## Ladezeiten. Kein Handy-Wert.
+func _frame_ms(seconds: float) -> float:
+	var frames := 0
+	var started := Time.get_ticks_usec()
+	while Time.get_ticks_usec() - started < int(seconds * 1000000.0):
+		await process_frame
+		frames += 1
+	return (Time.get_ticks_usec() - started) / 1000.0 / maxf(1.0, frames)
+
+
+func _memory() -> String:
+	return (
+		"static=%.1f MB video=%.1f MB textures=%.1f MB"
+		% [
+			Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0,
+			Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0,
+			Performance.get_monitor(Performance.RENDER_TEXTURE_MEM_USED) / 1048576.0,
+		]
+	)
+
+
+func _measure() -> void:
+	var stage = game.garage.track_stage
+	var player = stage.player
+	print(
+		(
+			"[TrackStageMeasure] Bühne offen, Standbild: %.1f ms/Bild, %s"
+			% [await _frame_ms(3.0), _memory()]
+		)
+	)
+	for id in ["winter_sprint", "jungle_emerald_3600"]:
+		var started := Time.get_ticks_usec()
+		var stream = load(player.clip_path(id))
+		var load_ms := (Time.get_ticks_usec() - started) / 1000.0
+		stream = null
+		await _choose(id)
+		print(
+			(
+				"[TrackStageMeasure] %s: Standbild-Wechsel %.1f ms, Clip-Laden %.1f ms, Datei %d KB"
+				% [
+					id,
+					stage.load_ms,
+					load_ms,
+					FileAccess.get_file_as_bytes(player.clip_path(id)).size() / 1024
+				]
+			)
+		)
+		var until := Time.get_ticks_msec() + 5000
+		while Time.get_ticks_msec() < until:
+			await process_frame
+		print(
+			(
+				"[TrackStageMeasure] %s Clip läuft=%s: %.1f ms/Bild, %s"
+				% [id, stage.is_preview_playing(), await _frame_ms(3.0), _memory()]
+			)
+		)
+	var players: int = game.garage.find_children("*", "VideoStreamPlayer", true, false).size()
+	print("[TrackStageMeasure] VideoStreamPlayer im Menü: %d" % players)
+	game.garage.step_buttons[2].emit_signal("pressed")
+	await _settle(6)
+	print(
+		(
+			"[TrackStageMeasure] nach Verlassen (Karts): Clip läuft=%s, %s"
+			% [stage.is_preview_playing(), _memory()]
+		)
+	)
+	print(
+		(
+			"[TrackStageMeasure] Vergleich Reiter Karts (3D-Garage): %.1f ms/Bild"
+			% await _frame_ms(3.0)
+		)
+	)
+	game.garage.step_buttons[3].emit_signal("pressed")
+	await _settle(10)

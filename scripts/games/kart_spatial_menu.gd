@@ -516,7 +516,8 @@ func _visible_stage_region() -> Rect2:
 	if track_stage.active and stage.has_area():
 		# Rundkurs-Übersicht der Streckenwahl: genau im Rahmen des Bühnenbilds.
 		var frame: Rect2 = track_stage.picture_rect().grow(-8.0 * _preview_dp_scale())
-		return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
+		if frame.has_area():
+			return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
 	var inset := 8.0 * _preview_dp_scale()
 	var clear := stage.grow(-inset)
 	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
