@@ -23,10 +23,18 @@ const FX_LOOPS := [
 	"engine_low", "engine_mid", "engine_high", "engine_off", "scrape", "squeal", "gravel", "snow",
 	"turbo", "wind",
 ]
+## One-shot trims: the race already plays its own collision/boost cue on the same
+## event, so these sit underneath it (worst-case sum stays below clipping).
+const FX_TRIM := {
+	"rail_hit": -5.0, "rail_hit_soft": -7.0, "backfire": -5.0, "land_thump": -3.0, "confetti": -5.0,
+	"whoosh": -9.0,
+}
+## Music ducking on a hard hit: depth in dB and how long it holds.
+const DUCK_DB := 3.0
 ## Per-loop trim in dB against the effect level, so the mix stays kind to small ears.
 const LOOP_TRIM := {
 	"engine_low": -13.0, "engine_mid": -14.0, "engine_high": -16.0, "engine_off": -15.0,
-	"scrape": -7.0, "squeal": -15.0, "gravel": -12.0, "snow": -11.0, "turbo": -12.0, "wind": -15.0,
+	"scrape": -9.0, "squeal": -15.0, "gravel": -12.0, "snow": -11.0, "turbo": -12.0, "wind": -15.0,
 }
 const MUSIC_DB := -17.0
 const EFFECT_DB := -9.0
@@ -52,6 +60,8 @@ var _loops: Dictionary = {}
 var _fx_players: Array[AudioStreamPlayer] = []
 var _fx_cursor: int = 0
 var _loop_fed: Dictionary = {}
+var _duck_until_msec: int = 0
+var ducking: bool = false
 ## Every accepted driving-sound request (kind -> count), muted or not; tests read it.
 var fx_requests: Dictionary = {}
 ## Getrennte Lautstärken (0–1) für Musik und Effekte; die Motorgeräusche folgen den Effekten.
@@ -219,7 +229,7 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 	player.pitch_scale = clampf(pitch, 0.5, 2.0)
 	player.volume_db = effect_db() - 4.0 if kind == "collision" else (effect_db() - 3.0 if kind in TONE_EFFECTS else effect_db())
 	if fx_cue:
-		player.volume_db = effect_db() - 2.0 + linear_to_db(clampf(gain, 0.05, 1.0))
+		player.volume_db = effect_db() + float(FX_TRIM.get(kind, -4.0)) + linear_to_db(clampf(gain, 0.05, 1.0))
 	player.play()
 
 
@@ -253,13 +263,35 @@ func set_loop(kind: String, gain: float, pitch: float = 1.0) -> void:
 ## Loops are driven by the race every tick. When nobody feeds them any more
 ## (menu, scene change, a stalled race) they fall silent on their own.
 func _process(_delta: float) -> void:
+	var now := Time.get_ticks_msec()
+	_update_duck(now)
 	if _loops.is_empty():
 		return
-	var now := Time.get_ticks_msec()
 	for kind in _loops:
 		var player: AudioStreamPlayer = _loops[kind]
 		if player.playing and now - int(_loop_fed.get(kind, 0)) > 250:
 			player.stop()
+
+
+## Briefly lower the music (default 3 dB for 0.3 s) so a hard hit cuts through
+## without making everything louder. Skipped while a crossfade owns the volume.
+func duck(seconds: float = 0.3) -> void:
+	_duck_until_msec = Time.get_ticks_msec() + int(seconds * 1000.0)
+	_update_duck(Time.get_ticks_msec())
+
+
+func _update_duck(now: int) -> void:
+	var want := now < _duck_until_msec and not _blocked()
+	if want == ducking and not want:
+		return
+	if _music.is_empty() or (is_instance_valid(_fade) and _fade.is_running()):
+		return
+	var player := _music[_active]
+	if not player.playing:
+		ducking = false
+		return
+	ducking = want
+	player.volume_db = music_db() - (DUCK_DB if want else 0.0)
 
 
 func loop_level(kind: String) -> float:

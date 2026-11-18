@@ -1,11 +1,12 @@
 extends MultiMeshInstance3D
 ## Marks that stay behind: brake and drift rubber, sand grooves, snow tracks and
-## scrape streaks on the rail. Continuous strokes per stream (one per tyre),
-## one flat ribbon segment per instance, all in one draw call. Fading is done in
-## the shader against the race clock, so the CPU only writes new segments.
+## scrape streaks on the rail. Each stream (one per tyre) is one continuous band:
+## every piece starts exactly on the previous piece's end edge, so the band bends
+## cleanly through curves without overlaps (no "ladder"). One draw call; fading
+## runs in the shader against the race clock, the CPU only writes new pieces.
 
 const HIDDEN := Transform3D(Basis(Vector3.ZERO, Vector3.ZERO, Vector3.ZERO), Vector3.ZERO)
-const MIN_STEP := 0.09
+const MIN_STEP := 0.12
 const MAX_STEP := 3.0
 
 var capacity: int = 0
@@ -13,9 +14,16 @@ var fx_time: float = 0.0
 var segments_total: int = 0
 var _cursor: int = 0
 var _death := PackedFloat32Array()
+## stream -> {"at": last centre, "half": last half-width vector, "v": length so far}
 var _last := {}
 var _last_death: float = -1.0
 var _material: ShaderMaterial
+## CPU copy of every piece's start, end and half-width vectors (tests read it;
+## the headless renderer keeps no MultiMesh data).
+var piece_start := PackedVector3Array()
+var piece_end := PackedVector3Array()
+var piece_half_start := PackedVector3Array()
+var piece_half_end := PackedVector3Array()
 
 
 func setup(shader: Shader, count: int) -> void:
@@ -42,6 +50,10 @@ func resize(count: int) -> void:
 	capacity = maxi(16, count)
 	multimesh.instance_count = capacity
 	_death.resize(capacity)
+	piece_start.resize(capacity)
+	piece_end.resize(capacity)
+	piece_half_start.resize(capacity)
+	piece_half_end.resize(capacity)
 	clear()
 
 
@@ -64,36 +76,44 @@ func advance(delta: float, focus: Vector3) -> void:
 
 
 ## Continue stream [param stream] to [param at]. [param normal] is the surface
-## normal (road up, or the rail's face); the ribbon lies in that surface.
+## normal (road up, or the rail's face); the band lies in that surface.
 func stroke(
 	stream: String, at: Vector3, normal: Vector3, width: float, color: Color, life: float, kind: int
 ) -> bool:
 	if not _last.has(stream):
-		_last[stream] = at
+		_last[stream] = {"at": at, "half": Vector3.ZERO, "v": 0.0}
 		return false
-	var previous: Vector3 = _last[stream]
+	var state: Dictionary = _last[stream]
+	var previous: Vector3 = state.at
 	var step := at - previous
 	var length := step.length()
 	if length < MIN_STEP:
 		return false
-	_last[stream] = at
 	if length > MAX_STEP:
+		_last[stream] = {"at": at, "half": Vector3.ZERO, "v": 0.0}
 		return false
-	var z := step / length
-	var x := normal.normalized().cross(z)
-	if x.length_squared() < 0.25:
+	var direction := step / length
+	var across := normal.normalized().cross(direction)
+	if across.length_squared() < 0.25:
+		_last[stream] = {"at": at, "half": Vector3.ZERO, "v": 0.0}
 		return false
-	x = x.normalized()
-	var y := z.cross(x).normalized()
-	# PlaneMesh lies in XZ: X = across (width), Z = along (length).
-	var basis := Basis(x * width, y, z * (length + width * 0.15))
+	var half_end := across.normalized() * width * 0.5
+	var half_start: Vector3 = state.half
+	if half_start == Vector3.ZERO:
+		half_start = half_end
+	var v: float = float(state.v)
 	var slot := _cursor
 	_cursor = (_cursor + 1) % capacity
-	multimesh.set_instance_transform(slot, Transform3D(basis, (at + previous) * 0.5))
+	multimesh.set_instance_transform(slot, Transform3D(Basis(step, half_start, half_end), previous))
 	multimesh.set_instance_color(slot, color)
-	multimesh.set_instance_custom_data(slot, Color(fx_time, life, 1.0, float(kind)))
+	multimesh.set_instance_custom_data(slot, Color(fx_time, life, float(kind), v))
 	_death[slot] = fx_time + life
+	piece_start[slot] = previous
+	piece_end[slot] = at
+	piece_half_start[slot] = half_start
+	piece_half_end[slot] = half_end
 	_last_death = maxf(_last_death, fx_time + life)
+	_last[stream] = {"at": at, "half": half_end, "v": v + length}
 	segments_total += 1
 	visible = true
 	return true
