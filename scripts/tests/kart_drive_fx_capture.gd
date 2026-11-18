@@ -207,7 +207,13 @@ func _landing() -> void:
 func _surface(label: String) -> void:
 	_clean(22.0)
 	along = game.track_length * 0.14
-	await _drive(30)
+	await _drive(20)
+	game.brake_visual_amount = 1.0
+	await _drive(16, -0.3)
+	game.brake_visual_amount = 0.0
+	game.speed = 22.0
+	fx._previous_speed = 22.0
+	await _drive(14)
 	game.drifting = true
 	game.steering = 0.7
 	game.drift_charge = game.DRIFT_TIERS[0] + 0.05
@@ -218,10 +224,6 @@ func _surface(label: String) -> void:
 		game._update_vehicles(STEP)
 		game._update_camera(STEP)
 		await _frame()
-	game.drifting = false
-	game.steering = 0.0
-	game.brake_visual_amount = 1.0
-	await _drive(20, -0.3)
 	await _shot("07_surface_" + label)
 
 

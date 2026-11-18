@@ -28,8 +28,8 @@ const STYLES := {
 		"debris_rate": 0.5, "trail": 0.1, "embers": false, "loop": "", "dust_scale": 0.9,
 	},
 	SURFACES.SAND: {
-		"name": "sand", "mark": Color(0.52, 0.36, 0.18, 0.62), "mark_kind": 0,
-		"smoke": Color(0.9, 0.74, 0.5, 0.62), "debris": Color(0.78, 0.6, 0.36, 1.0), "debris_kind": 1,
+		"name": "sand", "mark": Color(0.48, 0.32, 0.15, 0.75), "mark_kind": 0,
+		"smoke": Color(0.96, 0.84, 0.62, 0.72), "debris": Color(0.78, 0.6, 0.36, 1.0), "debris_kind": 1,
 		"debris_rate": 1.2, "trail": 1.0, "embers": false, "loop": "gravel", "dust_scale": 1.6,
 	},
 	SURFACES.SNOW_ICE: {

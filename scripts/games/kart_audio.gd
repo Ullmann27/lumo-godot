@@ -48,6 +48,7 @@ var _focused: bool = true
 var _background: bool = false
 var _fade: Tween
 var _loops: Dictionary = {}
+var _loop_fed: Dictionary = {}
 ## Every accepted driving-sound request (kind -> count), muted or not; tests read it.
 var fx_requests: Dictionary = {}
 ## Getrennte Lautstärken (0–1) für Musik und Effekte; die Motorgeräusche folgen den Effekten.
@@ -215,6 +216,7 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 func set_loop(kind: String, gain: float, pitch: float = 1.0) -> void:
 	if not FX_LOOPS.has(kind):
 		return
+	_loop_fed[kind] = Time.get_ticks_msec()
 	var player: AudioStreamPlayer = _loops.get(kind)
 	if gain <= 0.005 or _blocked() or effects_volume <= 0.01:
 		if player != null and player.playing:
@@ -234,6 +236,18 @@ func set_loop(kind: String, gain: float, pitch: float = 1.0) -> void:
 	player.pitch_scale = clampf(pitch, 0.5, 2.5)
 	if not player.playing:
 		player.play(randf() * maxf(0.0, player.stream.get_length() - 0.05))
+
+
+## Loops are driven by the race every tick. When nobody feeds them any more
+## (menu, scene change, a stalled race) they fall silent on their own.
+func _process(_delta: float) -> void:
+	if _loops.is_empty():
+		return
+	var now := Time.get_ticks_msec()
+	for kind in _loops:
+		var player: AudioStreamPlayer = _loops[kind]
+		if player.playing and now - int(_loop_fed.get(kind, 0)) > 250:
+			player.stop()
 
 
 func loop_level(kind: String) -> float:

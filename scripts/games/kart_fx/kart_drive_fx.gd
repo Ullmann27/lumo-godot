@@ -36,6 +36,7 @@ const SPARK_WHITE := Color(1.0, 0.96, 0.82)
 ## from a kart pressed against the collision wall (WALL_LATERAL 5.0).
 const RAIL_OFFSET := 0.93
 const RAIL_HEIGHT := 0.55
+const KART_SIDE := 0.78
 const HARD_HIT := 4.0
 
 var race: Node
@@ -190,7 +191,25 @@ func _restore_camera() -> void:
 func rail_contact(kart: Node3D, outward: Vector3, into_wall: float, speed: float) -> void:
 	if not is_instance_valid(kart) or into_wall <= 0.0:
 		return
-	_contacts.append({"kart": kart, "outward": outward.normalized(), "into": into_wall, "speed": absf(speed)})
+	_contacts.append({
+		"kart": kart, "outward": outward.normalized(), "into": into_wall, "speed": absf(speed),
+		"offset": _rail_offset(kart, outward.normalized()),
+	})
+
+
+## Distance from the kart's centre to the visible rail face. The collision wall
+## and the rail mesh are separate; where they sit far apart (curbs, wide
+## sections) the sparks come from the kart's side instead of thin air.
+func _rail_offset(kart: Node3D, outward: Vector3) -> float:
+	var world = race.get("world") if is_instance_valid(race) else null
+	if kart != race.player or world == null or not world.has_method("position_at") or world.get("RAIL_LATERAL") == null:
+		return RAIL_OFFSET
+	var side := signf(float(race.lane))
+	if side == 0.0:
+		return RAIL_OFFSET
+	var rail_local: Vector3 = world.position_at(float(race.distance), side * float(world.RAIL_LATERAL))
+	var rail: Vector3 = (kart.get_parent() as Node3D).to_global(rail_local) if kart.get_parent() is Node3D else rail_local
+	return clampf((rail - kart.global_position).dot(outward) - 0.08, 0.6, 3.0)
 
 
 ## The player's kart touched down after a jump ([param impact] = sink speed m/s).
@@ -318,6 +337,15 @@ func advance(delta: float) -> void:
 				)
 			_count("drift_sparks", count)
 			_mark("drift:%d" % index, tyres[index].global_position, up, 0.28, 0.9)
+		if float(style.debris_rate) > 0.3:
+			for index in range(tyres.size()):
+				var grains := _emit("drift_debris:%d" % index, 28.0 * float(style.debris_rate) * float(budget.rate), step)
+				for _n in range(grains):
+					puffs.spawn(tyres[index].global_position + up * 0.06,
+						forward * speed * 0.3 - right * side * _rng.randf_range(2.0, 5.0) + up * _rng.randf_range(1.5, 3.5),
+						_rng.randf_range(0.05, 0.1) * _size(), 0.05, 0.0, _rng.randf_range(0.5, 0.8), 1.0,
+						_tone(style.debris, 0.15), Color(0.3, _rng.randf(), _rng.randf_range(-9.0, 9.0), float(style.debris_kind)))
+				_count("drift_debris", grains)
 		var tint: Color = Color(style.smoke).lerp(color, 0.18 if tier > 0 else 0.0)
 		_tyre_smoke("drift_smoke", tyres, forward, up, step, 34.0 + 10.0 * float(tier), tint, 1.2)
 		squeal = maxf(squeal, 0.55 + 0.12 * float(tier))
@@ -400,7 +428,9 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 			along = -along
 		_scrape_time[id] = float(_scrape_time.get(id, 0.0)) + step
 		var duration: float = _scrape_time[id]
-		var at := kart.global_position + outward * RAIL_OFFSET + up * RAIL_HEIGHT
+		var offset: float = float(contact.get("offset", RAIL_OFFSET))
+		var on_rail := offset <= KART_SIDE + 0.45
+		var at := kart.global_position + outward * (offset if on_rail else KART_SIDE) + up * (RAIL_HEIGHT if on_rail else 0.28)
 		var pace := clampf(speed / 25.0, 0.0, 1.0)
 		var rate := (200.0 + 1300.0 * pace) * (0.55 + minf(duration, 1.2) * 0.6) * clampf(into / 2.5 + 0.45, 0.45, 1.7)
 		rate *= float(budget.rate) * (1.0 if is_player else 0.6)
@@ -419,10 +449,16 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 		if count > 0:
 			sparks.spawn(at - outward * 0.05, along * speed * 0.5, 0.75 * _size() * (0.7 + pace * 0.6), 0.3, 0.0, 0.07,
 				0.0, Color(1.0, 0.72, 0.36, 0.75), Color(1.0, _rng.randf(), 0.0, 0.4))
-		if speed > 3.0:
-			var streak := kart.global_position + outward * (RAIL_OFFSET - 0.02) + up * RAIL_HEIGHT
+		if speed > 3.0 and on_rail:
+			var streak := kart.global_position + outward * (offset - 0.02) + up * RAIL_HEIGHT
 			if marks.stroke("rail:%d" % id, streak, outward, 0.13, Color(0.08, 0.08, 0.1, 0.9),
 					float(budget.mark_life), 2):
+				_count("rail_marks", 1)
+		elif speed > 3.0:
+			# Wall short of the rail: the outer tyres scrub a dark mark on the curb line.
+			var scuff := kart.global_position + outward * (KART_SIDE - 0.1) + up * 0.03
+			var color: Color = style.mark
+			if marks.stroke("rail:%d" % id, scuff, up, 0.26, color, float(budget.mark_life), int(style.mark_kind)):
 				_count("rail_marks", 1)
 		if is_player:
 			player_scraping = true
@@ -517,26 +553,36 @@ func _surface_trail(tyres: Array[Node3D], forward: Vector3, up: Vector3, speed: 
 	var trail: float = float(style.trail)
 	if cruising and trail > 0.0 and speed > 9.0:
 		var amount := clampf((speed - 9.0) / 16.0, 0.2, 1.0) * trail
-		_tyre_smoke("surface_trail", tyres, forward, up, step, 22.0 * amount, style.smoke, float(style.dust_scale))
+		_tyre_smoke("surface_trail", tyres, forward, up, step, 40.0 * amount, style.smoke, float(style.dust_scale) * 1.25)
+		if str(style.name) == "snow":
+			# Powder snow glitters in the light.
+			for index in range(tyres.size()):
+				var glitter := _emit("glitter:%d" % index, 26.0 * amount * float(budget.rate), step)
+				for _n in range(glitter):
+					sparks.spawn(tyres[index].global_position + up * 0.2 + Vector3(_rng.randf_range(-0.4, 0.4), 0, _rng.randf_range(-0.4, 0.4)),
+						forward * speed * 0.3 + up * _rng.randf_range(0.8, 2.2) + Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)),
+						0.07 * _size(), 0.03, 0.0, _rng.randf_range(0.6, 1.1), 0.08, Color(0.85, 0.95, 1.0, 0.9),
+						Color(1.5, _rng.randf(), 0.0, 0.8))
+				_count("snow_glitter", glitter)
 		if int(style.debris_kind) == 2:
 			for index in range(tyres.size()):
-				var leaves := _emit("leaves:%d" % index, 6.0 * amount * float(budget.rate), step)
+				var leaves := _emit("leaves:%d" % index, 16.0 * amount * float(budget.rate), step)
 				for _n in range(leaves):
 					puffs.spawn(tyres[index].global_position + up * 0.1,
 						-forward * _rng.randf_range(1.0, 3.0) + up * _rng.randf_range(2.0, 3.6)
 						+ Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)),
-						0.11 * _size(), 0.1, 0.0, _rng.randf_range(1.1, 1.7), 0.18,
+						0.17 * _size(), 0.15, 0.0, _rng.randf_range(1.1, 1.7), 0.18,
 						[Color("8bc34a"), Color("f2a33a"), Color("c8642c")][_rng.randi() % 3],
 						Color(1.6, _rng.randf(), _rng.randf_range(-5.0, 5.0), 2.0))
 				_count("surface_leaves", leaves)
 	if bool(style.embers) and speed > 4.0:
 		for index in range(tyres.size()):
-			var embers := _emit("embers:%d" % index, (10.0 + speed * 1.4) * float(budget.rate), step)
+			var embers := _emit("embers:%d" % index, (16.0 + speed * 2.2) * float(budget.rate), step)
 			for _n in range(embers):
 				sparks.spawn(tyres[index].global_position + up * 0.05,
 					forward * speed * 0.2 + up * _rng.randf_range(1.0, 2.6) + Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)),
-					0.06 * _size(), 0.02, 0.0, _rng.randf_range(0.6, 1.2), -0.06,
-					Color(1.0, 0.45, 0.1, 0.95), Color(1.4, _rng.randf(), 0.4, 0.4))
+					_rng.randf_range(0.09, 0.15) * _size(), 0.03, 0.03, _rng.randf_range(0.7, 1.4), -0.06,
+					Color(1.0, 0.5, 0.12, 1.0), Color(1.4, _rng.randf(), 0.5, 0.5))
 			_count("embers", embers)
 
 
