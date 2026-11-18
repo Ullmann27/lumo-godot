@@ -283,6 +283,13 @@ func seen(event: String) -> bool:
 	return _events.has(event)
 
 
+## Zuwachs eines Zählers (z. B. Sterne) seit Beginn des laufenden Schritts.
+func since_step(key: String, value: float) -> float:
+	if not _events.has("@" + key):
+		_events["@" + key] = value
+	return value - float(_events["@" + key])
+
+
 ## True, sobald ok ohne Unterbrechung für seconds Sekunden gilt.
 func held(ok: bool, seconds: float) -> bool:
 	_hold = _hold + _delta if ok else 0.0

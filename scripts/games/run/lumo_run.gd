@@ -115,6 +115,8 @@ func _ready() -> void:
 	get_tree().auto_accept_quit = false
 	get_tree().quit_on_go_back = false
 	_build_screens()
+	# Erste Einführung je Kind (zeigt sich erst beim Laufen): scripts/games/guides/run_guide.gd
+	load("res://scripts/games/guides/run_guide.gd").attach(self)
 	var wanted: int = COURSES.index_of(str(options.get("runCourse", "")))
 	if wanted >= 0 and bool(options.get("runAutoStart", false)):
 		SceneRouter.launch_options.erase("runAutoStart")
