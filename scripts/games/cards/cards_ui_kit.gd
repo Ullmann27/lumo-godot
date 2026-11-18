@@ -125,9 +125,13 @@ static func choice(text: String, selected: bool, scale: float, min_width: float 
 	var box := slice("plate_nav_active.webp" if selected else "plate_nav.webp", scale, 8.0)
 	for state: String in ["normal", "hover", "focus", "pressed", "disabled"]:
 		node.add_theme_stylebox_override(state, box)
-	var face := GOLD if selected else WHITE
+	# Gewählt: dunkle Schrift auf der goldenen Fläche, sonst weiß auf Blau – gut lesbar.
+	var face := Color("2a1600") if selected else WHITE
 	for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
 		node.add_theme_color_override(state, face)
+	if selected:
+		node.add_theme_color_override("font_outline_color", Color(1.0, 0.93, 0.6, 0.6))
+		node.add_theme_constant_override("outline_size", int(roundf(2 * scale)))
 	return node
 
 

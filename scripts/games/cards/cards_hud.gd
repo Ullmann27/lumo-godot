@@ -756,7 +756,7 @@ func _tile(game: Dictionary, sideways: bool) -> Button:
 		fan.custom_minimum_size = Vector2(118, 72) * density
 		fan.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		fan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		fan.size_flags_stretch_ratio = 0.62
+		fan.size_flags_stretch_ratio = 0.5
 	body.add_child(fan)
 	var text := VBoxContainer.new()
 	text.name = "Text"
@@ -797,20 +797,39 @@ func _tile(game: Dictionary, sideways: bool) -> Button:
 ## Wird eine Kachel zu niedrig, entfällt zuerst die lange Beschreibung –
 ## Titel, Fächer und Unterzeile bleiben immer ganz in der Kachel.
 func _fit_tile(tile: Button) -> void:
-	if not is_instance_valid(tile) or not tile.has_node("Body/Text/About"):
+	if not is_instance_valid(tile) or not tile.get_parent() is Container:
 		return
+	# Alle Kacheln zeigen die Beschreibung – oder keine: ein ruhiges, gleiches Bild.
+	var tiles: Array[Button] = []
+	for child: Node in tile.get_parent().get_children():
+		if child is Button and child.has_node("Body/Text/About"):
+			tiles.append(child)
+	var all_fit := true
+	for each: Button in tiles:
+		all_fit = all_fit and _about_fits(each)
+	for each: Button in tiles:
+		each.get_node("Body/Text/About").visible = all_fit
+
+
+func _about_fits(tile: Button) -> bool:
 	var body: BoxContainer = tile.get_node("Body")
 	var about: Label = tile.get_node("Body/Text/About")
-	var room := tile.size.y - dp(22)
-	if not about.visible:
-		about.show()
-	var text: Control = tile.get_node("Body/Text")
 	var fan: Control = tile.get_node("Body/Fan")
-	var needed := text.get_combined_minimum_size().y
+	var inner := tile.size - Vector2(dp(28), dp(22))
+	# Breite der Textspalte aus der Kachel selbst – unabhängig vom letzten Layout.
+	var width := inner.x
+	if body is HBoxContainer:
+		width = (inner.x - dp(12)) / (1.0 + fan.size_flags_stretch_ratio)
+	var font := about.get_theme_font("font")
+	var font_size := about.get_theme_font_size("font_size")
+	var about_height := font.get_multiline_string_size(about.text, HORIZONTAL_ALIGNMENT_LEFT, maxf(1.0, width), font_size).y
+	var title_label: Control = tile.get_node("Body/Text/Title")
+	var status_label: Control = tile.get_node("Body/Text/Status")
+	var needed: float = about_height + title_label.get_combined_minimum_size().y
+	needed += status_label.get_combined_minimum_size().y + dp(6)
 	if body is VBoxContainer:
 		needed += fan.custom_minimum_size.y + dp(6)
-	if needed > room:
-		about.hide()
+	return needed <= inner.y
 
 
 ## Einstellungen vor der Partie. data: game, title, text, players, difficulty,
