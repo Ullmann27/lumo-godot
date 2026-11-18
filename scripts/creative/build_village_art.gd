@@ -73,7 +73,9 @@ static func bundle(name: String) -> Bundle:
 					var slot_name := source_material.resource_name if source_material != null else ""
 					# Blender writes the atlas as slot 0 and leaf cards as slot 1.
 					var leaves := slot_name.contains("foliage") or (slot_name.is_empty() and surface > 0)
-					var surface_name := mesh_node.mesh.surface_get_name(surface) if mesh_node.mesh is ArrayMesh else ""
+					var surface_name: String = ""
+					if mesh_node.mesh is ArrayMesh:
+						surface_name = (mesh_node.mesh as ArrayMesh).surface_get_name(surface)
 					leaves = leaves or surface_name.contains("foliage")
 					mesh_node.mesh.surface_set_material(surface, entry.foliage if leaves else entry.material)
 				var part := {"name": str(mesh_node.name), "mesh": mesh_node.mesh, "transform": xform}
