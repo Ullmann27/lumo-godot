@@ -138,6 +138,14 @@ func _ready() -> void:
 	MobileRuntime.safe_area_changed.connect(_layout)
 	ai = AI.new(int(rng.randi() & 0xFFFF) + 1)
 	open_home()
+	# Die App kann direkt einen Weg öffnen: chessMode = learn | play | pro.
+	match str(options.get("chessMode", "")):
+		"learn":
+			open_path()
+		"play":
+			open_levels("play")
+		"pro":
+			open_levels("pro")
 	_layout()
 	_greet.call_deferred()
 

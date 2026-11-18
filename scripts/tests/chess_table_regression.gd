@@ -135,6 +135,7 @@ func _run() -> void:
 	await _reward_once()
 	await _pro_mode()
 	await _views_and_squares()
+	await _launch_modes()
 	print("[ChessTable] kleinstes Touch-Ziel: %.0f px (%s)" % [min_touch, min_touch_name])
 	for key: String in square_sizes:
 		print("[ChessTable] Feldgröße %s: %s" % [key, square_sizes[key]])
@@ -283,7 +284,8 @@ func _solve_lesson(id: String) -> void:
 	_check(steps.size() > 0, "Lektion %s hat Schritte" % id)
 
 
-## Spielt ein Probespiel für das Kind mit einer kurzen Suche (zieht über Antippen).
+## Spielt ein Probespiel für das Kind mit einer festen Suchtiefe (unabhängig von
+## der Maschinenlast) und zieht über Antippen.
 func _solve_trial(id: String) -> bool:
 	table.hints = false
 	table.start_trial(id)
@@ -296,7 +298,7 @@ func _solve_trial(id: String) -> bool:
 			continue
 		var race: bool = SCHOOL.trial(id).get("goal", "") == "race"
 		var r: Dictionary = await helper.think(
-			table.rules, 2, {"budget_ms": 150, "slice_ms": 0, "race": race}
+			table.rules, 2, {"depth": 4, "budget_ms": 8000, "slice_ms": 0, "race": race}
 		)
 		var m: int = int(r.move)
 		if m < 0:
@@ -615,3 +617,19 @@ func _views_and_squares() -> void:
 		var p: Vector2 = table.square_point(e2) + Vector2(0, -20.0 * table._density)
 		_check(table.chess.pick(table.camera, p) != e2, "Prüfpunkt liegt außerhalb von e2")
 		_check(table.square_at_point(p) == e2, "3D: knapp daneben getippt trifft die eigene Figur")
+
+
+# --- Startoption chessMode ------------------------------------------------------------
+
+
+func _launch_modes() -> void:
+	for entry: Array in [
+		["learn", "path", "kids"], ["play", "levels", "play"], ["pro", "levels", "pro"]
+	]:
+		bridge._options["chessMode"] = entry[0]
+		await _new_table()
+		_check(
+			table.screen == entry[1] and table.mode == entry[2],
+			"chessMode=%s öffnet %s (%s/%s)" % [entry[0], entry[1], table.screen, table.mode]
+		)
+	bridge._options.erase("chessMode")
