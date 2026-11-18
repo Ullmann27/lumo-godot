@@ -47,6 +47,12 @@
   "sha256": "6ac766f0bd55c5c28061516b4d9c8298290cc87394a737fed0cf30fbf6980e9f",
   "triangles": 256
  },
+ "castle_wall": {
+  "bytes": 20408,
+  "parts": [],
+  "sha256": "e777128050cd99c82b62a2df031100aae33e067a07dc4e8672fa10ea0e371236",
+  "triangles": 140
+ },
  "chicken": {
   "bytes": 12260,
   "parts": [],
@@ -70,6 +76,21 @@
   "parts": [],
   "sha256": "3759879e59c659e3c46d2e8783a41fffab1435bd8fefa63db15bd08f4d689b59",
   "triangles": 392
+ },
+ "dragon": {
+  "bytes": 158316,
+  "parts": [
+   "Spin_WingL",
+   "Spin_WingR"
+  ],
+  "sha256": "d6d86ceccc33a4aa3eff1323f04e4ec914c4bfe284375bdcbbc6abeabf259a22",
+  "triangles": 802
+ },
+ "dragon_nest": {
+  "bytes": 135360,
+  "parts": [],
+  "sha256": "c7579aa79778992c2cd6fecccff91478446bb5b9fd94a7177e94ef0606b0a731",
+  "triangles": 912
  },
  "farm": {
   "bytes": 244572,
@@ -95,6 +116,14 @@
   "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2",
   "triangles": 360
  },
+ "gatehouse": {
+  "bytes": 49192,
+  "parts": [
+   "Spin_Bridge"
+  ],
+  "sha256": "3be694bfa2348308bab6c144b9e1b574f1dc5c5ede14da9e314700ade9d7d88d",
+  "triangles": 332
+ },
  "grain": {
   "bytes": 163700,
   "parts": [
@@ -108,6 +137,12 @@
   "parts": [],
   "sha256": "163dda89a428c10564ec6a77f318d7100a989361f5b068e4cf68ed6112745a17",
   "triangles": 18
+ },
+ "guard": {
+  "bytes": 75368,
+  "parts": [],
+  "sha256": "ef1f1a1c419cf3726a134b3bd2e27067e98fe3e282494228842254b11fdba363",
+  "triangles": 446
  },
  "house_a": {
   "bytes": 228112,
@@ -147,11 +182,35 @@
   "sha256": "c91276d6a7899c811c4d5c68618543aa78337db1568824d84c9a163b58c289b4",
   "triangles": 1168
  },
+ "moat": {
+  "bytes": 35712,
+  "parts": [],
+  "sha256": "5b644501c2d298949aeaa9ed8f2f9443c787b34bc494bfa7f8238d7767c32e0d",
+  "triangles": 212
+ },
+ "net_trap": {
+  "bytes": 32232,
+  "parts": [],
+  "sha256": "7ea9b25357cbc4cfb5d2cc216c4d315f7c74163ac66cac01a7a82ce01baae5b0",
+  "triangles": 228
+ },
+ "palisade": {
+  "bytes": 66040,
+  "parts": [],
+  "sha256": "2b073a224b58f2539308127cb5426222c5c8aa5d8d0d428e838711dfef5e3966",
+  "triangles": 492
+ },
  "quarry": {
   "bytes": 84452,
   "parts": [],
   "sha256": "1d1db8bf087f913d0bd3ba9940a0a0aa1b4b44c769f29955a3d786b7e35b7969",
   "triangles": 574
+ },
+ "raccoon": {
+  "bytes": 130732,
+  "parts": [],
+  "sha256": "9444600ac1f6cfce951ecf36d010d090543149bd3bcc5ed1c568e1cc7a2c8e9e",
+  "triangles": 664
  },
  "reeds": {
   "bytes": 22580,
@@ -164,6 +223,12 @@
   "parts": [],
   "sha256": "a6a623be5220277af576829d05e3554dd7f08ef87741f776cf24e432d7b7d4e6",
   "triangles": 780
+ },
+ "robber_camp": {
+  "bytes": 156104,
+  "parts": [],
+  "sha256": "b3e3b228676271e2f2f58138901060a463e15ea59515831a08ab91bedce4e69b",
+  "triangles": 996
  },
  "rock_a": {
   "bytes": 18076,
@@ -224,6 +289,12 @@
   "parts": [],
   "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48",
   "triangles": 576
+ },
+ "wall_tower": {
+  "bytes": 52976,
+  "parts": [],
+  "sha256": "c2539c5f29fa5a284a82ebdf2ae1dcef896e6a5190d89b903963bb62c2cebc30",
+  "triangles": 400
  },
  "warehouse": {
   "bytes": 49084,
