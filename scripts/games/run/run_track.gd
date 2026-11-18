@@ -24,6 +24,8 @@ var falls: Dictionary = {}
 var defeated: Dictionary = {}
 var enemy_hits: Dictionary = {}
 var crumbled: Dictionary = {}
+## Stretches before precise platforms where the second flow stage pauses.
+var precise: Array[Vector2] = []
 var ride_ready_at: Dictionary = {}
 var waits_done: Dictionary = {}
 var chase_active: bool = false
@@ -64,6 +66,27 @@ func _reset_path_state() -> void:
 	defeated.clear()
 	enemy_hits.clear()
 	crumbled.clear()
+	precise.clear()
+	if plan.adventure:
+		for platform in plan.platforms:
+			var small: bool = float(platform.s1) - float(platform.s0) < 4.5
+			var tricky: bool = not str(platform.get("axis", "")).is_empty() or bool(platform.get("crumble", false))
+			if (small or tricky) and not bool(platform.get("tempo", false)):
+				precise.append(Vector2(float(platform.s0) - TUNING.PATH_PRECISE_LEAD, float(platform.s1) + 2.0))
+		# Where obstacles follow each other closely, the top stage pauses as well:
+		# it is meant for the open stretches, never to shorten the time to react.
+		var items: Array[Vector2] = []
+		for gap in world.level.gaps:
+			items.append(gap)
+		for list in [plan.hurdles, plan.blockers]:
+			for item in list:
+				items.append(Vector2(float(item.s) - 1.0, float(item.s) + 1.0))
+		for enemy in plan.enemies:
+			items.append(Vector2(float(enemy.s) - absf(float(enemy.get("span", 0.0))) - 1.0, float(enemy.s) + 1.0))
+		items.sort_custom(func(a: Vector2, b: Vector2) -> bool: return a.x < b.x)
+		for index in range(items.size() - 1):
+			if items[index + 1].x - items[index].y < TUNING.PATH_DENSE_SPACING:
+				precise.append(Vector2(items[index].x - TUNING.PATH_PRECISE_LEAD, items[index + 1].y))
 	ride_ready_at.clear()
 	waits_done.clear()
 	chase_active = false
@@ -134,21 +157,32 @@ func platform_offset(platform: Dictionary, time: float) -> Vector3:
 	return Vector3(value, 0.0, 0.0)
 
 
-## A crumbling platform gives way 0.75 s after Lumo steps on it and is back 3 s later.
+## A crumbling platform gives way 0.75 s after Lumo steps on it (or after its own
+## "hold" seconds, see the adventure passages) and is back 3 s later.
 func platform_solid(index: int) -> bool:
 	if not crumbled.has(index):
 		return true
+	var hold: float = float(plan.platforms[index].get("hold", 0.75))
 	var since: float = clock - float(crumbled[index])
-	return since < 0.75 or since > 3.75
+	return since < hold or since > hold + 3.0
 
 
 func crumble_progress(index: int) -> float:
 	if not crumbled.has(index):
 		return 0.0
+	var hold: float = float(plan.platforms[index].get("hold", 0.75))
 	var since: float = clock - float(crumbled[index])
-	if since > 3.75:
+	if since > hold + 3.0:
 		return 0.0
-	return clampf(since / 0.75, 0.0, 1.0) + (1.0 if since >= 0.75 else 0.0)
+	return clampf(since / hold, 0.0, 1.0) + (1.0 if since >= hold else 0.0)
+
+
+## Highest flow stage allowed here: 1 before precise platforms, otherwise 2.
+func flow_cap(s: float) -> int:
+	for zone in precise:
+		if s >= zone.x and s <= zone.y:
+			return 1
+	return 2
 
 
 ## Highest speed allowed here: Lumo waits at the first stream until SPRINGEN.

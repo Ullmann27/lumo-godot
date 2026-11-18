@@ -42,6 +42,8 @@ var air_dash_ready: bool = true
 ## Momentum 0..1 (path only): builds while Lumo runs on freely, adds flow_bonus.
 var flow: float = 0.0
 var flow_bonus: float = 0.0
+## Second flow stage 0..1 (path only): builds after flow is full, see run_tuning.
+var flow2: float = 0.0
 var acceleration: float = TUNING.ACCELERATION
 var coyote_window: float = TUNING.COYOTE_SECONDS
 var buffer_window: float = TUNING.JUMP_BUFFER_SECONDS
@@ -96,6 +98,7 @@ func place(distance: float, lateral: float, start_speed: float) -> void:
 	tumble_time = 0.0
 	tumbled = false
 	flow = 0.0
+	flow2 = 0.0
 
 
 func press_jump() -> void:
@@ -158,6 +161,7 @@ func stumble() -> bool:
 	boost_time = 0.0
 	dash_time = 0.0
 	flow = 0.0
+	flow2 = 0.0
 	return true
 
 
@@ -168,6 +172,7 @@ func tumble() -> bool:
 	tumble_time = TUNING.TUMBLE_SECONDS
 	tumbled = true
 	flow = 0.0
+	flow2 = 0.0
 	vy = 6.0
 	grounded = false
 	jumping = false
@@ -272,11 +277,18 @@ func _step_speed(delta: float, pull_back: float, track) -> void:
 	# Momentum: running on freely builds flow (a sprint); braking or a bump loses it.
 	if flow_bonus > 0.0:
 		var free_run: bool = grounded and pull_back <= 0.3 and stumble_time <= 0.0 and not in_cart and speed >= cruise * 0.85
+		var stage_two: bool = track.flow_cap(s) >= 2 if track.has_method("flow_cap") else true
 		if free_run:
 			flow = minf(1.0, flow + delta / TUNING.PATH_FLOW_SECONDS)
+			if flow >= 1.0 and stage_two:
+				flow2 = minf(1.0, flow2 + delta / TUNING.PATH_FLOW2_SECONDS)
 		elif pull_back > 0.3 or stumble_time > 0.0:
 			flow = maxf(0.0, flow - delta * 2.5)
-		target += flow * flow_bonus
+			flow2 = 0.0
+		if not stage_two:
+			# Before a precise spot the top stage pauses (it comes back right after).
+			flow2 = maxf(0.0, flow2 - delta * 1.5)
+		target += flow * flow_bonus + flow2 * TUNING.PATH_FLOW2_BONUS
 	if stumble_time > 0.0:
 		target = minf(target, cruise * 0.45)
 	if in_cart:

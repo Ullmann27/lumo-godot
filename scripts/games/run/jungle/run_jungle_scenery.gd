@@ -31,6 +31,7 @@ const DECK: Dictionary = {
 	"canopy": [1, Color("d0a064"), Color("86b24a")],
 	"stone": [2, Color("e0c89c"), Color("b2c080")],
 	"cave": [3, Color("8a877c"), Color("5f8576")],
+	"slide": [3, Color("9ab8b4"), Color("5f9aa0")],
 	"rail": [0, Color("857a6c"), Color("6c6458")],
 	"gold": [2, Color("f0c862"), Color("d9a63a")],
 }
@@ -493,8 +494,10 @@ func _floor(at: float) -> float:
 	return minf(0.0, path.ground_offset_at(at))
 
 
+## The surroundings of the waterfall slide are the cave's.
 func _surface_of(at: float) -> String:
-	return path.surface_at(at)
+	var kind: String = path.surface_at(at)
+	return "cave" if kind == "slide" else kind
 
 
 func _main_samples(step: float) -> PackedFloat32Array:
@@ -1165,7 +1168,9 @@ func _structures() -> bool:
 		var to: float = gap.y
 		var middle: float = (from + to) * 0.5
 		var kind: String = _surface_of(from - 1.0)
-		if kind in ["dirt", "cave", "roots"]:
+		if _is_glut(from):
+			continue
+		if kind in ["dirt", "cave", "roots", "slide"]:
 			_water_plane(from - 1.0, to + 1.0, path.half_width_at(middle) + 2.5, -1.9)
 		elif kind in ["canopy", "plank", "stone", "rail"]:
 			# A misty drop: haze below the hole tells that it is deep.
@@ -1194,7 +1199,42 @@ func _railing(from: float, to: float, half: float, ropes: bool) -> void:
 		at = next
 
 
-func _water_plane(from: float, to: float, half: float, depth: float) -> void:
+func _is_glut(at: float) -> bool:
+	for item in level.decor:
+		if str(item.kind) == "glut" and at >= float(item.s0) - 0.1 and at <= float(item.s1):
+			return true
+	return false
+
+
+## The glowing ember stream of the first adventure passage: a warm glowing bed
+## deep in the hole, flames along it and rising sparks. Child-friendly glow, no fire.
+func _glut(from: float, to: float) -> void:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("ff7a2a")
+	material.emission_enabled = true
+	material.emission = Color("ff6a1a")
+	material.emission_energy_multiplier = 2.6
+	material.roughness = 1.0
+	var half: float = path.half_width_at((from + to) * 0.5) + 2.0
+	var node: MeshInstance3D = _water_plane(from - 0.6, to + 0.6, half, -3.2)
+	node.name = "Glut_%d" % int(from)
+	node.material_override = material
+	var at: float = from + 0.8
+	while at < to:
+		for lat in [-2.6, 0.0, 2.6]:
+			_put("flame", at, _xf(at, lat + _rng.randf_range(-0.5, 0.5), -3.1, Vector3.ONE * _rng.randf_range(1.2, 1.8)))
+			_embers(at, lat, -2.6)
+		at += 1.6
+	if not low:
+		var light := OmniLight3D.new()
+		light.light_color = Color("ff8a3a")
+		light.light_energy = 2.2
+		light.omni_range = 9.0
+		light.position = _point((from + to) * 0.5, 0.0, -1.5)
+		add_child(light)
+
+
+func _water_plane(from: float, to: float, half: float, depth: float) -> MeshInstance3D:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var rows: int = maxi(1, ceili((to - from) / 1.5))
@@ -1215,9 +1255,10 @@ func _water_plane(from: float, to: float, half: float, depth: float) -> void:
 	var node := MeshInstance3D.new()
 	node.name = "Water_%d" % int(from)
 	node.mesh = st.commit()
-	node.material_override = _materials["water"]
+	node.material_override = _materials.get("water")
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(node)
+	return node
 
 
 # ------------------------------------------------------------------ landmarks from the level
@@ -1271,6 +1312,8 @@ func _decor() -> bool:
 				_put("plankbox", at, _xf(at, lat, 1.4, Vector3(1.1, 0.6, 0.1), -0.3))
 			"cart_stop":
 				_put("plankbox", at, _xf(at - 25.0, 1.6, 0.5, Vector3(0.9, 1.0, 1.4)))
+			"glut":
+				_glut(float(item.s0), float(item.s1))
 	return true
 
 

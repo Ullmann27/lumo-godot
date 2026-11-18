@@ -28,6 +28,10 @@ var _jump_in: float = -1.0
 var _pending: Array = []
 var _think: int = 0
 var _braking: bool = false
+## A deliberately slow player: holds the stick back this much (0 = never) in
+## the stretches given by `slow_zones` ([s0, s1] in metres; empty = everywhere).
+var hold_back: float = 0.0
+var slow_zones: Array[Vector2] = []
 
 
 func _init(seed: int = 1) -> void:
@@ -53,7 +57,18 @@ func drive(game, delta: float) -> void:
 	_think += 1
 	if player.grounded and _jump_in < 0.0 and _hold_left <= 0.0 and _think % 2 == 0:
 		_decide(game, steer)
-	game.touch_steer = Vector2(steer, 1.0 if _braking else 0.0)
+	game.touch_steer = Vector2(steer, 1.0 if _braking else _hold_back_at(player.s))
+
+
+func _hold_back_at(at: float) -> float:
+	if hold_back <= 0.0:
+		return 0.0
+	if slow_zones.is_empty():
+		return hold_back
+	for zone in slow_zones:
+		if at >= zone.x and at <= zone.y:
+			return hold_back
+	return 0.0
 
 
 func _tick_inputs(player, delta: float) -> void:
@@ -81,6 +96,9 @@ func _route(game, branch: Dictionary) -> String:
 	var key: String = str(branch.name)
 	if not routes.has(key):
 		routes[key] = "upper" if rng.randf() < upper_share else "lower"
+		# An adventure passage: the brave line only with the pace it needs.
+		if routes[key] == "upper" and game.player.speed < float(branch.get("brave_speed", 0.0)):
+			routes[key] = "lower"
 	return str(routes[key])
 
 
@@ -172,7 +190,7 @@ func _simulate(game, steer: float, jump_at: float, hold: float, dash_at: float, 
 	for field in [
 		"s", "previous_s", "lat", "lat_v", "h", "vy", "speed", "grounded", "jumping", "coyote", "ground_rate",
 		"dash_time", "dash_cooldown", "boost_time", "stumble_time", "invulnerable", "cruise", "lateral_speed",
-		"slow_factor", "air_dash", "air_dash_ready", "in_cart", "cart_lat", "flow", "flow_bonus", "acceleration",
+		"slow_factor", "air_dash", "air_dash_ready", "in_cart", "cart_lat", "flow", "flow2", "flow_bonus", "acceleration",
 		"coyote_window", "buffer_window",
 	]:
 		copy.set(field, source.get(field))
@@ -185,7 +203,7 @@ func _simulate(game, steer: float, jump_at: float, hold: float, dash_at: float, 
 	var airborne: bool = false
 	var t: float = 0.0
 	var landed_for: float = 0.0
-	var pull: float = 1.0 if _braking and jump_at < 0.0 else 0.0
+	var pull: float = 1.0 if _braking and jump_at < 0.0 else _hold_back_at(source.s)
 	var stomped: Array[int] = []
 	while t < seconds:
 		if jump_at >= 0.0 and t >= jump_at and t < jump_at + STEP:

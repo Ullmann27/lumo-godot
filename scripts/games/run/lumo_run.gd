@@ -433,12 +433,23 @@ func _simulate(delta: float) -> void:
 func _follow_sections() -> void:
 	if player.s < 0.0:
 		return
+	_announce_passages()
 	var index: int = world.section_at(player.s)
 	if index == _section:
 		return
 	_section = index
 	if index > 0 and index < SECTION_SAYINGS.size():
 		hud.banner(SECTION_SAYINGS[index], index)
+
+
+## The adventure passages are announced early (sign, words), once per run.
+func _announce_passages() -> void:
+	for index in range(plan.passages.size()):
+		var passage: Dictionary = plan.passages[index]
+		var key: String = "passage%d" % index
+		if not _hinted.has(key) and player.s >= float(passage.announce) and player.s < float(passage.s0):
+			_hinted[key] = true
+			hud.say(str(passage.say), 3.2)
 
 
 func _coach_icon() -> String:

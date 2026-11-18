@@ -47,6 +47,7 @@ var waits: Array[Dictionary] = []
 var coaches: Array[Dictionary] = []
 var sections: Array[Dictionary] = []
 var branches: Array[Dictionary] = []
+var passages: Array[Dictionary] = []
 var decor: Array[Dictionary] = []
 var chase: Dictionary = {}
 var cart: Dictionary = {}
@@ -116,6 +117,7 @@ func _adopt_level(level) -> void:
 	coaches.assign(level.coaches.duplicate(true))
 	sections.assign(level.sections.duplicate(true))
 	branches.assign(level.branches.duplicate(true))
+	passages.assign(level.passages.duplicate(true))
 	decor.assign(level.decor.duplicate(true))
 	checkpoints.assign(level.checkpoints.duplicate(true))
 	for roof in level.ceilings:

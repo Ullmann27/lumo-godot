@@ -37,6 +37,9 @@ var waits: Array[Dictionary] = []
 var coaches: Array[Dictionary] = []
 var decor: Array[Dictionary] = []
 var branches: Array[Dictionary] = []
+## The three adventure passages (see _passage): where they are, their two lines
+## and the numbers they were built with (gaps in metres).
+var passages: Array[Dictionary] = []
 var chase: Dictionary = {}
 var cart: Dictionary = {}
 var bonus: Dictionary = {}
@@ -78,7 +81,7 @@ func _leg(length_m: float, turn: float, rise: float, half: float, surface: Strin
 ## A hole in the path: falling in means a short trip back to the last rescue point.
 func _hole(length_m: float, rise: float = 0.0, turn: float = 0.0) -> float:
 	# Holes in the forest floor are shallow streams; up in the trees it is a long way down.
-	var floor_depth: float = -2.6 if _ground > -1.0 and _surface in ["dirt", "roots", "cave"] else minf(_ground, -9.0)
+	var floor_depth: float = -2.6 if _ground > -1.0 and _surface in ["dirt", "roots", "cave", "slide"] else minf(_ground, -9.0)
 	var from: float = _leg(length_m, turn, rise, _half, "gap", floor_depth)
 	gaps.append(Vector2(from, from + length_m))
 	return from
@@ -184,6 +187,25 @@ func _decor(kind: String, at: float, lat: float, extra: Dictionary = {}) -> void
 	var entry: Dictionary = {"kind": kind, "s": at, "lat": lat}
 	entry.merge(extra, true)
 	decor.append(entry)
+
+
+## Registers an adventure passage: announced `lead` metres before its hole,
+## with a safe line (shorter jump, more time) and a brave line (longer jump,
+## gold stars). Both are branches for the scripted player as well.
+func _passage(name: String, hole: float, length_m: float, safe: Dictionary, brave: Dictionary, say: String,
+		brave_speed: float, lead: float = 46.0) -> void:
+	passages.append({
+		"name": name, "s0": hole, "s1": hole + length_m, "announce": hole - lead, "say": say,
+		"safe_lat": float(safe.lat), "safe_gap": float(safe.gap), "brave_lat": float(brave.lat), "brave_gap": float(brave.gap),
+		"safe_hold": float(safe.get("hold", 0.0)), "brave_hold": float(brave.get("hold", 0.0)),
+		"plank": float(safe.get("plank", 0.0)), "brave_speed": brave_speed, "downhill": float(brave.get("downhill", 1.0)),
+	})
+	branches.append({
+		"s0": hole - 24.0, "s1": hole + length_m + 1.0, "upper_lat": float(brave.lat), "lower_lat": float(safe.lat),
+		"name": name, "brave_speed": brave_speed,
+	})
+	_decor("sign", hole - lead, -(_half + 0.6), {"icon": "passage"})
+	coaches.append({"s0": hole - 14.0, "s1": hole + 1.0, "icon": "jump"})
 
 
 func _section(index: int, mood: String) -> void:
@@ -387,6 +409,7 @@ func _canopy_walk() -> void:
 	_arc(hole3 - 2.4, hole3 + 8.0, -0.6, 3.0, 5)
 	var g: float = _leg(18.0, 0.0, 0.0, 2.0, "canopy", -18.0)
 	_safe(g + 2.0)
+	_collapsing_bridge()
 	# Second vine, then down the wooden stairs to the temple.
 	var swing2: float = _hole(10.5)
 	_vine(swing2 - 0.6, 0.0, 5.2, 0.82)
@@ -440,6 +463,7 @@ func _temple() -> void:
 		_line(hall + 4.0 + float(index) * 8.0, hall + 9.0 + float(index) * 8.0, -rock_lat, -rock_lat, 1.0, 2.5)
 	_enemy("crab", hall + 38.0, 0.0, 1.8, 1.6)
 	_safe(hall + 2.0)
+	_ember_leap()
 	# The chase: a mossy stone ball rolls after Lumo down the long gallery.
 	var gallery: float = _leg(24.0, 0.0, -1.0, 2.4, "stone")
 	_safe(gallery + 3.0)
@@ -501,6 +525,7 @@ func _waterfall_cave() -> void:
 	_enemy("beetle", fork + 38.0, 2.0, 3.0, 1.2, 1.5)
 	_safe(fork + 3.0, 2.0)
 	_safe(fork + 54.0)
+	_waterfall_slide()
 	var d: float = _leg(26.0, 20.0, 1.0, 2.2, "cave")
 	_line(d + 2.0, d + 22.0, 0.0, 0.0)
 	var hop: float = _hole(5.0)
@@ -546,6 +571,94 @@ func _mine_ride() -> void:
 	_line(last + 3.0, last + 20.0, 0.0, 0.0)
 	finish_s = last + 26.0
 	_decor("finish_temple", finish_s + 6.0, 0.0)
+
+
+# ------------------------------------------------------------------ adventure passages
+# The numbers (course time, before PATH_TIME_SCALE): a held jump flies 0.877 s
+# (10 m/s up, hold gravity 20 for 0.45 s, then 30 up / 32 down), an unheld one
+# 0.656 s. At Lumo's pace of 8.5 m/s that is 7.5 m held and 5.6 m tapped; a
+# really slow runner (40 % = 3.4 m/s) gets 3.0 m. lumo_run_adventure_regression
+# measures the same numbers with the real motion model.
+
+
+## Passage 1 (temple): the glowing ember stream. Left the old slab reaches far
+## into the stream (4.2 m to jump), right is the full width (6.6 m, gold stars).
+func _ember_leap() -> void:
+	var approach: float = _leg(18.0, -8.0, 0.0, 4.2, "stone")
+	_line(approach + 2.0, approach + 16.0, 0.0, 0.0, 1.0, 3.0)
+	var run_up: float = _leg(28.0, 0.0, 0.0, 4.2, "stone")
+	_safe(run_up + 2.0)
+	_line(run_up + 6.0, run_up + 25.0, -2.2, -2.2, 1.0, 3.2, "lower")
+	_line(run_up + 6.0, run_up + 25.0, 2.2, 2.2, 1.0, 3.2, "upper")
+	var ember: float = _hole(6.6)
+	_platform(ember + 4.2, ember + 6.6, -2.2, 1.4, 0.0, "ruin", {"tempo": true})
+	_arc(ember - 0.6, ember + 4.8, -2.2, 2.4, 3, 1.0, "lower")
+	_arc(ember - 0.8, ember + 7.6, 2.2, 3.0, 5, 1.0, "upper")
+	_gold(ember + 3.4, 2.2, 2.9, "upper")
+	_decor("glut", ember + 3.3, 0.0, {"s0": ember, "s1": ember + 6.6})
+	_decor("torch", run_up + 20.0, -5.0)
+	_decor("torch", run_up + 20.0, 5.0)
+	_passage(
+		"Glutbach-Sprung", ember, 6.6, {"lat": -2.2, "gap": 4.2}, {"lat": 2.2, "gap": 6.6},
+		"Glutbach! Mit Schwung springen – links ist der Sprung kürzer.", TUNING.PATH_CRUISE + 1.0
+	)
+	var land: float = _leg(18.0, 10.0, 0.0, 3.0, "stone")
+	_line(land + 3.0, land + 15.0, 0.0, 0.0, 1.0, 3.0)
+	_safe(land + 4.0)
+
+
+## Passage 2 (treetops): the collapsing rope bridge. Every plank gives way soon
+## after Lumo steps on it - keep running! Left planks hold 0.9 s and end 3.5 m
+## before the far side; right planks hold only 0.45 s and end 5 m before it.
+func _collapsing_bridge() -> void:
+	var deck: float = _leg(26.0, 0.0, 0.0, 2.4, "canopy", -18.0)
+	_line(deck + 3.0, deck + 24.0, 0.0, 0.0, 1.0, 3.0)
+	_safe(deck + 2.0)
+	var ravine: float = _hole(24.0)
+	for k in range(5):
+		var from: float = ravine + float(k) * 4.0
+		_platform(from, from + (4.5 if k == 4 else 4.0), -1.1, 1.1, 0.0, "plank", {"crumble": true, "hold": 0.9, "tempo": true})
+		_platform(from, from + (3.0 if k == 4 else 4.0), 1.1, 1.1, 0.0, "plank", {"crumble": true, "hold": 0.45, "tempo": true})
+	_line(ravine + 1.0, ravine + 19.0, -1.1, -1.1, 1.0, 2.6, "lower")
+	_line(ravine + 1.0, ravine + 17.0, 1.1, 1.1, 1.0, 2.0, "upper")
+	_arc(ravine + 19.8, ravine + 25.0, -1.1, 2.4, 3, 1.0, "lower")
+	_arc(ravine + 18.4, ravine + 25.4, 1.1, 3.0, 4, 1.0, "upper")
+	_gold(ravine + 21.5, 1.1, 2.9, "upper")
+	_passage(
+		"Einsturzbrücke", ravine, 24.0, {"lat": -1.1, "gap": 3.5, "hold": 0.9, "plank": 4.0},
+		{"lat": 1.1, "gap": 5.0, "hold": 0.45, "plank": 4.0},
+		"Die Brücke stürzt ein! Nicht stehen bleiben – lauf drüber!", TUNING.PATH_CRUISE + 1.5
+	)
+	var far: float = _leg(16.0, 15.0, 0.0, 2.0, "canopy", -18.0)
+	_line(far + 3.0, far + 14.0, 0.0, 0.0)
+	_safe(far + 3.0)
+
+
+## Passage 3 (cave): the waterfall slide with two chutes. Downhill Lumo gets
+## faster by himself; at the bottom the pool. Left a lily pad halves the jump
+## (3.8 m, then 3.1 m), right one long leap of 8.5 m to the crystal bank.
+func _waterfall_slide() -> void:
+	var top: float = _leg(22.0, 0.0, 0.0, 4.0, "cave")
+	_line(top + 3.0, top + 20.0, 0.0, 0.0)
+	_safe(top + 3.0)
+	_decor("waterfall", top + 16.0, 6.2, {"height": 10.0, "width": 5.0})
+	var chute: float = _leg(30.0, 0.0, -6.5, 4.0, "slide")
+	_safe(chute + 2.0)
+	_line(chute + 2.0, chute + 28.0, -2.0, -2.0, 1.0, 3.0, "lower")
+	_line(chute + 2.0, chute + 28.0, 2.0, 2.0, 1.0, 3.0, "upper")
+	var pool: float = _hole(8.5)
+	_platform(pool + 3.8, pool + 5.4, -2.0, 1.3, 0.0, "lily", {"axis": "h", "amp": 0.2, "rate": 1.4, "tempo": true})
+	_arc(pool - 0.6, pool + 4.4, -2.0, 2.2, 3, 1.0, "lower")
+	_arc(pool + 5.2, pool + 9.0, -2.0, 2.0, 3, 1.0, "lower")
+	_arc(pool - 0.8, pool + 9.4, 2.0, 3.2, 5, 1.0, "upper")
+	_gold(pool + 4.3, 2.0, 3.1, "upper")
+	_passage(
+		"Wasserfall-Rutsche", pool, 8.5, {"lat": -2.0, "gap": 3.8}, {"lat": 2.0, "gap": 8.5, "downhill": TUNING.GRADE_MAX},
+		"Wasserfall-Rutsche! Links mit dem Seerosenblatt, rechts der große Sprung.", TUNING.PATH_CRUISE * 0.95
+	)
+	var bank: float = _leg(18.0, 12.0, 0.0, 2.6, "cave")
+	_line(bank + 3.0, bank + 16.0, 0.0, 0.0)
+	_safe(bank + 3.0)
 
 
 ## The golden treasure hall, reached only through the hidden barrel.
