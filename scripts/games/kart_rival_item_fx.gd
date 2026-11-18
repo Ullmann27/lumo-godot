@@ -4,6 +4,7 @@ extends Node3D
 ## uses the same solid emblem as its skill-gate outcome. Racing owns the clock.
 
 const SYMBOLS = preload("res://scripts/games/kart_item_symbols.gd")
+const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
 
 const ITEM_COLORS := {
 	"boost": Color("ffd166"),
@@ -132,14 +133,18 @@ func set_item(value: String) -> void:
 	if value == _rendered_item:
 		return
 	_rendered_item = value
-	var visible_item: bool = ITEM_COLORS.has(value)
+	var visible_item: bool = ITEM_COLORS.has(value) or ITEM_CATALOG.has(value)
 	item_orb.visible = visible_item
 	item_ring.visible = visible_item
 	for kind in _held_symbols:
 		(_held_symbols[kind] as Node3D).visible = kind == value
 	if visible_item:
-		item_ring.material_override = _held_ring_materials[value]
-		SYMBOLS.advance(_held_symbols[value], elapsed, reduced_motion)
+		if _held_ring_materials.has(value) and _held_symbols.has(value):
+			item_ring.material_override = _held_ring_materials[value]
+			SYMBOLS.advance(_held_symbols[value], elapsed, reduced_motion)
+		else:
+			# Catalogue items without an own emblem show their colour on the hover rail.
+			item_ring.material_override = _material(ITEM_CATALOG.color(value).lightened(0.16), 0.82, 1.4)
 
 
 func set_shield(seconds: float) -> void:

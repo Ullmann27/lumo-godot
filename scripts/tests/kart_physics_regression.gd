@@ -78,18 +78,24 @@ func _test_drift_tiers() -> void:
 	assert(game.drift_charge >= 0.8 and game.drift_charge < 1.8, "A controlled drift charges blue at the live pace scale")
 	game.boost_time = 0
 	game._release_drift()
-	assert(is_equal_approx(game.boost_time, 1.0) and game.drift_tier_count == [1, 0])
+	assert(is_equal_approx(game.boost_time, 1.0) and game.drift_tier_count == [1, 0, 0])
 	assert("Blauer" in game.message.text)
 	game.drifting = true
 	game.drift_charge = 1.9
 	game.boost_time = 0
 	game._release_drift()
-	assert(game.boost_time >= 1.8 and game.drift_tier_count == [1, 1], "A long drift is orange")
+	assert(game.boost_time >= 1.8 and game.drift_tier_count == [1, 1, 0], "A long drift is orange")
+	game.drifting = true
+	game.drift_charge = 2.8
+	game.boost_time = 0
+	game._release_drift()
+	assert(game.boost_time >= 2.5 and game.drift_tier_count == [1, 1, 1], "A very long drift is purple")
+	assert("Lila" in game.message.text or "Turbo-Kette" in game.message.text)
 	game.drifting = true
 	game.drift_charge = 0.5
 	game.boost_time = 0
 	game._release_drift()
-	assert(game.boost_time == 0 and game.drift_tier_count == [1, 1], "A short drift gives nothing")
+	assert(game.boost_time == 0 and game.drift_tier_count == [1, 1, 1], "A short drift gives nothing")
 	completed_checks += 1
 
 
@@ -529,7 +535,7 @@ func _run() -> void:
 	print(
 		(
 			"[KartPhysics] PASS: rail walls on every course at full turbo, sliding contact, "
-			+ "blue/orange drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
+			+ "blue/orange/purple drift tiers, wrong-way warning, reverse line and jump-ahead give no lap, "
 			+ "GAS/BREMSE pedals with reverse, on-screen pad, forward-facing boost chevrons, "
 			+ "and a physical Wolkenweg split route"
 		)

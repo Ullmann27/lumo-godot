@@ -45,6 +45,19 @@ const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
 const JUMP_HINT_LEAD_M: float = 70.0
 ## Maximum intentional lateral displacement during a precision flight.
 const PRECISION_AIR_LATERAL_M: float = 2.0
+const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
+const RACE_RULES = preload("res://scripts/games/kart_items/kart_race_rules.gd")
+const ITEM_RUNTIME = preload("res://scripts/games/kart_items/kart_item_runtime.gd")
+const FX_DIRECTOR = preload("res://scripts/games/kart_items/kart_fx_director.gd")
+const ITEM_BOX_SCENE = preload("res://scenes/games/props/kart_item_box.tscn")
+const BOOST_RING_SCENE = preload("res://scenes/games/props/kart_boost_ring.tscn")
+const TRIGGER_GROUP := "lumo_kart_triggers"
+## Built-in boost ring layout per course (fraction of lap, lateral offset).
+const BOOST_RING_LAYOUT: Array = [[0.27, 0.0], [0.61, -1.6]]
+## A row of surprise boxes across the road (lateral metres) at two calm spots per lap.
+const CATALOG_BOX_ROW: Array[float] = [-3.2, 0.0, 3.2]
+const CATALOG_BOX_ROWS_PER_LAP: int = 2
+const CATALOG_BOX_RADIUS: float = 2.2
 const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
@@ -60,9 +73,9 @@ const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 const SESSION_VERSION: int = 4
 const SESSION_VERSIONS: Array[int] = [1, 2, 3, 4]
 const MODE_IDS: Array[String] = ["race", "cup", "time_trial", "training", "arena"]
-## Drift turbo tiers: blue after 0.8 s of full steering, orange after 1.8 s.
-const DRIFT_TIERS: Array[float] = [0.8, 1.8]
-const DRIFT_BOOST_SECONDS: Array[float] = [1.0, 1.8]
+## Drift turbo tiers: blue after 0.8 s of full steering, orange after 1.8 s, purple after 2.7 s.
+const DRIFT_TIERS: Array[float] = RACE_RULES.DRIFT_TIERS
+const DRIFT_BOOST_SECONDS: Array[float] = RACE_RULES.DRIFT_BOOST_SECONDS
 ## Arcade jump: strong gravity and a capped take-off speed keep flights short and readable.
 ## Tuned on the Himmelsinseln gap: 17 m/s (Entdecken) clears it, a crawl below ~13 m/s falls,
 ## turbo speed lands before the crystal cave.
@@ -144,7 +157,25 @@ var elapsed: float = 0.0
 var boost_time: float = 0.0
 var boosts: int = 1
 var drift_charge: float = 0.0
-var drift_tier_count: Array[int] = [0, 0]
+var drift_tier_count: Array[int] = [0, 0, 0]
+## Arcade gameplay layer (items, spins, slipstream, tricks, combos, catch-up).
+var item_charges: int = 0
+var player_spin_time: float = 0.0
+var magnet_time: float = 0.0
+var aurora_time: float = 0.0
+var slipstream_charge: float = 0.0
+var slipstream_ready_leader: int = -1
+var combo: int = 0
+var last_boost_source_at: float = -100.0
+var item_runtime: Node3D
+var fx: Node3D
+var track_triggers: Array[Node3D] = []
+var trigger_cooldowns: Dictionary = {}
+var opponent_spin_times: Array[float] = []
+var opponent_aurora_times: Array[float] = []
+var opponent_previous_positions: Array[Vector3] = []
+var player_previous_position := Vector3.ZERO
+var gameplay_stats: Dictionary = {}
 var wall_contacts: int = 0
 var airborne: bool = false
 var air_trick: Dictionary = {}
@@ -201,6 +232,11 @@ var item_boxes: Array[Node3D] = []
 var item_box_distances: Array[float] = []
 var item_box_laterals: Array[float] = []
 var item_box_collected: Dictionary = {}
+## Surprise item boxes (branch item system) beside the HEAD skill resonance rings.
+var catalog_boxes: Array[Node3D] = []
+var catalog_box_distances: Array[float] = []
+var catalog_box_laterals: Array[float] = []
+var catalog_box_collected: Dictionary = {}
 var hud: Label
 var message: Label
 var boost_button: Control
@@ -397,6 +433,10 @@ func _build_world() -> void:
 	item_box_distances.clear()
 	item_box_laterals.clear()
 	item_box_collected.clear()
+	catalog_boxes.clear()
+	catalog_box_distances.clear()
+	catalog_box_laterals.clear()
+	catalog_box_collected.clear()
 	obstacle_distances.clear()
 	opponents.clear()
 	opponent_headings.clear()
@@ -410,6 +450,11 @@ func _build_world() -> void:
 	opponent_scores.clear()
 	opponent_targets.clear()
 	arena_pickup_timers.clear()
+	opponent_spin_times.clear()
+	opponent_aurora_times.clear()
+	opponent_previous_positions.clear()
+	track_triggers.clear()
+	trigger_cooldowns.clear()
 	ghost = null
 	darkride_event.bind_world(null)
 	if is_instance_valid(kart_audio):
@@ -463,6 +508,11 @@ func _build_world() -> void:
 		var item_layout: Array = ADVENTURE_DRAMA.item_layout(track_id)
 		for entry in item_layout:
 			_item_box(float(entry[0]) * track_length, float(entry[1]))
+		for entry in BOOST_RING_LAYOUT:
+			_boost_ring(float(entry[0]) * track_length, float(entry[1]))
+		for fraction in _catalog_box_fractions():
+			for lateral in CATALOG_BOX_ROW:
+				_catalog_box(float(fraction) * track_length, float(lateral))
 	player = VEHICLE.new()
 	player.set_meta("roadside_speed_factor", 1.0)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
@@ -549,6 +599,9 @@ func _build_world() -> void:
 		opponent_scores.append(0)
 		opponent_targets.append(i * 5)
 		opponent_headings.append(0.0)
+		opponent_spin_times.append(0.0)
+		opponent_aurora_times.append(0.0)
+		opponent_previous_positions.append(Vector3.ZERO)
 	camera = Camera3D.new()
 	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
@@ -559,6 +612,7 @@ func _build_world() -> void:
 	speed_fx.name = "CameraSpeedFx"
 	camera.add_child(speed_fx)
 	speed_fx.set_motion(0.0, false, reduced_motion)
+	_build_gameplay_layer()
 	if mode == "arena":
 		player.position = Vector3(0, 0.04, 28)
 		player_heading = 0
@@ -862,7 +916,7 @@ func _begin_race() -> void:
 	brake_visual_amount = 0.0
 	reverse_hold_time = 0.0
 	drift_charge = 0
-	drift_tier_count = [0, 0]
+	drift_tier_count = [0, 0, 0]
 	wall_contacts = 0
 	airborne = false
 	air_trick = {}
@@ -881,6 +935,7 @@ func _begin_race() -> void:
 	drifting = false
 	shield_time = 0
 	item = ""
+	_reset_gameplay_layer()
 	physical_velocity = Vector3.ZERO
 	checkpoint_index = 0
 	arena_scores = 0
@@ -1046,7 +1101,7 @@ func _build_pedal_pad() -> Control:
 	drift_button = _action("DRIFT\nHALTEN", func(): pass, Color("bc8eff"), 106)
 	drift_button.name = "DriftAction"
 	drift_button.icon_id = "drift"
-	drift_button.button_down.connect(func(): drifting = racing and not paused)
+	drift_button.button_down.connect(_press_drift)
 	drift_button.button_up.connect(_release_drift)
 	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
@@ -1809,6 +1864,7 @@ func _physics_process(delta: float) -> void:
 				_finish()
 		else:
 			_drive_opponents(delta)
+			_update_gameplay_layer(delta)
 			_track_events()
 			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
@@ -1843,6 +1899,9 @@ func _physics_process(delta: float) -> void:
 		for i in range(item_boxes.size()):
 			if item_boxes[i].visible:
 				RESONANCE.advance_ring(item_boxes[i], elapsed + float(i) * 0.37, reduced_motion)
+		for i in range(catalog_boxes.size()):
+			if catalog_boxes[i].visible and catalog_boxes[i].has_method("advance_managed"):
+				catalog_boxes[i].advance_managed(0.0 if paused else delta, reduced_motion)
 	if is_instance_valid(shield_visual):
 		shield_visual.visible = shield_time > 0
 		if shield_visual.visible and not reduced_motion:
@@ -1903,6 +1962,11 @@ func _boost_for(seconds: float) -> float:
 
 
 func _drive_player(delta: float, axis: float, braking: float) -> void:
+	if player_spin_time > 0.0:
+		# A friendly spin: steering is muted for a moment, the kart keeps rolling.
+		axis *= 0.25
+		drifting = false
+		drift_charge = 0.0
 	if mode != "arena" and not open_edge_fall and _drive_loop(delta, axis, braking):
 		return
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
@@ -1937,6 +2001,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		target *= 1.0 - braking * 0.94
 	if hit_timer > 0:
 		target *= _factor("stability", 0.45)
+	if target > 0.0:
+		target *= _gameplay_speed_factor()
 	var road: Dictionary = {}
 	if mode != "arena":
 		road = world.sample_road(player.position, previous_road_distance)
@@ -2212,6 +2278,8 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			boost_time += _boost_for(float(trick_reward.boost))
 			message.text = str(trick_reward.label)
 			_sound_effect("boost")
+			_stat("tricks")
+			_award_boost("trick_landing", 0.0, "")
 		if is_instance_valid(drive_feedback):
 			drive_feedback.landed(
 				impact,
@@ -2498,6 +2566,8 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				opponent_item_cooldowns[index] = 1.8
 				break
 
+	if opponent_items[index].is_empty() and opponent_item_cooldowns[index] <= 0.0:
+		_rival_collect_catalog_box(index)
 	if opponent_items[index].is_empty():
 		_sync_rival_item_fx(index)
 		return
@@ -2515,9 +2585,11 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 					message.text = "Rivale lädt Lichtimpuls – Abstand oder Schild!"
 					_sound_effect("item")
 		"shield":
-			if _rival_target_near(index, 7.0):
+			if _rival_target_near(index, 7.0) or _rival_threatened(index):
 				opponent_shield_times[index] = 5.0
 				opponent_items[index] = ""
+		_:
+			_rival_use_catalog_item(index, local_gap)
 	_sync_rival_item_fx(index)
 
 
@@ -2695,6 +2767,7 @@ func _drive_opponents(delta: float) -> void:
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
 		target_speed *= clampf(float(rival.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
+		target_speed *= _rival_gameplay_factor(i)
 		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
 		var forward := Vector3(-sin(opponent_headings[i]), 0, -cos(opponent_headings[i]))
 		if opponent_stuns[i] <= 0.0:
@@ -2829,14 +2902,17 @@ func _update_hud() -> void:
 	var enabled: bool = racing and not paused and not finished
 	boost_button.text = "SPEED\n◆ %d" % boosts
 	boost_button.disabled = boosts == 0 or not enabled
-	var drift_state: String = "HALTEN"
-	if drift_charge >= DRIFT_TIERS[1]:
-		drift_state = "ORANGE!"
-	elif drift_charge >= DRIFT_TIERS[0]:
-		drift_state = "BLAU!"
+	var drift_state: String = RACE_RULES.drift_label(drift_charge)
+	if airborne and air_trick.is_empty():
+		drift_state = "TRICK!"
 	drift_button.text = "DRIFT\n" + drift_state
 	drift_button.disabled = not enabled
-	item_button.text = {"": "TAKTIK\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "SCHUB\n➜"}.get(item, "TAKTIK")
+	if item.is_empty() or item in ["shield", "pulse", "boost"]:
+		item_button.text = {"": "TAKTIK\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "SCHUB\n➜"}.get(item, "TAKTIK")
+	else:
+		item_button.text = ITEM_CATALOG.label(item)
+	if item_charges > 1:
+		item_button.text += " ×%d" % item_charges
 	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
@@ -2902,7 +2978,7 @@ func _track_events() -> void:
 	var lap: int = int(distance / track_length)
 	for i in range(gems.size()):
 		var key: int = _gem_key(lap, i)
-		if not collected.has(key) and player.position.distance_to(gems[i].position) < 1.75:
+		if not collected.has(key) and player.position.distance_to(gems[i].position) < _gem_pickup_radius():
 			collected[key] = true
 			if collected.size() % 3 == 0:
 				boosts = mini(3, boosts + 1)
@@ -2933,8 +3009,10 @@ func _track_events() -> void:
 				"Impuls" if item == "pulse" else "Schild" if item == "shield" else "Schub"
 			]
 			_sound_effect("item")
+	_collect_catalog_boxes(lap)
 	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
 		if absf(fposmod(distance, track_length) - float(fraction) * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
+			_trigger_once("pad_%d" % int(float(fraction) * 1000.0), "boost_pad")
 			boost_time = maxf(boost_time, _boost_for(1.0))
 
 
@@ -2942,6 +3020,9 @@ func _use_item() -> void:
 	if item.is_empty() or not racing or paused or finished:
 		return
 	_sound_effect("item")
+	if item not in ["boost", "shield", "pulse"]:
+		_use_catalog_item()
+		return
 	match item:
 		"boost":
 			boost_time = maxf(boost_time, _boost_for(3.0))
@@ -3061,7 +3142,10 @@ func _update_vehicles(_delta: float) -> void:
 		var kart: LumoRaceKart = opponents[i]
 		var flight: Variant = kart.get_meta(RIVAL_FLIGHT.STATE_KEY) if kart.has_meta(RIVAL_FLIGHT.STATE_KEY) else null
 		var rival_airborne: bool = flight != null and bool(flight.active)
-		var rival_stunned: bool = i < opponent_stuns.size() and opponent_stuns[i] > 0.0
+		var rival_stunned: bool = (
+			(i < opponent_stuns.size() and opponent_stuns[i] > 0.0)
+			or (i < opponent_spin_times.size() and opponent_spin_times[i] > 0.0)
+		)
 		kart.set_driver_runtime_state(rival_airborne, rival_stunned, paused)
 	for fx in opponent_item_fx:
 		if is_instance_valid(fx):
@@ -3233,6 +3317,10 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 	if camera_punch > 0.0 and not reduced_motion:
 		camera.fov += camera_punch * 9.5
 		camera_punch = maxf(0.0, camera_punch - delta * 2.2)
+	if is_instance_valid(fx) and not snap:
+		# Drive-through push: brief FOV punch and a tiny shake (both off in reduced motion).
+		camera.fov += fx.camera_fov_kick()
+		camera.position += camera.basis * fx.camera_shake()
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
@@ -3257,14 +3345,15 @@ func _boost() -> void:
 func _release_drift() -> void:
 	drifting = false
 	if racing and not paused and not finished and drift_charge >= DRIFT_TIERS[0]:
-		var tier: int = 1 if drift_charge >= DRIFT_TIERS[1] else 0
+		var tier: int = RACE_RULES.drift_tier(drift_charge)
 		drift_tier_count[tier] += 1
 		boost_time = maxf(boost_time, _boost_for(DRIFT_BOOST_SECONDS[tier]))
-		camera_punch = maxf(camera_punch, 0.20 if tier == 0 else 0.34)
-		message.text = "Oranger Drift-Turbo!" if tier == 1 else "Blauer Drift-Turbo!"
+		camera_punch = maxf(camera_punch, [0.20, 0.34, 0.45][tier])
+		message.text = ["Blauer Drift-Turbo!", "Oranger Drift-Turbo!", "Lila Mega-Drift-Turbo!"][tier]
 		_sound_effect("drift")
 		if is_instance_valid(drive_feedback):
 			drive_feedback.boost_release(tier + 1)
+		_award_boost(["drift_blue", "drift_orange", "drift_purple"][tier], 0.0, "")
 	drift_charge = 0
 
 
@@ -3530,7 +3619,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			if not event.pressed:
 				_release_drift()
 			else:
-				drifting = racing and not paused
+				_press_drift()
 		elif event.pressed and event.keycode == KEY_SPACE:
 			_boost()
 		elif event.pressed and event.keycode == KEY_E:
@@ -4335,7 +4424,8 @@ func _save_session() -> void:
 		"mode", "track_id", "selected_driver", "selected_kart", "player_heading", "previous_road_distance",
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
 		"arena_scores", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings",
-		"item", "shield_time", "reset_count", "setup_snapshot", "item_box_collected", "opponent_items"
+		"item", "shield_time", "reset_count", "setup_snapshot", "item_box_collected", "opponent_items",
+		"item_charges", "catalog_box_collected"
 	]:
 		config.set_value("race", key, get(key))
 	for key in RIVAL_SESSION_TIMERS:
@@ -4486,6 +4576,8 @@ func _sync_item_box_visibility() -> void:
 	var lap: int = int(distance / track_length)
 	for i in range(item_boxes.size()):
 		item_boxes[i].visible = not item_box_collected.has(lap * item_boxes.size() + i)
+	for i in range(catalog_boxes.size()):
+		catalog_boxes[i].visible = not catalog_box_collected.has(lap * catalog_boxes.size() + i)
 
 
 func _restore_item_continuity(config: ConfigFile) -> void:
@@ -4498,13 +4590,24 @@ func _restore_item_continuity(config: ConfigFile) -> void:
 				and typeof(saved_pickups[key]) == TYPE_BOOL and saved_pickups[key]
 			):
 				item_box_collected[key] = true
+	catalog_box_collected.clear()
+	var saved_boxes = config.get_value("race", "catalog_box_collected", {})
+	if saved_boxes is Dictionary:
+		for key in saved_boxes:
+			if typeof(key) == TYPE_INT and key >= 0 and typeof(saved_boxes[key]) == TYPE_BOOL and saved_boxes[key]:
+				catalog_box_collected[key] = true
 	_sync_item_box_visibility()
 	var saved_items = config.get_value("race", "opponent_items", [])
 	for i in range(opponents.size()):
 		var saved_item: String = ""
 		if saved_items is Array and i < saved_items.size() and saved_items[i] is String:
 			saved_item = saved_items[i]
-		opponent_items[i] = saved_item if saved_item in ["boost", "shield", "pulse"] else ""
+		opponent_items[i] = saved_item if ITEM_CATALOG.has(saved_item) else ""
+	if not item.is_empty() and not ITEM_CATALOG.has(item):
+		item = ""
+	var saved_charges = config.get_value("race", "item_charges", 0)
+	var max_charges: int = maxi(1, int(ITEM_CATALOG.entry(item).get("charges", 1)))
+	item_charges = 0 if item.is_empty() else clampi(int(saved_charges) if typeof(saved_charges) in [TYPE_INT, TYPE_FLOAT] else 1, 1, max_charges)
 	for key in RIVAL_SESSION_TIMERS:
 		var timers: Array = get(key)
 		var saved_timers = config.get_value("race", key, [])
@@ -4657,6 +4760,20 @@ func _roll_item_for_place(_place: int) -> String:
 	return "boost"
 
 
+## Surprise item boxes draw from the data-driven catalogue (assets/kart/items/kart_items.json).
+## Skill resonance rings keep their deterministic award.
+func _roll_catalog_item(place: int, progress: float = -INF) -> String:
+	# Data-driven odds from assets/kart/items/kart_items.json; the legacy three-item
+	# pool stays as a safe fallback if the catalog cannot be read.
+	var rolled: String = ITEM_CATALOG.roll(
+		place, rng, _catch_up_amount(place, distance if progress == -INF else progress)
+	)
+	if not rolled.is_empty():
+		return rolled
+	var pool: Array[String] = _item_pool_for_place(place)
+	return pool[rng.randi_range(0, pool.size() - 1)]
+
+
 func _item_box(distance_on_track: float, lateral: float) -> void:
 	var basis: Basis = world.frame(distance_on_track)
 	var transform := Transform3D(
@@ -4666,6 +4783,13 @@ func _item_box(distance_on_track: float, lateral: float) -> void:
 	item_boxes.append(node)
 	item_box_distances.append(distance_on_track)
 	item_box_laterals.append(lateral)
+
+
+func _boost_ring(distance_on_track: float, lateral: float) -> void:
+	var ring: Node3D = BOOST_RING_SCENE.instantiate()
+	ring.name = "BoostRing"
+	race_root.add_child(ring)
+	ring.global_transform = Transform3D(world.frame(distance_on_track), _track_position(distance_on_track, lateral))
 
 
 func _mesh(parent: Node3D, mesh: Mesh, position: Vector3, color: Color) -> MeshInstance3D:
@@ -4758,3 +4882,543 @@ func _apply_volumes() -> void:
 func _sound_effect(kind: String) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind)
+
+
+# --- Arcade gameplay layer (Lumo-Kart items, spins, slipstream, tricks, combos) ---
+
+const RIVAL_DISPLAY_NAMES: Dictionary = {
+	"otter": "Otter", "rabbit": "Hase", "badger": "Dachs", "cat": "Katze", "fox": "Fuchs",
+	"lion": "Löwe", "owl": "Eule", "squirrel": "Eichhörnchen", "turtle": "Schildkröte",
+}
+var player_spin_total: float = 1.0
+var opponent_spin_totals: Array[float] = []
+var _player_base_basis := Basis.IDENTITY
+var _player_spun_basis := Basis.IDENTITY
+var _player_spin_applied: bool = false
+var _flash_layer: CanvasLayer
+
+
+func _build_gameplay_layer() -> void:
+	item_runtime = ITEM_RUNTIME.new()
+	item_runtime.name = "KartItemRuntime"
+	item_runtime.reduced_motion = reduced_motion
+	race_root.add_child(item_runtime)
+	if mode != "arena" and is_instance_valid(world):
+		item_runtime.setup(track_length, WORLD.WALL_LATERAL, _frame_at)
+	_flash_layer = CanvasLayer.new()
+	_flash_layer.name = "KartFlashLayer"
+	_flash_layer.layer = 1
+	race_root.add_child(_flash_layer)
+	fx = FX_DIRECTOR.new()
+	fx.name = "KartFxDirector"
+	race_root.add_child(fx)
+	fx.setup(_flash_layer, graphics_profile, reduced_motion)
+	fx.sound_hook.connect(_on_fx_sound)
+	opponent_spin_totals.clear()
+	for i in range(opponents.size()):
+		opponent_spin_totals.append(1.0)
+		opponent_previous_positions[i] = opponents[i].global_position
+	player_previous_position = player.global_position
+	# Track scenes may place their own LumoKartItemBox / BoostRing / BoostPad nodes.
+	for node in get_tree().get_nodes_in_group(TRIGGER_GROUP):
+		if not race_root.is_ancestor_of(node) or node in item_boxes:
+			continue
+		if node in catalog_boxes:
+			continue
+		if str(node.get("trigger_kind")) == "item_box" and mode != "arena":
+			node.managed = true
+			var sampled_box: Dictionary = world.sample_road(node.global_position, 0.0)
+			catalog_boxes.append(node)
+			catalog_box_distances.append(float(sampled_box.distance))
+			catalog_box_laterals.append(float(sampled_box.lateral))
+		else:
+			track_triggers.append(node)
+
+
+func _frame_at(progress: float, lateral: float) -> Transform3D:
+	return Transform3D(world.frame(progress), _track_position(progress, lateral))
+
+
+func _reset_gameplay_layer() -> void:
+	item_charges = 0
+	player_spin_time = 0.0
+	player_spin_total = 1.0
+	magnet_time = 0.0
+	aurora_time = 0.0
+	slipstream_charge = 0.0
+	slipstream_ready_leader = -1
+	combo = 0
+	last_boost_source_at = -100.0
+	trigger_cooldowns.clear()
+	_player_spin_applied = false
+	for i in range(opponent_spin_times.size()):
+		opponent_spin_times[i] = 0.0
+		opponent_aurora_times[i] = 0.0
+	if is_instance_valid(item_runtime):
+		item_runtime.clear()
+	gameplay_stats = {
+		"items_used": 0, "rival_items_used": 0, "player_hits_taken": 0, "player_hits_scored": 0,
+		"blocked": 0, "intercepted": 0, "slipstreams": 0, "tricks": 0, "rings": 0, "max_combo": 0,
+		"boost_sources": {},
+	}
+
+
+func _on_fx_sound(_event_id: String, fallback: String) -> void:
+	_sound_effect(fallback)
+
+
+func _fx(event_id: String, at: Vector3, strength: float = 1.0) -> void:
+	if is_instance_valid(fx):
+		fx.trigger(event_id, at, strength)
+
+
+func _stat(key: String, amount: int = 1) -> void:
+	if gameplay_stats.is_empty():
+		_reset_gameplay_layer()
+	gameplay_stats[key] = int(gameplay_stats.get(key, 0)) + amount
+
+
+func _rival_name(index: int) -> String:
+	if index < 0 or index >= opponents.size():
+		return "Ein Rivale"
+	return str(RIVAL_DISPLAY_NAMES.get(str(opponents[index].animal), "Ein Rivale"))
+
+
+func _leader_progress() -> float:
+	var best: float = distance
+	for value in opponent_distances.slice(0, opponents.size()):
+		best = maxf(best, value)
+	return best
+
+
+func _catch_up_amount(place: int, progress: float) -> float:
+	if place < 3 or opponents.is_empty():
+		return 0.0
+	return RACE_RULES.gap_ratio(_leader_progress() - progress)
+
+
+func _gem_pickup_radius() -> float:
+	return 6.0 if magnet_time > 0.0 else 1.75
+
+
+## Player top-speed factor from spins, Nordlicht, magnet tow and the catch-up help.
+func _gameplay_speed_factor() -> float:
+	var factor: float = 1.0
+	if player_spin_time > 0.0:
+		factor *= 0.3
+	if aurora_time > 0.0:
+		factor *= 1.22
+	elif magnet_time > 0.0:
+		factor *= 1.06
+	if mode in ["race", "cup"] and not opponents.is_empty():
+		factor *= RACE_RULES.player_catch_up(_leader_progress() - distance, difficulty)
+	return factor
+
+
+func _rival_gameplay_factor(index: int) -> float:
+	var factor: float = 1.0
+	if index < opponent_spin_times.size() and opponent_spin_times[index] > 0.0:
+		factor *= 0.25
+	if index < opponent_aurora_times.size() and opponent_aurora_times[index] > 0.0:
+		factor *= 1.2
+	if mode in ["race", "cup"] and index < opponent_distances.size():
+		factor *= RACE_RULES.rival_rubber_band(opponent_distances[index] - distance, difficulty)
+	return factor
+
+
+func _racers() -> Array:
+	var result: Array = [{
+		"key": -1, "progress": distance, "lateral": lane,
+		"protected": shield_time > 0.0 or aurora_time > 0.0,
+	}]
+	for i in range(opponents.size()):
+		result.append({
+			"key": i, "progress": opponent_distances[i], "lateral": opponent_lanes[i],
+			"protected": opponent_shield_times[i] > 0.0 or opponent_aurora_times[i] > 0.0,
+		})
+	return result
+
+
+## Closest racer ahead of / behind `key` in race progress.
+func _neighbour(key: int, ahead: bool) -> Dictionary:
+	var own: float = distance if key < 0 else opponent_distances[key]
+	var own_lane: float = lane if key < 0 else opponent_lanes[key]
+	var best := {"key": -99, "gap": INF, "lateral": 0.0}
+	for racer in _racers():
+		if int(racer.key) == key:
+			continue
+		var gap: float = (float(racer.progress) - own) * (1.0 if ahead else -1.0)
+		if gap > 0.5 and gap < float(best.gap):
+			best = {"key": int(racer.key), "gap": gap, "lateral": float(racer.lateral) - own_lane}
+	return best
+
+
+func _rival_threatened(index: int) -> bool:
+	if not is_instance_valid(item_runtime) or index >= opponent_distances.size():
+		return false
+	return item_runtime.incoming_for(index, opponent_distances[index]) < 1.2
+
+
+func _grant_item(id: String) -> void:
+	item = id
+	item_charges = maxi(1, int(ITEM_CATALOG.entry(id).get("charges", 1)))
+
+
+func _consume_item() -> void:
+	item_charges = maxi(1, item_charges) - 1
+	if item_charges <= 0:
+		item = ""
+		item_charges = 0
+	_stat("items_used")
+
+
+func _use_catalog_item() -> void:
+	var id: String = item
+	var row: Dictionary = ITEM_CATALOG.entry(id)
+	if row.is_empty():
+		item = ""
+		item_charges = 0
+		return
+	var at: Vector3 = player.global_position + Vector3.UP * 0.8
+	var behaviour: String = str(row.behaviour)
+	if mode == "arena" and behaviour in ["homing_projectile", "bouncing_projectile", "dropped_trap"]:
+		behaviour = "boost"
+	match behaviour:
+		"boost":
+			boost_time = maxf(boost_time, _boost_for(float(row.get("seconds", 1.6))))
+			message.text = "%s!" % row.name
+			_award_boost("boost_pad", 0.0, "")
+		"homing_projectile":
+			var target: Dictionary = _neighbour(-1, true)
+			item_runtime.fire_homing(id, -1, distance, lane, int(target.key))
+			message.text = (
+				"Sternrakete fliegt zu %s!" % _rival_name(int(target.key))
+				if int(target.key) >= 0 else "Sternrakete fliegt voraus!"
+			)
+			_fx("rocket_launch", at)
+		"bouncing_projectile":
+			item_runtime.fire_bouncing(id, -1, distance, lane, clampf(steering, -1.0, 1.0) * 6.0)
+			message.text = "Funkenkugel – sie prallt von den Banden ab!"
+			_fx("rocket_launch", at, 0.6)
+		"dropped_trap":
+			item_runtime.drop_trap(id, -1, distance, lane)
+			message.text = "Blubberblase liegt hinter dir – sie fängt auch Raketen!"
+		"magnet":
+			magnet_time = float(row.get("seconds", 4.0))
+			message.text = "Sternmagnet: Sterne fliegen zu dir, Windschatten zieht stärker!"
+			_fx("magnet", at)
+		"aurora":
+			aurora_time = float(row.get("seconds", 4.5))
+			shield_time = maxf(shield_time, aurora_time)
+			boost_time = maxf(boost_time, _boost_for(aurora_time * 0.5))
+			message.text = "Nordlicht-Lauf! Du leuchtest und bist geschützt."
+			_fx("aurora", at)
+	_consume_item()
+
+
+func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
+	var id: String = opponent_items[index]
+	if not ITEM_CATALOG.has(id):
+		opponent_items[index] = ""
+		return
+	var behaviour: String = ITEM_CATALOG.behaviour(id)
+	var ahead: Dictionary = _neighbour(index, true)
+	var behind: Dictionary = _neighbour(index, false)
+	var context := {
+		"ahead_gap": ahead.gap, "ahead_lateral": ahead.lateral, "behind_gap": behind.gap,
+		"threatened": _rival_threatened(index), "player_near": local_gap.length(),
+		"place": _opponent_place(index),
+	}
+	if not RACE_RULES.rival_should_use(id, behaviour, context):
+		return
+	var progress: float = opponent_distances[index]
+	var rival_lane: float = opponent_lanes[index]
+	match behaviour:
+		"boost":
+			opponent_boost_times[index] = 2.2
+		"homing_projectile":
+			if not is_instance_valid(item_runtime) or not item_runtime.fire_homing(id, index, progress, rival_lane, int(ahead.key)):
+				return
+			if int(ahead.key) == -1:
+				message.text = "Achtung: Sternrakete von %s! Schild oder Blubberblase hilft." % _rival_name(index)
+			_fx("rocket_launch", opponents[index].global_position + Vector3.UP * 0.8, 0.5)
+		"bouncing_projectile":
+			if not is_instance_valid(item_runtime) or not item_runtime.fire_bouncing(id, index, progress, rival_lane, 0.0):
+				return
+		"dropped_trap":
+			if not is_instance_valid(item_runtime):
+				return
+			item_runtime.drop_trap(id, index, progress, rival_lane)
+		"magnet":
+			opponent_boost_times[index] = 1.5
+		"aurora":
+			var seconds: float = ITEM_CATALOG.number(id, "seconds", 4.5)
+			opponent_aurora_times[index] = seconds
+			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
+		_:
+			return
+	opponent_items[index] = ""
+	opponent_item_cooldowns[index] = 1.8
+	_stat("rival_items_used")
+
+
+func _update_gameplay_layer(delta: float) -> void:
+	player_spin_time = maxf(0.0, player_spin_time - delta)
+	magnet_time = maxf(0.0, magnet_time - delta)
+	aurora_time = maxf(0.0, aurora_time - delta)
+	for i in range(opponent_spin_times.size()):
+		opponent_spin_times[i] = maxf(0.0, opponent_spin_times[i] - delta)
+		opponent_aurora_times[i] = maxf(0.0, opponent_aurora_times[i] - delta)
+	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
+		for event in item_runtime.step(delta, _racers()):
+			_apply_item_event(event)
+	_update_slipstream(delta)
+	_update_track_triggers()
+	_update_aurora_contacts()
+	_apply_spin_visuals()
+	player_previous_position = player.global_position
+	for i in range(opponents.size()):
+		opponent_previous_positions[i] = opponents[i].global_position
+
+
+func _spin_player(seconds: float) -> void:
+	player_spin_time = seconds
+	player_spin_total = maxf(0.1, seconds)
+	speed *= 0.6
+	hit_timer = maxf(hit_timer, 0.3)
+	_stat("player_hits_taken")
+
+
+func _spin_rival(index: int, seconds: float) -> void:
+	opponent_spin_times[index] = seconds
+	opponent_spin_totals[index] = maxf(0.1, seconds)
+
+
+func _apply_item_event(event: Dictionary) -> void:
+	var target: int = int(event.target)
+	var source: int = int(event.get("source", -99))
+	var at: Vector3 = event.get("position", Vector3.ZERO)
+	if str(event.type) == "intercepted":
+		_stat("intercepted")
+		_fx("blocked", at)
+		if source == -1 or target == -1:
+			message.text = "Die Blubberblase hat die Rakete gefangen!"
+		return
+	if str(event.type) == "blocked":
+		_stat("blocked")
+		_fx("blocked", at)
+		if target == -1:
+			message.text = "Dein Schild hält – nichts passiert!"
+		return
+	if target == -1:
+		_spin_player(float(event.spin))
+		_fx("hit_spin", player.global_position + Vector3.UP * 0.8)
+		message.text = "Huch, gedreht! Gleich geht's weiter."
+		if source >= 0 and source < opponents.size():
+			opponents[source].cheer_briefly(1.2)
+	elif target >= 0 and target < opponents.size():
+		_spin_rival(target, float(event.spin))
+		_fx("hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
+		if source == -1:
+			_stat("player_hits_scored")
+			message.text = "Treffer! %s dreht sich im Kreis." % _rival_name(target)
+
+
+func _update_slipstream(delta: float) -> void:
+	if mode not in ["race", "cup"] or opponents.is_empty() or airborne:
+		slipstream_charge = maxf(0.0, slipstream_charge - delta * 2.0)
+		return
+	var forward := Vector3(-sin(player_heading), 0.0, -cos(player_heading))
+	var leader: int = -1
+	for i in range(opponents.size()):
+		if RACE_RULES.in_slipstream(player.global_position, forward, opponents[i].global_position, speed):
+			leader = i
+			break
+	if leader < 0:
+		slipstream_charge = maxf(0.0, slipstream_charge - delta * 2.0)
+		slipstream_ready_leader = -1
+		return
+	slipstream_ready_leader = leader
+	slipstream_charge += delta * (2.0 if magnet_time > 0.0 else 1.0)
+	if slipstream_charge >= RACE_RULES.SLIPSTREAM_CHARGE_SECONDS:
+		slipstream_charge = 0.0
+		message.text = "Windschatten von %s – Schub!" % _rival_name(leader)
+		_stat("slipstreams")
+		_award_boost("slipstream", RACE_RULES.SLIPSTREAM_BOOST_SECONDS, "")
+
+
+func _trigger_once(key: String, event_id: String, seconds: float = 0.0) -> bool:
+	if float(trigger_cooldowns.get(key, -1.0)) > elapsed:
+		return false
+	trigger_cooldowns[key] = elapsed + 1.2
+	_award_boost(event_id, seconds, "")
+	return true
+
+
+func _update_track_triggers() -> void:
+	for trigger in track_triggers:
+		if not is_instance_valid(trigger):
+			continue
+		var key: String = str(trigger.get_instance_id())
+		match str(trigger.get("trigger_kind")):
+			"boost_ring":
+				# A jump of more than 6 m in one frame is a reset/restore teleport, not a pass.
+				if player_previous_position.distance_to(player.global_position) < 6.0 and trigger.crossed(player_previous_position, player.global_position):
+					if _trigger_once(key, "boost_ring", float(trigger.boost_seconds)):
+						trigger.celebrate()
+						_stat("rings")
+						message.text = "Durch den Turbo-Ring!"
+				for i in range(opponents.size()):
+					if opponent_previous_positions[i].distance_to(opponents[i].global_position) < 6.0 and trigger.crossed(opponent_previous_positions[i], opponents[i].global_position):
+						opponent_boost_times[i] = maxf(opponent_boost_times[i], 1.2)
+			"boost_pad":
+				if trigger.contains(player.global_position):
+					_trigger_once(key, "boost_pad", float(trigger.boost_seconds))
+
+
+func _award_boost(event_id: String, seconds: float, text: String) -> void:
+	combo = RACE_RULES.next_combo(combo, elapsed - last_boost_source_at)
+	last_boost_source_at = elapsed
+	if seconds > 0.0:
+		boost_time = maxf(boost_time, _boost_for(seconds))
+	var sources: Dictionary = gameplay_stats.get("boost_sources", {})
+	sources[event_id] = int(sources.get(event_id, 0)) + 1
+	gameplay_stats["boost_sources"] = sources
+	gameplay_stats["max_combo"] = maxi(int(gameplay_stats.get("max_combo", 0)), combo)
+	var at: Vector3 = player.global_position + Vector3.UP * 0.6
+	_fx(event_id, at)
+	if combo >= 2:
+		boost_time += RACE_RULES.combo_bonus(combo)
+		message.text = "Turbo-Kette ×%d!" % combo
+		_fx("combo", at, 0.6)
+	elif not text.is_empty():
+		message.text = text
+
+
+func _update_aurora_contacts() -> void:
+	if aurora_time <= 0.0:
+		return
+	for i in range(opponents.size()):
+		var gap: Vector3 = opponents[i].global_position - player.global_position
+		gap.y = 0.0
+		if gap.length() < 1.9 and opponent_spin_times[i] <= 0.0 and opponent_shield_times[i] <= 0.0:
+			_spin_rival(i, ITEM_CATALOG.number("aurora", "spin_seconds", 1.0))
+			_stat("player_hits_scored")
+			_fx("hit_spin", opponents[i].global_position + Vector3.UP * 0.8, 0.6)
+
+
+func _press_drift() -> void:
+	# Holding DRIFT in the air starts the HEAD air-trick system (kart_air_trick.gd);
+	# its landing reward feeds the combo chain.
+	drifting = racing and not paused and not finished
+
+
+## Friendly spin (two turns, easing out). Applied on top
+## of the physics basis each physics frame, never accumulated.
+func _apply_spin_visuals() -> void:
+	if _player_spin_applied and player.basis.is_equal_approx(_player_spun_basis):
+		player.basis = _player_base_basis
+	_player_spin_applied = false
+	var base: Basis = player.basis
+	var spun: Basis = base
+	if player_spin_time > 0.0:
+		var t: float = 1.0 - player_spin_time / player_spin_total
+		var turns: float = 0.25 if reduced_motion else 2.0
+		var angle: float = TAU * turns * (1.0 - pow(1.0 - t, 2.0))
+		spun = spun.rotated(base.y.normalized(), angle)
+	if spun != base:
+		_player_base_basis = base
+		player.basis = spun.orthonormalized()
+		_player_spun_basis = player.basis
+		_player_spin_applied = true
+	for i in range(opponents.size()):
+		if opponent_spin_times[i] <= 0.0:
+			continue
+		var rival_t: float = 1.0 - opponent_spin_times[i] / opponent_spin_totals[i]
+		var rival_turns: float = 0.25 if reduced_motion else 2.0
+		var rival_basis: Basis = opponents[i].basis
+		opponents[i].basis = rival_basis.rotated(
+			rival_basis.y.normalized(), TAU * rival_turns * (1.0 - pow(1.0 - rival_t, 2.0))
+		).orthonormalized()
+
+
+# --- Surprise item boxes (catalogue roll) beside the skill resonance rings ---
+
+
+## Two calm lap fractions, as far as possible from rings, turbo fields, boost rings,
+## story beats, jumps and the loop, so a box row never sits on a ramp.
+func _catalog_box_fractions() -> Array[float]:
+	var busy: Array[float] = []
+	for entry in ADVENTURE_DRAMA.item_layout(track_id):
+		busy.append(float(entry[0]))
+	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+		busy.append(float(fraction))
+	for entry in BOOST_RING_LAYOUT:
+		busy.append(float(entry[0]))
+	for beat in ADVENTURE_DRAMA.profile(track_id).get("beats", []):
+		busy.append(float(beat[0]))
+	var length: float = maxf(track_length, 1.0)
+	for kicker in world.action.get("kickers", []) if world.action is Dictionary else []:
+		for offset in [-30.0, 0.0, 30.0]:
+			busy.append(fposmod(float(kicker.get("take_off", 0.0)) + offset, length) / length)
+	if not world.loop_layout.is_empty():
+		busy.append(fposmod(float(world.loop_layout.start), length) / length)
+	var picks: Array[float] = []
+	for _row in range(CATALOG_BOX_ROWS_PER_LAP):
+		var best: float = -1.0
+		var best_gap: float = -1.0
+		for step in range(6, 95):
+			var candidate: float = float(step) / 100.0
+			var gap: float = 1.0
+			for other in busy + picks:
+				var d: float = absf(candidate - other)
+				gap = minf(gap, minf(d, 1.0 - d))
+			for other in picks:
+				if absf(candidate - other) < 0.28:
+					gap = -1.0
+			if _road_width_at(candidate * length) < ROAD_WIDTH * 0.85:
+				gap = -1.0
+			if gap > best_gap:
+				best_gap = gap
+				best = candidate
+		if best >= 0.0:
+			picks.append(best)
+	picks.sort()
+	return picks
+
+
+func _catalog_box(distance_on_track: float, lateral: float) -> void:
+	var basis: Basis = world.frame(distance_on_track)
+	var node: Node3D = ITEM_BOX_SCENE.instantiate()
+	node.name = "SurpriseItemBox"
+	node.managed = true
+	node.position = _track_position(distance_on_track, lateral) + basis.y * 1.05
+	node.basis = basis
+	race_root.add_child(node)
+	catalog_boxes.append(node)
+	catalog_box_distances.append(distance_on_track)
+	catalog_box_laterals.append(lateral)
+
+
+func _collect_catalog_boxes(lap: int) -> void:
+	for i in range(catalog_boxes.size()):
+		var key: int = lap * catalog_boxes.size() + i
+		if catalog_box_collected.has(key) or not catalog_boxes[i].visible:
+			continue
+		if player.position.distance_to(catalog_boxes[i].position) > CATALOG_BOX_RADIUS:
+			continue
+		catalog_box_collected[key] = true
+		catalog_boxes[i].visible = false
+		_fx("item_box", catalog_boxes[i].global_position)
+		if item.is_empty():
+			_grant_item(_roll_catalog_item(_place()))
+			message.text = "%s! Tippe ITEM." % str(ITEM_CATALOG.entry(item).get("name", "Überraschung"))
+			_sound_effect("item")
+
+
+func _rival_collect_catalog_box(index: int) -> void:
+	for i in range(catalog_boxes.size()):
+		if opponents[index].position.distance_to(catalog_boxes[i].position) <= CATALOG_BOX_RADIUS:
+			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index])
+			opponent_item_cooldowns[index] = 1.8
+			return
