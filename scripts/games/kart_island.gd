@@ -25,7 +25,8 @@ const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const ADVENTURE_DRAMA = preload("res://scripts/games/kart_adventure_drama.gd")
 const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
-const MINIMAP = preload("res://scripts/games/kart_minimap.gd")
+const MINIMAP = preload("res://scripts/games/kart_hud/kart_race_minimap.gd")
+const RACE_HUD = preload("res://scripts/games/kart_hud/kart_race_hud.gd")
 const TOUCH_ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
@@ -35,6 +36,8 @@ const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const DRIVE_FEEDBACK = preload("res://scripts/games/kart_drive_feedback.gd")
+## Fahrgefühl-Effekte (Funken, Spuren, Rauch, Motor, Federung): scripts/games/kart_fx/.
+const DRIVE_FX = preload("res://scripts/games/kart_fx/kart_drive_fx.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
@@ -190,6 +193,8 @@ var landing_count: int = 0
 var landing_settle: float = 0.0
 ## Camera FOV punch for mini-turbo and item bursts (visual only).
 var camera_punch: float = 0.0
+## Eased field of view without the short kicks (0 = not set yet).
+var camera_base_fov: float = 0.0
 var gap_falls: int = 0
 ## Sonnenhafen precision jump: the kicker in flight, and the measured results.
 var precision_kicker: Dictionary = {}
@@ -221,6 +226,7 @@ var player: LumoRaceKart
 var camera: Camera3D
 var speed_fx: Node3D
 var drive_feedback: Node3D
+var drive_fx: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -529,6 +535,10 @@ func _build_world() -> void:
 	drive_feedback.reduced_motion = reduced_motion
 	race_root.add_child(drive_feedback)
 	drive_feedback.bind_vehicle(player)
+	# Hook kart_fx: Fahrgefühl-Effekte lesen nur den echten Fahrzustand dieses Rennens.
+	drive_fx = DRIVE_FX.new()
+	race_root.add_child(drive_fx)
+	drive_fx.bind_race(self)
 	shield_visual = SHIELD_DOME.new()
 	shield_visual.reduced_motion = reduced_motion
 	player.add_child(shield_visual)
@@ -1259,6 +1269,7 @@ func _build_ui() -> void:
 	modal_body.add_child(menu_settings_navigation)
 	menu_settings_navigation.hide()
 	modal.hide()
+	RACE_HUD.dress(self)
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 	MobileRuntime.safe_area_changed.connect(_on_viewport_size_changed)
 	_update_safe_area()
@@ -1389,19 +1400,20 @@ func _apply_responsive_layout() -> void:
 		var gap: float = 4.0
 		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
 		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
-		var pad_height: float = clampf(display_size.y * 0.24, 176.0, 240.0)
+		var pad_height: float = clampf(display_size.y * 0.29, 176.0, 290.0)
 		joystick.custom_minimum_size = Vector2.ONE * stick_size * ui_scale
 		pedal_pad.custom_minimum_size = Vector2(pad_width, pad_height) * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(gap * ui_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		controls_gap.custom_minimum_size = Vector2(gap * ui_scale, 1.0)
-		var diameter: float = maxf(48.0, minf(68.0, minf(pad_width * 0.28, pad_height * 0.26)))
+		# Thumb cluster on the right: big enough for a child's thumb, clear of the road middle.
+		var diameter: float = maxf(48.0, minf(84.0, minf(pad_width * 0.29, pad_height * 0.28)))
 		var compact_positions: Dictionary = {
-			"DriftAction": Vector2(pad_width * 0.28, pad_height * 0.2),
-			"BoostAction": Vector2(pad_width * 0.72, pad_height * 0.2),
-			"ItemAction": Vector2(pad_width * 0.28, pad_height * 0.5),
-			"BrakePedal": Vector2(pad_width * 0.72, pad_height * 0.5),
-			"GasPedal": Vector2(pad_width * 0.5, pad_height * 0.82)
+			"DriftAction": Vector2(pad_width * 0.46, pad_height * 0.2),
+			"BoostAction": Vector2(pad_width * 0.84, pad_height * 0.2),
+			"ItemAction": Vector2(pad_width * 0.46, pad_height * 0.5),
+			"BrakePedal": Vector2(pad_width * 0.84, pad_height * 0.5),
+			"GasPedal": Vector2(pad_width * 0.65, pad_height * 0.82)
 		}
 		for child in pedal_pad.get_children():
 			if not child is Control:
@@ -1497,6 +1509,7 @@ func _apply_responsive_layout() -> void:
 		modal.offset_right = modal_width * 0.5
 		modal.offset_top = -modal_height * 0.5
 		modal.offset_bottom = modal_height * 0.5
+	RACE_HUD.relayout(self, ui_scale, short_landscape)
 	# A Container can grow its offsets while an old minimum size is being
 	# rescaled. Restore the anchored rectangle after all new minimums are set.
 	hud_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1901,7 +1914,9 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 	_update_hud()
 	_update_start_lights(delta)
-	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished:
+	# Hook kart_fx: der mehrschichtige Motor (kart_drive_fx) ersetzt den einfachen Sinus.
+	var layered_engine: bool = is_instance_valid(drive_fx) and drive_fx.owns_engine_sound()
+	if engine_playback and not layered_engine and not muted and host_sound_enabled and racing and not paused and not finished:
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
 			var sample: float = sin(phase * TAU) * 0.025 * effects_volume
@@ -2272,6 +2287,9 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35),
 				race_root.global_basis * (road.basis as Basis)
 			)
+		# Hook kart_fx: Staubring, Funken und Federstoß bei der echten Landung.
+		if is_instance_valid(drive_fx):
+			drive_fx.landed(impact, race_root.global_basis * (road.basis as Basis))
 		air_trick = {}
 		# Settle sideways slide after a firm landing. Precision zone/long
 		# outcomes already apply their own speed rules and stay untouched.
@@ -2440,6 +2458,9 @@ func _collide_with_rail(road: Dictionary) -> void:
 	if into_wall <= 0.0:
 		return
 	wall_contacts += 1
+	# Hook kart_fx: Funken, Schleifspur, Kratzgeräusch und Stoß am echten Berührungspunkt.
+	if is_instance_valid(drive_fx):
+		drive_fx.rail_contact(player, race_root.global_basis * (road_basis.x * side), into_wall, speed)
 	# Slide along the curb instead of bouncing off it and spinning out.
 	physical_velocity -= road_basis.x * side * into_wall * 1.08
 	speed *= clampf(1.0 - into_wall * 0.022, 0.80, 0.99)
@@ -2776,6 +2797,9 @@ func _drive_opponents(delta: float) -> void:
 			var rail_side: float = signf(rival_lateral)
 			var overlap: float = rival_lateral - rail_side * _wall_lateral_at(float(next.distance))
 			rival.position -= (next.basis as Basis).x * overlap
+			# Hook kart_fx: auch Rivalen sprühen Funken, wenn sie an der Planke entlangschrammen.
+			if is_instance_valid(drive_fx) and absf(overlap) > 0.01:
+				drive_fx.rail_contact(rival, race_root.global_basis * ((next.basis as Basis).x * rail_side), absf(overlap) / maxf(delta, 0.001), target_speed)
 			opponent_lanes[i] = rail_side * _wall_lateral_at(float(next.distance))
 		rival.position.y = (
 			float(next.height)
@@ -2907,6 +2931,7 @@ func _update_hud() -> void:
 	gas_button.disabled = not enabled
 	brake_button.disabled = not enabled
 	gas_button.visible = not auto_gas
+	RACE_HUD.push(self, place, display_speed)
 	_update_jump_hint(enabled)
 
 
@@ -3134,6 +3159,9 @@ func _update_vehicles(_delta: float) -> void:
 		drive_feedback.advance(
 			_delta, racing and not finished and not menu_active, paused, airborne, reduced_motion
 		)
+	# Hook kart_fx: ein Takt Fahrgefühl-Effekte aus dem echten Fahrzustand.
+	if is_instance_valid(drive_fx):
+		drive_fx.advance(_delta)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
@@ -3308,18 +3336,25 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
 	var target_fov: float = _resize_compensated_fov(baseline_fov, aspect)
-	camera.fov = (
+	# The eased base value is kept apart from the short kicks: easing from a
+	# value that already contains a kick lets the kicks pile up frame by frame
+	# until the field of view leaves its valid range.
+	camera_base_fov = (
 		target_fov
-		if snap
-		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+		if snap or camera_base_fov <= 0.0
+		else lerpf(camera_base_fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
 	)
+	var kicked_fov: float = camera_base_fov
 	if camera_punch > 0.0 and not reduced_motion:
-		camera.fov += camera_punch * 9.5
+		kicked_fov += camera_punch * 9.5
 		camera_punch = maxf(0.0, camera_punch - delta * 2.2)
 	if is_instance_valid(fx) and not snap:
 		# Drive-through push: brief FOV punch and a tiny shake (both off in reduced motion).
-		camera.fov += fx.camera_fov_kick()
+		kicked_fov += fx.camera_fov_kick()
 		camera.position += camera.basis * fx.camera_shake()
+	if is_instance_valid(drive_fx) and not snap:
+		kicked_fov += drive_fx.camera_fov_kick()  # Hook kart_fx: Turbo-FOV-Schub
+	camera.fov = clampf(kicked_fov, 20.0, 140.0)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
@@ -3830,6 +3865,9 @@ func _finish(cinematic: bool = true) -> void:
 		return
 	if is_instance_valid(drive_feedback):
 		drive_feedback.reset()
+	# Hook kart_fx: im Ziel keine Spuren/Funken mehr aus dem Rennen.
+	if is_instance_valid(drive_fx):
+		drive_fx.reset()
 	completed_race = true
 	racing = false
 	_update_audio()
