@@ -267,28 +267,28 @@
   "triangles": 164
  },
  "soldier_bogen": {
-  "bytes": 112808,
+  "bytes": 519920,
   "parts": [],
-  "sha256": "ad7839d695b061b2892cc2ec4fe20fafdccc7de7ced23e3fc43c19d02193d54c",
-  "triangles": 682
+  "sha256": "d85b9f791f09e4957204ba8f589563aaec485dbd7961be00a106959109df06b1",
+  "triangles": 3850
  },
  "soldier_reiter": {
-  "bytes": 156160,
+  "bytes": 906148,
   "parts": [],
-  "sha256": "75afbad8971d096bb592a3732ceec2a32acd6d17f5b2e06d87684d40cf2ea87c",
-  "triangles": 956
+  "sha256": "819ea9a78f5c20cbf59a7d6ad73e65f3b47f24a2d310750173b1bc68f5fb7e0c",
+  "triangles": 6396
  },
  "soldier_schild": {
-  "bytes": 87868,
+  "bytes": 514724,
   "parts": [],
-  "sha256": "816819b262eb9e6009126451f0e696fa5ba869b2adbbc1d12a7b7a9f5b714857",
-  "triangles": 536
+  "sha256": "7837f3dc4b507b3ba14cca60b76c4810830801f1949ca57fb161733313462ee0",
+  "triangles": 3624
  },
  "soldier_speer": {
-  "bytes": 85708,
+  "bytes": 539352,
   "parts": [],
-  "sha256": "d741b24178746ca6bb7141e414f5ac7f102ba0cb5ecbcc428d6e9da1b54fa3a2",
-  "triangles": 518
+  "sha256": "386927024e155b995cc83e95156643818dad357858403cc3d5afac861f12d058",
+  "triangles": 3846
  },
  "tree_birch": {
   "bytes": 51444,
