@@ -348,7 +348,8 @@ func fan_transform() -> Transform3D:
 
 
 func head_top() -> Vector3:
-	return to_global(Vector3(0, 2.02 if not _is_lumo else 1.95, 0.0))
+	# Über Ohren und Brille: das Namensschild darf kein Gesicht verdecken.
+	return to_global(Vector3(0, 2.16 if not _is_lumo else 1.95, 0.0))
 
 
 func chest() -> Vector3:

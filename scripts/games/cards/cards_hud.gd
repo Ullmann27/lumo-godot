@@ -352,7 +352,7 @@ func place_plate(player: int, at: Vector2) -> void:
 	var target := Vector2(local.x - extent.x * 0.5, local.y - extent.y)
 	target.x = clampf(target.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
 	var limit := _top_limit(target.x, extent.x)
-	if side and limit > target.y + 0.5:
+	if limit > target.y + 0.5:
 		# Über dem Kopf ist kein Platz: das Schild steht außen neben dem Kopf.
 		var left := local.x < safe.size.x * 0.5
 		var beside := Vector2(local.x - extent.x - dp(34) if left else local.x + dp(34), local.y + dp(4))
