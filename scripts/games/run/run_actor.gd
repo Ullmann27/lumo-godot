@@ -18,6 +18,9 @@ const CADENCE_GEAR: float = 0.5
 ## wider stride, higher knees, stronger arm swing and hip bob, pose follows quickly.
 const RUN_STYLE := {"limb_gain": 1.35, "bounce_gain": 2.2, "run_floor": 1.0, "response": 55.0}
 
+## How much faster than course time the run plays on screen (the path's tempo):
+## the legs follow the pace the child really sees.
+var pace_scale: float = 1.0
 var rig
 var pivot: Node3D
 var shadow: MeshInstance3D
@@ -167,7 +170,7 @@ func apply(feet: Transform3D, ground: Transform3D, player, delta: float, frozen:
 		_blink = 0.0
 		pivot.visible = true
 	if uses_original:
-		var pace: float = player.speed * CADENCE_GEAR if player.grounded else 0.0
+		var pace: float = player.speed * pace_scale * CADENCE_GEAR if player.grounded else 0.0
 		rig.set_platform_motion(Vector3(0.0, player.vy, -pace), player.grounded, delta)
 
 

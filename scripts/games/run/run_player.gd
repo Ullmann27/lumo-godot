@@ -39,6 +39,12 @@ var lateral_speed: float = TUNING.LATERAL_SPEED
 var slow_factor: float = TUNING.SLOW_FACTOR
 var air_dash: bool = false
 var air_dash_ready: bool = true
+## Momentum 0..1 (path only): builds while Lumo runs on freely, adds flow_bonus.
+var flow: float = 0.0
+var flow_bonus: float = 0.0
+var acceleration: float = TUNING.ACCELERATION
+var coyote_window: float = TUNING.COYOTE_SECONDS
+var buffer_window: float = TUNING.JUMP_BUFFER_SECONDS
 ## A barrel, vine, zip line or warp Lumo is riding (empty when he runs).
 var ride: Dictionary = {}
 var ride_index: int = -1
@@ -59,6 +65,10 @@ func use_path_feel() -> void:
 	lateral_speed = TUNING.PATH_LATERAL_SPEED
 	slow_factor = TUNING.PATH_SLOW_FACTOR
 	air_dash = true
+	flow_bonus = TUNING.PATH_FLOW_BONUS
+	acceleration = TUNING.PATH_ACCELERATION
+	coyote_window = TUNING.PATH_COYOTE_SECONDS
+	buffer_window = TUNING.PATH_JUMP_BUFFER_SECONDS
 
 
 func place(distance: float, lateral: float, start_speed: float) -> void:
@@ -85,11 +95,12 @@ func place(distance: float, lateral: float, start_speed: float) -> void:
 	ride_index = -1
 	tumble_time = 0.0
 	tumbled = false
+	flow = 0.0
 
 
 func press_jump() -> void:
 	jump_held = true
-	jump_buffer = TUNING.JUMP_BUFFER_SECONDS
+	jump_buffer = buffer_window
 
 
 func release_jump() -> void:
@@ -146,6 +157,7 @@ func stumble() -> bool:
 	invulnerable = TUNING.INVULNERABLE_SECONDS
 	boost_time = 0.0
 	dash_time = 0.0
+	flow = 0.0
 	return true
 
 
@@ -155,6 +167,7 @@ func tumble() -> bool:
 		return false
 	tumble_time = TUNING.TUMBLE_SECONDS
 	tumbled = true
+	flow = 0.0
 	vy = 6.0
 	grounded = false
 	jumping = false
@@ -256,6 +269,14 @@ func _step_speed(delta: float, pull_back: float, track) -> void:
 	if dash_time > 0.0:
 		target += TUNING.DASH_BONUS
 		burst = true
+	# Momentum: running on freely builds flow (a sprint); braking or a bump loses it.
+	if flow_bonus > 0.0:
+		var free_run: bool = grounded and pull_back <= 0.3 and stumble_time <= 0.0 and not in_cart and speed >= cruise * 0.85
+		if free_run:
+			flow = minf(1.0, flow + delta / TUNING.PATH_FLOW_SECONDS)
+		elif pull_back > 0.3 or stumble_time > 0.0:
+			flow = maxf(0.0, flow - delta * 2.5)
+		target += flow * flow_bonus
 	if stumble_time > 0.0:
 		target = minf(target, cruise * 0.45)
 	if in_cart:
@@ -264,7 +285,7 @@ func _step_speed(delta: float, pull_back: float, track) -> void:
 		target = minf(target, track.speed_cap(s, lat))
 	var rate: float = TUNING.DECELERATION if not air_dash else TUNING.DECELERATION * 3.0
 	if speed < target:
-		rate = TUNING.BURST_ACCELERATION if burst else TUNING.ACCELERATION
+		rate = TUNING.BURST_ACCELERATION if burst else acceleration
 	speed = move_toward(speed, target, rate * delta)
 
 
@@ -276,12 +297,12 @@ func _step_vertical(delta: float, track) -> void:
 			grounded = false
 			jumping = false
 			vy = clampf(ground_rate, 0.0, 8.0)
-			coyote = TUNING.COYOTE_SECONDS
+			coyote = coyote_window
 			air_time = 0.0
 		else:
 			ground_rate = clampf((ground - h) / delta, -12.0, 12.0)
 			h = ground
-			coyote = TUNING.COYOTE_SECONDS
+			coyote = coyote_window
 	else:
 		coyote = maxf(0.0, coyote - delta)
 	if jump_buffer > 0.0 and coyote > 0.0 and stumble_time < TUNING.STUMBLE_SECONDS * 0.5:
@@ -323,7 +344,7 @@ func _step_vertical(delta: float, track) -> void:
 		grounded = true
 		jumping = false
 		ground_rate = 0.0
-		coyote = TUNING.COYOTE_SECONDS
+		coyote = coyote_window
 		air_dash_ready = true
 		events.append(&"land")
 

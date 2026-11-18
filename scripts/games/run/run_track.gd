@@ -226,7 +226,7 @@ func resolve(player, time: float) -> Array[Dictionary]:
 		if float(strip.s0) > s:
 			break
 		if on_ground and s <= float(strip.s1) and absf(player.lat - float(strip.lat)) <= float(strip.half):
-			if player.boost(TUNING.BOOST_SECONDS):
+			if player.boost(float(strip.get("seconds", TUNING.BOOST_SECONDS))):
 				events.append({"type": "boost", "index": index})
 	_resolve_hurdles(player, events)
 	_resolve_blockers(player, time, events)
