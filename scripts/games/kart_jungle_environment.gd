@@ -264,12 +264,30 @@ func _build_landmarks() -> void:
 
 # --- living atmosphere ---------------------------------------------------------
 
+## Particle quad with white vertex colours. A plain QuadMesh has no colour attribute;
+## with vertex_color_use_as_albedo single particles then drew as black squares in the
+## compatibility renderer (seen as a dark firefly square on the Dschungelherz course).
+static func _coloured_quad(size: float) -> ArrayMesh:
+	var half := size * 0.5
+	var arrays := []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([
+		Vector3(-half, -half, 0), Vector3(half, -half, 0), Vector3(half, half, 0), Vector3(-half, half, 0)
+	])
+	arrays[Mesh.ARRAY_NORMAL] = PackedVector3Array([Vector3.BACK, Vector3.BACK, Vector3.BACK, Vector3.BACK])
+	arrays[Mesh.ARRAY_TEX_UV] = PackedVector2Array([Vector2(0, 1), Vector2(1, 1), Vector2(1, 0), Vector2(0, 0)])
+	arrays[Mesh.ARRAY_COLOR] = PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE])
+	arrays[Mesh.ARRAY_INDEX] = PackedInt32Array([0, 2, 1, 0, 3, 2])
+	var mesh := ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
+
+
 func _particles(name_text: String, amount: int, colour: Color, size: float, glow: bool) -> CPUParticles3D:
 	var particles := CPUParticles3D.new()
 	particles.name = name_text
 	particles.amount = amount
-	var quad := QuadMesh.new()
-	quad.size = Vector2(size, size)
+	var quad := _coloured_quad(size)
 	var material := StandardMaterial3D.new()
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -279,7 +297,7 @@ func _particles(name_text: String, amount: int, colour: Color, size: float, glow
 		material.emission_enabled = true
 		material.emission = colour
 		material.emission_energy_multiplier = 1.4
-	quad.material = material
+	quad.surface_set_material(0, material)
 	particles.mesh = quad
 	particles.local_coords = false
 	add_child(particles)
