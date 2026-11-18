@@ -305,7 +305,8 @@ func _run() -> void:
 			"refitting the stage clears an interrupted projection transition")
 		await _tap(garage.step_buttons[3])
 		# Streckenwahl als Bühne (kart_track_stage.gd): großes Bild statt Garagenkulisse.
-		_check(garage.step == 3 and garage.track_stage.active, "track tab shows the track stage")
+		_check(garage.step == 3 and garage.track_stage.active,
+			"track tab shows the track stage (step=%d active=%s mode=%s)" % [garage.step, garage.track_stage.active, garage.setup.mode])
 		_check(not garage.garage_interior.root.visible, "garage walls do not enclose the track preview")
 		if is_instance_valid(garage.preview_world):
 			var road_frame := Rect2(Vector2.ZERO, Vector2(garage.preview_viewport.size))

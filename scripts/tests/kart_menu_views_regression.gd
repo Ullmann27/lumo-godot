@@ -148,5 +148,8 @@ func _run() -> void:
 	game.abandoned = true
 	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartMenuViews]")):
 		failures.append("teardown")
+	# Keine gespeicherte Stufe oder Sitzung an andere Tests weitergeben.
+	DirAccess.remove_absolute("user://kart_preferences.cfg")
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	print("[KartMenuViews] %s %d Prüfungen, %d Fehler" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)

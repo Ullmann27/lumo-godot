@@ -416,7 +416,11 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	var stats_width: float = 110.0 * ui_scale
 	# Die Bühne für die Kamera endet über den Knöpfen; sie liegen direkt darunter.
 	# Direkt über der Kartauswahl, ganz in der Bühne (nicht auf dem Rand der Auswahl).
-	var y: float = minf(stage.end.y + gap * 0.5, drawer.position.y - button_height - gap * 0.6)
+	var y: float = stage.end.y + gap * 0.5
+	# Nur wenn die Auswahl unter der Bühne liegt (Hochformat). Im Querformat steht sie
+	# daneben; dort schob ihre Oberkante die Knöpfe auf die Reiterleiste („Werte“ über „Strecken“).
+	if drawer.position.y >= stage.end.y - 1.0:
+		y = minf(y, drawer.position.y - button_height - gap * 0.6)
 	var x: float = stage.get_center().x - (open_width + stats_width + gap) * 0.5
 	open_button.position = Vector2(x, y)
 	open_button.size = Vector2(open_width, button_height)
