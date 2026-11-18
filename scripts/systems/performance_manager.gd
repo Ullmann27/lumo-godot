@@ -27,6 +27,25 @@ var platform: String = ""
 var ultra_enabled: bool = false
 
 
+## Names of graphics adapters that compute the picture on the processor.
+const SOFTWARE_ADAPTER_WORDS: Array[String] = ["swiftshader", "llvmpipe", "softpipe", "software rasterizer", "android emulator"]
+
+
+static func is_software_adapter(adapter_name: String) -> bool:
+	var lower := adapter_name.to_lower()
+	for word in SOFTWARE_ADAPTER_WORDS:
+		if lower.contains(word):
+			return true
+	return false
+
+
+## True on a phone or tablet without hardware graphics (see is_software_adapter).
+static func software_rendered_mobile() -> bool:
+	if not (OS.has_feature("android") or OS.has_feature("ios")):
+		return false
+	return is_software_adapter(RenderingServer.get_video_adapter_name())
+
+
 func _ready() -> void:
 	platform = OS.get_name()
 	EventBus.platform_detected.emit(platform)
@@ -49,6 +68,11 @@ func _ready() -> void:
 				auto_profile = Profile.MEDIUM
 			"high":
 				auto_profile = Profile.HIGH
+	# A phone whose pictures are computed by the processor (an emulator, or a
+	# device without a usable graphics chip) starts with the light profile.
+	if software_rendered_mobile():
+		auto_profile = Profile.LOW
+		print("[Perf] software_renderer_on_mobile: light profile")
 	# Apply the quality settings again when a different race/learning scene loads.
 	get_tree().scene_changed.connect(_on_scene_changed)
 	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
