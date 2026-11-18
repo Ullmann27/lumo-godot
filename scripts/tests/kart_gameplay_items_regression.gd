@@ -78,7 +78,9 @@ func _test_rules() -> void:
 	_check(not RULES.in_slipstream(Vector3.ZERO, forward, Vector3(0, 0, -5), 5.0), "too slow for a tow")
 	_check(is_equal_approx(RULES.player_catch_up(5.0, "gemuetlich"), 1.0), "no help in close racing")
 	_check(RULES.player_catch_up(200.0, "gemuetlich") <= 1.1001 and RULES.player_catch_up(200.0, "gemuetlich") > 1.09, "bounded help far behind")
-	_check(RULES.rival_rubber_band(120.0, "gemuetlich") < 0.9 and RULES.rival_rubber_band(-120.0, "gemuetlich") > 1.05, "runaway rivals ease off, stragglers push")
+	_check(RULES.rival_rubber_band(120.0, "gemuetlich") < 0.9, "runaway rivals ease off")
+	for level in ["gemuetlich", "flott", "pro"]:
+		_check(is_equal_approx(RULES.rival_rubber_band(-120.0, level), 1.0), "overtaken rivals get no push (%s)" % level)
 	_check(RULES.rival_rubber_band(120.0, "profi") > RULES.rival_rubber_band(120.0, "gemuetlich"), "less rubber band on harder settings")
 	_check(RULES.next_combo(1, 1.0) == 2 and RULES.next_combo(4, 9.0) == 1, "combo chains within the window only")
 	_check(RULES.rival_should_use("star_rocket", "homing_projectile", {"ahead_gap": 20.0}), "AI fires rocket at a racer ahead")

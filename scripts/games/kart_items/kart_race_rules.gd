@@ -30,7 +30,6 @@ const COMBO_MAX: int = 6
 ## Catch-up limits (fractions of top speed).
 const PLAYER_CATCH_UP_MAX := {"gemuetlich": 0.10, "normal": 0.07, "profi": 0.04}
 const RIVAL_SLOW_MAX: float = 0.12
-const RIVAL_PUSH_MAX: float = 0.10
 const CATCH_UP_START_GAP: float = 18.0
 const CATCH_UP_FULL_GAP: float = 90.0
 
@@ -60,12 +59,17 @@ static func player_catch_up(gap_to_leader: float, difficulty: String) -> float:
 
 
 ## Rival speed multiplier relative to the player (positive = rival ahead).
-## Far-ahead rivals ease off, far-behind rivals push; close racing is untouched.
+## Far-ahead rivals ease off; close racing is untouched. A rival the child has
+## overtaken is never pushed back: a good overtake counts until the finish line.
+## (Bis 18.11.2026 bekamen Rivalen hinter dem Kind bis zu +10 % Schub; im Messgeschirr
+## lagen sie 90-95 % der Rennzeit im Schub, sobald das Kind führte.)
 static func rival_rubber_band(rival_lead: float, difficulty: String) -> float:
-	var strength: float = 1.0 if difficulty == "gemuetlich" else (0.75 if difficulty == "normal" else 0.5)
-	if rival_lead > 0.0:
-		return 1.0 - RIVAL_SLOW_MAX * strength * gap_ratio(rival_lead)
-	return 1.0 + RIVAL_PUSH_MAX * strength * gap_ratio(-rival_lead)
+	if rival_lead <= 0.0:
+		return 1.0
+	var strength: float = (
+		1.0 if difficulty == "gemuetlich" else (0.75 if difficulty == "normal" else 0.5)
+	)
+	return 1.0 - RIVAL_SLOW_MAX * strength * gap_ratio(rival_lead)
 
 
 ## Is `follower` in the wake of `leader`? Positions are world space, forward is the
