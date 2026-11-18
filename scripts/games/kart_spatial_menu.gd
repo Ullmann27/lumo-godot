@@ -27,10 +27,6 @@ var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
 
 
-func _init() -> void:
-	setup["difficulty"] = "pro"
-
-
 func _ready() -> void:
 	super._ready()
 	_stage_header = header_row.get_parent()
