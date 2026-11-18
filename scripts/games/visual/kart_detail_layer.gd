@@ -546,7 +546,7 @@ func _stage() -> void:
 		[Color("1d1e22"), Color("f2f2ee")], 14, 0.9, "stage")
 	# Tribünen mit winkendem Publikum, Kameraturm, Podest, Konfettikanonen, Boxengasse.
 	var fan_kinds: Array[String] = ["fan_a", "fan_b", "fan_c", "fan_d"]
-	var stands: int = 1 if profile == "low" else 2
+	var stands: int = 2
 	for s in range(stands):
 		var side: float = -1.0 if s == 0 else 1.0
 		var site: Dictionary = {}
@@ -555,6 +555,10 @@ func _stage() -> void:
 				if site.is_empty():
 					site = _site(candidate + s * 30.0, side, lateral, 4.2, false)
 		if site.is_empty():
+			# Kein Platz für eine Tribüne (z. B. dichter Wald): Stehpublikum hinter einer Bande.
+			for candidate in [-18.0, -32.0, 24.0, -46.0, 38.0, -60.0, 52.0]:
+				if _fan_group(candidate + s * 7.0, side, s * 2, fan_kinds, "stage"):
+					break
 			continue
 		_place("grandstand", site, "stage")
 		var rows: int = 3
@@ -761,10 +765,11 @@ func _life() -> void:
 	var found: int = 0
 	# Erst Kurvenscheitel, dann – falls die Strecke dort keinen Platz hat –
 	# auch Geraden, damit jede Strecke ihr Publikum bekommt.
-	for pass_index in range(2):
-		var d: float = 120.0 + pass_index * 41.0
+	for pass_index in range(3):
+		var d: float = 120.0 + pass_index * 41.0 - (pass_index / 2) * 70.0
 		while d < _length() - 80.0 and found < groups:
 			d += 23.0
+			d += float(pass_index) * 3.0
 			if pass_index == 0 and absf(_corner_strength(d)) < 0.22:
 				continue
 			if _fan_group(d, -signf(_corner_strength(d)) if absf(_corner_strength(d)) > 0.05 else (1.0 if int(d) % 2 == 0 else -1.0), found, fans):
@@ -773,13 +778,16 @@ func _life() -> void:
 	_marshals()
 
 
-func _fan_group(d: float, outside: float, found: int, fans: Array[String]) -> bool:
-	var anchor: Dictionary = _site(d, outside, _half_width(d) + 3.4, 0.5)
+func _fan_group(d: float, outside: float, found: int, fans: Array[String], barrier_category: String = "props") -> bool:
+	var anchor: Dictionary = {}
+	for lateral in [3.4, 2.0, 5.5]:
+		if anchor.is_empty():
+			anchor = _site(d, outside, _half_width(d) + lateral, 2.0)
 	if anchor.is_empty():
 		return false
-	_place("barrier", anchor, "props", Vector3(0, 0, 0.9))
+	_place("barrier", anchor, barrier_category, Vector3(0, 0, 0.9))
 	for i in range(5 if profile == "high" else 4):
-		_place(fans[(i + found) % 4], anchor, "life", Vector3(-1.8 + i * 0.9, 0, -0.4 - (i % 2) * 0.6), rng.randf_range(-0.3, 0.3), rng.randf_range(0.85, 1.05))
+		_place(fans[(i + found) % 4], anchor, "life", Vector3(-1.6 + i * 0.8, 0, -0.4 - (i % 2) * 0.5), rng.randf_range(-0.3, 0.3), rng.randf_range(0.85, 1.05))
 	return true
 
 
