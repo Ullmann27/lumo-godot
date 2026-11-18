@@ -28,12 +28,7 @@ const AMBER := Color("ffa91f")
 const VIOLET := Color("8a5cff")
 const TEAL := Color("1fb8d8")
 const MAGENTA := Color("ff4fc8")
-const TRACKS := [
-	["volcano_night", "Vulkan", "assets/kart/neon_previews/volcano_night.webp"],
-	["jungle_emerald_3600", "Dschungel", "assets/kart/neon_previews/jungle_emerald_3600.webp"],
-	["desert_drift", "Wüste", "assets/kart/neon_previews/desert_drift.webp"],
-	["sonnenhafen", "Sonnenhafen", "assets/kart/neon_previews/sonnenhafen.webp"],
-]
+const PREVIEW_DIR := "res://assets/kart/neon_previews/"
 const TRACK_NAMES := {
 	"volcano_night": "Vulkan", "jungle_emerald_3600": "Dschungel", "desert_drift": "Wüste",
 	"sonnenhafen": "Sonnenhafen", "winter_sprint": "Winter-Sprint", "galaxy_ringway": "Galaxy Ringway",
@@ -59,6 +54,9 @@ var _overlay_flat: StyleBoxFlat
 var _skin_scale := -1.0
 var _highlight_pick: Button
 var _track_buttons: Dictionary = {}
+## Arrows on the big course picture: previous and next course of the catalogue.
+var _thumb_prev: Button
+var _thumb_next: Button
 var _featured_track := ""
 ## Strecke, die das nächste Rennen fährt. Das Highlight zeigt immer genau diese
 ## Strecke; der Besitzer setzt sie vor dem Einhängen aus der echten Auswahl.
@@ -198,7 +196,7 @@ func _build_highlight() -> void:
 		minf(_highlight_icon.size.x, _highlight_icon.size.y), Color.WHITE))
 	_highlight.add_child(_highlight_icon)
 	_highlight_title = Label.new()
-	_highlight_title.text = "Strecken-Highlight"
+	_highlight_title.text = "Strecken · %d" % CATALOG.TRACKS.size()
 	_highlight_title.add_theme_font_override("font", THEME.HEADING)
 	_highlight_title.add_theme_color_override("font_color", Color.WHITE)
 	_highlight_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -207,17 +205,18 @@ func _build_highlight() -> void:
 	_highlight_pick.active = true
 	_highlight_pick.pressed.connect(func(): _track_select(_featured_track))
 	_highlight.add_child(_highlight_pick)
-	for entry in TRACKS:
-		var id: String = entry[0]
-		if not _available_track(id):
-			continue
-		var thumb = _tile("Track_" + id, entry[1], "", "", NEON, "thumb")
-		var path := "res://" + str(entry[2])
+	# Every course of the catalogue gets its picture here (not only four of them).
+	for entry in CATALOG.TRACKS:
+		var id: String = str(entry.id)
+		var thumb = _tile("Track_" + id, str(TRACK_NAMES.get(id, entry.get("name", id))), "", "", NEON, "thumb")
+		var path := PREVIEW_DIR + id + ".webp"
 		if ResourceLoader.exists(path, "Texture2D"):
 			thumb.art = load(path)
 		thumb.pressed.connect(func(): _choose_track(id))
 		_track_buttons[id] = thumb
 		_highlight.add_child(thumb)
+	_thumb_prev = _page_button("TrackPagePrev", "‹", -1)
+	_thumb_next = _page_button("TrackPageNext", "›", 1)
 	_dots = Control.new()
 	_dots.name = "HighlightDots"
 	_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -225,6 +224,35 @@ func _build_highlight() -> void:
 	_highlight.add_child(_dots)
 	# Hervorgehoben ist, was "Rennen" wirklich startet – nie eine bloße Werbestrecke.
 	_feature_track(selected_track if _available_track(selected_track) else str(CATALOG.TRACKS[0].id))
+
+
+func _page_button(node_name: String, sign_text: String, direction: int) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.text = sign_text
+	button.focus_mode = Control.FOCUS_NONE
+	button.tooltip_text = "Nächste Strecke" if direction > 0 else "Vorige Strecke"
+	button.add_theme_font_override("font", THEME.HEADING)
+	button.add_theme_color_override("font_color", Color.WHITE)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var skin := StyleBoxFlat.new()
+		skin.bg_color = Color("0b2a66", 0.92) if state != "pressed" else Color("14479c", 0.96)
+		skin.border_color = NEON
+		skin.set_border_width_all(2)
+		skin.set_corner_radius_all(10)
+		button.add_theme_stylebox_override(state, skin)
+	button.pressed.connect(func(): step_track(direction))
+	_highlight.add_child(button)
+	return button
+
+
+## The arrows on the big picture step through every course of the catalogue.
+func step_track(direction: int) -> void:
+	var ids: Array[String] = []
+	for entry in CATALOG.TRACKS:
+		ids.append(str(entry.id))
+	var index := ids.find(_featured_track)
+	_choose_track(ids[posmod(maxi(index, 0) + direction, ids.size())])
 
 
 func _draw_dots() -> void:
