@@ -40,6 +40,9 @@ var _look := Vector2.ZERO
 var _look_goal := Vector2.ZERO
 var _look_point := Vector3.ZERO
 var _has_look := false
+## Neck and head: the pose from the animation and what the look wrote last.
+var _look_base: Dictionary = {}
+var _look_written: Dictionary = {}
 var _mood_left := 0.0
 var _clock := 0.0
 var _bubble: Sprite3D
@@ -309,8 +312,18 @@ func _apply_look(step: float) -> void:
 		var parent_rotation := Quaternion.IDENTITY
 		if parent >= 0:
 			parent_rotation = skeleton.get_bone_global_pose(parent).basis.get_rotation_quaternion()
-		var current := skeleton.get_bone_global_pose(bone).basis.get_rotation_quaternion()
-		skeleton.set_bone_pose_rotation(bone, (parent_rotation.inverse() * turn * current).normalized())
+		# The turn goes on top of the pose the animation gave this bone. Lumo's
+		# rig does not rewrite neck and head every frame; without remembering
+		# that pose the turn was added again each frame and his head kept spinning.
+		var posed: Quaternion = skeleton.get_bone_pose_rotation(bone)
+		if _look_written.has(bone) and posed.is_equal_approx(_look_written[bone]):
+			posed = _look_base[bone]
+		else:
+			_look_base[bone] = posed
+		var current := (parent_rotation * posed).normalized()
+		var turned := (parent_rotation.inverse() * turn * current).normalized()
+		skeleton.set_bone_pose_rotation(bone, turned)
+		_look_written[bone] = turned
 
 
 func _apply_body(step: float) -> void:
