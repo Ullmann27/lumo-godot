@@ -36,6 +36,7 @@ const SCENES: Dictionary = {
 	"connect_four": "res://scenes/games/connect_four_table.tscn",
 	"memory": "res://scenes/games/memory_table.tscn",
 	"quiz": "res://scenes/games/quiz_studio.tscn",
+	"chess": "res://scenes/games/chess_table.tscn",
 	"stars": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }
