@@ -52,9 +52,11 @@ static func wells_needed(people: int, irrigation: bool) -> int:
 
 
 ## Vollständiger Plan für eine Stadt: Höfe, Häuser, Brunnen, Bauplätze.
-static func plan(civilians: int, guards: int, daily_yield: int, irrigation: bool) -> Dictionary:
+## `riders`: davon Reiter – ihr Pferd isst 1 Portion zusätzlich (Nachtrag).
+static func plan(civilians: int, guards: int, daily_yield: int, irrigation: bool, riders := 0) -> Dictionary:
 	var people := maxi(0, civilians) + maxi(0, guards)
-	var farms := farms_needed(civilians, guards, daily_yield)
+	var horses := clampi(riders, 0, maxi(0, guards))
+	var farms := farms_needed(civilians, guards + horses, daily_yield)
 	var houses := houses_needed(people)
 	var wells := wells_needed(people, irrigation)
 	var base := farms + houses + wells
@@ -71,7 +73,8 @@ static func plan(civilians: int, guards: int, daily_yield: int, irrigation: bool
 		"cells": cells,
 		"farm_area_m2": snappedf(float(farms) * SPACING * SPACING, 0.01),
 		"food_per_day": farms * daily_yield,
-		"need_per_day": people * FOOD_PER_PERSON,
+		"need_per_day": people * FOOD_PER_PERSON + horses,
+		"riders": horses,
 	}
 
 
@@ -117,4 +120,7 @@ static func expected_harvest(model, town: Dictionary) -> int:
 
 
 static func town_reserve(model, town: Dictionary) -> Dictionary:
-	return reserve(int(town.resources.food), expected_harvest(model, town), int(town.population))
+	return reserve(
+		int(town.resources.food), expected_harvest(model, town),
+		int(town.population) + int(town.get("troop_upkeep", 0))
+	)

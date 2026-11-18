@@ -206,7 +206,17 @@ static func _purpose(entry: Dictionary, kind: String) -> String:
 			return "Platz für neue Familien"
 		"well":
 			return "Wasser für alle"
-	return str(entry.interest_text)
+		"market":
+			return "Münzen, um neues Land zu erschließen"
+		"quarry":
+			return "Steine zum Bauen"
+		"lumber":
+			return "Holz zum Bauen"
+		"road":
+			return "Wege für das nächste Gebiet"
+		"school":
+			return "ein Lernhaus für die Kinder"
+	return "Platz für die wachsende Stadt"
 
 
 func allied(id: String) -> bool:

@@ -94,7 +94,7 @@ func _city() -> Dictionary:
 	town.households = []
 	town.population = 4000
 	ECONOMY.reconcile_households(town)
-	town.resources = {"wood": 3000, "stone": 3000, "food": 6000, "coins": 1600}
+	town.resources = {"wood": 3000, "stone": 3000, "food": 6000, "coins": 1900}
 	town.crops = {"carrots": 6000, "grain": 0, "bread": 0}
 	var spent := int(ECONOMY.PROJECTS.irrigation.cost) + int(ECONOMY.PROJECTS.bridge.cost)
 	town.income_total = spent * 5 + 50
@@ -104,18 +104,23 @@ func _city() -> Dictionary:
 	town.campaign_chapter = 12
 	model.day = 40
 	var raids = load("res://scripts/creative/build_village_raids.gd").restore(null, model)
-	for post in ["nord", "nord", "ost", "ost", "sued", "sued", "west", "west", "mitte", "mitte"]:
-		var error := GUARDS.train(model, raids, 100, post)
-		_check(error.is_empty(), "100 Wachen am %s: %s" % [post, error])
+	# Aufstellung nach den Gegnern: Bogenschützen nach Norden (Funkel fliegt),
+	# Reiter nach Süden (Plünderer), Speerträger nach Osten (Belagerer).
+	for site in ["schiessplatz", "kaserne", "stall"]:
+		_check(GUARDS.build_site(model, raids, site).is_empty(), "Ausbildungsstätte " + site)
+	for order in [["nord", "bogen"], ["nord", "bogen"], ["ost", "speer"], ["ost", "speer"], ["sued", "reiter"],
+			["sued", "reiter"], ["west", "schild"], ["west", "schild"], ["mitte", "schild"], ["mitte", "schild"]]:
+		var error := GUARDS.train(model, raids, 100, order[0], order[1])
+		_check(error.is_empty(), "100 %s am %s: %s" % [order[1], order[0], error])
 	var neighbors = NEIGHBORS.new()
 	var dummy = STATE.new("settlement", true)
-	for _day in range(70):
-		neighbors.advance_day(dummy)
-	# Bis Burgheim gerade an seiner Befestigung baut (sichtbare Baustelle).
+	# Bis Burgheim gerade die letzte Stufe seiner Befestigung baut (Wehrtürme
+	# als Baustelle neben fertiger Mauer), höchstens 150 Tage.
 	var guard := 0
-	while neighbors.current_project("leo").get("kind", "") != "fort" and guard < 80:
+	while int(neighbors.fort.building) != 2 and guard < 150:
 		neighbors.advance_day(dummy)
 		guard += 1
+	print("[VillageBigCity] Nachbarn nach %d Tagen, Befestigung %s" % [guard, str(neighbors.fort)])
 	return {"model": model, "raids": raids, "neighbors": neighbors}
 
 
@@ -163,7 +168,9 @@ func _run() -> void:
 		city.tutorial.skip()
 	_check(int(city.model._player.population) == 4000, "Stadt mit 4.000 Menschen geladen")
 	_check(int(city.raids.guards) == 1000 and GUARDS.total(city.raids) == 1000, "1.000 gespeicherte Wachen geladen")
-	_check(city.raids.units.size() == 2 * 5 or city.raids.units.size() == 5, "Verbände geladen (%d)" % city.raids.units.size())
+	_check(city.raids.units.size() == 5, "Verbände geladen (%d)" % city.raids.units.size())
+	_check(GUARDS.count_of(city.raids, "reiter") == 200 and int(city.model._player.troop_upkeep) == 200, "200 Reiter, ihre Pferde essen mit")
+	_check(city.guards_view.find_children("Formation_reiter", "", true, false).size() == 1, "Reiter-Gruppe mit eigenem Modell auf der Karte")
 	_check(int(city.guards_view.get_meta("total", 0)) == 1000, "Kartenschilder zeigen 1.000 Wachen")
 	_check(int(city.guards_view.get_meta("shown_figures", 0)) <= 5 * 24, "Aus der Ferne repräsentative Gruppen statt 1.000 Figuren (%d)" % int(city.guards_view.get_meta("shown_figures", 0)))
 	var reserve := SUPPLY.town_reserve(city.model, city.model._player)

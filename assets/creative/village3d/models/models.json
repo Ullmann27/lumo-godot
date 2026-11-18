@@ -266,6 +266,30 @@
   "sha256": "95c4ef767fd77bb6949fabd5f6cd55a88e64e7ddddd49a530ce6e00cde61d8c9",
   "triangles": 164
  },
+ "soldier_bogen": {
+  "bytes": 112808,
+  "parts": [],
+  "sha256": "ad7839d695b061b2892cc2ec4fe20fafdccc7de7ced23e3fc43c19d02193d54c",
+  "triangles": 682
+ },
+ "soldier_reiter": {
+  "bytes": 156160,
+  "parts": [],
+  "sha256": "75afbad8971d096bb592a3732ceec2a32acd6d17f5b2e06d87684d40cf2ea87c",
+  "triangles": 956
+ },
+ "soldier_schild": {
+  "bytes": 87868,
+  "parts": [],
+  "sha256": "816819b262eb9e6009126451f0e696fa5ba869b2adbbc1d12a7b7a9f5b714857",
+  "triangles": 536
+ },
+ "soldier_speer": {
+  "bytes": 85708,
+  "parts": [],
+  "sha256": "d741b24178746ca6bb7141e414f5ac7f102ba0cb5ecbcc428d6e9da1b54fa3a2",
+  "triangles": 518
+ },
  "tree_birch": {
   "bytes": 51444,
   "parts": [],

@@ -223,6 +223,85 @@ def model_guard(b):
     b.blob((0.34, 1.73, 0.08), (0.08, 0.1, 0.08), "cloth", "ffd25a", subdiv=1, seed=706, jitter=0.0)
 
 
+# --- Soldaten (Nachtrag 18.11.2026): Menschen, mittelalterlich, eigenes Design.
+# Wams in Lumo-Blau mit gelbem Stern, Gesicht ohne Ausdruck von Gewalt.
+# Silhouetten klar verschieden: großer Schild / Bogen mit Köcher / langer
+# Speer mit Helmbusch / Reiter auf dem Pferd mit Wimpel. Kein Blut.
+def soldier_body(b, seed, tunic="2f6fc9", y0=0.0, helmet="kettle"):
+    b.cylinder((0, y0 + 0.5, 0), 0.2, 0.5, 10, "cloth", tunic, r_top=0.17)
+    b.blob((0, y0 + 0.86, 0), (0.2, 0.17, 0.16), "cloth", tunic, subdiv=2, seed=seed, jitter=0.02)
+    b.box((0, y0 + 0.52, 0), (0.42, 0.06, 0.34), "beam", "5a3c22")
+    b.blob((0, y0 + 0.68, 0.17), (0.06, 0.06, 0.015), "plain", "ffd25a", subdiv=1, seed=seed + 1, jitter=0.0)
+    for s in (-1, 1):
+        b.cylinder((s * 0.09, y0 + 0.13, 0.0), 0.075, 0.27, 6, "plain", "3e3428")
+        b.cylinder((s * 0.24, y0 + 0.7, 0.0), 0.06, 0.34, 6, "cloth", tunic)
+        b.blob((s * 0.24, y0 + 0.52, 0.02), (0.05, 0.05, 0.05), "plain", "e6b88c", subdiv=1, seed=seed + 2, jitter=0.0)
+    b.blob((0, y0 + 1.12, 0.01), (0.15, 0.17, 0.15), "plain", "e6b88c", subdiv=2, seed=seed + 3, jitter=0.01)
+    for s in (-1, 1):
+        b.blob((s * 0.055, y0 + 1.14, 0.135), (0.02, 0.022, 0.01), "plain", "1e1a1c", subdiv=1, seed=seed + 4, jitter=0.0)
+    if helmet == "kettle":
+        b.cylinder((0, y0 + 1.22, 0), 0.16, 0.1, 10, "metal", "b8bec8", r_top=0.15)
+        b.cylinder((0, y0 + 1.2, 0), 0.26, 0.025, 12, "metal", "aab1bb")
+    elif helmet == "crest":
+        b.blob((0, y0 + 1.24, 0), (0.17, 0.13, 0.17), "metal", "c9ced6", subdiv=1, seed=seed + 5, jitter=0.0)
+        b.box((0, y0 + 1.38, -0.02), (0.05, 0.12, 0.3), "cloth", "e8553f")
+    elif helmet == "hood":
+        b.blob((0, y0 + 1.2, -0.03), (0.18, 0.18, 0.18), "cloth", "3b6b3a", subdiv=2, seed=seed + 5, jitter=0.02)
+        b.cone((0, y0 + 1.3, -0.14), 0.07, 0.16, 6, "cloth", "3b6b3a")
+
+
+def model_soldier_schild(b):
+    """Schildwache (~1.4 m): großer Turmschild mit Stern, kurzes Schwert in der Scheide."""
+    soldier_body(b, 1101)
+    b.box((-0.34, 0.66, 0.16), (0.08, 0.86, 0.56), "planks", "2f5fae")
+    b.box((-0.39, 0.66, 0.16), (0.02, 0.7, 0.42), "metal", "d9dde4")
+    b.blob((-0.4, 0.7, 0.16), (0.02, 0.09, 0.09), "plain", "ffd25a", subdiv=1, seed=1110, jitter=0.0)
+    b.box((0.22, 0.42, -0.08), (0.06, 0.4, 0.07), "beam", "4a3a2a")
+    b.box((0.22, 0.65, -0.08), (0.14, 0.03, 0.05), "metal", "b8bec8")
+
+
+def model_soldier_bogen(b):
+    """Bogenschütze (~1.4 m): Kapuze, Langbogen als Bogen aus Stäben, Köcher am Rücken."""
+    soldier_body(b, 1201, tunic="2f6fc9", helmet="hood")
+    for i in range(9):
+        a = -0.95 + i * (1.9 / 8)
+        y = 0.75 + math.sin(a) * 0.62
+        x = 0.3 + math.cos(a) * 0.16
+        b.cylinder((x, y, 0.16), 0.026, 0.18, 5, "beam", "8a5a2e")
+    b.cylinder((0.3, 0.75, 0.16), 0.008, 1.1, 3, "plain", "f2efe6")
+    b.cylinder((-0.08, 0.86, -0.2), 0.08, 0.42, 8, "planks", "7a4a28")
+    for i in range(4):
+        b.cone((-0.12 + i * 0.03, 1.07, -0.2), 0.03, 0.08, 4, "cloth", "f2efe6")
+
+
+def model_soldier_speer(b):
+    """Speerträger (~1.4 m): Helm mit rotem Busch, langer Speer, kleiner Rundschild."""
+    soldier_body(b, 1301, helmet="crest")
+    b.cylinder((0.3, 1.0, 0.06), 0.025, 2.3, 6, "beam", "a87a4e")
+    b.cone((0.3, 2.15, 0.06), 0.05, 0.22, 4, "metal", "d9dde4")
+    b.cylinder((-0.32, 0.66, 0.1), 0.2, 0.05, 12, "planks", "2f5fae", axis="x")
+    b.cylinder((-0.35, 0.66, 0.1), 0.06, 0.03, 8, "metal", "ffd25a", axis="x")
+
+
+def model_soldier_reiter(b):
+    """Reiter (~2.1 m): braunes Pferd mit Satteldecke in Stadtfarbe, Reiter mit Wimpel-Lanze."""
+    horse = "8a5a36"
+    b.blob((0, 0.95, 0), (0.28, 0.3, 0.62), "plain", horse, subdiv=2, seed=1401, jitter=0.02)
+    b.blob((0, 1.3, 0.6), (0.13, 0.26, 0.15), "plain", horse, subdiv=2, seed=1402, jitter=0.02)
+    b.blob((0, 1.5, 0.78), (0.11, 0.12, 0.22), "plain", horse, subdiv=2, seed=1403, jitter=0.02)
+    b.box((0, 1.5, 0.52), (0.05, 0.3, 0.2), "cloth", "3a2a1e")
+    for s in (-1, 1):
+        b.cone((s * 0.06, 1.6, 0.66), 0.03, 0.1, 4, "plain", horse)
+        for fz in (-0.42, 0.42):
+            b.cylinder((s * 0.15, 0.36, fz), 0.055, 0.72, 6, "plain", "6e4428")
+            b.cylinder((s * 0.15, 0.04, fz), 0.065, 0.08, 6, "plain", "2b2420")
+    b.cylinder((0, 0.95, -0.66), 0.05, 0.5, 6, "plain", "3a2a1e", axis="z")
+    b.box((0, 1.12, 0), (0.62, 0.22, 0.5), "cloth", "2f6fc9")
+    soldier_body(b, 1410, y0=0.98, helmet="kettle")
+    b.cylinder((0.3, 1.85, 0.25), 0.022, 1.9, 6, "beam", "a87a4e")
+    b.box((0.3, 2.62, 0.38), (0.02, 0.18, 0.28), "cloth", "ffd25a")
+
+
 def model_dragon(b):
     """Funkel, der kleine Drache (~3 m): chubby body, light belly, horns, back spikes, tail."""
     b.blob((0, 1.2, 0), (0.75, 0.7, 1.0), "plain", "39b49a", subdiv=2, seed=801, jitter=0.03)
@@ -296,6 +375,10 @@ MODELS = {
     "robber_camp": (model_robber_camp, {}),
     "raccoon": (model_raccoon, {}),
     "guard": (model_guard, {}),
+    "soldier_schild": (model_soldier_schild, {}),
+    "soldier_bogen": (model_soldier_bogen, {}),
+    "soldier_speer": (model_soldier_speer, {}),
+    "soldier_reiter": (model_soldier_reiter, {}),
     "dragon": (model_dragon, {"Spin_WingL": (model_dragon_wing_l, (-0.45, 1.75, 0.25)),
                               "Spin_WingR": (model_dragon_wing_r, (0.45, 1.75, 0.25))}),
     "dragon_nest": (model_dragon_nest, {}),

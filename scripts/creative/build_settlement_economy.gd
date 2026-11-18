@@ -295,7 +295,8 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 		gross += model._working(town, "market")
 	var paid := credit_income(town, gross)
 	output.coins = int(paid.net_income)
-	var needs := int(town.population)
+	# Bewohner (auch Soldaten) essen 1; Pferde der Reiter 1 zusätzlich.
+	var needs := int(town.population) + int(town.get("troop_upkeep", 0))
 	town.food_shortfall = maxi(0, needs - int(town.resources.food))
 	town.resources.food = maxi(0, int(town.resources.food) - needs)
 	synchronize_pantry(town)

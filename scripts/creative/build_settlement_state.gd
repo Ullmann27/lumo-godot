@@ -752,7 +752,7 @@ static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 		return false
 	if (
 		not _whole(town.get("next_id"), 1, 10000)
-		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION if is_living else 50)
+		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION * 2 if is_living else 50)
 	):
 		return false
 	for resource in RESOURCES:

@@ -16,6 +16,8 @@ const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
 const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
+const TROOPS = preload("res://scripts/creative/build_village_troops.gd")
+const RAIDS = preload("res://scripts/creative/build_village_raids.gd")
 const OLD_BLOCKED := "res://tools/lumo_village_art/old_blocked_player_1089.json"
 var checks := 0
 var failures: Array[String] = []
@@ -44,6 +46,7 @@ func _run() -> void:
 	_thousand_guards()
 	_fields()
 	_neighbors()
+	_troops()
 	if failures.is_empty():
 		print("[VillageSupply] PASS checks=%d" % checks)
 		quit(0)
@@ -230,10 +233,10 @@ func _old_save() -> void:
 # 4 -------------------------------------------------------------- 30 Tage
 ## Eine echte Stadt nach den Spielregeln: Höfe, Häuser, Brunnen auf bebaubaren
 ## Plätzen der kleinsten passenden Region, Bevölkerung in Familien.
-func _city(civil: int, guards: int, irrigation: bool, stock: int):
+func _city(civil: int, guards: int, irrigation: bool, stock: int, riders := 0):
 	var people := civil + guards
 	var daily := SUPPLY.farm_yield(1, irrigation)
-	var plan := SUPPLY.plan(civil, guards, daily, irrigation)
+	var plan := SUPPLY.plan(civil, guards, daily, irrigation, riders)
 	var model = STATE.new("settlement", true)
 	var town: Dictionary = model._player
 	town.city_projects = {"irrigation": true} if irrigation else {}
@@ -266,6 +269,7 @@ func _city(civil: int, guards: int, irrigation: bool, stock: int):
 	town.households = []
 	town.population = people
 	ECONOMY.reconcile_households(town)
+	town.troop_upkeep = riders
 	town.resources = {"wood": 500, "stone": 500, "food": stock, "coins": 2000}
 	town.crops = {"carrots": stock, "grain": 0, "bread": 0}
 	town.treasury = 0
@@ -279,11 +283,23 @@ func _city(civil: int, guards: int, irrigation: bool, stock: int):
 
 
 func _thirty_days() -> void:
+	var runs: Array = []
 	for people in [40, 400, 4000]:
-		var guards: int = people / 4
 		for irrigation in [false, true]:
 			for fail_day in [3, 20]:
-				var made: Dictionary = _city(people - guards, guards, irrigation, 0)
+				runs.append([people, irrigation, fail_day, 0])
+	# Nachtrag: ein Viertel der Soldaten sind Reiter (Pferd isst 1 mehr).
+	for people in [400, 4000]:
+		runs.append([people, true, 20, people / 16])
+	for run in runs:
+		var people: int = run[0]
+		var irrigation: bool = run[1]
+		var fail_day: int = run[2]
+		var riders: int = run[3]
+		var guards: int = people / 4
+		if true:
+			if true:
+				var made: Dictionary = _city(people - guards, guards, irrigation, 0, riders)
 				var model = made.model
 				var plan: Dictionary = made.plan
 				_check(STATE.restore(JSON.parse_string(JSON.stringify(model.snapshot()))) != null, "Teststadt %d ist ein gültiger Spielstand" % people)
@@ -318,6 +334,7 @@ func _thirty_days() -> void:
 						_check(working == 0 and int(own.produced.food) == 0, "Ausgefallene Ernte an Tag %d: kein Ertrag" % day)
 					elif day != fail_day:
 						_check(int(own.produced.food) == int(plan.farms) * int(plan.daily_yield), "Ertrag = Höfe × Tagesertrag (%d Menschen, Tag %d)" % [people, day])
+						_check(int(own.food_needed) == people + riders, "Verbrauch = Menschen + Pferde (%d + %d)" % [people, riders])
 					if day == fail_day - 1:
 						reserve_line = SUPPLY.reserve_text(SUPPLY.town_reserve(model, model._player))
 					last_report = own
@@ -326,9 +343,9 @@ func _thirty_days() -> void:
 				_check(int(model._player.population) == people, "Bevölkerung bleibt %d (Rollen: %d Zivil + %d Wachen)" % [people, people - guards, guards])
 				_check(water >= people, "Wasser reicht für alle (%d ≥ %d)" % [water, people])
 				_check(final_food > 0, "Nach 30 Tagen ist wieder Vorrat da (%d)" % final_food)
-				_table("30 Tage | %d Menschen (%d+%d) | Ertrag %d/Hof | Region %d (%d Plätze) | Höfe %d arbeitend | Brunnen %d, Wasser %d | Ertrag %d/Tag | Verbrauch %d/Tag | Ernteausfall Tag %d | Mangeltage %d (fehlend %d) | tiefster Vorrat %d | wieder satt ab Tag %d | Vorrat Tag 30: %d | Anzeige vor Ausfall: %s | Rechenzeit %.1f ms" % [
-					people, people - guards, guards, int(plan.daily_yield), int(town.region), int(town.plots), int(plan.farms),
-					int(plan.wells), water, int(plan.farms) * int(plan.daily_yield), people, fail_day, shortfall_days, short_total,
+				_table("30 Tage | %d Menschen (%d+%d, davon %d Reiter) | Ertrag %d/Hof | Region %d (%d Plätze) | Höfe %d arbeitend | Brunnen %d, Wasser %d | Ertrag %d/Tag | Verbrauch %d/Tag | Ernteausfall Tag %d | Mangeltage %d (fehlend %d) | tiefster Vorrat %d | wieder satt ab Tag %d | Vorrat Tag 30: %d | Anzeige vor Ausfall: %s | Rechenzeit %.1f ms" % [
+					people, people - guards, guards, riders, int(plan.daily_yield), int(town.region), int(town.plots), int(plan.farms),
+					int(plan.wells), water, int(plan.farms) * int(plan.daily_yield), people + riders, fail_day, shortfall_days, short_total,
 					lowest, recovered, final_food, reserve_line, float(micros) / 1000.0])
 				if fail_day == 20:
 					_check(shortfall_days == 0, "Mit 17 Tagen Überschuss übersteht die Stadt (%d) einen Ernteausfall" % people)
@@ -471,3 +488,60 @@ func _neighbors() -> void:
 	var raw: Variant = JSON.parse_string(JSON.stringify(neighbors.snapshot()))
 	var back = NEIGHBORS.restore(raw)
 	_check(JSON.stringify(back.snapshot()) == JSON.stringify(neighbors.snapshot()), "Baustellen und Befestigung speichern/laden verlustfrei")
+
+
+# 8 ------------------------------------------------- Truppenarten (Nachtrag)
+func _troops() -> void:
+	# Gegenstücke: je Angreifer hilft die angesagte Art am meisten.
+	for attacker in TROOPS.ATTACKERS:
+		var best := str(TROOPS.ATTACKERS[attacker].best)
+		var points := {}
+		for kind in TROOPS.KINDS:
+			points[kind] = TROOPS.points([{"type": kind, "size": 100, "post": "nord"}], attacker, "nord", {})
+		var winner := best
+		for kind in points:
+			if float(points[kind]) > float(points[winner]):
+				winner = kind
+		_check(winner == best, "Gegen %s helfen %s am meisten" % [attacker, TROOPS.title(best)])
+		_table("Truppen | gegen %s | %s" % [str(TROOPS.ATTACKERS[attacker].title), JSON.stringify(points)])
+	# Aufstellung: am angegriffenen Tor voll, Mitte 80 %, anderes Tor 30 %.
+	var at_gate := TROOPS.points([{"type": "speer", "size": 50, "post": "ost"}], "belagerer", "ost", {})
+	var center := TROOPS.points([{"type": "speer", "size": 50, "post": "mitte"}], "belagerer", "ost", {})
+	var wrong := TROOPS.points([{"type": "speer", "size": 50, "post": "west"}], "belagerer", "ost", {})
+	_check(at_gate > center and center > wrong, "Aufstellung zählt: Tor > Mitte > falsches Tor")
+	# Schutzbauten: Türme stärken Bogenschützen, Mauern Schildwachen.
+	var bare := TROOPS.points([{"type": "bogen", "size": 20, "post": "nord"}], "flieger", "nord", {})
+	var towers := TROOPS.points([{"type": "bogen", "size": 20, "post": "nord"}], "flieger", "nord", {"tower": 4})
+	_check(towers > bare * 1.5, "Vier Türme machen Bogenschützen deutlich stärker")
+	var walls := TROOPS.points([{"type": "schild", "size": 20, "post": "ost"}], "belagerer", "ost", {"wall": 3})
+	_check(walls > TROOPS.points([{"type": "schild", "size": 20, "post": "ost"}], "belagerer", "ost", {}), "Mauern stärken Schildwachen")
+	_check(TROOPS.advice("flieger", "Nordtor").contains("Bogenschützen"), "Rat für das Kind in einem Satz: " + TROOPS.advice("flieger", "Nordtor"))
+	_check(TROOPS.outcome_text(true, "pluenderer").contains("ziehen ab") and not TROOPS.outcome_text(false, "pluenderer").contains("Blut"), "Ausgang ohne Gewalt")
+	# Alter Spielstand mit nur einer Zahl → Schildwachen in der Stadtmitte.
+	var made: Dictionary = _city(300, 100, true, 500)
+	var model = made.model
+	var old_raids = RAIDS.restore({"version": 1, "guards": 37, "parts": {"wall": 1}}, model)
+	_check(int(old_raids.guards) == 37 and GUARDS.count_of(old_raids, "schild") == 37, "Alte 37 Wachen werden 37 Schildwachen")
+	_check(str(old_raids.units[0].post) == "mitte", "… in der Stadtmitte")
+	# Ausbildungsstätten und Kosten.
+	var raids = RAIDS.restore(null, model)
+	model._player.resources = {"wood": 400, "stone": 400, "food": 500, "coins": 400}
+	model._player.crops = {"carrots": 500, "grain": 0, "bread": 0}
+	_check(GUARDS.train_error(model, raids, 10, "nord", "bogen").contains("Schießplatz"), "Bogenschützen brauchen einen Schießplatz")
+	_check(GUARDS.build_site(model, raids, "schiessplatz").is_empty(), "Schießplatz gebaut")
+	var wood_before := int(model._player.resources.wood)
+	_check(GUARDS.train(model, raids, 10, "nord", "bogen").is_empty(), "10 Bogenschützen am Nordtor")
+	_check(int(model._player.resources.wood) == wood_before - 20, "Bogenschützen kosten Holz aus dem Dorf")
+	_check(GUARDS.build_site(model, raids, "stall").is_empty() and GUARDS.train(model, raids, 10, "sued", "reiter").is_empty(), "Stall und 10 Reiter")
+	_check(int(model._player.troop_upkeep) == 10, "Pferde fressen 10 Essen am Tag zusätzlich")
+	var report: Dictionary = model.next_day()
+	_check(int(report.player.food_needed) == 400 + 10, "Tagesverbrauch zählt die Pferde mit (%d)" % int(report.player.food_needed))
+	_check(GUARDS.merge(raids, int(raids.units[0].id), int(raids.units[1].id)).contains("gleiche"), "Nur gleiche Truppen bilden einen Verband")
+	var back = RAIDS.restore(JSON.parse_string(JSON.stringify(raids.snapshot(model))), model)
+	_check(JSON.stringify(back.units) == JSON.stringify(raids.units) and bool(back.troop_sites.get("stall", false)), "Truppenarten und Stätten laden verlustfrei")
+	_check(int(model._player.troop_upkeep) == 10, "Pferdefutter nach dem Laden wieder da")
+	# Die Verteidigung rechnet mit Art und Aufstellung.
+	raids.pending = {"threat": "raeuber", "level": 1, "arrive_day": 99, "reason": "Test", "by": "krummzahn"}
+	var with_riders: float = raids.defense_points("raeuber")
+	GUARDS.move(raids, int(raids.units[1].id), "nord")
+	_check(raids.defense_points("raeuber") < with_riders, "Reiter vom Südtor weg: weniger Schutz gegen Plünderer im Süden")

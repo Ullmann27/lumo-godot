@@ -125,6 +125,7 @@ var raid_camera_return: Dictionary = {}
 ## Wachen-Verbände auf der Karte und „Felder ziehen“ (große Städte).
 var guards_view: Node3D
 var guard_post := "mitte"
+var guard_kind := "schild"
 var field_drag := false
 var field_button: Button
 var drag_from := -1
@@ -2730,6 +2731,7 @@ func _defense_dialog() -> void:
 		var forecast: Dictionary = raids.forecast()
 		_village_caption(body, "%s kommt in %d Tag%s." % [raids.threat_title(pending), days, "" if days == 1 else "en"], 19)
 		_lumo_says(body, "%s %s" % [str(pending.reason), str(forecast.advice)])
+		_village_caption(body, GUARDS.advice(str(pending.threat)))
 		var row := VHUD.progress_row()
 		VHUD.set_progress(row, "Dein Schutz", roundi(float(forecast.have)), roundi(float(forecast.need) * 1.1))
 		body.add_child(row)
@@ -2981,9 +2983,25 @@ func _guard_units_dialog() -> void:
 	var dialog: Window = view.dialog
 	dialog.name = "GuardUnitsDialog"
 	var info: Dictionary = GUARDS.overview(model, raids)
-	_village_caption(body, "%d Wachen in %d Verbänden · noch %d Plätze" % [int(info.total), int(info.units), int(info.room)], 18)
-	_village_caption(body, "Wachen essen wie alle Bewohner: %d Portionen am Tag. %s" % [int(info.food_per_day), str(info.reserve_text)])
-	_village_caption(body, "Neue Wachen stellen sich hier auf:", 17)
+	_village_caption(body, "%d Soldaten in %d Verbänden · noch %d Plätze" % [int(info.total), int(info.units), int(info.room)], 18)
+	_village_caption(body, "Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag. %s" % [int(info.food_per_day), str(info.reserve_text)])
+	if not raids.pending.is_empty():
+		_lumo_says(body, GUARDS.advice(str(raids.pending.threat)))
+	_village_caption(body, "Welche Truppe?", 17)
+	var kinds := HBoxContainer.new()
+	kinds.add_theme_constant_override("separation", 6)
+	body.add_child(kinds)
+	for kind in GUARDS.TROOPS.KINDS:
+		var picked: bool = kind == guard_kind
+		var kind_button := _button(("● " if picked else "") + "%s %d" % [GUARDS.TROOPS.title(kind), int(info.kinds[kind])], _guard_action.bind("kind", kind, 0, dialog), 120)
+		kind_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		kinds.add_child(kind_button)
+	_village_caption(body, str(GUARDS.TROOPS.TYPES[guard_kind].why))
+	var site := GUARDS.TROOPS.site_needed(guard_kind)
+	if not site.is_empty() and not GUARDS.has_site(raids, guard_kind):
+		var spec: Dictionary = GUARDS.TROOPS.SITES[site]
+		_raid_button(body, "%s bauen: %s" % [str(spec.title), _cost_text(spec.cost)], _guard_action.bind("site", site, 0, dialog), model._affords(model._player, spec.cost))
+	_village_caption(body, "Neue Soldaten stellen sich hier auf:", 17)
 	var posts := HBoxContainer.new()
 	posts.add_theme_constant_override("separation", 6)
 	body.add_child(posts)
@@ -2993,15 +3011,15 @@ func _guard_units_dialog() -> void:
 		post_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		posts.add_child(post_button)
 	for count in GUARDS.STEPS:
-		var error := GUARDS.train_error(model, raids, int(count), guard_post)
-		_raid_button(body, "%d %s ausbilden: %d Münze%s" % [count, "Wache" if count == 1 else "Wachen", count, "" if count == 1 else "n"], _guard_action.bind("train", guard_post, int(count), dialog), error.is_empty())
+		var error := GUARDS.train_error(model, raids, int(count), guard_post, guard_kind)
+		_raid_button(body, "%d %s ausbilden: %s" % [count, GUARDS.TROOPS.title(guard_kind, int(count)), _cost_text(GUARDS.TROOPS.cost(guard_kind, int(count)))], _guard_action.bind("train", guard_post, int(count), dialog), error.is_empty())
 		if not error.is_empty() and int(count) > 1:
 			_village_caption(body, "  " + error)
 			break
 	_village_caption(body, "Deine Verbände", 18)
 	for unit in raids.units:
 		var id := int(unit.id)
-		_village_caption(body, "%s · %s · %d Wachen" % [str(unit.name), str(GUARDS.POSTS[str(unit.post)]), int(unit.size)], 16)
+		_village_caption(body, "%s · %d %s · %s" % [str(unit.name), int(unit.size), GUARDS.TROOPS.title(str(unit.type), int(unit.size)), str(GUARDS.POSTS[str(unit.post)])], 16)
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
 		body.add_child(row)
@@ -3026,17 +3044,23 @@ func _guard_action(action: String, argument: String, number: int, dialog: Window
 	match action:
 		"post":
 			guard_post = argument
-		"train":
-			error = GUARDS.train(model, raids, number, argument)
+		"kind":
+			guard_kind = argument
+		"site":
+			error = GUARDS.build_site(model, raids, argument)
 			if error.is_empty():
-				feedback.text = "%d neue Wachen am %s." % [number, str(GUARDS.POSTS[argument])]
+				feedback.text = "%s steht. Jetzt kannst du %s ausbilden." % [str(GUARDS.TROOPS.SITES[argument].title), GUARDS.TROOPS.title(str(GUARDS.TROOPS.SITES[argument]["for"]))]
+		"train":
+			error = GUARDS.train(model, raids, number, argument, guard_kind)
+			if error.is_empty():
+				feedback.text = "%d neue %s am %s." % [number, GUARDS.TROOPS.title(guard_kind, number), str(GUARDS.POSTS[argument])]
 		"move":
 			error = GUARDS.move(raids, number, argument)
 		"split":
 			var unit := GUARDS.find(raids, number)
 			error = GUARDS.split(raids, number, int(unit.get("size", 0)) / 2)
 		"dismiss":
-			error = GUARDS.dismiss(raids, number, 1)
+			error = GUARDS.dismiss(raids, number, 1, model)
 		"regroup":
 			for post in GUARDS.POST_ORDER:
 				GUARDS.regroup(raids, post)
