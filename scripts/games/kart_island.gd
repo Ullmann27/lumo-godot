@@ -51,6 +51,9 @@ const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const RESULT_KIT = preload("res://scripts/games/kart_result_kit.gd")
+const RESULT_BADGE = preload("res://scripts/games/kart_result_badge.gd")
+const RESULT_WIDGETS = preload("res://scripts/games/kart_result_widgets.gd")
 const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
 const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
@@ -215,6 +218,15 @@ var modal_column: VBoxContainer
 var modal_scroll: ScrollContainer
 var modal_padding: MarginContainer
 var pause_navigation: HBoxContainer
+## Zieleinlauf: Tafel rechts (quer) bzw. unten (hoch), ohne Abdunklung; die
+## Kamera stellt das Kart in die freie Fläche.
+var result_view: bool = false
+var result_scale: float = 1.0
+var result_camera_time: float = 0.0
+## Bildschirmanteil (0..1), in dessen Mitte das Kart stehen soll, und der Anteil
+## der freien Fläche an Breite und Höhe.
+var result_focus: Vector2 = Vector2(0.5, 0.5)
+var result_free: Vector2 = Vector2.ONE
 var safe_ui: Control
 var muted: bool = false
 var host_sound_enabled: bool = true
@@ -1152,7 +1164,8 @@ func _build_ui() -> void:
 	modal.offset_bottom = 260
 	modal.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 24))
 	safe_ui.add_child(modal)
-	modal.visibility_changed.connect(func(): modal_backdrop.visible = modal.visible)
+	modal.visibility_changed.connect(_on_modal_visibility_changed)
+	modal.draw.connect(_draw_result_plate)
 	modal_column = VBoxContainer.new()
 	modal_column.add_theme_constant_override("separation", 10)
 	# Settings and result buttons pass touch drags to their ScrollContainer.
@@ -1176,6 +1189,7 @@ func _build_ui() -> void:
 	modal_scroll.add_child(modal_padding)
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_padding.add_child(modal_column)
+	modal_column.sort_children.connect(modal.queue_redraw)
 	# Return actions stay outside the scrolling settings on compact landscapes.
 	pause_navigation = HBoxContainer.new()
 	pause_navigation.name = "PauseNavigation"
@@ -1410,12 +1424,6 @@ func _apply_responsive_layout() -> void:
 	)
 	for side in ["left", "right", "top", "bottom"]:
 		modal_padding.add_theme_constant_override("margin_" + side, roundi(8.0 * ui_scale))
-	modal_height = _result_modal_height(
-		modal_height,
-		maxf(1.0, safe_ui.size.y - margin_dp * 2.0 * ui_scale),
-		modal_width,
-		ui_scale
-	)
 	for button in [top_menu_button, top_reset_button, top_pause_button]:
 		button.custom_minimum_size = top_button_size * ui_scale
 		button.add_theme_font_size_override("font_size", roundi((15.0 if short_landscape else 21.0) * ui_scale))
@@ -1436,10 +1444,13 @@ func _apply_responsive_layout() -> void:
 					if button.name == "ReturnToGames"
 					else "Zum Lernen"
 				)
-	modal.offset_left = -modal_width * 0.5
-	modal.offset_right = modal_width * 0.5
-	modal.offset_top = -modal_height * 0.5
-	modal.offset_bottom = modal_height * 0.5
+	if result_view:
+		_layout_result(ui_scale, margin_dp, display_size)
+	else:
+		modal.offset_left = -modal_width * 0.5
+		modal.offset_right = modal_width * 0.5
+		modal.offset_top = -modal_height * 0.5
+		modal.offset_bottom = modal_height * 0.5
 	# A Container can grow its offsets while an old minimum size is being
 	# rescaled. Restore the anchored rectangle after all new minimums are set.
 	hud_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -1523,52 +1534,171 @@ func _apply_minimap_layout() -> void:
 		return
 	map_panel.hide()
 
-## The finished-race dialog shows every action without scrolling. It grows to
-## its content first; only when the safe area is too short do the buttons drop
-## to the 48 dp touch minimum and the two optional lines step aside.
-func _result_modal_height(
-	base_height: float, available: float, modal_width: float, ui_scale: float
-) -> float:
-	if not finished or not modal.visible or not modal_column.has_node("ResultTitle"):
-		return base_height
-	var frame: Vector2 = modal.get_theme_stylebox("panel").get_minimum_size()
-	var padding: float = roundi(8.0 * ui_scale) * 2.0
-	var text_width: float = maxf(1.0, modal_width - frame.x - padding)
-	var needed: float = base_height
-	for stage in range(3):
-		var button_size := Vector2(80.0, 58.0 if stage == 0 else 48.0)
-		for child in modal_column.get_children():
-			if child is Button:
-				child.set_meta("kart_base_minimum_size", button_size)
-				child.custom_minimum_size = button_size * ui_scale
-			elif child.name == "ResultPlaceLine":
-				child.visible = stage < 1
-			elif child.name == "ResultCheer":
-				child.visible = stage < 2
-		needed = _result_content_height(text_width) + frame.y + padding
+## Zieleinlauf-Tafel: quer rechts angedockt (rund 45 % der sicheren Breite),
+## hoch und fast quadratisch unten. Der Inhalt ist ein Entwurf von 560 Einheiten
+## Breite, der mit der Tafel skaliert. Reicht die Höhe nicht, weicht zuerst die
+## Schlusszeile, dann schrumpft der Maßstab; Knöpfe bleiben mindestens 48 dp hoch.
+## Passt selbst der kleinste Maßstab nicht (sehr flache Fenster, viele
+## Zusatzzeilen), rücken die Aktionen direkt unter die Wertzeilen: Sie bleiben
+## ohne Scrollen erreichbar, nur die Zusatzzeilen liegen dann im Scrollbereich.
+func _layout_result(ui_scale: float, margin_dp: float, display_size: Vector2) -> void:
+	var margin: float = margin_dp * ui_scale
+	var area: Vector2 = safe_ui.size
+	var landscape: bool = display_size.x >= display_size.y * 1.3
+	var panel_width: float = area.x - margin * 2.0
+	var available: float = area.y - margin * 2.0
+	if landscape:
+		panel_width = minf(panel_width, area.x * 0.45)
+	else:
+		panel_width = minf(panel_width, 660.0 * ui_scale)
+		# Über der Tafel bleibt Platz für Lumo im Kart.
+		available = minf(available, maxf(area.y * 0.6, 340.0 * ui_scale))
+	var factor: float = clampf(panel_width / (RESULT_KIT.DESIGN_WIDTH * ui_scale), 0.42, 2.2)
+	var cheer: Control = modal_column.get_node_or_null("ResultCheer")
+	if cheer != null:
+		cheer.visible = true
+	var needed: float = _apply_result_scale(factor * ui_scale, ui_scale, panel_width)
+	for stage in range(6):
 		if needed <= available:
 			break
-	return minf(available, maxf(base_height, needed))
+		if stage == 0 and cheer != null:
+			cheer.visible = false
+		else:
+			factor = maxf(0.42, factor * clampf(available / needed, 0.7, 0.97))
+		needed = _apply_result_scale(factor * ui_scale, ui_scale, panel_width)
+	if not landscape:
+		var fitted_width: float = minf(panel_width, RESULT_KIT.DESIGN_WIDTH * factor * ui_scale * 1.14)
+		if fitted_width < panel_width:
+			panel_width = fitted_width
+			needed = _apply_result_scale(factor * ui_scale, ui_scale, panel_width)
+	var height: float = minf(needed, area.y - margin * 2.0)
+	_order_result_actions(needed > height)
+	if landscape:
+		modal.offset_right = area.x * 0.5 - margin
+		modal.offset_left = modal.offset_right - panel_width
+		modal.offset_top = -height * 0.5
+		modal.offset_bottom = height * 0.5
+	else:
+		modal.offset_left = -panel_width * 0.5
+		modal.offset_right = panel_width * 0.5
+		modal.offset_bottom = area.y * 0.5 - margin
+		modal.offset_top = modal.offset_bottom - height
+	# Freie Fläche für das Kart: links neben bzw. über der Tafel.
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var origin: Vector2 = safe_ui.global_position
+	if landscape:
+		var free_right: float = origin.x + area.x * 0.5 + modal.offset_left
+		result_free = Vector2(clampf(free_right / viewport_size.x, 0.2, 1.0), 1.0)
+		result_focus = Vector2(result_free.x * 0.5, 0.52)
+	else:
+		var free_bottom: float = origin.y + area.y * 0.5 + modal.offset_top
+		result_free = Vector2(1.0, clampf(free_bottom / viewport_size.y, 0.2, 1.0))
+		result_focus = Vector2(0.5, result_free.y * 0.57)
+	modal.queue_redraw()
 
 
-## Wrapped labels report a reliable minimum only after layout, so the dialog
-## measures its lines against the width it is about to receive.
-func _result_content_height(text_width: float) -> float:
-	var height: float = 0.0
+## Setzt den Maßstab aller Bausteine und liefert die Höhe, die die Tafel bei
+## dieser Breite braucht (Rahmen, Inhalt, Aktionen).
+func _apply_result_scale(unit: float, dp: float, panel_width: float) -> float:
+	result_scale = unit
+	var frame := StyleBoxEmpty.new()
+	frame.content_margin_left = 14.0 * unit
+	frame.content_margin_right = 14.0 * unit
+	frame.content_margin_top = 2.0 * unit
+	frame.content_margin_bottom = 14.0 * unit
+	modal.add_theme_stylebox_override("panel", frame)
+	for side in ["left", "right", "top", "bottom"]:
+		modal_padding.add_theme_constant_override("margin_" + side, 0)
+	modal_column.add_theme_constant_override("separation", roundi(8.0 * unit))
+	var inner: float = maxf(1.0, panel_width - frame.get_minimum_size().x)
+	var total: float = frame.get_minimum_size().y
 	var rows: int = 0
 	for child in modal_column.get_children():
-		if not (child is Control) or not child.visible:
+		if not (child is Control) or child.is_queued_for_deletion():
 			continue
-		rows += 1
-		if child is Label:
-			var font: Font = child.get_theme_font("font")
-			var font_size: int = child.get_theme_font_size("font_size")
-			height += ceilf(font.get_multiline_string_size(
-				child.text, HORIZONTAL_ALIGNMENT_LEFT, text_width, font_size
-			).y) + 2.0
-		else:
-			height += child.get_combined_minimum_size().y
-	return height + maxf(0.0, rows - 1.0) * modal_column.get_theme_constant("separation")
+		var height: float = _scale_result_node(child, unit, dp, inner)
+		if child.visible:
+			total += height
+			rows += 1
+	total += float(maxi(0, rows - 1) * modal_column.get_theme_constant("separation"))
+	# Ein Pixel Luft, damit Rundungen keinen Scrollbalken erzeugen.
+	return ceilf(total) + 2.0
+
+
+## Normal stehen die Aktionen am Ende der Tafel. Bei Platzmangel (`early`)
+## folgen sie direkt auf die Wertzeilen, vor Streckenpass, Bestzeit und Cup-Wertung.
+func _order_result_actions(early: bool) -> void:
+	var rows: Array[Node] = []
+	for row_name in ["ResultMainActions", "ResultMoreActions", "ResultCheer"]:
+		if modal_column.has_node(row_name):
+			rows.append(modal_column.get_node(row_name))
+	var stats: Node = modal_column.get_node_or_null("ResultStats")
+	var first: int = modal_column.get_child_count() - rows.size()
+	if early and stats != null:
+		first = stats.get_index() + 1
+	for index in range(rows.size()):
+		if rows[index].get_index() != first + index:
+			modal_column.move_child(rows[index], first + index)
+
+
+func _scale_result_node(node: Control, unit: float, dp: float, width: float) -> float:
+	if node is BoxContainer and not node.has_method("apply_result_scale"):
+		# Aktionszeile: zwei Knöpfe nebeneinander, auf sehr schmalen Tafeln gestapelt.
+		node.add_theme_constant_override("separation", roundi(10.0 * unit))
+		node.vertical = width < 300.0 * dp
+		var tallest: float = 0.0
+		var stacked: float = 0.0
+		for child in node.get_children():
+			child.apply_result_scale(unit, dp)
+			tallest = maxf(tallest, child.custom_minimum_size.y)
+			stacked += child.custom_minimum_size.y
+		if node.vertical:
+			return stacked + float(maxi(0, node.get_child_count() - 1) * node.get_theme_constant("separation"))
+		return tallest
+	if node.has_method("apply_result_scale"):
+		node.apply_result_scale(unit, dp)
+		return node.result_height(width)
+	if node is Label:
+		if not node.has_meta("kart_result_font_size"):
+			node.set_meta("kart_result_font_size", node.get_theme_font_size("font_size"))
+		var font_size: int = RESULT_KIT.font_size(float(node.get_meta("kart_result_font_size")), unit, dp)
+		node.add_theme_font_size_override("font_size", font_size)
+		return ceilf(node.get_theme_font("font").get_multiline_string_size(
+			node.text, HORIZONTAL_ALIGNMENT_LEFT, width, font_size
+		).y) + 2.0
+	return node.get_combined_minimum_size().y
+
+
+func _draw_result_plate() -> void:
+	if not result_view:
+		return
+	var top: float = 0.0
+	var badge: Control = modal_column.get_node_or_null("ResultTitle")
+	if badge != null:
+		# Die Zahl ragt über die Tafelkante hinaus, wie in Heinz' Zielbildern.
+		top = clampf(
+			badge.global_position.y - modal.global_position.y + badge.size.y * 0.5, 0.0, modal.size.y * 0.5
+		)
+	modal.draw_style_box(
+		RESULT_KIT.plate_style(result_scale), Rect2(0, top, modal.size.x, modal.size.y - top)
+	)
+
+
+func _on_modal_visibility_changed() -> void:
+	if not modal.visible and result_view:
+		_end_result_view()
+	modal_backdrop.visible = modal.visible and not result_view
+
+
+func _end_result_view() -> void:
+	result_view = false
+	if is_instance_valid(player):
+		var animator = player.get("lumo_animation")
+		if is_instance_valid(animator):
+			animator.clear_attention_target()
+	modal.add_theme_stylebox_override("panel", _style(Color("0b1b32"), 24))
+	modal_column.add_theme_constant_override("separation", 10)
+	modal.queue_redraw()
 
 
 func _apply_ui_scale(control: Node, ui_scale: float) -> void:
@@ -1576,6 +1706,9 @@ func _apply_ui_scale(control: Node, ui_scale: float) -> void:
 	# fits its child minimum to the actual gap between the HUD and pedals.
 	# Recursing here would restore a larger cached minimum after a resize.
 	if control == garage or control == reference_landing or control == map_panel:
+		return
+	# Die Ergebnistafel skaliert ihre Bausteine selbst (_apply_result_scale).
+	if result_view and control == modal_column:
 		return
 	if control is Control:
 		var ui_control: Control = control
@@ -2933,6 +3066,9 @@ func _update_vehicles(_delta: float) -> void:
 func _update_camera(delta: float, snap: bool = false) -> void:
 	if not is_instance_valid(camera):
 		return
+	if result_view and finished and finish_cine_left <= 0.0:
+		_update_result_camera(delta, snap)
+		return
 	# Heinz' racing references keep the kart large in frame and put the horizon/
 	# setpiece directly ahead. Speed stretches the view; boost never teleports it.
 	if loop_state.active:
@@ -2999,6 +3135,82 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		)
 		camera.rotate_object_local(Vector3(0, 0, 1), roll)
 	_update_camera_speed_effects(delta, snap, speed_ratio)
+
+
+## Ergebnisbild: Kamera vorn rechts vor dem Kart, so gedreht, dass Lumo in der
+## freien Fläche neben bzw. über der Tafel steht. Gilt nur, solange das Ergebnis
+## sichtbar ist; die Rennkamera bleibt unverändert.
+func _update_result_camera(delta: float, snap: bool) -> void:
+	var immediate: bool = snap or reduced_motion
+	result_camera_time += delta
+	var blend: float = 1.0 if immediate else smoothstep(0.0, 1.0, result_camera_time / 0.9)
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
+	var target_fov: float = clampf(_resize_compensated_fov(48.0, aspect), 48.0, 76.0)
+	camera.fov = target_fov if immediate else lerpf(camera.fov, target_fov, minf(1.0, delta * 4.0))
+	var tan_vertical: float = tan(deg_to_rad(target_fov) * 0.5)
+	var tan_horizontal: float = tan_vertical * aspect
+	# Kart mit Lumo (schräg von vorn, mit Perspektive etwa 3,6 m breit und
+	# 2,5 m hoch) füllt die freie Fläche; hoch steht es ohne Tafel daneben.
+	var subject_width: float = 3.6 if result_free.x < 1.0 else 3.0
+	var view_distance: float = clampf(maxf(
+		subject_width / (2.0 * tan_horizontal * result_free.x * 0.92),
+		2.5 / (2.0 * tan_vertical * result_free.y * 0.86)
+	), 2.8, 9.5)
+	var target: Vector3 = player.position + Vector3.UP * 1.0
+	var desired: Vector3 = _result_camera_position(view_distance, target)
+	if not immediate:
+		desired = camera.position.lerp(desired, minf(1.0, delta * 4.5))
+	camera.position = _clear_finish_camera(desired, target)
+	if mode != "arena" and is_instance_valid(world):
+		camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
+	camera.look_at(target)
+	# Nach rechts bzw. unten schwenken: Das Kart rückt in die freie Fläche.
+	camera.rotate_object_local(Vector3.UP, -atan((0.5 - result_focus.x) * 2.0 * tan_horizontal) * blend)
+	camera.rotate_object_local(Vector3.RIGHT, -atan((0.5 - result_focus.y) * 2.0 * tan_vertical) * blend)
+	if is_instance_valid(speed_fx):
+		speed_fx.set_motion(0.0, false, reduced_motion)
+	_keep_result_cheer()
+
+
+## Bevorzugt vorn rechts vor dem Kart. Steht dort eine Leitplanke oder ein
+## Gebäude im Weg (das Kart rollt oft am Rand aus), folgt die nächste freie
+## Richtung: vorn links, gerade von vorn, dann seitlich.
+func _result_camera_position(view_distance: float, target: Vector3) -> Vector3:
+	_cache_finish_camera_boxes()
+	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
+	var side := Vector3(-ahead.z, 0, ahead.x)
+	var best: Vector3 = target
+	var best_clear: float = -1.0
+	for angle in [0.62, -0.62, 0.0, 1.25, -1.25]:
+		var candidate: Vector3 = (
+			player.position
+			+ (ahead * cos(angle) + side * sin(angle)) * view_distance
+			+ Vector3.UP * (0.6 + view_distance * 0.2)
+		)
+		var clear: float = _finish_camera_segment_fraction(target, candidate)
+		if clear >= 0.9:
+			return candidate
+		if clear > best_clear:
+			best_clear = clear
+			best = candidate
+	return best
+
+
+## Lumo schaut zur Kamera und jubelt, solange das Ergebnis eines Treppchenplatzes
+## (oder einer Fahrt ohne Rang) zu sehen ist: Die vorhandene Jubelbewegung beginnt
+## nach ihrem Ende neu. Bei ruhiger Bewegung bleibt Lumo ruhig sitzen.
+func _keep_result_cheer() -> void:
+	if reduced_motion or paused or not is_instance_valid(player):
+		return
+	var place: int = int(result_payload.get("place", 1)) if _ranked() else 1
+	for animator in [player.get("lumo_animation"), player.get("production_driver")]:
+		if not is_instance_valid(animator):
+			continue
+		if animator.has_method("set_attention_target"):
+			animator.set_attention_target(camera.global_position)
+		if place <= 3 and not bool(animator.victory):
+			animator.celebrate_finished_race(place)
 
 
 func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) -> void:
@@ -3498,11 +3710,18 @@ func _return_to_app(destination: String) -> void:
 func _show_host_save_failure() -> void:
 	message.text = HostBridge.SAVE_FAILURE
 	if not modal_column.has_node("HostSaveFailure"):
-		var label := _label(HostBridge.SAVE_FAILURE, 20)
+		var label: Control
+		if result_view:
+			# Im Ergebnis ist die obere Meldungszeile ausgeblendet: Hinweis in der Tafel.
+			label = RESULT_WIDGETS.Row.new().setup("notice", HostBridge.SAVE_FAILURE, "", 0, Color("ffb648"))
+		else:
+			label = _label(HostBridge.SAVE_FAILURE, 20)
+			label.add_theme_color_override("font_color", Color("3a4577"))
 		label.name = "HostSaveFailure"
-		label.add_theme_color_override("font_color", Color("3a4577"))
 		modal_column.add_child(label)
 		modal_column.move_child(label, 1)
+		if result_view:
+			_apply_responsive_layout()
 
 
 func _abandon() -> void:
@@ -3606,6 +3825,7 @@ func _show_result() -> void:
 	_clear_column(modal_column)
 	modal_scroll.scroll_vertical = 0
 	pause_navigation.hide()
+	menu_settings_navigation.hide()
 	var title: String = "Ziel erreicht!"
 	if mode == "training":
 		title = "Gut trainiert!"
@@ -3619,64 +3839,105 @@ func _show_result() -> void:
 		)
 	var ranked: bool = _ranked()
 	var place_now: int = int(result_payload.get("place", 1))
-	if ranked and not (mode == "cup" and not pending_cup_next):
-		title = _place_title(place_now)
-	var title_label: Label = _label(title, 34 if ranked else 30)
-	title_label.name = "ResultTitle"
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if ranked:
-		title_label.add_theme_color_override("font_color", _place_color(place_now))
-	modal_column.add_child(title_label)
-	if ranked:
-		var cheer: Label = _label(_place_cheer(place_now), 21)
-		cheer.name = "ResultCheer"
-		cheer.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		modal_column.add_child(cheer)
-	var stats: Label = _label(_result_stats_text(), 21)
-	stats.name = "ResultStats"
+	var cup_final: bool = ranked and mode == "cup" and not pending_cup_next
+	# Abzeichen: große Platzzahl mit „PLATZ von 6“; ohne Rang die Überschrift.
+	var badge := RESULT_BADGE.new()
+	badge.place = place_now
+	badge.ranked = ranked
+	badge.title = title
+	badge.subline = "von 6" if ranked else ""
+	badge.reduced_motion = reduced_motion
+	modal_column.add_child(badge)
+	if cup_final:
+		var headline: Label = _label(title, 24)
+		headline.name = "ResultHeadline"
+		headline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		headline.add_theme_color_override("font_color", _place_color(place_now))
+		modal_column.add_child(headline)
+	var stats := RESULT_WIDGETS.Stats.new()
+	stats.text = _result_stats_text()
 	modal_column.add_child(stats)
 	var mastery: Variant = result_payload.get("trackPass", {})
 	if mastery is Dictionary and bool(mastery.get("eligible", false)):
 		var mastery_text := "Streckenpass · %d/3 Ziele\n%s" % [int(mastery.get("stage", 0)), TRACK_PASS.goal_text(int(mastery.get("stage", 0)))]
+		var mastery_icon: String = "pass"
 		if not bool(mastery.get("saved", true)):
 			mastery_text = "Der Streckenpass konnte nicht gespeichert werden. Dein Rennergebnis bleibt erhalten."
-		var mastery_label := _label(mastery_text, 20)
-		mastery_label.name = "TrackPassResult"
-		modal_column.add_child(mastery_label)
-	var details: String = ""
-	if ranked:
-		details = "Platz %d von 6" % place_now
+			mastery_icon = "notice"
+		var mastery_row := RESULT_WIDGETS.Row.new().setup(mastery_icon, mastery_text)
+		mastery_row.name = "TrackPassResult"
+		modal_column.add_child(mastery_row)
 	if mode == "arena":
-		details += ("\n" if details != "" else "") + "%d Kristalle gesammelt" % arena_scores
-	if details != "":
-		var details_label: Label = _label(details, 21)
-		# The ranked title already names the place; this line may yield on small screens.
-		if ranked and mode != "arena":
-			details_label.name = "ResultPlaceLine"
-		modal_column.add_child(details_label)
+		var crystals := RESULT_WIDGETS.Row.new().setup("crystal", "Kristalle gesammelt", str(arena_scores))
+		crystals.name = "ResultCrystals"
+		modal_column.add_child(crystals)
 	if mode == "time_trial":
 		var record_text: String = "Deine neue Bestzeit – Geisterfahrt gespeichert!" if best_record else ("Bestzeit: %.2f Sekunden" % records.previous_best if records.previous_best > 0 else "Erste Trainingszeit. Ohne Zurücksetzen wird deine Geisterfahrt gespeichert.")
-		modal_column.add_child(_label(record_text, 20))
+		var record_row := RESULT_WIDGETS.Row.new().setup("record", record_text)
+		record_row.name = "ResultRecord"
+		modal_column.add_child(record_row)
+	var primary: Button
+	var secondary: Button
 	if mode == "cup":
 		var names: Array[String] = [str(CATALOG.entry(CATALOG.DRIVERS, selected_driver).name), "Milo", "Nova", "Borin", "Yuki", "Fynn"]
 		var standings: Array[Dictionary] = []
 		for i in range(cup_points.size()):
-			standings.append({"name": names[i], "points": cup_points[i], "id": i})
+			standings.append({"name": names[i], "points": cup_points[i], "id": i, "me": i == 0})
 		standings.sort_custom(func(a: Dictionary, b: Dictionary): return int(a.points) > int(b.points))
-		var lines: String = "GESAMTWERTUNG\n"
-		for i in range(standings.size()):
-			lines += "%d. %s    %d Punkte%s\n" % [i + 1, standings[i].name, int(standings[i].points), "  ← DU" if int(standings[i].id) == 0 else ""]
-		modal_column.add_child(_label(lines.strip_edges(), 19))
-		if pending_cup_next:
-			modal_column.add_child(_button("Weiter: " + str(CATALOG.TRACKS[cup_index + 1].name), _next_cup_race))
-	if not pending_cup_next:
-		modal_column.add_child(_button("Noch einmal fahren", _restart_setup))
-	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
-	modal_column.add_child(_button("Zur Spieleauswahl", _return_to_world))
-	modal_column.add_child(_button("Zum Lernen", func(): _return_to_app("learn")))
+		modal_column.add_child(RESULT_WIDGETS.Standings.new().setup(standings))
+	if pending_cup_next:
+		primary = RESULT_WIDGETS.Action.new().setup(
+			"Weiter: " + str(CATALOG.TRACKS[cup_index + 1].name), _next_cup_race, "primary", "next"
+		)
+		secondary = RESULT_WIDGETS.Action.new().setup("Zur Spieleauswahl", _return_to_world, "secondary")
+	else:
+		primary = RESULT_WIDGETS.Action.new().setup("Zur Spieleauswahl", _return_to_world, "primary", "next")
+		secondary = RESULT_WIDGETS.Action.new().setup("Noch einmal fahren", _restart_setup, "secondary", "replay")
+	var main_row := BoxContainer.new()
+	main_row.name = "ResultMainActions"
+	main_row.add_child(primary)
+	main_row.add_child(secondary)
+	modal_column.add_child(main_row)
+	var more_row := BoxContainer.new()
+	more_row.name = "ResultMoreActions"
+	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Neue Fahrt auswählen", _leave_race_for_menu))
+	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Zum Lernen", func(): _return_to_app("learn")))
+	modal_column.add_child(more_row)
+	for row in [main_row, more_row]:
+		for action in row.get_children():
+			# Wie alle Dialogknöpfe: Ein Wischen, das auf dem Knopf beginnt, scrollt
+			# die Tafel und löst die Aktion nicht aus.
+			action.mouse_filter = Control.MOUSE_FILTER_PASS
+	if ranked:
+		modal_column.add_child(RESULT_WIDGETS.Tagline.new().setup(_place_cheer(place_now)))
+	result_view = true
+	result_camera_time = 0.0
+	# Das Ergebnis steht frei über der Szene: keine Renn-Anzeige, keine Abdunklung.
+	hud_content.hide()
 	modal.show()
+	modal_backdrop.hide()
 	_apply_responsive_layout()
 	call_deferred("_apply_responsive_layout")
+	_play_result_entrance(badge, stats)
+
+
+## Abzeichen ploppt auf, die Zeilen blenden nacheinander ein. Bei ruhiger
+## Bewegung steht alles sofort.
+func _play_result_entrance(badge: Control, stats: Control) -> void:
+	if reduced_motion:
+		badge.appear = 1.0
+		return
+	badge.play_in()
+	var rows: Array = stats.get_children()
+	for row_name in ["ResultMainActions", "ResultMoreActions", "ResultCheer"]:
+		if modal_column.has_node(row_name):
+			rows.append(modal_column.get_node(row_name))
+	for index in range(rows.size()):
+		var row: Control = rows[index]
+		row.modulate.a = 0.0
+		var fade: Tween = row.create_tween()
+		fade.tween_interval(0.12 + 0.07 * float(index))
+		fade.tween_property(row, "modulate:a", 1.0, 0.22)
 
 
 func _ranked() -> bool:
