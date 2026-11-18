@@ -45,6 +45,8 @@ var state: String = "done"
 var index: int = 0
 var replaying: bool = false
 var shown_steps: Array[String] = []
+## Schritte, die in dieser Sitzung durch eine Handlung des Kindes erfüllt wurden.
+var completed: Array[String] = []
 var root: Control
 var frame: Control
 var bubble: PanelContainer
@@ -216,6 +218,7 @@ func _begin_step(fresh: bool = true) -> void:
 
 func _complete_step() -> void:
 	var id := str(steps[index].id)
+	completed.append(id)
 	step_completed.emit(id)
 	print("[FirstRunGuide] step done ", id, " t=", _clock)
 	_praise = PRAISE[index % PRAISE.size()]
