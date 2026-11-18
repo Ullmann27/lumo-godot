@@ -31,6 +31,7 @@ const VIOLET := Color("8a5cff")
 const TEAL := Color("1fb8d8")
 const MAGENTA := Color("ff4fc8")
 const PREVIEW_DIR := "res://assets/kart/neon_previews/"
+const STAGE_ART_DIR := "res://assets/kart/track_stage/"
 const TRACK_NAMES := {
 	"volcano_night": "Vulkan", "jungle_emerald_3600": "Dschungel", "desert_drift": "Wüste",
 	"sonnenhafen": "Sonnenhafen", "winter_sprint": "Winter-Sprint", "galaxy_ringway": "Galaxy Ringway",
@@ -284,7 +285,12 @@ func _feature_track(id: String) -> void:
 	selected_track = id
 	_highlight_pick.title = TRACK_NAMES.get(id, str(CATALOG.entry(CATALOG.TRACKS, id).get("name", id)))
 	_highlight_pick.tooltip_text = "%s fahren – Strecke wählen" % _highlight_pick.title
-	if _track_buttons.has(id):
+	# Das große Bild nutzt das scharfe Bühnenbild der Streckenwahl (1920×1080); geladen
+	# wird nur die gerade gezeigte Strecke, die kleinen Bilder bleiben die Vorschauen.
+	var stage_art := STAGE_ART_DIR + id + ".webp"
+	if ResourceLoader.exists(stage_art, "Texture2D"):
+		_highlight_pick.art = load(stage_art)
+	elif _track_buttons.has(id):
 		_highlight_pick.art = _track_buttons[id].art
 	for key in _track_buttons:
 		_track_buttons[key].set_active(key == id)

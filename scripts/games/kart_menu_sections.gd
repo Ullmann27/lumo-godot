@@ -44,7 +44,8 @@ static func level_facts(entry: Dictionary) -> PackedStringArray:
 	return PackedStringArray([own_text, rival_text, behaviour, assist])
 
 
-## Ersetzt die schmalen Zeilen des Reiters durch große Karten in einem Raster.
+## Ersetzt die schmalen Zeilen des Reiters durch große Karten. Die Karten bleiben direkte
+## Kinder der Auswahl (wie die bisherigen Zeilen); `layout` stellt sie neben- oder untereinander.
 ## `select` wird mit (Schlüssel, ID) aufgerufen wie bei den übrigen Auswahlkarten.
 static func build(menu: Control, step: int, select: Callable) -> void:
 	if step not in [1, 4]:
@@ -53,11 +54,6 @@ static func build(menu: Control, step: int, select: Callable) -> void:
 	for child in choices.get_children():
 		choices.remove_child(child)
 		child.queue_free()
-	var grid := GridContainer.new()
-	grid.name = "ShowcaseCards"
-	grid.columns = 3
-	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	choices.add_child(grid)
 	var key := "driver" if step == 1 else "difficulty"
 	var entries: Array[Dictionary] = CATALOG.DRIVERS if step == 1 else CATALOG.DIFFICULTIES
 	for index in range(entries.size()):
@@ -82,29 +78,36 @@ static func build(menu: Control, step: int, select: Callable) -> void:
 			card.chevrons = index + 1
 			card.lines = level_facts(item)
 			card.art_share = 0.26
+		card.set_meta("showcase_card", true)
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		card.pressed.connect(func(): select.call(key, id))
-		grid.add_child(card)
+		choices.add_child(card)
 
 
-## Raster an die Fläche anpassen: nebeneinander, wenn es breit genug ist, sonst untereinander.
+static func cards(menu: Control) -> Array:
+	var result: Array = []
+	for child in menu.choices.get_children():
+		if child.has_meta("showcase_card") and not child.is_queued_for_deletion():
+			result.append(child)
+	return result
+
+
+## Nebeneinander, wenn jede Karte mindestens 150 dp breit wird, sonst untereinander.
+## Muss nach der Streckenwahl-Anordnung laufen (die setzt die Auswahl auf senkrecht zurück).
 static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_view: bool) -> void:
-	var grid := menu.choices.get_node_or_null("ShowcaseCards") as GridContainer
-	if grid == null:
+	var shown := cards(menu)
+	if shown.is_empty():
 		return
-	var count := grid.get_child_count()
-	var columns := count if area_dp.x >= 150.0 * count else 1
-	grid.columns = columns
+	var count := shown.size()
+	var side_by_side := area_dp.x >= 150.0 * count
 	var gap := 8.0
-	grid.add_theme_constant_override("h_separation", roundi(gap * scale_factor))
-	grid.add_theme_constant_override("v_separation", roundi(gap * scale_factor))
-	var rows := ceili(float(count) / columns)
-	var height := maxf((area_dp.y - gap * (rows - 1)) / rows, 96.0 if short_view else 120.0)
-	if columns == 1:
-		height = maxf(height, 116.0)
-	for card in grid.get_children():
+	menu.choices.vertical = not side_by_side
+	menu.choices.add_theme_constant_override("separation", roundi(gap * scale_factor))
+	var height := area_dp.y
+	if not side_by_side:
+		height = maxf((area_dp.y - gap * (count - 1)) / count, 96.0 if short_view else 116.0)
+	for card in shown:
 		card.custom_minimum_size = Vector2(0, floorf(height * scale_factor))
 		card.apply_size(scale_factor)
-		if columns == 1 and card.chevrons == 0:
+		if not side_by_side and card.chevrons == 0:
 			card.art_share = 0.6

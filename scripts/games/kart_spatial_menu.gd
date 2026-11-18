@@ -472,16 +472,16 @@ func _apply_responsive_layout() -> void:
 					# actionable information and remain visible on every form factor.
 					if step == 3 and setup.mode == "race" and track_pass != null:
 						card.caption_label.show()
-	if step in [1, 4]:
-		var title_dp := 0.0 if short_view else 40.0
-		var inset := 8.0 if short_view else 20.0
-		SECTIONS.layout(self, choices_rect.size - Vector2(inset + 4.0, inset + title_dp), scale_factor, short_view)
 	if stage_mode:
 		title_label.hide()
 		_stage_rect(setup_left, choices_rect, scale_factor)
 		track_stage.layout_cards(choices_rect, scale_factor)
 	else:
 		track_stage.release_drawer()
+	if step in [1, 4]:
+		var title_dp := 0.0 if short_view else 40.0
+		var inset := 8.0 if short_view else 20.0
+		SECTIONS.layout(self, choices_rect.size - Vector2(inset + 4.0, inset + title_dp), scale_factor, short_view)
 	_stage_rect(footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
 	footer_spacer.hide()
 	footer.columns = (3 if has_saved_race else 2) + (1 if workshop_in_footer else 0)
@@ -578,6 +578,12 @@ func _fit_welcome_camera() -> void:
 		direction = Vector3(-2.35, 0.82, -3.6).normalized()
 	# Fahrer: nah an Figur und Cockpit, leicht von vorn – Gesicht und Silhouette groß.
 	var driver_stage: bool = step == 1 and inspection_view == 0
+	# Hauptmenü (offenes Fold): Kart und Lumo füllen die linke Bühne; der Lichtring darf
+	# angeschnitten sein, statt das Kart klein in die Mitte zu zwingen.
+	var landing_stage: bool = _landing_active and step == 0
+	if landing_stage:
+		focus = Vector3(0, 0.85, 0)
+		direction = Vector3(1.1, 0.95, -4.6).normalized()
 	if driver_stage:
 		focus = Vector3(0, 1.0, 0)
 		direction = Vector3(-1.2, 0.75, -3.4).normalized()
@@ -600,7 +606,7 @@ func _fit_welcome_camera() -> void:
 		focus = bounds.get_center()
 		direction = Vector3(0.65, 0.90, -1.0).normalized()
 	else:
-		points = _stage_subject_points(garage_stage or driver_stage)
+		points = _stage_subject_points(garage_stage or driver_stage or landing_stage)
 		if driver_stage and is_instance_valid(preview_kart):
 			# Ohren und Kopf der (teils geskinnten) Figuren sicher im Bild.
 			for corner in [Vector3(0.55, 2.05, 0.1), Vector3(-0.55, 2.05, 0.1)]:
@@ -613,7 +619,7 @@ func _fit_welcome_camera() -> void:
 				group = group.expand(point)
 			focus.x = group.get_center().x * 0.6
 			focus.z = group.get_center().z * 0.6
-	var distance := 6.0 if step == 3 else (2.6 if garage_stage or driver_stage else 4.8)
+	var distance := 6.0 if step == 3 else (2.6 if garage_stage or driver_stage or landing_stage else 4.8)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	preview_camera.fov = 40.0 if aspect < 1.0 else 35.0

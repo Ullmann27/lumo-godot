@@ -360,7 +360,8 @@ func _swatch_color(kind: String, option: Dictionary) -> Color:
 
 func _refresh_all() -> void:
 	var item: Dictionary = FLEET.entry(kart_id)
-	title_label.text = "TUNING-WERKSTATT · %s" % str(item.name).to_upper()
+	# Kurz genug für das offene Fold: der Kartname wurde vorher abgeschnitten („· CO…“).
+	title_label.text = "WERKSTATT · %s" % str(item.name).to_upper()
 	budget_label.text = "★ %d frei" % tuning.available()
 	var stats: Dictionary = FLEET.base_stats(kart_id)
 	var extra: Dictionary = tuning.bonus(kart_id)

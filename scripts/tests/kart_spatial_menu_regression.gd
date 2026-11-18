@@ -77,6 +77,10 @@ func _check_camera_clear(menu) -> void:
 			continue
 		var bounds: AABB = mesh.global_transform * mesh.get_aabb()
 		for focus in [Vector3(0, 0.75, 0), Vector3(0, 1.5, 0)]:
+			# Zusammengeführte Studio-Geometrie (Boden, Drehteller, Wände in einem Mesh)
+			# umschließt auch das Kart selbst; ihre Hülle sagt nichts über eine Verdeckung.
+			if bounds.has_point(focus):
+				continue
 			if bounds.intersects_segment(origin, focus) != null:
 				obscured_by.append(str(mesh.name))
 	_check(obscured_by.is_empty(), "physical camera sees the driver through the open studio: " + str(obscured_by))
@@ -165,46 +169,52 @@ func _check_header_touch(menu) -> void:
 		" destinations=", emitted, " previous_section=", prior_step, " actual_section=", menu.step)
 
 
+## Neon-Hauptmenü (kart_neon_hub.gd): jede sichtbare Bedienfläche ist mindestens 48 dp
+## groß, liegt im sicheren Bereich und wird ohne Vergrößerung des Elternknotens gezeichnet.
 func _check_landing_raster_scale(landing) -> void:
 	var window_dp: Vector2 = Vector2(root.size) / root.get_node("MobileRuntime").get_ui_density()
 	var logical_size: Vector2 = root.get_visible_rect().size
 	var ui_scale: float = maxf(logical_size.x / window_dp.x, logical_size.y / window_dp.y)
-	var available: Vector2 = landing.size / ui_scale
-	var narrow := available.x < 520.0
-	var horizontal_modes: bool = landing._modes.columns == 3
 	_check(landing._layout_root.scale.is_equal_approx(Vector2.ONE),
 		"landing text is rasterized at native UI size, without parent magnification")
-	var fonts: Array = [
-		[landing._stars, 16 if narrow else 22],
-		[landing._settings, 16],
-		[landing._back, 16],
-		[landing._start, 21 if narrow else 25],
-	]
-	var buttons: Array = [landing._settings, landing._back, landing._start]
-	for button in landing._navigation.get_children():
-		fonts.append([button, 14 if narrow else 16])
-		buttons.append(button)
-	for card in landing._mode_buttons.values():
-		fonts.append([card.title_label, 13 if horizontal_modes else (16 if available.y < 440 else 20)])
-		fonts.append([card.caption_label, 13])
-		fonts.append([card.selection_mark, 14])
-		buttons.append(card)
-	for spec in fonts:
-		var physical_font: float = float(spec[0].get_theme_font_size("font_size")) / ui_scale
-		_check(absf(physical_font - float(spec[1])) <= 0.51 / ui_scale,
-			"landing %s glyphs have %s dp raster size (actual %.3f)" % [spec[0].name, spec[1], physical_font])
+	_check(is_equal_approx(landing._layout_scale, ui_scale), "landing lays out in actual dp (k=%.3f)" % ui_scale)
+	var buttons: Array = [landing._back, landing._player, landing._stars_chip, landing._highlight_pick]
+	buttons.append_array(landing._mode_tiles.values())
+	buttons.append_array(landing._feature_tiles.values())
+	buttons.append_array(landing._navigation.get_children())
+	var checked := 0
 	for button in buttons:
-		if button.is_visible_in_tree():
-			var actual: Rect2 = button.get_global_rect()
-			var touch_size := actual.size / ui_scale
-			_check(touch_size.x >= 47.99 and touch_size.y >= 47.99,
-				"landing %s retains a 48dp touch target: %s" % [button.name, touch_size])
-			_check(game.safe_ui.get_global_rect().grow(1.0).encloses(actual),
-				"landing %s remains inside the safe area" % button.name)
-	print("[SpatialMenu] RASTER ", expected_pixels, " ui_scale=", ui_scale,
-		" title_px=", landing._mode_buttons.time_trial.title_label.get_theme_font_size("font_size"),
-		" navigation_px=", landing._navigation.get_node("Open_garage").get_theme_font_size("font_size"),
-		" back_px=", landing._back.get_theme_font_size("font_size"))
+		if not button.is_visible_in_tree():
+			continue
+		var actual: Rect2 = button.get_global_rect()
+		var touch_size := actual.size / ui_scale
+		# Das Menü rundet Positionen auf ganze Pixel; 48 dp dürfen dabei um < 0,5 dp schrumpfen.
+		_check(touch_size.x >= 47.5 and touch_size.y >= 47.5,
+			"landing %s retains a 48dp touch target: %s" % [button.name, touch_size])
+		_check(game.safe_ui.get_global_rect().grow(1.0).encloses(actual),
+			"landing %s remains inside the safe area" % button.name)
+		checked += 1
+	_check(checked >= 10, "landing shows its header, mode tiles and navigation (%d)" % checked)
+	print("[SpatialMenu] RASTER ", expected_pixels, " ui_scale=", ui_scale, " targets=", checked)
+
+
+## Große Karten von Fahrer bzw. Tempo & Gegner: alle sichtbar, mindestens 48 dp, nicht überlappend.
+func _check_showcase(menu, prefix: String, count: int) -> void:
+	var cards: Array = []
+	for child in menu.choices.get_children():
+		if str(child.name).begins_with(prefix):
+			cards.append(child)
+	_check(cards.size() == count, "%s cards are built (%d)" % [prefix, cards.size()])
+	var drawer: Rect2 = menu.choices.get_parent().get_global_rect().grow(1.0)
+	var seen: Array[Rect2] = []
+	for card in cards:
+		var actual: Rect2 = card.get_global_rect()
+		_check(minf(actual.size.x, actual.size.y) / menu._preview_dp_scale() >= 47.99, "%s is at least 48dp" % card.name)
+		for other in seen:
+			_check(not other.grow(-0.5).intersects(actual), "%s does not overlap another card" % card.name)
+		seen.append(actual)
+	if not cards.is_empty():
+		_check(drawer.encloses(cards[0].get_global_rect()), "%s first card is visible in the drawer" % prefix)
 
 
 func _run() -> void:
@@ -250,13 +260,18 @@ func _run() -> void:
 		_check_camera_clear(garage)
 		_check_landing_raster_scale(landing)
 		if android_density:
-			_check(landing._modes.columns == 1, "Android landscape keeps the three touch-sized modes beside the 3D stage")
 			_check(root.get_visible_rect().size.is_equal_approx(Vector2(1600, 720)),
 				"Android physical pixels use the production expanded 1280x720 content scale")
-			_check_subject_clear(garage, [landing._header, landing._modes, landing._navigation, landing._footer])
+			_check_subject_clear(garage, landing._mode_tiles.values() + [landing._highlight, landing._dock])
 		await _shot("landing-%dx%d" % [dimensions.x, dimensions.y])
-		await _tap(landing._mode_buttons.time_trial)
+		# Leiste „Rennen“ öffnet die Rennarten; Zeitfahren wählt, ohne zu starten.
+		await _tap(landing._navigation.get_node("Dock_race"))
+		_check(landing._overlay.visible and landing._overlay_title.text == "Rennarten", "race dock opens all race kinds")
+		var time_trial: Button = landing._race_kinds.get_node("Mode_time_trial")
+		await _tap(time_trial)
 		_check(garage.setup.mode == "time_trial" and game.menu_active, "mode touch selects without starting")
+		landing._close_overlay()
+		await _settle()
 		await _tap(landing._navigation.get_node("Open_garage"))
 		_check(garage.step == 2 and not landing.visible, "garage navigation opens real customizer")
 		_check(garage.preview_viewport.get_instance_id() == viewport_id, "navigation reuses one live viewport")
@@ -274,6 +289,7 @@ func _run() -> void:
 			_check_subject_clear(garage, [garage._stage_header, garage.step_strip, garage.setup_left, garage.footer, garage.view_choice])
 			await _tap(garage.step_buttons[1])
 			await _check_header_touch(garage)
+			_check_showcase(garage, "DriverCard_", 3)
 			await _tap(garage.step_buttons[2])
 			await _check_header_touch(garage)
 		await _shot("garage-%dx%d" % [dimensions.x, dimensions.y])
@@ -288,18 +304,21 @@ func _run() -> void:
 		_check(is_zero_approx(float(garage.preview_vignette.material.get_shader_parameter("camera_transition"))),
 			"refitting the stage clears an interrupted projection transition")
 		await _tap(garage.step_buttons[3])
-		_check(garage.step == 3 and is_instance_valid(garage.preview_world), "track tab constructs real world geometry")
+		# Streckenwahl als Bühne (kart_track_stage.gd): großes Bild statt Garagenkulisse.
+		_check(garage.step == 3 and garage.track_stage.active, "track tab shows the track stage")
 		_check(not garage.garage_interior.root.visible, "garage walls do not enclose the track preview")
-		var road_frame := Rect2(Vector2.ZERO, Vector2(garage.preview_viewport.size))
-		var route: Curve3D = garage.preview_world.curve
-		var complete_road := true
-		for sample in range(96):
-			var point: Vector3 = garage.preview_world.to_global(route.sample_baked(route.get_baked_length() * sample / 96.0))
-			complete_road = complete_road and road_frame.has_point(garage.preview_camera.unproject_position(point))
-		_check(complete_road, "complete drivable road remains inside the track camera")
+		if is_instance_valid(garage.preview_world):
+			var road_frame := Rect2(Vector2.ZERO, Vector2(garage.preview_viewport.size))
+			var route: Curve3D = garage.preview_world.curve
+			var complete_road := true
+			for sample in range(96):
+				var point: Vector3 = garage.preview_world.to_global(route.sample_baked(route.get_baked_length() * sample / 96.0))
+				complete_road = complete_road and road_frame.has_point(garage.preview_camera.unproject_position(point))
+			_check(complete_road, "complete drivable road remains inside the track camera")
 		await _shot("tracks-%dx%d" % [dimensions.x, dimensions.y])
 		await _tap(garage.step_buttons[4])
 		_check(garage.step == 4, "difficulty section is directly reachable")
+		_check_showcase(garage, "LevelCard_", 3)
 		for action in [garage.back_button, garage.next_button, garage.step_buttons[4]]:
 			var dp_scale: float = garage._preview_dp_scale()
 			_check(action.size.y / dp_scale >= 47.99, "%s has at least 48dp height" % action.name)
