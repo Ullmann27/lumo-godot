@@ -42,6 +42,7 @@ var room: Node3D
 var camera: Camera3D
 var chess: Node3D
 var board2d: Control
+var top_backdrop: ColorRect
 var lumo: Node3D
 var ai: RefCounted
 var rng := RandomNumberGenerator.new()
@@ -268,6 +269,14 @@ func _build_ui() -> void:
 	layer.add_child(ui)
 	_theme = _make_theme()
 	ui.theme = _theme
+	# Hinter der Draufsicht wird der Raum abgedunkelt, damit nur das Brett zählt.
+	top_backdrop = ColorRect.new()
+	top_backdrop.name = "TopBackdrop"
+	top_backdrop.color = Color(0.05, 0.07, 0.14, 0.86)
+	top_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	top_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_backdrop.visible = false
+	ui.add_child(top_backdrop)
 	board2d = BOARD2D.new()
 	board2d.name = "TopView"
 	board2d.visible = false
@@ -400,6 +409,7 @@ func _layout() -> void:
 		_wrap_bar(side)
 	board_area.size = board_area.size.max(Vector2(8, 8))
 	_board_rect = board_area
+	top_backdrop.visible = board2d.visible
 	var square := minf(board_area.size.x, board_area.size.y)
 	board2d.position = board_area.position + (board_area.size - Vector2(square, square)) * 0.5
 	board2d.size = Vector2(square, square)
