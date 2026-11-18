@@ -14,6 +14,11 @@ const JUMP = preload("res://scripts/games/jump_touch_button.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const HUD = preload("res://scripts/creative/build_hud_style.gd")
 const CAMPAIGN_MAP = preload("res://scripts/creative/build_campaign_map.gd")
+const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
+const ATMOSPHERE = preload("res://scripts/creative/build_village_atmosphere.gd")
+const ART = preload("res://scripts/creative/build_village_art.gd")
+const LIFE = preload("res://scripts/creative/build_village_life.gd")
+const VHUD = preload("res://scripts/creative/build_village_hud.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -79,6 +84,23 @@ var last_view_radius := -1.0
 var overview_nodes: Array[MultiMeshInstance3D] = []
 # Twelve real chapter milestones share one lightweight world landmark.
 var beacon_progress: Array[MeshInstance3D] = []
+var village_life: Node3D
+var art_material: ShaderMaterial
+var quality := "medium"
+var time_of_day := 0.35
+var day_cycle: Tween
+var fresh_builds: Dictionary = {}
+var spinning_parts: Array[Node3D] = []
+var goal_card: PanelContainer
+var progress_rows: Array[HBoxContainer] = []
+var camera_cluster: VBoxContainer
+var toast: PanelContainer
+var dock_rows: Array[Control] = []
+var actions_scroll_node: ScrollContainer
+var primary_row: HBoxContainer
+var evening_button: Button
+var more_panel: PanelContainer
+var more_button: Button
 
 
 func _ready() -> void:
@@ -134,16 +156,28 @@ func _ready() -> void:
 	return_scene = "games" if host_entry else "build"
 	kit.environment(self, "bauwelt_day")
 	NEXTGEN_ENV.apply_day(self)
+	quality = LumoQuality.tier()
+	if model.living_village:
+		# Strong reference: every village building shares this one material.
+		art_material = ART.material()
+		ATMOSPHERE.apply(self, quality)
+		focus = _start_focus()
+		orbit = START_VIEW.x
+		tilt = START_VIEW.y
+		radius = START_VIEW.z
 	_build_landscape()
 	camera = Camera3D.new()
 	camera.fov = 51
-	camera.far = 600 if model.living_village else 180
+	camera.far = {"low": 420.0, "medium": 620.0, "high": 900.0}.get(quality, 620.0) if model.living_village else 180.0
 	add_child(camera)
 	camera.current = true
 	explorer = EXPLORER.new()
 	explorer.horizontal_limit = Vector2(196, 95) if model.living_village else Vector2(31, 18)
 	add_child(explorer)
-	_build_ui()
+	if model.living_village:
+		_build_village_ui()
+	else:
+		_build_ui()
 	_rebuild()
 	_camera_update(true)
 	get_viewport().size_changed.connect(_layout)
@@ -288,6 +322,9 @@ func _build_landscape() -> void:
 		village_residents = RESIDENTS.new()
 		add_child(village_residents)
 		village_residents.configure()
+		village_life = LIFE.new()
+		add_child(village_life)
+		village_life.configure(quality)
 		return
 	for x in [-16.0, 16.0]:
 		var bank := StaticBody3D.new()
@@ -568,7 +605,9 @@ func _layout() -> void:
 		return
 	RUNTIME.safe_area(self, safe_ui)
 	var size := safe_ui.size
-	bottom.offset_top = -maxf(176, bottom.get_combined_minimum_size().y + 10)
+	if model.living_village and is_instance_valid(goal_card):
+		_layout_village_hud(size)
+	bottom.offset_top = -maxf(0.0 if model.living_village else 176.0, bottom.get_combined_minimum_size().y + 10)
 	var short := size.y < 560
 	rival_label.visible = mode == "rival" and not short
 	var goal_size := 13 if short else 15
@@ -638,6 +677,9 @@ func _sync_visible_plots(force := false) -> void:
 			if model.living_village and where.distance_squared_to(view_focus) > 75.0 * 75.0:
 				continue
 			var key := "%s_%d" % ["r" if opponent else "p", index]
+			if model.living_village and not model.plot_buildable(index, opponent):
+				# Rock, slope or shore: no building site and nothing to tap.
+				continue
 			active_plots[key] = true
 			if not plot_nodes.has(key):
 				var body := StaticBody3D.new()
@@ -646,14 +688,19 @@ func _sync_visible_plots(force := false) -> void:
 				body.set_meta("plot", index)
 				body.set_meta("opponent", opponent)
 				add_child(body)
-				var plot_mesh := kit.box(
-					body,
-					Vector3(0, 0, 0),
-					Vector3(4.65, 0.06, 4.65),
-					Color("b6bc86") if opponent else Color("bad39c")
-				)
-				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
-				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
+				if model.living_village:
+					# The site is painted into the terrain; the collider reaches
+					# above small bumps so a tap always lands on the plot.
+					kit.collision(body, Vector3(0, -0.12, 0), Vector3(4.65, 0.5, 4.65))
+				else:
+					var plot_mesh := kit.box(
+						body,
+						Vector3(0, 0, 0),
+						Vector3(4.65, 0.06, 4.65),
+						Color("b6bc86") if opponent else Color("bad39c")
+					)
+					plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
+					kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
 				plot_nodes[key] = body
 	for key in plot_nodes.keys():
 		if not active_plots.has(key):
@@ -693,12 +740,19 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				active[key] = true
 				detailed += 1
 				if not facility_nodes.has(key):
-					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent)
+					var variant := posmod(int(building.plot) * 7 + (3 if opponent else 0), 3)
+					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent, variant)
 					facility.position = at + Vector3.UP * 0.06
+					if model.living_village:
+						# A slight, stable turn per plot keeps streets from looking stamped.
+						facility.rotation.y = (float(posmod(int(building.plot) * 13, 5)) - 2.0) * 0.035
 					facility.set_meta("plot", int(building.plot))
 					facility.set_meta("opponent", opponent)
 					add_child(facility)
 					facility_nodes[key] = facility
+					if fresh_builds.has(key):
+						fresh_builds.erase(key)
+						VISUAL.animate_construction(facility)
 			else:
 				var field := str(building.kind) in ["farm", "grain", "road"]
 				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
@@ -712,14 +766,15 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				if not field:
 					silhouettes.roofs.append(
 						Transform3D(
-							Basis.from_scale(Vector3(3.8, 0.44, 3.8)),
-							at + Vector3.UP * (height + 0.25)
+							Basis.from_scale(Vector3(3.8, 1.3 if model.living_village else 0.44, 3.8)),
+							at + Vector3.UP * (height + (0.7 if model.living_village else 0.25))
 						)
 					)
 	for key in facility_nodes.keys():
 		if not active.has(key):
 			facility_nodes[key].queue_free()
 			facility_nodes.erase(key)
+	_collect_living_details()
 	for previous_node in overview_nodes:
 		remove_child(previous_node)
 		previous_node.queue_free()
@@ -728,13 +783,20 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		"homes": Color("eed8a6"), "fields": Color("89ae63"),
 		"services": Color("80b7b1"), "roofs": Color("b96c50")
 	}
+	if model.living_village:
+		colors = {
+			"homes": Color("e9dcc2"), "fields": Color("c7b06a"),
+			"services": Color("d8cdb8"), "roofs": Color("b4573c")
+		}
 	for group: String in silhouettes:
 		var transforms: Array = silhouettes[group]
 		if transforms.is_empty():
 			continue
 		var batch := MultiMesh.new()
 		batch.transform_format = MultiMesh.TRANSFORM_3D
-		var cube := BoxMesh.new()
+		var cube: PrimitiveMesh = BoxMesh.new()
+		if group == "roofs" and model.living_village:
+			cube = PrismMesh.new()
 		cube.size = Vector3.ONE
 		batch.mesh = cube
 		batch.instance_count = transforms.size()
@@ -784,8 +846,14 @@ func _refresh_labels() -> void:
 			% [int(chapter.chapter), int(chapter.total),
 				str(chapter.title), str(chapter.task)]
 		)
-		if not compact_hud:
+		if not compact_hud and progress_rows.is_empty():
 			goal_label.text += "\nFortschritt: " + " · ".join(next_steps)
+		for index in range(progress_rows.size()):
+			var row: HBoxContainer = progress_rows[index]
+			row.visible = index < chapter.goals.size()
+			if row.visible:
+				var goal: Dictionary = chapter.goals[index]
+				VHUD.set_progress(row, str(goal.title), int(goal.current), int(goal.target))
 		var economy: Dictionary = model.economy_status()
 		HUD.set_chip(resource_chips.treasury, str(int(economy.treasury)), "Stadtkasse")
 		HUD.set_chip(resource_chips.happiness, "%d%%" % int(economy.happiness), "Zufriedenheit")
@@ -804,6 +872,8 @@ func _refresh_labels() -> void:
 		else "Tippe einen freien Bauplatz oder „Freier Bauplatz“. "
 			+ "Dein Dorf hat %d Grundstücke – sechs sind nur die Speicherplätze." % int(town.plots)
 	)
+	if model.living_village and selected_plot < 0:
+		plot_label.text = "Bauplatz antippen oder gleich ein Gebäude wählen."
 	var occupied := false
 	for building in town.buildings:
 		if int(building.plot) == selected_plot:
@@ -815,6 +885,12 @@ func _refresh_labels() -> void:
 	var blocked := _transactions_blocked()
 	for kind in purchase_buttons:
 		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
+		if model.living_village:
+			# Cards stay lit while affordable; without a chosen site the next
+			# free meadow plot is used (camera flies there, scaffold rises).
+			purchase_buttons[kind].disabled = (
+				blocked or occupied or not model._affords(town, model.building_cost(str(kind)))
+			)
 		purchase_buttons[kind].text = (
 			str(STATE.BUILDINGS[str(kind)].title) + "\n" + _cost_text(model.building_cost(str(kind)))
 		)
@@ -854,10 +930,19 @@ func _winner_text(winner: String) -> String:
 func _buy(kind: String) -> void:
 	if _transactions_blocked():
 		return
+	if model.living_village and selected_plot < 0:
+		var free := _next_free_plot()
+		if free >= 0:
+			selected_plot = free
+			focus = _plot_world(free)
+			_camera_update(true)
 	selected_kind = kind
 	if not model.try_build(kind, selected_plot):
 		feedback.text = model.last_error
 		return
+	var built: Array = model.player().buildings
+	if not built.is_empty():
+		fresh_builds["p_" + str(built[-1].id)] = true
 	selected_plot = -1
 	_rebuild()
 	feedback.text = (
@@ -870,6 +955,17 @@ func _buy(kind: String) -> void:
 
 # Keyboard/touch-accessible plot finding. This changes only camera and
 # selection, never a save, a purchase, a day or a child's resources.
+func _next_free_plot() -> int:
+	var town: Dictionary = model.player()
+	var used: Dictionary = {}
+	for building in town.buildings:
+		used[int(building.plot)] = true
+	for candidate in range(int(town.plots)):
+		if not used.has(candidate) and model.plot_buildable(candidate):
+			return candidate
+	return -1
+
+
 func _focus_next_free_plot() -> void:
 	if _transactions_blocked():
 		return
@@ -880,7 +976,7 @@ func _focus_next_free_plot() -> void:
 	var count: int = int(town.plots)
 	for offset in range(count):
 		var candidate: int = (selected_plot + 1 + offset) % count
-		if used.has(candidate):
+		if used.has(candidate) or not model.plot_buildable(candidate):
 			continue
 		selected_plot = candidate
 		focus = _plot_world(candidate)
@@ -903,6 +999,7 @@ func _next_day() -> void:
 	var report: Dictionary = model.next_day()
 	_rebuild()
 	if bool(report.get("advanced", false)):
+		_play_day_cycle()
 		var own: Dictionary = report.player
 		feedback.text = (
 			"Tag %d: %s erhalten · %d Essen gebraucht%s"
@@ -1341,6 +1438,8 @@ func _zoom_village(direction: int) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
+	if model.living_village and _village_release(event):
+		return
 	if pointer < 0:
 		return
 	var release: bool = (
@@ -1370,8 +1469,12 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
+func _hud_rect(control: Control) -> Rect2:
+	return Rect2(control.global_position - safe_ui.global_position, control.size)
+
+
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [top, bottom, pause_panel]:
+	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel]:
 		if not is_instance_valid(control) or not control.is_visible_in_tree():
 			continue
 		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
@@ -1398,6 +1501,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if walking and event is InputEventKey and not event.echo and event.keycode == KEY_SPACE:
 		explorer.hold_jump(event.pressed)
+	if model.living_village and not walking:
+		_village_gesture(event)
+		return
 	if event is InputEventScreenTouch:
 		if event.pressed and pointer < 0:
 			pointer = event.index
@@ -1436,6 +1542,24 @@ func _pick_plot(point: Vector2) -> void:
 		origin, origin + camera.project_ray_normal(point) * 180, 1
 	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot"):
+		# A tap on the slope or meadow between sites selects the cell under it.
+		var side := 1.0 if float(hit.position.x) > 0.0 else -1.0
+		var center := side * REGION.TOWN_CENTER
+		var cell := Vector2i(
+			roundi((float(hit.position.x) - center) / REGION.SPACING), roundi(float(hit.position.z) / REGION.SPACING)
+		)
+		var index := REGION.plot_index_at(cell)
+		var opponent := side > 0.0
+		var town: Dictionary = model.rival() if opponent else model.player()
+		if index < 0 or index >= int(town.plots) or (opponent and mode != "rival"):
+			return
+		if not model.plot_buildable(index, opponent):
+			feedback.text = "Hier ist Fels, Hang oder Ufer. Gebaut wird auf flacher Wiese."
+			return
+		hit = {"collider": plot_nodes.get("%s_%d" % ["r" if opponent else "p", index])}
+		if hit.collider == null:
+			return
 	if hit.is_empty() or not hit.collider.has_meta("plot"):
 		return
 	if bool(hit.collider.get_meta("opponent", false)):
@@ -1450,10 +1574,15 @@ func _camera_update(immediate := false) -> void:
 		return
 	var aspect := get_viewport().get_visible_rect().size.aspect()
 	var target_radius := maxf(radius, 20.0 / maxf(0.35, aspect))
+	var look := focus
+	if model.living_village:
+		look.y = REGION.ground(focus.x, focus.z) + 0.6
 	camera.position = (
-		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
+		look + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
 	)
-	camera.look_at(focus)
+	if model.living_village:
+		camera.position.y = maxf(camera.position.y, REGION.ground(camera.position.x, camera.position.z) + 3.0)
+	camera.look_at(look)
 	if is_instance_valid(village_region):
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
@@ -1506,6 +1635,8 @@ func _physics_process(delta: float) -> void:
 			_sync_visible_plots()
 	if is_instance_valid(village_residents):
 		village_residents.advance(delta)
+	if model.living_village:
+		_advance_village_details(delta)
 	if is_instance_valid(rival_host):
 		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
@@ -1579,3 +1710,545 @@ func _save_message() -> void:
 func _leave(destination: String = "") -> void:
 	if save_blocked or _save():
 		SceneRouter.goto(return_scene if destination.is_empty() else destination)
+
+
+# ----------------------------------------------------------------- Dorfwelt
+# Kamera, Tageszeit und lebendige Details der großen Dorfkarte. Nichts davon
+# verändert Spielstand, Rohstoffe, Zeitlauf oder Belohnungen.
+const FOCUS_LIMIT := Vector2(205.0, 108.0)
+## Startblick über das Tal: von Süden auf den Ort, Berge und Fluss dahinter.
+const START_VIEW := Vector3(-0.38, 0.38, 64.0)
+const RADIUS_RANGE := Vector2(14.0, 110.0)
+const TILT_RANGE := Vector2(0.28, 1.25)
+var touches: Dictionary = {}
+var gesture_moved := false
+var gesture_start := Vector2.ZERO
+var pinch_distance := 0.0
+var pinch_angle := 0.0
+var pinch_center := Vector2.ZERO
+var pan_velocity := Vector3.ZERO
+var mouse_orbit := false
+
+
+func _start_focus() -> Vector3:
+	return Vector3(-REGION.TOWN_CENTER + 2.0, REGION.ground(-REGION.TOWN_CENTER, 0.0), 4.0)
+
+
+## Für Darstellung und Bildprüfungen: dieselbe Regel wie im Spielmodell.
+func plot_buildable(plot: int, opponent := false) -> bool:
+	return model.plot_buildable(plot, opponent)
+
+
+func set_time_of_day(value: float) -> void:
+	time_of_day = clampf(value, 0.0, 1.0)
+	if model.living_village:
+		ATMOSPHERE.set_time(self, time_of_day)
+		if is_instance_valid(village_life):
+			village_life.set_night(float(get_meta("village_night", 0.0)))
+
+
+func toggle_evening() -> void:
+	if day_cycle != null and day_cycle.is_valid():
+		day_cycle.kill()
+	var target := 0.35 if time_of_day > 0.6 else 0.82
+	day_cycle = create_tween()
+	day_cycle.tween_method(set_time_of_day, time_of_day, target, 1.6).set_trans(Tween.TRANS_SINE)
+
+
+## „Nächster Tag“: der Abend zieht über das Tal, Fenster gehen an, dann wird
+## es wieder Morgen. Nur Bild – der Tag im Modell ist schon weitergezählt.
+func _play_day_cycle() -> void:
+	if not model.living_village or not is_inside_tree():
+		return
+	if day_cycle != null and day_cycle.is_valid():
+		day_cycle.kill()
+	day_cycle = create_tween()
+	day_cycle.tween_method(set_time_of_day, time_of_day, 0.86, 1.1).set_trans(Tween.TRANS_SINE)
+	day_cycle.tween_interval(0.5)
+	day_cycle.tween_method(set_time_of_day, 0.86, 0.35, 1.3).set_trans(Tween.TRANS_SINE)
+
+
+func _collect_living_details() -> void:
+	if not model.living_village:
+		return
+	spinning_parts.clear()
+	var chimneys: Array[Vector3] = []
+	var built: Array = []
+	for building in model.player().buildings:
+		built.append(int(building.plot))
+	for key in facility_nodes:
+		var facility: Node3D = facility_nodes[key]
+		for part in facility.get_meta("spin_parts", []):
+			if is_instance_valid(part):
+				spinning_parts.append(part)
+		for local in facility.get_meta("chimneys", []):
+			chimneys.append(facility.transform * (local as Vector3))
+	if is_instance_valid(village_region):
+		village_region.set_built_plots(built, false)
+		if mode == "rival":
+			var rival_built: Array = []
+			for building in model.rival().buildings:
+				rival_built.append(int(building.plot))
+			village_region.set_built_plots(rival_built, true)
+	if is_instance_valid(village_life):
+		var view_focus: Vector3 = explorer.position if walking else focus
+		chimneys.sort_custom(
+			func(a: Vector3, b: Vector3) -> bool:
+				return a.distance_squared_to(view_focus) < b.distance_squared_to(view_focus)
+		)
+		village_life.set_smoke_sources(chimneys)
+		village_life.set_town(model.player(), view_focus)
+
+
+func _advance_village_details(delta: float) -> void:
+	var step := minf(delta, 0.1)
+	for part in spinning_parts:
+		if is_instance_valid(part):
+			part.rotate_object_local(Vector3.RIGHT, step * (2.6 if str(part.name) == "Spin_Saw" else 0.7))
+	if is_instance_valid(village_region):
+		village_region.advance(step)
+	if is_instance_valid(village_life):
+		village_life.advance(step, camera.global_position if is_instance_valid(camera) else focus)
+	if not walking and touches.is_empty() and pan_velocity.length_squared() > 0.0004:
+		focus += pan_velocity * step
+		pan_velocity *= exp(-4.5 * step)
+		_clamp_focus()
+		_camera_update()
+
+
+func _clamp_focus() -> void:
+	focus.x = clampf(focus.x, -FOCUS_LIMIT.x, FOCUS_LIMIT.x)
+	focus.z = clampf(focus.z, -FOCUS_LIMIT.y, FOCUS_LIMIT.y)
+	focus.y = REGION.ground(focus.x, focus.z)
+
+
+func _pan_by(relative: Vector2) -> Vector3:
+	var height := maxf(1.0, get_viewport().get_visible_rect().size.y)
+	var scale := maxf(radius, 20.0) * 1.15 / height
+	var right := Vector3(cos(orbit), 0.0, -sin(orbit))
+	var forward := Vector3(-sin(orbit), 0.0, -cos(orbit))
+	var move := -right * relative.x * scale + forward * relative.y * scale / maxf(0.35, sin(tilt))
+	focus += move
+	_clamp_focus()
+	return move
+
+
+## Ein Finger: verschieben. Zwei Finger: zoomen, drehen, neigen.
+## Maus: linke Taste verschieben, rechte Taste drehen, Rad zoomen.
+func _village_gesture(event: InputEvent) -> void:
+	if paused or is_instance_valid(campaign_map):
+		return
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touches[event.index] = event.position
+			pan_velocity = Vector3.ZERO
+			if touches.size() == 1:
+				gesture_start = event.position
+				gesture_moved = false
+			elif touches.size() == 2:
+				gesture_moved = true
+				_reset_pinch()
+		else:
+			_village_release(event)
+	elif event is InputEventScreenDrag and touches.has(event.index):
+		touches[event.index] = event.position
+		if touches.size() == 1:
+			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
+			if gesture_moved:
+				var move := _pan_by(event.relative)
+				pan_velocity = pan_velocity.lerp(move / maxf(get_physics_process_delta_time(), 0.008), 0.35)
+				_camera_update()
+		elif touches.size() >= 2:
+			_pinch_update()
+	elif event is InputEventMouseButton:
+		if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and event.pressed:
+			radius = clampf(radius * (0.9 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1.1), RADIUS_RANGE.x, RADIUS_RANGE.y)
+			_camera_update()
+			_sync_visible_plots()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			mouse_orbit = event.pressed
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				touches[-1] = event.position
+				gesture_start = event.position
+				gesture_moved = false
+				pan_velocity = Vector3.ZERO
+			else:
+				_village_release(event)
+	elif event is InputEventMouseMotion:
+		if mouse_orbit:
+			orbit -= event.relative.x * 0.006
+			tilt = clampf(tilt + event.relative.y * 0.004, TILT_RANGE.x, TILT_RANGE.y)
+			_camera_update()
+		elif touches.has(-1):
+			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
+			if gesture_moved:
+				_pan_by(event.relative)
+				_camera_update()
+
+
+func _reset_pinch() -> void:
+	var points: Array = touches.values()
+	pinch_distance = (points[0] as Vector2).distance_to(points[1])
+	pinch_angle = ((points[1] as Vector2) - (points[0] as Vector2)).angle()
+	pinch_center = ((points[0] as Vector2) + (points[1] as Vector2)) * 0.5
+
+
+func _pinch_update() -> void:
+	var points: Array = touches.values()
+	var a: Vector2 = points[0]
+	var b: Vector2 = points[1]
+	var distance := a.distance_to(b)
+	var angle := (b - a).angle()
+	var center := (a + b) * 0.5
+	if pinch_distance > 8.0 and distance > 8.0:
+		radius = clampf(radius * pinch_distance / distance, RADIUS_RANGE.x, RADIUS_RANGE.y)
+	orbit += wrapf(angle - pinch_angle, -PI, PI)
+	tilt = clampf(tilt + (center.y - pinch_center.y) * 0.004, TILT_RANGE.x, TILT_RANGE.y)
+	pinch_distance = distance
+	pinch_angle = angle
+	pinch_center = center
+	_camera_update()
+	_sync_visible_plots()
+
+
+## Owns every world-finger release, even above HUD controls, so no stale
+## finger blocks the next plot selection. Returns true when consumed.
+func _village_release(event: InputEvent) -> bool:
+	var index := -2
+	if event is InputEventScreenTouch and not event.pressed:
+		index = event.index
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		index = -1
+	if index == -2 or not touches.has(index):
+		return false
+	var was_single := touches.size() == 1
+	touches.erase(index)
+	var canceled: bool = event is InputEventScreenTouch and event.canceled
+	if was_single and not gesture_moved and not canceled and not walking and not paused:
+		_pick_plot(event.position)
+	if touches.size() == 1:
+		gesture_start = touches.values()[0]
+		gesture_moved = true
+	get_viewport().set_input_as_handled()
+	return true
+
+
+# ------------------------------------------------------------- Dorf-HUD
+# Obere Leiste mit Rohstoffen, Kapitel-Tafel mit Fortschrittsbalken, Dock mit
+# Hauptaktionen und Gebäudekarten, Kamera-Leiste. Alles ≥ 48 dp, Safe-Area.
+func _build_village_ui() -> void:
+	var layer := CanvasLayer.new()
+	add_child(layer)
+	safe_ui = Control.new()
+	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	safe_ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(safe_ui)
+	top_backdrop = Panel.new()
+	top_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top_backdrop.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	safe_ui.add_child(top_backdrop)
+	bottom_backdrop = Panel.new()
+	bottom_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bottom_backdrop.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	safe_ui.add_child(bottom_backdrop)
+	# Top bar: back · resources · Lumo · pause
+	top = VBoxContainer.new()
+	top.name = "VillageTopBar"
+	top.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	top.minimum_size_changed.connect(func(): call_deferred("_layout"))
+	safe_ui.add_child(top)
+	var bar := PanelContainer.new()
+	bar.add_theme_stylebox_override("panel", VHUD.panel("glass", 6))
+	bar.mouse_filter = Control.MOUSE_FILTER_PASS
+	top.add_child(bar)
+	var heading := HBoxContainer.new()
+	heading.add_theme_constant_override("separation", 8)
+	bar.add_child(heading)
+	var back := VHUD.button("‹ Spiele" if host_entry else "‹ Bauwelt", _leave, 96, "cream", 15)
+	back.name = "SettlementReturn"
+	heading.add_child(back)
+	var chips_scroll := ScrollContainer.new()
+	chips_scroll.name = "VillageResourceBar"
+	chips_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	chips_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	chips_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chips_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	heading.add_child(chips_scroll)
+	var chips := HBoxContainer.new()
+	chips.add_theme_constant_override("separation", 6)
+	chips.alignment = BoxContainer.ALIGNMENT_CENTER
+	chips.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chips_scroll.add_child(chips)
+	for resource in ["wood", "stone", "food", "coins", "population", "plots", "day", "treasury", "happiness", "water"]:
+		var chip := VHUD.chip(resource)
+		chips.add_child(chip)
+		resource_chips[resource] = chip
+	walk_button = VHUD.button("Lumo", _toggle_walk, 70, "teal", 15)
+	heading.add_child(walk_button)
+	heading.add_child(VHUD.button("Ⅱ", _toggle_pause, 52, "cream", 18))
+	# Chapter card with the real story goal and progress bars.
+	goal_card = PanelContainer.new()
+	goal_card.name = "VillageChapterCard"
+	goal_card.add_theme_stylebox_override("panel", VHUD.panel("glass", 10))
+	goal_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	safe_ui.add_child(goal_card)
+	var goal_box := VBoxContainer.new()
+	goal_box.add_theme_constant_override("separation", 4)
+	goal_card.add_child(goal_box)
+	goal_label = VHUD.label("", 15)
+	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	goal_box.add_child(goal_label)
+	for index in range(3):
+		var row := VHUD.progress_row()
+		goal_box.add_child(row)
+		progress_rows.append(row)
+	rival_label = VHUD.label("", 13)
+	rival_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	goal_box.add_child(rival_label)
+	# Camera cluster (right edge): zoom, home view, evening.
+	camera_cluster = VBoxContainer.new()
+	camera_cluster.name = "VillageCameraTools"
+	camera_cluster.add_theme_constant_override("separation", 8)
+	safe_ui.add_child(camera_cluster)
+	camera_cluster.add_child(VHUD.round_button("+", _zoom_village.bind(-1), "Näher heran"))
+	camera_cluster.add_child(VHUD.round_button("−", _zoom_village.bind(1), "Weiter weg"))
+	camera_cluster.add_child(VHUD.round_button("⌂", _home_view, "Zurück zum Dorfplatz"))
+	evening_button = VHUD.round_button("☾", toggle_evening, "Abendstimmung")
+	camera_cluster.add_child(evening_button)
+	# Feedback toast above the dock.
+	toast = PanelContainer.new()
+	toast.name = "VillageFeedback"
+	toast.add_theme_stylebox_override("panel", VHUD.panel("glass", 6))
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	safe_ui.add_child(toast)
+	feedback = VHUD.label(
+		"Dein Plan zählt: Nahrung, Material und Wohnraum halten die Siedlung am Leben.", 14
+	)
+	feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	feedback.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	toast.add_child(feedback)
+	# Dock: plot hint · primary actions + toolbar + day · building cards.
+	bottom = VBoxContainer.new()
+	bottom.name = "VillageDock"
+	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	bottom.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	bottom.add_theme_constant_override("separation", 6)
+	bottom.minimum_size_changed.connect(func(): call_deferred("_layout"))
+	safe_ui.add_child(bottom)
+	var dock := PanelContainer.new()
+	dock.add_theme_stylebox_override("panel", VHUD.panel("glass", 8))
+	dock.mouse_filter = Control.MOUSE_FILTER_PASS
+	bottom.add_child(dock)
+	var dock_box := VBoxContainer.new()
+	dock_box.add_theme_constant_override("separation", 6)
+	dock.add_child(dock_box)
+	plot_label = VHUD.label("Wähle ein freies Grundstück und ein Gebäude.", 14)
+	plot_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	dock_box.add_child(plot_label)
+	var first_row := HBoxContainer.new()
+	first_row.add_theme_constant_override("separation", 8)
+	dock_box.add_child(first_row)
+	dock_rows.append(first_row)
+	primary_row = HBoxContainer.new()
+	primary_row.name = "VillagePrimaryActions"
+	primary_row.add_theme_constant_override("separation", 8)
+	first_row.add_child(primary_row)
+	var chapter_action := VHUD.button("Kapitel", _chapter_dialog, 96, "primary", 15)
+	chapter_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	primary_row.add_child(chapter_action)
+	var map_action := VHUD.button("Karte", open_campaign_map, 84, "teal", 15)
+	map_action.name = "VillageCampaignMap"
+	map_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	primary_row.add_child(map_action)
+	var find_action := VHUD.button("Freier Bauplatz", _focus_next_free_plot, 140, "leaf", 15)
+	find_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	primary_row.add_child(find_action)
+	actions_scroll_node = ScrollContainer.new()
+	actions_scroll_node.name = "VillageActions"
+	actions_scroll_node.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	actions_scroll_node.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	actions_scroll_node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	first_row.add_child(actions_scroll_node)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	actions_scroll_node.add_child(actions)
+	# Frequent story actions stay in the toolbar; rarely used tools sit in
+	# the "Mehr" panel (same buttons, same rules, same state handling).
+	more_panel = PanelContainer.new()
+	more_panel.name = "VillageMoreTools"
+	more_panel.add_theme_stylebox_override("panel", VHUD.panel("glass", 10))
+	more_panel.hide()
+	safe_ui.add_child(more_panel)
+	var more_box := VBoxContainer.new()
+	more_box.add_theme_constant_override("separation", 8)
+	more_panel.add_child(more_box)
+	for spec in [
+		["Rückgängig", _undo, more_box], ["Wiederholen", _redo, more_box], ["Handeln", _trade_dialog, actions],
+		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor, more_box],
+		["Tilda · Lieferung", _tilda_dialog, actions], ["Stadtkasse", _public_project_dialog, actions]
+	]:
+		var action_button := VHUD.button(spec[0], _from_more.bind(spec[1]), 150 if spec[2] == more_box else 104, "cream", 15)
+		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		transaction_buttons.append(action_button)
+	for index in [4, 5, 2]:
+		actions.add_child(transaction_buttons[index])
+	for index in [0, 1, 3]:
+		more_box.add_child(transaction_buttons[index])
+	demolish_button = VHUD.button("Rückbauen", _from_more.bind(_demolish), 150, "rose", 15)
+	demolish_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	more_box.add_child(demolish_button)
+	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
+	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	more_box.add_child(expand_button)
+	more_button = VHUD.button("Mehr ▴", _toggle_more, 96, "dark", 15)
+	more_button.name = "VillageMore"
+	more_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	actions.add_child(more_button)
+	day_button = VHUD.button("Nächster Tag ☀", _day_action, 156, "primary", 16)
+	first_row.add_child(day_button)
+	var second_row := HBoxContainer.new()
+	second_row.name = "VillageSecondRow"
+	second_row.add_theme_constant_override("separation", 8)
+	second_row.hide()
+	dock_box.add_child(second_row)
+	var buildings_scroll := ScrollContainer.new()
+	buildings_scroll.name = "VillageBuildCards"
+	buildings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	buildings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	dock_box.add_child(buildings_scroll)
+	dock_rows.append(buildings_scroll)
+	dock_rows.append(second_row)
+	var buildings := HBoxContainer.new()
+	buildings.add_theme_constant_override("separation", 8)
+	buildings_scroll.add_child(buildings)
+	for kind in STATE.BUILDINGS.keys():
+		var spec: Dictionary = STATE.BUILDINGS[kind]
+		var card := VHUD.building_card(
+			kind, str(spec.title) + "\n" + _cost_text(model.building_cost(kind)), _buy.bind(kind)
+		)
+		card.mouse_filter = Control.MOUSE_FILTER_PASS
+		buildings.add_child(card)
+		purchase_buttons[kind] = card
+	pause_panel = PanelContainer.new()
+	pause_panel.add_theme_stylebox_override("panel", _panel())
+	pause_panel.custom_minimum_size = Vector2(300, 0)
+	pause_panel.hide()
+	safe_ui.add_child(pause_panel)
+	var pause_box := VBoxContainer.new()
+	pause_box.add_theme_constant_override("separation", 8)
+	pause_panel.add_child(pause_box)
+	pause_box.add_child(_label("Deine Siedlung wartet", 22))
+	pause_box.add_child(_button("Weiter", _toggle_pause))
+	pause_box.add_child(_button("Speichern", _save_message))
+	pause_box.add_child(_button("Zur Spielewelt" if host_entry else "Zur Bauwelt", _leave))
+	if host_entry:
+		var build_return := _button("Zur Bauwelt", _leave.bind("build"))
+		build_return.name = "SettlementBuildReturn"
+		pause_box.add_child(build_return)
+	walk_controls = Control.new()
+	walk_controls.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	walk_controls.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	walk_controls.hide()
+	safe_ui.add_child(walk_controls)
+	walk_stick = STICK.new()
+	walk_controls.add_child(walk_stick)
+	jump_button = JUMP.new()
+	jump_button.hold_changed.connect(func(held: bool): explorer.hold_jump(held))
+	walk_controls.add_child(jump_button)
+
+
+func _layout_village_hud(size: Vector2) -> void:
+	var portrait := size.y > size.x * 1.15
+	var short := size.y < 430.0
+	var gap := 8.0
+	top.offset_left = gap
+	top.offset_right = -gap
+	top.offset_top = gap
+	bottom.offset_left = gap
+	bottom.offset_right = -gap
+	bottom.offset_bottom = -gap
+	for chip: PanelContainer in resource_chips.values():
+		var value: Label = chip.get_meta("value")
+		value.add_theme_font_size_override("font_size", 17 if short else 21)
+		var icon: TextureRect = chip.get_meta("icon")
+		icon.custom_minimum_size = Vector2.ONE * (28 if short else 36)
+	# Portrait/narrow: toolbar and day button move to a second row.
+	var narrow := size.x < 900.0
+	var first_row: HBoxContainer = dock_rows[0]
+	var second_row: HBoxContainer = dock_rows[2]
+	if narrow and actions_scroll_node.get_parent() == first_row:
+		first_row.remove_child(actions_scroll_node)
+		first_row.remove_child(day_button)
+		second_row.add_child(actions_scroll_node)
+		second_row.add_child(day_button)
+	elif not narrow and actions_scroll_node.get_parent() != first_row:
+		second_row.remove_child(actions_scroll_node)
+		second_row.remove_child(day_button)
+		first_row.add_child(actions_scroll_node)
+		first_row.add_child(day_button)
+	second_row.visible = narrow
+	if narrow:
+		primary_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		for child in primary_row.get_children():
+			child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	else:
+		primary_row.size_flags_horizontal = Control.SIZE_FILL
+		for child in primary_row.get_children():
+			child.size_flags_horizontal = Control.SIZE_FILL
+	var top_end := top.position.y + top.size.y
+	var card_width := clampf(size.x * (0.94 if portrait else 0.36), 260.0, 460.0)
+	goal_card.custom_minimum_size = Vector2(card_width, 0)
+	goal_card.size = Vector2(card_width, 0)
+	goal_card.position = Vector2(gap if not portrait else (size.x - card_width) * 0.5, top_end + gap)
+	goal_label.add_theme_font_size_override("font_size", 13 if short else 15)
+	for row in progress_rows:
+		row.visible = row.visible and not short
+	goal_card.reset_size()
+	var cluster_height := camera_cluster.get_combined_minimum_size().y
+	var dock_top := size.y - bottom.get_combined_minimum_size().y - gap
+	var cluster_y := clampf((top_end + dock_top - cluster_height) * 0.5, top_end + gap, maxf(top_end + gap, dock_top - cluster_height - gap))
+	if portrait:
+		cluster_y = maxf(goal_card.position.y + goal_card.size.y + gap, dock_top - cluster_height - gap - 60.0)
+	camera_cluster.visible = dock_top - top_end > cluster_height * 0.6
+	camera_cluster.position = Vector2(size.x - 52.0 - gap, cluster_y)
+	camera_cluster.size = camera_cluster.get_combined_minimum_size()
+	var toast_width := clampf(size.x * 0.6, 260.0, 720.0)
+	toast.custom_minimum_size = Vector2(toast_width, 0)
+	toast.size = Vector2(toast_width, 0)
+	toast.reset_size()
+	toast.position = Vector2((size.x - toast_width) * 0.5, dock_top - toast.size.y - gap)
+	toast.visible = not short and toast.position.y > top_end + gap
+	plot_label.visible = portrait and not short
+	if more_panel.visible:
+		more_panel.reset_size()
+		var anchor := _hud_rect(more_button)
+		more_panel.position = Vector2(
+			clampf(anchor.end.x - more_panel.size.x, gap, size.x - more_panel.size.x - gap),
+			maxf(top_end + gap, anchor.position.y - more_panel.size.y - gap)
+		)
+	if is_instance_valid(evening_button):
+		evening_button.text = "☀" if time_of_day > 0.6 else "☾"
+
+
+func _toggle_more() -> void:
+	more_panel.visible = not more_panel.visible
+	_layout()
+
+
+func _from_more(action: Callable) -> void:
+	if is_instance_valid(more_panel):
+		more_panel.hide()
+	action.call()
+
+
+func _home_view() -> void:
+	if _transactions_blocked():
+		return
+	focus = _start_focus()
+	orbit = START_VIEW.x
+	tilt = START_VIEW.y
+	radius = START_VIEW.z
+	pan_velocity = Vector3.ZERO
+	_rebuild()
+	_camera_update(true)
