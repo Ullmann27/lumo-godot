@@ -488,6 +488,11 @@ func _choose_reference_mode(mode_id: String) -> void:
 		"garage":
 			step = 2
 		_:
+			# Jede Katalogstrecke wird übernommen, nicht nur Sonnenhafen.
+			if str(CATALOG.entry(CATALOG.TRACKS, mode_id).get("id", "")) == mode_id:
+				setup["track"] = mode_id
+				if str(setup.get("mode", "race")) in ["cup", "arena"]:
+					setup["mode"] = "race"
 			return
 	_close_reference_landing()
 	_refresh()

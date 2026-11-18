@@ -714,6 +714,7 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	if not preserve_setup:
 		garage.setup.mode = "cup"
 	reference_landing.current_mode = _known_mode(str(garage.setup.mode))
+	reference_landing.selected_track = str(garage.setup.get("track", ""))
 	reference_landing.mode_selected.connect(_reference_select_mode)
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
@@ -740,6 +741,8 @@ func _reference_select_mode(selected: String) -> void:
 	if _is_catalog_track(selected):
 		# Neon-Menü: Strecken-Highlight und Wochen-Abenteuer wählen echte Katalogstrecken.
 		garage.setup["track"] = selected
+		_single_race_for_chosen_course()
+		print("[Kart] track_selected: ", selected, " mode=", garage.setup.mode)
 		return
 	match selected:
 		"race", "cup", "time_trial", "training", "arena":
@@ -751,6 +754,8 @@ func _reference_select_mode(selected: String) -> void:
 		"garage":
 			garage.step = 2
 		"world":
+			# Die Streckenliste gibt es nur für Rennarten mit frei wählbarer Strecke.
+			_single_race_for_chosen_course()
 			garage.step = 3
 		"difficulty":
 			garage.step = 4
@@ -762,6 +767,16 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+## Wer eine Strecke aussucht, will genau diese fahren. Cup und Arena haben keine
+## frei wählbare Strecke und würden die Wahl stillschweigend übergehen (Issue #204).
+func _single_race_for_chosen_course() -> void:
+	if str(garage.setup.get("mode", "race")) not in ["cup", "arena"]:
+		return
+	garage.setup["mode"] = "race"
+	if is_instance_valid(reference_landing) and reference_landing.has_method("set_current_mode"):
+		reference_landing.set_current_mode("race")
 
 
 static func _is_catalog_track(id: String) -> bool:
@@ -847,6 +862,12 @@ func _start_selected_race(setup: Dictionary) -> void:
 	selected_driver = str(setup.get("driver", "fox"))
 	selected_kart = str(setup.get("kart", "comet"))
 	track_id = str(setup.get("track", "sonnenhafen"))
+	if not _is_catalog_track(track_id):
+		# Unbekannte Strecken wurden früher stillschweigend zu Sonnenhafen.
+		push_warning("[Kart] Unbekannte Strecke '%s' – Rennen nicht gestartet" % track_id)
+		if is_instance_valid(garage) and is_instance_valid(garage.detail):
+			garage.detail.text = "Diese Strecke ist noch nicht startbereit. Bitte wähle eine andere."
+		return
 	difficulty = str(setup.get("difficulty", "gemuetlich"))
 	cup_index = 0
 	cup_points = [0, 0, 0, 0, 0, 0]
@@ -966,6 +987,8 @@ func _begin_race() -> void:
 	if not is_instance_valid(race_root) or not is_instance_valid(player) or not is_instance_valid(camera):
 		push_error("[Kart] Failed to assemble the playable 3D race")
 	else:
+		if is_instance_valid(world) and str(world.track_id) != track_id:
+			push_error("[Kart] Gewählte Strecke %s, gebaute Welt %s" % [track_id, world.track_id])
 		print("[Kart] race_world_ready: ", track_id, " mode=", mode)
 
 
