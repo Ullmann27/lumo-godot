@@ -49,7 +49,7 @@ const STEPS := [
 		"say": "Oben siehst du dein Holz, deinen Stein und dein Essen.", "target": "chips", "mode": "ok", "replay": true},
 ]
 ## Gespeicherte Schritt-Nummern aus Version 1 (alte Reihenfolge) → neue IDs.
-const V1_IDS := ["hallo", "bauplatz", "bauplatz", "wohnhaus", "versorgen", "bauernhof", "tag", "familie", "ziel"]
+const V1_IDS := ["hallo", "bauplatz", "bauplatz", "wohnhaus", "versorgen", "versorgen", "tag", "familie", "ziel"]
 ## Themen für „Lumo zeigt es noch einmal“: erster und letzter Schritt.
 const TOPICS := {
 	"Umsehen": ["kamera", "kamera"], "Bauen": ["bauplatz", "wohnhaus"], "Rohstoffe": ["rohstoffe", "rohstoffe"],
@@ -261,6 +261,7 @@ func step_text(index: int, spoken := false) -> String:
 
 func _show() -> void:
 	_clear_buttons()
+	_sync_guide()
 	if not context_topic.is_empty():
 		_say_line(str(CONTEXT[context_topic]), str(CONTEXT[context_topic]), "context_" + context_topic)
 		_add_button("Verstanden", _close_context)
@@ -275,7 +276,6 @@ func _show() -> void:
 		_relayout()
 		return
 	visible = active()
-	_sync_guide()
 	if not visible:
 		return
 	var spec: Dictionary = STEPS[step]
@@ -337,6 +337,7 @@ func _next() -> void:
 	if current_id() == "luftblick" and guide.flying:
 		guide.finish_flight()
 		return
+	var was_done := done
 	step += 1
 	if replay_end >= 0 and step > replay_end:
 		replay_end = -1
@@ -347,7 +348,7 @@ func _next() -> void:
 	while replay_end < 0 and step < STEPS.size() and not _main_step(step):
 		step += 1
 	_skip_satisfied()
-	if step >= STEPS.size() and not done:
+	if step >= STEPS.size() and not was_done:
 		done = true
 		finished.emit()
 	world.tutorial_changed()

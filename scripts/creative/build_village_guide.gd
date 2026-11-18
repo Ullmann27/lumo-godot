@@ -103,8 +103,10 @@ func place_lumo(spot: Vector3) -> void:
 		return
 	if not lumo_held:
 		held_path = world.village_life.lumo_path.duplicate()
-		world.village_life.lumo_path.clear()
 		lumo_held = true
+	# A one-point path keeps Lumo standing (the walk planner refills an empty one).
+	world.village_life.lumo_path.assign([Vector3(spot.x, 0.0, spot.z)])
+	world.village_life.lumo_target = 0
 	lumo.position = Vector3(spot.x, TERRAIN.height(spot.x, spot.z) + float(lumo.get_meta("foot_offset", 0.0)), spot.z)
 	var camera_at: Vector3 = world.camera.global_position
 	lumo.rotation.y = atan2(camera_at.x - spot.x, camera_at.z - spot.z)
@@ -117,8 +119,10 @@ func release_lumo() -> void:
 		return
 	lumo_held = false
 	if is_instance_valid(world.village_life):
-		world.village_life.lumo_path.assign(held_path)
+		world.village_life.lumo_path.assign(held_path if held_path.size() > 1 else [])
 		world.village_life.lumo_target = 0
+		if world.village_life.lumo_path.is_empty() and world.village_life.has_method("_plan_lumo_walk"):
+			world.village_life._plan_lumo_walk(world.model.player())
 	held_path.clear()
 
 
