@@ -216,6 +216,10 @@ func start_course(index: int, with_save: bool) -> void:
 	world.name = "RunWorld"
 	add_child(world)
 	world.build(lightweight, str(course.track))
+	if world.find_children("*", "WorldEnvironment", true, false).is_empty():
+		# Dschungelherz brings no sky or sun of its own; give it the daylight that
+		# its track definition describes instead of the project's default dusk.
+		world._lighting()
 	plan = PLAN.build(world, course)
 	track = TRACK.new()
 	track.setup(plan, world)
@@ -673,7 +677,7 @@ func _finish() -> void:
 			["Aufgaben", "%d von %d richtig" % [solved, plan.question_checkpoints().size()]],
 			["Belohnung", "+%d Sterne" % reward],
 		],
-		"thresholds": "★ Ziel erreicht · ★★ ab %d %% · ★★★ ab %d %% der Sterne" % [
+		"thresholds": "★ Ziel · ★★ ab %d %% · ★★★ ab %d %% der Sterne" % [
 			roundi(TUNING.RATING_TWO * 100.0), roundi(TUNING.RATING_THREE * 100.0)
 		],
 	}
