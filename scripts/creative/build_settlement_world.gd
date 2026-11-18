@@ -2626,13 +2626,13 @@ func tutorial_target_rect(target: String) -> Rect2:
 			var tab: Control = area_tabs.get(target.substr(4))
 			return _hud_rect(tab) if tab != null and tab.is_visible_in_tree() else Rect2()
 		"harvest":
-			return _union([resource_chips.food])
+			return resource_chip_rect("food")
 		"day":
 			return _hud_rect(day_button) if day_button.is_visible_in_tree() else Rect2()
 		"chips":
 			return _union([resource_chips.wood, resource_chips.stone, resource_chips.food])
 		"people":
-			return _union([resource_chips.population])
+			return resource_chip_rect("population")
 		"goal":
 			return _union([goal_card])
 		"world":
@@ -2653,6 +2653,20 @@ func tutorial_target_rect(target: String) -> Rect2:
 			var local := safe_ui.get_global_transform_with_canvas().affine_inverse() * screen
 			return Rect2(local - Vector2(36, 36), Vector2(72, 72))
 	return Rect2()
+
+
+## Ein Rohstoff in der oberen Leiste: auf schmalen Bildschirmen erst ins Bild
+## rollen, dann nur den sichtbaren Teil melden (Zeiger und Ernteweg).
+func resource_chip_rect(resource: String) -> Rect2:
+	var chip: Control = resource_chips.get(resource)
+	if chip == null or not chip.is_visible_in_tree():
+		return Rect2()
+	var scroll := chip.get_parent().get_parent() as ScrollContainer
+	if scroll != null:
+		var inside := _hud_rect(scroll).grow(0.5).encloses(_hud_rect(chip))
+		if not inside:
+			scroll.scroll_horizontal = maxi(0, int(chip.position.x - (scroll.size.x - chip.size.x) * 0.5))
+	return _clip_to_scroll(chip)
 
 
 func _tutorial_topics() -> void:

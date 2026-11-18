@@ -473,6 +473,12 @@ func _portrait_and_fold() -> void:
 		await _tap_local(village, village.tutorial.target_rect().get_center())
 		_pointer_ok(village, label + " Nächster Tag")
 		_check(village.tutorial.current_id() == "tag", "%s: Hof gebaut" % label)
+		await _tap_local(village, village.tutorial.target_rect().get_center())
+		_check(village.tutorial.current_id() == "ernte", "%s: erste Ernte" % label)
+		var food := _pointer_ok(village, label + " Vorrat")
+		var chip: Rect2 = village._hud_rect(village.resource_chips.food)
+		_check(food.size.x >= chip.size.x * 0.9 and food.intersects(chip), "%s: Zeiger auf dem sichtbaren Vorrat %s / %s" % [label, food, chip])
+		_check(not food.intersects(village._hud_rect(village.walk_button)), "%s: Zeiger nicht auf dem Lumo-Knopf" % label)
 		await _close(village)
 	root.size = Vector2i(1280, 720)
 	density = 1.0

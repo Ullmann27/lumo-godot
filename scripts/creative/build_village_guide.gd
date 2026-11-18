@@ -152,8 +152,8 @@ func building_point(kind: String) -> Vector2:
 
 
 func food_chip_point() -> Vector2:
-	var rect: Rect2 = world._hud_rect(world.resource_chips.food)
-	return rect.get_center()
+	var rect: Rect2 = world.resource_chip_rect("food")
+	return rect.get_center() if rect.size != Vector2.ZERO else Vector2.INF
 
 
 func flow_ends() -> Array:
