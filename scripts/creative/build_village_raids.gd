@@ -496,6 +496,7 @@ static func restore(raw: Variant, model = null):
 	var result = load("res://scripts/creative/build_village_raids.gd").new()
 	if model != null:
 		result.next_check = maxi(FIRST_DAY, int(model.day) + 2)
+		GUARDS.apply_upkeep(model, result)
 	if not raw is Dictionary or raw.get("version") != VERSION:
 		return result
 	result.world_seed = int(raw.get("seed", result.world_seed))

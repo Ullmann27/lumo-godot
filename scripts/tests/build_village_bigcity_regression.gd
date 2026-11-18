@@ -207,7 +207,17 @@ func _run() -> void:
 	city._rebuild()
 	city._camera_update(true)
 	await _frames(8)
-	await _capture("02_wachen_nordtor_nah")
+	await _capture("02_bogenschuetzen_nordtor_nah")
+	var south: Vector3 = city.guards_view.post_position("sued")
+	city.focus = south + Vector3(0, 0, 6)
+	city.radius = 26.0
+	city.tilt = 0.45
+	city.orbit = 0.6
+	city._clamp_focus()
+	city._rebuild()
+	city._camera_update(true)
+	await _frames(8)
+	await _capture("02b_reiter_suedtor_nah")
 	# Wohnviertel nah.
 	city.focus = Vector3(-REGION.TOWN_CENTER + 20.0, 0, 18.0)
 	city.radius = 46.0
@@ -269,7 +279,7 @@ func _run() -> void:
 	if start >= 0:
 		var cell := REGION.plot_coordinate(start)
 		var finish := REGION.plot_index_at(cell - Vector2i(signi(cell.x), signi(cell.y)) * 3)
-		city.focus = city._plot_world(start)
+		city.focus = (city._plot_world(start) + city._plot_world(finish)) * 0.5
 		city.radius = 36.0
 		city.tilt = 0.9
 		city._rebuild()

@@ -69,8 +69,14 @@ static func reconcile(raids) -> void:
 
 ## Pferdefutter der Reiter in den Dorfverbrauch übernehmen.
 static func apply_upkeep(model, raids) -> void:
-	if model != null:
-		model._player["troop_upkeep"] = TROOPS.upkeep(raids.units)
+	if model == null:
+		return
+	# Nur mit Reitern gesetzt: Dörfer ohne Pferde bleiben Feld für Feld gleich.
+	var horses := TROOPS.upkeep(raids.units)
+	if horses > 0:
+		model._player["troop_upkeep"] = horses
+	else:
+		model._player.erase("troop_upkeep")
 
 
 static func total(raids) -> int:
