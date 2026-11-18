@@ -35,6 +35,7 @@ static var _shaders: Dictionary = {}
 ## Names of models that could not be loaded (the caller falls back to code meshes).
 static var missing: Array[String] = []
 static var loaded: Array[String] = []
+static var _globals_ready: bool = false
 
 
 static func path_of(name: String) -> String:
@@ -109,8 +110,13 @@ static func set_focus(point: Vector3) -> void:
 	RenderingServer.global_shader_parameter_set("jungle_focus", point)
 
 
+## Adds the global shader value once per process. (Asking the server for its list
+## is editor-only and logs an error at runtime, so a flag remembers it instead.)
 static func _ensure_globals() -> void:
-	if not RenderingServer.global_shader_parameter_get_list().has(&"jungle_focus"):
+	if _globals_ready:
+		return
+	_globals_ready = true
+	if not ProjectSettings.has_setting("shader_globals/jungle_focus"):
 		RenderingServer.global_shader_parameter_add("jungle_focus", RenderingServer.GLOBAL_VAR_TYPE_VEC3, Vector3(0, -1000, 0))
 
 
