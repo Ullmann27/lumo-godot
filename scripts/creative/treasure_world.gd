@@ -56,6 +56,28 @@ var find_beam: MeshInstance3D
 var find_light: OmniLight3D
 
 
+## Im Hochformat rückt die Kamera weiter zurück: sonst steht der nahe Lumo unten
+## im Bild genau dort, wo die Meldungszeile liegt.
+const PORTRAIT_CAMERA_SCALE := 1.45
+
+
+## Im Hochformat zielt die Kamera näher auf Lumo; er rückt damit zur Bildmitte.
+const PORTRAIT_LOOK_OFFSET := Vector3(0.0, 1.0, -1.2)
+
+
+func _portrait() -> bool:
+	var view := get_viewport().get_visible_rect().size
+	return view.y > view.x
+
+
+func _camera_offset() -> Vector3:
+	return CAMERA_OFFSET * (PORTRAIT_CAMERA_SCALE if _portrait() else 1.0)
+
+
+func _camera_look_offset() -> Vector3:
+	return PORTRAIT_LOOK_OFFSET if _portrait() else CAMERA_LOOK_OFFSET
+
+
 func _ready() -> void:
 	previous = RUNTIME.enter(self, true)
 	SceneRouter.current_scene_id = "treasure"
@@ -94,8 +116,8 @@ func _ready() -> void:
 	add_child(camera)
 	camera.fov = 55
 	camera.current = true
-	camera.position = player.position + CAMERA_OFFSET
-	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
+	camera.position = player.position + _camera_offset()
+	camera.look_at(player.position + _camera_look_offset(), Vector3.UP)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("ffe7a1"), true)
 	marker.scale = Vector3.ONE * 0.65
 	alternate_marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("9de9ff"), true)
@@ -439,9 +461,9 @@ func _physics_process(delta: float) -> void:
 	# Fundmoment: Kamera rückt kurz näher an den jubelnden Lumo.
 	var focus := 1.0 - 0.16 * smoothstep(0.0, 0.35, find_focus)
 	camera.position = camera.position.lerp(
-		player.position + CAMERA_OFFSET * focus, minf(1, delta * 4)
+		player.position + _camera_offset() * focus, minf(1, delta * 4)
 	)
-	camera.look_at(player.position + CAMERA_LOOK_OFFSET, Vector3.UP)
+	camera.look_at(player.position + _camera_look_offset(), Vector3.UP)
 	ADVENTURE.set_focus(player.position + Vector3.UP * 1.5)
 	var found := model.try_discover(player.position)
 	if not found.is_empty():
