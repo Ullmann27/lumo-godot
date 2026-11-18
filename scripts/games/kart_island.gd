@@ -4439,8 +4439,12 @@ func _load_preferences() -> void:
 	host_sound_enabled = bool(host_options.get("soundEnabled", true))
 	host_reduce_motion = bool(host_options.get("reduceAnimations", false))
 	reduced_motion = preferred_reduced_motion or host_reduce_motion
+	# Without hardware graphics (emulator, very weak device) the race starts light.
 	lightweight = bool(
-		config.get_value("race", "lightweight", SettingsStore.get_profile() == "low")
+		config.get_value(
+			"race", "lightweight",
+			SettingsStore.get_profile() == "low" or PerformanceManager.software_rendered_mobile()
+		)
 	)
 	muted = bool(config.get_value("race", "muted", false))
 	music_volume = clampf(float(config.get_value("race", "music_volume", 1.0)), 0.0, 1.0)
