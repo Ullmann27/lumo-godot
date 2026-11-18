@@ -493,6 +493,7 @@ func _update_view(delta: float, snap: bool) -> void:
 	actor.apply(feet, ground, player, maxf(delta, 0.0001), paused or question_open or phase == Phase.COUNTDOWN)
 	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
+	fx.set_speed(camera.pace_now if phase == Phase.RUNNING else 0.0, camera.global_transform)
 	if plan.adventure and is_instance_valid(world.scenery):
 		world.scenery.follow(camera.global_position, player.s, maxf(delta, 0.0001), feet.origin)
 

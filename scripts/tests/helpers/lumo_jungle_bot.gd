@@ -32,6 +32,8 @@ var _braking: bool = false
 ## the stretches given by `slow_zones` ([s0, s1] in metres; empty = everywhere).
 var hold_back: float = 0.0
 var slow_zones: Array[Vector2] = []
+## False: never presses FLITZEN (a slow child who does not speed up).
+var use_dash: bool = true
 
 
 func _init(seed: int = 1) -> void:
@@ -149,6 +151,8 @@ func _decide(game, steer: float) -> void:
 		return
 	var fallback: Array = []
 	for option in OPTIONS:
+		if not use_dash and float(option[2]) >= 0.0:
+			continue
 		var trial: Dictionary = _simulate(game, steer, float(option[0]), float(option[1]), float(option[2]), 1.6)
 		if trial.ok and trial.drop and fallback.is_empty():
 			fallback = option

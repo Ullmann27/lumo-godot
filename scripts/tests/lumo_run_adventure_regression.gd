@@ -342,11 +342,16 @@ func _bots_cross(game) -> void:
 		var name: String = str(passage.name)
 		var clean: int = 0
 		var brave: int = 0
+		var only: String = OS.get_environment("LUMO_PASSAGE")
+		if not only.is_empty() and only != name:
+			continue
 		for seed in range(1, SEEDS + 1):
 			var bot = BOT.new(seed)
 			var result: Dictionary = _attempt(game, bot, passage, float(passage.announce) - 10.0)
 			if int(result.rescues) == 0 and bool(result.across):
 				clean += 1
+			else:
+				print("[LumoAdventure] %s seed %d: %d falls (first at s=%.1f), route %s" % [name, seed, int(result.rescues), float(result.fall_s), str(result.routes.get(name, ""))])
 			if str(result.routes.get(name, "")) == "upper":
 				brave += 1
 		print("[LumoAdventure] %s: %d of %d normal players across without a fall (%d on the brave line)" % [name, clean, SEEDS, brave])
@@ -359,6 +364,8 @@ func _bots_cross(game) -> void:
 func _slow_players(game) -> void:
 	for passage in game.plan.passages:
 		var name: String = str(passage.name)
+		if not OS.get_environment("LUMO_PASSAGE").is_empty() and OS.get_environment("LUMO_PASSAGE") != name:
+			continue
 		var zone := Vector2(float(passage.announce) - 10.0, float(passage.s1))
 		# Slow only on the first try: falls at the passage, back in shortly
 		# before it, then runs normally and gets across.
@@ -366,6 +373,7 @@ func _slow_players(game) -> void:
 		bot.hold_back = SLOW_PULL
 		bot.slow_zones.append(zone)
 		bot.routes[name] = "lower"
+		bot.use_dash = false
 		_place(game, zone.x, 0.0, TUNING.PATH_CRUISE)
 		var before: int = game.track.rescues
 		var fall_s: float = -1.0
@@ -393,6 +401,7 @@ func _slow_players(game) -> void:
 		stubborn.hold_back = SLOW_PULL
 		stubborn.slow_zones.append(zone)
 		stubborn.routes[name] = "lower"
+		stubborn.use_dash = false
 		var tries: Dictionary = _attempt(game, stubborn, passage, zone.x, 45.0)
 		_check(bool(tries.across) and int(tries.rescues) <= TUNING.PATH_HELP_AFTER_FALLS + 1, "%s: who stays slow is carried across after %d falls" % [name, int(tries.rescues)])
 		# Moderately slow (about 70 %): the safe line is enough.
@@ -400,5 +409,6 @@ func _slow_players(game) -> void:
 		easy.hold_back = EASY_PULL
 		easy.slow_zones.append(zone)
 		easy.routes[name] = "lower"
+		easy.use_dash = false
 		var calm: Dictionary = _attempt(game, easy, passage, zone.x)
 		_check(bool(calm.across) and int(calm.rescues) == 0, "%s: at about 70 %% pace the safe line works (%d falls)" % [name, int(calm.rescues)])
