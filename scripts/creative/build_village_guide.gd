@@ -56,9 +56,10 @@ func landing_view() -> Dictionary:
 func start_flight() -> void:
 	flight_to = landing_view()
 	# Hoch über dem Tal, leicht gedreht: man sieht Fluss, Wiesen und Nachbarn.
-	flight_from = {"focus": world._start_focus(), "orbit": float(flight_to.orbit) - 0.9, "tilt": 1.2, "radius": 108.0}
+	flight_from = {"focus": world._start_focus(), "orbit": float(flight_to.orbit) - 0.9, "tilt": 0.78, "radius": 110.0}
 	flight_time = 0.0
 	flying = true
+	_cinema(true)
 	_apply(flight_from)
 	place_lumo(flight_to.spot)
 
@@ -67,6 +68,7 @@ func finish_flight() -> void:
 	if not flying:
 		return
 	flying = false
+	_cinema(false)
 	_apply(flight_to)
 	place_lumo(flight_to.spot)
 	if lumo_held and world.village_life.lumo.is_usable():
@@ -80,6 +82,14 @@ func land_now() -> void:
 	flying = false
 	_apply(flight_to)
 	place_lumo(flight_to.spot)
+
+
+## Während des kurzen Flugs: freier Blick, nur Lumos Blase und „Überspringen“.
+func _cinema(on: bool) -> void:
+	for node in [world.bottom, world.goal_card]:
+		if is_instance_valid(node):
+			node.visible = not on
+	world._layout()
 
 
 func _apply(view: Dictionary) -> void:
@@ -195,7 +205,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if flow.is_empty() or carrot == null:
+	if flow.is_empty():
 		return
 	var ends := flow_ends()
 	if ends.size() != 2 or ends[0] == Vector2.INF or ends[1] == Vector2.INF:
@@ -216,5 +226,22 @@ func _draw() -> void:
 	for index in range(count):
 		var t := fmod(flow_time / FLOW_SECONDS + float(index) / float(count), 1.0)
 		var point := a.lerp(control, t).lerp(control.lerp(b, t), t)
-		var size := Vector2.ONE * 46.0
-		draw_texture_rect(carrot, Rect2(point - size * 0.5, size), false)
+		var ahead := a.lerp(control, minf(1.0, t + 0.02)).lerp(control.lerp(b, minf(1.0, t + 0.02)), minf(1.0, t + 0.02))
+		_draw_carrot(point, (ahead - point).angle() if ahead != point else PI * 0.5)
+
+
+## Eine gezeichnete Karotte (orange Rübe, grünes Kraut), Spitze in Flugrichtung.
+func _draw_carrot(center: Vector2, angle: float) -> void:
+	var forward := Vector2.from_angle(angle)
+	var side := forward.orthogonal()
+	var tip := center + forward * 26.0
+	var back := center - forward * 14.0
+	var outline := Color("5a2a0c")
+	var body := PackedVector2Array([tip, back + side * 11.0, back - side * 11.0])
+	var rim := PackedVector2Array([tip + forward * 3.0, back + side * 14.0 - forward * 2.0, back - side * 14.0 - forward * 2.0])
+	draw_colored_polygon(rim, outline)
+	draw_colored_polygon(body, Color("ff8a1f"))
+	draw_line(center + side * 4.0, center + side * 4.0 - forward * 6.0, Color("d9661a"), 2.0)
+	for spread in [-0.5, 0.0, 0.5]:
+		var leaf := (-forward).rotated(spread)
+		draw_colored_polygon(PackedVector2Array([back + side * 3.0, back - side * 3.0, back + leaf * 18.0]), Color("3fae4a"))

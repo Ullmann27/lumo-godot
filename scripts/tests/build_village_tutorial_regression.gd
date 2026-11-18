@@ -180,9 +180,10 @@ func _first_visit() -> void:
 	_check(village.area_tabs.bauen.visible and village.area_tabs.versorgen.visible, "Bauen und Versorgen sind da")
 	_check(not village.area_tabs.nachbarn.visible and not village.area_tabs.schuetzen.visible, "Nachbarn/Schützen öffnen sich später")
 	_check(village.purchase_buttons.house.visible and not village.purchase_buttons.clinic.visible, "Am Anfang nur das Wohnhaus beim Bauen")
-	_check(village.day_button.is_visible_in_tree(), "„Nächster Tag“ ist fest sichtbar")
+	_check(not village.bottom.visible, "Während des Flugs freier Blick auf das Tal")
 	var before: Dictionary = village.model.snapshot()
 	await _land(village)
+	_check(village.day_button.is_visible_in_tree(), "Nach der Landung ist „Nächster Tag“ fest sichtbar")
 	_check(tutorial.current_id() == "hallo", "Nach dem Flug: Lumo begrüßt")
 	_check(absf(village.radius - 26.0) < 0.5 and village.tilt < 0.8, "Kamera setzt nah auf (%.1f)" % village.radius)
 	var lumo: Node3D = village.village_life.lumo
