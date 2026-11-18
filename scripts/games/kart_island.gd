@@ -36,6 +36,8 @@ const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
 const DRIVE_FEEDBACK = preload("res://scripts/games/kart_drive_feedback.gd")
+## Fahrgefühl-Effekte (Funken, Spuren, Rauch, Motor, Federung): scripts/games/kart_fx/.
+const DRIVE_FX = preload("res://scripts/games/kart_fx/kart_drive_fx.gd")
 const RESONANCE = preload("res://scripts/games/kart_resonance_system.gd")
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
@@ -224,6 +226,7 @@ var player: LumoRaceKart
 var camera: Camera3D
 var speed_fx: Node3D
 var drive_feedback: Node3D
+var drive_fx: Node3D
 var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
@@ -532,6 +535,10 @@ func _build_world() -> void:
 	drive_feedback.reduced_motion = reduced_motion
 	race_root.add_child(drive_feedback)
 	drive_feedback.bind_vehicle(player)
+	# Hook kart_fx: Fahrgefühl-Effekte lesen nur den echten Fahrzustand dieses Rennens.
+	drive_fx = DRIVE_FX.new()
+	race_root.add_child(drive_fx)
+	drive_fx.bind_race(self)
 	shield_visual = SHIELD_DOME.new()
 	shield_visual.reduced_motion = reduced_motion
 	player.add_child(shield_visual)
@@ -707,6 +714,7 @@ func _show_reference_landing(preserve_setup: bool = false) -> void:
 	if not preserve_setup:
 		garage.setup.mode = "cup"
 	reference_landing.current_mode = _known_mode(str(garage.setup.mode))
+	reference_landing.selected_track = str(garage.setup.get("track", ""))
 	reference_landing.mode_selected.connect(_reference_select_mode)
 	reference_landing.quick_start.connect(_reference_quick_start)
 	reference_landing.open_settings.connect(_reference_open_settings)
@@ -733,6 +741,8 @@ func _reference_select_mode(selected: String) -> void:
 	if _is_catalog_track(selected):
 		# Neon-Menü: Strecken-Highlight und Wochen-Abenteuer wählen echte Katalogstrecken.
 		garage.setup["track"] = selected
+		_single_race_for_chosen_course()
+		print("[Kart] track_selected: ", selected, " mode=", garage.setup.mode)
 		return
 	match selected:
 		"race", "cup", "time_trial", "training", "arena":
@@ -744,6 +754,8 @@ func _reference_select_mode(selected: String) -> void:
 		"garage":
 			garage.step = 2
 		"world":
+			# Die Streckenliste gibt es nur für Rennarten mit frei wählbarer Strecke.
+			_single_race_for_chosen_course()
 			garage.step = 3
 		"difficulty":
 			garage.step = 4
@@ -755,6 +767,16 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+## Wer eine Strecke aussucht, will genau diese fahren. Cup und Arena haben keine
+## frei wählbare Strecke und würden die Wahl stillschweigend übergehen (Issue #204).
+func _single_race_for_chosen_course() -> void:
+	if str(garage.setup.get("mode", "race")) not in ["cup", "arena"]:
+		return
+	garage.setup["mode"] = "race"
+	if is_instance_valid(reference_landing) and reference_landing.has_method("set_current_mode"):
+		reference_landing.set_current_mode("race")
 
 
 static func _is_catalog_track(id: String) -> bool:
@@ -840,6 +862,12 @@ func _start_selected_race(setup: Dictionary) -> void:
 	selected_driver = str(setup.get("driver", "fox"))
 	selected_kart = str(setup.get("kart", "comet"))
 	track_id = str(setup.get("track", "sonnenhafen"))
+	if not _is_catalog_track(track_id):
+		# Unbekannte Strecken wurden früher stillschweigend zu Sonnenhafen.
+		push_warning("[Kart] Unbekannte Strecke '%s' – Rennen nicht gestartet" % track_id)
+		if is_instance_valid(garage) and is_instance_valid(garage.detail):
+			garage.detail.text = "Diese Strecke ist noch nicht startbereit. Bitte wähle eine andere."
+		return
 	difficulty = str(setup.get("difficulty", "gemuetlich"))
 	cup_index = 0
 	cup_points = [0, 0, 0, 0, 0, 0]
@@ -959,6 +987,8 @@ func _begin_race() -> void:
 	if not is_instance_valid(race_root) or not is_instance_valid(player) or not is_instance_valid(camera):
 		push_error("[Kart] Failed to assemble the playable 3D race")
 	else:
+		if is_instance_valid(world) and str(world.track_id) != track_id:
+			push_error("[Kart] Gewählte Strecke %s, gebaute Welt %s" % [track_id, world.track_id])
 		print("[Kart] race_world_ready: ", track_id, " mode=", mode)
 
 
@@ -1907,7 +1937,9 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 	_update_hud()
 	_update_start_lights(delta)
-	if engine_playback and not muted and host_sound_enabled and racing and not paused and not finished:
+	# Hook kart_fx: der mehrschichtige Motor (kart_drive_fx) ersetzt den einfachen Sinus.
+	var layered_engine: bool = is_instance_valid(drive_fx) and drive_fx.owns_engine_sound()
+	if engine_playback and not layered_engine and not muted and host_sound_enabled and racing and not paused and not finished:
 		for i in range(engine_playback.get_frames_available()):
 			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
 			var sample: float = sin(phase * TAU) * 0.025 * effects_volume
@@ -2278,6 +2310,9 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 				or (precision_result != PRECISION.LANDING_LONG and air_time > 0.35),
 				race_root.global_basis * (road.basis as Basis)
 			)
+		# Hook kart_fx: Staubring, Funken und Federstoß bei der echten Landung.
+		if is_instance_valid(drive_fx):
+			drive_fx.landed(impact, race_root.global_basis * (road.basis as Basis))
 		air_trick = {}
 		# Settle sideways slide after a firm landing. Precision zone/long
 		# outcomes already apply their own speed rules and stay untouched.
@@ -2446,6 +2481,9 @@ func _collide_with_rail(road: Dictionary) -> void:
 	if into_wall <= 0.0:
 		return
 	wall_contacts += 1
+	# Hook kart_fx: Funken, Schleifspur, Kratzgeräusch und Stoß am echten Berührungspunkt.
+	if is_instance_valid(drive_fx):
+		drive_fx.rail_contact(player, race_root.global_basis * (road_basis.x * side), into_wall, speed)
 	# Slide along the curb instead of bouncing off it and spinning out.
 	physical_velocity -= road_basis.x * side * into_wall * 1.08
 	speed *= clampf(1.0 - into_wall * 0.022, 0.80, 0.99)
@@ -2782,6 +2820,9 @@ func _drive_opponents(delta: float) -> void:
 			var rail_side: float = signf(rival_lateral)
 			var overlap: float = rival_lateral - rail_side * _wall_lateral_at(float(next.distance))
 			rival.position -= (next.basis as Basis).x * overlap
+			# Hook kart_fx: auch Rivalen sprühen Funken, wenn sie an der Planke entlangschrammen.
+			if is_instance_valid(drive_fx) and absf(overlap) > 0.01:
+				drive_fx.rail_contact(rival, race_root.global_basis * ((next.basis as Basis).x * rail_side), absf(overlap) / maxf(delta, 0.001), target_speed)
 			opponent_lanes[i] = rail_side * _wall_lateral_at(float(next.distance))
 		rival.position.y = (
 			float(next.height)
@@ -3141,6 +3182,9 @@ func _update_vehicles(_delta: float) -> void:
 		drive_feedback.advance(
 			_delta, racing and not finished and not menu_active, paused, airborne, reduced_motion
 		)
+	# Hook kart_fx: ein Takt Fahrgefühl-Effekte aus dem echten Fahrzustand.
+	if is_instance_valid(drive_fx):
+		drive_fx.advance(_delta)
 	if not enabled:
 		for kart in opponents:
 			kart.set_motion(0, 0, false, false)
@@ -3331,6 +3375,8 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 		# Drive-through push: brief FOV punch and a tiny shake (both off in reduced motion).
 		kicked_fov += fx.camera_fov_kick()
 		camera.position += camera.basis * fx.camera_shake()
+	if is_instance_valid(drive_fx) and not snap:
+		kicked_fov += drive_fx.camera_fov_kick()  # Hook kart_fx: Turbo-FOV-Schub
 	camera.fov = clampf(kicked_fov, 20.0, 140.0)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
@@ -3842,6 +3888,9 @@ func _finish(cinematic: bool = true) -> void:
 		return
 	if is_instance_valid(drive_feedback):
 		drive_feedback.reset()
+	# Hook kart_fx: im Ziel keine Spuren/Funken mehr aus dem Rennen.
+	if is_instance_valid(drive_fx):
+		drive_fx.reset()
 	completed_race = true
 	racing = false
 	_update_audio()

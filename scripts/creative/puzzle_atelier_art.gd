@@ -3,6 +3,7 @@ extends RefCounted
 ## gold details and plants. Repeated meshes go through MultiMesh so the
 ## start camera stays inside the draw-call budget.
 const GARDEN := preload("res://assets/creative/puzzle/atelier_garden.webp")
+const ADVENTURE = preload("res://scripts/creative/adventure_kit.gd")
 
 
 static func apply(root: Node3D, _kit = null, tier: String = "") -> void:
@@ -20,6 +21,7 @@ static func apply(root: Node3D, _kit = null, tier: String = "") -> void:
 		_banners(root)
 	_title(root)
 	_window_light(root)
+	_studio_props(root, density)
 
 
 static func _mat(
@@ -319,3 +321,23 @@ static func _mesh(
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(node)
 	return node
+
+
+## Blender-Requisiten: Messing-Arbeitslampe mit warmem Licht, Staffelei mit
+## Skizze, Farbgläser mit Pinseln. Die Lampe wirft weiches Licht auf den Tisch.
+static func _studio_props(root: Node3D, density: float) -> void:
+	ADVENTURE.place(root, "AtelierLamp", "atelier", "atelier_lamp", ADVENTURE.xf(Vector3(-9.7, -0.04, -4.6), -0.5, 2.2), true)
+	var lamp_light := SpotLight3D.new()
+	lamp_light.name = "AtelierLampLight"
+	lamp_light.position = Vector3(-7.9, 3.0, -3.6)
+	lamp_light.look_at_from_position(lamp_light.position, Vector3(-3.0, 0.0, 0.2), Vector3.UP)
+	lamp_light.light_color = Color("ffd9a0")
+	lamp_light.light_energy = 2.4
+	lamp_light.spot_range = 14.0
+	lamp_light.spot_angle = 38.0
+	lamp_light.spot_attenuation = 0.8
+	lamp_light.shadow_enabled = density > 0.6
+	root.add_child(lamp_light)
+	if density > 0.4:
+		ADVENTURE.place(root, "AtelierEasel", "atelier", "easel", ADVENTURE.xf(Vector3(10.2, -0.04, -5.4), 0.4 + PI, 1.6), true)
+	ADVENTURE.place(root, "AtelierPaints", "atelier", "paint_jars", ADVENTURE.xf(Vector3(-9.6, -0.04, 4.6), 0.3, 1.5), false)

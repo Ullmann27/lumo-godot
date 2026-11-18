@@ -41,8 +41,14 @@ func _run() -> void:
 	for id in ["volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen"]:
 		_check(hub._track_buttons.has(id), "Strecke im Katalog: " + id)
 		_check(hub._track_buttons[id].art != null, "echtes Vorschaubild: " + id)
+	# Issue #204: hervorgehoben ist die Strecke, die "Rennen" startet – ohne Vorgabe die
+	# erste Katalogstrecke, nie eine bloße Werbestrecke.
+	_check(hub._featured_track == "sonnenhafen" and hub.selected_track == "sonnenhafen",
+		"Highlight zeigt beim Start die Strecke des nächsten Rennens")
 	hub._track_buttons["jungle_emerald_3600"].pressed.emit()
 	_check(hub._featured_track == "jungle_emerald_3600", "Tippen auf Vorschau wechselt das Highlight")
+	_check(routes == ["jungle_emerald_3600"], "Tippen auf Vorschau übergibt die Strecke an das Rennen")
+	routes.clear()
 	hub._highlight_pick.pressed.emit()
 	_check(routes == ["jungle_emerald_3600", "world"], "Highlight öffnet echte Streckenwahl mit Dschungel")
 	routes.clear()
