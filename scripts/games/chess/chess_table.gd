@@ -1402,7 +1402,8 @@ func _lumo_turn() -> void:
 		_lumo_look_board()
 	var started := Time.get_ticks_msec()
 	ai.stopped = false
-	var result: Dictionary = await ai.think(rules, level)
+	var race := screen == "trial" and str(SCHOOL.trial(trial_id).get("goal", "")) == "race"
+	var result: Dictionary = await ai.think(rules, level, {"race": race})
 	if gen != _generation or _closed or rules == null:
 		return
 	# Kurz nachdenken lassen, auch wenn es schnell ging.

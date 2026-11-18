@@ -299,7 +299,9 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) 
 	_lift_from = -1
 	if not is_instance_valid(mover) or reduced_motion:
 		show_board(board_after)
-		move_animated.emit()
+		# Verzögert melden: Der Aufrufer wartet erst nach diesem Aufruf auf das
+		# Signal (sonst hinge der Tisch bei „Animationen reduzieren“).
+		move_animated.emit.call_deferred()
 		return
 	var victim_sq := to
 	if flags & 4:

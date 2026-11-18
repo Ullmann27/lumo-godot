@@ -412,8 +412,9 @@ static func trial_result(id: String, g: RefCounted) -> String:
 		return "white"
 	if count[0] == 0:
 		return "black"
+	# Wer im Rennen nicht mehr ziehen kann, hat verloren (klare Regel für Kinder).
 	if not g.has_legal_move():
-		return "draw"
+		return "black" if g.side == 0 else "white"
 	if g.played.size() >= 160:
 		return "draw"
 	return ""

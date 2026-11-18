@@ -44,7 +44,10 @@ const INF := 32000
 const TT_EXACT := 0
 const TT_LOWER := 1
 const TT_UPPER := 2
-const TT_LIMIT := 250000
+## Transpositionstabelle fester Größe (2^17 Einträge, ersetzt immer): kein
+## Umhashen eines wachsenden Dictionary mitten in der Suche (das kostete
+## einzelne Scheiben von mehreren hundert Millisekunden).
+const TT_BITS := 17
 const MAX_PLY := 64
 const LAZY_MARGIN := 180
 
@@ -52,7 +55,9 @@ static var pst_mg: Array = []  # [typ] -> PackedInt32Array(64) aus Sicht von Wei
 static var pst_eg: Array = []
 
 var rules: RefCounted
-var tt: Dictionary = {}
+var tt_keys := PackedInt64Array()
+var tt_vals := PackedInt64Array()
+var tt_mask := (1 << TT_BITS) - 1
 var killers := PackedInt32Array()
 var history := PackedInt32Array()
 var nodes := 0
@@ -62,9 +67,13 @@ var slice_usec := 10000
 var slice_deadline := 0
 var frames := 0
 var max_slice_usec := 0
+## Dauer jeder Rechenscheibe (µs) der letzten Suche, für Messungen.
+var slice_samples := PackedInt32Array()
 var _slice_started := 0
 var root_bonus := PackedInt32Array()
 var rng := RandomNumberGenerator.new()
+## Bauernrennen der Lernspiele: Wer zuerst umwandelt, hat gewonnen.
+var race := false
 
 
 static func ensure_tables() -> void:
@@ -303,6 +312,7 @@ func _new_search(g: RefCounted, budget_ms: int, slice_ms: int) -> void:
 	stopped = false
 	frames = 0
 	max_slice_usec = 0
+	slice_samples.clear()
 	var now := Time.get_ticks_usec()
 	hard_deadline = now + budget_ms * 1000
 	slice_usec = slice_ms * 1000 if slice_ms > 0 else 1 << 50
@@ -311,8 +321,9 @@ func _new_search(g: RefCounted, budget_ms: int, slice_ms: int) -> void:
 	killers.fill(0)
 	for i in history.size():
 		history[i] = history[i] >> 2
-	if tt.size() > TT_LIMIT:
-		tt.clear()
+	if tt_keys.is_empty():
+		tt_keys.resize(1 << TT_BITS)
+		tt_vals.resize(1 << TT_BITS)
 
 
 ## Zeit prüfen; bei Bedarf auf das nächste Bild warten.
@@ -323,6 +334,7 @@ func _tick() -> void:
 		return
 	if now >= slice_deadline:
 		max_slice_usec = maxi(max_slice_usec, now - _slice_started)
+		slice_samples.append(now - _slice_started)
 		var tree := Engine.get_main_loop() as SceneTree
 		if tree != null:
 			await tree.process_frame
@@ -336,7 +348,7 @@ func _tick() -> void:
 
 ## Lumo denkt nach. Ergebnis: {move, score, depth, nodes, ms, frames,
 ## max_slice_ms, level, book}. `options` kann "budget_ms", "slice_ms" (0 = ohne
-## Pause), "depth" überschreiben; "random_off" schaltet die Zufallszüge der
+## Pause), "depth" überschreiben, "race" wertet Umwandeln als Sieg (Bauernrennen); "random_off" schaltet die Zufallszüge der
 ## leichten Stufen ab (nur für Messungen).
 func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	var cfg: Dictionary = level_config(level)
@@ -355,6 +367,7 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 			result.book = true
 			result.ms = (Time.get_ticks_usec() - started) / 1000.0
 			return result
+	race = bool(options.get("race", false))
 	var max_depth := int(options.get("depth", cfg.depth))
 	var budget := int(options.get("budget_ms", cfg.budget))
 	_new_search(work, budget, int(options.get("slice_ms", 10)))
@@ -439,7 +452,10 @@ func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool,
 		# Suchfenster wird um ihn verschoben, damit nur echte Werte (keine
 		# Schranken) mit Rauschen verglichen werden.
 		var bonus := root_bonus[(m & 63) * 64 + ((m >> 6) & 63)] if noise > 0 else 0
-		var a := alpha - bonus
+		# Mattwerte bekommen kein Rauschen; das Fenster bleibt in gültigen Grenzen.
+		if absi(alpha) >= MATE_BOUND:
+			bonus = 0
+		var a := clampi(alpha - bonus, -INF + 1, INF - 1)
 		g.make_move(m)
 		var raw := 0
 		if first:
@@ -472,6 +488,8 @@ func _search(depth: int, alpha: int, beta: int, ply: int, quiesce: bool, allow_n
 	if stopped:
 		return 0
 	var g := rules
+	if race and ply > 0 and (RULES.move_flags(g.last_move()) & RULES.F_PROMO) != 0:
+		return -MATE + ply  # Der Gegner hat das Rennen gerade gewonnen.
 	if g.halfmove >= 100 or _repeated(g):
 		return 0
 	var in_check: bool = g.is_attacked(g.king_sq[g.side], g.side ^ 1)
@@ -483,8 +501,9 @@ func _search(depth: int, alpha: int, beta: int, ply: int, quiesce: bool, allow_n
 		return evaluate(g)
 	var key: int = g.hash
 	var tt_move := -1
-	if tt.has(key):
-		var e: int = tt[key]
+	var slot := key & tt_mask
+	if tt_keys[slot] == key and tt_vals[slot] != 0:
+		var e: int = tt_vals[slot]
 		tt_move = e & 0x1FFFFF
 		var e_depth := (e >> 21) & 63
 		var e_flag := (e >> 27) & 3
@@ -552,7 +571,7 @@ func _search(depth: int, alpha: int, beta: int, ply: int, quiesce: bool, allow_n
 				history[hi] = mini(history[hi] + depth * depth, 50000)
 			break
 	if legal == 0:
-		return -MATE + ply if in_check else 0
+		return -MATE + ply if in_check or race else 0
 	var flag := TT_EXACT
 	if best_score <= orig_alpha:
 		flag = TT_UPPER
@@ -624,9 +643,10 @@ func _has_pieces(g: RefCounted) -> bool:
 
 
 func _tt_move(key: int) -> int:
-	if tt.has(key):
-		return int(tt[key]) & 0x1FFFFF
-	return -1
+	var slot := key & tt_mask
+	if tt_keys.is_empty() or tt_keys[slot] != key or tt_vals[slot] == 0:
+		return -1
+	return int(tt_vals[slot]) & 0x1FFFFF
 
 
 func _tt_store(key: int, depth: int, score: int, flag: int, move: int, ply: int = 0) -> void:
@@ -635,7 +655,9 @@ func _tt_store(key: int, depth: int, score: int, flag: int, move: int, ply: int 
 	elif score <= -MATE_BOUND:
 		score -= ply
 	var mv := move if move >= 0 else 0x1FFFFF
-	tt[key] = mv | (mini(depth, 63) << 21) | (flag << 27) | ((score + 65536) << 29)
+	var slot := key & tt_mask
+	tt_keys[slot] = key
+	tt_vals[slot] = mv | (mini(depth, 63) << 21) | (flag << 27) | ((score + 65536) << 29)
 
 
 ## Sortiert Züge: Tabellenzug, Schlagzüge (wertvolles Opfer, billiger Täter),
