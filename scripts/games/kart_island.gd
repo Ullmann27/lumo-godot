@@ -3763,13 +3763,14 @@ func _pause() -> void:
 		var finish_training := _button("Training abschließen", _finish)
 		finish_training.name = "FinishTraining"
 		modal_column.add_child(finish_training)
-	_append_preferences()
+	# Die Wege aus der Pause stehen direkt unter „Weiterfahren“, die Einstellungen danach.
 	var new_drive := _button("Neue Fahrt auswählen", _leave_race_for_menu)
 	new_drive.name = "PauseNewDrive"
 	modal_column.add_child(new_drive)
 	var abandon := _button("Rennen abbrechen", _abandon, Color("3a4577"))
 	abandon.name = "PauseAbandon"
 	modal_column.add_child(abandon)
+	_append_preferences()
 	MODAL_STYLE.dress(modal, _modal_dp_scale())
 	modal.show()
 	_apply_responsive_layout()
