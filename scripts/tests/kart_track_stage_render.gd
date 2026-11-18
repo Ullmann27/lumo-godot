@@ -25,13 +25,31 @@ const SHOTS := {
 	"jungle_temple": {"f": 0.031, "side": 1.0},
 	"candy_cloud": {"f": 0.025, "side": 1.0},
 	"volcano_night": {"f": 0.412, "side": 1.0},
-	"winter_sprint": {"f": 0.794, "side": 1.0},
+	# Passagen-Strecken zeigen ihre neue Engstelle: Vorplatz und Gletscher-Eisbrücke.
+	"winter_sprint":
+	{
+		"f": 0.0563,
+		"back": 21.0,
+		"travel": 12.0,
+		"h": 3.3,
+		"off": -3.0,
+		"ahead": 22.0,
+		"look_lat": 0.0
+	},
 	"galaxy_ringway": {"f": 0.325, "side": 1.0},
 	"desert_drift": {"f": 0.062, "side": 1.0},
 	"learning_lab": {"f": 0.800, "side": 1.0},
-	# Wasserfall und Sonnentempel liegen von der Fahrbahn aus hinter Bäumen; die
-	# offene Waldkurve bei Abschnitt 5 liest sich am besten (am Probebild gewählt).
-	"jungle_emerald_3600": {"f": 0.350, "side": 1.0},
+	# Dschungelherz: Anfahrt auf die Kronenbrücke (Vorplatz, schmales Deck über der Schlucht).
+	"jungle_emerald_3600":
+	{
+		"f": 0.5275,
+		"back": 36.0,
+		"travel": 7.0,
+		"h": 2.8,
+		"off": -3.5,
+		"ahead": 30.0,
+		"look_lat": 0.0
+	},
 }
 const CLIP_SECONDS := 6.5
 const FPS := 30
