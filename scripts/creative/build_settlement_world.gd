@@ -1592,6 +1592,45 @@ func _look_neighbor() -> void:
 	_camera_update(true)
 
 
+## Kamera über allen drei Nachbarstädten, im Hoch- wie im Querformat (Karte der
+## Nachbarn). Die Ortsschilder haben feste Bildschirmgröße und bleiben lesbar.
+func show_neighbor_towns() -> void:
+	if paused or walking or not model.living_village:
+		return
+	var low := Vector2(INF, INF)
+	var high := Vector2(-INF, -INF)
+	var margin := TERRAIN.NEIGHBOR_HALF + 8.0
+	for id in TERRAIN.NEIGHBOR_SITES:
+		var site: Vector2 = TERRAIN.NEIGHBOR_SITES[id]
+		low = Vector2(minf(low.x, site.x - margin), minf(low.y, site.y - margin))
+		high = Vector2(maxf(high.x, site.x + margin), maxf(high.y, site.y + margin))
+	var middle := (low + high) * 0.5
+	var span := high - low
+	var aspect := get_viewport().get_visible_rect().size.aspect()
+	# Die lange Seite der Nachbarschaft (Nord–Süd) liegt quer im Querformat.
+	var across := span.x
+	var along := span.y
+	orbit = 0.0
+	if aspect > 1.0:
+		orbit = PI * 0.5
+		across = span.y
+		along = span.x
+	tilt = 1.3
+	var half_fov := deg_to_rad(camera.fov * 0.5)
+	# Oben und unten liegen Leisten: nur gut zwei Drittel der Höhe zählen.
+	var need := maxf(along * 0.5 / (tan(half_fov) * 0.68), across * 0.5 / (tan(half_fov) * aspect * 0.92))
+	radius = need
+	focus = Vector3(middle.x, 0, middle.y)
+	focus.y = REGION.ground(focus.x, focus.z)
+	camera.far = maxf(camera.far, radius * 1.8)
+	_rebuild()
+	_camera_update(true)
+	var towns := PackedStringArray()
+	for entry in NEIGHBORS.NEIGHBORS:
+		towns.append(str(entry.town))
+	feedback.text = "Deine Nachbarstädte: %s. Die Schilder zeigen, was sie gerade bauen." % ", ".join(towns)
+
+
 func _pan_village(dx: int, dz: int) -> void:
 	if _transactions_blocked() or not model.living_village:
 		return
@@ -2328,6 +2367,11 @@ func _build_village_ui() -> void:
 	_dock_tool(transaction_buttons[4], "versorgen", true)
 	_dock_tool(transaction_buttons[5], "versorgen", true)
 	_dock_tool(transaction_buttons[2], "nachbarn")
+	var towns_button := VHUD.button("Nachbarstädte zeigen", _from_more.bind(show_neighbor_towns), 190, "teal", 15)
+	towns_button.name = "VillageNeighborTowns"
+	towns_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	_dock_tool(towns_button, "nachbarn")
+	actions.add_child(towns_button)
 	var neighbor_button := VHUD.button("Nachbarn", _from_more.bind(_neighbors_dialog), 110, "teal", 15)
 	neighbor_button.name = "VillageNeighbors"
 	neighbor_button.mouse_filter = Control.MOUSE_FILTER_PASS

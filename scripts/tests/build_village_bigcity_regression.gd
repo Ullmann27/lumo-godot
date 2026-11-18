@@ -48,6 +48,21 @@ func _capture(name: String) -> void:
 		print("[VillageBigCity] Bild ", capture_dir.path_join(name + ".png"), " ", image.get_size())
 
 
+## Alle drei Nachbarstädte mit Namensschild sichtbar (zwischen den Leisten).
+func _check_town_signs(city, label: String) -> void:
+	var view: Rect2 = city.get_viewport().get_visible_rect()
+	var seen := 0
+	for id in ["leo", "ella", "flitz"]:
+		var holder: Node = city.neighbors_view.get_node_or_null("Neighbor_" + id)
+		var sign: Label3D = holder.get_node_or_null("TownSign") if holder != null else null
+		if sign == null or city.camera.is_position_behind(sign.global_position):
+			continue
+		var point: Vector2 = city.camera.unproject_position(sign.global_position)
+		if view.grow(-20.0).has_point(point):
+			seen += 1
+	_check(seen == 3, "%s: alle drei Nachbarstädte mit Schild im Bild (%d)" % [label, seen])
+
+
 ## Verbände-Tafel: nichts seitlich abgeschnitten, Touch-Ziele ≥ 126 px, alles erreichbar.
 func _check_board(city, screen: Vector2i) -> void:
 	var board: Control = city.troop_board
@@ -266,15 +281,21 @@ func _run() -> void:
 	await _frames(8)
 	await _capture("03_grossstadt_nah")
 	# Nachbarstädte mit Baustellen.
-	city.focus = Vector3(150.0, 0, 18.0)
-	city.radius = 170.0
-	city.tilt = 1.15
-	city.orbit = 0.0
-	city._clamp_focus()
-	city._rebuild()
-	city._camera_update(true)
+	city.show_neighbor_towns()
 	await _frames(8)
+	_check_town_signs(city, "Hochformat")
 	await _capture("04_nachbarstaedte_karte")
+	var portrait_size := root.size
+	root.size = Vector2i(portrait_size.y, portrait_size.x)
+	await _frames(4)
+	city._layout()
+	city.show_neighbor_towns()
+	await _frames(8)
+	_check_town_signs(city, "Querformat")
+	await _capture("04b_nachbarstaedte_karte_quer")
+	root.size = portrait_size
+	await _frames(4)
+	city._layout()
 	city.focus = Vector3(190.0, 0, 2.0)
 	city.radius = 62.0
 	city.tilt = 0.6

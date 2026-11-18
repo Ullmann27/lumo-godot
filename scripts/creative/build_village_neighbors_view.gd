@@ -10,6 +10,7 @@ const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VIEW_RANGE := 240.0
+const VHUD_FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 var model
 var facilities: Dictionary = {}
 var walls: Dictionary = {}
@@ -65,15 +66,17 @@ func _build_border(entry: Dictionary) -> void:
 	holder.add_child(label)
 	var sign := Label3D.new()
 	sign.name = "ProjectSign"
-	sign.font_size = 52
-	sign.pixel_size = 0.022
-	sign.outline_size = 16
+	sign.font = VHUD_FONT
+	sign.font_size = 44
+	sign.pixel_size = 0.0006
+	sign.fixed_size = true
+	sign.outline_size = 14
 	sign.modulate = Color("fff0b8")
 	sign.outline_modulate = Color("3a2412")
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	sign.no_depth_test = true
 	sign.render_priority = 2
-	sign.visibility_range_end = 320.0
+	sign.visibility_range_end = 700.0
 	sign.visible = false
 	holder.add_child(sign)
 	project_signs[str(entry.id)] = sign
@@ -85,18 +88,22 @@ func _build_site(entry: Dictionary) -> void:
 	add_child(holder)
 	var center: Vector3 = NEIGHBORS.plot_world(str(entry.id), 4)
 	var sign := Label3D.new()
+	sign.name = "TownSign"
 	sign.text = "%s · %s" % [str(entry.town).to_upper(), str(entry.name)]
-	# Gut lesbar aus der Übersicht: groß, hell, dunkler Rand, nie verdeckt.
+	# Gut lesbar aus jeder Entfernung: feste Bildschirmgröße, hell, dunkler Rand, nie verdeckt.
 	sign.position = center + Vector3(0, 12.0, -9.0)
-	sign.font_size = 72
-	sign.pixel_size = 0.026
-	sign.outline_size = 20
+	sign.font = VHUD_FONT
+	sign.font_size = 64
+	sign.pixel_size = 0.0006
+	sign.fixed_size = true
+	sign.outline_size = 18
 	sign.modulate = Color(str(entry.color)).lightened(0.6)
 	sign.outline_modulate = Color("142629")
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	sign.no_depth_test = true
 	sign.render_priority = 2
-	sign.visibility_range_end = 320.0
+	sign.outline_render_priority = 1
+	sign.visibility_range_end = 700.0
 	holder.add_child(sign)
 	if ART.exists("watchtower"):
 		var banner := ART.instance("watchtower")
@@ -202,7 +209,7 @@ func sync() -> void:
 
 
 ## Schild über der Baustelle: „BURGHEIM BAUT: …“ mit echten Resttagen.
-func _project_sign(entry: Dictionary, town: Dictionary) -> void:
+func _project_sign(entry: Dictionary, _town: Dictionary) -> void:
 	var id := str(entry.id)
 	var sign: Label3D = project_signs.get(id)
 	if sign == null:
@@ -212,16 +219,11 @@ func _project_sign(entry: Dictionary, town: Dictionary) -> void:
 	if project.is_empty():
 		return
 	var days := int(project.days_left)
-	sign.text = "%s BAUT: %s\n%s · noch %s" % [str(entry.town).to_upper(), str(project.title), str(project.why),
-		"1 Tag" if days == 1 else "%d Tage" % days]
-	var at: Vector3 = NEIGHBORS.plot_world(id, 4)
-	if int(project.plot) >= 0:
-		at = NEIGHBORS.plot_world(id, int(project.plot))
-	elif str(project.kind) == "fort":
-		# Südseite: das Ortsschild steht im Norden, die Schilder überdecken sich nie.
-		at = NEIGHBORS.plot_world(id, 4) + Vector3(0, 0, _town_half(town) + 2.0)
-		at.y = TERRAIN.height(at.x, at.z)
-	sign.position = at + Vector3(0, 7.5, 0)
+	sign.text = "baut: %s · noch %s\n%s" % [str(project.title), "1 Tag" if days == 1 else "%d Tage" % days,
+		str(project.why)]
+	# Direkt unter dem Ortsschild: Name und Bau-Hinweis gehören zusammen.
+	sign.position = NEIGHBORS.plot_world(id, 4) + Vector3(0, 12.0, -9.0)
+	sign.offset = Vector2(0, -78)
 
 
 ## Halbe Kantenlänge des bebauten Ortskerns eines Nachbarn.
