@@ -424,6 +424,32 @@ func _footer(columns: int = 1) -> GridContainer:
 	return footer
 
 
+## Knopfzeile unter der Tafel: Hauptknopf groß, Nebenknöpfe nebeneinander.
+## Auf breiten oder flachen Bildschirmen steht alles in einer Zeile.
+func _actions(primary: Array, secondary: Array) -> void:
+	var footer := _footer(1)
+	var one_row := compact or wide
+	var row: HBoxContainer = null
+	if one_row or not secondary.is_empty():
+		row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", int(dp(8)))
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if one_row:
+		footer.add_child(row)
+		for entry: Array in secondary:
+			_button(row, str(entry[1]), "blue", str(entry[0]), entry[2] if entry.size() > 2 else {})
+		_button(row, str(primary[1]), str(primary[3]) if primary.size() > 3 else "gold", str(primary[0]), primary[2] if primary.size() > 2 else {})
+		return
+	_button(footer, str(primary[1]), str(primary[3]) if primary.size() > 3 else "gold", str(primary[0]), primary[2] if primary.size() > 2 else {})
+	if row != null:
+		footer.add_child(row)
+		for entry: Array in secondary:
+			var node := _button(row, str(entry[1]), "blue", str(entry[0]), entry[2] if entry.size() > 2 else {})
+			node.add_theme_font_size_override("font_size", int(roundf(16 * density)))
+			node.custom_minimum_size.x = dp(72)
+			node.clip_text = true
+
+
 func _fit_panel() -> void:
 	if not is_instance_valid(overlay) or not overlay.has_node("Panel"):
 		return
@@ -661,10 +687,8 @@ func show_setup(data: Dictionary) -> void:
 			pick.pressed.connect(_emit("pref", {"key": row[1], "value": int(option[0])}))
 			line.add_child(pick)
 	var has_resume := not str(data.get("resume", "")).is_empty()
-	var foot := _footer(3)
-	_button(foot, "Zurück", "blue", "back")
-	_button(foot, "So geht's", "blue", "intro", {"game": data.game})
-	_button(foot, "Neue Partie" if has_resume else "Los geht's!", "blue" if has_resume else "gold", "start", {"game": data.game})
+	_actions(["start", "Neue Partie" if has_resume else "Los geht's!", {"game": data.game}, "blue" if has_resume else "gold"],
+		[["back", "Zurück"], ["intro", "So geht's", {"game": data.game}]])
 
 
 func show_pause(data: Dictionary) -> void:
@@ -768,10 +792,7 @@ func show_final(data: Dictionary) -> void:
 	reward.add_child(KIT.label(str(data.get("reward", "")), 18, density, KIT.GOLD, true))
 	if not str(data.get("warning", "")).is_empty():
 		_text(column, str(data.warning), 13.0, Color("ffb39a"))
-	var foot := _footer(3)
-	_button(foot, "Spielewelt", "blue", "leave")
-	_button(foot, "Anderes Spiel", "blue", "menu")
-	_button(foot, "Nochmal", "gold", "again")
+	_actions(["again", "Nochmal spielen"], [["leave", "Spielewelt"], ["menu", "Anderes Spiel"]])
 
 
 func show_top(value: bool) -> void:

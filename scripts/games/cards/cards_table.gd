@@ -63,6 +63,8 @@ var time_scale := 1.0
 var reduced_motion := false
 var sound_enabled := true
 var last_result: Dictionary = {}
+## Fester Startwert für Bildbelege und Prüfungen (0 = zufällig).
+var forced_seed := 0
 
 var _ui_scale := 1.0
 var _android_safe_area_enabled := false
@@ -223,11 +225,11 @@ func _measure_hand() -> void:
 		"unit": unit,
 		"scale": card_px * unit / ART.HEIGHT,
 		"centre_x": (insets.position.x + area.x * 0.5 - size.x * 0.5) * unit,
-		"base_y": -half_height + (insets.size.y + 8.0 * _ui_scale + card_px * 0.56) * unit,
+		"base_y": -half_height + (insets.size.y + 8.0 * _ui_scale + card_px * 0.64) * unit,
 		"avail_px": area.x - 20.0 * _ui_scale,
-		"zone_px": card_px * 1.24 + 12.0 * _ui_scale + insets.size.y,
+		"zone_px": card_px * 1.36 + 12.0 * _ui_scale + insets.size.y,
 	}
-	hud.hand_height = card_px * 1.24 + 12.0 * _ui_scale
+	hud.hand_height = card_px * 1.36 + 12.0 * _ui_scale
 
 
 func _process(delta: float) -> void:
@@ -479,6 +481,8 @@ func _start_match(id: String, resume: bool) -> void:
 	else:
 		var prefs: Dictionary = session.prefs()
 		var seed_value := int(Time.get_ticks_usec() & 0x3FFFFFFF) ^ int(Time.get_unix_time_from_system())
+		if forced_seed > 0:
+			seed_value = forced_seed
 		rules = session.new_match(id, {
 			"players": int(prefs.players),
 			"rounds": int(prefs.rounds),
@@ -1022,18 +1026,24 @@ func _slot(node: Node3D, index: int, count: int) -> Transform3D:
 		"hand":
 			var m := _hand_metrics
 			var card_w: float = float(m.card_px) * 0.711
-			var spacing: float = minf(card_w * 0.74, (float(m.avail_px) - card_w) / maxf(1.0, count - 1.0))
+			var step_roll := minf(deg_to_rad(3.2), deg_to_rad(26.0) / maxf(1.0, count))
+			# Gedrehte Randkarten brauchen seitlich etwas mehr Platz.
+			var slack := float(m.card_px) * sin(step_roll * float(count - 1) * 0.5) + card_w * 0.07
+			var spacing: float = minf(card_w * 0.74, (float(m.avail_px) - card_w - slack) / maxf(1.0, count - 1.0))
 			var offset := float(index) - float(count - 1) * 0.5
 			var unit: float = m.unit
-			var roll := -offset * minf(deg_to_rad(3.2), deg_to_rad(26.0) / maxf(1.0, count))
+			var roll := -offset * step_roll
 			var lift := 0.0
 			if _selected.has(card):
 				lift = float(m.card_px) * 0.20
 			elif _legal_cards.has(card) and _can_act():
 				lift = float(m.card_px) * 0.05
 			var drop := absf(offset) * absf(offset) * float(m.card_px) * 0.004
-			var at := Vector3(float(m.centre_x) + offset * spacing * unit, float(m.base_y) + (lift - drop) * unit, -HAND_DEPTH + 0.004 * index)
-			return Transform3D(_hand_basis(roll, float(m.scale) * (1.06 if _selected.has(card) else 1.0)), at)
+			# Jede Karte rückt etwas näher zur Kamera (liegt obenauf) und wird im
+			# gleichen Maß kleiner – auf dem Bildschirm bleibt sie genau am Platz.
+			var near := (HAND_DEPTH - 0.004 * index) / HAND_DEPTH
+			var at := Vector3(float(m.centre_x) + offset * spacing * unit, float(m.base_y) + (lift - drop) * unit, -HAND_DEPTH) * near
+			return Transform3D(_hand_basis(roll, float(m.scale) * near * (1.06 if _selected.has(card) else 1.0)), at)
 		"fan":
 			var seat: Node3D = seats[node.owner_seat]
 			var fan: Transform3D = seat.fan_transform()
