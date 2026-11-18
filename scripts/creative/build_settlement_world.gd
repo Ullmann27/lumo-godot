@@ -2988,8 +2988,9 @@ func _guard_units_dialog() -> void:
 	if not raids.pending.is_empty():
 		_lumo_says(body, GUARDS.advice(str(raids.pending.threat)))
 	_village_caption(body, "Welche Truppe?", 17)
-	var kinds := HBoxContainer.new()
-	kinds.add_theme_constant_override("separation", 6)
+	var kinds := HFlowContainer.new()
+	kinds.add_theme_constant_override("h_separation", 6)
+	kinds.add_theme_constant_override("v_separation", 6)
 	body.add_child(kinds)
 	for kind in GUARDS.TROOPS.KINDS:
 		var picked: bool = kind == guard_kind
@@ -3002,8 +3003,9 @@ func _guard_units_dialog() -> void:
 		var spec: Dictionary = GUARDS.TROOPS.SITES[site]
 		_raid_button(body, "%s bauen: %s" % [str(spec.title), _cost_text(spec.cost)], _guard_action.bind("site", site, 0, dialog), model._affords(model._player, spec.cost))
 	_village_caption(body, "Neue Soldaten stellen sich hier auf:", 17)
-	var posts := HBoxContainer.new()
-	posts.add_theme_constant_override("separation", 6)
+	var posts := HFlowContainer.new()
+	posts.add_theme_constant_override("h_separation", 6)
+	posts.add_theme_constant_override("v_separation", 6)
 	body.add_child(posts)
 	for post in GUARDS.POST_ORDER:
 		var chosen: bool = post == guard_post
@@ -3020,8 +3022,8 @@ func _guard_units_dialog() -> void:
 	for unit in raids.units:
 		var id := int(unit.id)
 		_village_caption(body, "%s · %d %s · %s" % [str(unit.name), int(unit.size), GUARDS.TROOPS.title(str(unit.type), int(unit.size)), str(GUARDS.POSTS[str(unit.post)])], 16)
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 6)
+		var row := HFlowContainer.new()
+		row.add_theme_constant_override("h_separation", 6)
 		body.add_child(row)
 		var next_post: String = GUARDS.POST_ORDER[(GUARDS.POST_ORDER.find(str(unit.post)) + 1) % GUARDS.POST_ORDER.size()]
 		for spec in [

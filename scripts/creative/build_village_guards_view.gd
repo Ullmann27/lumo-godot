@@ -26,7 +26,9 @@ func setup(village_model, village_raids) -> void:
 
 ## Wo ein Standort liegt: Tore vor dem erschlossenen Ortsrand, Mitte am Platz.
 func post_position(post: String) -> Vector3:
-	var edge := REGION.extent_for_plots(int(model._player.plots)) + 3.0
+	# Auf der äußersten Gasse um den erschlossenen Ort (nie im Wald davor).
+	var ring := roundi(REGION.extent_for_plots(int(model._player.plots)) / REGION.SPACING - 0.8)
+	var edge := (float(ring) + 0.5) * REGION.SPACING
 	var center := Vector2(-REGION.TOWN_CENTER + REGION.SPACING * 0.5, REGION.SPACING * 0.5)
 	var spot := center
 	match post:
@@ -66,7 +68,8 @@ func sync() -> void:
 		holder.name = "Post_" + post
 		add_child(holder)
 		var base := post_position(post)
-		var along := Vector3(0, 0, 1) if post in ["nord", "sued", "mitte"] else Vector3(1, 0, 0)
+		# Die Reihe läuft entlang der Gasse, auf der der Verband steht.
+		var along := Vector3(0, 0, 1) if post in ["west", "ost", "mitte"] else Vector3(1, 0, 0)
 		var side := Vector3(1, 0, 0) if along.z != 0.0 else Vector3(0, 0, 1)
 		var yaw := 0.0 if along.z != 0.0 else PI * 0.5
 		# Je Art ein eigener Block hintereinander auf der Straße.

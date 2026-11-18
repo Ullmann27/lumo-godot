@@ -218,7 +218,8 @@ func _project_sign(entry: Dictionary, town: Dictionary) -> void:
 	if int(project.plot) >= 0:
 		at = NEIGHBORS.plot_world(id, int(project.plot))
 	elif str(project.kind) == "fort":
-		at = NEIGHBORS.plot_world(id, 4) + Vector3(0, 0, -_town_half(town) - 2.0)
+		# Südseite: das Ortsschild steht im Norden, die Schilder überdecken sich nie.
+		at = NEIGHBORS.plot_world(id, 4) + Vector3(0, 0, _town_half(town) + 2.0)
 		at.y = TERRAIN.height(at.x, at.z)
 	sign.position = at + Vector3(0, 7.5, 0)
 

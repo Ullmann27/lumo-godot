@@ -228,9 +228,9 @@ func _run() -> void:
 	await _frames(8)
 	await _capture("03_grossstadt_nah")
 	# Nachbarstädte mit Baustellen.
-	city.focus = Vector3(150.0, 0, 0)
+	city.focus = Vector3(150.0, 0, 18.0)
 	city.radius = 170.0
-	city.tilt = 0.9
+	city.tilt = 1.15
 	city.orbit = 0.0
 	city._clamp_focus()
 	city._rebuild()
