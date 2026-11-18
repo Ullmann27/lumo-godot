@@ -49,7 +49,7 @@ func _run() -> void:
 	fx = game.drive_fx
 	_check(is_instance_valid(fx), "race builds the driving-effects node")
 	_check(fx.get_parent() == game.race_root, "effects live in the race root (freed with the race)")
-	_check(fx.get_child_count() == 4, "three particle/mark batches + one speed-line ring")
+	_check(fx.get_child_count() == 7, "3 particle/mark batches, speed lines, flames, impact light, photo finish")
 	_check(fx.profile == "high", "effects follow the race quality profile")
 	_check(fx.owns_engine_sound(), "layered engine replaces the single sine")
 	await _cruise_is_quiet()
@@ -60,6 +60,7 @@ func _run() -> void:
 	await _launch_and_landing()
 	await _rivals()
 	await _extras()
+	await _round_two()
 	await _pause_freezes()
 	await _budgets()
 	_surfaces()
@@ -296,6 +297,116 @@ func _rivals() -> void:
 	_check(fx.shake == 0.0, "a rival's hit does not jolt the player camera")
 
 
+func _round_two() -> void:
+	# (1) Brake marks are one continuous band: each piece starts on the last piece's end edge.
+	_clean(24.0)
+	_tick(3)
+	game.brake_visual_amount = 1.0
+	for _i in range(30):
+		game.speed = maxf(6.0, game.speed - 0.3)
+		game.steering = 0.4
+		_tick(1)
+	var marks = fx.marks
+	var joined := 0
+	var pieces := 0
+	for slot in range(marks.segments_total):
+		var end: Vector3 = marks.piece_end[slot]
+		for other in range(slot + 1, mini(slot + 4, marks.segments_total)):
+			if marks.piece_start[other].distance_to(end) < 0.0001:
+				pieces += 1
+				if marks.piece_half_start[other].distance_to(marks.piece_half_end[slot]) < 0.0001:
+					joined += 1
+				break
+	_check(pieces > 20 and joined == pieces, "brake band pieces share their joints (%d of %d)" % [joined, pieces])
+	# (2) Brake smoke grows with speed.
+	_clean(24.0)
+	game.brake_visual_amount = 1.0
+	_tick(30)
+	var fast_smoke: int = int(fx.counts.get("brake_smoke", 0))
+	_clean(8.0)
+	game.brake_visual_amount = 1.0
+	_tick(30, 8.0 * STEP)
+	var slow_smoke: int = int(fx.counts.get("brake_smoke", 0))
+	_check(fast_smoke > slow_smoke * 2 and fast_smoke > 60, "full brake at speed billows (%d vs %d)" % [fast_smoke, slow_smoke])
+	# (3) Loose ground: a real plume behind the cruising kart.
+	_clean(22.0)
+	fx.style = STYLES.for_track("desert_drift")
+	_tick(60)
+	_check(int(fx.counts.get("surface_trail", 0)) > 80, "sand plume (%d puffs/s)" % int(fx.counts.get("surface_trail", 0)))
+	fx.style = STYLES.for_track("sonnenhafen")
+	# (4) Turbo flames: two flame bodies + road glow, Mach rings only at ignition, light on HIGH.
+	_clean(22.0)
+	game.boost_time = 2.0
+	_tick(1)
+	_check(fx.flames.used >= 3, "turbo draws two flames and the road glow (%d)" % fx.flames.used)
+	_check(fx.flames.data[0].g > 0.9, "Mach rings at ignition")
+	_check(fx.flames.light.visible, "HIGH: turbo lights road and tail")
+	_tick(45)
+	_check(fx.flames.data[0].g == 0.0, "Mach rings fade after ignition")
+	game.boost_time = 0.0
+	_tick(2)
+	_check(int(fx.counts.get("afterglow", 0)) > 0 and fx.flames.used == 2, "pipes glow after the turbo")
+	_tick(110)
+	_check(fx.flames.used == 0 and not fx.flames.light.visible, "afterglow cools down completely")
+	game.graphics_profile = "medium"
+	_clean(22.0)
+	game.boost_time = 2.0
+	_tick(2)
+	_check(not fx.flames.light.visible and fx.flames.used >= 3, "MEDIUM: glow patch instead of a light")
+	game.graphics_profile = "high"
+	_clean(22.0)
+	_tick(1)
+	# (5) Rail impact: burst, flash light (HIGH), paint flakes, hot scratch, bouncing sparks.
+	var road: Dictionary = game.world.sample_road(game.player.position, along)
+	game.lane = game._wall_lateral_at(along) + 0.4
+	_place(along, game.lane)
+	game.physical_velocity = -(road.basis as Basis).z * 22.0 + (road.basis as Basis).x * 12.0
+	game._collide_with_rail(road)
+	game._update_vehicles(STEP)
+	_check(int(fx.counts.get("rail_burst", 0)) >= 60, "hard hit: big spark fan")
+	_check(int(fx.counts.get("paint_flakes", 0)) > 5, "hard hit: paint flakes in kart colour")
+	_check(fx.flash_light.visible, "hard hit: short light flash on HIGH")
+	_tick(20)
+	_check(not fx.flash_light.visible, "the flash is short")
+	_check(fx.sparks.bounced_total > 60, "rail sparks carry a ground height and bounce")
+	game.reduced_motion = true
+	_clean(22.0)
+	game.reduced_motion = true
+	_tick(1)
+	road = game.world.sample_road(game.player.position, along)
+	game.lane = game._wall_lateral_at(along) + 0.4
+	_place(along, game.lane)
+	game.physical_velocity = -(road.basis as Basis).z * 22.0 + (road.basis as Basis).x * 12.0
+	game._collide_with_rail(road)
+	game._update_vehicles(STEP)
+	_check(not fx.flash_light.visible, "reduced motion: no light flash")
+	game.reduced_motion = false
+	# (6) Rivals: same effects, strict budget.
+	for profile in ["high", "low"]:
+		game.graphics_profile = profile
+		_clean(20.0)
+		fx.style = STYLES.for_track("desert_drift")
+		var rival = game.opponents[0]
+		for _i in range(30):
+			_tick(1)
+			rival.global_transform = game.player.global_transform.translated(game.player.global_basis.x * 3.0)
+			rival.set_motion(20.0, 0.8, true, true)
+			rival.set_drift_spark_tier(1)
+			rival.motion_brake = 0.0
+		var lively: int = int(fx.counts.get("rival_drift_sparks", 0)) + int(fx.counts.get("rival_dust", 0))
+		if profile == "high":
+			_check(int(fx.counts.get("rival_drift_sparks", 0)) > 0, "HIGH: a drifting rival sprays sparks")
+			_check(int(fx.counts.get("rival_dust", 0)) > 0, "HIGH: a rival raises dust on sand")
+			_check(int(fx.counts.get("rival_marks", 0)) > 0, "HIGH: a rival leaves drift marks")
+			_check(int(fx.counts.get("flame", 0)) > 0, "HIGH: a boosting rival shows flames")
+		else:
+			_check(lively == 0, "LOW: rivals get no extra particles (budget)")
+		rival.set_motion(0.0, 0.0, false, false)
+		fx.style = STYLES.for_track("sonnenhafen")
+	game.graphics_profile = "high"
+	_clean()
+
+
 func _extras() -> void:
 	# Lift off the gas at speed: one overrun pop from the exhaust, then quiet.
 	_clean(18.0)
@@ -382,7 +493,8 @@ func _budgets() -> void:
 		print("[KartDriveFx] %s worst case: %d sparks, %d soft, %d marks, %d draw batches" % [
 			profile, state.sparks_live, state.soft_live, state.marks_live, state.draw_batches
 		])
-		_check(state.draw_batches <= 4, "%s at most four effect draw batches" % profile)
+		_check(state.draw_batches <= 5, "%s at most five effect draw batches" % profile)
+		_check(state.lights <= (2 if profile == "high" else 0), "%s light budget" % profile)
 	game.graphics_profile = "high"
 	_clean()
 
