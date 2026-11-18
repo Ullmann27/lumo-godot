@@ -106,7 +106,9 @@ func _init() -> void:
 		label.add_theme_color_override("font_outline_color", Color("020b20"))
 		label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.55))
 		info_panel.add_child(label)
-	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	# Lange Namen („Candy Cloud Circuit“) brechen um statt abgeschnitten zu werden.
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_label.max_lines_visible = 2
 	goal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	map_panel = PanelContainer.new()
 	map_panel.name = "TrackMap"
@@ -463,7 +465,7 @@ func layout(
 	)
 	# Unten links: Name und Ziel in der ruhigen, abgedunkelten Ecke.
 	var pad := 18.0
-	var info_width := minf(stage_rect.size.x - pad * 2 - 150.0, 430.0)
+	var info_width := minf(stage_rect.size.x - pad * 2, 560.0)
 	world_label.add_theme_font_size_override("font_size", roundi(14 * ui_scale))
 	name_label.add_theme_font_size_override(
 		"font_size", roundi((34 if stage_rect.size.x > 480 else 30) * ui_scale)
@@ -502,17 +504,14 @@ func layout(
 	map_panel.size = map_size * ui_scale
 	map_view.custom_minimum_size = Vector2.ZERO
 	map_view.queue_redraw()
-	# Unten rechts: zur Rundkurs-Übersicht (48 dp Touchfläche).
+	# Oben links: zur Rundkurs-Übersicht (48 dp Touchfläche), fern von Name und Karte.
 	UI.premium_button(overview_button, ACCENT)
 	overview_button.add_theme_font_size_override("font_size", roundi(15 * ui_scale))
 	overview_button.custom_minimum_size = Vector2(140, 48) * ui_scale
 	overview_button.reset_size()
 	var button_size := overview_button.get_combined_minimum_size() / ui_scale
-	overview_button.position = (stage_rect.end - Vector2(14.0, 14.0) - button_size) * ui_scale
+	overview_button.position = (stage_rect.position + Vector2(14.0, 14.0)) * ui_scale
 	overview_button.size = button_size * ui_scale
-	if overview:
-		# In der Übersicht steht der Knopf über dem freien 3D-Bereich.
-		overview_button.position.y = (stage_rect.position.y + 14.0) * ui_scale
 	return cards_rect
 
 
@@ -532,7 +531,9 @@ func layout_cards(cards_rect: Rect2, ui_scale: float) -> void:
 		var height := cards_rect.size.y - 6.0
 		card_size = Vector2(clampf((height - 80.0) * 16.0 / 9.0 + 16.0, 200.0, 300.0), height)
 	else:
-		card_size = Vector2(0, clampf(cards_rect.size.y / 4.6, 86.0, 112.0))
+		# Volle Breite abzüglich Bildlaufleiste: die Karte braucht eine echte Breite,
+		# sonst bekommt ihr Bild links keinen Platz.
+		card_size = Vector2(cards_rect.size.x - 14.0, clampf(cards_rect.size.y / 4.6, 86.0, 112.0))
 	for child in menu.choices.get_children():
 		if child is CARD:
 			child.set_tall(_portrait)

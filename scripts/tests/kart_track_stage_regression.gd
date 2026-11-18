@@ -262,6 +262,9 @@ func _run() -> void:
 				_text_fits(stage.card_for(id).title_label),
 				"%s: %s Kartenname lesbar" % [format[1], id]
 			)
+			_check(_text_fits(stage.name_label), "%s: %s Bühnenname lesbar" % [format[1], id])
+			var frame: Control = stage.card_for(id).picture_frame
+			_check(_px(frame).size.x >= 60.0 * DENSITY, "%s: %s Kartenbild sichtbar" % [format[1], id])
 		var picture := _px(stage.stage_frame)
 		var cards := _px(garage.choices.get_parent())
 		_check(not picture.intersects(cards), "%s: Bühne und Karten überlappen nicht" % format[1])

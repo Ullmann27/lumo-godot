@@ -138,7 +138,9 @@ func _contact_sheet() -> void:
 				await process_frame
 			await RenderingServer.frame_post_draw
 			var image := root.get_texture().get_image()
-			var area: Rect2i = Rect2i(stage.picture_rect())
+			var scale := Vector2(root.size) / root.get_visible_rect().size
+			var rect: Rect2 = stage.picture_rect()
+			var area := Rect2i(Rect2(rect.position * scale, rect.size * scale))
 			frames.append(image.get_region(area))
 			print(
 				(
