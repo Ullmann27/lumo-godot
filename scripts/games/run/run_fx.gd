@@ -68,15 +68,15 @@ func _emitter(kind: String) -> CPUParticles3D:
 	emitter.explosiveness = 0.92
 	emitter.local_coords = false
 	emitter.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var quad := QuadMesh.new()
+	# The quad is built once its size is known (see the end of this function): it
+	# carries vertex colours, because a plain QuadMesh drew single particles black.
+	var quad_size := Vector2.ONE
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	material.vertex_color_use_as_albedo = true
 	material.albedo_texture = _soft_dot()
-	quad.material = material
-	emitter.mesh = quad
 	var fade := Gradient.new()
 	fade.set_color(0, Color(1, 1, 1, 0.9))
 	fade.set_color(1, Color(1, 1, 1, 0.0))
@@ -88,7 +88,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 	var scale: int = 2 if low else 1
 	match kind:
 		"dust":
-			quad.size = Vector2(0.7, 0.7)
+			quad_size = Vector2(0.7, 0.7)
 			emitter.amount = 10 / scale
 			emitter.lifetime = 0.5
 			emitter.direction = Vector3.UP
@@ -98,7 +98,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.initial_velocity_max = 2.6
 			emitter.color = Color(0.93, 0.89, 0.8, 0.75)
 		"sparkle":
-			quad.size = Vector2(0.34, 0.34)
+			quad_size = Vector2(0.34, 0.34)
 			emitter.amount = 8 / scale
 			emitter.lifetime = 0.42
 			emitter.direction = Vector3.UP
@@ -108,7 +108,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.initial_velocity_max = 4.2
 			emitter.color = Color("fff0a0")
 		"splash":
-			quad.size = Vector2(0.3, 0.3)
+			quad_size = Vector2(0.3, 0.3)
 			emitter.amount = 22 / scale
 			emitter.lifetime = 0.7
 			emitter.direction = Vector3.UP
@@ -119,7 +119,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.color = Color("bff3ff")
 		"leaves":
 			# A whirl of small leaves kicked up by a jump or a dash.
-			quad.size = Vector2(0.22, 0.16)
+			quad_size = Vector2(0.22, 0.16)
 			emitter.amount = 12 / scale
 			emitter.lifetime = 0.9
 			emitter.direction = Vector3.UP
@@ -131,7 +131,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.angular_velocity_max = 360.0
 			emitter.color = Color("7fc84a")
 		_:
-			quad.size = Vector2(0.26, 0.26)
+			quad_size = Vector2(0.26, 0.26)
 			emitter.amount = 40 / scale
 			emitter.lifetime = 1.3
 			emitter.direction = Vector3.UP
@@ -142,4 +142,7 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
 			emitter.emission_sphere_radius = 0.6
 			emitter.color = Color("ffe27a")
+	var quad: ArrayMesh = preload("res://scripts/systems/particle_quad.gd").make(quad_size)
+	quad.surface_set_material(0, material)
+	emitter.mesh = quad
 	return emitter
