@@ -1,0 +1,885 @@
+{
+ "models": {
+  "arch": {
+   "file": "arch.glb",
+   "triangles": 3160,
+   "vertices": 1694,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 222496,
+   "size_m": [
+    7.0,
+    6.11,
+    1.25
+   ],
+   "sha256": "f13c585d46dc4c13f712941c15301304991c8584e53fdd17fb971a26a9d14b80"
+  },
+  "barrel": {
+   "file": "barrel.glb",
+   "triangles": 1368,
+   "vertices": 910,
+   "materials": [
+    "wood",
+    "iron",
+    "paint_dark"
+   ],
+   "bytes": 68612,
+   "size_m": [
+    1.54,
+    1.54,
+    1.52
+   ],
+   "sha256": "6375555e6d80f3cea3e5be64bb054da56e99aa030e7225c2a9d2349e96bb874d"
+  },
+  "beetle": {
+   "file": "beetle.glb",
+   "triangles": 3310,
+   "vertices": 1794,
+   "materials": [
+    "paint_beetle",
+    "paint_dark",
+    "paint_eye",
+    "paint_pupil"
+   ],
+   "bytes": 135588,
+   "size_m": [
+    1.48,
+    0.94,
+    1.65
+   ],
+   "sha256": "c0b64082c8662b328f9caee481b2a84d038f1211c054a1a9d6d8382147598108"
+  },
+  "bigleaf_a": {
+   "file": "bigleaf_a.glb",
+   "triangles": 276,
+   "vertices": 234,
+   "materials": [
+    "stem",
+    "leaves"
+   ],
+   "bytes": 15924,
+   "size_m": [
+    2.76,
+    1.54,
+    3.25
+   ],
+   "sha256": "a87b7332d1687db123f6d521e2aa33b262dbe52f0877f26b61fab5d98eb86e16"
+  },
+  "bigleaf_b": {
+   "file": "bigleaf_b.glb",
+   "triangles": 230,
+   "vertices": 195,
+   "materials": [
+    "stem",
+    "leaves"
+   ],
+   "bytes": 13768,
+   "size_m": [
+    2.56,
+    1.14,
+    2.8
+   ],
+   "sha256": "84b0a0da31e42cbef74a68c252c165c14c5a3b59618822ec10c7970cdfde3087"
+  },
+  "block": {
+   "file": "block.glb",
+   "triangles": 108,
+   "vertices": 56,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 9476,
+   "size_m": [
+    1.03,
+    1.01,
+    1.03
+   ],
+   "sha256": "3396d50e86bbfdb66557374ad80276940bb9fda5598aa90a1be7c46598fef7e7"
+  },
+  "boulder": {
+   "file": "boulder.glb",
+   "triangles": 2000,
+   "vertices": 1134,
+   "materials": [
+    "stone",
+    "paint_gold"
+   ],
+   "bytes": 75692,
+   "size_m": [
+    2.03,
+    2.02,
+    2.03
+   ],
+   "sha256": "3595f4947e4a1d3992a46e153d5d9e574d8deec1d0765b26f69386d46851faa0"
+  },
+  "bush": {
+   "file": "bush.glb",
+   "triangles": 336,
+   "vertices": 350,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 21976,
+   "size_m": [
+    2.45,
+    2.13,
+    3.1
+   ],
+   "sha256": "1f7ed32f35b39faf0870540165197c79d83f9c562ae5e4bd1ab1415acc1410b3"
+  },
+  "canopy": {
+   "file": "canopy.glb",
+   "triangles": 568,
+   "vertices": 600,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 35372,
+   "size_m": [
+    6.14,
+    3.49,
+    6.78
+   ],
+   "sha256": "96db56bc50618f87bac97153ab6d438caaeae090a37bf1c87fb5b77d38619c0b"
+  },
+  "cart": {
+   "file": "cart.glb",
+   "triangles": 3548,
+   "vertices": 1992,
+   "materials": [
+    "wood",
+    "iron"
+   ],
+   "bytes": 186084,
+   "size_m": [
+    1.84,
+    1.37,
+    2.34
+   ],
+   "sha256": "7987161085dc260e2ebe62513b79bf7791514b3af9b3a48af447332f097150ae"
+  },
+  "cliff": {
+   "file": "cliff.glb",
+   "triangles": 1280,
+   "vertices": 642,
+   "materials": [
+    "stone"
+   ],
+   "bytes": 73004,
+   "size_m": [
+    2.02,
+    1.32,
+    2.11
+   ],
+   "sha256": "27f6717576dba6911e1a45dc945a91350d9f44bb7b15f7a2d5f219319227801d"
+  },
+  "coconut": {
+   "file": "coconut.glb",
+   "triangles": 1710,
+   "vertices": 896,
+   "materials": [
+    "coconut_husk",
+    "paint_eye",
+    "paint_pupil",
+    "paint_dark",
+    "leaves"
+   ],
+   "bytes": 74624,
+   "size_m": [
+    0.9,
+    1.11,
+    0.92
+   ],
+   "sha256": "8c846b6631ba2d92e4fcd4f69bba148e92fe11d4a9dd4aed9c3c8402e4fe2911"
+  },
+  "crab": {
+   "file": "crab.glb",
+   "triangles": 2520,
+   "vertices": 1450,
+   "materials": [
+    "paint_crab",
+    "paint_crab_belly",
+    "paint_eye",
+    "paint_pupil",
+    "paint_dark"
+   ],
+   "bytes": 115980,
+   "size_m": [
+    2.22,
+    1.11,
+    1.24
+   ],
+   "sha256": "861764248f1f5978261ab34830391ed7fbb353ef3522317542651fe47134f9ca"
+  },
+  "crate": {
+   "file": "crate.glb",
+   "triangles": 540,
+   "vertices": 280,
+   "materials": [
+    "wood"
+   ],
+   "bytes": 28000,
+   "size_m": [
+    1.04,
+    1.0,
+    1.04
+   ],
+   "sha256": "3b54c53288f8b72d03819c523065488b5404694d6622c0be0274ada06d3617ca"
+  },
+  "crystal_a": {
+   "file": "crystal_a.glb",
+   "triangles": 168,
+   "vertices": 196,
+   "materials": [
+    "glow_crystal"
+   ],
+   "bytes": 21208,
+   "size_m": [
+    0.85,
+    1.39,
+    0.8
+   ],
+   "sha256": "1fa15c189b8fb648d541051c7b1df8cecdae2b43bee2c56193aa17285509cf4d"
+  },
+  "crystal_b": {
+   "file": "crystal_b.glb",
+   "triangles": 96,
+   "vertices": 112,
+   "materials": [
+    "glow_crystal"
+   ],
+   "bytes": 12856,
+   "size_m": [
+    0.88,
+    1.49,
+    0.77
+   ],
+   "sha256": "7edeb6888342a2d06eba69f9dba694bd275e8db610fd24144a53957583a73ef2"
+  },
+  "fern_a": {
+   "file": "fern_a.glb",
+   "triangles": 144,
+   "vertices": 135,
+   "materials": [
+    "leaves"
+   ],
+   "bytes": 9164,
+   "size_m": [
+    2.45,
+    0.56,
+    2.58
+   ],
+   "sha256": "4498b5da73aa89f4bdc23adac0173cf8de70e89afb5f00e82b3d244ca4a1d612"
+  },
+  "fern_b": {
+   "file": "fern_b.glb",
+   "triangles": 112,
+   "vertices": 105,
+   "materials": [
+    "leaves"
+   ],
+   "bytes": 7524,
+   "size_m": [
+    2.52,
+    0.79,
+    2.64
+   ],
+   "sha256": "5f226a88f0e17ca2bedf4ed2b8ffa6f4e70d8f796e309e5ce1525b580f7426bf"
+  },
+  "flower": {
+   "file": "flower.glb",
+   "triangles": 116,
+   "vertices": 138,
+   "materials": [
+    "leaves",
+    "stem",
+    "petal"
+   ],
+   "bytes": 11660,
+   "size_m": [
+    0.92,
+    0.65,
+    0.92
+   ],
+   "sha256": "005425b4daff7db83257fd42f90d2834e413d0e9937f400aa52d335e99c6e6b2"
+  },
+  "gate": {
+   "file": "gate.glb",
+   "triangles": 1192,
+   "vertices": 651,
+   "materials": [
+    "sandstone",
+    "paint_gold",
+    "iron"
+   ],
+   "bytes": 64972,
+   "size_m": [
+    4.0,
+    4.4,
+    0.65
+   ],
+   "sha256": "f6fd0b14f3ff4ef20adfe75b2cb88e6f0e79a1fef135ff9151a1a42231a69a49"
+  },
+  "grass": {
+   "file": "grass.glb",
+   "triangles": 96,
+   "vertices": 128,
+   "materials": [
+    "grass"
+   ],
+   "bytes": 11328,
+   "size_m": [
+    1.09,
+    0.83,
+    0.94
+   ],
+   "sha256": "9c16055667cf38780d44ff4e2e7a9ac9fd3faa277d6888811178772b5c437508"
+  },
+  "groundcover": {
+   "file": "groundcover.glb",
+   "triangles": 48,
+   "vertices": 72,
+   "materials": [
+    "leaves"
+   ],
+   "bytes": 5560,
+   "size_m": [
+    2.46,
+    0.35,
+    2.06
+   ],
+   "sha256": "846cba94d7336163e287686c1b61628ba2ba0bb3b1330f9d4f30483ee4062eee"
+  },
+  "lantern": {
+   "file": "lantern.glb",
+   "triangles": 524,
+   "vertices": 372,
+   "materials": [
+    "wood",
+    "iron",
+    "glow_lantern"
+   ],
+   "bytes": 47368,
+   "size_m": [
+    0.54,
+    1.12,
+    0.26
+   ],
+   "sha256": "ac6c6e7d8fc44a1dfaa60511aed3066549f7c5fff48212b61adbe800cc700350"
+  },
+  "liana_a": {
+   "file": "liana_a.glb",
+   "triangles": 192,
+   "vertices": 194,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 13628,
+   "size_m": [
+    1.56,
+    5.27,
+    1.25
+   ],
+   "sha256": "97bc8987ed9e391c578b90cbb28f7a45f15e84e16329b0be204741b5b9d57d59"
+  },
+  "liana_b": {
+   "file": "liana_b.glb",
+   "triangles": 192,
+   "vertices": 194,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 13612,
+   "size_m": [
+    1.39,
+    7.36,
+    1.41
+   ],
+   "sha256": "2917bc7f0247e7d1cb30abd9fb38e6f0d77adbe8ef3b05cfddaad3b6461e5d41"
+  },
+  "liana_c": {
+   "file": "liana_c.glb",
+   "triangles": 192,
+   "vertices": 194,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 13628,
+   "size_m": [
+    1.59,
+    9.32,
+    1.29
+   ],
+   "sha256": "3cb201efe5d4a81bc8eaf609a3cf74ea37c79a7761679ea12ac4064b1c166229"
+  },
+  "log": {
+   "file": "log.glb",
+   "triangles": 318,
+   "vertices": 276,
+   "materials": [
+    "bark",
+    "wood"
+   ],
+   "bytes": 19792,
+   "size_m": [
+    4.06,
+    0.86,
+    0.71
+   ],
+   "sha256": "2e827a1082903deb9039437c1a20f2f4b6051dbd5d9225e145d8b0a9d5deb2c2"
+  },
+  "mushroom": {
+   "file": "mushroom.glb",
+   "triangles": 1418,
+   "vertices": 832,
+   "materials": [
+    "paint_stem_cream",
+    "paint_spot",
+    "paint_cap"
+   ],
+   "bytes": 68844,
+   "size_m": [
+    2.36,
+    1.41,
+    2.34
+   ],
+   "sha256": "596893cb8ba8279fc95df1b37854ad9c13db2966e47fb3b2acdf3a06c3a8f6c9"
+  },
+  "palm_a": {
+   "file": "palm_a.glb",
+   "triangles": 980,
+   "vertices": 672,
+   "materials": [
+    "bark",
+    "leaves",
+    "coconut_husk"
+   ],
+   "bytes": 46972,
+   "size_m": [
+    8.64,
+    12.39,
+    8.07
+   ],
+   "sha256": "4c501cc1b1ba8c48fb24e084d5bf7f654c8410e76e2c4d19f998d3443e123095"
+  },
+  "palm_a_lod": {
+   "file": "palm_a_lod.glb",
+   "triangles": 132,
+   "vertices": 117,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 9556,
+   "size_m": [
+    7.94,
+    11.96,
+    8.04
+   ],
+   "sha256": "7a700ea93ab3a001690f761eb85a9ff9f20f4ee09141fc6e7bc2c9839999a169"
+  },
+  "palm_b": {
+   "file": "palm_b.glb",
+   "triangles": 980,
+   "vertices": 672,
+   "materials": [
+    "bark",
+    "leaves",
+    "coconut_husk"
+   ],
+   "bytes": 46972,
+   "size_m": [
+    9.95,
+    15.37,
+    10.61
+   ],
+   "sha256": "c9d749c14fc76b70abbaf57d32b41c3fc449ad4af50b1c40b4bf39d88b5ffe5f"
+  },
+  "palm_b_lod": {
+   "file": "palm_b_lod.glb",
+   "triangles": 132,
+   "vertices": 117,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 9560,
+   "size_m": [
+    9.88,
+    14.75,
+    10.45
+   ],
+   "sha256": "41c13fb8cdda6e83bf8dcb596ef2d4e118f14ec0774759f5486334c799f8c479"
+  },
+  "pillar": {
+   "file": "pillar.glb",
+   "triangles": 1676,
+   "vertices": 980,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 114764,
+   "size_m": [
+    1.62,
+    6.4,
+    1.64
+   ],
+   "sha256": "3afc463bdaf2b22c79bf5011bebcdf46e503bb61053bf5282ec5484d9fbdfd11"
+  },
+  "pillar_broken": {
+   "file": "pillar_broken.glb",
+   "triangles": 1404,
+   "vertices": 840,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 91544,
+   "size_m": [
+    2.33,
+    4.31,
+    1.77
+   ],
+   "sha256": "ad0c09163d4b4a43494736cecf84b32ec601001e11fb8d8010dbef05b0affb91"
+  },
+  "plank": {
+   "file": "plank.glb",
+   "triangles": 108,
+   "vertices": 56,
+   "materials": [
+    "wood"
+   ],
+   "bytes": 6904,
+   "size_m": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sha256": "3ba65d3788e3800dd5400f34ee09e330c7df12a2cf5f6b10313d001321ebe861"
+  },
+  "post": {
+   "file": "post.glb",
+   "triangles": 100,
+   "vertices": 77,
+   "materials": [
+    "wood"
+   ],
+   "bytes": 6932,
+   "size_m": [
+    1.0,
+    1.0,
+    0.95
+   ],
+   "sha256": "075877a383e739c311bd303576f5d51cf5b0de6e021b36fe4e1491fa6568f742"
+  },
+  "rail": {
+   "file": "rail.glb",
+   "triangles": 132,
+   "vertices": 72,
+   "materials": [
+    "iron"
+   ],
+   "bytes": 16292,
+   "size_m": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sha256": "2cf8a8003acf3d898faf4a9b730b55a5c8f011143d62093ba5a6d0624ce9a060"
+  },
+  "rock_a": {
+   "file": "rock_a.glb",
+   "triangles": 320,
+   "vertices": 162,
+   "materials": [
+    "stone"
+   ],
+   "bytes": 15244,
+   "size_m": [
+    2.79,
+    1.17,
+    2.33
+   ],
+   "sha256": "12752255ffc0b3a93ebbbac24ba16c9a1982412707338701504d03501a62f7dc"
+  },
+  "rock_b": {
+   "file": "rock_b.glb",
+   "triangles": 320,
+   "vertices": 162,
+   "materials": [
+    "stone"
+   ],
+   "bytes": 15488,
+   "size_m": [
+    2.96,
+    0.76,
+    2.21
+   ],
+   "sha256": "a43a53bb1317517acab3e8e6bc8111fa6679c2158a7a7a6c642bda01a38f1f32"
+  },
+  "rope": {
+   "file": "rope.glb",
+   "triangles": 160,
+   "vertices": 110,
+   "materials": [
+    "rope"
+   ],
+   "bytes": 8060,
+   "size_m": [
+    0.92,
+    0.96,
+    1.42
+   ],
+   "sha256": "6cf2b43795a67f7e06cc54a9da94b4d6a6c8da1586646764de41f50990af40ee"
+  },
+  "rubble": {
+   "file": "rubble.glb",
+   "triangles": 816,
+   "vertices": 428,
+   "materials": [
+    "sandstone",
+    "stone"
+   ],
+   "bytes": 65640,
+   "size_m": [
+    2.14,
+    1.39,
+    1.54
+   ],
+   "sha256": "0bdaa67977c8e7483437460e796ba4102f76f2b033f77a4575586f4c3bd9c605"
+  },
+  "stairs": {
+   "file": "stairs.glb",
+   "triangles": 1944,
+   "vertices": 1008,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 136440,
+   "size_m": [
+    3.0,
+    1.52,
+    2.43
+   ],
+   "sha256": "ba850700a60934fa9d46e27b73930aa9fea69df1e895d46891eae9679a027f92"
+  },
+  "statue": {
+   "file": "statue.glb",
+   "triangles": 2804,
+   "vertices": 1501,
+   "materials": [
+    "sandstone",
+    "moss"
+   ],
+   "bytes": 125480,
+   "size_m": [
+    2.78,
+    3.84,
+    2.06
+   ],
+   "sha256": "0b760badeed24369fa5e1f350fbe90a8df3035ce9ef4dae4c69e408ae43de6a4"
+  },
+  "torch": {
+   "file": "torch.glb",
+   "triangles": 404,
+   "vertices": 286,
+   "materials": [
+    "wood",
+    "rope",
+    "iron",
+    "paint_ember"
+   ],
+   "bytes": 26044,
+   "size_m": [
+    0.48,
+    2.1,
+    0.48
+   ],
+   "sha256": "ebc753e4f5891ca0b9a6367af55fa7be68047a399f6167a422feea7d2768cf3b"
+  },
+  "treasure": {
+   "file": "treasure.glb",
+   "triangles": 2432,
+   "vertices": 2116,
+   "materials": [
+    "paint_gold",
+    "glow_crystal"
+   ],
+   "bytes": 176948,
+   "size_m": [
+    1.78,
+    0.42,
+    1.89
+   ],
+   "sha256": "7ec8eb007f7b8a9f73abc6b8a9157c740b17b6f44d80438d760a215d08c1eead"
+  },
+  "tree_broad": {
+   "file": "tree_broad.glb",
+   "triangles": 6664,
+   "vertices": 6491,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 354764,
+   "size_m": [
+    12.26,
+    18.86,
+    14.04
+   ],
+   "sha256": "498742a501abda68e9f842fdacc04834f52407d9fba5a31321f1810754273fca"
+  },
+  "tree_broad_lod": {
+   "file": "tree_broad_lod.glb",
+   "triangles": 1002,
+   "vertices": 1242,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 68816,
+   "size_m": [
+    12.64,
+    19.04,
+    15.47
+   ],
+   "sha256": "35fdd4e40d0f74c9c0bd5e923e86acd1deff776fa081c8f3634354652a1d1592"
+  },
+  "tree_fig": {
+   "file": "tree_fig.glb",
+   "triangles": 7376,
+   "vertices": 6691,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 368632,
+   "size_m": [
+    16.46,
+    21.07,
+    13.99
+   ],
+   "sha256": "6f5e8bc3c35cfa3210ec25492594bc3c662ff918aaf129339d3d0bfdf8b25454"
+  },
+  "tree_fig_lod": {
+   "file": "tree_fig_lod.glb",
+   "triangles": 1310,
+   "vertices": 1542,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 85060,
+   "size_m": [
+    17.46,
+    21.51,
+    15.76
+   ],
+   "sha256": "a3dcbe5bef2fb959b079f01d53cc9b2a63686852e64232ce8984e610e3572b49"
+  },
+  "tree_kapok": {
+   "file": "tree_kapok.glb",
+   "triangles": 7440,
+   "vertices": 7075,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 387452,
+   "size_m": [
+    22.53,
+    32.28,
+    23.78
+   ],
+   "sha256": "0e416283cd082679b970787ce442ed0f932d699b7a2313fe123e04fffb932590"
+  },
+  "tree_kapok_lod": {
+   "file": "tree_kapok_lod.glb",
+   "triangles": 1366,
+   "vertices": 1728,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 94328,
+   "size_m": [
+    22.08,
+    32.29,
+    24.69
+   ],
+   "sha256": "aad637c1eaf3edcb850b8fb26f59966c5fee931fdcd1d102b30c4571bccb299c"
+  },
+  "tree_slender": {
+   "file": "tree_slender.glb",
+   "triangles": 5376,
+   "vertices": 5381,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 293752,
+   "size_m": [
+    9.2,
+    16.47,
+    9.76
+   ],
+   "sha256": "fb64eb975c507aa9e18ecbc4d80d3204c80f10ecfa5fd009d0f3fecb29100719"
+  },
+  "tree_slender_lod": {
+   "file": "tree_slender_lod.glb",
+   "triangles": 738,
+   "vertices": 960,
+   "materials": [
+    "bark",
+    "leaves"
+   ],
+   "bytes": 53696,
+   "size_m": [
+    9.83,
+    17.13,
+    10.23
+   ],
+   "sha256": "2faa7fa6c7bed6196f0dcb32f1dd5331e7eef6cb8ae413261cc8e0b9afea18c4"
+  },
+  "wall": {
+   "file": "wall.glb",
+   "triangles": 3240,
+   "vertices": 1680,
+   "materials": [
+    "sandstone"
+   ],
+   "bytes": 243956,
+   "size_m": [
+    4.0,
+    2.79,
+    0.88
+   ],
+   "sha256": "077f0cf1f65f51ae3d321dc4ce5ccdc3a99ad33ed61f517d30d8bc3c46e72e28"
+  }
+ },
+ "generator": "tools/lumo_run_art/build_jungle_art.py",
+ "seed": 20261118,
+ "textures": [
+  "bark_albedo.jpg",
+  "bark_normal.jpg",
+  "ground_albedo.jpg",
+  "ground_normal.jpg",
+  "iron_albedo.jpg",
+  "iron_normal.jpg",
+  "leaves_albedo.png",
+  "leaves_normal.jpg",
+  "moss_albedo.jpg",
+  "moss_normal.jpg",
+  "sandstone_albedo.jpg",
+  "sandstone_normal.jpg",
+  "stone_albedo.jpg",
+  "stone_normal.jpg",
+  "wood_albedo.jpg",
+  "wood_normal.jpg"
+ ]
+}

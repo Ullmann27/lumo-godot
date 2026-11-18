@@ -8,6 +8,15 @@ extends Node3D
 const MESHES = preload("res://scripts/games/run/jungle/run_jungle_meshes.gd")
 const SHADERS = preload("res://scripts/games/run/jungle/run_jungle_shaders.gd")
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
+const ART = preload("res://scripts/games/run/jungle/run_jungle_art.gd")
+## Code-built surfaces of platforms that get the textured jungle materials.
+const PLATFORM_ART: Dictionary = {
+	"moss": ["ground", {"moss": 0.85, "world_scale": 0.45}],
+	"branch": ["bark", {"moss": 0.4, "world_scale": 0.6}],
+	"stone": ["stone", {"moss": 0.5, "world_scale": 0.5}],
+	"ruin": ["sandstone", {"moss": 0.45, "world_scale": 0.45}],
+	"plank": ["wood", {"moss": 0.1, "world_scale": 0.9}],
+}
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const NEAR: float = 140.0
 const LOOKS: Dictionary = {
@@ -64,7 +73,18 @@ func build(race_world, course_plan, calm: bool) -> void:
 		if bool(plan.checkpoints[index].question):
 			_build_gate(index, float(plan.checkpoints[index].s) + 1.8)
 	if not plan.chase.is_empty():
-		_boulder = _node("Boulder", _mesh("boulder"))
+		var ball: Mesh = _mesh("boulder")
+		if _is_art(ball):
+			# The Blender ball has radius 1; the chase ball rolls with its own radius.
+			_boulder = Node3D.new()
+			_boulder.name = "Boulder"
+			add_child(_boulder)
+			var body := _node("BoulderBody", ball)
+			remove_child(body)
+			_boulder.add_child(body)
+			body.scale = Vector3.ONE * float(plan.chase.radius)
+		else:
+			_boulder = _node("Boulder", ball)
 		_boulder.visible = false
 
 
@@ -81,7 +101,10 @@ func _place(node: Node3D, s: float, lat: float, h: float, yaw: float = 0.0) -> v
 func _mesh(kind: String) -> Mesh:
 	if _mesh_cache.has(kind):
 		return _mesh_cache[kind]
-	var mesh: Mesh
+	var mesh: Mesh = _art_mesh(kind)
+	if mesh != null:
+		_mesh_cache[kind] = mesh
+		return mesh
 	match kind:
 		"boulder":
 			mesh = MESHES.boulder()
@@ -105,11 +128,30 @@ func _mesh(kind: String) -> Mesh:
 	return mesh
 
 
+## The Blender model of a gameplay piece (null if its GLB is missing).
+func _art_mesh(kind: String) -> Mesh:
+	match kind:
+		"boulder":
+			return ART.mesh("boulder", {"moss": 0.3})
+		"crab", "beetle", "coconut", "barrel", "torch", "log", "rubble", "gate", "canopy", "mushroom":
+			return ART.mesh(kind)
+		"warp":
+			return ART.mesh("barrel", {"tint": Color(1.5, 1.15, 0.45)})
+		"gold":
+			return ART.mesh("mushroom", {"cap": Color("ffc83a")})
+	return null
+
+
+func _is_art(mesh: Mesh) -> bool:
+	return mesh != null and mesh.has_meta("jungle_glb")
+
+
 func _node(label: String, mesh: Mesh, material: Material = null) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
 	node.name = label
 	node.mesh = mesh
-	node.material_override = material if material != null else _solid
+	if material != null or not _is_art(mesh):
+		node.material_override = material if material != null else _solid
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	node.visibility_range_end = NEAR
 	add_child(node)
@@ -146,7 +188,9 @@ func _build_platform(index: int, platform: Dictionary) -> void:
 			var z: float = -length * 0.5 + 0.4 + float(k) * 0.8
 			MESHES._box(kit, Vector3(0, 0.01, z), Vector3(half, 0.02, 0.04), Color("4a3220"))
 	var mid: float = (float(platform.s0) + float(platform.s1)) * 0.5
-	var node := _node("Platform%d" % index, kit.mesh())
+	var look_art: Array = PLATFORM_ART.get(str(platform.look), [])
+	var surface: Material = ART.surface_material(str(look_art[0]), look_art[1]) if not look_art.is_empty() else null
+	var node := _node("Platform%d" % index, kit.mesh(), surface)
 	_place(node, mid, float(platform.lat), top)
 	_platforms[index] = {"node": node, "mid": mid}
 
@@ -158,7 +202,8 @@ func _build_mushroom(index: int, pad: Dictionary) -> void:
 	_place(holder, float(pad.s), float(pad.lat), float(pad.get("top", 0.0)))
 	var cap := MeshInstance3D.new()
 	cap.mesh = _mesh(str(pad.get("look", "mushroom")))
-	cap.material_override = _solid
+	if not _is_art(cap.mesh):
+		cap.material_override = _solid
 	cap.scale = Vector3.ONE * 0.95
 	cap.visibility_range_end = NEAR
 	holder.add_child(cap)
@@ -170,6 +215,14 @@ func _build_log(hurdle: Dictionary) -> void:
 	var road: float = world.half_width_at(s) + 0.6
 	var left: float = maxf(float(hurdle.lat) - float(hurdle.half), -road)
 	var right: float = minf(float(hurdle.lat) + float(hurdle.half), road)
+	var art: Mesh = _art_mesh("log")
+	if art != null:
+		# The Blender log is 4 m long along x; stretched to the hurdle's width.
+		var log_node := _node("Log%d" % int(s), art)
+		_quiet(log_node)
+		_place(log_node, s, (left + right) * 0.5, 0.0)
+		log_node.transform.basis = log_node.transform.basis.scaled_local(Vector3((right - left) / 4.0, 1.0, 1.0))
+		return
 	var kit := MESHES.Kit.new()
 	var bark := Color("7a5232")
 	MESHES.tube(kit, [Vector3(left, 0.32, 0), Vector3((left + right) * 0.5, 0.36, 0), Vector3(right, 0.32, 0)], [0.32, 0.34, 0.3], 9, [bark, bark.lightened(0.1), bark], true)
@@ -187,10 +240,17 @@ func _quiet(node: GeometryInstance3D) -> void:
 
 
 func _build_rubble(blocker: Dictionary) -> void:
-	var kit := MESHES.Kit.new()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = int(float(blocker.s) * 10.0)
 	var radius: float = float(blocker.radius)
+	var art: Mesh = _art_mesh("rubble")
+	if art != null:
+		var pile := _node("Rubble%d" % int(blocker.s), art)
+		_quiet(pile)
+		_place(pile, float(blocker.s), float(blocker.lat), 0.0, rng.randf_range(-0.3, 0.3))
+		pile.transform.basis = pile.transform.basis.scaled_local(Vector3(radius, maxf(1.0, radius * 0.9), radius))
+		return
+	var kit := MESHES.Kit.new()
 	MESHES._box(kit, Vector3(0, 0.55, 0), Vector3(radius * 0.9, 0.55, radius * 0.8), Color("bfa77f"))
 	MESHES._box(kit, Vector3(0.1, 1.35, 0), Vector3(radius * 0.7, 0.3, radius * 0.6), Color("c9b38c"))
 	MESHES.blob(kit, Vector3(0, 1.7, 0), Vector3(radius * 0.7, 0.15, radius * 0.6), Color("4f9a3c"), rng, 0.2, 2, 7)
@@ -214,7 +274,8 @@ func _build_ride(index: int, ride: Dictionary) -> void:
 			var barrel := MeshInstance3D.new()
 			barrel.name = "Barrel"
 			barrel.mesh = _mesh("barrel" if str(ride.kind) == "barrel" else "warp")
-			barrel.material_override = _solid
+			if not _is_art(barrel.mesh):
+				barrel.material_override = _solid
 			barrel.visibility_range_end = NEAR
 			holder.add_child(barrel)
 			var star := MeshInstance3D.new()
@@ -240,11 +301,25 @@ func _build_ride(index: int, ride: Dictionary) -> void:
 			holder.transform = Transform3D(world.frame(float(ride.ps)), point(float(ride.ps), float(ride.lat), float(ride.ph)))
 			var branch := MeshInstance3D.new()
 			var branch_kit := MESHES.Kit.new()
-			MESHES.tube(branch_kit, [Vector3(-4, 0.2, 0), Vector3(4, 0.1, 0)], [0.35, 0.25], 7, [Color("6b4a31"), Color("6b4a31")])
-			MESHES.blob(branch_kit, Vector3(0, 0.8, 0), Vector3(2.6, 1.0, 1.6), Color("2f8f3e"), rng, 0.25, 3, 8)
+			MESHES.tube(branch_kit, [Vector3(-4, 0.2, 0), Vector3(4, 0.1, 0)], [0.35, 0.25], 10, [Color("6b4a31"), Color("6b4a31")])
 			branch.mesh = branch_kit.mesh()
-			branch.material_override = _solid
+			branch.material_override = ART.surface_material("bark", {"moss": 0.5, "world_scale": 0.6})
 			holder.add_child(branch)
+			var crown: Mesh = _art_mesh("canopy")
+			if crown != null:
+				for side in [-1.0, 1.0]:
+					var leaves := MeshInstance3D.new()
+					leaves.mesh = crown
+					leaves.position = Vector3(side * 2.2, 0.4, 0)
+					leaves.rotation.y = side * 1.3
+					holder.add_child(leaves)
+			else:
+				var blob_kit := MESHES.Kit.new()
+				MESHES.blob(blob_kit, Vector3(0, 0.8, 0), Vector3(2.6, 1.0, 1.6), Color("2f8f3e"), rng, 0.25, 3, 8)
+				var blob := MeshInstance3D.new()
+				blob.mesh = blob_kit.mesh()
+				blob.material_override = _solid
+				holder.add_child(blob)
 			_swing(index, ride, float(ride.a0))
 		"zip":
 			var kit := MESHES.Kit.new()
@@ -314,12 +389,20 @@ func _build_gate(index: int, at: float) -> void:
 	_place(holder, at, 0.0, 0.0)
 	var door := MeshInstance3D.new()
 	door.name = "Door"
-	var kit := MESHES.Kit.new()
-	MESHES._box(kit, Vector3(0, 2.2, 0), Vector3(half + 0.3, 2.2, 0.25), Color("a8956e"))
-	for row in range(3):
-		MESHES._box(kit, Vector3(0, 0.8 + float(row) * 1.4, 0.27), Vector3(half * 0.8, 0.08, 0.04), Color("6f6450"))
-	door.mesh = kit.mesh()
-	door.material_override = _solid
+	var art: Mesh = _art_mesh("gate")
+	var stretch: float = 1.0
+	if art != null:
+		# The Blender door is 4 m wide; stretched to the path.
+		door.mesh = art
+		stretch = (half + 0.3) * 2.0 / 4.0
+		door.scale = Vector3(stretch, 1.0, 1.0)
+	else:
+		var kit := MESHES.Kit.new()
+		MESHES._box(kit, Vector3(0, 2.2, 0), Vector3(half + 0.3, 2.2, 0.25), Color("a8956e"))
+		for row in range(3):
+			MESHES._box(kit, Vector3(0, 0.8 + float(row) * 1.4, 0.27), Vector3(half * 0.8, 0.08, 0.04), Color("6f6450"))
+		door.mesh = kit.mesh()
+		door.material_override = _solid
 	holder.add_child(door)
 	var sign := Label3D.new()
 	sign.text = "?"
@@ -329,7 +412,8 @@ func _build_gate(index: int, at: float) -> void:
 	sign.outline_size = 24
 	sign.modulate = Color("ffe27a")
 	sign.outline_modulate = Color("3a2a10")
-	sign.position = Vector3(0, 2.3, 0.32)
+	sign.position = Vector3(0, 2.3, 0.42)
+	sign.scale = Vector3(1.0 / stretch, 1.0, 1.0)
 	door.add_child(sign)
 	_gates[index] = door
 
