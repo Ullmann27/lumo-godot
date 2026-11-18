@@ -71,9 +71,11 @@ static func bundle(name: String) -> Bundle:
 				for surface in range(mesh_node.mesh.get_surface_count()):
 					var source_material := mesh_node.mesh.surface_get_material(surface)
 					var slot_name := source_material.resource_name if source_material != null else ""
-					mesh_node.mesh.surface_set_material(
-						surface, entry.foliage if slot_name.contains("foliage") else entry.material
-					)
+					# Blender writes the atlas as slot 0 and leaf cards as slot 1.
+					var leaves := slot_name.contains("foliage") or (slot_name.is_empty() and surface > 0)
+					var surface_name := mesh_node.mesh.surface_get_name(surface) if mesh_node.mesh is ArrayMesh else ""
+					leaves = leaves or surface_name.contains("foliage")
+					mesh_node.mesh.surface_set_material(surface, entry.foliage if leaves else entry.material)
 				var part := {"name": str(mesh_node.name), "mesh": mesh_node.mesh, "transform": xform}
 				entry.parts.append(part)
 				var box: AABB = xform * mesh_node.mesh.get_aabb()
