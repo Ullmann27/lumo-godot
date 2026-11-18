@@ -94,6 +94,33 @@ const SPECS: Dictionary = {
 			"hit_text": "Lichtwand! Die Pfeile zeigen dir die freie Spur.",
 		},
 	],
+	"jungle_temple":
+	[
+		{
+			"kind": "gate",
+			"id": "steintor",
+			"name": "Steintor der Tempelhalle",
+			"theme": "temple",
+			"object": "stone",
+			"cue": "stone_rumble",
+			"effect": "bump",
+			"wait_start": 1124.0,
+			"wait_line": 1143.0,
+			"plane": 1151.0,
+			"respawn": 1130.0,
+			"lat_min": -5.0,
+			"lat_max": -0.8,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 2.2,
+			"sign": "STEINTOR\nInnen warten – außen die Rampe",
+			"approach_text": "Das Steintor! Innen kurz warten oder außen über die Rampe.",
+			"warn_text": "Rumms! Das Steintor senkt sich. Innen warten oder außen vorbei.",
+			"hit_text": "Autsch, das Steintor! Bei Rot innen kurz warten.",
+		},
+	],
 	"volcano_night":
 	[
 		{
