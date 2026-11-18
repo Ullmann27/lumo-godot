@@ -22,6 +22,33 @@ const SPECS: Dictionary = {
 			"approach_text": "Eisbrücke! Bremsen, ausrichten, langsam hinüber.",
 		},
 	],
+	"sonnenhafen":
+	[
+		{
+			"kind": "gate",
+			"id": "hafenschranke",
+			"name": "Hafenschranke",
+			"theme": "harbor",
+			"object": "barrier",
+			"cue": "gate_bell",
+			"effect": "bump",
+			"wait_start": 1298.0,
+			"wait_line": 1328.0,
+			"plane": 1336.0,
+			"respawn": 1306.0,
+			"lat_min": -5.0,
+			"lat_max": -0.8,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 0.4,
+			"sign": "HAFENSCHRANKE\nInnen warten – außen am Wasser",
+			"approach_text": "Die Hafenschranke! Innen kurz warten oder außen am Wasser vorbei.",
+			"warn_text": "Ding-dong! Die Schranke schwenkt. Innen warten oder außen vorbei.",
+			"hit_text": "Bumm – die Schranke! Bei Rot innen kurz warten.",
+		},
+	],
 	"jungle_emerald_3600":
 	[
 		{

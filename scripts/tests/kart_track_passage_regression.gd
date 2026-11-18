@@ -621,6 +621,7 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 	for difficulty in ["gemuetlich", "flott", "pro"]:
 		if str(entry.kind) == "gate":
 			await _rival_outer_lane(track, entry, difficulty)
+			await RIVAL_CHECKS.gate_wait(self, track, entry, difficulty)
 		else:
 			await _rival_waits(track, entry, difficulty)
 	await _full_pace(track, entry)

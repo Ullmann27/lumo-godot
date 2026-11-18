@@ -29,6 +29,8 @@ const QUEUE_LANE_M: float = 2.6
 const QUEUE_MOVING_SPEED: float = 1.5
 ## Within this distance before the deck every moving kart funnels into the single line.
 const QUEUE_FUNNEL_M: float = 14.0
+## A rival whose centre is this close to a closing gate band counts as "in front of it".
+const GATE_LANE_MARGIN: float = 1.2
 ## First warning sign before a passage zone; the spoken/written hint follows the pace
 ## (at least ANNOUNCE_SECONDS before the zone, never later than 70 m).
 const SIGN_LEAD_M: float = 170.0
@@ -425,7 +427,10 @@ static func rival_control(
 			result.speed = cap
 		elif str(entry.kind) == "gate":
 			var gate_line: float = float(entry.wait_line) - d
-			if gate_line > 80.0 or d > float(entry.plane) + float(entry.band):
+			if (
+				gate_line > 80.0
+				or d > float(entry.plane) + float(entry.band) + KART_HALF_LENGTH + 1.0
+			):
 				continue
 			var gate_state: Dictionary = swing_state(entry, t)
 			var gate_need: float = clear_time(entry, d, speed, 30.0) + SWING_CLEAR_MARGIN
@@ -435,11 +440,31 @@ static func rival_control(
 			)
 			if gate_line < 0.0:
 				result.smooth = true
+				# Committed past the line: hold the chosen side through the gate. Before, the
+				# rival's own racing line pulled it from the open outer lane back into the band.
+				if lateral != INF:
+					var outside: bool = (
+						lateral >= band.y + GATE_LANE_MARGIN * 0.5
+						or lateral <= band.x - GATE_LANE_MARGIN * 0.5
+					)
+					result.lane = (
+						free_lane(world, entry, gate_state) if outside else (band.x + band.y) * 0.5
+					)
 				continue
 			# Short inner line when it stays open long enough, else the open outer lane.
 			result.lane = (
 				(band.x + band.y) * 0.5 if inner_ok else free_lane(world, entry, gate_state)
 			)
+			# Still in front of the closing band (no room to change lanes in time): brake,
+			# wait at the line and pull away at green, exactly like the child may do.
+			if (
+				not inner_ok
+				and lateral != INF
+				and lateral > band.x - GATE_LANE_MARGIN
+				and lateral < band.y + GATE_LANE_MARGIN
+			):
+				result.waiting = true
+				result.speed = sqrt(2.0 * RIVAL_BRAKE * maxf(0.0, gate_line - 0.6))
 		else:
 			var to_line: float = float(entry.wait_line) - d
 			if to_line > 70.0 or d > float(entry.plane) + float(entry.band):

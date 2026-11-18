@@ -179,7 +179,7 @@ static func field(test, track: String, difficulty: String = "flott") -> void:
 	var has_swing: bool = false
 	for entry in PASSAGES.of(test.game.world):
 		has_bridge = has_bridge or str(entry.kind) == "bridge"
-		has_swing = has_swing or str(entry.kind) == "swing"
+		has_swing = has_swing or str(entry.kind) in ["swing", "gate"]
 	if has_bridge:
 		test._check(
 			deck_speed <= PASSAGES.RIVAL_BRIDGE_SPEED * 1.05 + 0.5,
@@ -198,3 +198,70 @@ static func field(test, track: String, difficulty: String = "flott") -> void:
 			% [track, difficulty, t, longest_halt, waits, deck_speed, vine_hits]
 		)
 	)
+
+
+## A rival in the closing band shortly before the line has no room to change lanes: it
+## brakes, stops before the waiting line, waits for green and passes without a hit.
+static func gate_wait(test, track: String, entry: Dictionary, difficulty: String) -> void:
+	await test._start(track, difficulty, "comet", "race")
+	test.hold_rivals_from = 1
+	var guard: float = 0.0
+	while str(PASSAGES.swing_state(entry, test.game.elapsed).phase) != "warn" and guard < 12.0:
+		test._place(float(entry.wait_line) - 400.0, -4.6, 0.0)
+		test._tick()
+		guard += STEP
+	var state: Dictionary = PASSAGES.swing_state(entry, test.game.elapsed)
+	var band: Vector2 = PASSAGES.gate_band(entry, state)
+	var lane: float = (band.x + band.y) * 0.5
+	var at: float = float(entry.wait_line) - 36.0
+	test.game.opponent_distances[0] = at
+	test.game.opponents[0].position = test.game.world.position_at(at, lane)
+	test.game.opponent_headings[0] = test.game._heading(at)
+	var rules: Dictionary = test.game.CATALOG.entry(test.game.CATALOG.DIFFICULTIES, difficulty)
+	var cruise: float = test.game.RIVAL_RACECRAFT.cruise_speed(
+		test.game.opponents[0].kart_style, rules
+	)
+	test.game.opponents[0].set_motion(cruise, 0.0, false, false)
+	var stopped_at: float = -1.0
+	var waited: float = 0.0
+	var stunned: bool = false
+	var passed: bool = false
+	var t: float = 0.0
+	while t < 16.0 and not passed:
+		test._place(float(entry.wait_line) - 400.0, -4.6, 0.0)
+		test._tick()
+		t += STEP
+		var road: Dictionary = test.game.world.sample_road(
+			test.game.opponents[0].position,
+			fposmod(test.game.opponent_distances[0], test.game.track_length)
+		)
+		var local: float = float(road.distance)
+		var speed: float = absf(test.game.opponents[0].motion_speed)
+		var inside: bool = (
+			float(road.lateral) > band.x - PASSAGES.GATE_LANE_MARGIN
+			and float(road.lateral) < band.y + PASSAGES.GATE_LANE_MARGIN
+		)
+		if local < float(entry.wait_line) + 0.5 and speed < 0.3 and inside:
+			waited += STEP
+			if stopped_at < 0.0:
+				stopped_at = local
+		stunned = stunned or test.game.opponent_stuns[0] > 0.7
+		passed = local > float(entry.plane) + float(entry.band) + 3.0
+	var tag: String = "%s %s" % [entry.id, difficulty]
+	# Either it stopped in front of the band, or it found room in the open lane – never a hit.
+	test._check(passed and not stunned, "%s: rival in the band passes without a hit" % tag)
+	test._check(
+		stopped_at < 0.0 or stopped_at <= float(entry.wait_line) + 0.5,
+		"%s: a waiting rival stops before the line (%.1f m)" % [tag, stopped_at]
+	)
+	test._note(
+		(
+			(
+				"%s: KI %.1f m/s im Sperrband 36 m vor der Linie → hält bei %.1f m, wartet %.1f s,"
+				+ " durch: %s, Treffer: %s"
+			)
+			% [tag, cruise, stopped_at, waited, passed, stunned]
+		)
+	)
+	test._park_rival(0, -600.0)
+	test.hold_rivals_from = 99
