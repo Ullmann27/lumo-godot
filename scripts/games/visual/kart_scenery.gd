@@ -133,6 +133,7 @@ const THEMES: Dictionary = {
 		"night": 1.0,
 		"particles": ["neon"],
 		"wind": 0.3,
+		"sky": "nachtstadt",
 	},
 	"jungle_temple":
 	{
@@ -217,6 +218,7 @@ const THEMES: Dictionary = {
 		"lamp": "leuchte_neon",
 		"lamp_colors": [Color("c7a6ff"), Color("7fe3ff")],
 		"night": 0.6,
+		"sky": "daemmerung",
 		"particles": ["kristall"],
 		"wind": 0.2,
 		"rock_tint": Color(0.5, 0.45, 0.62),
@@ -906,6 +908,19 @@ static func _particles(world, root: Node3D, look: Dictionary, budget: Dictionary
 # ------------------------------------------------------------------ Himmel
 
 const SKIES: Dictionary = {
+	"nachtstadt":
+	{
+		"zenith": Color("050b26"), "horizon": Color("1c2a6a"), "haze": Color("4a2f7a"),
+		"ground": Color("0a1030"), "clouds": 0.25, "cloud_color": Color("2a2f6a"),
+		"cloud_shadow": Color("0e1236"), "sun_size": 0.0, "sun_disc": 0.0, "stars": 0.8, "aurora": 0.0,
+		"energy": 1.0, "horizon_glow": Color("5a2a7a"),
+	},
+	"daemmerung":
+	{
+		"zenith": Color("1a1848"), "horizon": Color("7a5aa8"), "haze": Color("e0a0b8"),
+		"ground": Color("2a2440"), "clouds": 0.3, "cloud_color": Color("d8b0e0"),
+		"cloud_shadow": Color("4a3a70"), "sun_size": 0.02, "stars": 0.45, "aurora": 0.0, "energy": 1.0,
+	},
 	"mittelmeer":
 	{
 		"zenith": Color("2f6fc4"), "horizon": Color("a9cdea"), "haze": Color("f1d9b8"),

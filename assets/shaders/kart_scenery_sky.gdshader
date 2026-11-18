@@ -14,6 +14,9 @@ uniform float sun_size = 0.03;
 uniform float stars : hint_range(0.0, 1.0) = 0.0;
 uniform float aurora : hint_range(0.0, 1.0) = 0.0;
 uniform float energy = 1.0;
+uniform float sun_disc = 1.0;
+// Lichtglocke einer Stadt / Glut am Horizont (Nachtstrecken).
+uniform vec4 horizon_glow : source_color = vec4(0.0, 0.0, 0.0, 1.0);
 
 float hash(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -78,7 +81,8 @@ void sky() {
 	}
 	if (LIGHT0_ENABLED && h > -0.02) {
 		float disc = smoothstep(1.0 - sun_size * 0.02, 1.0 - sun_size * 0.012, sun_dot);
-		col = mix(col, sun_col * 3.0, disc);
+		col = mix(col, sun_col * 3.0, disc * sun_disc);
 	}
+	col += horizon_glow.rgb * pow(1.0 - clamp(abs(h), 0.0, 1.0), 14.0);
 	COLOR = col * energy;
 }
