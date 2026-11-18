@@ -37,29 +37,46 @@ func _exercise_animal(animal: String, reduced: bool) -> Dictionary:
 	root.add_child(kart)
 	kart.set_process(false)
 	kart.reduced_motion = reduced
-	var authored_jaw: Vector3 = kart.jaw.position
-	var race_ears: Array[float] = _ear_angles(kart)
-	kart._process(1.0 / 60.0)
-	_check(kart.jaw.position.is_equal_approx(authored_jaw), label + " idle preserves authored jaw")
-	kart.set_motion(20.0, 0.6, true, true)
-	for amount in [0.25, 1.0, 0.0]:
-		kart.set_speaking(amount)
+	# Rivals with an authored 3D figure (rabbit, lion, ...) race as that rig;
+	# the sculpted stand-in with its own jaw and ears races for the others.
+	var authored_rig: bool = is_instance_valid(kart.production_driver)
+	var authored_jaw := Vector3.ZERO
+	var race_ears: Array[float] = []
+	if authored_rig:
+		_check(kart.production_driver.is_usable() and kart.jaw == null,
+			label + " races as the authored 3D figure, not as the stand-in")
+		kart._process(1.0 / 60.0)
+		kart.set_motion(20.0, 0.6, true, true)
+		kart._process(1.0 / 60.0)
+		kart.celebrate(1)
+		kart._process(1.0 / 60.0)
+		_check(kart.production_driver.is_usable(), label + " authored figure survives race and finish")
+	else:
+		authored_jaw = kart.jaw.position
+		race_ears = _ear_angles(kart)
+		kart._process(1.0 / 60.0)
+		_check(kart.jaw.position.is_equal_approx(authored_jaw), label + " idle preserves authored jaw")
+		kart.set_motion(20.0, 0.6, true, true)
+		for amount in [0.25, 1.0, 0.0]:
+			kart.set_speaking(amount)
+			kart._process(1.0 / 60.0)
+			_check(
+				kart.jaw.position.is_equal_approx(authored_jaw + Vector3(0, -amount * 0.035, 0)),
+				label + " racing speech offsets its own rest pose"
+			)
+		if reduced:
+			_check(is_equal_approx(kart.driver.position.y, kart.driver_rest_height),
+				label + " race body bob is disabled")
+			_check(is_zero_approx(kart.head.rotation.z), label + " race head roll is disabled")
+		kart.celebrate(1)
 		kart._process(1.0 / 60.0)
 		_check(
-			kart.jaw.position.is_equal_approx(authored_jaw + Vector3(0, -amount * 0.035, 0)),
-			label + " racing speech offsets its own rest pose"
+			kart.jaw.position.is_equal_approx(authored_jaw),
+			label + " celebration preserves lip placement"
 		)
-	if reduced:
-		_check(is_zero_approx(kart.driver.position.y), label + " race body bob is disabled")
-		_check(is_zero_approx(kart.head.rotation.z), label + " race head roll is disabled")
-	kart.celebrate(1)
-	kart._process(1.0 / 60.0)
-	_check(
-		kart.jaw.position.is_equal_approx(authored_jaw),
-		label + " celebration preserves lip placement"
-	)
-	if reduced:
-		_check(is_zero_approx(kart.driver.position.y), label + " celebration hop is disabled")
+		if reduced:
+			_check(is_equal_approx(kart.driver.position.y, kart.driver_rest_height),
+				label + " celebration hop is disabled")
 	kart.configure_companion(animal)
 	var companion_jaw: Vector3 = kart.jaw.position
 	var authored_ears: Array[float] = _ear_angles(kart)
@@ -85,21 +102,25 @@ func _exercise_animal(animal: String, reduced: bool) -> Dictionary:
 	kart.celebrate(0)
 	kart.set_speaking(0.0)
 	_check(not kart.companion_mode, label + " companion returns to racing mode")
-	_check(
-		kart.jaw.position.is_equal_approx(authored_jaw),
-		label + " rebuild restores original racing jaw"
-	)
-	_check_ears(kart, race_ears, label + " companion-to-race rebuild")
-	kart._process(1.0 / 60.0)
-	_check(
-		kart.jaw.position.is_equal_approx(authored_jaw), label + " rebuilt race idle keeps its jaw"
-	)
-	kart.set_speaking(1.0)
-	kart._process(1.0 / 60.0)
-	_check(
-		kart.jaw.position.is_equal_approx(authored_jaw + Vector3(0, -0.035, 0)),
-		label + " rebuilt race speech keeps its own rest pose"
-	)
+	if authored_rig:
+		_check(is_instance_valid(kart.production_driver) and kart.production_driver.is_usable(),
+			label + " rebuild restores the authored 3D figure")
+	else:
+		_check(
+			kart.jaw.position.is_equal_approx(authored_jaw),
+			label + " rebuild restores original racing jaw"
+		)
+		_check_ears(kart, race_ears, label + " companion-to-race rebuild")
+		kart._process(1.0 / 60.0)
+		_check(
+			kart.jaw.position.is_equal_approx(authored_jaw), label + " rebuilt race idle keeps its jaw"
+		)
+		kart.set_speaking(1.0)
+		kart._process(1.0 / 60.0)
+		_check(
+			kart.jaw.position.is_equal_approx(authored_jaw + Vector3(0, -0.035, 0)),
+			label + " rebuilt race speech keeps its own rest pose"
+		)
 	kart.free()
 	return {"jaw": companion_jaw, "ears": authored_ears}
 

@@ -4,6 +4,7 @@ extends SceneTree
 const KART = preload("res://scripts/games/kart_vehicle.gd")
 const FINISH = preload("res://scripts/games/visual/kart_cinema_materials.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -54,7 +55,8 @@ func _run() -> void:
 		fleet_kart.free()
 	var kart: LumoRaceKart = KART.new()
 	root.add_child(kart)
-	# A remaining procedural profile still exercises the Cinema shader path.
+	# The in-code fallback body still exercises the Cinema shader path.
+	PRODUCTION.fallback_only = true
 	kart.configure("fox", Color("f08a2c"), "gecko_velo")
 	var body: MeshInstance3D = kart.get_node("AuroraCoachwork/BatchedSculptedSurfaces")
 	var mesh: Mesh = body.mesh
@@ -81,5 +83,6 @@ func _run() -> void:
 	assert(kart.get_node("AuroraCoachwork/BatchedSculptedSurfaces").get_surface_override_material(0) is ShaderMaterial,
 		"Workshop rebuild must retain the chosen cinema profile")
 	kart.free()
+	PRODUCTION.fallback_only = false
 	print("[KartCinemaKart] PASS: live coachwork finish, high/mobile switches, unchanged pigments/mesh/brakes and workshop rebuild")
 	quit(0)

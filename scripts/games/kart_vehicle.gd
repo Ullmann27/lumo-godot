@@ -89,6 +89,8 @@ var arm_blend: float = 0.0
 var racing_arm_joints: Array[Node3D] = []
 var racing_rest_grips: Array[Vector3] = []
 var wheel_rest_grips: Array[Vector3] = []
+## Seat height of the stand-in figure; its bob and hop move around this value.
+var driver_rest_height: float = 0.0
 ## Original Lumo stays behind his existing explicit adapter switch. Authored
 ## rival rigs have their own helper and never replace this character path.
 var animated_lumo_enabled := false
@@ -407,6 +409,7 @@ func _rebuild() -> void:
 	racing_arm_joints.clear()
 	racing_rest_grips.clear()
 	wheel_rest_grips.clear()
+	driver_rest_height = 0.0
 	head = null
 	tail = null
 	jaw = null
@@ -659,6 +662,7 @@ func _seat_stand_in_driver() -> void:
 	if is_instance_valid(production_driver) or not is_instance_valid(driver):
 		return
 	driver.position += Vector3(0.0, -0.38, 0.13)
+	driver_rest_height = driver.position.y
 	wheel_rest_grips.assign(production_vehicle.wheel_rest_grips)
 
 
@@ -666,10 +670,17 @@ func _build_production_vehicle() -> bool:
 	if not PRODUCTION_VEHICLE.supports(kart_style):
 		return false
 	var candidate = PRODUCTION_VEHICLE.new()
-	if not candidate.build(kart_style, look, FLEET.entry(kart_style).look):
+	# The body's own colours are the reference: a fleet kart on a shared body
+	# always receives its paint, a stock Comet keeps the authored finish.
+	var body: String = PRODUCTION_VEHICLE.body_of(kart_style)
+	var livery: Dictionary = look if body == kart_style else chassis_look
+	if not candidate.build(kart_style, livery, FLEET.entry(body).look):
 		candidate.free()
 		return false
 	production_vehicle = candidate
+	# Garage, tests and tools read which fleet design and which body this is.
+	production_vehicle.set_meta("fleet_design", kart_style)
+	production_vehicle.set_meta("fleet_body", body)
 	add_child(production_vehicle)
 	wheel_pivots.assign(candidate.wheel_pivots)
 	wheel_rotors.assign(candidate.wheel_rotors)
@@ -695,7 +706,7 @@ func _build_production_vehicle() -> bool:
 			spark.hide()
 			spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			sparks.append(spark)
-	var stance: float = 0.91 if kart_style == "glider" else (1.10 if kart_style == "turbo" else 1.0)
+	var stance: float = 0.91 if body == "glider" else (1.10 if body == "turbo" else 1.0)
 	for side in [-1.0, 1.0]:
 		var lamp := _box(self, Vector3(side * 0.242 * stance, 0.683, 1.065),
 			Vector3(0.150 * stance, 0.025, 0.002), Color("ff4054"))
@@ -2565,7 +2576,7 @@ func _process(delta: float) -> void:
 		return
 	if driver:
 		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
-		driver.position.y = 0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006)
+		driver.position.y = driver_rest_height + (0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006))
 	if head:
 		head.rotation.y = lerpf(head.rotation.y, -motion_steer * 0.22, minf(1, delta * 8))
 		head.rotation.z = 0.0 if reduced_motion else sin(animation_time * 2.2) * 0.014 - motion_steer * 0.024
@@ -2636,7 +2647,7 @@ func _apply_celebration(delta: float) -> void:
 	if driver:
 		# Freudensprung im Sitz: Platz 1 hüpft, 2–3 wippen, ab 4 bleibt Lumo ruhig.
 		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place == 1 else 0.035)
-		driver.position.y = hop
+		driver.position.y = driver_rest_height + hop
 		driver.rotation.z = beat * (0.05 if happy else 0.0)
 	if head:
 		var nod: float = 0.06 + absf(beat) * 0.06

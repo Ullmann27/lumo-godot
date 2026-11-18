@@ -80,6 +80,12 @@ jobs:
           test "$(git -C "$baseline" rev-parse HEAD)" = b8f464d946f73d9b88458bf223f1b83db3975a1a
           cp "$original/scripts/tests/kart_sonnenhafen_viaduct_capture.gd" \
             "$baseline/scripts/tests/kart_sonnenhafen_viaduct_capture.gd"
+          # The frozen tree imports the Lumo reference CSV as a translation table, which
+          # crashes the Godot 4.6.3 importer (SIGSEGV). Mark it "keep" as on the current tree.
+          keep_csv=assets/characters/lumo/reference/lumo_reference_manifest.csv
+          if [ -f "$baseline/$keep_csv" ]; then
+            cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
+          fi
           (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
           mkdir -p "$original/exports/viaduct/before"
           (cd "$baseline" && LUMO_CAPTURE_DIR="$original/exports/viaduct/before" \

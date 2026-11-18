@@ -66,6 +66,12 @@ jobs:
           git -C "$baseline" fetch --depth 1 origin 5b25223163cbb0dee5af3fe503e5e75bd11a9673
           git -C "$baseline" checkout --detach FETCH_HEAD
           test "$(git -C "$baseline" rev-parse HEAD)" = 5b25223163cbb0dee5af3fe503e5e75bd11a9673
+          # The frozen tree imports the Lumo reference CSV as a translation table, which
+          # crashes the Godot 4.6.3 importer (SIGSEGV). Mark it "keep" as on the current tree.
+          keep_csv=assets/characters/lumo/reference/lumo_reference_manifest.csv
+          if [ -f "$baseline/$keep_csv" ]; then
+            cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
+          fi
           # Import the pinned direct parent under the same software GL
           # context used by the actual comparison captures. Headless importer
           # crashed on the 1969 legacy importer; keep the

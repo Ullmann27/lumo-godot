@@ -3,6 +3,15 @@ extends Node3D
 ## changes at LOD boundaries; wheel/driver anchors never move or get replaced.
 
 const VARIANTS: Array[String] = ["comet", "glider", "turbo"]
+## Every kart of the fleet drives one of the three authored bodies, so the
+## driver always sits in a real cockpit. Paint, trim, accent and neon come
+## from the kart's own look.
+const BODY_OF: Dictionary = {
+	"comet": "comet", "boru_rally": "comet", "nala_comet": "comet", "zuri_volt": "comet",
+	"terra": "comet", "koloss": "comet",
+	"glider": "glider", "gecko_velo": "glider", "noa_tide": "glider", "iva_aurora": "glider",
+	"turbo": "turbo", "blitz": "turbo", "phantom": "turbo", "stella": "turbo",
+}
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
 const LOD_HYSTERESIS := 2.0
@@ -29,8 +38,18 @@ var _far_distance := 36.0
 var _preview_detail := false
 
 
+## The sculpted in-code karts remain the fallback for a body that cannot be
+## loaded. Tests set this to keep that fallback path exercised.
+static var fallback_only: bool = false
+
+
 static func supports(id: String) -> bool:
-	return id in VARIANTS
+	return BODY_OF.has(id) and not fallback_only
+
+
+## Authored body ("comet", "glider" or "turbo") of a fleet kart.
+static func body_of(id: String) -> String:
+	return str(BODY_OF.get(id, ""))
 
 
 static func _scene(path: String) -> PackedScene:
@@ -46,12 +65,12 @@ static func _scene(path: String) -> PackedScene:
 func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	if not supports(id) or asset_root != null:
 		return false
-	variant = id
+	variant = body_of(id)
 	name = "ProductionKart"
 	set_process(false)
 	for level in range(3):
 		var suffix := "" if level == 0 else "_lod%d" % level
-		var path := MODEL_DIRECTORY + "aurora_" + id + suffix + ".glb"
+		var path := MODEL_DIRECTORY + "aurora_" + variant + suffix + ".glb"
 		var packed := _scene(path)
 		if packed == null:
 			return false
