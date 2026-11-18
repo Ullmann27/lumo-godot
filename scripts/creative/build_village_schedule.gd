@@ -136,6 +136,17 @@ static func stage_change(level: int) -> String:
 	return "Diesmal ist die Gruppe größer: %d statt %d." % [int(now.group), int(before.group)]
 
 
+## Name der Truppenart, die gegen diesen Angreifer hilft. Solange es nur eine
+## Art gibt: „Wache/Wachen“. Sobald die Regeln Truppenarten kennen, liefern sie
+## `troop_for_threat(threat) -> {"one": "Speerträger", "many": "Speerträger"}`.
+static func troop_word(raids, threat: String) -> Dictionary:
+	if raids.has_method("troop_for_threat"):
+		var named: Variant = raids.troop_for_threat(threat)
+		if named is Dictionary and named.has("one") and named.has("many"):
+			return named
+	return {"one": "Wache", "many": "Wachen"}
+
+
 ## Die eine einfache Handlung, die jetzt hilft (echte Zahlen aus dem Plan).
 static func simple_help(raids, model) -> String:
 	if raids.pending.is_empty():
@@ -149,13 +160,14 @@ static func simple_help(raids, model) -> String:
 	var per_guard: float = float(raids.UNIT.guard) * float(raids.THREATS[threat].weights.guard)
 	var guards_needed := int(ceil(gap / maxf(0.1, per_guard)))
 	var free_guards: int = raids.max_guards(model) - int(raids.guards)
+	var troop := troop_word(raids, threat)
 	if guards_needed <= free_guards:
-		return "Bilde %d Wache%s aus (je 1 Münze). Dann reicht dein Schutz." % [guards_needed, "" if guards_needed == 1 else "n"]
+		return "Bilde %d %s aus (je 1 Münze). Dann reicht dein Schutz." % [guards_needed, str(troop.one if guards_needed == 1 else troop.many)]
 	if threat != "drache" and int(raids.parts.wall) == 0:
-		return "Baue eine Holzpalisade (12 Holz) und bilde Wachen aus."
+		return "Baue eine Holzpalisade (12 Holz) und bilde %s aus." % str(troop.many)
 	if threat == "drache":
 		return "Baue einen Wachturm mit Wasserspritze (8 Stein, 6 Holz)."
-	return "Baue Netzfallen (3 Holz, 2 Essen) und bilde Wachen aus."
+	return "Baue Netzfallen (3 Holz, 2 Essen) und bilde %s aus." % str(troop.many)
 
 
 func snapshot() -> Dictionary:

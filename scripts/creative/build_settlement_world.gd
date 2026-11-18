@@ -124,6 +124,7 @@ var dock
 var schedule
 var area_tabs: Dictionary = {}
 var dock_tools: Array[Control] = []
+var troop_row: HBoxContainer
 
 
 func _ready() -> void:
@@ -2178,6 +2179,16 @@ func _build_village_ui() -> void:
 	defense_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	_dock_tool(defense_button, "schuetzen")
 	actions.add_child(defense_button)
+	# Platz für Truppenarten und Verbände im Bereich „Schützen“ (Regeln: dorf3).
+	troop_row = HBoxContainer.new()
+	troop_row.name = "VillageTroops"
+	troop_row.add_theme_constant_override("separation", 8)
+	_dock_tool(troop_row, "schuetzen")
+	actions.add_child(troop_row)
+	var guard_quick := VHUD.button("Wache ausbilden", _quick_guard, 150, "cream", 15)
+	guard_quick.name = "VillageTroop_wache"
+	guard_quick.mouse_filter = Control.MOUSE_FILTER_PASS
+	troop_row.add_child(guard_quick)
 	raid_alert = VHUD.button("", _defense_dialog, 300, "rose", 16)
 	raid_alert.name = "VillageRaidAlert"
 	raid_alert.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -2441,6 +2452,24 @@ func _apply_dock() -> void:
 		HUD.style_button(tab, "primary" if section == str(dock.current) else "cream")
 		tab.set_meta("active", section == str(dock.current))
 	_layout()
+
+
+## Weitere Truppenarten/Verbände hängen ihre Knöpfe hier in „Schützen“ ein.
+func add_troop_tool(control: Control) -> void:
+	if is_instance_valid(troop_row):
+		troop_row.add_child(control)
+
+
+func _quick_guard() -> void:
+	if _transactions_blocked() or raids == null:
+		return
+	var error: String = raids.train_guard(model)
+	feedback.text = error if not error.is_empty() else "Eine neue Wache mit Helm und Schild. (%d von %d)" % [int(raids.guards), raids.max_guards(model)]
+	if schedule != null:
+		schedule.defense_seen = true
+	raids_view.sync()
+	_refresh_raid_alert()
+	_save()
 
 
 ## Ein Spielmoment ist vorbei (Bau, Tag, Ende der Einführung): öffnet sich etwas?

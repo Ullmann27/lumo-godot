@@ -190,7 +190,15 @@ func _recovery() -> void:
 	_check("erholung" in plan.missing(model, true), "Erholung ist als Grund benannt")
 
 
+class NamedTroops:
+	extends RefCounted
+	func troop_for_threat(_threat: String) -> Dictionary:
+		return {"one": "Speerträger", "many": "Speerträger"}
+
+
 func _stages() -> void:
+	_check(SCHEDULE.troop_word(RAIDS.new(), "raeuber").many == "Wachen", "Ohne Truppenarten heißt es „Wachen“")
+	_check(SCHEDULE.troop_word(NamedTroops.new(), "raeuber").one == "Speerträger", "Mit Truppenarten wird die passende genannt")
 	var previous: Dictionary = SCHEDULE.stage(1)
 	_check(int(previous.group) <= 4 and int(previous.sides) == 1, "Stufe 1: kleine Gruppe aus einer Richtung")
 	for level in range(2, RAIDS.MAX_LEVEL + 1):
@@ -321,6 +329,12 @@ func _scene() -> void:
 	_check(village.dock.is_open("schuetzen"), "„Schützen“ hat sich an einem passenden Moment geöffnet")
 	village.select_dock_section("schuetzen")
 	_check(village.schedule.defense_seen, "Bereich angetippt: Verteidigung kennengelernt")
+	await _frames(2)
+	_check(village.troop_row != null and village.troop_row.is_visible_in_tree(), "„Schützen“ hat Platz für Truppenarten")
+	var extra := Button.new()
+	extra.text = "Bogenschützen"
+	village.add_troop_tool(extra)
+	_check(extra.get_parent() == village.troop_row, "Weitere Truppenart lässt sich einhängen")
 	village._next_day()
 	await _frames(4)
 	_check(not village.raids.pending.is_empty(), "Danach kommt die erste kleine Herausforderung")
