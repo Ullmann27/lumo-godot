@@ -44,6 +44,17 @@ const MYSTERY_PRISM = preload("res://scripts/games/kart_mystery_prism.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const AIR_TRICK = preload("res://scripts/games/kart_air_trick.gd")
 const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
+## LUMO-Passagen (Eisbrücke, Kronenbrücke, Lianenaffe): Zähler für Tests und Ergebnis.
+var passage_falls: int = 0
+var passage_hits: int = 0
+var passage_announced: Dictionary = {}
+var _passage_last_phase: Dictionary = {}
+var _passage_hit_cooldown: float = 0.0
+var _traffic_player_entry: int = -1
+var passage_creep: String = ""
+var passage_fall_respawn: float = -1.0
 ## The jump speed hint appears this many metres before the ramp starts.
 const JUMP_HINT_LEAD_M: float = 70.0
 ## Maximum intentional lateral displacement during a precision flight.
@@ -525,16 +536,17 @@ func _build_world() -> void:
 			gem_distances.append(STUNT.loop_start(world))
 		# Turbo-Felder und Item-Ringe folgen der Abenteuer-Dramaturgie je Strecke
 		# (kart_adventure_drama.gd); Strecken ohne eigene Dramaturgie behalten die alten Werte.
+		# LUMO passages: no pad, ring or box on a narrow deck, a plaza or at Kiri's line.
 		for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
-			_turbo_pad(float(fraction) * track_length)
+			_turbo_pad(PASSAGES.clear_distance(world, float(fraction) * track_length))
 		var item_layout: Array = ADVENTURE_DRAMA.item_layout(track_id)
 		for entry in item_layout:
-			_item_box(float(entry[0]) * track_length, float(entry[1]))
+			_item_box(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
 		for entry in BOOST_RING_LAYOUT:
-			_boost_ring(float(entry[0]) * track_length, float(entry[1]))
+			_boost_ring(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
 		for fraction in _catalog_box_fractions():
 			for lateral in CATALOG_BOX_ROW:
-				_catalog_box(float(fraction) * track_length, float(lateral))
+				_catalog_box(PASSAGES.clear_distance(world, float(fraction) * track_length), float(lateral))
 	player = VEHICLE.new()
 	player.set_meta("roadside_speed_factor", 1.0)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
@@ -959,6 +971,13 @@ func _begin_race() -> void:
 	jump_count = 0
 	landing_count = 0
 	gap_falls = 0
+	passage_falls = 0
+	passage_hits = 0
+	passage_announced.clear()
+	passage_creep = ""
+	passage_fall_respawn = -1.0
+	_passage_last_phase.clear()
+	_passage_hit_cooldown = 0.0
 	precision_kicker = {}
 	precision_launch_lateral = 0.0
 	last_precision_landing = ""
@@ -1908,6 +1927,7 @@ func _physics_process(delta: float) -> void:
 			_drive_opponents(delta)
 			_update_gameplay_layer(delta)
 			_track_events()
+			_update_passages(delta)
 			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
 				roadside_lasso.advance(self, delta)
@@ -1953,6 +1973,8 @@ func _physics_process(delta: float) -> void:
 			pulse_age += delta
 		pulse_visual.visible = pulse_age < 0.65
 		pulse_visual.scale = Vector3.ONE * (1.0 + pulse_age * 22.0)
+	if is_instance_valid(world) and mode != "arena":
+		PASSAGE_ART.update_visuals(world, elapsed)
 	_update_vehicles(delta)
 	_update_camera(delta)
 	_update_hud()
@@ -2034,7 +2056,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			reverse_hold_time += delta
 		else:
 			reverse_hold_time = 0.0
-		if speed < -0.1 or reverse_hold_time >= REVERSE_ENGAGE_SECONDS:
+		# At a LUMO passage a held brake means "wait here", never "roll backwards".
+		var hold_still: bool = mode != "arena" and not PASSAGES.zone_at(world, previous_road_distance).is_empty()
+		if speed < -0.1 or (reverse_hold_time >= REVERSE_ENGAGE_SECONDS and not hold_still):
 			target = -REVERSE_SPEED
 		else:
 			target = 0.0
@@ -2042,6 +2066,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		reverse_hold_time = 0.0
 		target *= throttle
 		target *= 1.0 - braking * 0.94
+		target = _passage_creep_target(target, manual_gas)
 	if hit_timer > 0:
 		target *= _factor("stability", 0.45)
 	if target > 0.0:
@@ -2056,6 +2081,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		if difficulty == "gemuetlich" and absf(lane) > _road_width_at(float(road.distance)) * 0.31:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
+		axis = _passage_steer_assist(axis, road)
 	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
@@ -2113,7 +2139,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		return
 	road = world.sample_road(player.position, previous_road_distance)
 	lane = float(road.lateral)
-	if not open_edge_fall and absf(lane) > _wall_lateral_at(float(road.distance)) and world.open_edge_side(float(road.distance)) != signf(lane):
+	if not open_edge_fall and absf(lane) > _wall_lateral_at(float(road.distance)) and world.open_edge_side(float(road.distance)) != signf(lane) and not PASSAGES.void_at(world, float(road.distance)):
 		_collide_with_rail(road)
 		road = world.sample_road(player.position, previous_road_distance)
 		lane = float(road.lateral)
@@ -2123,6 +2149,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var travel: float = fposmod(road_distance - previous_road_distance + track_length * 0.5, track_length) - track_length * 0.5
 	# An einer offenen Kante gibt es neben der Fahrbahn keinen Boden: dort beginnt der Sturz sofort.
 	var edge_margin: float = 0.3 if mode != "arena" and world.open_edge_side(road_distance) == signf(lane) else 2.0
+	var passage_void: bool = mode != "arena" and PASSAGES.void_at(world, road_distance)
+	if passage_void:
+		edge_margin = PASSAGES.DECK_FALL_MARGIN
 	if not open_edge_fall and absf(lane) < _road_width_at(road_distance) * 0.5 + edge_margin:
 		var before_vertical: Vector3 = player.position
 		if not _move_vertically(road, road_distance, delta):
@@ -2136,6 +2165,13 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		# expires. Once over the void, the next rail must not lift it onto road.
 		if world.open_edge_side(road_distance) != 0.0 and world.open_edge_side(road_distance) == signf(lane):
 			open_edge_fall = true
+		if passage_void:
+			if not open_edge_fall or passage_fall_respawn < 0.0:
+				passage_fall_respawn = PASSAGES.respawn_for(world, road_distance)
+			open_edge_fall = true
+		if passage_fall_respawn >= 0.0:
+			# Into the gap, not over it: the kart loses its forward run while it drops.
+			physical_velocity = physical_velocity.lerp(Vector3.ZERO, minf(1.0, delta * 2.5))
 		offroad_seconds += delta
 		player.position.y -= offroad_seconds * delta * 10.0
 		if offroad_seconds > 1.15:
@@ -2486,6 +2522,88 @@ func _rescue_from_gap() -> void:
 	)
 
 
+## Who stopped on a bridge plaza is rolled over gently by Auto-Gas (creep speed) until
+## the deck ends. Gas held by hand or a boost overrides it; a flying start is untouched.
+func _passage_creep_target(target: float, manual_gas: bool) -> float:
+	if mode == "arena" or not is_instance_valid(world):
+		return target
+	var entry: Dictionary = PASSAGES.zone_at(world, previous_road_distance)
+	if entry.is_empty() or str(entry.kind) != "bridge":
+		passage_creep = ""
+		return target
+	var local: float = fposmod(previous_road_distance, track_length)
+	if local > float(entry.deck_end):
+		passage_creep = ""
+		return target
+	if absf(speed) < 1.0 and local < float(entry.deck_start):
+		passage_creep = str(entry.id)
+	if passage_creep == str(entry.id) and not manual_gas and boost_time <= 0.0:
+		return minf(target, PASSAGES.CREEP_SPEED)
+	return target
+
+
+## Entdecken (Fahrhilfe): on the plaza run-up and on the deck the steering is gently
+## pulled onto the centre line. The child still steers; the help never drives alone.
+func _passage_steer_assist(axis: float, road: Dictionary) -> float:
+	if difficulty != "gemuetlich" or airborne or not is_instance_valid(world):
+		return axis
+	var d: float = float(road.distance)
+	var entry: Dictionary = PASSAGES.zone_at(world, d)
+	if entry.is_empty() or str(entry.kind) != "bridge":
+		return axis
+	if float(entry.deck_start) - fposmod(d, track_length) > 26.0:
+		return axis
+	var correction: float = angle_difference(player_heading, _heading(d + 4.0))
+	if absf(lane) < 0.15 and absf(correction) < 0.03:
+		return axis
+	return clampf(axis - correction * 0.9 - clampf(lane * 0.55, -0.6, 0.6), -1.0, 1.0)
+
+
+## Announcements, Kiri's call and the swing hit. Rivals get the same rules.
+func _update_passages(delta: float) -> void:
+	_passage_hit_cooldown = maxf(0.0, _passage_hit_cooldown - delta)
+	var local: float = fposmod(previous_road_distance, track_length)
+	var lap: int = int(distance / maxf(track_length, 1.0))
+	for entry in PASSAGES.of(world):
+		var key: String = "%s:%d" % [str(entry.id), lap]
+		var before: float = float(entry.zone_start) - local
+		var announce_at: float = maxf(70.0, absf(speed) * PASSAGES.ANNOUNCE_SECONDS)
+		if before > 0.0 and before < announce_at and not passage_announced.has(key):
+			passage_announced[key] = true
+			message.text = str(entry.approach_text)
+		if str(entry.kind) not in ["swing", "gate"]:
+			continue
+		var state: Dictionary = PASSAGES.swing_state(entry, elapsed)
+		var phase: String = str(state.phase)
+		if phase == "warn" and str(_passage_last_phase.get(entry.id, "")) != "warn":
+			if absf(float(entry.plane) - local) < 160.0:
+				_sound_effect(str(entry.get("cue", "monkey_call")))
+				if before < 0.0 and local < float(entry.plane):
+					message.text = str(entry.get("warn_text", "Uh-uh-AAH! Kiri holt Schwung. Kurz warten!"))
+		_passage_last_phase[entry.id] = phase
+		if (
+			PASSAGES.blocker_hits(world, entry, previous_road_distance, lane, elapsed)
+			and _passage_hit_cooldown <= 0.0 and shield_time <= 0.0 and not open_edge_fall
+		):
+			_passage_hit_cooldown = 1.6
+			passage_hits += 1
+			if str(entry.get("effect", "bump")) == "reset":
+				# Into the lava pulse: the Lumo cloud lifts the kart back before the stream.
+				passage_fall_respawn = float(entry.respawn)
+				open_edge_fall = true
+				message.text = str(entry.get("hit_text", "Zu heiß! Die Lumo-Wolke holt dich zurück."))
+			else:
+				_spin_player(0.6)
+				speed = minf(speed, 3.0)
+				physical_velocity = physical_velocity.limit_length(3.0)
+				message.text = str(entry.get("hit_text", "Kiri hat dich angestupst! Bei Rot kurz warten."))
+			_sound_effect("collision")
+		for i in range(opponents.size()):
+			var rival_lane: float = opponent_lanes[i] if i < opponent_lanes.size() else 0.0
+			if PASSAGES.blocker_hits(world, entry, opponent_distances[i], rival_lane, elapsed):
+				opponent_stuns[i] = maxf(opponent_stuns[i], 0.8)
+
+
 func _manual_gas_active() -> bool:
 	return gas_held or Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)
 
@@ -2695,7 +2813,9 @@ func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
 		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
 			traffic.append(Vector3(gap.dot(-basis.z), float(road.lateral) + gap.dot(basis.x), absf(opponents[other].motion_speed)))
 	var player_gap: Vector3 = player.position - origin
+	_traffic_player_entry = -1
 	if player_gap.length_squared() < 10000.0 and absf(player_gap.dot(basis.y)) < 3.0:
+		_traffic_player_entry = traffic.size()
 		traffic.append(Vector3(player_gap.dot(-basis.z), float(road.lateral) + player_gap.dot(basis.x), maxf(0.0, speed)))
 	for obstacle in world.action_obstacles:
 		var gap: Vector3 = obstacle - origin
@@ -2796,6 +2916,11 @@ func _drive_opponents(delta: float) -> void:
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
 		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
+		var passage_rule: Dictionary = PASSAGES.rival_control(
+			world, float(sampled.distance), absf(rival.motion_speed), elapsed, traffic, _traffic_player_entry
+		)
+		if float(passage_rule.lane) < INF:
+			target_lane = float(passage_rule.lane)
 		var look_ahead: float = float(profile.look_ahead)
 		if absf(rival.motion_speed) < 4.0 and absf(target_lane - float(sampled.lateral)) > 0.6:
 			look_ahead = 1.5
@@ -2835,6 +2960,10 @@ func _drive_opponents(delta: float) -> void:
 				float(sampled.lateral), target_lane, traffic, target_speed,
 				Vector2(forward.dot(-(sampled.basis as Basis).z), forward.dot((sampled.basis as Basis).x)), delta
 			)
+		if float(passage_rule.lane) < INF or float(passage_rule.speed) < INF or bool(passage_rule.smooth):
+			# Brake, wait and pull away again smoothly at a LUMO passage.
+			target_speed = minf(target_speed, float(passage_rule.speed))
+			target_speed = minf(target_speed, absf(rival.motion_speed) + 30.0 * delta)
 		rival.position += forward * target_speed * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
@@ -2909,6 +3038,15 @@ func _reset_kart() -> void:
 		)
 	)
 	open_edge_fall = false
+	var passage_reset: float = -1.0
+	if mode != "arena":
+		passage_reset = PASSAGES.respawn_for(world, previous_road_distance)
+		if passage_fall_respawn >= 0.0:
+			passage_reset = passage_fall_respawn
+			# The kart drifted while falling: count from the passage, not from where it fell.
+			distance = distance - fposmod(distance, track_length) + passage_reset + 6.0
+			previous_road_distance = passage_reset
+	passage_fall_respawn = -1.0
 	if mode == "arena":
 		player.position = Vector3(0, 0.035, 28)
 		player_heading = 0
@@ -2938,6 +3076,15 @@ func _reset_kart() -> void:
 		physical_velocity = Vector3(-sin(player_heading), 0, -cos(player_heading)) * speed
 		shield_time = maxf(shield_time, 2.0)
 		message.text = "Die Lumo-Wolke hat dich aufgefangen. Weiter geht’s!"
+	if mode != "arena" and passage_reset >= 0.0:
+		# LUMO-Passage: calmly back on the level plaza, centred, standing, aligned.
+		speed = 0.0
+		physical_velocity = Vector3.ZERO
+		shield_time = maxf(shield_time, 1.5)
+		if fell_from_edge:
+			passage_falls += 1
+		message.text = "Die Lumo-Wolke bringt dich zurück. Ausrichten und langsam hinüber!"
+		_sound_effect("whoosh")
 
 
 func _update_ghost() -> void:
@@ -3038,7 +3185,12 @@ func _track_events() -> void:
 			_sound_effect("collision")
 			if shield_time <= 0:
 				hit_timer = maxf(hit_timer, 0.25)
-				player.position += away.normalized() * 0.18
+				var push: Vector3 = away.normalized() * 0.18
+				if not PASSAGES.zone_at(world, previous_road_distance).is_empty():
+					# Waiting zone / deck: a rival never shoves the child sideways into danger.
+					var along: Vector3 = world.forward(previous_road_distance)
+					push = along * minf(0.0, push.dot(along))
+				player.position += push
 	var lap: int = int(distance / track_length)
 	for i in range(gems.size()):
 		var key: int = _gem_key(lap, i)
@@ -3075,7 +3227,8 @@ func _track_events() -> void:
 			_sound_effect("item")
 	_collect_catalog_boxes(lap)
 	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
-		if absf(fposmod(distance, track_length) - float(fraction) * track_length - 1.1) < 1.2 and absf(lane) < 2.1:
+		var pad_at: float = PASSAGES.clear_distance(world, float(fraction) * track_length)
+		if absf(fposmod(distance, track_length) - pad_at - 1.1) < 1.2 and absf(lane) < 2.1:
 			_trigger_once("pad_%d" % int(float(fraction) * 1000.0), "boost_pad")
 			boost_time = maxf(boost_time, _boost_for(1.0))
 
