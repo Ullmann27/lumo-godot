@@ -41,6 +41,9 @@ var traps: Array[Dictionary] = []
 ## Bounced rockets and fading trails (world-space, purely visual).
 var debris: Array[Dictionary] = []
 var stats := {"fired": 0, "dropped": 0, "hits": 0, "blocked": 0, "expired": 0, "intercepted": 0, "pairs": 0}
+## Small presentation cues for the race (wall bounce of a Funkenkugel, a Blubberblase
+## that times out). Purely visual/sound; consumed with take_feedback().
+var feedback: Array[Dictionary] = []
 var _next_pair: int = 1
 var _meshes: Dictionary = {}
 var _materials: Dictionary = {}
@@ -61,6 +64,7 @@ func clear() -> void:
 	projectiles.clear()
 	traps.clear()
 	debris.clear()
+	feedback.clear()
 
 
 func active_count() -> int:
@@ -192,6 +196,7 @@ func step(delta: float, racers: Array) -> Array[Dictionary]:
 			if absf(float(entry.lateral)) > wall_lateral:
 				entry.lateral = signf(entry.lateral) * (wall_lateral * 2.0 - absf(entry.lateral))
 				entry.lateral_velocity = -float(entry.lateral_velocity)
+				_cue("wall_bounce", entry)
 		entry.progress = float(entry.progress) + float(entry.speed) * delta
 		var catcher: Dictionary = _trap_in_path(entry)
 		if not catcher.is_empty():
@@ -252,6 +257,7 @@ func step(delta: float, racers: Array) -> Array[Dictionary]:
 			continue
 		if float(entry.age) >= float(entry.life):
 			stats.expired += 1
+			_cue("trap_pop", entry)
 			_retire(entry)
 			continue
 		_place(entry)
@@ -259,6 +265,17 @@ func step(delta: float, racers: Array) -> Array[Dictionary]:
 	traps = keep_traps
 	_advance_debris(delta)
 	return events
+
+
+func _cue(kind: String, entry: Dictionary) -> void:
+	if feedback.size() < 8:
+		feedback.append({"kind": kind, "owner": int(entry.owner), "position": _node_position(entry.node)})
+
+
+func take_feedback() -> Array[Dictionary]:
+	var result: Array[Dictionary] = feedback.duplicate()
+	feedback.clear()
+	return result
 
 
 func _node_position(node: Variant) -> Vector3:

@@ -73,7 +73,9 @@ func _present(frame_ticks: float) -> void:
 		return
 	var flight = game.get("rocket_flight")
 	if flight != null and is_instance_valid(flight):
-		flight._process(STEP * (60.0 / 50.0 if cadence == "50" else 60.0 / 45.0 if cadence == "45" else 1.0))
+		flight._process(
+			STEP * (60.0 / 50.0 if cadence == "50" else 60.0 / 45.0 if cadence == "45" else 1.0)
+		)
 
 
 func _rocket() -> Node3D:
@@ -96,7 +98,9 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 	var target: Node3D = _target()
 	var road_d: float = float(game.distance if scenario == "rival" else game.opponent_distances[0])
 	var road_lane: float = float(game.lane if scenario == "rival" else game.opponent_lanes[0])
-	row["target_lift"] = snappedf(target.global_position.y - game._track_position(road_d, road_lane).y, 0.001)
+	row["target_lift"] = snappedf(
+		target.global_position.y - game._track_position(road_d, road_lane).y, 0.001
+	)
 	row["target_on_screen"] = cam.is_position_in_frustum(target.global_position + Vector3.UP * 0.6)
 	var flight = game.get("rocket_flight")
 	if flight != null and is_instance_valid(flight):
@@ -108,7 +112,9 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 		var p: Vector3 = rocket.global_position
 		row["rocket"] = [snappedf(p.x, 0.001), snappedf(p.y, 0.001), snappedf(p.z, 0.001)]
 		row["on_screen"] = cam.is_position_in_frustum(p)
-		var s: Vector2 = cam.unproject_position(p) if not cam.is_position_behind(p) else Vector2(-1, -1)
+		var s: Vector2 = (
+			cam.unproject_position(p) if not cam.is_position_behind(p) else Vector2(-1, -1)
+		)
 		row["screen"] = [snappedf(s.x, 0.1), snappedf(s.y, 0.1)]
 		row["cam_dist"] = snappedf(cam.global_position.distance_to(p), 0.01)
 		row["to_target"] = snappedf(p.distance_to(target.global_position), 0.01)
@@ -119,9 +125,13 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 			var shown_cam: Transform3D = cam.global_transform
 			cam.global_transform = raw_cam
 			var rp: Vector3 = (raw_rocket as Transform3D).origin
-			var rs: Vector2 = cam.unproject_position(rp) if not cam.is_position_behind(rp) else Vector2(-1, -1)
+			var rs: Vector2 = (
+				cam.unproject_position(rp) if not cam.is_position_behind(rp) else Vector2(-1, -1)
+			)
 			cam.global_transform = shown_cam
-			row["raw_rocket"] = [snappedf(rp.x, 0.001), snappedf(rp.y, 0.001), snappedf(rp.z, 0.001)]
+			row["raw_rocket"] = [
+				snappedf(rp.x, 0.001), snappedf(rp.y, 0.001), snappedf(rp.z, 0.001)
+			]
 			row["raw_screen"] = [snappedf(rs.x, 0.1), snappedf(rs.y, 0.1)]
 	var particles: int = 0
 	for child in game.item_runtime.find_children("*", "CPUParticles3D", true, false):
@@ -130,7 +140,8 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 	row["runtime_particles"] = particles
 	row["player_speed"] = snappedf(float(game.speed), 0.01)
 	row["spin"] = snappedf(
-		float(game.player_spin_time) if scenario == "rival" else float(game.opponent_spin_times[0]), 0.001
+		float(game.player_spin_time) if scenario == "rival" else float(game.opponent_spin_times[0]),
+		0.001
 	)
 	row["laps"] = [game.checkpoint_index, snappedf(float(game.distance), 0.01)]
 	return row
@@ -191,7 +202,15 @@ func _run() -> void:
 	game.reduced_motion = reduced
 	await process_frame
 	await process_frame
-	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"})
+	game._start_selected_race(
+		{
+			"mode": "race",
+			"driver": "fox",
+			"kart": "comet",
+			"track": "sonnenhafen",
+			"difficulty": "gemuetlich"
+		}
+	)
 	game._end_preview()
 	game.set_physics_process(false)
 	await process_frame
@@ -265,15 +284,30 @@ func _run() -> void:
 		frame += 1
 		await _present_async(tick_offset + _frame_time(frame))
 		var spinning: bool = (
-			game.player_spin_time > 0.0 if scenario == "rival" else game.opponent_spin_times[0] > 0.0
+			game.player_spin_time > 0.0
+			if scenario == "rival"
+			else game.opponent_spin_times[0] > 0.0
 		)
 		if spinning and hit_frame < 0:
 			hit_frame = frame
 		if frame == 3 and not OS.get_environment("LUMO_ROCKET_DEBUG").is_empty():
 			for node in game.race_root.find_children("*", "GeometryInstance3D", true, false):
 				var g := node as GeometryInstance3D
-				if g.is_visible_in_tree() and g.global_position.distance_to(game.camera.global_position) < 14.0 and not "Kart_" in str(g.get_path()):
-					print("[RocketDebug] %s %s d=%.2f" % [g.get_path(), g.get_class(), g.global_position.distance_to(game.player.global_position)])
+				if (
+					g.is_visible_in_tree()
+					and g.global_position.distance_to(game.camera.global_position) < 14.0
+					and not "Kart_" in str(g.get_path())
+				):
+					print(
+						(
+							"[RocketDebug] %s %s d=%.2f"
+							% [
+								g.get_path(),
+								g.get_class(),
+								g.global_position.distance_to(game.player.global_position)
+							]
+						)
+					)
 		var label: String = "flight" if hit_frame < 0 else "after_hit"
 		rows.append(_record(label, frame, ticks_done - last_ticks))
 		last_ticks = ticks_done
@@ -283,14 +317,25 @@ func _run() -> void:
 				# Nach dem Treffer: Einschlag, Wirbel, Landung im festen Abstand.
 				if post_index < 0:
 					post_index = 0
-				due = post_index < POST_HIT.size() and frame - hit_frame >= int(POST_HIT[post_index])
+				due = (
+					post_index < POST_HIT.size() and frame - hit_frame >= int(POST_HIT[post_index])
+				)
 				if due:
 					post_index += 1
 			if due:
-				await _shot("%s%s%s_%02d_f%03d_%s" % [
-					scenario, "_reduced" if reduced else "", "_" + tag if not tag.is_empty() else "",
-					saved.size() + 1, frame, label,
-				])
+				await _shot(
+					(
+						"%s%s%s_%02d_f%03d_%s"
+						% [
+							scenario,
+							"_reduced" if reduced else "",
+							"_" + tag if not tag.is_empty() else "",
+							saved.size() + 1,
+							frame,
+							label,
+						]
+					)
+				)
 		if hit_frame >= 0 and not spinning and landed_frame < 0:
 			landed_frame = frame
 		var pictures_done: bool = saved.size() >= shot_at.size() or post_index >= POST_HIT.size()
@@ -298,10 +343,17 @@ func _run() -> void:
 			break
 	RenderingServer.render_loop_enabled = true
 	var summary := _summarise(hit_frame, start_ticks)
-	var name: String = "%s_%s%s_c%s%s%s" % [
-		mode, scenario, "_reduced" if reduced else "", cadence, "" if smooth else "_nosmooth",
-		"_" + tag if not tag.is_empty() else "",
-	]
+	var name: String = (
+		"%s_%s%s_c%s%s%s"
+		% [
+			mode,
+			scenario,
+			"_reduced" if reduced else "",
+			cadence,
+			"" if smooth else "_nosmooth",
+			"_" + tag if not tag.is_empty() else "",
+		]
+	)
 	var file := FileAccess.open(destination.path_join(name + ".json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify({"summary": summary, "rows": rows}, "\t"))
 	file.close()
@@ -343,7 +395,9 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 			var rsa: Array = flight[i - 1].raw_screen
 			var rsb: Array = r.raw_screen
 			if rsa[0] >= 0 and rsb[0] >= 0 and bool(r.get("on_screen", false)):
-				raw_screen_steps.append(Vector2(rsa[0], rsa[1]).distance_to(Vector2(rsb[0], rsb[1])))
+				raw_screen_steps.append(
+					Vector2(rsa[0], rsa[1]).distance_to(Vector2(rsb[0], rsb[1]))
+				)
 		var sa: Array = flight[i - 1].screen
 		var sb: Array = r.screen
 		if sa[0] >= 0 and sb[0] >= 0 and bool(r.get("on_screen", false)):
@@ -356,29 +410,49 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 			max_lift = maxf(max_lift, float(r.target_lift))
 			end_lift = float(r.target_lift)
 			max_display = maxf(max_display, float(r.get("display_lift", 0.0)))
-	var fps: float = 60.0 if cadence in ["60", "jitter"] else (120.0 if cadence == "120cap" else float(cadence))
+	var fps: float = (
+		60.0 if cadence in ["60", "jitter"] else (120.0 if cadence == "120cap" else float(cadence))
+	)
 	return {
-		"mode": mode, "scenario": scenario, "reduced": reduced, "cadence": cadence, "smooth": smooth,
+		"mode": mode,
+		"scenario": scenario,
+		"reduced": reduced,
+		"cadence": cadence,
+		"smooth": smooth,
 		"smoother_present": smoother != null,
-		"flight_frames": flight.size(), "flight_seconds": snappedf(flight.size() / fps, 0.001),
-		"hit_frame": hit_frame, "visible_frames": visible_frames,
+		"flight_frames": flight.size(),
+		"flight_seconds": snappedf(flight.size() / fps, 0.001),
+		"hit_frame": hit_frame,
+		"visible_frames": visible_frames,
 		"visible_seconds": snappedf(visible_frames / fps, 0.001),
 		"ticks_per_render_frame": ticks_hist,
-		"world_step_m": _stats(steps), "screen_step_px": _stats(screen_steps),
-		"raw_world_step_m": _stats(raw_steps), "raw_screen_step_px": _stats(raw_screen_steps),
-		"target_max_lift_m": snappedf(max_lift, 0.001), "target_end_lift_m": snappedf(end_lift, 0.001),
+		"world_step_m": _stats(steps),
+		"screen_step_px": _stats(screen_steps),
+		"raw_world_step_m": _stats(raw_steps),
+		"raw_screen_step_px": _stats(raw_screen_steps),
+		"target_max_lift_m": snappedf(max_lift, 0.001),
+		"target_end_lift_m": snappedf(end_lift, 0.001),
 		"max_display_lift_m": snappedf(max_display, 0.001),
 		"player_speed": rows[0].player_speed if not rows.is_empty() else 0.0,
 		"start_gap_m": rows[0].get("to_target", -1.0) if not rows.is_empty() else -1.0,
-		"max_runtime_particles": rows.map(func(r): return int(r.runtime_particles)).max() if not rows.is_empty() else 0,
-		"max_trail_points": rows.map(func(r): return int(r.get("trail_points", 0))).max() if not rows.is_empty() else 0,
+		"max_runtime_particles":
+		rows.map(func(r): return int(r.runtime_particles)).max() if not rows.is_empty() else 0,
+		"max_trail_points":
+		rows.map(func(r): return int(r.get("trail_points", 0))).max() if not rows.is_empty() else 0,
 		"pip_frames": rows.filter(func(r): return bool(r.get("pip", false))).size(),
 		"ticks_total": ticks_done - start_ticks,
 		"runtime_stats": game.item_runtime.stats.duplicate(),
-		"flight_stats": game.rocket_flight.stats.duplicate() if game.get("rocket_flight") != null else {},
-		"smoother": {
-			"frames": smoother.interpolated_frames, "adopted": smoother.adopted_writes,
-		} if smoother != null else {},
+		"flight_stats":
+		game.rocket_flight.stats.duplicate() if game.get("rocket_flight") != null else {},
+		"smoother":
+		(
+			{
+				"frames": smoother.interpolated_frames,
+				"adopted": smoother.adopted_writes,
+			}
+			if smoother != null
+			else {}
+		),
 	}
 
 
@@ -398,7 +472,11 @@ func _stats(values: Array[float]) -> Dictionary:
 	var sorted: Array[float] = values.duplicate()
 	sorted.sort()
 	return {
-		"n": values.size(), "mean": snappedf(mean, 0.001), "min": snappedf(sorted[0], 0.001),
-		"max": snappedf(sorted[-1], 0.001), "p95": snappedf(sorted[int(sorted.size() * 0.95)], 0.001),
-		"cv": snappedf(sqrt(variance / values.size()) / maxf(mean, 0.0001), 0.001), "zero": zeros,
+		"n": values.size(),
+		"mean": snappedf(mean, 0.001),
+		"min": snappedf(sorted[0], 0.001),
+		"max": snappedf(sorted[-1], 0.001),
+		"p95": snappedf(sorted[int(sorted.size() * 0.95)], 0.001),
+		"cv": snappedf(sqrt(variance / values.size()) / maxf(mean, 0.0001), 0.001),
+		"zero": zeros,
 	}

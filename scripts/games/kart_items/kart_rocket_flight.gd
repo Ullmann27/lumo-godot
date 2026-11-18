@@ -49,7 +49,9 @@ var assist: float = 0.0
 var pip_time: float = 0.0
 var pip_target: int = -99
 var pip_shown_frames: int = 0
-var stats := {"trails": 0, "impacts": 0, "muzzles": 0, "tumbles": 0, "pip": 0, "max_trail_points": 0}
+var stats := {
+	"trails": 0, "impacts": 0, "muzzles": 0, "tumbles": 0, "pip": 0, "max_trail_points": 0
+}
 var _trails: Array[Dictionary] = []
 var _impacts: Array[Dictionary] = []
 var _muzzles: Array[Dictionary] = []
@@ -169,9 +171,11 @@ func _build_pools() -> void:
 		var impact := {
 			"flash": _flash_node("ImpactFlash%d" % index),
 			"smoke": _burst("ImpactSmoke%d" % index, _puff_mesh, int(IMPACT_SMOKE[quality]), 1.7),
-			"sparks": _burst("ImpactSparks%d" % index, _spark_mesh, int(IMPACT_SPARKS[quality]), 0.6),
+			"sparks":
+			_burst("ImpactSparks%d" % index, _spark_mesh, int(IMPACT_SPARKS[quality]), 0.6),
 			"light": _flash_light("ImpactLight%d" % index),
-			"age": 9.0, "size": 3.6,
+			"age": 9.0,
+			"size": 3.6,
 		}
 		_style_impact(impact)
 		_impacts.append(impact)
@@ -179,7 +183,8 @@ func _build_pools() -> void:
 		var muzzle := {
 			"flash": _flash_node("MuzzleFlash%d" % index),
 			"smoke": _burst("MuzzleSmoke%d" % index, _puff_mesh, int(MUZZLE_PUFFS[quality]), 0.9),
-			"age": 9.0, "size": 1.5,
+			"age": 9.0,
+			"size": 1.5,
 		}
 		_style_muzzle(muzzle)
 		_muzzles.append(muzzle)
@@ -240,10 +245,14 @@ func _style_impact(impact: Dictionary) -> void:
 	smoke.scale_amount_min = 0.9
 	smoke.scale_amount_max = 1.5
 	smoke.scale_amount_curve = _curve([Vector2(0, 0.5), Vector2(0.3, 1.4), Vector2(1, 2.4)])
-	smoke.color_ramp = _ramp([
-		[0.0, Color(1.0, 0.86, 0.5, 0.95)], [0.12, Color(0.98, 0.58, 0.32, 0.85)],
-		[0.35, Color(0.62, 0.6, 0.68, 0.7)], [1.0, Color(0.78, 0.78, 0.86, 0.0)],
-	])
+	smoke.color_ramp = _ramp(
+		[
+			[0.0, Color(1.0, 0.86, 0.5, 0.95)],
+			[0.12, Color(0.98, 0.58, 0.32, 0.85)],
+			[0.35, Color(0.62, 0.6, 0.68, 0.7)],
+			[1.0, Color(0.78, 0.78, 0.86, 0.0)],
+		]
+	)
 	var sparks: CPUParticles3D = impact.sparks
 	sparks.direction = Vector3.UP
 	sparks.spread = 85.0
@@ -253,9 +262,13 @@ func _style_impact(impact: Dictionary) -> void:
 	sparks.gravity = Vector3(0, -14.0, 0)
 	sparks.scale_amount_min = 0.7
 	sparks.scale_amount_max = 1.6
-	sparks.color_ramp = _ramp([
-		[0.0, Color(1.0, 1.0, 0.85, 1.0)], [0.35, Color(1.0, 0.75, 0.3, 1.0)], [1.0, Color(1.0, 0.35, 0.15, 0.0)],
-	])
+	sparks.color_ramp = _ramp(
+		[
+			[0.0, Color(1.0, 1.0, 0.85, 1.0)],
+			[0.35, Color(1.0, 0.75, 0.3, 1.0)],
+			[1.0, Color(1.0, 0.35, 0.15, 0.0)],
+		]
+	)
 
 
 func _style_muzzle(muzzle: Dictionary) -> void:
@@ -270,9 +283,13 @@ func _style_muzzle(muzzle: Dictionary) -> void:
 	smoke.scale_amount_min = 0.4
 	smoke.scale_amount_max = 0.8
 	smoke.scale_amount_curve = _curve([Vector2(0, 0.6), Vector2(1, 1.8)])
-	smoke.color_ramp = _ramp([
-		[0.0, Color(1.0, 0.85, 0.55, 0.9)], [0.25, Color(0.85, 0.85, 0.92, 0.6)], [1.0, Color(0.9, 0.9, 0.96, 0.0)],
-	])
+	smoke.color_ramp = _ramp(
+		[
+			[0.0, Color(1.0, 0.85, 0.55, 0.9)],
+			[0.25, Color(0.85, 0.85, 0.92, 0.6)],
+			[1.0, Color(0.9, 0.9, 0.96, 0.0)],
+		]
+	)
 
 
 static func _curve(points: Array) -> Curve:
@@ -385,7 +402,8 @@ static func tumble_offset(u: float, kind: String, reduced: bool) -> Transform3D:
 	var turn := Basis(Vector3.FORWARD, roll) * Basis(Vector3.RIGHT, pitch)
 	# Um den Schwerpunkt drehen, dann anheben.
 	return (
-		Transform3D(Basis.IDENTITY, pivot + Vector3.UP * lift) * Transform3D(turn, Vector3.ZERO)
+		Transform3D(Basis.IDENTITY, pivot + Vector3.UP * lift)
+		* Transform3D(turn, Vector3.ZERO)
 		* Transform3D(Basis.IDENTITY, -pivot)
 	)
 
@@ -395,29 +413,34 @@ func offset_for(node: Node3D) -> Variant:
 	if not is_instance_valid(host):
 		return null
 	if node == host.camera:
-		if assist <= 0.001:
-			return null
-		var eased: float = assist * assist * (3.0 - 2.0 * assist)
-		return Transform3D(Basis.IDENTITY, Vector3(0.0, ASSIST_UP * eased, ASSIST_BACK * eased))
-	var key: int = -1
-	if node != host.player:
-		key = -2
-		var index: int = 0
-		for kart in host.opponents:
-			if kart == node:
-				key = index
-				break
-			index += 1
-		if key < 0:
-			return null
-	if not tumbles.has(key):
+		return _camera_offset()
+	var key: int = _racer_key(node)
+	if key < -1 or not tumbles.has(key):
 		return null
 	var record: Dictionary = tumbles[key]
-	var u: float = float(record.age) / float(record.total)
 	var kind: String = "mild" if key == -1 else ("rocket" if str(record.kind) == "rocket" else "")
 	if kind.is_empty():
 		return null
-	return tumble_offset(u, kind, reduced_motion)
+	return tumble_offset(float(record.age) / float(record.total), kind, reduced_motion)
+
+
+func _camera_offset() -> Variant:
+	if assist <= 0.001:
+		return null
+	var eased: float = assist * assist * (3.0 - 2.0 * assist)
+	return Transform3D(Basis.IDENTITY, Vector3(0.0, ASSIST_UP * eased, ASSIST_BACK * eased))
+
+
+## -1 = Kind, 0.. = Rivale, -2 = kein Fahrer.
+func _racer_key(node: Node3D) -> int:
+	if node == host.player:
+		return -1
+	var index: int = 0
+	for kart in host.opponents:
+		if kart == node:
+			return index
+		index += 1
+	return -2
 
 
 ## Größte momentane Anzeige-Hebung eines Fahrers (m), für Tests und Messung.
@@ -461,7 +484,9 @@ func tick(delta: float) -> void:
 	if reduced_motion:
 		want_assist = false
 		want_pip = -99
-	assist = move_toward(assist, 1.0 if want_assist else 0.0, delta / (0.35 if want_assist else 0.6))
+	assist = move_toward(
+		assist, 1.0 if want_assist else 0.0, delta / (0.35 if want_assist else 0.6)
+	)
 	if want_pip >= 0 and pip_time <= 0.0:
 		pip_target = want_pip
 		pip_time = PIP_SECONDS
@@ -507,7 +532,9 @@ func _on_main_screen(point: Vector3) -> bool:
 		return false
 	var screen: Vector2 = camera.unproject_position(point)
 	var size: Vector2 = camera.get_viewport().get_visible_rect().size
-	return Rect2(Vector2(size.x * 0.04, size.y * 0.06), size * Vector2(0.92, 0.88)).has_point(screen)
+	return Rect2(Vector2(size.x * 0.04, size.y * 0.06), size * Vector2(0.92, 0.88)).has_point(
+		screen
+	)
 
 
 func _feed_flight_sound(delta: float) -> void:
@@ -516,16 +543,29 @@ func _feed_flight_sound(delta: float) -> void:
 		return
 	var nearest: float = INF
 	for entry in host.item_runtime.projectiles if is_instance_valid(host.item_runtime) else []:
-		if str(entry.kind) == "homing" and is_instance_valid(entry.node) and (entry.node as Node3D).is_inside_tree():
-			nearest = minf(nearest, host.camera.global_position.distance_to((entry.node as Node3D).global_position))
+		if (
+			str(entry.kind) == "homing"
+			and is_instance_valid(entry.node)
+			and (entry.node as Node3D).is_inside_tree()
+		):
+			nearest = minf(
+				nearest,
+				host.camera.global_position.distance_to((entry.node as Node3D).global_position)
+			)
 	if nearest == INF:
 		_last_rocket_distance = -1.0
 		return
 	# Lauter und heller, je näher die Rakete ist; leicht höher beim Herankommen.
-	var closing: float = 0.0 if _last_rocket_distance < 0.0 else (_last_rocket_distance - nearest) / maxf(delta, 0.001)
+	var closing: float = (
+		0.0
+		if _last_rocket_distance < 0.0
+		else (_last_rocket_distance - nearest) / maxf(delta, 0.001)
+	)
 	_last_rocket_distance = nearest
 	var gain: float = clampf(1.15 - nearest / 45.0, 0.12, 1.0)
-	var pitch: float = clampf(1.0 + closing / 140.0 + (1.0 - clampf(nearest / 45.0, 0.0, 1.0)) * 0.12, 0.8, 1.3)
+	var pitch: float = clampf(
+		1.0 + closing / 140.0 + (1.0 - clampf(nearest / 45.0, 0.0, 1.0)) * 0.12, 0.8, 1.3
+	)
 	if audio.has_method("set_loop"):
 		audio.set_loop("rocket_fly", gain, pitch)
 
@@ -555,7 +595,6 @@ func _ensure_pip() -> void:
 	_pip_frame.add_child(container)
 	_pip_viewport = SubViewport.new()
 	_pip_viewport.name = "HitCamViewport"
-	_pip_viewport.size = Vector2i(384, 216)
 	_pip_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_pip_viewport.msaa_3d = Viewport.MSAA_DISABLED
 	container.add_child(_pip_viewport)
@@ -587,14 +626,17 @@ func _update_pip() -> void:
 	_pip_frame.size = frame_size + Vector2(8, 8)
 	# Oben links unter der Kopfzeile: Karte, Item-Tasten und Lenkrad bleiben frei.
 	_pip_frame.position = Vector2(18.0, parent_size.y * 0.12)
-	_pip_viewport.size = Vector2i(int(frame_size.x), int(frame_size.y))
+	(_pip_viewport.get_parent() as Control).custom_minimum_size = frame_size
 	var kart: Node3D = host.opponents[pip_target]
 	var forward: Vector3 = -kart.global_basis.z
 	forward.y = 0.0
 	forward = forward.normalized() if forward.length() > 0.1 else Vector3.FORWARD
 	var side: Vector3 = forward.cross(Vector3.UP).normalized()
 	# Ruhiger Blick seitlich von vorn auf den Rivalen; folgt nur seiner Fahrt.
-	var focus: Vector3 = host.world.position_at(host.opponent_distances[pip_target], host.opponent_lanes[pip_target]) + Vector3.UP * 1.1
+	var focus: Vector3 = (
+		host.world.position_at(host.opponent_distances[pip_target], host.opponent_lanes[pip_target])
+		+ Vector3.UP * 1.1
+	)
 	var eye: Vector3 = focus + forward * 6.5 + side * 4.0 + Vector3.UP * 2.2
 	_pip_camera.global_transform = Transform3D(Basis.looking_at(focus - eye, Vector3.UP), eye)
 	_pip_camera.current = true
@@ -661,8 +703,11 @@ func _sync_trails() -> void:
 			break
 		node.set_meta("flight_trail", true)
 		var trail := {
-			"source": node, "points": [], "smoke": _ribbon("RocketSmokeTrail", _smoke_material),
-			"core": _ribbon("RocketGlowCore", _core_material), "spacing": 0.0,
+			"source": node,
+			"points": [],
+			"smoke": _ribbon("RocketSmokeTrail", _smoke_material),
+			"core": _ribbon("RocketGlowCore", _core_material),
+			"spacing": 0.0,
 		}
 		_trails.append(trail)
 		stats.trails += 1
@@ -708,14 +753,22 @@ func _advance_trail(trail: Dictionary, delta: float, eye: Vector3) -> bool:
 		if exhaust != null and not exhaust.visible:
 			alive = false
 	if alive:
-		var nozzle: Vector3 = (source as Node3D).global_transform * Vector3(0, 0, PODS.NOZZLE_Z * ROCKET_SCALE + 0.25)
+		var nozzle: Vector3 = (
+			(source as Node3D).global_transform * Vector3(0, 0, PODS.NOZZLE_Z * ROCKET_SCALE + 0.25)
+		)
 		var budget: int = int(TRAIL_POINTS[quality])
 		var spacing: float = 0.28
 		if points.size() >= 2:
 			var span: float = float(points[-1].age) - float(points[0].age)
-			spacing = maxf(0.28, nozzle.distance_to(points[0].position) / maxf(1.0, budget - 2.0)) if span > 0.0 else spacing
+			spacing = (
+				maxf(0.28, nozzle.distance_to(points[0].position) / maxf(1.0, budget - 2.0))
+				if span > 0.0
+				else spacing
+			)
 		if points.is_empty() or points[-1].position.distance_to(nozzle) >= spacing:
-			var jitter := Vector3(randf_range(-1, 1), randf_range(-0.3, 0.6), randf_range(-1, 1)) * 0.45
+			var jitter := (
+				Vector3(randf_range(-1, 1), randf_range(-0.3, 0.6), randf_range(-1, 1)) * 0.45
+			)
 			points.append({"position": nozzle, "age": 0.0, "drift": jitter})
 			while points.size() > budget:
 				points.pop_front()
@@ -748,12 +801,18 @@ static func smoke_color(age: float) -> Color:
 	var hot := Color(1.0, 0.78, 0.45, 0.95)
 	var warm := Color(0.92, 0.66, 0.56, 0.92)
 	var smoke := Color(0.74, 0.74, 0.82, 0.86)
-	var colour: Color = hot.lerp(warm, clampf(t / 0.06, 0.0, 1.0)) if t < 0.06 else warm.lerp(smoke, clampf((t - 0.06) / 0.2, 0.0, 1.0))
+	var colour: Color = (
+		hot.lerp(warm, clampf(t / 0.06, 0.0, 1.0))
+		if t < 0.06
+		else warm.lerp(smoke, clampf((t - 0.06) / 0.2, 0.0, 1.0))
+	)
 	colour.a *= 1.0 - pow(t, 1.6)
 	return colour
 
 
-func _draw_ribbon(mesh: ImmediateMesh, points: Array, eye: Vector3, life: float, core: bool) -> void:
+func _draw_ribbon(
+	mesh: ImmediateMesh, points: Array, eye: Vector3, life: float, core: bool
+) -> void:
 	mesh.clear_surfaces()
 	var first: int = 0
 	while first < points.size() and float(points[first].age) >= life:

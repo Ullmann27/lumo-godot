@@ -93,7 +93,9 @@ func end_tick() -> void:
 			if entry.prev.origin.distance_to(now.origin) > SNAP_DISTANCE:
 				entry.prev = now
 		else:
-			_entries[id] = {"node": node, "prev": now, "curr": now, "shown": false, "shown_transform": now}
+			_entries[id] = {
+				"node": node, "prev": now, "curr": now, "shown": false, "shown_transform": now
+			}
 	for id in _entries.keys():
 		if not seen.has(id):
 			_entries.erase(id)
@@ -115,7 +117,11 @@ func _wanted_nodes() -> Array:
 func _process(_delta: float) -> void:
 	if _entries.is_empty():
 		return
-	var fraction: float = clampf(manual_fraction, 0.0, 1.0) if manual else clampf(Engine.get_physics_interpolation_fraction(), 0.0, 1.0)
+	var fraction: float = (
+		clampf(manual_fraction, 0.0, 1.0)
+		if manual
+		else clampf(Engine.get_physics_interpolation_fraction(), 0.0, 1.0)
+	)
 	for id in _entries:
 		var entry: Dictionary = _entries[id]
 		var node: Node3D = entry.node
