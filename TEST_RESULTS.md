@@ -1,5 +1,15 @@
 # TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
 
+## Nachtrag 18.11.2026, Teil 2 (Stand `8ec2910`, alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, kein Mobile-Renderer)
+
+Zusammengeführt und auf dem jeweils zusammengeführten Stand geprüft (headless, ohne `ERROR`-Zeilen):
+- **Echter Lumo in Schatzsuche, Rhythmus, Home und Lernszenen** (`60127d0`, `94ceb3a`): `real_lumo_everywhere_regression` 344 Prüfungen.
+- **Kart-Item-System** (`ddf5bc7`, Korrekturen `a3ddf7e`): Sternraketen mit Haltern links/rechts, Zielerfassung, Schildkuppel, Falle, Glücksstern. `kart_gameplay_items_regression` 139 Prüfungen. Zwei Fehler aus der CI behoben: fehlender Schlüssel `pair` bei Fallen, aufschaukelndes Blickfeld (`p_fov > 179`).
+- **Gerenderte Renn-Knöpfe und neues Renn-HUD** (`4e632df`): `kart_hud_controls_regression` 978 Prüfungen; dazu `kart_complete_flow`, `kart_regression`, `kart_race_bridge`, `kart_result_reachability` (11 Displaygrößen), `kart_modes`, `kart_real_lumo` (13); mit Renderer `kart_pause_layout`, `kart_menu_flow`, `kart_start_hero`.
+- **Fahr-Effekte an echten Fahrzuständen** (`8ec2910`): Funken und Schleifspur an der Leitplanke, Bremsspur und -rauch, Turbo, Drift in vier Stufen, Staub je Untergrund, Landung, Motor in drei Lastschichten. `kart_drive_fx_regression` 120 Prüfungen (u. a. gerade Fahrt erzeugt nichts, Pause friert ein, Budgets je Profil); dazu `kart_regression`, `kart_complete_flow`, `kart_gameplay_items` (139), `kart_hud_controls`, `kart_physics`, `kart_audio`, `kart_real_lumo` (13), `kart_race_bridge`, `kart_modes`; `kart_courses_driving_regression -- --tracks=sonnenhafen,volcano_night`: je zwei Runden ohne Rücksetzer. Messung des Helfers (HIGH, 1600x720, gl_compatibility): +4 Zeichenaufrufe (277 → 281).
+
+Ehrliche Einordnung der Fahr-Effekte nach Sicht der Engine-Bilder: Funken, Turbo-Linien und Lava-Glut wirken; Bremsspur (Leiter-Muster), Bremsrauch und Staub auf Sand/Wald sind noch zu schwach, die Turbo-Flamme ist ein Strahl. Zweite Runde läuft. Klänge wurden nur rechnerisch geprüft, nicht angehört.
+
 ## Nachtrag 18.11.2026 (Stand `786f3fa`, alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS)
 
 Zusammengeführt und geprüft:
