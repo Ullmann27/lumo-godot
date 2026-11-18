@@ -20,7 +20,7 @@ uniform float snow_height = 44.0;
 uniform float cloud_shadow : hint_range(0.0, 1.0) = 0.32;
 uniform vec2 cloud_wind = vec2(0.0045, 0.0018);
 uniform float detail_strength : hint_range(0.0, 2.0) = 1.0;
-uniform vec4 grass_tint : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 grass_tint : source_color = vec4(0.84, 0.92, 0.74, 1.0);
 
 varying vec3 world_pos;
 varying vec3 world_nrm;
@@ -49,7 +49,7 @@ void fragment() {
 	vec3 g1 = texture(grass_albedo, p * 0.23).rgb;
 	vec3 g2 = texture(grass_albedo, p * 0.057 + vec2(0.37, 0.71)).rgb;
 	vec3 grass = mix(g1, g2, 0.4);
-	grass *= mix(vec3(0.80, 0.93, 0.74), vec3(1.10, 1.05, 0.86), smoothstep(0.25, 0.75, macro));
+	grass *= mix(vec3(0.72, 0.88, 0.64), vec3(1.12, 1.06, 0.80), smoothstep(0.2, 0.8, macro));
 	grass *= mix(1.0, 0.9, smoothstep(0.55, 0.85, noise_near.g));
 	grass *= grass_tint.rgb;
 	vec3 dirt = texture(dirt_albedo, p * 0.21).rgb;
@@ -75,7 +75,8 @@ void fragment() {
 
 	vec3 col = grass;
 	col = mix(col, mix(grass, dirt, 0.65), yard_w);
-	col = mix(col, dirt * vec3(1.06, 1.0, 0.93), path_w);
+	vec3 path = mix(dirt, vec3(dot(dirt, vec3(0.33))) * vec3(1.05, 0.98, 0.88), 0.45);
+	col = mix(col, path, path_w * 0.92);
 	col = mix(col, sand, sand_w);
 	col = mix(col, rock, rock_w);
 	col = mix(col, vec3(0.93, 0.95, 0.98) * (0.92 + noise_near.r * 0.1), snow_w);

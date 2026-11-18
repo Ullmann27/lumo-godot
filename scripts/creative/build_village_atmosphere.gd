@@ -11,15 +11,15 @@ const SHADOWS := {
 }
 ## Zwei Schlüsselbilder; dazwischen wird weich gemischt.
 const DAY := {
-	"sun_color": Color("fff0d6"), "sun_energy": 1.35, "sun_pitch": -38.0, "sun_yaw": -32.0,
+	"sun_color": Color("fff1da"), "sun_energy": 1.6, "sun_pitch": -38.0, "sun_yaw": -32.0,
 	"sky_top": Color("2f6fb4"), "sky_horizon": Color("b9d4e4"), "ground_horizon": Color("a7bccb"),
-	"ambient": Color("b7c9dc"), "ambient_energy": 0.62, "fog": Color("a9c2d6"), "fog_density": 0.0026,
-	"exposure": 0.98, "night": 0.0, "fill": 0.18,
+	"ambient": Color("aac2da"), "ambient_energy": 0.42, "fog": Color("a4bfd6"), "fog_density": 0.0015,
+	"exposure": 0.9, "night": 0.0, "fill": 0.18,
 }
 const EVENING := {
-	"sun_color": Color("ff9c5a"), "sun_energy": 0.85, "sun_pitch": -9.0, "sun_yaw": -68.0,
+	"sun_color": Color("ffa868"), "sun_energy": 1.05, "sun_pitch": -15.0, "sun_yaw": -68.0,
 	"sky_top": Color("34407a"), "sky_horizon": Color("f2a072"), "ground_horizon": Color("8c6f86"),
-	"ambient": Color("8f86b0"), "ambient_energy": 0.5, "fog": Color("c9958a"), "fog_density": 0.0034,
+	"ambient": Color("8a8fbf"), "ambient_energy": 0.42, "fog": Color("b88f96"), "fog_density": 0.0024,
 	"exposure": 1.05, "night": 1.0, "fill": 0.12,
 }
 
@@ -31,28 +31,28 @@ static func apply(root: Node3D, tier: String) -> void:
 		return
 	var env := world.environment
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_white = 5.0
+	env.tonemap_white = 6.0
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_sky_contribution = 0.0
 	env.fog_enabled = true
 	env.fog_mode = Environment.FOG_MODE_EXPONENTIAL
-	env.fog_sky_affect = 0.35
-	env.fog_aerial_perspective = 0.25
+	env.fog_sky_affect = 0.2
+	env.fog_aerial_perspective = 0.06
 	env.fog_sun_scatter = 0.18
 	env.fog_height = 6.0
 	env.fog_height_density = 0.0 if tier == "low" else 0.012
 	env.glow_enabled = tier != "low"
-	env.glow_intensity = 0.55
+	env.glow_intensity = 0.35
 	env.glow_strength = 0.9
 	env.glow_bloom = 0.04
-	env.glow_hdr_threshold = 1.1
-	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
+	env.glow_hdr_threshold = 1.25
+	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SCREEN
 	env.ssao_enabled = tier == "high"
 	env.ssao_radius = 1.4
 	env.ssao_intensity = 1.1
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.08
-	env.adjustment_contrast = 1.06
+	env.adjustment_saturation = 1.16
+	env.adjustment_contrast = 1.12
 	var shadow: Dictionary = SHADOWS.get(tier, SHADOWS.medium)
 	sun.shadow_enabled = bool(shadow.enabled)
 	sun.directional_shadow_max_distance = float(shadow.distance)

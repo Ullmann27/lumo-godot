@@ -1,5 +1,6 @@
 // LUMO Dorfwelt · ein Material für alle Gebäude, Requisiten und Bäume.
 // UV  = Texturkoordinate in Metern / Kachelgröße (wiederholend),
+// COLOR.rgb = Zielfarbe relativ zum Kachelmittel (0.5 = Textur unverändert),
 // UV2 = Kachelmitte im 4x4-Atlas, COLOR.rgb = Tönung, 1-COLOR.a = Windgewicht.
 // Fensterkacheln leuchten abends (Alpha des Atlas = Leuchtmaske).
 // Läuft in Mobile und gl_compatibility (nur textureGrad und Ableitungen).
@@ -45,7 +46,8 @@ void fragment() {
 	vec2 gy = dFdy(UV) * 0.25 * 0.976;
 	vec4 albedo = textureGrad(atlas_albedo, auv, gx, gy);
 	vec3 nrm = textureGrad(atlas_normal, auv, gx, gy).rgb;
-	vec3 col = albedo.rgb * COLOR.rgb;
+	// COLOR.rgb is authored as colour / (2 · tile mean): 0.5 keeps the texture.
+	vec3 col = albedo.rgb * COLOR.rgb * 2.0;
 	col = mix(col, col * tint_mix.rgb, tint_mix.a);
 	ALBEDO = col;
 	NORMAL_MAP = nrm;

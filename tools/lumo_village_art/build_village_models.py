@@ -40,9 +40,51 @@ TILES = [
 TILE_SCALE = {
     "plaster": 1.6, "planks": 1.6, "beam": 1.1, "roof_clay": 1.7, "roof_slate": 1.7,
     "thatch": 1.5, "stone_wall": 1.5, "cobble": 1.4, "cloth": 1.2, "field": 3.0,
-    "metal": 1.0, "bark": 0.9, "leaves": 1.3, "plain": 2.0,
+    "metal": 1.0, "bark": 0.9, "leaves": 0.55, "plain": 2.0,
 }
 FIT = {"window", "door"}
+
+
+def _tile_means():
+    """Mean linear colour of every atlas tile, so vertex tints aim at the
+    requested colour while keeping the texture detail (tint = colour / 2·mean)."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return {}
+    path = ROOT / "assets/creative/village3d/textures/village_atlas_albedo.png"
+    if not path.exists():
+        return {}
+    img = Image.open(path).convert("RGB")
+    tile = img.size[0] // 4
+    means = {}
+    for index, name in enumerate(TILES):
+        x, y = (index % 4) * tile, (index // 4) * tile
+        crop = img.crop((x, y, x + tile, y + tile)).resize((32, 32))
+        px = list(crop.getdata())
+        lin_px = [[(c / 255.0 / 12.92 if c / 255.0 <= 0.04045 else ((c / 255.0 + 0.055) / 1.055) ** 2.4) for c in q] for q in px]
+        means[name] = tuple(sum(q[i] for q in lin_px) / len(lin_px) for i in range(3))
+    return means
+
+
+TILE_MEANS = _tile_means()
+
+
+NEUTRAL_TILES = {"plain", "plaster", "cloth"}
+
+
+def tint(tile: str, hex_color: str, alpha: float):
+    if hex_color.lower() == "ffffff" or tile not in TILE_MEANS:
+        return (0.5, 0.5, 0.5, alpha)
+    srgb = [int(hex_color[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+    saturation = (max(srgb) - min(srgb)) / max(max(srgb), 1e-5)
+    if tile not in NEUTRAL_TILES and saturation < 0.16:
+        # Grey on a coloured texture means "a little darker/weathered".
+        value = max(srgb)
+        return (0.5 * value, 0.5 * value, 0.5 * value, alpha)
+    target = lin(hex_color)
+    mean = TILE_MEANS[tile]
+    return tuple(min(1.0, target[i] / max(2.0 * mean[i], 0.02)) for i in range(3)) + (alpha,)
 
 
 def lin(hex_color: str, alpha: float = 1.0):
@@ -63,6 +105,7 @@ class Builder:
         self.bm = bmesh.new()
         self.tile = self.bm.faces.layers.int.new("tile")
         self.fit = self.bm.faces.layers.int.new("fit")
+        self.smooth = self.bm.faces.layers.int.new("smooth")
         self.col = self.bm.loops.layers.float_color.new("Color")
         self.stack = [Matrix.Identity(4)]
         self.rng = random.Random(hash(name) & 0xFFFF)
@@ -89,7 +132,7 @@ class Builder:
             return None
         f[self.tile] = TILES.index(tile)
         f[self.fit] = 1 if (fit or tile in FIT) else 0
-        c = lin(color, 1.0 - wave)
+        c = tint(tile, color, 1.0 - wave)
         for loop in f.loops:
             loop[self.col] = c
         return f
@@ -141,26 +184,35 @@ class Builder:
         self.face(ring, tile, color, wave=wave)
         self.pop()
 
-    def blob(self, c, radii, tile="leaves", color="ffffff", subdiv=2, seed=0, jitter=0.18, wave=0.0, flat_bottom=False):
-        """Displaced icosphere: canopies, bushes, hay, rocks."""
+    def blob(self, c, radii, tile="leaves", color="ffffff", subdiv=2, seed=0, jitter=0.18, wave=0.0, flat_bottom=False,
+             smooth=None):
+        """Displaced icosphere with shared vertices: canopies, bushes, hay (smooth), rocks (faceted)."""
+        if smooth is None:
+            smooth = tile in ("leaves", "thatch", "cloth", "plain")
         tmp = bmesh.new()
         bmesh.ops.create_icosphere(tmp, subdivisions=subdiv, radius=1.0)
         r = random.Random(seed)
-        noise = {}
-        for v in tmp.verts:
-            key = (round(v.co.x, 3), round(v.co.y, 3), round(v.co.z, 3))
-            noise[key] = 1.0 + (r.random() - 0.5) * 2 * jitter
         self.push(c)
+        mapped = {}
+        for v in tmp.verts:
+            k = 1.0 + (r.random() - 0.5) * 2 * jitter
+            # tmp is generated in Blender space; read it as Godot xyz (symmetric shape).
+            x, y, z = v.co.x * radii[0] * k, v.co.z * radii[1] * k, v.co.y * radii[2] * k
+            if flat_bottom:
+                y = max(y, -radii[1] * 0.15)
+            mapped[v.index] = self._v((x, y, z))
+        col = tint(tile, color, 1.0 - wave)
         for f in tmp.faces:
-            pts = []
-            for v in f.verts:
-                k = noise[(round(v.co.x, 3), round(v.co.y, 3), round(v.co.z, 3))]
-                # tmp is generated in Blender space; read it as Godot xyz (symmetric shape).
-                x, y, z = v.co.x * radii[0] * k, v.co.z * radii[1] * k, v.co.y * radii[2] * k
-                if flat_bottom:
-                    y = max(y, -radii[1] * 0.15)
-                pts.append((x, y, z))
-            self.face(list(reversed(pts)), tile, color, wave=wave)
+            verts = [mapped[v.index] for v in reversed(f.verts)]
+            try:
+                nf = self.bm.faces.new(verts)
+            except ValueError:
+                continue
+            nf[self.tile] = TILES.index(tile)
+            nf[self.fit] = 0
+            nf[self.smooth] = 1 if smooth else 0
+            for loop in nf.loops:
+                loop[self.col] = col
         self.pop()
         tmp.free()
 
@@ -388,11 +440,17 @@ class Builder:
         obj.parent = parent
         mat = bpy.data.materials.get("village_atlas") or bpy.data.materials.new("village_atlas")
         mesh.materials.append(mat)
+        smooth_layer = mesh.attributes.get("smooth")
+        flags = [0] * len(mesh.polygons)
+        if smooth_layer is not None:
+            smooth_layer.data.foreach_get("value", flags)
         for p in mesh.polygons:
-            p.use_smooth = False
+            p.use_smooth = bool(flags[p.index])
         attr = mesh.color_attributes.get("Color")
         if attr is not None:
             mesh.color_attributes.active_color = attr
+            mesh.color_attributes.active_color_name = attr.name
+            mesh.color_attributes.render_color_index = list(mesh.color_attributes).index(attr)
         return obj
 
 

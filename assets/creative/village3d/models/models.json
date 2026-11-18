@@ -1,254 +1,254 @@
 {
  "bakery": {
-  "bytes": 90016,
+  "bytes": 102192,
   "parts": [],
-  "sha256": "608db373243e3027936957396e2ba50a3f745aed54bda8b90e3a50f1a57fb10f",
+  "sha256": "593df92b881f43ee8a95a84663c07df308fa875ff3fc5edb5df70536db657c8a",
   "triangles": 730
  },
  "beacon": {
-  "bytes": 22952,
+  "bytes": 25988,
   "parts": [],
-  "sha256": "61839649a797019ba1beba6f77e13478d5c52c97b2facb766d6ea8b5fe69cb91",
+  "sha256": "3e4e30703712259d0ce1b59a7fbc42c6fcd10fdd9c8c782fe93b117c32ba15a7",
   "triangles": 216
  },
  "bird": {
-  "bytes": 5676,
+  "bytes": 6408,
   "parts": [],
-  "sha256": "0b61660f7c729a59d4c68edfe357db5eca035f5ac125909c022394895d4f6e08",
+  "sha256": "5509d666d1b536ad74b33b80f2ac4ba40e642f66d076140aac1036ec18cebbdc",
   "triangles": 24
  },
  "boat": {
-  "bytes": 13192,
+  "bytes": 14948,
   "parts": [],
-  "sha256": "d995b309eddff4961b19c243fde27675175f5e9a8644752dd87602217a3ef21c",
+  "sha256": "1ad85f05e1453864688ff663cc6ce3a2905bb46ff9c564f31fc88d2102f3fdd0",
   "triangles": 84
  },
  "bridge": {
-  "bytes": 54376,
+  "bytes": 61700,
   "parts": [],
-  "sha256": "b30fcd46b08db7b7dd444ecaaa89d12def8970d6c7bbd7c3dc7e88713154b792",
+  "sha256": "2c02bcf337d749f8d2a80dd631ee6ecd0e9942ed17de8e6f3b218929e36b5272",
   "triangles": 452
  },
  "bush": {
-  "bytes": 74600,
+  "bytes": 84460,
   "parts": [],
-  "sha256": "d5a7e029ab3bfbd3bdfa847a4d10c966ac4e482a76780840937548b9024d28aa",
+  "sha256": "34556f8bf2f5f0db5b0c7864b82d47c22c021daa85091af93fe8d7a855542b1c",
   "triangles": 420
  },
  "cart": {
-  "bytes": 33960,
+  "bytes": 37960,
   "parts": [],
-  "sha256": "a79e28844979341b38efa068ad1f93a314c674877e008b039b38018ced31b45f",
+  "sha256": "4536e46ae2cc47e9d63741edae0fe0d40b8d68a5d3f1b7c0758c76bc8fbbb81f",
   "triangles": 256
  },
  "chicken": {
-  "bytes": 10820,
+  "bytes": 12260,
   "parts": [],
-  "sha256": "9a9c753c76466009db99705aed0c219fcb37f8786df008e71b7825049ed31ee3",
+  "sha256": "f4ef6c13758880a61e5bfe055954e8f1859d0350fb72f941a6bfb40a1a7275fc",
   "triangles": 58
  },
  "clinic": {
-  "bytes": 200844,
+  "bytes": 228352,
   "parts": [],
-  "sha256": "1292108ca98cc4d0a56b8539fe0b6cfeaec43191207bd302bac6dd10f494fd65",
+  "sha256": "1257ed0b3b090d820d125601a71392e827e16702214dc8bfb938388bb8ea2a29",
   "triangles": 1318
  },
  "cow": {
-  "bytes": 15152,
+  "bytes": 17168,
   "parts": [],
-  "sha256": "e78f593aa0b3bf77de94627694585836aa27282496529a013c78fadb20d0175d",
+  "sha256": "822a811e15d8e60ab767cb42ffd5ebf7a8f434034e3a3293f7afbd012fbe4505",
   "triangles": 112
  },
  "dock": {
-  "bytes": 42588,
+  "bytes": 48280,
   "parts": [],
-  "sha256": "a074feb029ddfca58eefa2b11a9ef750c4acac1d632f439541feb5b7d4e5fc8b",
+  "sha256": "e94c4c0304569034b65afcbf3c3aea1433aca4593ba81838105839cf01e05d53",
   "triangles": 392
  },
  "farm": {
-  "bytes": 220012,
+  "bytes": 244572,
   "parts": [],
-  "sha256": "8be0a1b7f50d37a24ad204459e25e68494d02d453f1bc863b5a35057f59dcc21",
+  "sha256": "1d73749be17a672d20583070dcb9f2449fb879317e465890d2828db3fe4f3210",
   "triangles": 1382
  },
  "fence": {
-  "bytes": 11400,
+  "bytes": 12904,
   "parts": [],
-  "sha256": "f70e493bc868393e32a52449924c98cbf1ec0259b0dd23f2f7ebad90fad775fe",
+  "sha256": "cf3404fa4ece6d733855dc3c2c4a5687c0fd62b675adcd52f06295f909d62dac",
   "triangles": 84
  },
  "fir_low": {
-  "bytes": 4896,
+  "bytes": 5516,
   "parts": [],
-  "sha256": "caede7f60f70e50b04a1b90ff7d7239b0913054c82cd812b209f57cd5287b2b3",
+  "sha256": "0439e11521eb885b1ad0598a8b906ca8be21ee660899ce870b0858b8fb46e044",
   "triangles": 28
  },
  "flowers": {
-  "bytes": 64168,
+  "bytes": 72968,
   "parts": [],
-  "sha256": "bde1272eac47b7ea8ff77f6213482736a4a04434e16ed038518fdcbf3baaa056",
+  "sha256": "2d60d4c537c84694d313976301a64cfea264f3250aab6fcdd1b0103cb239b419",
   "triangles": 360
  },
  "grain": {
-  "bytes": 144240,
+  "bytes": 163700,
   "parts": [
    "Spin_Blades"
   ],
-  "sha256": "27877db305c655a769295429756998fabd745207715b0a5fc02f04d6a94d5b36",
+  "sha256": "46f2e8c36a13e12afa414b357e2595736fab1dc8373409a52855013fe7a075ff",
   "triangles": 1264
  },
  "grass_tuft": {
-  "bytes": 4620,
+  "bytes": 5208,
   "parts": [],
-  "sha256": "c20ef6c31a7b9848570866b82f2fa792b4af6099d89dc3a2aa0937e7acb48b3b",
+  "sha256": "61dca9600be0c77184bdaad4bcd2da90ace8ccfb7bb91c2580921d14f51603a9",
   "triangles": 18
  },
  "house_a": {
-  "bytes": 200700,
+  "bytes": 228112,
   "parts": [],
-  "sha256": "d74473ac39b4f6995446488c81861517d3a8fde3a4a9229cfc60c6bcb72f04c4",
+  "sha256": "2d5fcb86777311d61175a2ad31314b8c016d68730739d9ad223d99e759c3b9ec",
   "triangles": 1408
  },
  "house_b": {
-  "bytes": 216484,
+  "bytes": 245992,
   "parts": [],
-  "sha256": "d8110fb38e8340fc02d71a8b8140df8407749e0020fa1234e34e64c732fde7c7",
+  "sha256": "152c3910594b7148b892f5c4faa94680e647e9faaf2d14282c10ae64257f9ddf",
   "triangles": 1442
  },
  "house_c": {
-  "bytes": 396720,
+  "bytes": 451012,
   "parts": [],
-  "sha256": "4237e2d2d328c884d8d8198cc07a3adc7777c554b0087743dafc2176e489998f",
+  "sha256": "b4293a309b171a4d8de75c629e26b557a3d22064e9460a95a789f2a869c5ff38",
   "triangles": 2722
  },
  "lantern": {
-  "bytes": 9780,
+  "bytes": 11056,
   "parts": [],
-  "sha256": "ccc1b79305db96e52cd8ec25ced7476f596f7b3ab6bbf7db6ceac5df8c3d37df",
+  "sha256": "ed59b3d88244db21001a3b9b962179fee55072401858b4cf23c37681dca7467e",
   "triangles": 74
  },
  "lumber": {
-  "bytes": 84108,
+  "bytes": 95424,
   "parts": [
    "Spin_Saw"
   ],
-  "sha256": "26584183b829182a4e6793ab9fe5c17a0934843e16979a5af11705ec78e84da4",
+  "sha256": "22857815bfd3127b57f23b7bfafc9bd9b5b45cb969887e8586b6957b3764a491",
   "triangles": 744
  },
  "market": {
-  "bytes": 178108,
+  "bytes": 202492,
   "parts": [],
-  "sha256": "9d34bc0f8065de174d8c82783319ac388e8c627355c5513b8ce45500288dcd1a",
+  "sha256": "407dd5b2777cfad05432bab9ec228893d17639658dc797674b148cb1c4d3f007",
   "triangles": 1168
  },
  "quarry": {
-  "bytes": 79304,
+  "bytes": 84452,
   "parts": [],
-  "sha256": "1180e466eb4b2445a9dea0c6341a33b101a86dc95b452e93e5632300a7934ab3",
+  "sha256": "ed0750ae24802e5b2245136298eb88ccc4df1345d2735127d6f3073221d3bc94",
   "triangles": 574
  },
  "reeds": {
-  "bytes": 19924,
+  "bytes": 22580,
   "parts": [],
-  "sha256": "7a1d6a62a7f90a4cd9a06a50592cd9b88ac8d25eda06ef60fdaabbfa399a2132",
+  "sha256": "7a568572ce305620947861ed5c0c1fabf76e8f7b5c6da36c9093987ba45fd660",
   "triangles": 160
  },
  "road": {
-  "bytes": 118204,
+  "bytes": 134368,
   "parts": [],
-  "sha256": "5e0bd2af41fabbf42bf410e6705e3e6625008d094317d3e07cee9cb7622d0356",
+  "sha256": "663b6f9e163717072bb3e5421b90c28532ba91f7eb8dca3bf635e50fe2439295",
   "triangles": 780
  },
  "rock_a": {
-  "bytes": 18912,
+  "bytes": 18076,
   "parts": [],
-  "sha256": "c715f6152a6bd9421165547373652ffbbf6bf88bbf4e24531f94683d338f3d4c",
+  "sha256": "994ecc69517af8b9f33274c1293c4283e4ffa334664cd7f9f7841caa59202f5a",
   "triangles": 100
  },
  "rock_b": {
-  "bytes": 18912,
+  "bytes": 18844,
   "parts": [],
-  "sha256": "abaa9d29668a891d0346656fba31af743b5a3da6c311a13aaf2b3f799e4a6ed6",
+  "sha256": "ba906119597f5244fcc998e3f21bb6980155554f4e22559542f047bc75d739df",
   "triangles": 100
  },
  "rock_c": {
-  "bytes": 15432,
+  "bytes": 15204,
   "parts": [],
-  "sha256": "4ab88e105cb3d6e57e6d253393ac17637edbeee46ac52798d1d5e6b79f09b927",
+  "sha256": "eabc80b6033873665ddd64d989c253860dd4b34d6965dc30f352369aaff6d44c",
   "triangles": 80
  },
  "scaffold": {
-  "bytes": 53896,
+  "bytes": 61156,
   "parts": [],
-  "sha256": "a01331f6bbd3d4b8b4073c5b7e86dc0560f29312dca4db9ba11859aeec1a1b04",
+  "sha256": "0f9b4188f24bb1c85d92935126164edfeb1e6bd3e3c0ce5e50c453ac75d3a301",
   "triangles": 444
  },
  "school": {
-  "bytes": 209084,
+  "bytes": 237468,
   "parts": [],
-  "sha256": "7168605db462ab2baa03c03606d6362c6352ab0adb2519bfb35ab99b51e06df9",
+  "sha256": "90a878295a25541689c3f3b8df7dc3e4b62c64077994b1621e84f92f5784558b",
   "triangles": 1366
  },
  "sheep": {
-  "bytes": 26000,
+  "bytes": 29392,
   "parts": [],
-  "sha256": "b18b1ca54316712a8af8e9981b4fbd4de6ae4300d37e9681f9dab9e8cee5ec5f",
+  "sha256": "95c4ef767fd77bb6949fabd5f6cd55a88e64e7ddddd49a530ce6e00cde61d8c9",
   "triangles": 164
  },
  "tree_birch": {
-  "bytes": 66292,
+  "bytes": 75364,
   "parts": [],
-  "sha256": "5b54661ba888b854b4ba1a1a48a88ebea1a4cbc37651607cb624992c38b7f09b",
+  "sha256": "5243a0b9b805f642565dcbe4ece8f499f883b3b97c5b243b47b50822688cb0e8",
   "triangles": 400
  },
  "tree_fir": {
-  "bytes": 15728,
+  "bytes": 17824,
   "parts": [],
-  "sha256": "c8a57f3f68f99651aec2fc0ec39320eb5711ac9a54d455eb758b0f6e4a8d81c6",
+  "sha256": "c7983e6924f32621c9215186df995de8f052483facad3790cfca6eb9535c21ca",
   "triangles": 114
  },
  "tree_low": {
-  "bytes": 6744,
+  "bytes": 7620,
   "parts": [],
-  "sha256": "409ade2c9488daa1fdb8b4198372bf791c55b9138038776fe6aa649ddc52654b",
+  "sha256": "d7ca9aaf5776533fe0cb34bc3ad78ab30dc15697f031b20f814d92fb498d9a64",
   "triangles": 36
  },
  "tree_oak": {
-  "bytes": 94296,
+  "bytes": 107096,
   "parts": [],
-  "sha256": "8dba169024498ace669346b4421ca7dc06a7a94d9938c892e9044995e34730c1",
+  "sha256": "65b45443d83ce30ec893abece0d0700c1c978fcb65846d6d80c7d85a82bec960",
   "triangles": 568
  },
  "warehouse": {
-  "bytes": 43280,
+  "bytes": 49084,
   "parts": [],
-  "sha256": "72da42576d44f5de4567cfbb59471819c45470d788af7e306f8989cd608deed9",
+  "sha256": "891591480a63740df022311b3f1c7c07f512ea779b12f4686d44fb6094b0c002",
   "triangles": 370
  },
  "watchtower": {
-  "bytes": 38568,
+  "bytes": 43748,
   "parts": [],
-  "sha256": "5dc930f9ff13e97d07d8ff3108eaa7bd595e9131eb5dafbf2dfd506c8af049be",
+  "sha256": "49e9a64d32af2e66d3463060979dc875f3dc5a76c6c199a07568fc27e14eeb4e",
   "triangles": 318
  },
  "watermill": {
-  "bytes": 108616,
+  "bytes": 123388,
   "parts": [
    "Spin_Wheel"
   ],
-  "sha256": "9216a1534cd8d300b48eac8aea60f2ab1aa2f488101cc280081c70febfd785b2",
+  "sha256": "a94424b91bcab273ea9c1e676fad33d9fcd031d876eb37a3d19e392ddb0a8b7c",
   "triangles": 808
  },
  "well": {
-  "bytes": 98728,
+  "bytes": 112156,
   "parts": [],
-  "sha256": "3f5dbbf2b55a27a49ddc9bbe9ca8fc46401484ac6ba483cd17a0c30d93e22296",
+  "sha256": "f0b530afe732bcd96221a3f6d61df69b4a19dff4cf1138b2d9c45d48083b4239",
   "triangles": 726
  },
  "workshop": {
-  "bytes": 21448,
+  "bytes": 24312,
   "parts": [],
-  "sha256": "98853fc0ef9bb1c1f99e485a1ba91328b65037a99c10412083e226c3f7190d9b",
+  "sha256": "05f92cee8a615ee7dc74712839405a32eda0b9f801611f261069c5516d1566cd",
   "triangles": 168
  }
 }

@@ -132,7 +132,7 @@ def raw_height(x, z):
     peaks = (ridged ** 2.2) * 0.72 + detail * 0.28
     gorge = 0.18 + 0.82 * smoothstep(9.0, 52.0, np.abs(x - river_center(z)))
     edge = smoothstep(285.0, 320.0, np.abs(x)) + smoothstep(-205.0, -240.0, z)
-    h = h + (mountain ** 1.25) * (6.0 + 50.0 * peaks) * np.where(z < 0, gorge, 1.0) + edge * 12.0
+    h = h + (mountain ** 1.05) * (12.0 + 62.0 * peaks) * np.where(z < 0, gorge, 1.0) + edge * 12.0
     for lx, lz, lr in LAKES:
         d = np.sqrt((x - lx) ** 2 + (z - lz) ** 2) + (fbm(x, z, 0.03, 17, 2) - 0.5) * 10.0
         lake = smoothstep(lr + 16.0, lr - 4.0, d)
