@@ -64,7 +64,7 @@ static func build_cup(list: VBoxContainer) -> void:
 ## Belohnungen: jede echte Freischaltung mit Bild; gesperrte nennen die fehlenden Sterne.
 static func build_rewards(list: VBoxContainer, stars: int) -> void:
 	var grid := _grid(list, "RewardCards")
-	grid.set_meta("card_ratio", 1.0)
+	grid.set_meta("card_ratio", 1.22)
 	var next := PATH.next_milestone(stars)
 	for entry in PATH.milestones():
 		var done := stars >= int(entry.stars)
@@ -78,7 +78,7 @@ static func build_rewards(list: VBoxContainer, stars: int) -> void:
 		if not done:
 			card.disabled = true
 			card.locked_text = "%s · noch %d ★" % [entry.kind, int(entry.stars) - stars]
-		card.art_share = 0.62
+		card.art_share = 0.52
 		card.focus_mode = Control.FOCUS_NONE
 		card.mouse_filter = Control.MOUSE_FILTER_PASS
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -114,7 +114,7 @@ static func scale(list: VBoxContainer, k: float, width_dp: float) -> void:
 	for child in list.get_children():
 		if child.has_meta("overlay_grid"):
 			var grid := child as GridContainer
-			var columns := clampi(int(width_dp / 150.0), 2, 4)
+			var columns := clampi(int(width_dp / 150.0), 2, 5)
 			grid.columns = columns
 			grid.add_theme_constant_override("h_separation", roundi(8 * k))
 			grid.add_theme_constant_override("v_separation", roundi(8 * k))

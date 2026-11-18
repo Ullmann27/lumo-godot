@@ -118,7 +118,7 @@ static func _build_modes(menu: Control, select: Callable) -> void:
 		card.accent = look[1]
 		card.lines = PackedStringArray([str(look[2])])
 		card.selected = str(menu.setup.mode) == id
-		card.art_share = 0.5
+		card.art_share = 0.4
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card.pressed.connect(func(): select.call("mode", id))
 		grid.add_child(card)
@@ -169,5 +169,5 @@ static func _layout_modes(grid: GridContainer, area_dp: Vector2, scale_factor: f
 	var height := clampf((area_dp.y - gap * (rows - 1)) / rows, 64.0, 170.0)
 	for card in grid.get_children():
 		card.custom_minimum_size = Vector2(0, floorf(height * scale_factor))
-		card.art_share = 0.5 if height >= 110.0 else 0.0
+		card.art_share = 0.4 if height >= 110.0 else 0.0
 		card.apply_size(scale_factor)

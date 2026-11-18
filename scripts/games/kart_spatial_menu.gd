@@ -613,9 +613,9 @@ func _fit_welcome_camera() -> void:
 			# Nur Figur und Cockpit füllen das Bild (nicht die ganze Kartbreite): Kopf, Ohren
 			# und Oberkörper der (teils geskinnten) Figuren groß, Räder dürfen angeschnitten sein.
 			points.clear()
-			for x in [-0.62, 0.62]:
-				for y in [0.55, 2.05]:
-					for z in [-0.7, 0.45]:
+			for x in [-0.5, 0.5]:
+				for y in [0.95, 2.02]:
+					for z in [-0.55, 0.4]:
 						points.append(preview_kart.to_global(Vector3(x, y, z)))
 		if garage_stage and not points.is_empty():
 			# Bildmitte = Mitte aus Kart, Lumo und Werkbank (nicht der Drehteller allein),
