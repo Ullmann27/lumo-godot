@@ -257,7 +257,7 @@ func _check_stunt_jump() -> void:
 			jump = kicker
 	assert(not jump.is_empty(), "Stunt jump exists")
 	var tunnel: float = STUNT.tunnel_start(game.world)
-	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.JUMP_LEAD_M), "Jump at Position B")
+	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m()), "Jump at Position B")
 	assert(
 		float(jump.start) > float(game.world.loop_layout.start) + LOOP.ADVANCE,
 		"Ramp after the loop exit"
