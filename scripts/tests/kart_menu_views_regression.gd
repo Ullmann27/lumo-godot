@@ -65,12 +65,18 @@ func _run() -> void:
 		_check(card.art != null, "%s hat ein Bild" % card.name)
 		if card.art != null:
 			pictures[card.art.resource_path] = true
-			_check(card.art.resource_path.ends_with(str(entry.id) + ".webp"), "%s zeigt sein eigenes Bild" % card.name)
+			_check(
+				card.art.resource_path.ends_with(str(entry.id) + ".webp"),
+				"%s zeigt sein eigenes Bild" % card.name
+			)
 		var open: bool = catalog.unlocked(entry, int(game.garage.stars), game.garage.unlocked_ids)
-		_check(card.disabled == not open, "%s ist nur gesperrt, wenn Sterne fehlen" % card.name)
+		_check(card.disabled != open, "%s ist nur gesperrt, wenn Sterne fehlen" % card.name)
 		if not open:
 			var missing: int = int(entry.unlock) - int(game.garage.stars)
-			_check(card.locked_text == "Noch %d ★" % missing, "%s nennt die fehlenden Sterne" % card.name)
+			_check(
+				card.locked_text == "Noch %d ★" % missing,
+				"%s nennt die fehlenden Sterne" % card.name
+			)
 		var height_dp: float = card.size.y / game.garage._preview_dp_scale()
 		_check(height_dp >= 120.0, "%s ist groß (%.0f dp hoch)" % [card.name, height_dp])
 	_check(pictures.size() == drivers.size(), "jede Fahrerkarte hat ein eigenes Bild")
@@ -83,12 +89,24 @@ func _run() -> void:
 		var lines: PackedStringArray = levels[index].lines
 		_check(levels[index].title == str(entry.name), "Stufe %s heißt %s" % [index, entry.name])
 		_check(lines == sections.level_facts(entry), "%s nutzt die Katalogaussagen" % entry.name)
-		_check(lines.has("Rivalen: %d %% Kraft" % roundi(float(entry.rival) * 100.0)), "%s nennt die Rivalenkraft" % entry.name)
-		_check(lines.has("Lenkhilfe: an") == (str(entry.id) == "gemuetlich"), "%s Lenkhilfe wie im Rennen" % entry.name)
-		_check(levels[index].selected == (str(entry.id) == str(game.garage.setup.difficulty)), "%s Auswahl stimmt" % entry.name)
+		_check(
+			lines.has("Rivalen: %d %% Kraft" % roundi(float(entry.rival) * 100.0)),
+			"%s nennt die Rivalenkraft" % entry.name
+		)
+		_check(
+			lines.has("Lenkhilfe: an") == (str(entry.id) == "gemuetlich"),
+			"%s Lenkhilfe wie im Rennen" % entry.name
+		)
+		_check(
+			levels[index].selected == (str(entry.id) == str(game.garage.setup.difficulty)),
+			"%s Auswahl stimmt" % entry.name
+		)
 	levels[1].pressed.emit()
 	await _frames(4)
-	_check(str(game.garage.setup.difficulty) == str(catalog.DIFFICULTIES[1].id), "Antippen wählt die Stufe")
+	_check(
+		str(game.garage.setup.difficulty) == str(catalog.DIFFICULTIES[1].id),
+		"Antippen wählt die Stufe"
+	)
 	# Einstellungen: Stufenschalter kennt alle drei Namen.
 	game._show_reference_landing(true)
 	await _frames(4)
@@ -107,7 +125,13 @@ func _run() -> void:
 	_check(seen == names, "Stufenschalter zeigt alle drei Stufen: %s" % [seen])
 	game._close_menu_settings()
 	# Ergebnis: zwei große Aktionen.
-	var setup := {"mode": "race", "driver": "fox", "kart": "comet", "track": "zauberwald", "difficulty": "gemuetlich"}
+	var setup := {
+		"mode": "race",
+		"driver": "fox",
+		"kart": "comet",
+		"track": "zauberwald",
+		"difficulty": "gemuetlich"
+	}
 	game._start_selected_race(setup)
 	game._end_preview()
 	game.countdown = 0
@@ -118,17 +142,31 @@ func _run() -> void:
 	game._finish(false)
 	await _frames(4)
 	var main_row: Node = game.modal_column.get_node_or_null("ResultMainActions")
-	_check(main_row != null and main_row.get_child_count() == 2, "Ergebnis hat genau zwei Hauptaktionen")
+	_check(
+		main_row != null and main_row.get_child_count() == 2,
+		"Ergebnis hat genau zwei Hauptaktionen"
+	)
 	if main_row != null and main_row.get_child_count() == 2:
-		_check(main_row.get_child(0).text == "Noch einmal" and main_row.get_child(0).kind == "primary",
-			"erste große Aktion: Noch einmal (gold)")
-		_check(main_row.get_child(1).text == "Zur Streckenwahl", "zweite große Aktion: Zur Streckenwahl")
+		_check(
+			main_row.get_child(0).text == "Noch einmal" and main_row.get_child(0).kind == "primary",
+			"erste große Aktion: Noch einmal (gold)"
+		)
+		_check(
+			main_row.get_child(1).text == "Zur Streckenwahl",
+			"zweite große Aktion: Zur Streckenwahl"
+		)
 		var big: float = main_row.get_child(0).get_global_rect().size.y
 		for small in game.modal_column.get_node("ResultMoreActions").get_children():
-			_check(small.get_global_rect().size.y < big, "%s ist kleiner als die Hauptaktionen" % small.text)
+			_check(
+				small.get_global_rect().size.y < big,
+				"%s ist kleiner als die Hauptaktionen" % small.text
+			)
 		main_row.get_child(1).pressed.emit()
 		await _frames(6)
-		_check(game.menu_active and int(game.garage.step) == 3, "Zur Streckenwahl öffnet die Rennwelten")
+		_check(
+			game.menu_active and int(game.garage.step) == 3,
+			"Zur Streckenwahl öffnet die Rennwelten"
+		)
 		_check(str(game.garage.setup.track) == "zauberwald", "die gefahrene Strecke bleibt gewählt")
 	# „Noch einmal“ startet dieselbe Strecke neu.
 	game._start_selected_race(setup)
@@ -143,13 +181,20 @@ func _run() -> void:
 	if main_row != null:
 		main_row.get_child(0).pressed.emit()
 		await _frames(4)
-		_check(not game.menu_active and game.track_id == "zauberwald" and not game.finished,
-			"Noch einmal startet dieselbe Strecke neu")
+		_check(
+			not game.menu_active and game.track_id == "zauberwald" and not game.finished,
+			"Noch einmal startet dieselbe Strecke neu"
+		)
 	game.abandoned = true
 	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartMenuViews]")):
 		failures.append("teardown")
 	# Keine gespeicherte Stufe oder Sitzung an andere Tests weitergeben.
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
-	print("[KartMenuViews] %s %d Prüfungen, %d Fehler" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
+	print(
+		(
+			"[KartMenuViews] %s %d Prüfungen, %d Fehler"
+			% ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()]
+		)
+	)
 	quit(0 if failures.is_empty() else 1)
