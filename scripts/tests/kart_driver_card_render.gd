@@ -71,7 +71,7 @@ func _run() -> void:
 		var camera := Camera3D.new()
 		camera.fov = 30.0
 		viewport.add_child(camera)
-		camera.look_at_from_position(Vector3(-1.55, 1.75, -2.9), Vector3(0.0, 1.05, 0.0))
+		camera.look_at_from_position(Vector3(-1.6, 2.0, -3.4), Vector3(0.0, 1.22, 0.0))
 		camera.current = true
 		await _frames(45)
 		await RenderingServer.frame_post_draw

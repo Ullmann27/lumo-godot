@@ -415,8 +415,10 @@ func _apply_responsive_layout() -> void:
 	reward_style.set_content_margin_all(0)
 	# Stern sitzt mit Luft im runden Rahmen statt auf der Kante.
 	reward_style.content_margin_left = 16.0 * scale_factor
-	progress_label.visible = not narrow
-	progress_icon.visible = not narrow
+	# Schmales Hochformat: nur Stern und Zahl (vorher blieb ein leerer Rahmen stehen).
+	progress_label.visible = true
+	progress_icon.visible = true
+	progress_label.text = ("%d" if narrow else "%d Sterne") % stars
 	_set_physical_font(progress_label, 16, scale_factor)
 	_set_physical_font(progress_icon, 22, scale_factor)
 	# Measure the actual children and panel margins before positioning the
