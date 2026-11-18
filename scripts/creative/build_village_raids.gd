@@ -16,6 +16,7 @@ extends RefCounted
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
+const SCALE = preload("res://scripts/creative/build_village_attack_scale.gd")
 const VERSION := 1
 ## Keine Angriffe in den ersten Tagen und nicht vor Kapitel 3 (Index 2).
 const FIRST_DAY := 8
@@ -165,13 +166,22 @@ func defense_with_more_guards(threat: String, more: int) -> float:
 
 
 ## Defence points against one threat. Guards on an expedition do not count.
+## Kommt ein großes Heer an mehreren Toren an (pending.army.sides > 1), zählt
+## das schwächste Tor: Soldaten = Tore × min(Punkte am Tor).
 func defense_points(threat: String, ally := false) -> float:
 	var weights: Dictionary = THREATS[threat].weights
 	var total := 0.0
 	for kind in parts:
 		total += float(parts[kind]) * float(UNIT[kind]) * float(weights[kind])
 	# Soldaten zählen nach Art, Aufstellung und Schutzbauten (build_village_troops.gd).
-	total += GUARDS.defense(self, threat)
+	var gates: Array = attack_sides(pending) if str(pending.get("threat", "")) == threat else []
+	if gates.size() > 1:
+		var weakest := INF
+		for side in gates:
+			weakest = minf(weakest, GUARDS.defense(self, threat, str(side), 1.0 / float(gates.size())))
+		total += weakest * float(gates.size())
+	else:
+		total += GUARDS.defense(self, threat)
 	if ally:
 		total += UNIT.ally * float(weights.ally)
 	return total
@@ -179,6 +189,35 @@ func defense_points(threat: String, ally := false) -> float:
 
 func attack_points(threat: String, level: int) -> float:
 	return float(THREATS[threat].base) + float(THREATS[threat].step) * float(level - 1)
+
+
+## Stärke einer angekündigten Begegnung: Grundstärke der Stufe plus das Heer,
+## das die Größe der Stadt anlockt (build_village_attack_scale.gd).
+func need_points(info: Dictionary) -> float:
+	var army: Variant = info.get("army", {})
+	var extra := SCALE.extra_points(army) if army is Dictionary else 0.0
+	return attack_points(str(info.threat), int(info.get("level", 1))) + extra
+
+
+## Tore, an denen eine Begegnung ankommt (alte Stände: nur die Hauptrichtung).
+func attack_sides(info: Dictionary) -> Array[String]:
+	if info.is_empty():
+		return []
+	var primary := str(GUARDS.THREAT_SIDE.get(str(info.get("threat", "")), "sued"))
+	var army: Variant = info.get("army", {})
+	var count := int(army.get("sides", 1)) if army is Dictionary else 1
+	return SCALE.sides(primary, clampi(count, 1, 4))
+
+
+## „So stark sind sie“: Anzahl und Tore in einem Satz.
+func army_text(info: Dictionary) -> String:
+	var army: Variant = info.get("army", {})
+	if not army is Dictionary or army.is_empty():
+		return ""
+	var titles: Array = []
+	for side in attack_sides(info):
+		titles.append(str(GUARDS.POSTS[side]))
+	return SCALE.army_text(army, titles)
 
 
 ## Seeded ±10 % per day and threat: the same save always plays out the same.
@@ -252,6 +291,7 @@ func advance_day(model, neighbors, chapter_index: int, tutorial_done := true, sc
 		pending["arrive_day"] = schedule.free_day(day + WARNING_DAYS, system)
 		schedule.claim(int(pending.arrive_day), system)
 	pending["level"] = level_for(str(choice.threat))
+	pending["army"] = SCALE.army(int(model._player.population), int(pending.level))
 	pending["ally"] = ""
 	_note(day, "Warnung: " + str(choice.reason))
 	report["warning"] = pending.duplicate()
@@ -271,10 +311,11 @@ func forecast() -> Dictionary:
 		return {}
 	var threat := str(pending.threat)
 	var ally_called := not str(pending.get("ally", "")).is_empty()
-	var need := attack_points(threat, int(pending.level))
+	var need := need_points(pending)
 	var have := defense_points(threat, ally_called)
 	return {"threat": threat, "need": need, "have": have, "ready": have >= need * 1.1,
-		"close": have >= need * 0.6, "advice": str(THREATS[threat].advice)}
+		"close": have >= need * 0.6, "advice": str(THREATS[threat].advice), "army": army_text(pending),
+		"sides": attack_sides(pending)}
 
 
 ## Ask an allied neighbour (Freundschaft 3) for help with the announced attack.
@@ -319,7 +360,7 @@ func resolve(model, neighbors) -> Dictionary:
 	var threat := str(pending.threat)
 	var level := int(pending.level)
 	var ally := str(pending.get("ally", ""))
-	var need := attack_points(threat, level) * _variance(day, threat)
+	var need := need_points(pending) * _variance(day, threat)
 	var have := defense_points(threat, not ally.is_empty())
 	var ratio := have / maxf(1.0, need)
 	var outcome := "abgewehrt" if ratio >= 1.0 else ("knapp" if ratio >= 0.6 else "verloren")
