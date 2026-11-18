@@ -56,7 +56,8 @@ func _clear_of_road(point: Vector3, margin: float = CLEARANCE) -> bool:
 	var closest: Vector3 = curve.get_closest_point(point)
 	var flat := Vector2(point.x - closest.x, point.z - closest.z)
 	var road_distance: float = curve.get_closest_offset(point)
-	var half: float = JUNGLE.width_at(road_distance) * 0.5 + 1.5
+	# The narrow Kronenbrücke deck keeps the canopy clearance of the full 14 m road.
+	var half: float = maxf(JUNGLE.width_at(road_distance), 14.0) * 0.5 + 1.5
 	return flat.length() > half + margin
 
 

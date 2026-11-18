@@ -1,0 +1,89 @@
+{
+	"closure_out_tangent_error": 0.0,
+	"closure_position_error_m": 0.0,
+	"coordinate_system": "Godot right-handed Y-up; Blender mapping (x,-z,y)",
+	"curve_bake_interval_m": 0.100000001490116,
+	"id": "jungle_emerald_3600",
+	"length_m": 3600.05102539062,
+	"max_grade_fraction": 0.075002759974671,
+	"minimum_curvature_radius_m": 36.4101210293507,
+	"sample_interval_m": 1.00001417371962,
+	"sampled_length_m": 3599.76277297735,
+	"schema": "lumo_jungle_centerline_v1",
+	"sections": [
+		{
+			"end_m": 300,
+			"index": 0,
+			"name": "Expeditionshafen",
+			"start_m": 0
+		},
+		{
+			"end_m": 600,
+			"index": 1,
+			"name": "Allee der Riesenwurzeln",
+			"start_m": 300
+		},
+		{
+			"end_m": 900,
+			"index": 2,
+			"name": "Smaragdfluss",
+			"start_m": 600
+		},
+		{
+			"end_m": 1200,
+			"index": 3,
+			"name": "Hinter dem Wasserfall",
+			"start_m": 900
+		},
+		{
+			"end_m": 1500,
+			"index": 4,
+			"name": "Wurzelgrotte",
+			"start_m": 1200
+		},
+		{
+			"end_m": 1800,
+			"index": 5,
+			"name": "Aufstieg ins Blätterdach",
+			"start_m": 1500
+		},
+		{
+			"end_m": 2100,
+			"index": 6,
+			"name": "Kronenbrücke",
+			"start_m": 1800
+		},
+		{
+			"end_m": 2400,
+			"index": 7,
+			"name": "Lichtung des Sonnentempels",
+			"start_m": 2100
+		},
+		{
+			"end_m": 2700,
+			"index": 8,
+			"name": "Schmetterlingsgarten",
+			"start_m": 2400
+		},
+		{
+			"end_m": 3000,
+			"index": 9,
+			"name": "Flusskaskaden",
+			"start_m": 2700
+		},
+		{
+			"end_m": 3300,
+			"index": 10,
+			"name": "Tropischer Regenkessel",
+			"start_m": 3000
+		},
+		{
+			"end_m": 3600,
+			"index": 11,
+			"name": "Rückkehr zum Hafen",
+			"start_m": 3300
+		}
+	],
+	"target_length_m": 3600.0,
+	"units": "metres"
+}
