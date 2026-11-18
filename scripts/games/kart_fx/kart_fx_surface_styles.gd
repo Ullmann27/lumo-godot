@@ -55,7 +55,14 @@ const STYLES := {
 }
 
 
+## Dschungelherz baut seine Fahrbahn selbst (Erdweg im Regenwald) und steht deshalb
+## nicht in der Belagtabelle; ohne diesen Eintrag fuhr es mit Asphalt-Effekten.
+const TRACK_OVERRIDES := {"jungle_emerald_3600": SURFACES.FOREST_PATH}
+
+
 static func for_track(track_id: String) -> Dictionary:
+	if TRACK_OVERRIDES.has(track_id):
+		return STYLES.get(int(TRACK_OVERRIDES[track_id]), ASPHALT)
 	var entry: Dictionary = SURFACES.surface(track_id)
 	if entry.is_empty():
 		return ASPHALT
