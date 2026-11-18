@@ -10,6 +10,7 @@ extends RefCounted
 ## whole sideways move happens high up in the ring. At u = 0 and u = 1 every
 ## deck vertex is the road surface point at the same lateral offset, the
 ## tangent is the road tangent and the banking is the road banking.
+const ROAD_SURFACES = preload("res://scripts/games/kart_road_surfaces.gd")
 const RADIUS: float = 6.5
 const ADVANCE: float = 7.0
 const LENGTH: float = TAU * RADIUS + ADVANCE * 0.2
@@ -333,7 +334,8 @@ static func _add_mesh(world, mesh_name: String, tool: SurfaceTool, material: Mat
 
 ## Expansion-track loop: same continuous geometry in the track's own colours.
 static func build(world, data: Dictionary, color: Color) -> void:
-	var asphalt: Color = world.definition.get("asphalt", Color("33466c"))
+	var asphalt: Color = ROAD_SURFACES.tint(
+		world.track_id, world.definition.get("asphalt", Color("33466c")))
 	build_track(
 		world,
 		data,

@@ -15,6 +15,7 @@ const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const ROAD_SURFACES = preload("res://scripts/games/kart_road_surfaces.gd")
 const MODULAR_PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -943,6 +944,8 @@ func _road() -> void:
 		asphalt.set_shader_parameter("surface_grit",0.0 if low_detail else 0.86)
 	if track_id == "candy_cloud":
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
+	else:
+		ROAD_SURFACES.apply(asphalt, track_id)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
@@ -959,7 +962,7 @@ func _road() -> void:
 				_material(edge_color,true)
 			)
 		_ribbon("RoadFoundation",side*6.1,side*6.13,-0.06,_material(Color("566b74")),0.70)
-		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(Color("f5f7e9")))
+		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(ROAD_SURFACES.marking(track_id,Color("f5f7e9"))))
 		if track_id=="holo_city": _ribbon("ContinuousLightEdge",side*5.83,side*5.94,0.045,_material(edge_color,true))
 	var count: int=ceili(length/1.4)
 	var step: float=length/count
@@ -980,7 +983,7 @@ func _road() -> void:
 			# Premium section follows exactly the existing path sample and the
 			# same RAIL_LATERAL. Kart collision is deliberately unchanged.
 			PREMIUM_RAIL_KIT.build_segment(self, i, d, step, side, basis)
-		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),Color("e6ead9"),basis)
+		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),ROAD_SURFACES.marking(track_id,Color("e6ead9")),basis)
 		if bridge and i%13==0 and track_id!="bergwelt":
 			var base_y: float=maxf(-2.3,_ground_height(p.x,p.z))
 			var pillar_height: float=maxf(0.3,p.y-base_y-0.4)
