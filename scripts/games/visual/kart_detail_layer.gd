@@ -36,6 +36,32 @@ var batches: Dictionary = {}  # "chunk:material" -> KIT.Batch
 var stats: Dictionary = {"wear": 0, "props": 0, "life": 0, "light": 0, "stage": 0, "facade": 0}
 var placed: Array[Dictionary] = []  # für den Test: stehende Teile mit Abstand zur Fahrbahn
 var _occupied: Array[Vector3] = []
+## Fremde Kulisse (Bäume/Leuchten des Kulissen-Moduls) in 8-m-Zellen: Vector4(x, y, z, Radius).
+var _obstacles: Dictionary = {}
+const OBSTACLE_CELL: float = 8.0
+
+
+## Merkt den Aufbau für das Ende des Frames vor (nach allen Zweigen von build()).
+## Ein Kindknoten der Welt trägt den verzögerten Aufruf: wird die Welt vorher
+## freigegeben oder neu gebaut, verschwindet er mit ihr – ohne Fehlermeldung.
+static func schedule(target: Node3D) -> void:
+	var pending := Scheduler.new()
+	pending.name = "KartDetailPending"
+	target.add_child(pending)
+	pending.call_deferred("run")
+
+
+class Scheduler:
+	extends Node
+
+	func run() -> void:
+		var target := get_parent() as Node3D
+		queue_free()
+		if target == null or target.is_queued_for_deletion():
+			return
+		target.remove_child(self)
+		var layer: GDScript = load("res://scripts/games/visual/kart_detail_layer.gd")
+		layer.apply(target, str(target.get("track_id")), layer.profile_for(target))
 
 
 ## Einstieg: baut (oder ersetzt) die Detail-Schicht einer fertig gebauten Strecke.
@@ -75,6 +101,7 @@ func _run(target: Node3D, wanted_track: String, wanted_profile: String) -> void:
 	root.name = ROOT_NAME
 	world.add_child(root)
 	var started: int = Time.get_ticks_usec()
+	_collect_scenery()
 	_stage()
 	if profile == "low":
 		_low_wear()
@@ -98,6 +125,43 @@ func _run(target: Node3D, wanted_track: String, wanted_profile: String) -> void:
 
 
 # ---------------------------------------------------------------- Grundlagen
+
+## Bäume und Leuchten der Kulisse vormerken, damit kein Kleinteil darin steckt.
+func _collect_scenery() -> void:
+	var plants = world.get("scenery_plants")
+	if plants is Dictionary:
+		for species in plants:
+			for t: Transform3D in plants[species].get("transforms", []):
+				_add_obstacle(t.origin, clampf(t.basis.x.length() * 1.1, 0.8, 3.2))
+	var scenery: Node = world.get_node_or_null("KartScenery")
+	if scenery != null:
+		for node in scenery.get_children():
+			if node is MultiMeshInstance3D and str(node.name).begins_with("Lamps_") and str(node.name).ends_with("lod0"):
+				var mm: MultiMesh = (node as MultiMeshInstance3D).multimesh
+				for i in range(mm.instance_count):
+					_add_obstacle((node as Node3D).position + mm.get_instance_transform(i).origin, 0.9)
+	if world.has_meta("scenery_lamp_heads"):
+		for head: Vector3 in world.get_meta("scenery_lamp_heads"):
+			_add_obstacle(head, 1.0)
+
+
+func _add_obstacle(at: Vector3, radius: float) -> void:
+	var key := Vector2i(floori(at.x / OBSTACLE_CELL), floori(at.z / OBSTACLE_CELL))
+	if not _obstacles.has(key):
+		_obstacles[key] = []
+	_obstacles[key].append(Vector4(at.x, at.y, at.z, radius))
+
+
+func _hits_scenery(at: Vector3, footprint: float) -> bool:
+	var cx: int = floori(at.x / OBSTACLE_CELL)
+	var cz: int = floori(at.z / OBSTACLE_CELL)
+	for x in range(cx - 1, cx + 2):
+		for z in range(cz - 1, cz + 2):
+			for o: Vector4 in _obstacles.get(Vector2i(x, z), []):
+				if absf(o.y - at.y) < 8.0 and Vector2(o.x - at.x, o.z - at.z).length() < o.w + footprint + 0.3:
+					return true
+	return false
+
 
 func _length() -> float:
 	return float(world.length)
@@ -192,6 +256,9 @@ func _site(d: float, side: float, lateral: float, footprint: float, check_block:
 	for other in _occupied:
 		if other.distance_squared_to(at) < pow(footprint + 0.9, 2.0):
 			return {}
+	if _hits_scenery(at, footprint):
+		stats["scenery_skips"] = int(stats.get("scenery_skips", 0)) + 1
+		return {}
 	_occupied.append(at)
 	var site := {"at": at, "d": d, "side": side, "lateral": lat, "basis": _facing_road(d, side), "road_y": road_y}
 	if str(theme.get("ground", "terrain")) == "road" and road_y - float(theme.get("plane_y", -2.0)) > 0.8:
@@ -692,20 +759,31 @@ func _life() -> void:
 	# Publikumsgruppen an markanten Stellen (Kurven-Scheitel).
 	var groups: int = 6 if profile == "medium" else 12
 	var found: int = 0
-	var d: float = 120.0
-	while d < _length() - 80.0 and found < groups:
-		d += 23.0
-		if absf(_corner_strength(d)) < 0.22:
-			continue
-		var outside: float = -signf(_corner_strength(d))
-		var anchor: Dictionary = _site(d, outside, _half_width(d) + 3.4, 0.5)
-		if anchor.is_empty():
-			continue
-		found += 1
-		_place("barrier", anchor, "props", Vector3(0, 0, 0.9))
-		for i in range(5 if profile == "high" else 4):
-			_place(fans[(i + found) % 4], anchor, "life", Vector3(-1.8 + i * 0.9, 0, -0.4 - (i % 2) * 0.6), rng.randf_range(-0.3, 0.3), rng.randf_range(0.85, 1.05))
-		d += 60.0 if profile == "high" else 110.0
+	# Erst Kurvenscheitel, dann – falls die Strecke dort keinen Platz hat –
+	# auch Geraden, damit jede Strecke ihr Publikum bekommt.
+	for pass_index in range(2):
+		var d: float = 120.0 + pass_index * 41.0
+		while d < _length() - 80.0 and found < groups:
+			d += 23.0
+			if pass_index == 0 and absf(_corner_strength(d)) < 0.22:
+				continue
+			if _fan_group(d, -signf(_corner_strength(d)) if absf(_corner_strength(d)) > 0.05 else (1.0 if int(d) % 2 == 0 else -1.0), found, fans):
+				found += 1
+				d += 60.0 if profile == "high" else 110.0
+	_marshals()
+
+
+func _fan_group(d: float, outside: float, found: int, fans: Array[String]) -> bool:
+	var anchor: Dictionary = _site(d, outside, _half_width(d) + 3.4, 0.5)
+	if anchor.is_empty():
+		return false
+	_place("barrier", anchor, "props", Vector3(0, 0, 0.9))
+	for i in range(5 if profile == "high" else 4):
+		_place(fans[(i + found) % 4], anchor, "life", Vector3(-1.8 + i * 0.9, 0, -0.4 - (i % 2) * 0.6), rng.randf_range(-0.3, 0.3), rng.randf_range(0.85, 1.05))
+	return true
+
+
+func _marshals() -> void:
 	# Streckenposten mit Flagge.
 	var marshals: int = 2 if profile == "medium" else 4
 	for m in range(marshals):
