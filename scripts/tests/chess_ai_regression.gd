@@ -1,11 +1,17 @@
 extends SceneTree
 ## Lumo als Schachgegner und Lehrer – ohne Szene.
-## Matt in 1 und 2, keine eingehängten Figuren auf Stufe Meister, Zeitbudget,
-## Rechnen über mehrere Bilder, Stufen gegeneinander, Erklärungen und Warnungen.
+## Stufen: 0 Anfänger, 1 Fortgeschritten, 2 Meister, 3 Militärschachspieler,
+## 4 Lernspiel (Kinder). Matt in 1/2/3, hängende Figuren schlagen, taktische
+## Motive (Gabel, Spieß), keine eingehängten Figuren, Zeitbudget, Rechnen über
+## mehrere Bilder, Eröffnungsbuch, Stufen gegeneinander, Erklärungen, Warnungen.
+## Mit `-- --quick` entfallen die langsamen Militär-Messungen.
 
 const RULES = preload("res://scripts/games/chess/chess_rules.gd")
 const AI = preload("res://scripts/games/chess/chess_ai.gd")
 const COACH = preload("res://scripts/games/chess/chess_coach.gd")
+const BOOK = preload("res://scripts/games/chess/chess_book.gd")
+const MILITARY := 3
+const MASTER := 2
 
 const MATE_IN_1 := [
 	["r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4", "h5f7"],
@@ -19,6 +25,21 @@ const MATE_IN_2 := [
 	"k7/8/2K5/8/8/8/8/7R w - - 0 1",
 ]
 ## Stellungen für „hängt keine Figur ein“ und die Zeitmessung.
+## Matt in 3 (5 Halbzüge, jeweils einzige oder kürzeste Lösung vom Test selbst geprüft).
+const MATE_IN_3 := [
+	"4N1k1/5ppp/8/1Q3R2/8/8/5PPP/6K1 w - - 0 1",
+	"7k/6pp/8/8/3N4/3Q4/8/6K1 w - - 0 1",
+	"1k3B2/ppp4Q/8/8/8/1R6/8/6K1 w - - 0 1",
+	"5N1k/6pp/8/1Q6/8/8/8/6K1 w - - 0 1",
+]
+## Taktik: Stellung, erwarteter Zug, Motiv.
+const TACTICS := [
+	["4k3/8/8/3r4/8/8/3Q4/4K3 w - - 0 1", "d2d5", "hängender Turm"],
+	["r3k3/8/8/1N6/8/8/8/4K3 w - - 0 1", "b5c7", "Springergabel König und Turm"],
+	["4k3/3q4/8/8/4N3/8/8/4K3 w - - 0 1", "e4f6", "Springergabel König und Dame"],
+	["8/8/8/3k3q/8/8/8/R5K1 w - - 0 1", "a1a5", "Spieß: Turm gegen König und Dame"],
+	["6k1/8/8/8/2q5/8/8/2R3K1 w - - 0 1", "c1c4", "hängende Dame"],
+]
 const MIDDLE := [
 	"r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq d3 0 3",
 	"rnbqkb1r/pp2pppp/3p1n2/8/3NP3/8/PPP2PPP/RNBQKB1R w KQkq - 1 5",

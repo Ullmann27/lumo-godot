@@ -22,11 +22,16 @@ const ROOM = preload("res://scripts/games/cards/cards_room.gd")
 const SEAT = preload("res://scripts/games/cards/cards_seat.gd")
 const ICONS := "res://assets/chess/icons/%s.webp"
 const LUMO_ANGLE := 180.0
+## Das Brett ist größer als ein Spielbrett am Kartentisch: Figuren bleiben am
+## Handy gut greifbar, und Lumo sitzt trotzdem sichtbar gegenüber.
+const BOARD_SCALE := 1.4
 const LEVEL_STARS := [1, 2, 3, 4]
+## Kurzbeschreibung je Stufe (ehrlich: was Lumo auf dieser Stufe tut).
 const LEVEL_TEXT := [
-	"Küken – ich übe noch!", "Fuchs – ich sehe Schlagzüge.",
-	"Schlaufuchs – ich denke voraus.", "Meister – ich spiele richtig stark.",
+	"sieht Schlagzüge, macht noch Fehler", "rechnet drei Halbzüge voraus",
+	"rechnet bis 2 s, kennt Eröffnungen", "volle Bedenkzeit (bis 7 s), die schwerste Stufe",
 ]
+const LEVEL_ICONS := ["w_pawn", "w_knight", "w_queen", "w_king"]
 const GOLD := Color("ffd166")
 const NAVY := Color("16284a")
 const CREAM := Color("fff4dc")
@@ -72,6 +77,7 @@ var _press_square := -1
 var _press_point := Vector2.ZERO
 var _dragging := false
 var _pending_warn := -1
+var _danger_sq := -1
 var _previous_window: Dictionary = {}
 var _density := 1.0
 var _board_rect := Rect2()
@@ -117,6 +123,7 @@ func _ready() -> void:
 	chess = SET.new()
 	chess.name = "ChessSet"
 	chess.position = Vector3(0, ROOM.TABLE_Y, 0)
+	chess.scale = Vector3.ONE * BOARD_SCALE
 	add_child(chess)
 	chess.reduced_motion = reduced_motion
 	_build_lumo()
@@ -362,17 +369,25 @@ func _layout() -> void:
 	bar.add_theme_constant_override("h_separation", int(6 * _density))
 	bar.add_theme_constant_override("v_separation", int(6 * _density))
 	var board_area := safe.grow(-gap)
+	var in_game := screen in ["lesson", "trial", "match"]
 	if portrait:
-		bubble.position = safe.position + Vector2(gap, gap)
 		bubble.size = Vector2(safe.size.x - 2 * gap, 0)
 		bubble.custom_minimum_size = Vector2(safe.size.x - 2 * gap, 0)
 		bubble.reset_size()
 		var bubble_h := maxf(bubble.size.y, 92.0 * _density) if bubble.visible else 0.0
-		bar.position = Vector2(safe.position.x + gap, safe.end.y - bar_h - gap)
-		bar.size = Vector2(safe.size.x - 2 * gap, bar_h)
-		board_area = Rect2(safe.position.x + gap, safe.position.y + bubble_h + 2 * gap,
-			safe.size.x - 2 * gap, safe.size.y - bubble_h - bar_h - 4 * gap)
 		_wrap_bar(safe.size.x - 2 * gap)
+		bar_h = bar.size.y if in_game else 0.0
+		bar.position = Vector2(safe.position.x + gap, safe.end.y - bar_h - gap)
+		if in_game:
+			# Im Spiel steht Lumos Sprechblase unten über den Knöpfen: oben bleibt
+			# Platz für Lumo, das Brett füllt die Breite.
+			bubble.position = Vector2(safe.position.x + gap, bar.position.y - bubble_h - gap)
+			board_area = Rect2(safe.position.x + gap, safe.position.y + gap,
+				safe.size.x - 2 * gap, safe.size.y - bubble_h - bar_h - 4 * gap)
+		else:
+			bubble.position = safe.position + Vector2(gap, gap)
+			board_area = Rect2(safe.position.x + gap, safe.position.y + bubble_h + 2 * gap,
+				safe.size.x - 2 * gap, safe.size.y - bubble_h - bar_h - 4 * gap)
 	else:
 		var side := clampf(safe.size.x * 0.34, 240.0 * _density, 380.0 * _density)
 		bubble.position = Vector2(safe.end.x - side - gap, safe.position.y + gap)
@@ -383,6 +398,7 @@ func _layout() -> void:
 		bar.size = Vector2(side, bar_h)
 		board_area = Rect2(safe.position.x + gap, safe.position.y + gap, safe.size.x - side - 3 * gap, safe.size.y - 2 * gap)
 		_wrap_bar(side)
+	board_area.size = board_area.size.max(Vector2(8, 8))
 	_board_rect = board_area
 	var square := minf(board_area.size.x, board_area.size.y)
 	board2d.position = board_area.position + (board_area.size - Vector2(square, square)) * 0.5
@@ -421,47 +437,74 @@ func _wrap_bar(width: float) -> void:
 
 
 ## Kamera so, dass das Brett die freie Fläche füllt und Lumo gegenüber sichtbar ist.
+## Binäre Suche über den Abstand; je Abstand wird die Kamera seitlich und in der
+## Höhe verschoben, bis die Hülle aller Punkte mittig in der freien Fläche liegt.
 func _frame_camera() -> void:
 	var size := get_viewport().get_visible_rect().size
 	if size.x < 2 or size.y < 2:
 		return
 	var aspect := size.x / size.y
+	var in_game := screen in ["lesson", "trial", "match"]
 	camera.fov = 40.0 if aspect < 1.0 else 34.0
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.v_offset = 0.0
 	camera.h_offset = 0.0
-	var tilt := deg_to_rad(44.0 if screen in ["lesson", "trial", "match"] else 30.0)
-	var target := Vector3(0, ROOM.TABLE_Y, -0.1)
+	var tilt := deg_to_rad(48.0 if in_game else 30.0)
+	var target := Vector3(0, ROOM.TABLE_Y, -0.2)
 	var corners: Array[Vector3] = []
-	for x: float in [-0.48, 0.48]:
-		for z: float in [-0.48, 0.48]:
+	for x: float in [-0.53, 0.53]:
+		for z: float in [-0.53, 0.53]:
 			corners.append(chess.to_global(Vector3(x, 0.0, z)))
-	corners.append(chess.to_global(Vector3(0.0, 0.16, -0.38)))
+	corners.append(chess.to_global(Vector3(0.0, 0.12, -0.38)))
 	# Lumo gegenüber: Kopf und Ohren sollen im Bild sein.
 	if is_instance_valid(lumo):
-		corners.append(lumo.to_global(Vector3(0, 1.9, 0)))
+		corners.append(lumo.to_global(Vector3(0, 1.98, 0)))
 	var area := _board_rect
 	var lo := 0.4
 	var hi := 12.0
-	for i in 32:
+	for i in 28:
 		var mid := (lo + hi) * 0.5
-		_place_camera(target, tilt, mid, area, size)
-		if _fits(corners, area):
+		if _place_camera(target, tilt, mid, area, size, corners):
 			hi = mid
 		else:
 			lo = mid
-	_place_camera(target, tilt, hi, area, size)
+	_place_camera(target, tilt, hi, area, size, corners)
 
 
-func _place_camera(target: Vector3, tilt: float, distance: float, area: Rect2, size: Vector2) -> void:
+## Stellt die Kamera auf `distance` und zentriert die Punkte in `area`.
+## Gibt zurück, ob alle Punkte hineinpassen.
+func _place_camera(target: Vector3, tilt: float, distance: float, area: Rect2, size: Vector2,
+		points: Array[Vector3]) -> bool:
 	camera.position = target + Vector3(0, sin(tilt), cos(tilt)) * distance
 	camera.look_at(target)
-	# Bildmitte auf die Mitte der freien Fläche schieben (Linsenversatz).
 	var half_h := tan(deg_to_rad(camera.fov * 0.5)) * distance
 	var px_to_world := 2.0 * half_h / size.y
 	var shift := area.get_center() - size * 0.5
 	camera.h_offset = -shift.x * px_to_world
 	camera.v_offset = shift.y * px_to_world
+	for _pass in 4:
+		var box := _projected_box(points)
+		if box.size.x < 0.0:
+			return false
+		var miss := box.get_center() - area.get_center()
+		camera.h_offset += miss.x * px_to_world
+		camera.v_offset -= miss.y * px_to_world
+	return _fits(points, area)
+
+
+func _projected_box(points: Array[Vector3]) -> Rect2:
+	var box := Rect2()
+	var first := true
+	for p: Vector3 in points:
+		if camera.is_position_behind(p):
+			return Rect2(0, 0, -1, -1)
+		var q := camera.unproject_position(p)
+		if first:
+			box = Rect2(q, Vector2.ZERO)
+			first = false
+		else:
+			box = box.expand(q)
+	return box
 
 
 func _fits(points: Array[Vector3], area: Rect2) -> bool:
@@ -624,20 +667,22 @@ func open_levels(which: String) -> void:
 	_clear_overlay()
 	if which == "pro":
 		_overlay_label("Für Große", 26, GOLD)
-		_overlay_label("Volle Regeln, keine Hilfen. Lumo spielt stark.", 17)
+		_overlay_label("Volle Regeln, keine Hilfen, Züge in Schachschrift.", 17)
 		say("Ich gebe mir richtig Mühe. Viel Glück!")
 	else:
 		_overlay_label("Gegen Lumo spielen", 26, GOLD)
+		_overlay_label("Mit Tipp, Warum? und Zurück.", 17)
 		say("Wie stark soll ich spielen?")
 	var slot := _slot()
 	if session.has_game(slot):
 		_overlay_button("Resume", "Weiterspielen", func() -> void: start_match(-1, true), "w_queen", true)
 	for i in 4:
 		var lv := i
-		var caption := "%s: %s" % [AI.level_name(i), LEVEL_TEXT[i]]
-		var button := _overlay_button("Level%d" % i, caption, func() -> void: start_match(lv, false), ["w_pawn", "w_knight", "w_bishop", "w_king"][i])
-		if which == "pro" and i < 2:
-			button.visible = false
+		var caption := "%s\n%s" % [AI.level_name(i), LEVEL_TEXT[i]]
+		var button := _overlay_button("Level%d" % i, caption, func() -> void: start_match(lv, false), LEVEL_ICONS[i])
+		button.custom_minimum_size.y = 92 * _density
+		if i == 3:
+			button.add_theme_stylebox_override("normal", _style(Color("5a2430"), GOLD, 18, 4))
 	_overlay_button("Back", "Zurück", open_home)
 	_show_overlay("levels")
 
@@ -809,6 +854,8 @@ func _refresh_glow() -> void:
 			for t: int in SCHOOL.squares(step.get("targets", [])):
 				if rules.board[t] == 0:
 					glow[t] = "hint"
+	if _danger_sq >= 0 and selected < 0 and not glow.has(_danger_sq):
+		glow[_danger_sq] = "danger"
 	if _pending_warn >= 0:
 		glow[_pending_warn] = "danger"
 	chess.set_glow(glow)
@@ -1215,7 +1262,7 @@ func start_trial(id: String) -> void:
 	trial_id = id
 	lesson_id = ""
 	mode = "kids"
-	level = 0
+	level = AI.LEVEL_KIDS
 	finished = false
 	mistakes = 0
 	_set_screen("trial")
@@ -1284,6 +1331,7 @@ func _end_game_state() -> void:
 	thinking = false
 	selected = -1
 	_pending_warn = -1
+	_danger_sq = -1
 	if ai != null:
 		ai.stopped = true
 	rules = null
@@ -1323,6 +1371,7 @@ func _child_move(m: int) -> void:
 
 func _commit_child_move(m: int) -> void:
 	_pending_warn = -1
+	_danger_sq = -1
 	var before: RefCounted = rules.duplicate_state()
 	if not rules.play(m):
 		chess.drop_back()
@@ -1333,7 +1382,9 @@ func _commit_child_move(m: int) -> void:
 	board2d.show_board(rules.board)
 	last_explain = COACH.explain(before, m, false)
 	if screen == "trial" or mode == "play":
-		say(last_explain, "Du")
+		# Lob für Versuche: oft ein kurzes „Gut gemacht!“ vor der Erklärung.
+		var praise := COACH.praise(rng) + " " if mistakes == 0 or rng.randf() < 0.5 else ""
+		say(praise + last_explain, "Du")
 	_refresh_glow()
 	_store()
 	if _check_end():
@@ -1377,12 +1428,18 @@ func _lumo_turn() -> void:
 	chess.animate_move(m, rules.board, 0.75)
 	board2d.show_board(rules.board)
 	last_explain = COACH.explain(before, m, true)
+	_danger_sq = -1
+	var danger: Dictionary = {} if mode == "pro" or not hints else COACH.danger(rules)
+	var tail := " Jetzt du!"
+	if not danger.is_empty():
+		_danger_sq = int(danger.square)
+		tail = " " + str(danger.text)
 	if mode == "pro":
 		say("Ich ziehe %s." % before.to_san(m, true), "Lumo · %s" % AI.level_name(level))
 	elif screen == "trial":
-		say(last_explain + " Jetzt du!", "Lumo")
+		say(last_explain + tail, "Lumo")
 	else:
-		say("Ich habe gezogen. Jetzt du!", "Lumo · %s" % AI.level_name(level))
+		say(last_explain + tail, "Lumo · %s" % AI.level_name(level))
 	await chess.move_animated
 	if gen != _generation or _closed:
 		return
@@ -1426,7 +1483,7 @@ func _finish_game(outcome: String, status: String) -> void:
 			stars = 0 if session.trial_done(trial_id) else 2
 			session.finish_trial(trial_id)
 	else:
-		variant = "%s:%s" % [mode, AI.level_name(level).to_lower()]
+		variant = "%s:%s" % [mode, AI.level_id(level)]
 		if outcome == "win":
 			stars = LEVEL_STARS[level]
 		elif outcome == "draw" and level >= 2:
@@ -1546,6 +1603,7 @@ func _on_undo() -> void:
 		return
 	selected = -1
 	last_explain = ""
+	_danger_sq = -1
 	_show_position()
 	_store()
 	say("Zurückgenommen. Probier etwas anderes!")

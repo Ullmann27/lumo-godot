@@ -48,7 +48,11 @@ func load_file() -> bool:
 	data = _blank()
 	if path.is_empty() or not FileAccess.file_exists(path):
 		return false
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	# JSON.new().parse meldet kaputte Dateien still (parse_string schreibt ERROR ins Log).
+	var json := JSON.new()
+	var parsed: Variant = null
+	if json.parse(FileAccess.get_file_as_string(path)) == OK:
+		parsed = json.data
 	if not parsed is Dictionary:
 		last_error = "Spielstand unlesbar"
 		return false

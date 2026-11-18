@@ -84,6 +84,23 @@ static func hanging_squares(g: RefCounted, color: int) -> Array[int]:
 	return out
 
 
+## Gefahr für die Seite am Zug (nach Lumos Zug): die wertvollste bedrohte
+## Figur. {} wenn nichts in Gefahr ist, sonst {"square", "text"}.
+static func danger(g: RefCounted) -> Dictionary:
+	var worst := -1
+	var worst_value := 0
+	for sq: int in hanging_squares(g, g.side):
+		var v: int = VALUE[g.board[sq] & 7]
+		if v > worst_value:
+			worst_value = v
+			worst = sq
+	if worst < 0 or worst_value < 3:
+		return {}
+	var t: int = g.board[worst] & 7
+	var name := capitalize_first(owned(t, false))
+	return {"square": worst, "text": "%s ist bedroht – magst du %s retten?" % [name, "sie" if FEMININE[t] else "ihn"]}
+
+
 ## Erklärt einen Zug in einem Satz. `g` ist die Stellung VOR dem Zug.
 ## `mine` = true, wenn Lumo selbst gezogen hat („ich“), sonst für das Kind.
 static func explain(g: RefCounted, m: int, mine: bool = true) -> String:

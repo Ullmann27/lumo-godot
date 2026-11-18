@@ -13,20 +13,28 @@ extends RefCounted
 ## das nächste Bild (`await process_frame`), damit das Spiel nicht ruckelt.
 ## `think()` ist darum eine Coroutine: `var r = await ai.think(rules, stufe)`.
 ##
-## Stufen: 0 Küken, 1 Fuchs, 2 Schlaufuchs, 3 Meister. Lumo sieht nur das
-## Brett – keine versteckten Hilfen, kein Schummeln.
+## Stufen (Erwachsene und „Gegen Lumo spielen“): 0 Anfänger, 1 Fortgeschritten,
+## 2 Meister, 3 Militärschachspieler (die schwierigste). Stufe 4 ist Lumos
+## sanfte Lernstufe für die Probespiele der Kinder (zieht oft einfach irgendwas).
+## Lumo sieht nur das Brett – keine versteckten Hilfen, kein Schummeln.
 
 const RULES = preload("res://scripts/games/chess/chess_rules.gd")
+const BOOK = preload("res://scripts/games/chess/chess_book.gd")
 
-const LEVEL_NAMES := ["Küken", "Fuchs", "Schlaufuchs", "Meister"]
+const LEVEL_NAMES := ["Anfänger", "Fortgeschritten", "Meister", "Militärschachspieler", "Lumo (Lernspiel)"]
+const LEVEL_IDS := ["anfaenger", "fortgeschritten", "meister", "militaerschachspieler", "lernspiel"]
+const LEVEL_KIDS := 4
 ## Je Stufe: höchste Tiefe, Zeitbudget (ms, Wanduhr), Zufallsrauschen in
-## Hundertstel-Bauern, Anteil zufälliger Züge, Ruhesuche an.
+## Hundertstel-Bauern, Anteil zufälliger Züge, Ruhesuche, Eröffnungsbuch,
+## Suchfenster um den letzten Wert (Aspiration).
 const LEVELS := [
-	{"depth": 1, "budget": 250, "noise": 0, "random": 0.75, "quiesce": false},
-	{"depth": 1, "budget": 400, "noise": 45, "random": 0.12, "quiesce": true},
-	{"depth": 3, "budget": 900, "noise": 15, "random": 0.0, "quiesce": true},
-	{"depth": 20, "budget": 1800, "noise": 0, "random": 0.0, "quiesce": true},
+	{"depth": 1, "budget": 400, "noise": 50, "random": 0.2, "quiesce": true, "book": false, "aspiration": false},
+	{"depth": 3, "budget": 1000, "noise": 15, "random": 0.0, "quiesce": true, "book": false, "aspiration": false},
+	{"depth": 20, "budget": 2000, "noise": 0, "random": 0.0, "quiesce": true, "book": true, "aspiration": false},
+	{"depth": 40, "budget": 7000, "noise": 0, "random": 0.0, "quiesce": true, "book": true, "aspiration": true},
+	{"depth": 1, "budget": 250, "noise": 0, "random": 0.75, "quiesce": false, "book": false, "aspiration": false},
 ]
+const ASPIRATION := 40
 
 const VALUE := [0, 100, 320, 330, 500, 900, 0]
 const PHASE_W := [0, 0, 1, 1, 2, 4, 0]
@@ -121,7 +129,15 @@ func _init(seed_value: int = 0) -> void:
 
 
 static func level_name(level: int) -> String:
-	return LEVEL_NAMES[clampi(level, 0, 3)]
+	return LEVEL_NAMES[clampi(level, 0, LEVEL_NAMES.size() - 1)]
+
+
+static func level_id(level: int) -> String:
+	return LEVEL_IDS[clampi(level, 0, LEVEL_IDS.size() - 1)]
+
+
+static func level_config(level: int) -> Dictionary:
+	return LEVELS[clampi(level, 0, LEVELS.size() - 1)]
 
 
 # --- Bewertung --------------------------------------------------------------
@@ -319,25 +335,33 @@ func _tick() -> void:
 
 
 ## Lumo denkt nach. Ergebnis: {move, score, depth, nodes, ms, frames,
-## max_slice_ms, level}. `options` kann "budget_ms", "slice_ms" (0 = ohne
+## max_slice_ms, level, book}. `options` kann "budget_ms", "slice_ms" (0 = ohne
 ## Pause), "depth" überschreiben; "random_off" schaltet die Zufallszüge der
 ## leichten Stufen ab (nur für Messungen).
 func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
-	var cfg: Dictionary = LEVELS[clampi(level, 0, 3)]
+	var cfg: Dictionary = level_config(level)
 	var started := Time.get_ticks_usec()
 	var work: RefCounted = g.duplicate_state()
 	var legal: PackedInt32Array = work.legal_moves()
 	var result := {"move": -1, "score": 0, "depth": 0, "nodes": 0, "ms": 0.0, "frames": 0,
-		"max_slice_ms": 0.0, "level": level}
+		"max_slice_ms": 0.0, "level": level, "book": false}
 	if legal.is_empty():
 		return result
+	# Eröffnungswissen: kleine eigene Tabelle bekannter Hauptzüge.
+	if bool(cfg.book) and not options.get("book_off", false):
+		var book_move: int = BOOK.pick(work, rng)
+		if book_move >= 0:
+			result.move = book_move
+			result.book = true
+			result.ms = (Time.get_ticks_usec() - started) / 1000.0
+			return result
 	var max_depth := int(options.get("depth", cfg.depth))
 	var budget := int(options.get("budget_ms", cfg.budget))
 	_new_search(work, budget, int(options.get("slice_ms", 10)))
-	# Küken und Fuchs ziehen öfter einfach irgendwas (und hängen Figuren ein).
+	# Die leichten Stufen ziehen öfter einfach irgendwas (und hängen Figuren ein).
 	if not options.get("random_off", false) and rng.randf() < float(cfg.random):
 		var pick := legal[rng.randi_range(0, legal.size() - 1)]
-		if level == 0:
+		if level == LEVEL_KIDS:
 			var captures: Array[int] = []
 			for m: int in legal:
 				if RULES.move_flags(m) & RULES.F_CAPTURE:
@@ -359,8 +383,22 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	var best := legal[0]
 	var best_score := -INF
 	var reached := 0
+	var aspiration := bool(cfg.get("aspiration", false))
 	for depth in range(1, max_depth + 1):
-		var r: Array = await _root(depth, legal, noise, bool(cfg.quiesce))
+		var r: Array = []
+		if aspiration and depth >= 4 and absi(best_score) < MATE_BOUND:
+			# Aspiration: erst ein enges Fenster um den letzten Wert, nur bei
+			# Ausreißern noch einmal mit vollem Fenster.
+			var lo := best_score - ASPIRATION
+			var hi := best_score + ASPIRATION
+			r = await _root(depth, legal, noise, bool(cfg.quiesce), lo, hi)
+			var outside := int(r[1]) <= lo or int(r[1]) >= hi
+			if stopped and outside:
+				r = [-1, 0]  # Nur eine Schranke: lieber den Zug der letzten Tiefe.
+			elif not stopped and r[0] >= 0 and outside:
+				r = await _root(depth, legal, noise, bool(cfg.quiesce))
+		else:
+			r = await _root(depth, legal, noise, bool(cfg.quiesce))
 		if stopped and r[0] < 0:
 			break
 		if r[0] >= 0:
@@ -386,12 +424,13 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	return result
 
 
-func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool) -> Array:
+func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool,
+		alpha0: int = -INF, beta0: int = INF) -> Array:
 	var g := rules
 	var ordered := _order(legal, _tt_move(g.hash), 0)
 	if root_bonus.size() != 64 * 64:
 		root_bonus.resize(64 * 64)
-	var alpha := -INF
+	var alpha := alpha0
 	var best := -1
 	var best_score := -INF
 	var first := true
@@ -404,11 +443,11 @@ func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool) -> Ar
 		g.make_move(m)
 		var raw := 0
 		if first:
-			raw = -(await _search(depth - 1, -INF, -a, 1, quiesce, true))
+			raw = -(await _search(depth - 1, -beta0, -a, 1, quiesce, true))
 		else:
 			raw = -(await _search(depth - 1, -a - 1, -a, 1, quiesce, true))
 			if raw > a and not stopped:
-				raw = -(await _search(depth - 1, -INF, -a, 1, quiesce, true))
+				raw = -(await _search(depth - 1, -beta0, -a, 1, quiesce, true))
 		g.unmake_move()
 		if stopped:
 			break
@@ -419,7 +458,9 @@ func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool) -> Ar
 			best = m
 		if score > alpha:
 			alpha = score
-	if best >= 0:
+		if alpha >= beta0:
+			break
+	if best >= 0 and best_score > alpha0 and best_score < beta0:
 		_tt_store(g.hash, depth, best_score, TT_EXACT, best)
 	return [best, best_score]
 

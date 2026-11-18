@@ -170,15 +170,19 @@ const TRIALS := {
 	"t4": {"title": "Mit Springern", "icon": "w_knight", "fen": "rnbq1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w - - 0 1",
 		"goal": "race", "say": "Alle Figuren außer dem König. Bring einen Bauern durch!"},
 	"t5": {"title": "Das ganze Spiel", "icon": "w_king", "fen": RULES.START_FEN,
-		"goal": "mate", "say": "Jetzt das echte Spiel! Wer den König fängt, gewinnt."},
+		"goal": "mate", "say": "Das echte Spiel! Ich erkläre jeden Zug. Zurück darfst du immer."},
 }
 
 ## Der Lernweg für Kinder. Jeder Eintrag öffnet sich, wenn der vorige geschafft ist.
 const PATH := [
-	["lesson", "brett"], ["lesson", "turm"], ["lesson", "laeufer"], ["lesson", "dame"], ["lesson", "koenig"],
-	["lesson", "springer"], ["lesson", "bauer"], ["trial", "t1"], ["lesson", "labyrinth"], ["trial", "t2"],
-	["trial", "t3"], ["lesson", "sterne"], ["trial", "t4"], ["lesson", "schach"], ["lesson", "matt"],
-	["trial", "t5"], ["lesson", "patt"], ["lesson", "rochade"], ["lesson", "vorbei"], ["lesson", "gabel"],
+	["lesson", "brett"],
+	["lesson", "bauer"], ["trial", "t1"],
+	["lesson", "turm"], ["lesson", "labyrinth"], ["trial", "t2"],
+	["lesson", "laeufer"], ["lesson", "dame"], ["trial", "t3"],
+	["lesson", "springer"], ["lesson", "sterne"], ["trial", "t4"],
+	["lesson", "koenig"], ["lesson", "schach"], ["lesson", "matt"],
+	["trial", "t5"],
+	["lesson", "patt"], ["lesson", "rochade"], ["lesson", "vorbei"], ["lesson", "gabel"],
 	["lesson", "fesselung"],
 ]
 
