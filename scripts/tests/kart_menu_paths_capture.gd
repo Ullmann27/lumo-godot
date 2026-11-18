@@ -102,6 +102,7 @@ func _run() -> void:
 		await _overlay("race", "rennarten")
 		await _overlay("rewards", "belohnungen")
 		await _overlay("season", "saison")
+		await _overlay("cup", "turniere")
 		await _step("modes", "rennen")
 		await _step("driver", "fahrer")
 		await _step("garage", "garage")

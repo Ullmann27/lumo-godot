@@ -57,6 +57,7 @@ static func build_cup(list: VBoxContainer) -> void:
 		card.focus_mode = Control.FOCUS_NONE
 		card.mouse_filter = Control.MOUSE_FILTER_PASS
 		card.set_meta("cover_art", true)
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_child(card)
 
 
@@ -80,6 +81,7 @@ static func build_rewards(list: VBoxContainer, stars: int) -> void:
 		card.art_share = 0.62
 		card.focus_mode = Control.FOCUS_NONE
 		card.mouse_filter = Control.MOUSE_FILTER_PASS
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		grid.add_child(card)
 
 
@@ -119,7 +121,7 @@ static func scale(list: VBoxContainer, k: float, width_dp: float) -> void:
 			var w := (width_dp - 8.0 * (columns - 1)) / columns
 			var h := w * float(grid.get_meta("card_ratio", 1.0))
 			for card in grid.get_children():
-				card.custom_minimum_size = Vector2(0, roundf(h * k))
+				card.custom_minimum_size = Vector2(floorf(w * k * 0.9), roundf(h * k))
 				card.apply_size(k)
 		elif child.has_meta("overlay_path"):
 			for station in child.get_children():
