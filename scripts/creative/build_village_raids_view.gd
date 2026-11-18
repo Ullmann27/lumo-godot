@@ -8,6 +8,7 @@ extends Node3D
 ## Wiederholtes (Mauer, Graben, Fallen) als MultiMesh – ein Draw-Call je Art.
 signal scene_finished
 const RAIDS = preload("res://scripts/creative/build_village_raids.gd")
+const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
 const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
@@ -281,7 +282,11 @@ func play(result: Dictionary) -> void:
 	var from := _origin(threat, str(result.get("by", "")))
 	var front := _front(from)
 	var won := str(result.outcome) == "abgewehrt"
-	var count := 1 if threat == "drache" else clampi(3 + int(result.get("level", 1)), 4, 9)
+	# One property per stage (build_village_schedule.gd): group size or sides.
+	var stage: Dictionary = SCHEDULE.stage(int(result.get("level", 1)))
+	var count := 1 if threat == "drache" else clampi(int(stage.group), 3, 12)
+	var sides := 1 if threat == "drache" else clampi(int(stage.sides), 1, 4)
+	set_meta("scene_sides", sides)
 	for index in range(count):
 		var node: Node3D
 		if threat == "drache":
@@ -297,8 +302,18 @@ func play(result: Dictionary) -> void:
 				add_child(node)
 		if node == null:
 			continue
-		var offset := Vector3((float(index % 3) - 1.0) * 1.6, 0, float(index / 3) * 1.8)
-		actors.append({"node": node, "from": from + offset, "front": front + offset * 0.8, "won": won,
+		var side := index % sides
+		var lane_from := from
+		var lane_front := front
+		if side > 0:
+			# Further arrival directions: the same group splits around the village.
+			var c := center()
+			var turned := Vector3(from.x - c.x, 0, from.z - c.z).rotated(Vector3.UP, PI * 0.5 * float(side))
+			lane_from = Vector3(c.x + turned.x, from.y, c.z + turned.z)
+			lane_front = _front(lane_from)
+		var slot := index / sides
+		var offset := Vector3((float(slot % 3) - 1.0) * 1.6, 0, float(slot / 3) * 1.8)
+		actors.append({"node": node, "from": lane_from + offset, "front": lane_front + offset * 0.8, "won": won,
 			"spin": 0.0, "phase": float(index) * 0.13, "flying": threat == "drache", "start": node.transform})
 	set_meta("scene_actors", actors.size())
 
