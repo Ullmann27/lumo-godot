@@ -119,7 +119,9 @@ func _profile() -> String:
 	return str(store.call("get_profile")) if store != null and store.has_method("get_profile") else "medium"
 
 
-func follow(camera_position: Vector3, player_s: float, _delta: float) -> void:
+func follow(camera_position: Vector3, player_s: float, _delta: float, focus: Vector3 = Vector3.INF) -> void:
+	if focus.is_finite():
+		ART.set_focus(focus + Vector3.UP * 0.9)
 	if is_instance_valid(_pollen):
 		_pollen.global_position = camera_position + Vector3(0, 1.0, 0)
 	_apply_mood(player_s)
@@ -270,7 +272,7 @@ func _make_kinds() -> void:
 	var gold := MESHES.Kit.new()
 	for coin in range(9):
 		MESHES.blob(gold, Vector3(crown_rng.randf_range(-0.8, 0.8), 0.1 + crown_rng.randf() * 0.5, crown_rng.randf_range(-0.8, 0.8)), Vector3(0.5, 0.25, 0.5), Color("ffd24a"), crown_rng, 0.1, 3, 7)
-	_kind("treasure", gold.mesh(), "glow", 120.0)
+	_art("treasure", "treasure", 120.0, false, gold.mesh(), "glow")
 	var mountain := MESHES.Kit.new()
 	MESHES.blob(mountain, Vector3.ZERO, Vector3(1.0, 1.0, 1.0), Color("3f6f5a"), crown_rng, 0.18, 6, 12, 0.0, true)
 	_kind("mountain", mountain.mesh(), "solid", 0.0)
@@ -731,6 +733,21 @@ func _cave() -> void:
 			if _rng.randf() < 0.3:
 				_put(crystal, at, _xf(at, side * _rng.randf_range(0.5, half), roof.z - 0.3, Vector3(1, -1, 1) * _rng.randf_range(0.5, 0.9), _rng.randf() * TAU))
 			at += _rng.randf_range(2.5, 4.5) * (1.5 if low else 1.0)
+		# The crystals light the cave walls blue-turquoise (MEDIUM and HIGH).
+		if tier > 0:
+			var glow_at: float = roof.x + 6.0
+			while glow_at < roof.y - 3.0:
+				var light := OmniLight3D.new()
+				light.light_color = Color("5fe6ff") if int(glow_at) % 2 == 0 else Color("9f8cff")
+				light.light_energy = 1.3
+				light.omni_range = 8.0
+				light.distance_fade_enabled = true
+				light.distance_fade_begin = 45.0
+				light.distance_fade_length = 15.0
+				var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
+				light.position = _point(glow_at, side * (path.half_width_at(glow_at) + 0.5), 1.6)
+				add_child(light)
+				glow_at += 22.0 if tier == 1 else 14.0
 
 
 func _cave_piece(from: float, to: float, height: float) -> void:
@@ -774,7 +791,7 @@ func _cave_piece(from: float, to: float, height: float) -> void:
 	node.name = "Cave_%d" % int(from)
 	node.mesh = st.commit()
 	if not _materials.has("cave"):
-		_materials["cave"] = ART.surface_material("stone", {"double": true, "world_scale": 0.3, "moss": 0.5, "tint": Color(0.85, 0.97, 1.0), "floor": 0.12})
+		_materials["cave"] = ART.surface_material("stone", {"double": true, "world_scale": 0.3, "moss": 0.22, "tint": Color(0.72, 0.86, 0.95), "floor": 0.1})
 	node.material_override = _materials["cave"]
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if not low else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	node.visibility_range_end = 200.0

@@ -14,7 +14,7 @@ const LOOK: Dictionary = {
 	"bark": {"shader": "surface", "moss": 0.3, "sway": 1.0, "normal": 1.2},
 	"wood": {"shader": "surface", "moss": 0.1},
 	"stone": {"shader": "surface", "moss": 0.55, "normal": 1.1},
-	"sandstone": {"shader": "surface", "moss": 0.38},
+	"sandstone": {"shader": "surface", "moss": 0.38, "shade": 0.8},
 	"moss": {"shader": "surface"},
 	"iron": {"shader": "surface", "metal": 0.55, "rough": 0.5},
 	"rope": {"shader": "surface"},
@@ -23,7 +23,7 @@ const LOOK: Dictionary = {
 	"stem": {"shader": "plant", "sway": 1.0},
 	"leaves": {"shader": "leaf"},
 	"petal": {"shader": "petal"},
-	"glow_crystal": {"shader": "crystal"},
+	"glow_crystal": {"shader": "crystal", "strength": 2.4},
 	"glow_lantern": {"shader": "crystal", "pulse": 0.1, "strength": 2.2},
 	"paint_ember": {"shader": "surface", "emit": 3.0},
 }
@@ -103,7 +103,19 @@ static func texture(file: String) -> Texture2D:
 	return _textures[file]
 
 
+## The world-space point the leaves keep clear of (Lumo); a global shader value.
+static func set_focus(point: Vector3) -> void:
+	_ensure_globals()
+	RenderingServer.global_shader_parameter_set("jungle_focus", point)
+
+
+static func _ensure_globals() -> void:
+	if not RenderingServer.global_shader_parameter_get_list().has(&"jungle_focus"):
+		RenderingServer.global_shader_parameter_add("jungle_focus", RenderingServer.GLOBAL_VAR_TYPE_VEC3, Vector3(0, -1000, 0))
+
+
 static func shader(kind: String) -> Shader:
+	_ensure_globals()
 	if not _shaders.has(kind):
 		var code: String
 		match kind:
@@ -157,6 +169,8 @@ static func material_for(original: Material, options: Dictionary = {}) -> Materi
 				colour = options.cap
 			if options.has("tint") and albedo != null:
 				colour = colour * Color(options.tint)
+			colour = colour * float(look.get("shade", 1.0))
+			colour.a = 1.0
 			made.set_shader_parameter("base_color", colour)
 			made.set_shader_parameter("use_tex", albedo != null)
 			if albedo != null:

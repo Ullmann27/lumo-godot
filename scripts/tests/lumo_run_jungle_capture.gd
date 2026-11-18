@@ -87,6 +87,8 @@ func _measure(label: String) -> void:
 			"objects": Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
 		}
 	)
+	var last: Dictionary = measures[measures.size() - 1]
+	print("[JungleCapture] sample %s s=%.0f section=%d draws=%d primitives=%d" % [label, float(last.s), int(last.section), int(last.draws), int(last.primitives)])
 
 
 func _run() -> void:

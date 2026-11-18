@@ -340,7 +340,7 @@ class Canvas:
         cover = np.clip(w - d + 0.5, 0, 1)
         self._paint(cover, tone, height * (1 - d / (w + 1e-3)).clip(0, 1))
 
-    def leaf(self, base, angle, length, width, tone, rng, tip=0.85, veins=8, slits=0, rib_tone=None):
+    def leaf(self, base, angle, length, width, tone, rng, tip=0.85, veins=8, slits=0, rib_tone=None, vein_strength=0.18, mottle_amount=0.16):
         """Elliptic, pointed leaf from `base` towards `angle` (radians, 0 = up)."""
         bx, by = base
         ux, uy = math.sin(angle), -math.cos(angle)
@@ -368,9 +368,11 @@ class Canvas:
         rgb = tone[None, None, :] * shade[..., None]
         rib_colour = rib_tone if rib_tone is not None else tone * 1.35 + 0.05
         rgb = rgb * (1 - rib[..., None] * 0.8) + rib_colour[None, None, :] * rib[..., None] * 0.8
-        rgb = rgb * (1 - vein[..., None] * 0.18) + (tone * 1.25)[None, None, :] * vein[..., None] * 0.18
+        rgb = rgb * (1 - vein[..., None] * vein_strength) + (tone * 1.3 + 0.04)[None, None, :] * vein[..., None] * vein_strength
         mottle = value_noise((self.size, self.size), (24, 24), rng)
-        rgb *= (0.92 + 0.16 * mottle)[..., None]
+        rgb *= (1.0 - mottle_amount * 0.5 + mottle_amount * mottle)[..., None]
+        # A darker rim and a sheen along the middle: leaves read as curved, not cut paper.
+        rgb *= (0.86 + 0.14 * np.clip(shape - np.abs(v), 0, 1) ** 0.3)[..., None]
         bulge = np.clip(shape - np.abs(v), 0, 1) ** 0.5
         height = 0.5 + 0.35 * bulge - 0.25 * vein - 0.3 * rib
         self._paint(cover, rgb, height)
@@ -461,8 +463,8 @@ def leaves(rng):
     cells.append(c)
     # 3: one big tropical leaf (banana / elephant ear) filling the cell, with tears.
     c = Canvas(cell)
-    c.leaf((cell * 0.5, cell * 0.99), 0.0, cell * 0.97, cell * 0.66, colour("3f8f35"), rng, tip=0.9, veins=16, slits=7,
-           rib_tone=colour("b9d27a"))
+    c.leaf((cell * 0.5, cell * 0.99), 0.0, cell * 0.97, cell * 0.66, colour("3f8f35"), rng, tip=0.9, veins=14, slits=7,
+           rib_tone=colour("b9d27a"), vein_strength=0.4, mottle_amount=0.08)
     cells.append(c)
     size = cell * 2
     rgba = np.zeros((size, size, 4))

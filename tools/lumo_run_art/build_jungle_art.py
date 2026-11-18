@@ -850,6 +850,27 @@ def mushroom() -> Geo:
     return geo
 
 
+def treasure() -> Geo:
+    """A heap of gold coins with a few gems: the riches of the hidden hall."""
+    rng = random.Random(1414)
+    geo = Geo()
+    G.blob(geo, v3(0, 0.05, 0), v3(0.85, 0.32, 0.85), "paint_gold", subdiv=3, rough=0.12, freq=3.0, seed=40, flat_bottom=0.15)
+    for _ in range(34):
+        angle = rng.uniform(0, math.tau)
+        r = rng.uniform(0.0, 0.95)
+        centre = v3(math.cos(angle) * r, 0.0, math.sin(angle) * r)
+        centre.y = max(0.03, 0.3 * (1.0 - (r / 0.95) ** 2)) + rng.uniform(0.0, 0.05)
+        tilt = Matrix.Rotation(rng.uniform(-0.6, 0.6), 3, "X") @ Matrix.Rotation(rng.uniform(-0.6, 0.6), 3, "Z")
+        G.lathe(geo, [(0.0, -0.012), (0.1, -0.012), (0.11, 0.0), (0.1, 0.012), (0.0, 0.012)], 10, "paint_gold", centre=centre,
+                axis=tilt, smooth_angle=50)
+    for k in range(3):
+        angle = rng.uniform(0, math.tau)
+        rot = Matrix.Rotation(rng.uniform(-0.4, 0.4), 3, "X")
+        G.lathe(geo, [(0.0, 0.0), (0.09, 0.0), (0.09, 0.1), (0.0, 0.2)], 6, "glow_crystal",
+                centre=v3(math.cos(angle) * 0.5, 0.18, math.sin(angle) * 0.5), axis=rot, smooth_angle=10)
+    return geo
+
+
 def crystal(seed: int, spikes: int, tall: float) -> Geo:
     rng = random.Random(seed)
     geo = Geo()
@@ -997,6 +1018,7 @@ def catalogue():
         "crystal_a": lambda: crystal(800, 7, 1.3),
         "crystal_b": lambda: crystal(801, 4, 2.0),
         "log": log,
+        "treasure": treasure,
         "crab": crab,
         "beetle": beetle,
         "coconut": coconut,

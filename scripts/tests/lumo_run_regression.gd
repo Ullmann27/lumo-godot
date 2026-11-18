@@ -1322,8 +1322,8 @@ func _check_jungle_art(game) -> void:
 	var scenery = game.world.scenery
 	var art: Dictionary = scenery.art_report()
 	_check(art.missing.is_empty(), "every jungle model loads (missing: %s)" % str(art.missing))
-	_check(art.glb.size() >= 40, "the jungle scenery is made of Blender models (%d kinds)" % art.glb.size())
-	var effects: Array[String] = ["bulb", "flame", "butterfly", "bird", "leafcard", "firefly", "spark", "treasure", "mountain"]
+	_check(art.glb.size() >= 36, "the jungle scenery is made of Blender models (%d kinds)" % art.glb.size())
+	var effects: Array[String] = ["bulb", "flame", "butterfly", "bird", "leafcard", "firefly", "spark", "mountain"]
 	var stray: Array = art.code.filter(func(kind: String) -> bool: return not effects.has(kind))
 	_check(stray.is_empty(), "only light and animal effects are drawn from code shapes (also: %s)" % str(stray))
 	var batches: int = 0

@@ -300,7 +300,12 @@ uniform float translucency = 0.55;
 uniform float variation = 0.35;
 uniform float brightness = 1.0;
 uniform float flutter = 1.0;
+// Lumo's chest in world space (set every frame): leaves between the camera and
+// Lumo, and leaves right in front of the lens, are cut away so the child always
+// sees Lumo and the path.
+global uniform vec3 jungle_focus;
 varying float leaf_rand;
+varying vec3 leaf_world;
 void vertex() {
 	vec3 origin = MODEL_MATRIX[3].xyz;
 	float w = UV2.x * sway;
@@ -309,10 +314,17 @@ void vertex() {
 	float f = TIME * 4.7 + UV2.y * 37.0 + origin.x * 1.3;
 	VERTEX += gust + NORMAL * sin(f) * 0.035 * w * flutter;
 	leaf_rand = fract(UV2.y * 7.13 + origin.x * 0.37 + origin.z * 0.91);
+	leaf_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 void fragment() {
 	vec4 tex = texture(albedo_tex, UV);
-	ALPHA = tex.a;
+	vec3 eye = INV_VIEW_MATRIX[3].xyz;
+	vec3 ray = jungle_focus - eye;
+	float along = clamp(dot(leaf_world - eye, ray) / max(dot(ray, ray), 0.01), 0.0, 1.0);
+	float off = length(leaf_world - (eye + ray * along));
+	float clear = along < 0.97 ? smoothstep(0.7 + along * 0.6, 1.5 + along * 0.9, off) : 1.0;
+	clear *= smoothstep(1.2, 3.2, length(VERTEX));
+	ALPHA = tex.a * clear;
 	ALPHA_SCISSOR_THRESHOLD = alpha_cut;
 	vec3 col = tex.rgb;
 	// Each card a little different: fresh yellow-green, deep blue-green or sun-dried.

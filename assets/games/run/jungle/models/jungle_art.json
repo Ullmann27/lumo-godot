@@ -703,6 +703,22 @@
    ],
    "sha256": "ebc753e4f5891ca0b9a6367af55fa7be68047a399f6167a422feea7d2768cf3b"
   },
+  "treasure": {
+   "file": "treasure.glb",
+   "triangles": 2432,
+   "vertices": 2116,
+   "materials": [
+    "paint_gold",
+    "glow_crystal"
+   ],
+   "bytes": 176948,
+   "size_m": [
+    1.78,
+    0.42,
+    1.89
+   ],
+   "sha256": "7ec8eb007f7b8a9f73abc6b8a9157c740b17b6f44d80438d760a215d08c1eead"
+  },
   "tree_broad": {
    "file": "tree_broad.glb",
    "triangles": 7696,
