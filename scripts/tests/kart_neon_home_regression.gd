@@ -37,10 +37,39 @@ func _run() -> void:
 	hub.size = Vector2(1280, 720)
 	await process_frame
 	_check(hub._highlight != null and hub._highlight.is_visible_in_tree(), "Strecken-Highlight sichtbar")
-	_check(hub._track_buttons.size() == 4, "vier echte Katalogstrecken im Highlight")
-	for id in ["volcano_night", "jungle_emerald_3600", "desert_drift", "sonnenhafen"]:
+	# Alle Strecken des Katalogs stehen im Hauptmenü zur Wahl (nicht nur vier).
+	var catalog = preload("res://scripts/games/kart_catalog.gd")
+	_check(hub._track_buttons.size() == catalog.TRACKS.size() and catalog.TRACKS.size() >= 13,
+		"alle %d Katalogstrecken im Highlight (%d Bilder)" % [catalog.TRACKS.size(), hub._track_buttons.size()])
+	for entry in catalog.TRACKS:
+		var id := str(entry.id)
 		_check(hub._track_buttons.has(id), "Strecke im Katalog: " + id)
-		_check(hub._track_buttons[id].art != null, "echtes Vorschaubild: " + id)
+		_check(hub._track_buttons.has(id) and hub._track_buttons[id].art != null, "echtes Vorschaubild: " + id)
+	# Die Pfeile auf dem großen Bild gehen durch jede Strecke; nichts liegt übereinander.
+	_check(hub._thumb_prev.is_visible_in_tree() and hub._thumb_next.is_visible_in_tree(), "Pfeile zum Blättern sichtbar")
+	_check(hub._thumb_next.get_global_rect().size.x >= 36.0, "Pfeil ist groß genug zum Antippen (%.0f px)" % hub._thumb_next.get_global_rect().size.x)
+	var seen := {}
+	for _step in range(catalog.TRACKS.size()):
+		seen[hub._featured_track] = true
+		var shown: Array = []
+		for id in hub._track_buttons:
+			if hub._track_buttons[id].is_visible_in_tree():
+				shown.append(id)
+		_check(shown.size() >= 3 and not shown.has(hub._featured_track), "drei weitere Streckenbilder neben der gewählten (%d)" % shown.size())
+		for a in range(shown.size()):
+			for b in range(a + 1, shown.size()):
+				_check(not hub._track_buttons[shown[a]].get_global_rect().intersects(hub._track_buttons[shown[b]].get_global_rect()),
+					"Streckenbilder %s und %s überlappen nicht" % [shown[a], shown[b]])
+		hub._thumb_next.pressed.emit()
+		await process_frame
+		await process_frame
+	_check(seen.size() == catalog.TRACKS.size(), "die Pfeile erreichen jede Strecke (%d von %d)" % [seen.size(), catalog.TRACKS.size()])
+	_check(routes.size() == catalog.TRACKS.size(), "jeder Pfeil-Tipp übergibt die Strecke an das Rennen (%d)" % routes.size())
+	hub._thumb_prev.pressed.emit()
+	await process_frame
+	hub._thumb_next.pressed.emit()
+	await process_frame
+	routes.clear()
 	# Issue #204: hervorgehoben ist die Strecke, die "Rennen" startet – ohne Vorgabe die
 	# erste Katalogstrecke, nie eine bloße Werbestrecke.
 	_check(hub._featured_track == "sonnenhafen" and hub.selected_track == "sonnenhafen",

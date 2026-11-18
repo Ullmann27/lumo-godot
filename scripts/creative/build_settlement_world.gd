@@ -22,6 +22,8 @@ const VHUD = preload("res://scripts/creative/build_village_hud.gd")
 const TUTORIAL = preload("res://scripts/creative/build_village_tutorial.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const NEIGHBORS_VIEW = preload("res://scripts/creative/build_village_neighbors_view.gd")
+const RAIDS = preload("res://scripts/creative/build_village_raids.gd")
+const RAIDS_VIEW = preload("res://scripts/creative/build_village_raids_view.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -111,6 +113,11 @@ var tutorial: Control
 var neighbors
 var neighbors_view: Node3D
 var more_button: Button
+var raids
+var raids_view: Node3D
+var defense_button: Button
+var raid_alert: Button
+var raid_camera_return: Dictionary = {}
 
 
 func _ready() -> void:
@@ -1014,6 +1021,9 @@ func _next_day() -> void:
 	var neighbor_note := ""
 	if bool(report.get("advanced", false)) and neighbors != null:
 		neighbor_note = _advance_neighbors()
+	var raid_report: Dictionary = {}
+	if bool(report.get("advanced", false)) and raids != null:
+		raid_report = raids.advance_day(model, neighbors, int(model._player.get("campaign_chapter", 0)), not is_instance_valid(tutorial) or not tutorial.active())
 	_rebuild()
 	if bool(report.get("advanced", false)):
 		_play_day_cycle()
@@ -1033,6 +1043,7 @@ func _next_day() -> void:
 			feedback.text += " · " + neighbor_note
 		if not str(report.get("winner", "")).is_empty():
 			feedback.text = _winner_text(str(report.winner))
+		_handle_raid_report(raid_report)
 	else:
 		feedback.text = str(report.get("message", model.last_error))
 	_save()
@@ -1662,6 +1673,11 @@ func _physics_process(delta: float) -> void:
 		_advance_village_details(delta)
 		if is_instance_valid(neighbors_view):
 			neighbors_view.advance(minf(delta, 0.1), explorer.position if walking else focus)
+		if is_instance_valid(raids_view):
+			raids_view.advance(minf(delta, 0.1))
+			if raids_view.playing():
+				focus = focus.lerp(raids_view.focus_point(), 1.0 - exp(-2.0 * delta))
+				_camera_update(true)
 	if is_instance_valid(rival_host):
 		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
@@ -2131,6 +2147,15 @@ func _build_village_ui() -> void:
 	neighbor_button.name = "VillageNeighbors"
 	neighbor_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	actions.add_child(neighbor_button)
+	defense_button = VHUD.button("Schutz", _from_more.bind(_defense_dialog), 100, "rose", 15)
+	defense_button.name = "VillageDefense"
+	defense_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	actions.add_child(defense_button)
+	raid_alert = VHUD.button("", _defense_dialog, 300, "rose", 16)
+	raid_alert.name = "VillageRaidAlert"
+	raid_alert.mouse_filter = Control.MOUSE_FILTER_PASS
+	raid_alert.hide()
+	safe_ui.add_child(raid_alert)
 	for index in [0, 1, 3]:
 		more_box.add_child(transaction_buttons[index])
 	demolish_button = VHUD.button("Rückbauen", _from_more.bind(_demolish), 150, "rose", 15)
@@ -2246,6 +2271,10 @@ func _layout_village_hud(size: Vector2) -> void:
 	for row in progress_rows:
 		row.visible = row.visible and not short
 	goal_card.reset_size()
+	if is_instance_valid(raid_alert):
+		raid_alert.visible = raids != null and not raids.pending.is_empty() and not short
+		raid_alert.reset_size()
+		raid_alert.position = Vector2(goal_card.position.x, goal_card.position.y + goal_card.size.y + gap)
 	var cluster_height := camera_cluster.get_combined_minimum_size().y
 	var dock_top := size.y - bottom.get_combined_minimum_size().y - gap
 	var cluster_y := clampf((top_end + dock_top - cluster_height) * 0.5, top_end + gap, maxf(top_end + gap, dock_top - cluster_height - gap))
@@ -2305,6 +2334,12 @@ func _start_village_systems() -> void:
 	neighbors_view = NEIGHBORS_VIEW.new()
 	add_child(neighbors_view)
 	neighbors_view.setup(neighbors)
+	raids = RAIDS.restore(village_meta.get("raids"), model)
+	raids_view = RAIDS_VIEW.new()
+	add_child(raids_view)
+	raids_view.setup(model, raids, LumoQuality.tier())
+	raids_view.scene_finished.connect(_raid_scene_finished)
+	_refresh_raid_alert()
 	_layout()
 
 
@@ -2315,6 +2350,8 @@ func _village_meta_snapshot() -> Dictionary:
 		data["tutorial"] = tutorial.snapshot()
 	if neighbors != null:
 		data["neighbors"] = neighbors.snapshot()
+	if raids != null:
+		data["raids"] = raids.snapshot(model)
 	return data
 
 
@@ -2516,3 +2553,242 @@ func _claim_source(key: String, dialog: Window) -> void:
 		feedback.text = model.last_error if not model.last_error.is_empty() else "Das geht gerade nicht."
 	if is_instance_valid(dialog):
 		dialog.queue_free()
+
+
+# ------------------------------------------------------------ Angriffe (Teil 3)
+const RAID_OUTCOME_TITLES := {
+	"abgewehrt": "Abgewehrt! Alle purzeln davon.", "knapp": "Knapp! Fast hättest du es geschafft.",
+	"verloren": "Diesmal waren sie stärker.", "frieden": "Frieden geschlossen.",
+}
+const PART_ORDER := ["wall", "tower", "gate", "ditch", "trap"]
+
+
+func _refresh_raid_alert() -> void:
+	if not is_instance_valid(raid_alert) or raids == null:
+		return
+	if raids.pending.is_empty():
+		raid_alert.hide()
+	else:
+		var days := maxi(0, int(raids.pending.arrive_day) - int(model.day))
+		var view: Dictionary = raids.forecast()
+		raid_alert.text = "⚠ %s · %s · %s" % [
+			raids.threat_title(raids.pending), "heute Nacht" if days == 0 else ("in %d Tag%s" % [days, "" if days == 1 else "en"]),
+			"Schutz reicht" if bool(view.ready) else "Schutz planen!"]
+	_layout()
+
+
+func _handle_raid_report(report: Dictionary) -> void:
+	if report.is_empty():
+		_refresh_raid_alert()
+		return
+	var expedition: Dictionary = report.get("expedition", {})
+	if not expedition.is_empty():
+		if str(expedition.kind) == "kundschafter":
+			feedback.text = "Der Kundschafter ist zurück: " + " ".join(expedition.get("lines", []))
+		else:
+			feedback.text = "Deine Wachen sind zurück und bringen %s mit. Krummzahn ist davongelaufen!" % _cost_text(expedition.get("back", {}))
+	if report.has("warning"):
+		_explain("angriff")
+		var warning: Dictionary = report.warning
+		feedback.text = "Achtung: %s %s" % [str(warning.reason), str(RAIDS.THREATS[str(warning.threat)].advice)]
+		_defense_dialog.call_deferred()
+	if report.has("raid"):
+		_start_raid_scene(report.raid)
+	raids_view.sync()
+	_refresh_raid_alert()
+
+
+func _start_raid_scene(result: Dictionary) -> void:
+	raid_camera_return = {"focus": focus, "radius": radius}
+	radius = clampf(radius, RADIUS_RANGE.x, 46.0)
+	raids_view.play(result)
+	feedback.text = "%s kommt! Schau zum Tor." % raids.threat_title(result)
+
+
+func _raid_scene_finished() -> void:
+	if not raid_camera_return.is_empty():
+		radius = float(raid_camera_return.radius)
+		raid_camera_return = {}
+	_rebuild()
+	_raid_result_dialog(raids.last_result)
+
+
+func _lumo_says(body: VBoxContainer, text: String) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var face := TextureRect.new()
+	face.texture = VHUD.texture("lumo_portrait")
+	face.custom_minimum_size = Vector2(76, 76)
+	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row.add_child(face)
+	var line := _label(text, 17)
+	line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	line.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(line)
+	body.add_child(row)
+
+
+func _raid_button(body: VBoxContainer, text: String, action: Callable, enabled := true) -> Button:
+	var button := _button(text, action, 300)
+	button.mouse_filter = Control.MOUSE_FILTER_PASS
+	button.disabled = not enabled
+	body.add_child(button)
+	return button
+
+
+## The planning screen: who comes and why, Lumo's advice, a simple bar
+## "dein Schutz gegen den Angriff", what can be built, guards, allies, deals,
+## expeditions and repairs. Every button pays with real village stock.
+func _defense_dialog() -> void:
+	if raids == null:
+		return
+	_explain("verteidigung")
+	var view: Dictionary = _village_dialog("Schutz für dein Dorf")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	dialog.name = "DefenseDialog"
+	var pending: Dictionary = raids.pending
+	if not pending.is_empty():
+		var days := maxi(0, int(pending.arrive_day) - int(model.day))
+		var forecast: Dictionary = raids.forecast()
+		_village_caption(body, "%s kommt in %d Tag%s." % [raids.threat_title(pending), days, "" if days == 1 else "en"], 19)
+		_lumo_says(body, "%s %s" % [str(pending.reason), str(forecast.advice)])
+		var row := VHUD.progress_row()
+		VHUD.set_progress(row, "Dein Schutz", roundi(float(forecast.have)), roundi(float(forecast.need) * 1.1))
+		body.add_child(row)
+		_village_caption(body, "Das reicht!" if bool(forecast.ready) else ("Es wird knapp. Noch etwas mehr Schutz!" if bool(forecast.close) else "Das reicht noch nicht. Baue mehr Schutz!"))
+		if str(pending.threat) == "rivale":
+			var cost: Dictionary = raids.negotiation_cost()
+			_raid_button(body, "Verhandeln: %s schenken" % _cost_text(cost), _raid_action.bind("negotiate", "", dialog), model._affords(model._player, cost))
+		if neighbors != null:
+			for entry in NEIGHBORS.NEIGHBORS:
+				var id: String = entry.id
+				if neighbors.allied(id) and id != str(pending.get("by", "")):
+					var asked := str(pending.get("ally", "")) == id
+					_raid_button(body, "%s hilft schon mit!" % str(entry.name) if asked else "%s um Hilfe bitten" % str(entry.name), _raid_action.bind("ally", id, dialog), not asked)
+	else:
+		_lumo_says(body, "Gerade ist alles ruhig. Krummzahn mag volle Kornlager (ab %d Essen), Funkel glitzernde Münzen (ab %d)." % [RAIDS.ROBBER_FOOD, RAIDS.DRAGON_COINS])
+	_village_caption(body, "Wappen: %d · abgewehrt: %d · Wachen: %d von %d" % [int(raids.fame), int(raids.defended), int(raids.guards), raids.max_guards(model)], 17)
+	# The child's own guards come first: train villagers to protect the village.
+	_village_caption(body, "Deine Wachen", 18)
+	_raid_button(body, "Wache ausbilden: 1 Münze", _raid_action.bind("guard", "", dialog), raids.guards < raids.max_guards(model) and raids.expedition.is_empty())
+	if raids.guards >= raids.max_guards(model):
+		_village_caption(body, "  Mehr Bewohner im Dorf: dann kannst du mehr Wachen ausbilden.")
+	_village_caption(body, "Schutzbauten", 18)
+	for kind in PART_ORDER:
+		var stage := int(raids.parts[kind])
+		var spec: Dictionary = RAIDS.PARTS[kind]
+		if stage >= int(spec.max):
+			_village_caption(body, "✓ %s (fertig)" % RAIDS.part_name(kind, stage))
+			continue
+		var error: String = raids.build_error(kind, model)
+		var caption := "%s bauen: %s" % [RAIDS.part_name(kind, stage + 1), _cost_text(raids.next_cost(kind))]
+		if int(spec.max) > 1 and kind in ["tower", "trap"]:
+			caption = "%s %d/%d: %s" % [str(spec.title), stage + 1, int(spec.max), _cost_text(raids.next_cost(kind))]
+		_raid_button(body, caption, _raid_action.bind("build", kind, dialog), error.is_empty())
+		if error.begins_with("Dafür brauchst"):
+			_village_caption(body, "  " + error)
+	_village_caption(body, "Unternehmungen", 18)
+	if not raids.expedition.is_empty():
+		_village_caption(body, "Unterwegs: %s, zurück an Tag %d." % ["Kundschafter" if str(raids.expedition.kind) == "kundschafter" else "Wachen holen Vorräte", int(raids.expedition.return_day)])
+	else:
+		_raid_button(body, "Kundschafter losschicken: 2 Essen", _raid_action.bind("expedition", "kundschafter", dialog), raids.expedition_error("kundschafter", model).is_empty())
+		if not raids.stash.is_empty():
+			_raid_button(body, "Vorräte zurückholen (%s)" % _cost_text(raids.stash), _raid_action.bind("expedition", "zurueckholen", dialog), raids.expedition_error("zurueckholen", model).is_empty())
+	if not model.damaged_plots.is_empty():
+		_village_caption(body, "Reparieren", 18)
+		for building in model._player.buildings:
+			var plot := int(building.plot)
+			if model.damaged_plots.has(plot):
+				var cost: Dictionary = raids.repair_cost(model, plot)
+				_raid_button(body, "%s reparieren: %s" % [str(STATE.BUILDINGS[str(building.kind)].title), _cost_text(cost)], _raid_action.bind("repair", str(plot), dialog), model._affords(model._player, cost))
+	if not raids.chronicle.is_empty():
+		_village_caption(body, "Chronik", 18)
+		for line in raids.chronicle.slice(-4):
+			_village_caption(body, str(line))
+
+
+func _raid_action(action: String, argument: String, dialog: Window) -> void:
+	if _transactions_blocked() or raids == null:
+		return
+	var error := ""
+	match action:
+		"build":
+			error = raids.build(argument, model)
+			if error.is_empty():
+				feedback.text = "%s steht! Dein Dorf ist besser geschützt." % RAIDS.part_name(argument, int(raids.parts[argument]))
+		"guard":
+			error = raids.train_guard(model)
+			if error.is_empty():
+				feedback.text = "Eine neue Wache mit Helm und Schild."
+		"ally":
+			error = raids.call_ally(argument, neighbors)
+			if error.is_empty():
+				feedback.text = "%s kommt dir zu Hilfe!" % str(NEIGHBORS.spec(argument).name)
+				neighbors_view.start_caravan(NEIGHBORS.plot_world(argument, 4), _plot_world(4), "Hilfe von " + str(NEIGHBORS.spec(argument).name))
+		"negotiate":
+			error = raids.negotiate(model, neighbors)
+			if error.is_empty():
+				feedback.text = "Frieden! Das Geschenk hat geholfen."
+		"expedition":
+			error = raids.start_expedition(argument, model)
+			if error.is_empty():
+				feedback.text = "Unterwegs! Mit „Nächster Tag“ kommen sie zurück."
+		"repair":
+			error = raids.repair(model, int(argument))
+			if error.is_empty():
+				feedback.text = "Repariert! Das Gebäude arbeitet wieder."
+	if not error.is_empty():
+		feedback.text = error
+	raids_view.sync()
+	_rebuild()
+	_refresh_raid_alert()
+	_save()
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	if error.is_empty() and action != "negotiate":
+		_reopen_defense.call_deferred()
+
+
+func _reopen_defense() -> void:
+	await get_tree().process_frame
+	if not is_instance_valid(village_window):
+		_defense_dialog()
+
+
+## Short, readable evaluation after the scene: what happened and what now.
+func _raid_result_dialog(result: Dictionary) -> void:
+	if result.is_empty():
+		return
+	var outcome := str(result.get("outcome", ""))
+	var view: Dictionary = _village_dialog(str(RAID_OUTCOME_TITLES.get(outcome, "Bericht")))
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	view.dialog.name = "RaidResult"
+	_village_caption(body, "Grund: " + str(result.get("reason", "")))
+	_village_caption(body, "Dein Schutz %d gegen den Angriff %d." % [roundi(float(result.get("have", 0))), roundi(float(result.get("need", 0)))], 17)
+	if outcome == "abgewehrt":
+		_lumo_says(body, "Super geplant! Niemand ist verletzt, alle sind davongepurzelt. Du bekommst ein Wappen und %s." % _cost_text(result.get("reward", {})))
+	else:
+		var names: Array[String] = []
+		for entry in result.get("damaged", []):
+			names.append(str(STATE.BUILDINGS[str(entry.kind)].title))
+		var loss: Dictionary = result.get("loss", {})
+		var lines := "Beschädigt: %s." % (", ".join(names) if not names.is_empty() else "nichts")
+		if loss.has("source"):
+			lines += " Die %s gehört wieder dem Nachbarn." % str(NEIGHBORS.SOURCES[str(loss.source)].title)
+		elif not loss.is_empty():
+			lines += " Mitgenommen: %s." % _cost_text(loss)
+		_village_caption(body, lines)
+		_lumo_says(body, "Kopf hoch! Niemand ist verletzt. Repariere die Gebäude, baue mehr Schutz – und mit zwei Wachen holst du Vorräte zurück.")
+		_raid_button(body, "Zum Schutz-Plan", _open_defense_from.bind(view.dialog))
+
+
+func _open_defense_from(dialog: Window) -> void:
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	_reopen_defense.call_deferred()
