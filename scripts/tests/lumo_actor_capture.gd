@@ -443,6 +443,16 @@ func _body_point(bone: String) -> Vector3:
 	return visual.to_local(_world_pos(_bone(bone)))
 
 
+## Ein Punkt am Kopf (in Ruhelage-Modellkoordinaten gemessen), wie er sich mit
+## dem aktuell gedrehten Kopf mitbewegt – in Körperkoordinaten.
+func _head_point(rest_point: Vector3) -> Vector3:
+	var head := _bone("Head")
+	var moved := (
+		skeleton.get_bone_global_pose(head) * skeleton.get_bone_global_rest(head).affine_inverse()
+	)
+	return visual.to_local(skeleton.to_global(moved * rest_point))
+
+
 func _clip_idle() -> bool:
 	var frames := 24
 	var length: float = player.get_animation("idle").length
@@ -561,12 +571,12 @@ func _clip_talk() -> bool:
 		_sample("idle", u * length)
 		_look(-0.30, sin(phase * 2.0) * 0.05 - 0.02, sin(phase) * 0.04)
 		var chest := _body_point("Chest")
-		var hand := chest + Vector3(-0.17, -0.04 + 0.05 * sin(phase * 2.0 + 0.6), 0.26 + 0.03 * cos(phase))
+		var hand := chest + Vector3(-0.24, -0.10 + 0.05 * sin(phase * 2.0 + 0.6), 0.32 + 0.03 * cos(phase))
 		_aim_arm(".R", hand, 0.9, 0.95, Vector3(-0.6, -1.0, -0.2))
 		_alive(phase, 0.7)
 		var mouth: Array = TALK_MOUTH[i]
 		if not str(mouth[0]).is_empty():
-			_shape(str(mouth[0]), float(mouth[1]))
+			_shape(str(mouth[0]), minf(1.0, float(mouth[1]) * 1.25))
 		_shape("Smile", 0.18)
 		_blink(_blink_curve(i, 9))
 		if not await _save_frame("talk", i):
@@ -586,8 +596,9 @@ func _clip_listen() -> bool:
 		_sample("idle", u * length)
 		_look(-0.18, -0.03, -0.17 + 0.03 * sin(phase))
 		_body_rot("Ear.R", Quaternion(Vector3.UP, -0.25 + 0.12 * sin(phase * 2.0)))
-		var ear := _body_point("Ear.R")
-		_aim_arm(".R", ear + Vector3(-0.13, -0.10, 0.03), 0.95, 0.95, Vector3(-1.0, -0.6, -0.2))
+		# Hohle Hand seitlich am Kopf, auf Augenhöhe hinter dem rechten Ohr.
+		var cup := _head_point(Vector3(-0.24, 1.31, 0.0))
+		_aim_arm(".R", cup, 0.95, 0.95, Vector3(-1.0, -0.8, 0.0))
 		_alive(phase, 0.6)
 		_shape("Smile", 0.25)
 		_shape("LookRight", 0.25)
@@ -609,6 +620,9 @@ func _clip_think() -> bool:
 		_set_yaw(FACE_YAW)
 		_sample("thinking", peak + 0.12 * sin(phase))
 		_look(-0.12, -0.16 + 0.03 * sin(phase), 0.08)
+		# Pfote ans Kinn (Kinn des Modells in Ruhelage), Kinn wandert mit dem Kopf.
+		var chin := _head_point(Vector3(0.0, 1.13, 0.24 + 0.015 * sin(phase * 2.0)))
+		_aim_arm(".R", chin + Vector3(-0.02, -0.04, 0.03), 1.0, 0.95, Vector3(-0.4, -1.0, 0.1))
 		_alive(phase, 0.8)
 		_shape("LookUp", 0.8)
 		_shape("LookRight", 0.3)
@@ -645,12 +659,53 @@ func _oneshot(name: String, clip: String, smile: float, hop: float, blink_at: in
 
 
 func _clip_cheer() -> bool:
-	return await _oneshot("cheer", "celebrate", 0.7, 0.16, -10)
+	return await _oneshot("cheer", "celebrate", 0.7, 0.2, -10)
 
 
+## Freundliches Nicken mit offener Hand nach vorn: „macht nichts, nochmal“.
 func _clip_comfort() -> bool:
-	return await _oneshot("comfort", "agree_nod", 0.5, 0.0, 12)
+	var length: float = player.get_animation("agree_nod").length
+	var frames := int(round(length * 12.0)) + 1
+	for i in range(frames):
+		var t := minf(float(i) / 12.0, length)
+		var u := t / length
+		var reach := _ease(u / 0.25) * (1.0 - _ease((u - 0.75) / 0.25))
+		_clear_face()
+		_set_yaw(FACE_YAW)
+		_sample("agree_nod", t)
+		_look(-0.22 * reach, 0.10 * sin(u * TAU * 2.0) * reach, 0.12 * reach)
+		var chest := _body_point("Chest")
+		_aim_arm(".R", chest + Vector3(-0.26, -0.28, 0.30), reach, 0.95, Vector3(-1.0, -0.5, -0.3))
+		_alive(u * TAU, 0.8)
+		_shape("Smile", 0.65)
+		# Freundlich zusammengekniffene Augen beim Nicken.
+		_blink(maxf(_blink_curve(i, 15), 0.3 * reach))
+		if not await _save_frame("comfort", i):
+			return false
+	_write_meta("comfort", {"frames": frames, "fps": 12, "loop": false, "yaw": FACE_YAW})
+	return true
 
 
+## Winkt mit dem rechten (kameranahen) Arm, Hand deutlich neben dem Kopf.
 func _clip_wave() -> bool:
-	return await _oneshot("wave", "greeting_wave", 0.6, 0.0, 18)
+	var frames := 24
+	var length: float = player.get_animation("idle").length
+	for i in range(frames):
+		var u := float(i) / float(frames - 1)
+		var raise := _ease(u / 0.2) * (1.0 - _ease((u - 0.8) / 0.2))
+		var swing := sin((u - 0.2) / 0.6 * TAU * 2.0) if u > 0.2 and u < 0.8 else 0.0
+		_clear_face()
+		_set_yaw(FACE_YAW)
+		_sample("idle", u * length * 0.5)
+		_look(-0.25 * raise, -0.04 * raise, -0.10 * raise)
+		var shoulder := _body_point("UpperArm.R")
+		var hand := shoulder + Vector3(-0.30 + 0.08 * swing, 0.36, 0.14)
+		_aim_arm(".R", hand, raise, 0.97, Vector3(-0.6, -1.0, 0.2))
+		_alive(u * TAU * 2.0, 1.0)
+		_shape("Smile", 0.75)
+		_shape("AA", 0.35 * raise)
+		_blink(_blink_curve(i, 19))
+		if not await _save_frame("wave", i):
+			return false
+	_write_meta("wave", {"frames": frames, "fps": 12, "loop": false, "yaw": FACE_YAW})
+	return true
