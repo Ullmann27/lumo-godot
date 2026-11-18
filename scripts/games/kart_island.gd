@@ -2582,6 +2582,10 @@ func _update_passages(delta: float) -> void:
 				_sound_effect(str(entry.get("cue", "monkey_call")))
 				if before < 0.0 and local < float(entry.plane):
 					message.text = str(entry.get("warn_text", "Uh-uh-AAH! Kiri holt Schwung. Kurz warten!"))
+		if phase == "open" and str(_passage_last_phase.get(entry.id, "")) == "swing":
+			# The waiting child learns that green means "go" (the old warning stayed on screen).
+			if before < 0.0 and local < float(entry.plane):
+				message.text = str(entry.get("go_text", "Grün! Jetzt vorbei."))
 		_passage_last_phase[entry.id] = phase
 		if (
 			PASSAGES.blocker_hits(world, entry, previous_road_distance, lane, elapsed, absf(speed))

@@ -286,6 +286,10 @@ func _particles(name_text: String, amount: int, colour: Color, size: float, glow
 	var quad := _coloured_quad(size)
 	var material := StandardMaterial3D.new()
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	# Keep the per-particle scale: a not yet emitted particle has scale 0 and black colour.
+	# Without this the billboard rebuilt its basis and drew it as a black square above the
+	# kart (18.11.2026, 784 dark pixels at screen centre in the Kiri/Kronenbrücke captures).
+	material.billboard_keep_scale = true
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = colour
 	material.vertex_color_use_as_albedo = true
