@@ -61,6 +61,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/run_godot_probe.py --timeout 180 --log proof/lumo-dialogue.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/learning_android_host_capability_regression.gd
+      - name: Test table games reach their Android host methods
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 180 --log proof/table-host.log --required '"status":"PASS"' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://scripts/tests/table_android_host_capability_regression.gd
       - name: Preserve genuine results
         if: always()
         uses: actions/upload-artifact@v4
