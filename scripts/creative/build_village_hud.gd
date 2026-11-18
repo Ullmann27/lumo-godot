@@ -98,16 +98,29 @@ static func round_button(text: String, action: Callable, tooltip: String) -> But
 
 ## Gebäudekarte: echtes Modellbild links, Name und Kosten rechts.
 static func building_card(kind: String, text: String, action: Callable) -> Button:
-	var card := HUD.button(text, action, 218.0, "cream")
+	var card := HUD.button(text, action, 232.0, "cream")
 	card.name = "BuildCard_" + kind
-	card.custom_minimum_size = Vector2(218, 86)
+	card.custom_minimum_size = Vector2(232, 86)
 	card.add_theme_font_size_override("font_size", 15)
 	card.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	card.icon = texture("bld_" + kind)
-	card.expand_icon = true
-	card.add_theme_constant_override("icon_max_width", 80)
-	card.add_theme_constant_override("h_separation", 8)
 	card.clip_text = false
+	# The rendered model sits in a fixed slot left of the text, so a long
+	# price line can never squeeze the picture away.
+	for state in ["normal", "hover", "pressed", "hover_pressed", "disabled", "focus"]:
+		var style := card.get_theme_stylebox(state)
+		if style != null:
+			style = style.duplicate()
+			style.content_margin_left = 88
+			card.add_theme_stylebox_override(state, style)
+	var picture := TextureRect.new()
+	picture.name = "CardPicture"
+	picture.texture = texture("bld_" + kind)
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	picture.position = Vector2(6, 4)
+	picture.size = Vector2(78, 76)
+	card.add_child(picture)
 	return card
 
 

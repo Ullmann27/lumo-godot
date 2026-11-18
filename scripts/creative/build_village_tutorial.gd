@@ -100,7 +100,18 @@ func _build() -> void:
 	add_child(pointer)
 	bubble = PanelContainer.new()
 	bubble.name = "LumoBubble"
-	bubble.add_theme_stylebox_override("panel", VHUD.panel("parchment", 12))
+	# Fully opaque, bright card: easy to read for beginning readers.
+	var paper := StyleBoxFlat.new()
+	paper.bg_color = Color("fffaf0")
+	paper.border_color = Color("c99a52")
+	paper.set_border_width_all(3)
+	paper.border_width_bottom = 6
+	paper.set_corner_radius_all(22)
+	paper.set_content_margin_all(14)
+	paper.shadow_color = Color(0.02, 0.08, 0.12, 0.35)
+	paper.shadow_size = 10
+	paper.shadow_offset = Vector2(0, 4)
+	bubble.add_theme_stylebox_override("panel", paper)
 	bubble.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(bubble)
 	var row := HBoxContainer.new()
@@ -109,7 +120,7 @@ func _build() -> void:
 	var face := TextureRect.new()
 	face.name = "LumoFace"
 	face.texture = VHUD.texture("lumo_portrait")
-	face.custom_minimum_size = Vector2(64, 64)
+	face.custom_minimum_size = Vector2(90, 90)
 	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	face.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -264,6 +275,12 @@ func _process(delta: float) -> void:
 		_next()
 		return
 	_relayout()
+	var face := bubble.find_child("LumoFace", true, false) as TextureRect
+	if face != null:
+		face.pivot_offset = face.size * Vector2(0.5, 1.0)
+		var breath := 1.0 + sin(clock * 2.2) * 0.025
+		var blink := 0.92 if fmod(clock, 3.7) < 0.12 else 1.0
+		face.scale = Vector2(breath, breath * blink)
 	pointer.queue_redraw()
 	ring.queue_redraw()
 

@@ -20,6 +20,8 @@ const ART = preload("res://scripts/creative/build_village_art.gd")
 const LIFE = preload("res://scripts/creative/build_village_life.gd")
 const VHUD = preload("res://scripts/creative/build_village_hud.gd")
 const TUTORIAL = preload("res://scripts/creative/build_village_tutorial.gd")
+const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
+const NEIGHBORS_VIEW = preload("res://scripts/creative/build_village_neighbors_view.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -106,6 +108,8 @@ var more_panel: PanelContainer
 ## mit Standardwerten; ältere Spielversionen ignorieren den Schlüssel.
 var village_meta: Dictionary = {}
 var tutorial: Control
+var neighbors
+var neighbors_view: Node3D
 var more_button: Button
 
 
@@ -1007,6 +1011,9 @@ func _next_day() -> void:
 	if _transactions_blocked():
 		return
 	var report: Dictionary = model.next_day()
+	var neighbor_note := ""
+	if bool(report.get("advanced", false)) and neighbors != null:
+		neighbor_note = _advance_neighbors()
 	_rebuild()
 	if bool(report.get("advanced", false)):
 		_play_day_cycle()
@@ -1022,6 +1029,8 @@ func _next_day() -> void:
 		)
 		if int(own.food_shortfall) > 0:
 			feedback.text += " · Es fehlen %d Essen. Baue Bauernhöfe!" % int(own.food_shortfall)
+		if not neighbor_note.is_empty():
+			feedback.text += " · " + neighbor_note
 		if not str(report.get("winner", "")).is_empty():
 			feedback.text = _winner_text(str(report.winner))
 	else:
@@ -1651,6 +1660,8 @@ func _physics_process(delta: float) -> void:
 		village_residents.advance(delta)
 	if model.living_village:
 		_advance_village_details(delta)
+		if is_instance_valid(neighbors_view):
+			neighbors_view.advance(minf(delta, 0.1), explorer.position if walking else focus)
 	if is_instance_valid(rival_host):
 		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
@@ -2116,6 +2127,10 @@ func _build_village_ui() -> void:
 		transaction_buttons.append(action_button)
 	for index in [4, 5, 2]:
 		actions.add_child(transaction_buttons[index])
+	var neighbor_button := VHUD.button("Nachbarn", _from_more.bind(_neighbors_dialog), 110, "teal", 15)
+	neighbor_button.name = "VillageNeighbors"
+	neighbor_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	actions.add_child(neighbor_button)
 	for index in [0, 1, 3]:
 		more_box.add_child(transaction_buttons[index])
 	demolish_button = VHUD.button("Rückbauen", _from_more.bind(_demolish), 150, "rose", 15)
@@ -2286,6 +2301,10 @@ func _start_village_systems() -> void:
 	tutorial = TUTORIAL.new()
 	safe_ui.add_child(tutorial)
 	tutorial.setup(self, village_meta.get("tutorial"))
+	neighbors = NEIGHBORS.restore(village_meta.get("neighbors"))
+	neighbors_view = NEIGHBORS_VIEW.new()
+	add_child(neighbors_view)
+	neighbors_view.setup(neighbors)
 	_layout()
 
 
@@ -2294,6 +2313,8 @@ func _village_meta_snapshot() -> Dictionary:
 	data["meta_version"] = 1
 	if is_instance_valid(tutorial):
 		data["tutorial"] = tutorial.snapshot()
+	if neighbors != null:
+		data["neighbors"] = neighbors.snapshot()
 	return data
 
 
@@ -2394,3 +2415,104 @@ func _replay_topic(topic: String, dialog: Window) -> void:
 		dialog.queue_free()
 	if is_instance_valid(tutorial):
 		tutorial.replay(topic)
+
+
+
+# ------------------------------------------------------------ Nachbarn
+func _advance_neighbors() -> String:
+	var result: Dictionary = neighbors.advance_day(model)
+	if is_instance_valid(neighbors_view):
+		neighbors_view.sync()
+	var help: Dictionary = result.get("help", {})
+	if not help.is_empty():
+		var site: Vector3 = NEIGHBORS.plot_world(str(help.id), 4)
+		neighbors_view.start_caravan(site, _plot_world(4), "Hilfe von %s" % str(NEIGHBORS.spec(str(help.id)).name))
+		return "%s schickt dir %d Essen" % [str(NEIGHBORS.spec(str(help.id)).name), int(help.food)]
+	var grew := 0
+	for id in result.neighbors:
+		grew += result.neighbors[id].built.size()
+	return "Nachbarn bauen %d Gebäude" % grew if grew > 0 else ""
+
+
+func _mood_text(id: String) -> String:
+	var value := int(neighbors.reputation[id])
+	return "Freundschaft %d/%d (%s)" % [maxi(0, value), NEIGHBORS.MAX_REPUTATION, neighbors.mood(id)]
+
+
+func _neighbors_dialog() -> void:
+	if neighbors == null:
+		return
+	_explain("nachbarn")
+	var view: Dictionary = _village_dialog("Deine Nachbarn")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	for entry in NEIGHBORS.NEIGHBORS:
+		var id: String = entry.id
+		var info: Dictionary = neighbors.summary(id)
+		_village_caption(body, "%s aus %s" % [str(entry.name), str(entry.town)], 19)
+		_village_caption(body, str(entry.text))
+		_village_caption(body, "%s · %d Bewohner · %d Gebäude" % [_mood_text(id), int(info.population), int(info.buildings)])
+		var deal: Dictionary = neighbors.offer(id)
+		if not deal.is_empty():
+			var trade := _button("Tauschen: %s → %s" % [_cost_text(deal.give), _cost_text(deal.receive)], _neighbor_trade.bind(id, dialog), 300)
+			trade.mouse_filter = Control.MOUSE_FILTER_PASS
+			trade.disabled = not model._affords(model.player(), deal.give)
+			body.add_child(trade)
+		var present := _button("Geschenk: 4 Essen", _neighbor_gift.bind(id, dialog), 300)
+		present.mouse_filter = Control.MOUSE_FILTER_PASS
+		present.disabled = int(model.player().resources.food) < 4
+		body.add_child(present)
+	_village_caption(body, "Rohstoffquellen (+%d am Tag für den Besitzer)" % NEIGHBORS.SOURCE_YIELD, 18)
+	for key in NEIGHBORS.SOURCES:
+		var source: Dictionary = NEIGHBORS.SOURCES[key]
+		var owner := str(neighbors.sources.get(key, ""))
+		if owner.is_empty():
+			var claim := _button("%s sichern: %s" % [str(source.title), _cost_text(source.cost)], _claim_source.bind(key, dialog), 300)
+			claim.mouse_filter = Control.MOUSE_FILTER_PASS
+			claim.disabled = not model._affords(model.player(), source.cost)
+			body.add_child(claim)
+		else:
+			_village_caption(body, "%s: %s" % [str(source.title), "gehört dir" if owner == "player" else "gehört " + str(NEIGHBORS.spec(owner).name)])
+
+
+func _neighbor_trade(id: String, dialog: Window) -> void:
+	if _transactions_blocked():
+		return
+	if neighbors.trade(id, model):
+		neighbors_view.start_caravan(_plot_world(4), NEIGHBORS.plot_world(id, 4), "Karawane zu " + str(NEIGHBORS.spec(id).name))
+		_explain("karawane")
+		_rebuild()
+		_save()
+		feedback.text = "Handel mit %s geschafft. Die Karawane ist unterwegs." % str(NEIGHBORS.spec(id).name)
+	else:
+		feedback.text = "Dieser Tausch klappt gerade nicht."
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+
+
+func _neighbor_gift(id: String, dialog: Window) -> void:
+	if _transactions_blocked():
+		return
+	if neighbors.gift(id, model):
+		neighbors_view.start_caravan(_plot_world(4), NEIGHBORS.plot_world(id, 4), "Geschenk für " + str(NEIGHBORS.spec(id).name))
+		_rebuild()
+		_save()
+		feedback.text = "%s freut sich über dein Geschenk." % str(NEIGHBORS.spec(id).name)
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+
+
+func _claim_source(key: String, dialog: Window) -> void:
+	if _transactions_blocked():
+		return
+	if neighbors.claim_source(key, model):
+		neighbors_view.sync()
+		_rebuild()
+		_save()
+		feedback.text = "Die %s gehört jetzt deinem Dorf." % str(NEIGHBORS.SOURCES[key].title)
+	else:
+		feedback.text = model.last_error if not model.last_error.is_empty() else "Das geht gerade nicht."
+	if is_instance_valid(dialog):
+		dialog.queue_free()
