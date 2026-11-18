@@ -347,7 +347,8 @@ func advance(delta: float) -> void:
 						_tone(style.debris, 0.15), Color(0.3, _rng.randf(), _rng.randf_range(-9.0, 9.0), float(style.debris_kind)))
 				_count("drift_debris", grains)
 		var tint: Color = Color(style.smoke).lerp(color, 0.18 if tier > 0 else 0.0)
-		_tyre_smoke("drift_smoke", tyres, forward, up, step, 34.0 + 10.0 * float(tier), tint, 1.2)
+		var loose := float(style.dust_scale)
+		_tyre_smoke("drift_smoke", tyres, forward, up, step, (34.0 + 10.0 * float(tier)) * loose, tint, 1.2 * loose)
 		squeal = maxf(squeal, 0.55 + 0.12 * float(tier))
 	else:
 		marks.lift("drift:0")

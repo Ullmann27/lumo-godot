@@ -48,6 +48,9 @@ var _focused: bool = true
 var _background: bool = false
 var _fade: Tween
 var _loops: Dictionary = {}
+## Driving one-shots have their own voices: they never cut a race cue.
+var _fx_players: Array[AudioStreamPlayer] = []
+var _fx_cursor: int = 0
 var _loop_fed: Dictionary = {}
 ## Every accepted driving-sound request (kind -> count), muted or not; tests read it.
 var fx_requests: Dictionary = {}
@@ -78,6 +81,12 @@ func _ensure_players() -> void:
 		player.volume_db = EFFECT_DB
 		add_child(player)
 		_effects.append(player)
+	for index in range(3):
+		var fx_player := AudioStreamPlayer.new()
+		fx_player.name = "DriveFx%d" % index
+		fx_player.bus = "Master"
+		add_child(fx_player)
+		_fx_players.append(fx_player)
 	_tone = AudioStreamPlayer.new()
 	_tone.name = "ItemTone"
 	_tone.bus = "Master"
@@ -200,7 +209,10 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 		return
 	_last_effect[kind] = now
 	var player: AudioStreamPlayer = _tone if kind in TONE_EFFECTS else _effects[_effect_cursor]
-	if player != _tone:
+	if fx_cue:
+		player = _fx_players[_fx_cursor]
+		_fx_cursor = (_fx_cursor + 1) % _fx_players.size()
+	elif player != _tone:
 		_effect_cursor = (_effect_cursor + 1) % _effects.size()
 	player.stop()
 	player.stream = stream
@@ -283,6 +295,8 @@ func _apply_pause() -> void:
 			player.stop()
 		if is_instance_valid(_tone):
 			_tone.stop()
+		for fx_player in _fx_players:
+			fx_player.stop()
 		stop_loops()
 	if _track_id == JUNGLE_ID and is_instance_valid(_fade) and _fade.is_valid():
 		if blocked:
