@@ -142,6 +142,17 @@ func set_locomotion_speed(speed_mps: float) -> bool:
 ## Feed after move_and_slide(), once per physics tick. This optional mode is
 ## shared by Jump and walking worlds. It has sole ownership of animated bones;
 ## the original AnimationPlayer is paused until a gesture/legacy mode resumes.
+## Gait look for action games (bigger stride, knee lift and arm swing). Empty =
+## the authored calm gait. Applies to the running pose owner at once and later.
+var platform_style: Dictionary = {}
+
+
+func set_platform_style(style: Dictionary) -> void:
+	platform_style = style.duplicate()
+	if platform_active and platform_pose != null:
+		platform_pose.set_style(platform_style)
+
+
 func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> bool:
 	if not is_usable() or suspended or not velocity.is_finite() or delta <= 0.0:
 		return false
@@ -169,6 +180,7 @@ func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> boo
 		if not platform_pose.bind(skeleton):
 			player.play("idle")
 			return false
+		platform_pose.set_style(platform_style)
 		platform_active = true
 	walking = grounded and speed > 0.06
 	walk_speed_mps = speed

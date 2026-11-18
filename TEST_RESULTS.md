@@ -1,5 +1,12 @@
 # TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
 
+## Nachtrag 18.11.2026, Teil 5 – schwarze Partikel, Lumos Laufstil (Stand `9636a3c`; alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS)
+
+- **Schwarzes Quadrat auf Dschungelherz** (`ed6ec66`): Ursache war ein Partikel-`QuadMesh` ohne Farbattribut zusammen mit `vertex_color_use_as_albedo`; im Kompatibilitäts-Renderer (mit dem die App die Spiele am Handy startet) wurden einzelne Partikel schwarz gezeichnet. Probe-Szene: 110 dunkle Pixel mit QuadMesh, 4 mit eingefärbtem Quad. `kart_jungle_environment_regression` und der Item-Test der Strecke PASS.
+- **Gleiche Ursache an drei weiteren Stellen** (`3ccdf2e`): Kart-Konfetti, Item-Wölkchen, Lauf-Staub nutzen jetzt `scripts/systems/particle_quad.gd`. `kart_gameplay_items` 139, `kart_complete_flow`, `kart_drive_fx` 155, `lumo_run` 496 PASS. Additive Effekte (Kartenstaub, Glühen, Memory-Funkeln, Himmelsinseln) sind nicht betroffen und unverändert.
+- **Lumo läuft sichtbar** (`9636a3c`): Messung im Jump & Run bei 8 m/s – Fußabstand vor/zurück 0,42 m → 0,76 m, Fußhub 0,12 m → 0,35 m, Arm-Spreizung 70° → 101°, 2,8 → 2,3 Schritte je Sekunde. Die Lauf-Pose hat einen optionalen Stil (`set_style`), Standard bleibt der ruhige Gang der Erkundungswelten. `lumo_studio_motion` 1047, `lumo_teacher_pose` 34, `jump_nextgen` 84, `real_lumo_everywhere` 370, `lumo_run` 496 PASS; Bildfolge von der Seite vorher/nachher gesichtet.
+- Nicht in APK 0.13.31+2043 enthalten (die steht auf `6e54cfb`); kommt mit dem nächsten Build.
+
 ## Nachtrag 18.11.2026, Teil 4 – Klangwelt, Dorfwelt, Lumo-Lauf-Kulisse, Spielzimmer (Stand `6e54cfb`; alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, Klänge nicht angehört)
 
 Die Helfer dieser vier Pakete wurden am Nutzungslimit gestoppt. Ihr letzter Arbeitsstand wurde gesichert, mit dem Hauptstand zusammengeführt, getestet und – wo es Bilder gibt – gesichtet:
