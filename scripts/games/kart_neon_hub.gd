@@ -20,6 +20,8 @@ const PATH = preload("res://scripts/games/kart_star_path.gd")
 const ADAPTIVE_LAYOUT = preload("res://scripts/games/kart_neon_layout.gd")
 const KIT = preload("res://scripts/games/kart_ui3d.gd")
 const ICONS = preload("res://scripts/games/kart_neon_icons.gd")
+## Bebilderte Fenster: Sternen-Cup mit Strecken, Belohnungen und Sternenpfad als Karten.
+const OVERLAYS = preload("res://scripts/games/kart_neon_overlays.gd")
 ## Kit-Icon je Rennart des Katalogs (Overlay "Rennarten").
 const RACE_KIND_ICONS := {"race": "icon_flag", "cup": "icon_trophy", "time_trial": "icon_stopwatch",
 	"training": "icon_route", "arena": "icon_star_crystal"}
@@ -345,7 +347,10 @@ func _press_mode(id: String) -> void:
 		"race":
 			_start("race")
 		"cup":
-			_start("cup")
+			# Erst die Strecken des Cups zeigen; START im Fenster beginnt das Turnier.
+			current_mode = "cup"
+			mode_selected.emit("cup")
+			_open_overlay("cup")
 		"season":
 			_open_overlay("season")
 		"event":
@@ -623,7 +628,14 @@ func _open_overlay(kind: String) -> void:
 		_overlay_list.remove_child(child)
 		child.queue_free()
 	_race_kinds.visible = kind == "race"
-	_live_start.visible = kind == "race"
+	_live_start.visible = kind in ["race", "cup"]
+	_live_start.text = "Sternen-Cup starten" if kind == "cup" else "START"
+	if kind == "cup":
+		_overlay_title.text = "Sternen-Cup"
+		_overlay_line("%d Rennen in dieser Reihenfolge. Jeder Platz bringt Punkte für den Pokal." % CATALOG.TRACKS.size(), Color("d9e6ff"))
+		OVERLAYS.build_cup(_overlay_list)
+		_show_overlay("Dock_cup")
+		return
 	if kind == "race":
 		_overlay_title.text = "Rennarten"
 		_overlay_line("Wähle deine Rennart. START beginnt das Rennen.", Color("d9e6ff"))
@@ -643,22 +655,19 @@ func _open_overlay(kind: String) -> void:
 	else:
 		_overlay_title.text = "Belohnungen"
 		_overlay_line("%d von %d Belohnungen freigeschaltet. Nichts davon kann man kaufen." % [unlocked, all.size()], Color("d9e6ff"))
-	for entry in all:
-		var done := total_stars >= int(entry.stars)
-		if kind == "rewards" and not done and entry != PATH.next_milestone(total_stars):
-			continue
-		var text := "Frei: %s %s (%d ★)" % [entry.kind, entry.name, entry.stars]
-		if not done:
-			text = "Noch %d ★: %s %s" % [int(entry.stars) - total_stars, entry.kind, entry.name]
-		if KIT.has("icon_star_gold"):
-			_overlay_line(text, Color("ffe08a") if done else Color("b8c8e8"), "icon_star_gold" if done else "icon_lock")
-		else:
-			_overlay_line(("★ " if done else "") + text, Color("ffd568") if done else Color("9fb4d8"))
+	if kind == "season":
+		OVERLAYS.build_season(_overlay_list, total_stars)
+	else:
+		OVERLAYS.build_rewards(_overlay_list, total_stars)
+	_show_overlay("Dock_season" if kind == "season" else "Dock_rewards")
+
+
+func _show_overlay(dock_name: String) -> void:
 	_overlay.visible = true
 	_overlay.move_to_front()
 	_layout()
 	for tile in _navigation.get_children():
-		tile.set_active(tile.name == ("Dock_season" if kind == "season" else "Dock_rewards"))
+		tile.set_active(tile.name == dock_name)
 
 
 ## Zeile im Overlay; mit `icon` (Kit-Icon) steht links ein gerendertes Zeichen.
@@ -688,8 +697,9 @@ func _overlay_line(text: String, color: Color, icon: String = "") -> void:
 
 ## Schrift und Icons der Overlay-Zeilen im dp-Maßstab.
 func scale_overlay_lines(k: float, font_dp: float) -> void:
+	OVERLAYS.scale(_overlay_list, k, _overlay.size.x / k - 40.0)
 	for child in _overlay_list.get_children():
-		if child == _race_kinds:
+		if child == _race_kinds or child.has_meta("overlay_grid") or child.has_meta("overlay_path"):
 			continue
 		if child.has_meta("overlay_row"):
 			child.add_theme_constant_override("separation", roundi(8 * k))

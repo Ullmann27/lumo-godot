@@ -540,7 +540,7 @@ func _run() -> void:
 	# scrolling. A very flat window is the remaining case in which its actions
 	# scroll; the drag below must still move the content and press nothing.
 	await _resize(Vector2i(1280, 320))
-	var new_drive := _button("Neue Fahrt auswählen")
+	var new_drive := _button("Zur Streckenwahl")
 	# The action may already be visible at the top; prepare room for a downward drag.
 	await _wheel(true)
 	await _reveal(new_drive)
@@ -564,7 +564,7 @@ func _run() -> void:
 	await _capture("14-public-new-garage")
 	if not await _expect(
 		game.menu_active and presses[id] == count_before + 1,
-		"Normal result action tap opens the garage exactly once"
+		"Normal result action tap opens the track choice exactly once"
 	):
 		return
 	await _finish(0, "")

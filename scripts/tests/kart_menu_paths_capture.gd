@@ -6,8 +6,12 @@ extends SceneTree
 ## Echter Renderer (xvfb), kein Android-FPS-Test.
 ## Aufruf: godot --rendering-method gl_compatibility --script
 ##   res://scripts/tests/kart_menu_paths_capture.gd -- --out=<ordner>
-##   [--sizes=1812x2176,2176x1812,1080x2340] [--only=hub,strecken]
+##   [--sizes=1812x2176,2176x1812,1080x2340] [--only=hub,strecken] [--density=2.625]
+## --density meldet dem Spiel die Gerätedichte wie die App am Handy (Fold7 ≈ 2,625);
+## ohne sie rechnet das Menü mit 1 dp = 1 px und alles erscheint winzig.
+## „pause“ startet zuletzt ein echtes Rennen und nimmt das Pausenfenster auf.
 var game
+var density: float = 0.0
 var out_dir: String = "user://kart_menu_paths"
 var sizes: Array[Vector2i] = [Vector2i(1812, 2176), Vector2i(2176, 1812), Vector2i(1080, 2340)]
 var only: PackedStringArray = PackedStringArray()
@@ -20,6 +24,8 @@ func _initialize() -> void:
 			out_dir = arg.trim_prefix("--out=")
 		elif arg.begins_with("--only="):
 			only = arg.trim_prefix("--only=").split(",", false)
+		elif arg.begins_with("--density="):
+			density = float(arg.trim_prefix("--density="))
 		elif arg.begins_with("--sizes="):
 			sizes.clear()
 			for part in arg.trim_prefix("--sizes=").split(",", false):
@@ -81,6 +87,8 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(out_dir)
+	if density > 0.0:
+		root.get_node("HostBridge")._options["displayDensity"] = density
 	root.size = sizes[0]
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
@@ -111,6 +119,18 @@ func _run() -> void:
 			await _landing()
 			game.reference_landing.open_settings.emit()
 			await _shot("einstellungen")
+			if game.has_method("_close_menu_settings"):
+				game._close_menu_settings()
+	if _wanted("pause"):
+		await _landing()
+		game._start_selected_race(game.garage.setup.duplicate(true))
+		await _frames(90)
+		for window in sizes:
+			root.size = window
+			await _frames(12)
+			if not game.paused:
+				game._pause()
+			await _shot("pause")
 	print("[KartMenuPaths] bilder=%d" % written)
 	var sound := root.get_node_or_null("GameSoundscape")
 	if sound != null and sound.has_method("release_audio"):

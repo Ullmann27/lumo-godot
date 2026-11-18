@@ -48,8 +48,9 @@ static func arrange(hub: Control) -> void:
 	else:
 		_portrait(hub, Rect2(m, top, area.x - 2 * m, bottom - top), k, g)
 	if hub._overlay.visible:
-		var w := minf(area.x - 2 * m, 560.0)
-		var h := minf(area.y - 2 * m, 640.0)
+		# Groß genug für bebilderte Karten (Cup-Strecken, Belohnungen, Sternenpfad).
+		var w := minf(area.x - 2 * m, 760.0)
+		var h := minf(area.y - 2 * m, 900.0)
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
 		hub._overlay.scale = Vector2.ONE
@@ -61,8 +62,8 @@ static func _scale_overlay(hub: Control, k: float) -> void:
 	hub._overlay_title.add_theme_font_size_override("font_size", roundi(24 * k))
 	hub.scale_overlay_lines(k, 15.0 if hub._race_kinds.visible else 17.0)
 	for kind in hub._race_kinds.get_children():
-		kind.custom_minimum_size = Vector2(0, 60) * k
-		kind.add_theme_font_size_override("font_size", roundi(13.5 * k))
+		kind.custom_minimum_size = Vector2(0, 72) * k
+		kind.add_theme_font_size_override("font_size", roundi(16.0 * k))
 	hub._live_start.custom_minimum_size = Vector2(0, 64) * k
 	hub._live_start.add_theme_font_size_override("font_size", roundi(22 * k))
 	var close: Button = hub._overlay.find_child("CloseOverlay", true, false)

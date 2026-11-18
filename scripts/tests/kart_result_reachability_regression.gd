@@ -14,9 +14,9 @@ const WINDOWS: Array = [
 	[Vector2i(1600, 720), 2.0], [Vector2i(2400, 1080), 2.625], [Vector2i(1812, 2176), 2.625],
 	[Vector2i(904, 2316), 2.625], [Vector2i(2316, 904), 2.625], [Vector2i(2176, 1812), 2.625]
 ]
-## Primary and secondary first, then the smaller second row.
+## Primary and secondary first ("Noch einmal", "Zur Streckenwahl"), then the smaller second row.
 const ACTIONS: Array[String] = [
-	"Zur Spieleauswahl", "Noch einmal fahren", "Neue Fahrt auswählen", "Zum Lernen"
+	"Noch einmal", "Zur Streckenwahl", "Zur Spieleauswahl", "Zum Lernen"
 ]
 var game
 var failures: int = 0
