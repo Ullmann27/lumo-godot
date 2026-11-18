@@ -207,7 +207,9 @@ func _frame_camera() -> void:
 	if portrait:
 		room.frame(aspect, 1.52 if ladder else 1.9, 1.6, 52.0 if ladder else 40.0, 0.2 if ladder else 0.10)
 	else:
-		room.frame(aspect, 2.4, 1.5 if ladder else 1.95, 50.0 if ladder else 37.0, 0.26 if ladder else 0.22)
+		# Querformat: steiler von oben, damit Stich und Auslage zwischen
+		# Kopfzeile und Hand ganz zu sehen sind.
+		room.frame(aspect, 2.35, 1.85 if ladder else 2.2, 50.0 if ladder else 42.0, 0.0 if ladder else -0.05)
 	hand_root.global_transform = camera.get_camera_transform()
 
 
@@ -217,7 +219,9 @@ func _measure_hand() -> void:
 	var insets := _safe_area_insets()
 	var area := size - insets.position - insets.size
 	var compact := area.y / _ui_scale < 520.0 and area.x > area.y
-	var card_px := clampf(area.y * (0.30 if compact else 0.19), 96.0 * _ui_scale, (150.0 if compact else 210.0) * _ui_scale)
+	var card_px := clampf(area.y * (0.25 if compact else 0.19), 88.0 * _ui_scale, (128.0 if compact else 210.0) * _ui_scale)
+	# Im flachen Querformat stehen links und rechts Schild und Hinweis; die Hand bleibt dazwischen.
+	var side_px: float = hud.side_width() + 12.0 * _ui_scale if hud.side else 0.0
 	var half_height := HAND_DEPTH * tan(deg_to_rad(camera.fov * 0.5))
 	var unit := 2.0 * half_height / size.y
 	_hand_metrics = {
@@ -226,10 +230,11 @@ func _measure_hand() -> void:
 		"scale": card_px * unit / ART.HEIGHT,
 		"centre_x": (insets.position.x + area.x * 0.5 - size.x * 0.5) * unit,
 		"base_y": -half_height + (insets.size.y + 8.0 * _ui_scale + card_px * 0.64) * unit,
-		"avail_px": area.x - 20.0 * _ui_scale,
+		"avail_px": area.x - 20.0 * _ui_scale - 2.0 * side_px,
 		"zone_px": card_px * 1.36 + 12.0 * _ui_scale + insets.size.y,
 	}
 	hud.hand_height = card_px * 1.36 + 12.0 * _ui_scale
+	hud._place_fixed()
 
 
 func _process(delta: float) -> void:
@@ -248,6 +253,7 @@ func _place_plates() -> void:
 	for player in range(1, seats.size()):
 		if player - 1 < hud.plates.size() and is_instance_valid(seats[player]):
 			hud.place_plate(player, camera.unproject_position(seats[player].head_top()) + Vector2(0, -6.0 * _ui_scale))
+	hud.spread_plates()
 
 
 # --------------------------------------------------------------------- Figuren
@@ -1497,6 +1503,7 @@ func _refresh_hud() -> void:
 	var plates: Array = []
 	for player in range(rules.players()):
 		var detail := ""
+		var extra := ""
 		match game:
 			"stich":
 				var count := int(rules.s.r.tricks[player])
@@ -1506,15 +1513,17 @@ func _refresh_hud() -> void:
 				detail = "%d Karte%s" % [left, "" if left == 1 else "n"]
 			"quartett":
 				var own: int = rules.s.r.sets[player].size()
-				detail = "%d Quartett%s" % [own, "" if own == 1 else "e"]
-				if player > 0:
-					detail = "%d Qu. · %d Karten" % [own, rules.s.r.hands[player].size()]
+				var held: int = rules.s.r.hands[player].size()
+				detail = "%d Karte%s" % [held, "" if held == 1 else "n"]
+				if own > 0:
+					extra = "%d Quartett%s" % [own, "" if own == 1 else "e"]
 		var target: bool = (game == "quartett" and _pick_rank > 0 and player > 0 and _can_act()
 			and rules.is_legal(0, {"ask": _pick_rank, "from": player}))
 		plates.append({
 			"name": "Du (Lumo)" if player == 0 else seats[player].display_name,
 			"portrait": "lumo" if player == 0 else seats[player].kind,
 			"info": detail,
+			"extra": extra,
 			"active": player == current,
 			"target": target,
 		})

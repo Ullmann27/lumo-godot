@@ -15,6 +15,8 @@ const TILE_PLATES := {"stich": "plate_hero_amber.webp", "leiter": "plate_hero_te
 var density := 1.0
 var compact := false
 var wide := false
+## Flaches Querformat: eigenes Schild links, Hinweis und Knopf rechts neben der Hand.
+var side := false
 var safe: Control
 var top_bar: HBoxContainer
 var pause_button: Button
@@ -80,6 +82,7 @@ func rebuild(new_density: float, insets: Rect2) -> void:
 	var area := size - insets.position - insets.size
 	compact = area.y / density < 520.0 and area.x > area.y
 	wide = area.x / density >= 600.0
+	side = compact
 	_build_top()
 	_build_play()
 	overlay = Control.new()
@@ -124,18 +127,28 @@ func _build_top() -> void:
 	top_bar.offset_left = dp(10)
 	top_bar.offset_right = -dp(10)
 	top_bar.offset_top = dp(8)
-	top_bar.offset_bottom = dp(64)
+	top_bar.offset_bottom = dp(54 if compact else 64)
 	top_bar.add_theme_constant_override("separation", int(dp(8)))
 	top_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe.add_child(top_bar)
-	pause_button = KIT.button("II", "blue", density, 56.0, 22.0)
+	pause_button = KIT.button("II", "blue", density, 52.0 if compact else 56.0, 22.0)
 	pause_button.name = "Pause"
 	pause_button.pressed.connect(func() -> void: chosen.emit("pause", {}))
 	top_bar.add_child(pause_button)
 	var middle := KIT.panel("row_stat.webp", density, 8.0)
+	middle.name = "Title"
 	middle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	middle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_bar.add_child(middle)
+	if side:
+		# Querformat: Titel links neben der Pause, die Mitte bleibt den Figuren.
+		middle.size_flags_horizontal = Control.SIZE_FILL
+		middle.custom_minimum_size.x = dp(168)
+		var gap := Control.new()
+		gap.name = "Gap"
+		gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		top_bar.add_child(gap)
 	var column := VBoxContainer.new()
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.add_theme_constant_override("separation", 0)
@@ -191,7 +204,7 @@ func _build_play() -> void:
 	action_button.hide()
 	me_plate = _make_plate(0)
 	me_plate.name = "PlateMe"
-	me_plate.custom_minimum_size.x = dp(150)
+	_fit_plate(me_plate, dp(150))
 	me_plate.hide()
 
 
@@ -222,16 +235,27 @@ func _make_plate(player: int) -> Button:
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(column)
+	# Die Schilder wachsen mit ihrem Text: kein Name wird abgeschnitten.
 	var name_label := KIT.label("", 14, density, KIT.WHITE, true)
 	name_label.name = "Name"
-	name_label.clip_text = true
 	column.add_child(name_label)
 	var info := KIT.label("", 12, density, KIT.CYAN)
 	info.name = "Info"
-	info.clip_text = true
 	column.add_child(info)
+	var extra := KIT.label("", 12, density, KIT.GOLD, true)
+	extra.name = "Extra"
+	extra.hide()
+	column.add_child(extra)
 	safe.add_child(plate)
 	return plate
+
+
+## Breite und Höhe nach Inhalt, mindestens die Grundgröße.
+func _fit_plate(plate: Button, base_width: float) -> void:
+	var row: HBoxContainer = plate.get_node("Row")
+	var needed := row.get_combined_minimum_size()
+	plate.custom_minimum_size = Vector2(maxf(base_width, needed.x + dp(18)), maxf(dp(52), needed.y + dp(8)))
+	plate.size = plate.custom_minimum_size
 
 
 func _style_plate(plate: Button, active: bool) -> void:
@@ -308,6 +332,10 @@ func set_plates(data: Array) -> void:
 		plate.get_node("Row/Face").texture = KIT.texture(PORTRAITS % str(entry.get("portrait", "lumo")))
 		plate.get_node("Row/Text/Name").text = str(entry.get("name", ""))
 		plate.get_node("Row/Text/Info").text = str(entry.get("info", ""))
+		var extra: Label = plate.get_node("Row/Text/Extra")
+		extra.text = str(entry.get("extra", ""))
+		extra.visible = not extra.text.is_empty()
+		_fit_plate(plate, dp(150) if player == 0 else dp(118))
 		_style_plate(plate, bool(entry.get("active", false)))
 		plate.disabled = not bool(entry.get("target", false))
 		plate.mouse_filter = Control.MOUSE_FILTER_STOP if bool(entry.get("target", false)) else Control.MOUSE_FILTER_IGNORE
@@ -321,15 +349,67 @@ func place_plate(player: int, at: Vector2) -> void:
 	var plate := plates[player - 1]
 	var local := at - safe.global_position
 	var extent := plate.size
-	var top_limit := dp(70)
 	var target := Vector2(local.x - extent.x * 0.5, local.y - extent.y)
 	target.x = clampf(target.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
-	target.y = clampf(target.y, top_limit, maxf(top_limit, safe.size.y - extent.y - dp(6)))
+	var limit := _top_limit(target.x, extent.x)
+	if side and limit > target.y + 0.5:
+		# Über dem Kopf ist kein Platz: das Schild steht außen neben dem Kopf.
+		var left := local.x < safe.size.x * 0.5
+		var beside := Vector2(local.x - extent.x - dp(34) if left else local.x + dp(34), local.y + dp(4))
+		beside.x = clampf(beside.x, dp(6), maxf(dp(6), safe.size.x - extent.x - dp(6)))
+		beside.y = clampf(beside.y, _top_limit(beside.x, extent.x), maxf(dp(6), safe.size.y - extent.y - dp(6)))
+		plate.position = beside
+		return
+	target.y = clampf(target.y, limit, maxf(dp(6), safe.size.y - extent.y - dp(6)))
 	plate.position = target
+
+
+## Oberste freie Höhe für ein Schild in diesem Streifen: unter Kopfzeile und Trumpf-Hinweis.
+func _top_limit(x: float, width: float) -> float:
+	var limit := dp(6)
+	var blockers: Array[Control] = [trump_chip]
+	if is_instance_valid(top_bar) and top_bar.visible:
+		for child: Node in top_bar.get_children():
+			if child is Control and child.visible and not child.name.begins_with("Gap"):
+				blockers.append(child)
+	for blocker: Control in blockers:
+		if not is_instance_valid(blocker) or not blocker.is_visible_in_tree():
+			continue
+		var rect := Rect2(blocker.global_position - safe.global_position, blocker.size)
+		if x < rect.end.x + dp(4) and x + width > rect.position.x - dp(4):
+			limit = maxf(limit, rect.end.y + dp(6))
+	return limit
+
+
+## Schilder, die sich berühren, rücken seitlich auseinander.
+func spread_plates() -> void:
+	var shown: Array[Button] = []
+	for plate: Button in plates:
+		if plate.visible:
+			shown.append(plate)
+	shown.sort_custom(func(a: Button, b: Button) -> bool: return a.position.x < b.position.x)
+	for _pass in range(3):
+		for index in range(shown.size() - 1):
+			var a := shown[index]
+			var b := shown[index + 1]
+			var ra := Rect2(a.position, a.size).grow(dp(3))
+			var rb := Rect2(b.position, b.size).grow(dp(3))
+			if not ra.intersects(rb):
+				continue
+			var overlap := ra.end.x - rb.position.x
+			a.position.x = maxf(dp(6), a.position.x - overlap * 0.5)
+			b.position.x = minf(safe.size.x - b.size.x - dp(6), a.position.x + a.size.x + dp(6))
+			a.position.y = maxf(a.position.y, _top_limit(a.position.x, a.size.x))
+			b.position.y = maxf(b.position.y, _top_limit(b.position.x, b.size.x))
 
 
 ## Untere Zone: Höhe der eigenen Hand in Bildpunkten (vom Tisch gesetzt).
 var hand_height := 160.0
+
+
+## Breite der Seitenspalten im flachen Querformat (Bildpunkte).
+func side_width() -> float:
+	return dp(172) if side else 0.0
 
 
 func _place_fixed() -> void:
@@ -338,6 +418,12 @@ func _place_fixed() -> void:
 	var area := safe.size
 	if area.x <= 0.0:
 		area = size
+	if is_instance_valid(trump_chip):
+		trump_chip.size = trump_chip.get_combined_minimum_size()
+		trump_chip.position = Vector2(area.x - trump_chip.size.x - dp(10), top_bar.offset_bottom + dp(8))
+	if side:
+		_place_side(area)
+		return
 	var above_hand := area.y - hand_height - dp(8)
 	if is_instance_valid(me_plate):
 		me_plate.size = me_plate.custom_minimum_size
@@ -354,9 +440,28 @@ func _place_fixed() -> void:
 		var height := maxf(dp(52), hint_panel.get_combined_minimum_size().y)
 		hint_panel.size = Vector2(width, height)
 		hint_panel.position = Vector2(left, above_hand - height)
-	if is_instance_valid(trump_chip):
-		trump_chip.size = trump_chip.get_combined_minimum_size()
-		trump_chip.position = Vector2(area.x - trump_chip.size.x - dp(10), dp(72))
+
+
+## Querformat: Die Tischmitte bleibt frei. Links unten steht das eigene Schild,
+## rechts unten Hinweis und Aktionsknopf, dazwischen die Hand.
+func _place_side(area: Vector2) -> void:
+	var column := side_width()
+	var bottom := area.y - dp(8)
+	if is_instance_valid(me_plate):
+		me_plate.size = me_plate.custom_minimum_size
+		me_plate.position = Vector2(dp(8), bottom - me_plate.size.y)
+	var hint_top := bottom
+	if is_instance_valid(hint_panel):
+		hint_panel.custom_minimum_size = Vector2(column, dp(52))
+		hint_panel.size = Vector2(column, 0)
+		var height := maxf(dp(52), hint_panel.get_combined_minimum_size().y)
+		hint_panel.size = Vector2(column, height)
+		hint_panel.position = Vector2(area.x - column - dp(8), bottom - height)
+		if hint_panel.visible:
+			hint_top = hint_panel.position.y
+	if is_instance_valid(action_button):
+		action_button.size = Vector2(column, action_button.get_combined_minimum_size().y)
+		action_button.position = Vector2(area.x - column - dp(8), hint_top - dp(8) - action_button.size.y)
 
 
 func _notification(what: int) -> void:
@@ -594,7 +699,8 @@ func show_select(data: Dictionary) -> void:
 	gap.size_flags_stretch_ratio = 0.9 if not compact else 0.2
 	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(gap)
-	var sideways := compact or area.x / density >= 700.0
+	# Nebeneinander nur im Querformat; hochkant (auch Fold) stehen die Kacheln untereinander.
+	var sideways := compact or (area.x > area.y and area.x / density >= 700.0)
 	var tiles: BoxContainer = HBoxContainer.new() if sideways else VBoxContainer.new()
 	tiles.name = "Tiles"
 	tiles.add_theme_constant_override("separation", int(dp(12)))
@@ -613,6 +719,7 @@ func _tile(game: Dictionary, sideways: bool) -> Button:
 	var tile := Button.new()
 	tile.name = "Tile_" + str(game.id)
 	tile.focus_mode = Control.FOCUS_NONE
+	tile.clip_contents = true
 	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tile.custom_minimum_size = Vector2(140, 96) * density
@@ -620,41 +727,85 @@ func _tile(game: Dictionary, sideways: bool) -> Button:
 	for state: String in ["normal", "hover", "focus", "pressed", "disabled"]:
 		tile.add_theme_stylebox_override(state, box)
 	tile.pressed.connect(_emit("game", {"game": str(game.id)}))
-	var stack_vertical := sideways and not compact
-	var body: BoxContainer = VBoxContainer.new() if stack_vertical else HBoxContainer.new()
+	# Nebeneinander stehende Kacheln: Fächer oben, Text darunter.
+	# Untereinander (Hochformat): Fächer links, Text rechts.
+	var body: BoxContainer = VBoxContainer.new() if sideways else HBoxContainer.new()
+	body.name = "Body"
 	body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	body.offset_left = dp(12)
-	body.offset_right = -dp(12)
-	body.offset_top = dp(8)
-	body.offset_bottom = -dp(10)
-	body.add_theme_constant_override("separation", int(dp(10)))
+	body.offset_left = dp(14)
+	body.offset_right = -dp(14)
+	body.offset_top = dp(10)
+	body.offset_bottom = -dp(12)
+	body.add_theme_constant_override("separation", int(dp(6 if sideways else 12)))
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile.add_child(body)
 	var fan := CardFan.new()
+	fan.name = "Fan"
 	fan.cards = game.get("cards", [])
-	fan.custom_minimum_size = Vector2(108, 84) * density if not compact else Vector2(84, 64) * density
-	fan.size_flags_vertical = Control.SIZE_EXPAND_FILL if stack_vertical else Control.SIZE_SHRINK_CENTER
-	if stack_vertical:
-		fan.size_flags_stretch_ratio = 1.4
 	fan.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if sideways:
+		fan.custom_minimum_size = Vector2(0, 56) * density
+		fan.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		fan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	else:
+		fan.custom_minimum_size = Vector2(118, 72) * density
+		fan.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		fan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		fan.size_flags_stretch_ratio = 0.62
 	body.add_child(fan)
 	var text := VBoxContainer.new()
+	text.name = "Text"
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	text.add_theme_constant_override("separation", int(dp(1)))
+	text.add_theme_constant_override("separation", int(dp(2)))
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	body.add_child(text)
-	var name_label := KIT.label(str(game.title), 21 if not compact else 18, density, KIT.WHITE, true)
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# Der Titel steht immer in einer Zeile; wird es eng, wird die Schrift kleiner.
+	var name_label := FitLabel.new()
+	name_label.name = "Title"
+	name_label.text = str(game.title)
+	name_label.base_size = roundf((22.0 if not compact else 19.0) * density)
+	name_label.add_theme_font_override("font", KIT.THEME.HEADING)
+	name_label.add_theme_font_size_override("font_size", int(name_label.base_size))
+	name_label.add_theme_color_override("font_color", KIT.WHITE)
+	name_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.03, 0.12, 0.75))
+	name_label.add_theme_constant_override("shadow_offset_y", int(dp(2)))
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if sideways else HORIZONTAL_ALIGNMENT_LEFT
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text.add_child(name_label)
 	if not compact:
-		text.add_child(KIT.wrapped(str(game.text), 13.5, density, Color("eaf4ff")))
+		var about := KIT.wrapped(str(game.text), 13.5, density, Color("eaf4ff"))
+		about.name = "About"
+		about.horizontal_alignment = name_label.horizontal_alignment
+		text.add_child(about)
 	var resume: String = str(game.get("resume", ""))
-	var status := KIT.label(resume if not resume.is_empty() else str(game.get("skill", "")), 12.5, density,
-		KIT.GOLD if not resume.is_empty() else KIT.CYAN, true)
+	var status := KIT.label(resume if not resume.is_empty() else str(game.get("skill", "")), 13.0, density,
+		KIT.GOLD if not resume.is_empty() else Color("dff8ff"), true)
+	status.name = "Status"
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.horizontal_alignment = name_label.horizontal_alignment
 	text.add_child(status)
+	tile.resized.connect(_fit_tile.bind(tile))
 	return tile
+
+
+## Wird eine Kachel zu niedrig, entfällt zuerst die lange Beschreibung –
+## Titel, Fächer und Unterzeile bleiben immer ganz in der Kachel.
+func _fit_tile(tile: Button) -> void:
+	if not is_instance_valid(tile) or not tile.has_node("Body/Text/About"):
+		return
+	var body: BoxContainer = tile.get_node("Body")
+	var about: Label = tile.get_node("Body/Text/About")
+	var room := tile.size.y - dp(22)
+	if not about.visible:
+		about.show()
+	var text: Control = tile.get_node("Body/Text")
+	var fan: Control = tile.get_node("Body/Fan")
+	var needed := text.get_combined_minimum_size().y
+	if body is VBoxContainer:
+		needed += fan.custom_minimum_size.y + dp(6)
+	if needed > room:
+		about.hide()
 
 
 ## Einstellungen vor der Partie. data: game, title, text, players, difficulty,
@@ -843,6 +994,20 @@ func _place_bubble() -> void:
 		return
 	# Über der eigenen Hand: Tisch, Mitspieler und ihre Schilder bleiben frei.
 	var area := safe.size if safe.size.x > 0 else size
+	if side and is_instance_valid(top_bar) and top_bar.visible:
+		# Flaches Querformat: oben zwischen Titel und Sternen – die Tischmitte und
+		# die eigene Hand bleiben frei.
+		var title: Control = top_bar.get_node("Title")
+		var stars: Control = top_bar.get_node("Stars")
+		var left_edge := title.position.x + title.size.x + top_bar.position.x + dp(8)
+		var right_edge := stars.position.x + top_bar.position.x - dp(8)
+		var room := right_edge - left_edge
+		if room >= dp(300):
+			bubble.custom_minimum_size.x = minf(room, dp(440))
+			bubble.size = Vector2(bubble.custom_minimum_size.x, 0)
+			bubble.size = Vector2(bubble.custom_minimum_size.x, bubble.get_combined_minimum_size().y)
+			bubble.position = Vector2(left_edge + (room - bubble.size.x) * 0.5, dp(6))
+			return
 	bubble.size = Vector2(bubble.custom_minimum_size.x, bubble.get_combined_minimum_size().y)
 	var bottom := area.y - hand_height - dp(8)
 	var left := (area.x - bubble.size.x) * 0.5
@@ -875,23 +1040,65 @@ func find_button(id: String) -> Button:
 	return null
 
 
-## Kleiner Kartenfächer als Bild auf den Spielkacheln.
+## Kleiner Kartenfächer als Bild auf den Spielkacheln. Die Karten werden so
+## groß gezeichnet, dass der ganze Fächer samt gedrehter Randkarten in die
+## eigene Fläche passt – nichts ragt über die Kachel hinaus.
 class CardFan:
 	extends Control
+	const SPREAD := 0.42
+	const TURN := 0.24
 	var cards: Array = []
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_RESIZED:
+			queue_redraw()
 
 	func _draw() -> void:
 		if cards.is_empty():
 			return
-		var card_height := minf(size.y * 0.92, size.x * 0.95)
-		var card_width := card_height * 0.711
 		var count := cards.size()
-		var centre := Vector2(size.x * 0.5, size.y * 0.5 + card_height * 0.5)
+		var outer := TURN * float(count - 1) * 0.5
+		# Halbe Breite und Höhe des Fächers in Kartenhöhen.
+		var half_width := 0.711 * (SPREAD * float(count - 1) * 0.5 + 0.5 * cos(outer)) + sin(outer)
+		var below := 0.711 * 0.5 * sin(outer)
+		var card_height := minf(size.y / (1.0 + below) * 0.96, size.x / (2.0 * half_width) * 0.96)
+		var card_width := card_height * 0.711
+		var centre := Vector2(size.x * 0.5, size.y * 0.5 + card_height * (1.0 - below) * 0.5)
 		for index in range(count):
 			var offset := float(index) - float(count - 1) * 0.5
-			var angle := offset * 0.24
-			draw_set_transform(centre + Vector2(offset * card_width * 0.42, 0), angle, Vector2.ONE)
+			draw_set_transform(centre + Vector2(offset * card_width * SPREAD, 0), offset * TURN, Vector2.ONE)
 			var rect := Rect2(-card_width * 0.5, -card_height, card_width, card_height)
-			draw_rect(rect.grow(1.0).abs(), Color(0, 0, 0, 0.25))
+			draw_rect(Rect2(rect.position + Vector2(2, 3), rect.size), Color(0, 0, 0, 0.28))
 			draw_texture_rect(ART.face_texture(int(cards[index])), rect, false)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## Einzeilige Beschriftung, die ihre Schrift verkleinert statt umzubrechen.
+class FitLabel:
+	extends Label
+	var base_size := 20.0
+
+	func _ready() -> void:
+		clip_text = true
+		autowrap_mode = TextServer.AUTOWRAP_OFF
+		custom_minimum_size.y = base_size * 1.25
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_RESIZED:
+			fit()
+
+	func fit() -> void:
+		var font := get_theme_font("font")
+		if font == null or size.x <= 1.0:
+			return
+		var wanted := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(base_size)).x + 4.0
+		var font_size := base_size
+		if wanted > size.x:
+			font_size = maxf(8.0, floorf(base_size * size.x / wanted))
+		add_theme_font_size_override("font_size", int(font_size))
+
+	## Passt der Titel in der aktuellen Schriftgröße ganz hinein?
+	func fits() -> bool:
+		var font := get_theme_font("font")
+		var font_size := get_theme_font_size("font_size")
+		return font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x <= size.x + 0.5
