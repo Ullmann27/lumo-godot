@@ -167,6 +167,9 @@ func _build_world() -> void:
 	collider.shape = capsule
 	actor.add_child(collider)
 	var visual: Node3D = LUMO.instantiate()
+	# Den echten Lumo baut diese Welt unten selbst ein (mit Plattform-Pose);
+	# die Grundformen-Figur bleibt nur Gang-/Testträger und Notfall-Ersatz.
+	visual.use_original_model = false
 	visual.scale = Vector3.ONE * 0.7
 	visual.rotation.y = PI
 	# Collider bottom sits 0.05 m above the actor origin; stand the feet on it
