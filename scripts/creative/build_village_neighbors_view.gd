@@ -7,6 +7,7 @@ const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
+const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VIEW_RANGE := 240.0
 var model
@@ -15,6 +16,11 @@ var walls: Dictionary = {}
 var caravans: Array[Dictionary] = []
 var _focus := Vector3(INF, 0, 0)
 var clock := 0.0
+## Optional: Gelände-Malschicht der Region (Gassen und Höfe der Nachbarstädte).
+var landscape: Node3D
+var project_signs: Dictionary = {}
+var _fort_key := ""
+var _painted: Dictionary = {}
 
 
 func setup(neighbors) -> void:
@@ -22,8 +28,55 @@ func setup(neighbors) -> void:
 	name = "NeighborVillages"
 	for entry in NEIGHBORS.NEIGHBORS:
 		_build_site(entry)
+		_build_border(entry)
 	_build_sources()
 	sync()
+
+
+## Grenzsteine in der Stadtfarbe: hier beginnt fremdes Stadtgebiet.
+func _build_border(entry: Dictionary) -> void:
+	if not ART.exists("lantern"):
+		return
+	var site: Vector2 = TERRAIN.NEIGHBOR_SITES.get(str(entry.id), Vector2.ZERO)
+	var half := TERRAIN.NEIGHBOR_HALF + 2.65
+	var transforms: Array = []
+	for side in range(4):
+		for step in range(9):
+			var along := -half + float(step) * half * 2.0 / 8.0
+			var local: Vector2 = [Vector2(along, -half), Vector2(half, along), Vector2(-along, half), Vector2(-half, -along)][side]
+			var x := site.x + local.x
+			var z := site.y + local.y
+			if TERRAIN.is_water(x, z):
+				continue
+			transforms.append(Transform3D(Basis().scaled(Vector3.ONE * 0.8), Vector3(x, TERRAIN.height(x, z), z)))
+	var holder := get_node("Neighbor_" + str(entry.id)) as Node3D
+	ART.batch(holder, "Border", "lantern", transforms, 260.0, false)
+	var label := Label3D.new()
+	label.name = "TerritoryLabel"
+	label.text = "Stadtgebiet %s" % str(entry.town)
+	label.position = Vector3(site.x, TERRAIN.height(site.x, site.y - half) + 3.2, site.y - half)
+	label.font_size = 40
+	label.pixel_size = 0.016
+	label.outline_size = 10
+	label.modulate = Color(str(entry.color)).lightened(0.4)
+	label.outline_modulate = Color("142629")
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.visibility_range_end = 200.0
+	holder.add_child(label)
+	var sign := Label3D.new()
+	sign.name = "ProjectSign"
+	sign.font_size = 52
+	sign.pixel_size = 0.022
+	sign.outline_size = 16
+	sign.modulate = Color("fff0b8")
+	sign.outline_modulate = Color("3a2412")
+	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sign.no_depth_test = true
+	sign.render_priority = 2
+	sign.visibility_range_end = 320.0
+	sign.visible = false
+	holder.add_child(sign)
+	project_signs[str(entry.id)] = sign
 
 
 func _build_site(entry: Dictionary) -> void:
@@ -104,8 +157,13 @@ func sync() -> void:
 		var id: String = entry.id
 		var town: Dictionary = model.towns[id]._player
 		var holder := get_node("Neighbor_" + id) as Node3D
+		var building_now: Dictionary = {}
+		for item in model.sites.get(id, []):
+			if int(item.done_day) > int(model.day):
+				building_now[str(item.building)] = item
 		for building in town.buildings:
-			var key := "%s_%s" % [id, str(building.id)]
+			var under := building_now.has(str(building.id))
+			var key := "%s_%s%s" % [id, str(building.id), "_bau" if under else ""]
 			active[key] = true
 			if facilities.has(key):
 				continue
@@ -113,9 +171,21 @@ func sync() -> void:
 			facility.position = NEIGHBORS.plot_world(id, int(building.plot)) + Vector3.UP * 0.06
 			facility.rotation.y = (float(posmod(int(building.plot) * 13, 5)) - 2.0) * 0.04
 			facility.collision_layer = 0
+			if under:
+				# Sichtbare Baustelle: Gerüst, halbhoher Rohbau.
+				facility.set_meta("under_construction", true)
+				var visual := facility.get_node_or_null("Visual") as Node3D
+				if visual != null:
+					visual.scale = Vector3(1.0, 0.45, 1.0)
+				if ART.exists("scaffold"):
+					var scaffold := ART.instance("scaffold")
+					scaffold.name = "Scaffold"
+					facility.add_child(scaffold)
 			holder.add_child(facility)
 			facilities[key] = facility
-		_walls(entry, town, holder)
+		_project_sign(entry, town)
+		_paint_site(entry, town)
+	_fort()
 	for key in facilities.keys():
 		if not active.has(key):
 			facilities[key].queue_free()
@@ -131,32 +201,123 @@ func sync() -> void:
 	set_meta("neighbor_buildings", facilities.size())
 
 
-## The castle builder rings his village with a fence once he has two quarries.
-func _walls(entry: Dictionary, town: Dictionary, holder: Node3D) -> void:
-	var id: String = entry.id
-	if str(entry.trait) != "burgenbauer" or walls.has(id) or not ART.exists("fence"):
+## Schild über der Baustelle: „BURGHEIM BAUT: …“ mit echten Resttagen.
+func _project_sign(entry: Dictionary, town: Dictionary) -> void:
+	var id := str(entry.id)
+	var sign: Label3D = project_signs.get(id)
+	if sign == null:
 		return
-	var quarries := 0
+	var project: Dictionary = model.current_project(id)
+	sign.visible = not project.is_empty()
+	if project.is_empty():
+		return
+	var days := int(project.days_left)
+	sign.text = "%s BAUT: %s\n%s · noch %s" % [str(entry.town).to_upper(), str(project.title), str(project.why),
+		"1 Tag" if days == 1 else "%d Tage" % days]
+	var at: Vector3 = NEIGHBORS.plot_world(id, 4)
+	if int(project.plot) >= 0:
+		at = NEIGHBORS.plot_world(id, int(project.plot))
+	elif str(project.kind) == "fort":
+		at = NEIGHBORS.plot_world(id, 4) + Vector3(0, 0, -_town_half(town) - 2.0)
+		at.y = TERRAIN.height(at.x, at.z)
+	sign.position = at + Vector3(0, 7.5, 0)
+
+
+## Halbe Kantenlänge des bebauten Ortskerns eines Nachbarn.
+func _town_half(town: Dictionary) -> float:
+	var ring := 1
 	for building in town.buildings:
-		if str(building.kind) == "quarry":
-			quarries += 1
-	if quarries < 2:
+		var cell := REGION.plot_coordinate(int(building.plot))
+		ring = maxi(ring, maxi(absi(cell.x), absi(cell.y)))
+	return (float(ring) + 0.9) * REGION.SPACING
+
+
+func _paint_site(entry: Dictionary, town: Dictionary) -> void:
+	if landscape == null or not landscape.has_method("paint_site"):
 		return
-	var transforms: Array = []
+	var id := str(entry.id)
+	var key := "%d|%d" % [int(town.plots), town.buildings.size()]
+	if _painted.get(id, "") == key:
+		return
+	_painted[id] = key
+	var cells: Array = []
+	var built: Dictionary = {}
+	var ring := 1
+	for index in range(mini(int(town.plots), NEIGHBORS.MAX_SITES)):
+		if not NEIGHBORS.plot_ok(id, index):
+			continue
+		var at := NEIGHBORS.plot_world(id, index)
+		cells.append(Vector2(at.x, at.z))
+		var cell := REGION.plot_coordinate(index)
+		ring = maxi(ring, maxi(absi(cell.x), absi(cell.y)))
+	for building in town.buildings:
+		var at := NEIGHBORS.plot_world(id, int(building.plot))
+		built[Vector2(at.x, at.z)] = true
+	landscape.paint_site(TERRAIN.NEIGHBOR_SITES[id], cells, built, TERRAIN.NEIGHBOR_RING)
+
+
+## Burgheims Befestigung in Stufen: Palisade, Steinmauer, Wehrtürme. Eine
+## laufende Stufe steht als halbhohe Baustelle mit Gerüsten am Ortsrand.
+func _fort() -> void:
+	var id := "leo"
+	var town: Dictionary = model.towns[id]._player
+	var half := _town_half(town) + 1.5
+	var stage := int(model.fort.stage)
+	var building := int(model.fort.building)
+	var key := "%d|%d|%.1f" % [stage, building, half]
+	if key == _fort_key:
+		return
+	_fort_key = key
+	var holder := get_node("Neighbor_" + id) as Node3D
+	if walls.has(id) and is_instance_valid(walls[id]):
+		walls[id].queue_free()
+	walls.erase(id)
+	var shown := maxi(stage, building + 1)
+	if shown <= 0:
+		return
+	var fort := Node3D.new()
+	fort.name = "Fortification"
+	holder.add_child(fort)
+	walls[id] = fort
 	var center: Vector3 = NEIGHBORS.plot_world(id, 4)
-	var half := REGION_HALF
+	var kind := "palisade" if shown == 1 else "castle_wall"
+	if not ART.exists(kind):
+		kind = "fence"
+	var segment := 4.0
+	var transforms: Array = []
+	var scaffolds: Array = []
+	var count := maxi(2, int(half * 2.0 / segment))
 	for side in range(4):
-		for step in range(5):
-			var along := -half + 4.0 + float(step) * 4.0 * half / 10.0
+		for step in range(count):
+			var along := -half + (float(step) + 0.5) * half * 2.0 / float(count)
 			var local: Vector2 = [Vector2(along, -half), Vector2(half, along), Vector2(-along, half), Vector2(-half, -along)][side]
+			# Ein Tor zur Straße auf jeder Seite.
+			if absf(along) < 2.6:
+				continue
 			var x: float = center.x + local.x
 			var z: float = center.z + local.y
 			var yaw: float = [0.0, PI * 0.5, PI, -PI * 0.5][side]
-			transforms.append(Transform3D(Basis(Vector3.UP, yaw), Vector3(x, TERRAIN.height(x, z), z)))
-	walls[id] = ART.batch(holder, "Walls", "fence", transforms, 220.0, true)
-
-
-const REGION_HALF := 10.6
+			var under := building >= 0 and shown == building + 1 and step % 2 == 1
+			var xform := Transform3D(Basis(Vector3.UP, yaw), Vector3(x, TERRAIN.height(x, z) - 0.1, z))
+			if under:
+				xform = xform.scaled_local(Vector3(1.0, 0.45, 1.0))
+				scaffolds.append(Transform3D(Basis(Vector3.UP, yaw), xform.origin))
+			transforms.append(xform)
+	ART.batch(fort, "Walls", kind, transforms, 260.0, true)
+	if not scaffolds.is_empty() and ART.exists("scaffold"):
+		ART.batch(fort, "Scaffolds", "scaffold", scaffolds, 200.0, false)
+	if shown >= 3 and ART.exists("wall_tower"):
+		var towers: Array = []
+		for corner in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
+			var x: float = center.x + corner.x * half
+			var z: float = center.z + corner.y * half
+			var xform := Transform3D(Basis(), Vector3(x, TERRAIN.height(x, z) - 0.1, z))
+			if building == 2:
+				xform = xform.scaled_local(Vector3(1.0, 0.45, 1.0))
+			towers.append(xform)
+		ART.batch(fort, "Towers", "wall_tower", towers, 280.0, true)
+	fort.set_meta("stage", stage)
+	fort.set_meta("building", building)
 
 
 func start_caravan(from: Vector3, to: Vector3, label: String) -> void:
