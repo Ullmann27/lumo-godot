@@ -63,7 +63,10 @@ func _run() -> void:
 		return
 	garage.workshop = TUNING.new(CHILD, 0)
 	game.workshop = garage.workshop
-	_check(garage.workshop.chosen("comet", "wheel_cover") == "serie", "alter Spielstand: Radaufsatz = Serie")
+	_check(
+		garage.workshop.chosen("comet", "wheel_cover") == "serie",
+		"alter Spielstand: Radaufsatz = Serie"
+	)
 	_check(garage.workshop.chosen("comet", "rims") == "chrom", "alter Spielstand: Felgen bleiben")
 	garage.step = 2
 	garage._select("kart", "comet")
@@ -71,20 +74,42 @@ func _run() -> void:
 	garage._apply_responsive_layout()
 	await _frames(6)
 	var bay = garage.parts_bay
-	_check(bay != null and bay.open_button.is_visible_in_tree(), "„Teile wechseln“ sichtbar bei 0 Sternen")
+	_check(
+		bay != null and bay.open_button.is_visible_in_tree(),
+		"„Teile wechseln“ sichtbar bei 0 Sternen"
+	)
 	if bay == null:
 		_finish()
 		return
 	var dp: float = garage._preview_dp_scale() if garage.has_method("_preview_dp_scale") else 1.0
 	var button_rect: Rect2 = bay.open_button.get_global_rect()
-	_check(button_rect.size.y >= 48.0 * dp - 0.5 and button_rect.size.x >= 48.0 * dp, "„Teile wechseln“ ≥ 48 dp")
+	_check(
+		button_rect.size.y >= 48.0 * dp - 0.5 and button_rect.size.x >= 48.0 * dp,
+		"„Teile wechseln“ ≥ 48 dp"
+	)
+	_check(
+		button_rect.end.y <= garage._selection_surface.get_global_rect().position.y + 1.0,
+		"„Teile wechseln“ steht beim Kart über der Kartauswahl"
+	)
 	# Karten: höchstens zwei beschriftete Werte.
-	var cards: Array = garage.find_children("*", "Button", true, false).filter(func(c): return c.get("bars") != null and c.get("item") is Dictionary)
+	var cards: Array = garage.find_children("*", "Button", true, false).filter(
+		func(c): return c.get("bars") != null and c.get("item") is Dictionary
+	)
 	_check(not cards.is_empty(), "Kartkarten vorhanden")
 	for card in cards:
-		_check(card.bars.only_keys.size() <= 2 and card.bars.show_labels, "Karte %s: höchstens zwei beschriftete Werte" % str(card.item.get("id", "")))
+		_check(
+			card.bars.only_keys.size() <= 2 and card.bars.show_labels,
+			"Karte %s: höchstens zwei beschriftete Werte" % str(card.item.get("id", ""))
+		)
 	bay._on_stats()
-	_check(bay.stats_panel.visible and bay.stats_bars._keys().size() == 5 and bay.stats_bars.show_labels, "„Werte“ zeigt alle fünf beschrifteten Werte")
+	_check(
+		(
+			bay.stats_panel.visible
+			and bay.stats_bars._keys().size() == 5
+			and bay.stats_bars.show_labels
+		),
+		"„Werte“ zeigt alle fünf beschrifteten Werte"
+	)
 	bay.stats_panel.hide()
 	# Räder: Vorschau → montieren.
 	bay._on_open()
@@ -92,25 +117,53 @@ func _run() -> void:
 	_check(bay.is_open() and bay.panel.is_visible_in_tree(), "Konfigurator geöffnet")
 	bay._on_slot("wheel_cover")
 	_check(bay.tiles.size() >= 3 and bay.tiles.has("serie"), "Räder: Serie + zwei Formen")
+	var pictures := 0
+	for id in bay.tiles:
+		var picture: TextureRect = bay.tiles[id].find_child("PartPicture", true, false)
+		if picture != null and picture.texture != null:
+			pictures += 1
+	_check(pictures == bay.tiles.size(), "jedes Rad-Teil hat ein gerendertes Teilebild")
+	_check(
+		bay.panel.get_global_rect().end.y <= garage.footer.get_global_rect().position.y + 1.0,
+		"Konfigurator bleibt über der Fußleiste"
+	)
 	var before_camera: Vector3 = garage.preview_camera.global_position
 	bay._on_tile("turbine")
 	await _frames(30)
 	var vehicle = _vehicle(garage.preview_kart)
-	_check(vehicle != null and vehicle.mounted_parts.get("wheel_cover") == "turbine", "Turbinenrad sofort am Kart (Vorschau)")
+	_check(
+		vehicle != null and vehicle.mounted_parts.get("wheel_cover") == "turbine",
+		"Turbinenrad sofort am Kart (Vorschau)"
+	)
 	_check(_count_parts(vehicle, "WheelCover_Turbine") == 4, "Turbinenrad an allen vier Rädern")
-	_check(garage.preview_camera.global_position.distance_to(before_camera) > 0.3, "Kamera fährt ans Rad")
-	_check(garage.workshop.chosen("comet", "wheel_cover") == "serie", "Vorschau ist noch nicht gespeichert")
+	_check(
+		garage.preview_camera.global_position.distance_to(before_camera) > 0.3,
+		"Kamera fährt ans Rad"
+	)
+	_check(
+		garage.workshop.chosen("comet", "wheel_cover") == "serie",
+		"Vorschau ist noch nicht gespeichert"
+	)
 	bay._on_tile("stern")
 	await _frames(2)
 	vehicle = _vehicle(garage.preview_kart)
-	_check(_count_parts(vehicle, "WheelCover_Star") == 4 and _count_parts(vehicle, "WheelCover_Turbine") == 0, "Wechsel auf Sternrad ersetzt das Turbinenrad")
+	_check(
+		(
+			_count_parts(vehicle, "WheelCover_Star") == 4
+			and _count_parts(vehicle, "WheelCover_Turbine") == 0
+		),
+		"Wechsel auf Sternrad ersetzt das Turbinenrad"
+	)
 	bay._on_tile("turbine")
 	bay._on_mount()
 	await _frames(6)
 	_check(not bay.is_open(), "Montieren schließt den Konfigurator")
 	_check(garage.workshop.chosen("comet", "wheel_cover") == "turbine", "Turbinenrad gespeichert")
 	vehicle = _vehicle(garage.preview_kart)
-	_check(_count_parts(vehicle, "WheelCover_Turbine") == 4, "Turbinenrad nach Neuaufbau der Garage noch am Kart")
+	_check(
+		_count_parts(vehicle, "WheelCover_Turbine") == 4,
+		"Turbinenrad nach Neuaufbau der Garage noch am Kart"
+	)
 	# Auspuff: einmal verwerfen, dann montieren.
 	bay._on_open()
 	bay._on_slot("exhaust")
@@ -118,11 +171,20 @@ func _run() -> void:
 	bay._on_tile("rakete")
 	await _frames(2)
 	vehicle = _vehicle(garage.preview_kart)
-	_check(_count_parts(vehicle, "ExhaustTip_Rocket") == 2, "Raketendüse links und rechts in der Vorschau")
+	_check(
+		_count_parts(vehicle, "ExhaustTip_Rocket") == 2,
+		"Raketendüse links und rechts in der Vorschau"
+	)
 	bay._on_back()
 	await _frames(4)
 	vehicle = _vehicle(garage.preview_kart)
-	_check(garage.workshop.chosen("comet", "exhaust") == "serie" and _count_parts(vehicle, "ExhaustTip_Rocket") == 0, "„Zurück“ verwirft die Vorschau")
+	_check(
+		(
+			garage.workshop.chosen("comet", "exhaust") == "serie"
+			and _count_parts(vehicle, "ExhaustTip_Rocket") == 0
+		),
+		"„Zurück“ verwirft die Vorschau"
+	)
 	_check(_count_parts(vehicle, "WheelCover_Turbine") == 4, "„Zurück“ lässt montierte Räder dran")
 	bay._on_open()
 	bay._on_slot("exhaust")
@@ -137,17 +199,44 @@ func _run() -> void:
 	var race_kart = _vehicle(game.player)
 	_check(race_kart != null, "Rennfahrzeug ist das gebaute Kart")
 	if race_kart != null:
-		_check(race_kart.mounted_parts.get("wheel_cover") == "turbine" and race_kart.mounted_parts.get("exhaust") == "doppel", "Rennfahrzeug trägt Turbinenrad und Doppelrohr")
-		_check(_count_parts(race_kart, "WheelCover_Turbine") == 4 and _count_parts(race_kart, "ExhaustTip_Twin") == 2, "Teile sind am Rennfahrzeug sichtbar angebaut")
+		_check(
+			(
+				race_kart.mounted_parts.get("wheel_cover") == "turbine"
+				and race_kart.mounted_parts.get("exhaust") == "doppel"
+			),
+			"Rennfahrzeug trägt Turbinenrad und Doppelrohr"
+		)
+		_check(
+			(
+				_count_parts(race_kart, "WheelCover_Turbine") == 4
+				and _count_parts(race_kart, "ExhaustTip_Twin") == 2
+			),
+			"Teile sind am Rennfahrzeug sichtbar angebaut"
+		)
 	if game.has_method("_leave_race_for_menu"):
 		game._leave_race_for_menu()
 		await _frames(8)
 	# Neu laden wie nach App-Neustart: Spielstand von der Platte.
 	var reloaded = TUNING.new(CHILD, 0)
-	_check(reloaded.chosen("comet", "wheel_cover") == "turbine" and reloaded.chosen("comet", "exhaust") == "doppel", "nach Neustart wieder da (pro Kind und Kart)")
+	_check(
+		(
+			reloaded.chosen("comet", "wheel_cover") == "turbine"
+			and reloaded.chosen("comet", "exhaust") == "doppel"
+		),
+		"nach Neustart wieder da (pro Kind und Kart)"
+	)
 	_check(reloaded.chosen("glider", "wheel_cover") == "serie", "anderes Kart bleibt Serie")
-	_check(TUNING.new("anderes_kind", 0).chosen("comet", "wheel_cover") == "serie", "anderes Kinderprofil bleibt Serie")
-	_check(reloaded.chosen("comet", "rims") == "chrom" and reloaded.available() == 0, "Felgen und Sterne unverändert")
+	_check(
+		TUNING.new("anderes_kind", 0).chosen("comet", "wheel_cover") == "serie",
+		"anderes Kinderprofil bleibt Serie"
+	)
+	_check(
+		(
+			reloaded.chosen("comet", "rims") == "chrom"
+			and reloaded.available() == game.workshop.available()
+		),
+		"Felgen und Sterne unverändert (Teile kosten nichts)"
+	)
 	DirAccess.remove_absolute(path)
 	DirAccess.remove_absolute(TUNING.path_for("anderes_kind"))
 	_finish()

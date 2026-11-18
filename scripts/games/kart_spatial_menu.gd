@@ -189,6 +189,8 @@ func _apply_selected_preview() -> void:
 	var changed := _selection_reaction_pending
 	super._apply_selected_preview()
 	_sync_workshop_host()
+	if step == 2:
+		call_deferred("_fit_welcome_camera")
 	if changed and is_instance_valid(service_station):
 		service_station.react_to_selection()
 
@@ -517,12 +519,19 @@ func _fit_welcome_camera() -> void:
 	# Hochformat-Garage: flachere, frontalere Kamera wie ein Konzeptbild – das Kart steht
 	# groß im unteren Drittel, darüber Leuchtwand und Schild statt leerer Bodenfläche.
 	var portrait_garage: bool = step == 2 and aspect < 1.0 and garage_interior.root.visible
-	if portrait_garage:
-		focus = Vector3(0, 1.05, 0.2)
-		direction = Vector3(0.95, 0.72, -4.6).normalized()
+	# Garage (Auftrag 18.11.): das gewählte Kart groß in niedriger Dreiviertelansicht, Lumo
+	# steht seitlich daneben; Leuchtwand und Werkbank bleiben Hintergrund und werden nicht
+	# mehr ins Bild gezwungen.
+	var garage_stage: bool = step == 2 and garage_interior.root.visible
+	if garage_stage:
+		focus = Vector3(0, 0.62, 0.15)
+		direction = Vector3(-2.35, 0.82, -3.6).normalized()
 	var region := _visible_stage_region()
 	var pixels := Vector2(preview_viewport.size)
 	var target := Rect2(region.position * pixels, region.size * pixels)
+	if garage_stage:
+		# Etwas Luft am Rand: das leichte Pendeln des Drehtellers schneidet kein Rad an.
+		target = target.grow_individual(-target.size.x * 0.05, -target.size.y * 0.03, -target.size.x * 0.05, -target.size.y * 0.02)
 	var points: Array[Vector3] = []
 	if step == 3:
 		if not is_instance_valid(preview_world):
@@ -536,8 +545,8 @@ func _fit_welcome_camera() -> void:
 		focus = bounds.get_center()
 		direction = Vector3(0.65, 0.90, -1.0).normalized()
 	else:
-		points = _stage_subject_points(portrait_garage)
-		if portrait_garage and not points.is_empty():
+		points = _stage_subject_points(garage_stage)
+		if garage_stage and not points.is_empty():
 			# Bildmitte = Mitte aus Kart, Lumo und Werkbank (nicht der Drehteller allein),
 			# damit die Gruppe das schmale Bild füllt.
 			var group := AABB(points[0], Vector3.ZERO)
@@ -545,7 +554,7 @@ func _fit_welcome_camera() -> void:
 				group = group.expand(point)
 			focus.x = group.get_center().x * 0.6
 			focus.z = group.get_center().z * 0.6
-	var distance := 6.0 if step == 3 else 4.8
+	var distance := 6.0 if step == 3 else (2.6 if garage_stage else 4.8)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	preview_camera.fov = 40.0 if aspect < 1.0 else 35.0
@@ -632,15 +641,11 @@ func _stage_subject_points(close_up: bool = false) -> Array[Vector3]:
 			points.append(ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius)))
 	if is_instance_valid(service_station):
 		points.append_array(service_station.subject_points())
-		points.append_array(service_station.workbench_points())
-	# Das LUMO-Schild gehört ins Bild, nie unter Reiter oder Kopfzeile.
-	if step == 2 and garage_interior.root.visible:
-		if close_up:
-			# Hochformat: wenigstens das Wort LUMO bleibt ganz im Bild.
-			for x in [-1.3, 1.3]:
-				points.append(garage_interior.root.to_global(SHOWROOM.SIGN_CENTER + Vector3(x, 0.3, 0)))
-		else:
-			points.append_array(SHOWROOM.sign_points(garage_interior.root))
+		if not close_up:
+			points.append_array(service_station.workbench_points())
+	# Das LUMO-Schild gehört ins Bild, nie unter Reiter oder Kopfzeile (Gesamtansicht).
+	if step == 2 and garage_interior.root.visible and not close_up:
+		points.append_array(SHOWROOM.sign_points(garage_interior.root))
 	return points
 
 

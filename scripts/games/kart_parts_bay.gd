@@ -9,14 +9,14 @@ extends Control
 ## Dazu „Werte“: die fünf vollständigen, beschrifteten Fahrwerte des gewählten Karts.
 ## Die Knöpfe sind mindestens 48 dp groß; nichts blinkt.
 
+signal parts_mounted(kart_id: String)
+
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const THUMBS := "res://assets/kart/production/parts/thumbs/%s.png"
 const ACCENT := Color("ff9a3c")
-
-signal parts_mounted(kart_id: String)
 
 var menu
 var open_button: Button
@@ -36,6 +36,7 @@ var pending: Dictionary = {}
 var slot: String = "wheel_cover"
 var _open := false
 var _scale := 1.0
+var _drawer := Rect2()
 
 
 func setup(owner_menu) -> void:
@@ -103,7 +104,9 @@ func _label(text: String, size: int, colour: Color) -> Label:
 func _build_stats_panel() -> void:
 	stats_panel = PanelContainer.new()
 	stats_panel.name = "KartFullStats"
-	stats_panel.add_theme_stylebox_override("panel", _style(Color(0.02, 0.08, 0.2, 0.94), Color(0.4, 0.88, 1.0, 0.8)))
+	stats_panel.add_theme_stylebox_override(
+		"panel", _style(Color(0.02, 0.08, 0.2, 0.94), Color(0.4, 0.88, 1.0, 0.8))
+	)
 	stats_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(stats_panel)
 	var column := VBoxContainer.new()
@@ -115,9 +118,18 @@ func _build_stats_panel() -> void:
 	stats_bars.name = "KartFullStatBars"
 	stats_bars.show_labels = true
 	stats_bars.show_numbers = true
+	stats_bars.label_names = {
+		"speed": "Tempo",
+		"accel": "Beschleunigung",
+		"brake": "Bremsen",
+		"handling": "Lenkung",
+		"turbo": "Turbo",
+	}
 	stats_bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(stats_bars)
-	var close := _action("Schließen", func(): stats_panel.hide(), Color(0.05, 0.3, 0.5, 0.95), Color.WHITE)
+	var close := _action(
+		"Schließen", func(): stats_panel.hide(), Color(0.05, 0.3, 0.5, 0.95), Color.WHITE
+	)
 	close.name = "KartFullStatsClose"
 	column.add_child(close)
 	stats_panel.hide()
@@ -126,7 +138,9 @@ func _build_stats_panel() -> void:
 func _build_panel() -> void:
 	panel = PanelContainer.new()
 	panel.name = "PartsConfigurator"
-	panel.add_theme_stylebox_override("panel", _style(Color(0.03, 0.09, 0.22, 0.96), Color(1.0, 0.7, 0.3, 0.9), 26))
+	panel.add_theme_stylebox_override(
+		"panel", _style(Color(0.03, 0.09, 0.22, 0.96), Color(1.0, 0.7, 0.3, 0.9), 26)
+	)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(panel)
 	var column := VBoxContainer.new()
@@ -139,7 +153,12 @@ func _build_panel() -> void:
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title_label)
 	for id in TUNING.PART_SLOTS:
-		var button := _action(str(TUNING.SLOT_NAMES[id]), _on_slot.bind(id), Color(0.05, 0.25, 0.45, 0.95), Color.WHITE)
+		var button := _action(
+			str(TUNING.SLOT_NAMES[id]),
+			_on_slot.bind(id),
+			Color(0.05, 0.25, 0.45, 0.95),
+			Color.WHITE
+		)
 		button.name = "PartsSlot_" + id
 		button.toggle_mode = true
 		head.add_child(button)
@@ -230,10 +249,18 @@ func _build_tiles() -> void:
 		tile.focus_mode = Control.FOCUS_NONE
 		tile.set_pressed_no_signal(id == current)
 		var chosen := id == current
-		tile.add_theme_stylebox_override("normal", _style(Color(0.05, 0.13, 0.27, 0.95), Color(0.4, 0.7, 0.95, 0.5), 18))
-		tile.add_theme_stylebox_override("hover", _style(Color(0.08, 0.2, 0.38, 0.97), Color(0.7, 0.95, 1.0, 0.9), 18))
-		tile.add_theme_stylebox_override("pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18))
-		tile.add_theme_stylebox_override("hover_pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18))
+		tile.add_theme_stylebox_override(
+			"normal", _style(Color(0.05, 0.13, 0.27, 0.95), Color(0.4, 0.7, 0.95, 0.5), 18)
+		)
+		tile.add_theme_stylebox_override(
+			"hover", _style(Color(0.08, 0.2, 0.38, 0.97), Color(0.7, 0.95, 1.0, 0.9), 18)
+		)
+		tile.add_theme_stylebox_override(
+			"pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18)
+		)
+		tile.add_theme_stylebox_override(
+			"hover_pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18)
+		)
 		tile.add_theme_stylebox_override("focus", _style(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 18))
 		tile.pressed.connect(_on_tile.bind(id))
 		var box := VBoxContainer.new()
@@ -255,7 +282,9 @@ func _build_tiles() -> void:
 		var name_label := _label(str(option.name), 14, Color.WHITE)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(name_label)
-		var tag := _label("Aussehen" + ("  ✓" if chosen and id == _saved(slot) else ""), 11, Color("9fe8ff"))
+		var tag := _label(
+			"Aussehen" + ("  ✓" if chosen and id == _saved(slot) else ""), 11, Color("9fe8ff")
+		)
 		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(tag)
 		tile_row.add_child(tile)
@@ -320,25 +349,42 @@ func _focus_camera() -> void:
 	var outward: Vector3
 	if slot == "wheel_cover" and not vehicle.wheel_rotors.is_empty():
 		var wheel: Node3D = vehicle.wheel_rotors[0]
+		var eye: Vector3 = menu.preview_camera.global_position
 		for rotor in vehicle.wheel_rotors:
-			# Vorderrad auf der Kameraseite (FR, rechts vorn).
-			if str(rotor.name).ends_with("FR"):
+			# Vorderrad auf der Kameraseite (das der Kamera nächste der beiden vorderen Räder).
+			var front := str(rotor.name).ends_with("FL") or str(rotor.name).ends_with("FR")
+			if (
+				front
+				and (
+					not str(wheel.name).ends_with("FL") and not str(wheel.name).ends_with("FR")
+					or (
+						rotor.global_position.distance_to(eye)
+						< wheel.global_position.distance_to(eye)
+					)
+				)
+			):
 				wheel = rotor
 		target = wheel.global_position
 		outward = (target - centre)
 		outward.y = 0.0
-		outward = outward.normalized() * 1.25 + kart.global_basis.z * -0.55 + Vector3(0, 0.32, 0)
+		outward = outward.normalized() * 1.7 + kart.global_basis.z * -0.75 + Vector3(0, 0.42, 0)
 	else:
 		var marker := vehicle.asset_root.find_child("Boost_R", true, false) as Node3D
 		target = marker.global_position if marker != null else centre
 		outward = kart.global_basis.z * 1.25 + kart.global_basis.x * 0.6 + Vector3(0, 0.38, 0)
 	menu.preview_camera.h_offset = 0.0
 	menu.preview_camera.v_offset = 0.0
-	menu._move_preview_camera(target + outward, target, Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE)
+	# Blickpunkt etwas unter dem Teil: es steht dann in der freien Bühne über dem Konfigurator.
+	var look_at: Vector3 = target - Vector3(0, 0.24 if slot == "wheel_cover" else 0.12, 0)
+	menu._move_preview_camera(
+		target + outward, look_at, Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE
+	)
 
 
 func _sync() -> void:
-	var garage_page: bool = menu != null and int(menu.step) == 2 and not bool(menu.get("_landing_active"))
+	var garage_page: bool = (
+		menu != null and int(menu.step) == 2 and not bool(menu.get("_landing_active"))
+	)
 	open_button.visible = garage_page and not _open
 	stats_button.visible = garage_page and not _open
 	panel.visible = garage_page and _open
@@ -369,15 +415,22 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	var open_width: float = 230.0 * ui_scale
 	var stats_width: float = 110.0 * ui_scale
 	# Die Bühne für die Kamera endet über den Knöpfen; sie liegen direkt darunter.
-	var y: float = stage.end.y + gap * 0.5
+	# Direkt über der Kartauswahl, ganz in der Bühne (nicht auf dem Rand der Auswahl).
+	var y: float = minf(stage.end.y + gap * 0.5, drawer.position.y - button_height - gap * 0.6)
 	var x: float = stage.get_center().x - (open_width + stats_width + gap) * 0.5
 	open_button.position = Vector2(x, y)
 	open_button.size = Vector2(open_width, button_height)
 	stats_button.position = Vector2(x + open_width + gap, y)
 	stats_button.size = Vector2(stats_width, button_height)
-	var stats_size := Vector2(minf(420.0 * ui_scale, stage.size.x - gap * 2.0), 26.0 * ui_scale * 5.0 + 120.0 * ui_scale)
-	stats_panel.position = Vector2(stage.get_center().x - stats_size.x * 0.5, maxf(stage.position.y + gap, y - stats_size.y - gap))
+	var stats_size := Vector2(
+		minf(420.0 * ui_scale, stage.size.x - gap * 2.0), 26.0 * ui_scale * 5.0 + 120.0 * ui_scale
+	)
+	stats_panel.position = Vector2(
+		stage.get_center().x - stats_size.x * 0.5,
+		maxf(stage.position.y + gap, y - stats_size.y - gap)
+	)
 	stats_panel.size = stats_size
+	_drawer = drawer
 	panel.position = drawer.position
 	panel.size = drawer.size
 	_apply_tile_size()
@@ -385,8 +438,17 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 
 
 func _apply_tile_size() -> void:
-	var edge: float = clampf((panel.size.y - 150.0 * _scale), 96.0 * _scale, 170.0 * _scale)
+	# Kopfzeile + Knopfzeile (je 52 dp) und Abstände gehen ab; die Teilebilder bekommen den Rest,
+	# damit der Konfigurator nie über die Fußleiste hinauswächst.
+	var room: float = _drawer.size.y if _drawer.has_area() else panel.size.y
+	var edge: float = clampf(room - 104.0 * _scale - 44.0 * _scale, 64.0 * _scale, 170.0 * _scale)
 	for id in tiles:
 		tiles[id].custom_minimum_size = Vector2(edge * 0.95, edge)
 		for label in tiles[id].find_children("*", "Label", true, false):
-			label.add_theme_font_size_override("font_size", roundi((14 if label.get_index() == 1 else 11) * _scale))
+			label.add_theme_font_size_override(
+				"font_size", roundi((14 if label.get_index() == 1 else 11) * _scale)
+			)
+	if _drawer.has_area():
+		panel.reset_size()
+		panel.position = _drawer.position
+		panel.size = _drawer.size

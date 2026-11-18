@@ -15,6 +15,8 @@ var show_labels: bool = true
 var compact_labels: bool = false
 ## Nur diese Werte zeigen (leer = alle fünf). Kartkarten: „Tempo“ und „Lenkung“.
 var only_keys: Array[String] = []
+## Kinderwörter statt Fachwörter (z. B. „Lenkung“ statt „Handling“); leer = Flottennamen.
+var label_names: Dictionary = {}
 const SHORT_NAMES: Dictionary = {
 	"speed": "Tempo", "accel": "Antritt", "brake": "Bremse", "handling": "Lenkung", "turbo": "Turbo",
 }
@@ -115,7 +117,7 @@ func _draw() -> void:
 			draw_string(UI.HEADING, Vector2(dot * 2.0 + 5.0, middle + font_size * 0.36), str(SHORT_NAMES[key]),
 				HORIZONTAL_ALIGNMENT_LEFT, label_width - dot * 2.0 - 5.0, font_size, Color("e4f2ff"))
 		elif show_labels:
-			var label: String = str(FLEET.STAT_NAMES[key])
+			var label: String = str(label_names.get(key, FLEET.STAT_NAMES[key]))
 			draw_string(UI.BODY, Vector2(0, middle + font_size * 0.36), label, HORIZONTAL_ALIGNMENT_LEFT, label_width, font_size, Color("c4d8ee"))
 		var track := Rect2(bar_left, middle - bar_height * 0.5, bar_width, bar_height)
 		draw_rect(track, TRACK_COLOR, true)

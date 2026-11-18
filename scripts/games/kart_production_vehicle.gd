@@ -393,6 +393,8 @@ func apply_parts(look: Dictionary) -> void:
 						tip.free()
 					continue
 				marker.add_child(tip)
+				# Etwas größer als modelliert: im Rennen sieht man das Heck nur klein von hinten.
+				tip.scale = Vector3.ONE * 1.5
 				_part_nodes.append(tip)
 	for node in _part_nodes:
 		node.visible = lod_level == 0
