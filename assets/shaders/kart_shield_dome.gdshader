@@ -56,7 +56,9 @@ void fragment() {
 	float height = lat + 0.5;
 	float shown = 1.0 - smoothstep(reveal * 1.15 - 0.16, reveal * 1.15 - 0.08, height);
 	float sweep_edge = exp(-pow((height - reveal * 1.15 + 0.12) * 18.0, 2.0)) * step(reveal, 0.999);
-	float body = 0.07 + lattice * (0.30 + band * 0.45) + fresnel * 0.95;
-	vec3 colour = tint.rgb * body * breathe + rim_tint.rgb * (fresnel * 0.55 + ripple * 1.6 + impact_glow * 1.4);
+	// Kept translucent: both faces add up on bright daytime tracks, and the
+	// kart and its driver must stay clearly visible inside the dome.
+	float body = 0.025 + lattice * (0.20 + band * 0.32) + fresnel * 0.50;
+	vec3 colour = tint.rgb * body * breathe + rim_tint.rgb * (fresnel * 0.28 + ripple * 1.1 + impact_glow * 0.9);
 	ALBEDO = (colour * shown + rim_tint.rgb * sweep_edge * 1.6) * strength;
 }
