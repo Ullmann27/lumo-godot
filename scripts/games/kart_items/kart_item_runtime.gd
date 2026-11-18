@@ -470,6 +470,9 @@ func _make_trail(rocket: Node3D) -> CPUParticles3D:
 	trail.amount = int(budget.get(quality, 26)) / (2 if reduced_motion else 1)
 	trail.lifetime = 0.8
 	trail.local_coords = false
+	# gl_compatibility zeichnet noch nie ausgestoßene Teilchen als schwarze Scheibe an der
+	# Düse (im Einzelbild gefunden): vorab einmal durchlaufen lassen = alle sind aktiv.
+	trail.preprocess = trail.lifetime
 	trail.emitting = true
 	trail.direction = Vector3(0, 0, 1)
 	trail.spread = 22.0

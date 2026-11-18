@@ -143,7 +143,8 @@ func setup(overlay_parent: Node, quality: String, reduced: bool) -> void:
 			stars.name = "StarBurst%d" % index
 			stars.emitting = false
 			stars.one_shot = true
-			stars.explosiveness = 0.95
+			# 1.0: sonst zeigt gl_compatibility noch nicht ausgestoßene Sterne kurz schwarz.
+			stars.explosiveness = 1.0
 			stars.lifetime = 0.95
 			stars.mesh = star_mesh
 			stars.direction = Vector3.UP
