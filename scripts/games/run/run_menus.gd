@@ -386,7 +386,8 @@ func _build_loading() -> void:
 func _build_question() -> void:
 	var u: float = _unit
 	_veil(0.45)
-	var column: VBoxContainer = _dialog(UI.CYAN, 600.0)
+	# On the adventure path the panel sits low, so the puzzle gate stays in view.
+	var column: VBoxContainer = _dialog(UI.CYAN, 600.0, str(data.get("dock", "center")))
 	column.add_child(UI.label(str(data.header), 15.0, u, UI.CYAN, true))
 	var prompt: Label = UI.label(str(data.prompt), 25.0, u, UI.WHITE, true)
 	prompt.name = "Prompt"

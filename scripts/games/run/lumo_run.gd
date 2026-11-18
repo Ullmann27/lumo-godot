@@ -660,6 +660,7 @@ func _show_question() -> void:
 			"wrong": wrong_answers.duplicate(),
 			"reveal": reveal,
 			"message": message,
+			"dock": "bottom" if plan.adventure else "center",
 		}
 	)
 

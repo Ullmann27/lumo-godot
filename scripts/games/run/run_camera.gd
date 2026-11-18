@@ -49,9 +49,9 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 			back += 1.2
 			height += 0.5
 		if chase_view:
-			back = 11.5 if portrait else 10.5
-			height = 6.4 if portrait else 5.6
-			ahead = 13.0
+			back = 14.0 if portrait else 13.0
+			height = 6.0 if portrait else 5.0
+			ahead = 6.0
 		if (player.in_cart or player.tumble_time > 0.0) and not reduced_motion:
 			swing = sin(Time.get_ticks_msec() * 0.0011) * 0.9
 	var wall: float = float(world.wall_lateral_at(player.s)) - 0.6

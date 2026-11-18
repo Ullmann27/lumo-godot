@@ -286,7 +286,7 @@ func layout() -> void:
 		skip_button.add_theme_stylebox_override(state, skip_style)
 	banner_label.add_theme_font_size_override("font_size", roundi(34.0 * u))
 	banner_label.add_theme_constant_override("outline_size", roundi(10.0 * u))
-	banner_label.position = Vector2(0, view.y * 0.2)
+	banner_label.position = Vector2(0, view.y * 0.36)
 	banner_label.size = Vector2(view.x, 60.0 * u)
 
 

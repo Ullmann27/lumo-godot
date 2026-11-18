@@ -7,7 +7,7 @@ extends SceneTree
 ##     --script res://scripts/tests/lumo_run_jungle_capture.gd
 ##
 ## LUMO_RUN_SIZE=1600x720 limits it to one window size; LUMO_SEED picks the
-## player's ways (default 2: explores niches and the treasure hall).
+## player's ways (default 4: upper ways, niches and the treasure hall).
 
 const BOT = preload("res://scripts/tests/helpers/lumo_jungle_bot.gd")
 const COURSES = preload("res://scripts/games/run/run_courses.gd")
@@ -99,7 +99,7 @@ func _run() -> void:
 		quit(1)
 		return
 	var only: String = OS.get_environment("LUMO_RUN_SIZE")
-	var seed: int = int(OS.get_environment("LUMO_SEED")) if not OS.get_environment("LUMO_SEED").is_empty() else 2
+	var seed: int = int(OS.get_environment("LUMO_SEED")) if not OS.get_environment("LUMO_SEED").is_empty() else 4
 	var bridge: Node = root.get_node("HostBridge")
 	bridge._options["displayDensity"] = 2.0
 	var index: int = COURSES.index_of("dschungelherz")
@@ -174,7 +174,7 @@ func _run() -> void:
 				elif kind == "zip" and player.ride_t > 1.0 and not specials.zip:
 					specials.zip = true
 					await _capture("34_zip_line")
-			if game.track.chase_active and player.s > float(plan.chase.s0) + 18.0 and not specials.chase:
+			if game.track.chase_active and player.s > float(plan.chase.s0) + 40.0 and not specials.chase:
 				specials.chase = true
 				await _capture("35_chase_stone_ball")
 			if player.s < 0.0 and player.s > float(plan.bonus.s0) + 22.0 and not specials.bonus:
