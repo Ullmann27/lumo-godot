@@ -151,6 +151,19 @@ func train_guard(model) -> String:
 	return ""
 
 
+## Schutzpunkte, wenn `more` weitere Wachen ausgebildet wären. Für Lumos Rat;
+## ändert nichts dauerhaft.
+func defense_with_more_guards(threat: String, more: int) -> float:
+	var kept: Array = units.duplicate(true)
+	var before: int = guards
+	guards += more
+	GUARDS.reconcile(self)
+	var points: float = defense_points(threat)
+	guards = before
+	units = kept
+	return points
+
+
 ## Defence points against one threat. Guards on an expedition do not count.
 func defense_points(threat: String, ally := false) -> float:
 	var weights: Dictionary = THREATS[threat].weights

@@ -274,6 +274,9 @@ static func dismiss(raids, id: int, count: int, model = null) -> String:
 
 
 ## Verteidigungspunkte der Verbände gegen eine Bedrohung der Dorfwelt.
+const SMALL_FORCE: int = 20
+
+
 static func defense(raids, threat: String) -> float:
 	var away := int(raids.expedition.get("guards", 0))
 	var units: Array = raids.units
@@ -287,9 +290,18 @@ static func defense(raids, threat: String) -> float:
 				var take := mini(away, int(unit.size))
 				unit.size = int(unit.size) - take
 				away -= take
-	return TROOPS.points(
+	var points: float = TROOPS.points(
 		units, str(THREAT_ATTACKER.get(threat, "pluenderer")), str(THREAT_SIDE.get(threat, "sued")), raids.parts
 	)
+	# Ein kleines Dorf muss noch nicht aufstellen: bis SMALL_FORCE Wachen zählt jede
+	# mindestens so viel wie früher die einfache Wache. Erst größere Truppen leben
+	# von Art, Aufstellung und Schutzbauten.
+	var home := 0
+	for unit in units:
+		home += int(unit.get("size", 0))
+	if home <= SMALL_FORCE:
+		points = maxf(points, float(home) * float(raids.UNIT.guard) * float(raids.THREATS[threat].weights.guard))
+	return points
 
 
 ## Ein Satz für das Kind: wer kommt, wohin, welche Truppe hilft.
