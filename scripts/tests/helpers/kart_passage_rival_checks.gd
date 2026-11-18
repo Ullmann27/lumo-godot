@@ -309,3 +309,63 @@ static func lava_fast(test, entry: Dictionary, cruise: float) -> void:
 			% [entry.id, entry_speed, float(entry.min_speed)]
 		)
 	)
+
+
+## Zauberwald root chicane: the narrow precision openings are ≥ 1.6 × widest kart, ten touch
+## runs on the short left–right line and ten on the wide mushroom line pass without touching
+## a root pillar.
+static func chicane(test, entry: Dictionary, widest: float) -> void:
+	var world = test.game.world
+	var lines: Array = []
+	for arch in entry.arches:
+		var d: float = float(arch[0])
+		var side: float = float(arch[1])
+		var half: float = world.road_width_at(d) * 0.5
+		var pillar: float = side * (half - float(entry.narrow_width) - 0.5)
+		var opening: float = half - absf(pillar) - 0.25
+		test._check(
+			opening >= widest * PASSAGES.PRECISION_FACTOR - 0.01,
+			"%s: narrow opening %.2f m ≥ 1.6 × %.2f m" % [entry.id, opening, widest]
+		)
+		var centres: Vector2 = PASSAGES.arch_lines(world, entry, arch)
+		lines.append([d, centres.x, centres.y])
+	for wide in [false, true]:
+		var clean: int = 0
+		var worst: float = 0.0
+		for run in range(10):
+			test._place(float(entry.zone_start) - 70.0, 0.0, 26.0)
+			var hits: int = 0
+			var resets: int = test.game.reset_count
+			var t: float = 0.0
+			while test._local() < float(entry.zone_end) + 6.0 and t < 8.0:
+				var target: float = 0.0
+				for line in lines:
+					if test._local() < float(line[0]) + 3.0:
+						target = float(line[2] if wide else line[1])
+						break
+				test._touch_steer(target, 0.10)
+				var before: float = test.game.hit_timer
+				test._tick()
+				t += STEP
+				if test.game.hit_timer > before + 0.1:
+					hits += 1
+				for line in lines:
+					if absf(test._local() - float(line[0])) < 0.5:
+						worst = maxf(
+							worst, absf(test.game.lane - float(line[2] if wide else line[1]))
+						)
+			if hits == 0 and test.game.reset_count == resets:
+				clean += 1
+		var tag: String = "wide mushroom line" if wide else "narrow left–right line"
+		test._check(clean >= 9, "%s: %s clean (%d/10)" % [entry.id, tag, clean])
+		test._note(
+			(
+				"%s %s: %d/10 ohne Wurzeltreffer, max. %.2f m neben der Linie im Bogen"
+				% [
+					entry.id,
+					"breite Pilzlinie" if wide else "enge Links-rechts-Linie",
+					clean,
+					worst
+				]
+			)
+		)

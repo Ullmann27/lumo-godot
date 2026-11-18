@@ -900,6 +900,9 @@ func _run() -> void:
 					await _bridge_checks(str(track), entry, widest)
 				"swing", "gate":
 					await _swing_checks(str(track), entry)
+				"flow":
+					if entry.has("arches"):
+						RIVAL_CHECKS.chicane(self, entry, widest)
 			await _start(str(track), "flott", "comet")
 		if not quick:
 			# Rival factors 0,86 / 0,96 / 1,00 with the full own pace 1,17 on every level.

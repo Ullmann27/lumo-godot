@@ -49,6 +49,23 @@ const SPECS: Dictionary = {
 			"hit_text": "Bumm – die Schranke! Bei Rot innen kurz warten.",
 		},
 	],
+	"zauberwald":
+	[
+		{
+			"kind": "flow",
+			"id": "wurzelboegen",
+			"name": "Wurzelbögen",
+			"theme": "forest",
+			"reserve": false,
+			"zone_start": 910.0,
+			"zone_end": 962.0,
+			"narrow_width": 3.6,
+			"arches": [[922.0, -1.0], [952.0, 1.0]],
+			"sign": "WURZELBÖGEN\nLinks – rechts durch",
+			"approach_text":
+			"Zwei Wurzelbögen: links, dann rechts durch – oder außen bei den Pilzen.",
+		},
+	],
 	"volcano_night":
 	[
 		{

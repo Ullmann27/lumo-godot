@@ -400,6 +400,18 @@ static func rival_control(
 	var result := {"lane": INF, "speed": INF, "waiting": false, "smooth": false}
 	var d: float = fposmod(distance, float(world.length))
 	for entry in of(world):
+		if str(entry.kind) == "flow" and entry.has("arches") and lateral != INF:
+			# Root arches: aim for the opening we are closer to, never at the root pillar.
+			for arch in entry.arches:
+				var to_arch: float = float(arch[0]) - d
+				if to_arch < -2.0 or to_arch > 45.0:
+					continue
+				var lines: Vector2 = arch_lines(world, entry, arch)
+				result.lane = (
+					lines.x if absf(lateral - lines.x) < absf(lateral - lines.y) else lines.y
+				)
+				break
+			continue
 		if str(entry.kind) in ["flow", "view"]:
 			continue
 		if str(entry.kind) == "bridge":
@@ -506,3 +518,19 @@ static func _in_queue(other: Vector3, lateral: float, ahead: float) -> bool:
 		return true
 	# Close to the deck everybody funnels into one line, whatever the lateral.
 	return ahead < QUEUE_FUNNEL_M and other.z > QUEUE_MOVING_SPEED
+
+
+## Root pillar lateral of a Zauberwald arch [distance, side of the narrow opening].
+static func arch_pillar(world, entry: Dictionary, arch: Array) -> float:
+	var half: float = world.road_width_at(float(arch[0])) * 0.5
+	return float(arch[1]) * (half - float(entry.narrow_width) - 0.5)
+
+
+## Centre lanes of the narrow opening (x) and of the wide mushroom opening (y).
+static func arch_lines(world, entry: Dictionary, arch: Array) -> Vector2:
+	var half: float = world.road_width_at(float(arch[0])) * 0.5
+	var side: float = float(arch[1])
+	var pillar: float = arch_pillar(world, entry, arch)
+	var narrow_centre: float = (pillar + side * (half - 0.2)) * 0.5
+	var wide_centre: float = -side * (half - 2.2)
+	return Vector2(narrow_centre, wide_centre)
