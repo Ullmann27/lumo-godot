@@ -298,6 +298,14 @@ func _check_passages(game) -> void:
 
 # ------------------------------------------------------------------ 4. normal players
 
+func _rescue_before(game, passage: Dictionary) -> float:
+	var best: float = float(passage.announce)
+	for point in game.plan.respawns:
+		if float(point.s) < float(passage.s0) and float(point.s) > best:
+			best = float(point.s)
+	return best
+
+
 func _place(game, s: float, lat: float, speed: float) -> void:
 	var passed: int = -1
 	for checkpoint in game.plan.checkpoints:
@@ -321,6 +329,8 @@ func _attempt(game, bot, passage: Dictionary, from: float, seconds: float = 14.0
 	var before: int = game.track.rescues
 	var first_fall_s: float = -1.0
 	var frames: int = 0
+	var counted: int = game.track.rescues
+	var at_passage: int = 0
 	while frames < int(seconds / STEP) and game.player.s < float(passage.s1) + 8.0:
 		if game.question_open:
 			game.answer(str(game.active_question.answer))
@@ -328,11 +338,15 @@ func _attempt(game, bot, passage: Dictionary, from: float, seconds: float = 14.0
 			bot.drive(game, STEP)
 		var was: float = game.player.s
 		game.advance(STEP)
-		if game.track.rescues != before and first_fall_s < 0.0:
-			first_fall_s = was
+		if game.track.rescues != counted:
+			counted = game.track.rescues
+			if first_fall_s < 0.0:
+				first_fall_s = was
+			if was >= float(passage.s0) - 3.0 and was <= float(passage.s1) + 3.0:
+				at_passage += 1
 		frames += 1
 	return {
-		"rescues": game.track.rescues - before, "across": game.player.s >= float(passage.s1) + 8.0,
+		"rescues": game.track.rescues - before, "at_passage": at_passage, "across": game.player.s >= float(passage.s1) + 8.0,
 		"fall_s": first_fall_s, "routes": bot.routes.duplicate(),
 	}
 
@@ -347,11 +361,11 @@ func _bots_cross(game) -> void:
 			continue
 		for seed in range(1, SEEDS + 1):
 			var bot = BOT.new(seed)
-			var result: Dictionary = _attempt(game, bot, passage, float(passage.announce) - 10.0)
-			if int(result.rescues) == 0 and bool(result.across):
+			var result: Dictionary = _attempt(game, bot, passage, float(passage.announce) - 10.0, 20.0)
+			if int(result.at_passage) == 0 and bool(result.across):
 				clean += 1
 			else:
-				print("[LumoAdventure] %s seed %d: %d falls (first at s=%.1f), route %s" % [name, seed, int(result.rescues), float(result.fall_s), str(result.routes.get(name, ""))])
+				print("[LumoAdventure] %s seed %d: %d falls at the passage, %d in all (first at s=%.1f), route %s" % [name, seed, int(result.at_passage), int(result.rescues), float(result.fall_s), str(result.routes.get(name, ""))])
 			if str(result.routes.get(name, "")) == "upper":
 				brave += 1
 		print("[LumoAdventure] %s: %d of %d normal players across without a fall (%d on the brave line)" % [name, clean, SEEDS, brave])
@@ -366,7 +380,8 @@ func _slow_players(game) -> void:
 		var name: String = str(passage.name)
 		if not OS.get_environment("LUMO_PASSAGE").is_empty() and OS.get_environment("LUMO_PASSAGE") != name:
 			continue
-		var zone := Vector2(float(passage.announce) - 10.0, float(passage.s1))
+		# From the rescue point before the passage: nothing else to jump there.
+		var zone := Vector2(_rescue_before(game, passage) + 0.5, float(passage.s1))
 		# Slow only on the first try: falls at the passage, back in shortly
 		# before it, then runs normally and gets across.
 		var bot = BOT.new(2)

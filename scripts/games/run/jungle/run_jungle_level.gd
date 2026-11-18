@@ -635,8 +635,8 @@ func _collapsing_bridge() -> void:
 
 
 ## Passage 3 (cave): the waterfall slide with two chutes. Downhill Lumo gets
-## faster by himself; at the bottom the pool. Left a lily pad halves the jump
-## (3.8 m, then 3.1 m), right one long leap of 8.5 m to the crystal bank.
+## faster by himself; at the bottom the pool. Left a carpet of lily pads reaches
+## out from the far bank (4.0 m to jump), right one long leap of 8.5 m.
 func _waterfall_slide() -> void:
 	var top: float = _leg(22.0, 0.0, 0.0, 4.0, "cave")
 	_line(top + 3.0, top + 20.0, 0.0, 0.0)
@@ -647,14 +647,15 @@ func _waterfall_slide() -> void:
 	_line(chute + 2.0, chute + 28.0, -2.0, -2.0, 1.0, 3.0, "lower")
 	_line(chute + 2.0, chute + 28.0, 2.0, 2.0, 1.0, 3.0, "upper")
 	var pool: float = _hole(8.5)
-	_platform(pool + 3.8, pool + 5.4, -2.0, 1.3, 0.0, "lily", {"axis": "h", "amp": 0.2, "rate": 1.4, "tempo": true})
-	_arc(pool - 0.6, pool + 4.4, -2.0, 2.2, 3, 1.0, "lower")
-	_arc(pool + 5.2, pool + 9.0, -2.0, 2.0, 3, 1.0, "lower")
+	_platform(pool + 4.0, pool + 6.3, -2.0, 1.3, 0.0, "lily", {"tempo": true})
+	_platform(pool + 6.2, pool + 8.5, -2.0, 1.3, 0.0, "lily", {"tempo": true})
+	_arc(pool - 0.6, pool + 5.0, -2.0, 2.4, 3, 1.0, "lower")
+	_line(pool + 5.6, pool + 8.0, -2.0, -2.0, 1.0, 2.4, "lower")
 	_arc(pool - 0.8, pool + 9.4, 2.0, 3.2, 5, 1.0, "upper")
 	_gold(pool + 4.3, 2.0, 3.1, "upper")
 	_passage(
-		"Wasserfall-Rutsche", pool, 8.5, {"lat": -2.0, "gap": 3.8}, {"lat": 2.0, "gap": 8.5, "downhill": TUNING.GRADE_MAX},
-		"Wasserfall-Rutsche! Links mit dem Seerosenblatt, rechts der große Sprung.", TUNING.PATH_CRUISE * 0.95
+		"Wasserfall-Rutsche", pool, 8.5, {"lat": -2.0, "gap": 4.0}, {"lat": 2.0, "gap": 8.5, "downhill": TUNING.GRADE_MAX},
+		"Wasserfall-Rutsche! Links auf die Seerosen, rechts der große Sprung.", TUNING.PATH_CRUISE * 0.95
 	)
 	var bank: float = _leg(18.0, 12.0, 0.0, 2.6, "cave")
 	_line(bank + 3.0, bank + 16.0, 0.0, 0.0)
