@@ -142,6 +142,7 @@ func _rail_contact() -> void:
 	_check(int(state.counts.get("rail_burst", 0)) >= 20, "hard hit adds a spark burst")
 	_check(int(state.sounds.get("rail_hit", 0)) == 1, "hard hit requests the metal impact sound")
 	_check(int(game.kart_audio.fx_requests.get("rail_hit", 0)) >= 1, "the sound request reaches the race audio")
+	_check(int(game.kart_audio.get("_duck_until_msec")) > Time.get_ticks_msec(), "a hard hit ducks the music briefly")
 	_check(state.scrape_level > 0.3, "scrape loop is driven by the contact")
 	_check(state.shake > 0.0 and fx.camera_shake() != Vector3.ZERO, "hard hit jolts the camera")
 	_check(game.player.driver_hit_pending, "the real Lumo driver flinches on a hard hit")

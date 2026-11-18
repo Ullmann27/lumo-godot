@@ -44,7 +44,8 @@ const SPARK_WHITE := Color(1.0, 0.96, 0.82)
 ## from a kart pressed against the collision wall (WALL_LATERAL 5.0).
 const RAIL_OFFSET := 0.93
 const RAIL_HEIGHT := 0.55
-const KART_SIDE := 0.78
+## Outer tyre edge of the production karts (measured 1.0 m; kart_rail_gap_probe).
+const KART_SIDE := 0.98
 const HARD_HIT := 4.0
 
 var race: Node
@@ -619,6 +620,9 @@ func _rail_hit(kart: Node3D, at: Vector3, outward: Vector3, up: Vector3, into: f
 		else:
 			_roll_velocity += signf(outward.dot(race.player.global_basis.x)) * 0.4
 		_sound("rail_hit", 0.92 + _rng.randf() * 0.16, 0.7 + strength * 0.3)
+		var audio = race.get("kart_audio")
+		if is_instance_valid(audio) and audio.has_method("duck"):
+			audio.duck(0.3)
 	else:
 		if race.player.global_position.distance_to(kart.global_position) < 18.0:
 			_sound("rail_hit_soft", 0.95 + _rng.randf() * 0.15, 0.45)
