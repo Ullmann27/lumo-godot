@@ -38,6 +38,8 @@ var steps: Array[Dictionary] = []
 var active_check: Callable
 ## Oben links des Wiederholen-Knopfs in Bildschirmkoordinaten; bekommt dessen Größe.
 var replay_position: Callable
+## Optional: obere Kante der Sprechblase (bekommt deren Größe), z. B. unter den Antworten.
+var bubble_position: Callable
 var outro_text: String = "Geschafft! Jetzt kannst du allein los."
 var reduced_motion: bool = false
 ## running | praise | outro | done | skipped
@@ -127,6 +129,7 @@ static func attach(
 	guide.steps.assign(guide_steps)
 	guide.active_check = active
 	guide.replay_position = options.get("replay_position", Callable())
+	guide.bubble_position = options.get("bubble_position", Callable())
 	guide.outro_text = str(options.get("outro", guide.outro_text))
 	guide.layer = int(options.get("layer", 60))
 	var calm: Variant = game.get("reduced_motion")
@@ -489,6 +492,8 @@ func _layout_bubble(view: Vector2, u: float, touch: float) -> void:
 	var y: float = view.y * 0.16
 	if target.has_area() and target.get_center().y < view.y * 0.5:
 		y = minf(view.y - bubble.size.y - 24.0 * u, target.end.y + 40.0 * u)
+	if bubble_position.is_valid():
+		y = float(bubble_position.call(bubble.size))
 	var x: float = (view.x - bubble.size.x) * 0.5
 	bubble.position = Vector2(maxf(12.0, x), maxf(12.0, y))
 	# Nie über dem Ziel: notfalls an den oberen Rand.

@@ -104,3 +104,33 @@ func check_touch_size(guide, button: Control, what: String) -> void:
 func frames(count: int) -> void:
 	for _frame in range(count):
 		await tree.process_frame
+
+
+## Belegbild, nur wenn LUMO_GUIDE_CAPTURE_DIR gesetzt ist (Lauf mit Bild, nicht headless).
+func snap(name: String) -> void:
+	var folder := OS.get_environment("LUMO_GUIDE_CAPTURE_DIR")
+	if folder.is_empty() or DisplayServer.get_name() == "headless":
+		return
+	DirAccess.make_dir_recursive_absolute(folder)
+	await frames(4)
+	await RenderingServer.frame_post_draw
+	var image: Image = tree.root.get_texture().get_image()
+	var size: Vector2i = tree.root.size
+	var path := folder.path_join("%s-%dx%d.png" % [name, size.x, size.y])
+	check(image.save_png(path) == OK, "Belegbild gespeichert " + path)
+	print("[%s] Bild: %s" % [label, path])
+
+
+## Fenstergröße aus LUMO_GUIDE_SIZE (z. B. 1812x2176), sonst fallback.
+static func window_size(fallback: Vector2i) -> Vector2i:
+	var raw := OS.get_environment("LUMO_GUIDE_SIZE")
+	var parts := raw.split("x")
+	if parts.size() == 2 and parts[0].is_valid_int() and parts[1].is_valid_int():
+		return Vector2i(int(parts[0]), int(parts[1]))
+	return fallback
+
+
+## Bildschirmdichte für Belegbilder (Fold ≈ 2.625), sonst 1.0.
+static func density() -> float:
+	var raw := OS.get_environment("LUMO_GUIDE_DENSITY")
+	return float(raw) if raw.is_valid_float() else 1.0
