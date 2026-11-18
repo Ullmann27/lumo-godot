@@ -15,6 +15,26 @@ var gathered: int = 0
 var stumbles: int = 0
 var checkpoint: int = -1
 var finished: bool = false
+## Adventure path state (Dschungelherz).
+var clock: float = 0.0
+var letters: int = 0
+var bonus_found: bool = false
+var rescue: int = -1
+var falls: Dictionary = {}
+var defeated: Dictionary = {}
+var enemy_hits: Dictionary = {}
+var crumbled: Dictionary = {}
+var ride_ready_at: Dictionary = {}
+var waits_done: Dictionary = {}
+var chase_active: bool = false
+var chase_done: bool = false
+var chase_catches: int = 0
+var boulder_s: float = -INF
+var rescues: int = 0
+var stomps: int = 0
+var _riding: int = -1
+var _wait_clock: float = 0.0
+var _last_clock: float = 0.0
 var _cursors: Dictionary = {}
 var _last_s: float = -1.0
 
@@ -31,8 +51,29 @@ func setup(course_plan, race_world) -> void:
 	stumbles = 0
 	checkpoint = -1
 	finished = false
+	_reset_path_state()
 	_cursors.clear()
 	_last_s = -1.0
+
+
+func _reset_path_state() -> void:
+	letters = 0
+	bonus_found = false
+	rescue = -1
+	falls.clear()
+	defeated.clear()
+	enemy_hits.clear()
+	crumbled.clear()
+	ride_ready_at.clear()
+	waits_done.clear()
+	chase_active = false
+	chase_done = false
+	chase_catches = 0
+	boulder_s = -INF
+	rescues = 0
+	stomps = 0
+	_riding = -1
+	_wait_clock = 0.0
 
 
 # ------------------------------------------------------------------ questions of the motion model
@@ -44,6 +85,8 @@ func grade_at(s: float) -> float:
 ## Height of the surface Lumo can stand on, relative to the road. `feet` is the
 ## height his feet come from, so platforms only catch him from above.
 func ground_at(s: float, lat: float, feet: float) -> float:
+	if plan.adventure:
+		return _path_ground(s, lat, feet)
 	if world.in_gap(s):
 		return -INF
 	var ground: float = float(world.ramp_height(s))
@@ -55,6 +98,68 @@ func ground_at(s: float, lat: float, feet: float) -> float:
 		if feet >= float(platform.top) - 0.4:
 			ground = maxf(ground, float(platform.top))
 	return ground
+
+
+## Adventure path: holes are open; platforms may drift, bob or crumble.
+func _path_ground(s: float, lat: float, feet: float) -> float:
+	var ground: float = -INF if world.in_gap(s) else 0.0
+	for index in range(plan.platforms.size()):
+		var platform: Dictionary = plan.platforms[index]
+		if s < float(platform.s0) - 4.0 or s > float(platform.s1) + 4.0:
+			continue
+		var offset: Vector3 = platform_offset(platform, clock)
+		if s < float(platform.s0) + offset.x or s > float(platform.s1) + offset.x:
+			continue
+		if absf(lat - float(platform.lat) - offset.y) > float(platform.half):
+			continue
+		if not platform_solid(index):
+			continue
+		var top: float = float(platform.top) + offset.z
+		if feet >= top - 0.4:
+			ground = maxf(ground, top)
+	return ground
+
+
+## How far a moving platform is from its rest place: x along, y across, z up.
+func platform_offset(platform: Dictionary, time: float) -> Vector3:
+	var axis: String = str(platform.get("axis", ""))
+	if axis.is_empty():
+		return Vector3.ZERO
+	var value: float = float(platform.amp) * sin(time * float(platform.rate) + float(platform.phase))
+	match axis:
+		"lat":
+			return Vector3(0.0, value, 0.0)
+		"h":
+			return Vector3(0.0, 0.0, value)
+	return Vector3(value, 0.0, 0.0)
+
+
+## A crumbling platform gives way 0.75 s after Lumo steps on it and is back 3 s later.
+func platform_solid(index: int) -> bool:
+	if not crumbled.has(index):
+		return true
+	var since: float = clock - float(crumbled[index])
+	return since < 0.75 or since > 3.75
+
+
+func crumble_progress(index: int) -> float:
+	if not crumbled.has(index):
+		return 0.0
+	var since: float = clock - float(crumbled[index])
+	if since > 3.75:
+		return 0.0
+	return clampf(since / 0.75, 0.0, 1.0) + (1.0 if since >= 0.75 else 0.0)
+
+
+## Highest speed allowed here: Lumo waits at the first stream until SPRINGEN.
+func speed_cap(s: float, _lat: float) -> float:
+	for index in range(plan.waits.size()):
+		if waits_done.has(index):
+			continue
+		var at: float = float(plan.waits[index].s)
+		if s > at - 10.0 and s <= at + 0.2:
+			return maxf(0.0, (at - s) * 2.4)
+	return INF
 
 
 ## Keeps Lumo between the rails and out of the loop's two feet.
@@ -101,8 +206,11 @@ func resolve(player, time: float) -> Array[Dictionary]:
 	_collect(player, events)
 	if player.loop_u >= 0.0:
 		return events
+	if plan.adventure:
+		if _resolve_path(player, events):
+			return events
 	var on_ground: bool = player.grounded
-	if _resolve_gaps(player, events):
+	if not plan.adventure and _resolve_gaps(player, events):
 		return events
 	for index in range(_cursor("bounce", plan.bounces, "s", s - 3.0), plan.bounces.size()):
 		var pad: Dictionary = plan.bounces[index]
@@ -122,6 +230,8 @@ func resolve(player, time: float) -> Array[Dictionary]:
 				events.append({"type": "boost", "index": index})
 	_resolve_hurdles(player, events)
 	_resolve_blockers(player, time, events)
+	if plan.adventure:
+		_resolve_enemies(player, events)
 	while checkpoint + 1 < plan.checkpoints.size() and s >= float(plan.checkpoints[checkpoint + 1].s):
 		checkpoint += 1
 		events.append({"type": "checkpoint", "index": checkpoint})
@@ -165,6 +275,8 @@ func add_bonus(amount: int) -> void:
 
 
 func _lose_stars() -> int:
+	if plan.adventure:
+		return 0
 	var lost: int = mini(TUNING.STUMBLE_STAR_LOSS, kept)
 	kept -= lost
 	return lost
@@ -329,6 +441,8 @@ func snapshot() -> Dictionary:
 		"taken": taken_ids(),
 		"broken": crates,
 		"misses": missed,
+		"letters": letters,
+		"bonus": bonus_found,
 	}
 
 
@@ -349,5 +463,255 @@ func restore(state: Dictionary) -> void:
 	stumbles = int(state.get("stumbles", 0))
 	checkpoint = int(state.get("checkpoint", -1))
 	finished = false
+	_reset_path_state()
+	letters = int(state.get("letters", 0))
+	bonus_found = bool(state.get("bonus", false))
 	_cursors.clear()
 	_last_s = -1.0
+
+
+# ------------------------------------------------------------------ adventure path
+
+func letter_count() -> int:
+	var count: int = 0
+	for bit in range(plan.letters.size()):
+		if letters & (1 << bit):
+			count += 1
+	return count
+
+
+func enemy_position(enemy: Dictionary, time: float) -> Vector2:
+	var wave: float = sin(time * float(enemy.rate) + float(enemy.phase))
+	match str(enemy.kind):
+		"crab":
+			return Vector2(float(enemy.s), float(enemy.lat) + float(enemy.amp) * wave)
+		"beetle":
+			return Vector2(float(enemy.s) + float(enemy.amp) * wave, float(enemy.lat))
+		"coconut":
+			var rolled: float = fposmod(time * float(enemy.rate) + float(enemy.phase), float(enemy.span))
+			return Vector2(float(enemy.s) - rolled, float(enemy.lat))
+	return Vector2(float(enemy.s), float(enemy.lat))
+
+
+## Rides, letters, holes, the chase, the mine cart and the rescue points.
+## True when Lumo was set back and nothing else should happen this step.
+func _resolve_path(player, events: Array[Dictionary]) -> bool:
+	var step: float = maxf(0.0, clock - _last_clock)
+	_last_clock = clock
+	var s: float = player.s
+	if s < 0.0 and not bonus_found and not player.is_riding():
+		bonus_found = true
+		events.append({"type": "bonus"})
+	if not player.is_riding() and _riding >= 0:
+		ride_ready_at[_riding] = clock + 1.0
+		_riding = -1
+	var found: int = plan.respawn_index(s)
+	if not player.is_riding() and player.tumble_time <= 0.0 and found >= 0:
+		var was_bonus: bool = rescue >= 0 and float(plan.respawns[rescue].s) < 0.0
+		if s < 0.0 or found > rescue or was_bonus:
+			rescue = found
+	_carry(player)
+	if player.h < -0.3 and not player.is_riding() and world.in_gap(player.previous_s) and not world.in_gap(player.s):
+		# Down in a hole Lumo bumps into its wall instead of running into the ground.
+		player.s = player.previous_s
+		player.speed = 0.0
+	_resolve_letters(player, events)
+	if player.tumbled and player.tumble_time <= 0.0:
+		_rescue(player, events, "hit", false)
+		return true
+	if player.tumble_time > 0.0:
+		return false
+	if not player.is_riding():
+		_grab_rides(player, events)
+	if player.is_riding():
+		return false
+	_resolve_waits(player, step, events)
+	if not plan.cart.is_empty():
+		var wanted: bool = s >= float(plan.cart.s0) and s < float(plan.cart.s1)
+		if wanted != player.in_cart:
+			player.in_cart = wanted
+			player.cart_lat = float(plan.cart.lat)
+			events.append({"type": "cart_on" if wanted else "cart_off"})
+	if _resolve_chase(player, step, events):
+		return true
+	var depth: float = world.fall_depth_at(player.s) if world.has_method("fall_depth_at") else TUNING.FALL_DEPTH
+	if player.h < -depth:
+		_rescue(player, events, "splash" if depth < 3.0 else "fall", true)
+		return true
+	return false
+
+
+func _carry(player) -> void:
+	if not player.grounded:
+		return
+	for index in range(plan.platforms.size()):
+		var platform: Dictionary = plan.platforms[index]
+		if str(platform.get("axis", "")).is_empty() and not bool(platform.get("crumble", false)):
+			continue
+		var offset: Vector3 = platform_offset(platform, clock)
+		if player.s < float(platform.s0) + offset.x or player.s > float(platform.s1) + offset.x:
+			continue
+		if absf(player.lat - float(platform.lat) - offset.y) > float(platform.half) + 0.05:
+			continue
+		if absf(player.h - float(platform.top) - offset.z) > 0.08:
+			continue
+		if bool(platform.get("crumble", false)) and not crumbled.has(index):
+			crumbled[index] = clock
+		var before: Vector3 = platform_offset(platform, clock - 1.0 / 60.0)
+		player.lat += offset.y - before.y
+		player.s += offset.x - before.x
+
+
+func _resolve_letters(player, events: Array[Dictionary]) -> void:
+	var centre: float = player.h + TUNING.BODY_CENTRE
+	for index in range(plan.letters.size()):
+		if letters & (1 << index):
+			continue
+		var letter: Dictionary = plan.letters[index]
+		if absf(player.s - float(letter.s)) > 1.4 or absf(player.lat - float(letter.lat)) > 1.4:
+			continue
+		if absf(centre - float(letter.h)) > 1.7:
+			continue
+		letters |= 1 << index
+		events.append({"type": "letter", "index": index, "char": str(letter.char)})
+
+
+func _grab_rides(player, events: Array[Dictionary]) -> void:
+	var centre := Vector3(player.s, player.lat, player.h + TUNING.BODY_CENTRE)
+	for index in range(plan.rides.size()):
+		var ride: Dictionary = plan.rides[index]
+		if absf(player.s - float(ride.s)) > 3.0 or clock < float(ride_ready_at.get(index, -INF)):
+			continue
+		var offset: Vector3 = centre - Vector3(float(ride.s), float(ride.lat), float(ride.h))
+		var grab: bool = false
+		match str(ride.kind):
+			"barrel", "warp":
+				grab = offset.length() <= TUNING.RIDE_GRAB_RADIUS
+			"vine":
+				grab = absf(offset.x) < 1.2 and absf(offset.y) < 1.4 and offset.z > -1.7 and offset.z < 1.5
+			"zip":
+				grab = absf(offset.x) < 1.2 and absf(offset.y) < 1.4 and absf(offset.z) < 1.4
+		if grab:
+			player.begin_ride(index, ride)
+			_riding = index
+			ride_ready_at[index] = INF
+			events.append({"type": "ride", "index": index, "kind": str(ride.kind)})
+			return
+
+
+func _resolve_waits(player, step: float, events: Array[Dictionary]) -> void:
+	for index in range(plan.waits.size()):
+		if waits_done.has(index):
+			continue
+		var wait: Dictionary = plan.waits[index]
+		var at: float = float(wait.s)
+		if player.s < at - 10.0:
+			continue
+		if player.s > at + 0.3 or not player.grounded:
+			waits_done[index] = true
+			_wait_clock = 0.0
+			continue
+		if player.speed < 0.4:
+			_wait_clock += step
+			if _wait_clock >= float(wait.get("auto", 4.0)):
+				# Nothing pressed for a while: Lumo shows it himself.
+				player.press_jump()
+				player.release_jump()
+				events.append({"type": "demo", "action": str(wait.action)})
+				_wait_clock = 0.0
+
+
+func _resolve_chase(player, step: float, events: Array[Dictionary]) -> bool:
+	if plan.chase.is_empty() or chase_done:
+		return false
+	var chase: Dictionary = plan.chase
+	if not chase_active:
+		if player.s >= float(chase.s0) and player.s < float(chase.s1):
+			chase_active = true
+			boulder_s = player.s - float(chase.gap)
+			events.append({"type": "chase_start"})
+		return false
+	# The ball rolls up close behind Lumo and then stays there: it only catches
+	# a Lumo who stops. Every catch makes it a little slower.
+	var factor: float = maxf(0.55, float(chase.factor) - 0.08 * float(chase_catches))
+	var roll: float = factor * TUNING.PATH_CRUISE
+	if player.s - boulder_s > float(chase.get("near", 6.5)):
+		roll = maxf(roll, maxf(player.speed, 3.0) + 2.5)
+	boulder_s += roll * step
+	if player.s >= float(chase.s1):
+		chase_active = false
+		chase_done = true
+		events.append({"type": "chase_end", "escaped": true})
+		return false
+	if boulder_s + float(chase.radius) >= player.s - 0.2 and player.h < 2.2:
+		chase_catches += 1
+		chase_active = false
+		if chase_catches >= TUNING.CHASE_HELP_AFTER_CATCHES:
+			chase_done = true
+		events.append({"type": "caught", "stuck": chase_done})
+		rescues += 1
+		player.respawn(float(chase.respawn), 0.0)
+		player.in_cart = false
+		_cursors.clear()
+		_last_s = player.s
+		return true
+	return false
+
+
+## Sets Lumo down at the last rescue point. After a few falls at the same spot
+## he is carried to the next one: nobody gets stuck.
+func _rescue(player, events: Array[Dictionary], cause: String, count_fall: bool) -> void:
+	var index: int = maxi(0, rescue)
+	var helped: bool = false
+	if count_fall:
+		var count: int = int(falls.get(index, 0)) + 1
+		falls[index] = count
+		if count > TUNING.PATH_HELP_AFTER_FALLS and index + 1 < plan.respawns.size():
+			if float(plan.respawns[index + 1].s) > 0.0 or player.s < 0.0:
+				index += 1
+				helped = true
+				rescue = index
+	var point: Dictionary = plan.respawns[index] if index < plan.respawns.size() else {"s": plan.start_s, "lat": 0.0, "cart": false}
+	rescues += 1
+	stumbles += 1
+	player.respawn(float(point.s), float(point.lat))
+	player.in_cart = bool(point.get("cart", false))
+	player.cart_lat = float(plan.cart.get("lat", 0.0))
+	if chase_active:
+		chase_active = false
+	_cursors.clear()
+	_last_s = player.s
+	events.append({"type": "rescue", "cause": cause, "helped": helped, "index": index})
+
+
+func _resolve_enemies(player, events: Array[Dictionary]) -> void:
+	if player.is_riding() or player.tumble_time > 0.0:
+		return
+	for index in range(plan.enemies.size()):
+		if defeated.has(index):
+			continue
+		var enemy: Dictionary = plan.enemies[index]
+		if absf(player.s - float(enemy.s)) > float(enemy.amp) + float(enemy.span) + 4.0:
+			continue
+		var at: Vector2 = enemy_position(enemy, clock)
+		var reach: float = float(enemy.radius) + 0.4
+		if absf(player.s - at.x) > reach or absf(player.lat - at.y) > reach:
+			continue
+		var top: float = float(enemy.top)
+		if player.h >= top:
+			continue
+		if not player.grounded and player.vy <= 0.0 and player.h >= top * 0.3:
+			defeated[index] = true
+			stomps += 1
+			player.bounce(TUNING.STOMP_SPEED)
+			events.append({"type": "stomp", "index": index, "kind": str(enemy.kind)})
+			continue
+		if player.invulnerable > 0.0:
+			continue
+		var hits: int = int(enemy_hits.get(index, 0)) + 1
+		enemy_hits[index] = hits
+		if hits >= TUNING.ENEMY_HELP_AFTER_HITS:
+			defeated[index] = true
+		if player.tumble():
+			events.append({"type": "hit", "index": index, "kind": str(enemy.kind), "leaves": defeated.has(index)})
+		return

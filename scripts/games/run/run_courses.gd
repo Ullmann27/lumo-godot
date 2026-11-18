@@ -6,11 +6,12 @@ const COURSES: Array[Dictionary] = [
 	{
 		"id": "dschungelherz",
 		"track": "jungle_emerald_3600",
+		"path": true,
 		"name": "Dschungelherz",
-		"kicker": "Lang & wild",
-		"length": "3,6 km",
+		"kicker": "Abenteuer-Pfad",
+		"length": "1,6 km",
 		"description":
-		"Durch Riesenwurzeln, Grotten und über die Kronenbrücke – die längste Strecke.",
+		"Wurzelpfad, Baumkronen, Tempel, Wasserfallhöhle und Lorenfahrt.",
 		"accent": Color("48d6a0"),
 		"emblem": "leaf",
 		"theme": "jungle",

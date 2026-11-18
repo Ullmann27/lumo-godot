@@ -87,3 +87,25 @@ static func rating(kept: int, total: int) -> int:
 ## Stars booked to the child's collection for one finished run.
 static func reward(solved: int, stars_rating: int) -> int:
 	return 3 + 2 * clampi(solved, 0, 3) + 3 * (clampi(stars_rating, 1, 3) - 1)
+
+
+# ------------------------------------------------------------------ adventure path (Dschungelherz)
+
+## Lumo runs a little slower on the narrow path; pulling back stops him completely.
+const PATH_CRUISE: float = 8.5
+const PATH_LATERAL_SPEED: float = 6.0
+const PATH_SLOW_FACTOR: float = 0.0
+## Second, smaller push in the air (FLITZEN while jumping), once per jump.
+const AIR_DASH_LIFT: float = 3.2
+const CART_SPEED: float = 13.0
+const STOMP_SPEED: float = 11.5
+const TUMBLE_SECONDS: float = 0.7
+## Metres below the path at which a fall into a hole is caught.
+const FALL_DEPTH: float = 4.0
+## Falls at the same spot before Lumo is carried to the next rescue point.
+const PATH_HELP_AFTER_FALLS: int = 2
+## Hits by the same enemy before it scuttles off for good.
+const ENEMY_HELP_AFTER_HITS: int = 3
+## Catches by the rolling stone before it gets stuck for good.
+const CHASE_HELP_AFTER_CATCHES: int = 3
+const RIDE_GRAB_RADIUS: float = 1.35

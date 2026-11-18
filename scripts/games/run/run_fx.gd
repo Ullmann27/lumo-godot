@@ -3,7 +3,7 @@ extends Node3D
 ## star, a splash for the water channels. A fixed pool of one-shot emitters is
 ## reused in turn, sized by the quality profile; calm mode shows none.
 
-const POOL: Dictionary = {"dust": 4, "sparkle": 6, "splash": 2, "burst": 2}
+const POOL: Dictionary = {"dust": 4, "sparkle": 6, "splash": 2, "burst": 3, "leaves": 3}
 
 var reduced_motion: bool = false
 var low: bool = false
@@ -117,6 +117,19 @@ func _emitter(kind: String) -> CPUParticles3D:
 			emitter.initial_velocity_min = 4.0
 			emitter.initial_velocity_max = 7.5
 			emitter.color = Color("bff3ff")
+		"leaves":
+			# A whirl of small leaves kicked up by a jump or a dash.
+			quad.size = Vector2(0.22, 0.16)
+			emitter.amount = 12 / scale
+			emitter.lifetime = 0.9
+			emitter.direction = Vector3.UP
+			emitter.spread = 70.0
+			emitter.gravity = Vector3(0, -2.5, 0)
+			emitter.initial_velocity_min = 1.5
+			emitter.initial_velocity_max = 3.5
+			emitter.angular_velocity_min = -360.0
+			emitter.angular_velocity_max = 360.0
+			emitter.color = Color("7fc84a")
 		_:
 			quad.size = Vector2(0.26, 0.26)
 			emitter.amount = 40 / scale

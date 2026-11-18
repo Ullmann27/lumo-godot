@@ -6,6 +6,8 @@ extends Node3D
 const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const FALLBACK = preload("res://scenes/characters/lumo/lumo_character.tscn")
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
+const MESHES = preload("res://scripts/games/run/jungle/run_jungle_meshes.gd")
+const SHADERS = preload("res://scripts/games/run/jungle/run_jungle_shaders.gd")
 ## Height of the fox's skeleton in the kart worlds (hero scale).
 const BONE_SPAN: float = 1.75
 const BODY_CENTRE: float = 0.9
@@ -24,6 +26,8 @@ var _squash: float = 0.0
 var _roll: float = 0.0
 var _blink: float = 0.0
 var _celebrating: bool = false
+var _flip: float = 0.0
+var cart: MeshInstance3D
 
 
 func setup(calm: bool) -> void:
@@ -64,6 +68,13 @@ func setup(calm: bool) -> void:
 	shadow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	shadow.top_level = true
 	add_child(shadow)
+	cart = MeshInstance3D.new()
+	cart.name = "MineCart"
+	cart.mesh = MESHES.cart()
+	cart.material_override = SHADERS.material(SHADERS.SOLID)
+	cart.rotation.y = PI
+	cart.visible = false
+	add_child(cart)
 
 
 ## Scales the original rig from its real skeleton, feet on the actor's origin.
@@ -98,10 +109,13 @@ func apply(feet: Transform3D, ground: Transform3D, player, delta: float, frozen:
 		ground.basis.scaled_local(Vector3.ONE * clampf(1.0 - above * 0.09, 0.45, 1.0)),
 		ground.origin + ground.basis.y * 0.05
 	)
-	shadow.visible = above < 9.0 and player.loop_u < 0.0
+	shadow.visible = above < 9.0 and player.loop_u < 0.0 and not player.is_riding()
+	cart.visible = player.in_cart
 	if uses_original:
 		rig.set_suspended(frozen)
 	if frozen or _celebrating:
+		return
+	if _ride_pose(player, delta):
 		return
 	if player.land_impact > 0.0:
 		_squash = clampf(player.land_impact / 14.0, 0.2, 0.7)
@@ -122,7 +136,12 @@ func apply(feet: Transform3D, ground: Transform3D, player, delta: float, frozen:
 		pitch_target = -0.05
 	_lean = lerpf(_lean, lean_target, 1.0 - exp(-12.0 * delta))
 	_pitch = lerpf(_pitch, pitch_target, 1.0 - exp(-10.0 * delta))
-	pivot.rotation = Vector3(_pitch - _roll, 0.0, _lean)
+	if player.tumble_time > 0.0 and not reduced_motion:
+		# A somersault backwards after a bump.
+		_flip = TAU * (1.0 - player.tumble_time / TUNING.TUMBLE_SECONDS)
+	else:
+		_flip = 0.0
+	pivot.rotation = Vector3(_pitch - _roll + _flip, 0.0, _lean)
 	var stretch: float = 0.0
 	if not player.grounded and not reduced_motion:
 		stretch = clampf(absf(player.vy) / 16.0, 0.0, 0.12)
@@ -130,8 +149,12 @@ func apply(feet: Transform3D, ground: Transform3D, player, delta: float, frozen:
 	if rolling and not reduced_motion:
 		tall *= 0.86
 	var wide: float = 1.0 + (1.0 - tall) * 0.55
+	if player.in_cart:
+		# Crouched in the mine cart, ears in the wind.
+		tall *= 0.78
+		_pitch = -0.25
 	pivot.scale = Vector3(wide, tall, wide)
-	pivot.position.y = BODY_CENTRE * tall
+	pivot.position.y = BODY_CENTRE * tall + (0.55 if player.in_cart else 0.0)
 	# Blink while Lumo cannot be bumped again; calm mode shows it without flicker.
 	if player.invulnerable > 0.0 and not reduced_motion:
 		_blink += delta
@@ -142,6 +165,30 @@ func apply(feet: Transform3D, ground: Transform3D, player, delta: float, frozen:
 	if uses_original:
 		var pace: float = player.speed * CADENCE_GEAR if player.grounded else 0.0
 		rig.set_platform_motion(Vector3(0.0, player.vy, -pace), player.grounded, delta)
+
+
+## Barrel, vine and zip line poses. True when the pose is handled here.
+func _ride_pose(player, delta: float) -> bool:
+	if not player.is_riding():
+		pivot.visible = true if player.invulnerable <= 0.0 or reduced_motion else pivot.visible
+		return false
+	var kind: String = str(player.ride.kind)
+	pivot.scale = Vector3.ONE
+	pivot.position.y = BODY_CENTRE
+	match kind:
+		"barrel", "warp":
+			# Inside the barrel until it fires, then a spinning flight.
+			pivot.visible = player.ride_fired
+			_roll += delta * TAU * 1.6 if not reduced_motion else 0.0
+			pivot.rotation = Vector3(-_roll, 0.0, 0.0)
+		"vine", "zip":
+			pivot.visible = true
+			var swing: float = clampf(player.speed / 14.0, -0.6, 0.6)
+			pivot.rotation = Vector3(-0.15 - swing * 0.5, 0.0, 0.0)
+			pivot.scale = Vector3(0.95, 1.08, 0.95)
+	if uses_original:
+		rig.set_platform_motion(Vector3(0.0, player.vy, -2.0), false, delta)
+	return true
 
 
 func greet() -> void:

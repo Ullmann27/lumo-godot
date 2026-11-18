@@ -1,0 +1,163 @@
+{
+  "generator": "tools/art/generate_run_jungle_audio.py",
+  "sample_rate": 32000,
+  "bpm": 112,
+  "files": [
+    {
+      "file": "jungle_calm.ogg",
+      "seconds": 68.571,
+      "bytes": 808274,
+      "loop": true
+    },
+    {
+      "file": "jungle_action.ogg",
+      "seconds": 68.571,
+      "bytes": 692010,
+      "loop": true
+    },
+    {
+      "file": "jungle_chase.ogg",
+      "seconds": 29.091,
+      "bytes": 302703,
+      "loop": true
+    },
+    {
+      "file": "finish.ogg",
+      "seconds": 4.5,
+      "bytes": 56487,
+      "loop": false
+    },
+    {
+      "file": "bonus.ogg",
+      "seconds": 2.6,
+      "bytes": 35340,
+      "loop": false
+    },
+    {
+      "file": "sfx_jump.ogg",
+      "seconds": 0.22,
+      "bytes": 5450,
+      "loop": false
+    },
+    {
+      "file": "sfx_land.ogg",
+      "seconds": 0.25,
+      "bytes": 5585,
+      "loop": false
+    },
+    {
+      "file": "sfx_dash.ogg",
+      "seconds": 0.35,
+      "bytes": 6301,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_0.ogg",
+      "seconds": 0.42,
+      "bytes": 4676,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_1.ogg",
+      "seconds": 0.42,
+      "bytes": 4677,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_2.ogg",
+      "seconds": 0.42,
+      "bytes": 4724,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_3.ogg",
+      "seconds": 0.42,
+      "bytes": 4661,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_4.ogg",
+      "seconds": 0.42,
+      "bytes": 4733,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_5.ogg",
+      "seconds": 0.42,
+      "bytes": 4644,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_6.ogg",
+      "seconds": 0.42,
+      "bytes": 4739,
+      "loop": false
+    },
+    {
+      "file": "sfx_star_7.ogg",
+      "seconds": 0.42,
+      "bytes": 4669,
+      "loop": false
+    },
+    {
+      "file": "sfx_letter.ogg",
+      "seconds": 1.1,
+      "bytes": 12791,
+      "loop": false
+    },
+    {
+      "file": "sfx_barrel_in.ogg",
+      "seconds": 0.25,
+      "bytes": 5390,
+      "loop": false
+    },
+    {
+      "file": "sfx_barrel_shoot.ogg",
+      "seconds": 0.7,
+      "bytes": 9068,
+      "loop": false
+    },
+    {
+      "file": "sfx_vine.ogg",
+      "seconds": 0.55,
+      "bytes": 7861,
+      "loop": false
+    },
+    {
+      "file": "sfx_checkpoint.ogg",
+      "seconds": 1.0,
+      "bytes": 8002,
+      "loop": false
+    },
+    {
+      "file": "sfx_stomp.ogg",
+      "seconds": 0.3,
+      "bytes": 4277,
+      "loop": false
+    },
+    {
+      "file": "sfx_hit.ogg",
+      "seconds": 0.7,
+      "bytes": 6546,
+      "loop": false
+    },
+    {
+      "file": "sfx_respawn.ogg",
+      "seconds": 0.7,
+      "bytes": 9046,
+      "loop": false
+    },
+    {
+      "file": "sfx_gate.ogg",
+      "seconds": 1.4,
+      "bytes": 14038,
+      "loop": false
+    },
+    {
+      "file": "sfx_cart.ogg",
+      "seconds": 0.4,
+      "bytes": 5547,
+      "loop": false
+    }
+  ]
+}

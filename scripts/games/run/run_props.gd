@@ -7,6 +7,7 @@ extends Node3D
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
+const JUNGLE_PROPS = preload("res://scripts/games/run/jungle/run_jungle_props.gd")
 const CHUNK: float = 120.0
 const STAR_SHADER: String = """
 shader_type spatial;
@@ -52,6 +53,10 @@ var _pad_squash: Dictionary = {}
 var _banners: Array[MeshInstance3D] = []
 var _banner_labels: Array[Label3D] = []
 var _part_range: float = 0.0
+## Adventure path: the moving parts live in run_jungle_props.gd.
+var jungle
+var track
+var player
 
 
 func build(race_world, course_plan, look: Dictionary, lightweight: bool, calm: bool) -> void:
@@ -68,6 +73,17 @@ func build(race_world, course_plan, look: Dictionary, lightweight: bool, calm: b
 	_bright.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_part_range = 150.0 if low else 210.0
 	_build_stars()
+	if plan.adventure:
+		jungle = JUNGLE_PROPS.new()
+		jungle.name = "JungleProps"
+		add_child(jungle)
+		jungle.build(world, plan, calm)
+		_part_range = 0.0
+		for checkpoint in plan.checkpoints:
+			_build_checkpoint(checkpoint)
+		_build_finish()
+		_flush()
+		return
 	for hurdle in plan.hurdles:
 		_build_hurdle(hurdle)
 	for index in range(plan.blockers.size()):
@@ -117,6 +133,36 @@ func knock_roller(index: int) -> void:
 
 func press_bounce(index: int) -> void:
 	_pad_squash[index] = 1.0
+	if jungle != null:
+		jungle.press_mushroom(index)
+
+
+func take_letter(index: int) -> void:
+	if jungle != null:
+		jungle.take_letter(index)
+
+
+func letter_position(index: int) -> Vector3:
+	return jungle.letter_position(index) if jungle != null else Vector3.ZERO
+
+
+func grab_ride(index: int) -> void:
+	if jungle != null:
+		jungle.grab_ride(index)
+
+
+func squash_enemy(index: int) -> void:
+	if jungle != null:
+		jungle.squash_enemy(index)
+
+
+func open_gate(checkpoint: int) -> void:
+	if jungle != null:
+		jungle.open_gate(checkpoint)
+
+
+func sync_platforms() -> void:
+	pass
 
 
 func set_checkpoint(index: int, reached: bool) -> void:
@@ -139,9 +185,13 @@ func sync(track) -> void:
 		knock_roller(int(index))
 	for index in range(_banners.size()):
 		set_checkpoint(index, index <= track.checkpoint)
+	if jungle != null:
+		jungle.sync()
 
 
 func advance(delta: float, time: float, player_s: float) -> void:
+	if jungle != null:
+		jungle.advance(delta, time, player_s, player)
 	for index in _rollers:
 		var node: Node3D = _rollers[index]
 		var blocker: Dictionary = plan.blockers[index]

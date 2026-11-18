@@ -178,6 +178,16 @@ static func load_valid(path: String, identity: Dictionary, plan) -> Dictionary:
 		if typeof(stored_misses[key]) != TYPE_INT or stored_misses[key] < 0:
 			return {}
 		misses[key] = stored_misses[key]
+	# Crystal letters and the treasure hall of the adventure path.
+	var letters: Variant = config.get_value(SECTION, "letters", 0)
+	if typeof(letters) != TYPE_INT or letters < 0 or letters >= (1 << plan.letters.size()):
+		return {}
+	for bit in range(plan.letters.size()):
+		if letters & (1 << bit) and float(plan.letters[bit].s) > limit:
+			return {}
+	var bonus: Variant = config.get_value(SECTION, "bonus", false)
+	if typeof(bonus) != TYPE_BOOL:
+		return {}
 	var pending: Variant = config.get_value(SECTION, "pending_question", {})
 	if typeof(pending) != TYPE_DICTIONARY:
 		return {}
@@ -202,6 +212,8 @@ static func load_valid(path: String, identity: Dictionary, plan) -> Dictionary:
 		"misses": misses,
 		"pending_question": pending,
 		"recent_questions": recent,
+		"letters": letters,
+		"bonus": bonus,
 	}
 
 

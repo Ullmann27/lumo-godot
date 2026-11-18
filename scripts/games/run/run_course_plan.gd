@@ -36,6 +36,22 @@ var zones: Array[Dictionary] = []
 var loop: Dictionary = {}
 var covered: Array[Vector2] = []
 var beats: Array[Dictionary] = []
+## Adventure courses (Dschungelherz): a hand-built path with more mechanics.
+var adventure: bool = false
+var star_route := PackedStringArray()
+var enemies: Array[Dictionary] = []
+var rides: Array[Dictionary] = []
+var letters: Array[Dictionary] = []
+var respawns: Array[Dictionary] = []
+var waits: Array[Dictionary] = []
+var coaches: Array[Dictionary] = []
+var sections: Array[Dictionary] = []
+var branches: Array[Dictionary] = []
+var decor: Array[Dictionary] = []
+var chase: Dictionary = {}
+var cart: Dictionary = {}
+var bonus: Dictionary = {}
+var intro_end: float = 0.0
 var signature: String = ""
 var _reserved: Array[Vector2] = []
 var _rng := RandomNumberGenerator.new()
@@ -54,11 +70,14 @@ func _generate(world, selected: Dictionary) -> void:
 	length = float(world.length)
 	finish_s = length - FINISH_MARGIN
 	_rng.seed = int(selected.get("seed", 1))
-	_reserve(0.0, start_s + 34.0)
-	_reserve(finish_s - 38.0, length)
-	_adopt_world_features()
-	_place_checkpoints()
-	_place_beats()
+	if world.get("level") != null:
+		_adopt_level(world.level)
+	else:
+		_reserve(0.0, start_s + 34.0)
+		_reserve(finish_s - 38.0, length)
+		_adopt_world_features()
+		_place_checkpoints()
+		_place_beats()
 	_sort_all()
 	star_total = 0
 	for value in star_value:
@@ -70,6 +89,49 @@ func _generate(world, selected: Dictionary) -> void:
 	star_total += question_checkpoints().size() * TUNING.QUESTION_BONUS_STARS
 	signature = _signature()
 	_world = null
+
+
+# ------------------------------------------------------------------ hand-built adventure path
+
+func _adopt_level(level) -> void:
+	adventure = true
+	start_s = float(level.start_s)
+	finish_s = float(level.finish_s)
+	intro_end = float(level.intro_end)
+	for star in level.stars:
+		star_s.append(float(star.s))
+		star_lat.append(float(star.lat))
+		star_h.append(float(star.h))
+		star_value.append(int(star.value))
+		star_route.append(str(star.route))
+	hurdles.assign(level.hurdles.duplicate(true))
+	blockers.assign(level.blockers.duplicate(true))
+	bounces.assign(level.bounces.duplicate(true))
+	platforms.assign(level.platforms.duplicate(true))
+	enemies.assign(level.enemies.duplicate(true))
+	rides.assign(level.rides.duplicate(true))
+	letters.assign(level.letters.duplicate(true))
+	respawns.assign(level.respawns.duplicate(true))
+	waits.assign(level.waits.duplicate(true))
+	coaches.assign(level.coaches.duplicate(true))
+	sections.assign(level.sections.duplicate(true))
+	branches.assign(level.branches.duplicate(true))
+	decor.assign(level.decor.duplicate(true))
+	checkpoints.assign(level.checkpoints.duplicate(true))
+	for roof in level.ceilings:
+		covered.append(Vector2(roof.x, roof.y))
+	chase = level.chase.duplicate(true)
+	cart = level.cart.duplicate(true)
+	bonus = level.bonus.duplicate(true)
+
+
+## Index of the last rescue point at or behind `at` (on the main path or in the bonus hall).
+func respawn_index(at: float) -> int:
+	var found: int = -1
+	for index in range(respawns.size()):
+		if float(respawns[index].s) <= at + 0.01:
+			found = index
+	return found
 
 
 # ------------------------------------------------------------------ what the world already has
@@ -508,20 +570,32 @@ func _sort_all() -> void:
 	var order: Array[int] = []
 	for index in range(star_s.size()):
 		order.append(index)
-	order.sort_custom(func(a: int, b: int) -> bool: return star_s[a] < star_s[b])
+	# Ties are broken by position across and height: the same plan always gives
+	# every star the same index, which saved runs rely on.
+	order.sort_custom(
+		func(a: int, b: int) -> bool:
+			if star_s[a] != star_s[b]:
+				return star_s[a] < star_s[b]
+			if star_lat[a] != star_lat[b]:
+				return star_lat[a] < star_lat[b]
+			return star_h[a] < star_h[b]
+	)
 	var s2 := PackedFloat32Array()
 	var lat2 := PackedFloat32Array()
 	var h2 := PackedFloat32Array()
 	var value2 := PackedInt32Array()
+	var route2 := PackedStringArray()
 	for index in order:
 		s2.append(star_s[index])
 		lat2.append(star_lat[index])
 		h2.append(star_h[index])
 		value2.append(star_value[index])
+		route2.append(star_route[index] if index < star_route.size() else "main")
 	star_s = s2
 	star_lat = lat2
 	star_h = h2
 	star_value = value2
+	star_route = route2
 	var by_s := func(a: Dictionary, b: Dictionary) -> bool: return float(a.s) < float(b.s)
 	var by_start := func(a: Dictionary, b: Dictionary) -> bool: return float(a.s0) < float(b.s0)
 	hurdles.sort_custom(by_s)
@@ -543,6 +617,10 @@ func _signature() -> String:
 		str(channels.size()),
 		str(bounces.size()),
 		str(platforms.size()),
+		str(enemies.size()),
+		str(rides.size()),
+		str(letters.size()),
+		str(respawns.size()),
 	]
 	for checkpoint in checkpoints:
 		parts.append(str(roundi(float(checkpoint.s))))

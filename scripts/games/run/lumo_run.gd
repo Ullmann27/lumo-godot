@@ -12,6 +12,8 @@ extends Node3D
 ##   run_session.gd      save file and best results
 
 const WORLD = preload("res://scripts/games/kart_world.gd")
+const PATH_WORLD = preload("res://scripts/games/run/jungle/run_jungle_path.gd")
+const AUDIO = preload("res://scripts/games/run/run_audio.gd")
 const COURSES = preload("res://scripts/games/run/run_courses.gd")
 const PLAN = preload("res://scripts/games/run/run_course_plan.gd")
 const TRACK = preload("res://scripts/games/run/run_track.gd")
@@ -42,6 +44,10 @@ const HINTS: Dictionary = {
 	"crates": "Kisten! FLITZEN zerbricht sie.",
 	"roller": "Rollstein! Weich aus oder spring.",
 }
+## Sections of the adventure path, said once when Lumo enters them.
+const SECTION_SAYINGS: Array[String] = [
+	"", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt!"
+]
 
 var phase: Phase = Phase.MENU
 var paused: bool = false
@@ -64,6 +70,7 @@ var fx
 var hud
 var menus
 var stage
+var audio
 var session_path: String = ""
 var result_id: String = ""
 var result_payload: Dictionary = {}
@@ -81,6 +88,11 @@ var rng := RandomNumberGenerator.new()
 var _hinted: Dictionary = {}
 var _hint_cursor: int = 0
 var _coast: float = 0.0
+var _section: int = -1
+var _combo: int = 0
+var _combo_left: float = 0.0
+var _slowmo_left: float = 0.0
+var load_ms: int = 0
 var _previous_auto_accept_quit: bool = true
 var _previous_quit_on_go_back: bool = true
 
@@ -127,6 +139,7 @@ func _build_screens() -> void:
 	hud.steer_changed.connect(func(axis: Vector2) -> void: touch_steer = axis)
 	hud.jump_changed.connect(_on_jump)
 	hud.dash_pressed.connect(_on_dash)
+	hud.skip_pressed.connect(skip_intro)
 	menus.course_chosen.connect(_on_course_chosen)
 	menus.answer_chosen.connect(answer)
 	menus.resume_pressed.connect(resume)
@@ -212,7 +225,8 @@ func start_course(index: int, with_save: bool) -> void:
 		stage = null
 	course_index = clampi(index, 0, COURSES.count() - 1)
 	var course: Dictionary = COURSES.course(course_index)
-	world = WORLD.new()
+	var load_started: int = Time.get_ticks_msec()
+	world = PATH_WORLD.new() if bool(course.get("path", false)) else WORLD.new()
 	world.name = "RunWorld"
 	add_child(world)
 	world.build(lightweight, str(course.track))
@@ -228,7 +242,13 @@ func start_course(index: int, with_save: bool) -> void:
 	add_child(props)
 	props.build(world, plan, COURSES.theme(course_index), lightweight, reduced_motion)
 	player = PLAYER.new()
+	if plan.adventure:
+		player.use_path_feel()
 	player.place(plan.start_s, 0.0, 0.0)
+	props.track = track
+	props.player = player
+	if props.jungle != null:
+		props.jungle.track = track
 	actor = ACTOR.new()
 	actor.name = "Lumo"
 	add_child(actor)
@@ -244,6 +264,11 @@ func start_course(index: int, with_save: bool) -> void:
 	fx.name = "RunFx"
 	add_child(fx)
 	fx.setup(lightweight, reduced_motion)
+	if not is_instance_valid(audio):
+		audio = AUDIO.new()
+		audio.name = "RunAudio"
+		add_child(audio)
+	audio.start_course(str(course.id), plan.adventure)
 	PerformanceManager.set_profile(PerformanceManager.current_profile, false)
 	session_path = _path(course_index)
 	questions.clear()
@@ -263,6 +288,10 @@ func start_course(index: int, with_save: bool) -> void:
 		shares.append(_share(float(checkpoint.s)))
 		flags.append(1 if bool(checkpoint.question) else 0)
 	hud.set_course(shares, flags, plan.star_total)
+	hud.set_letters(plan.letters.map(func(letter: Dictionary) -> String: return str(letter.char)), track.letters)
+	hud.set_skip_visible(plan.adventure and not restored and plan.intro_end > plan.start_s)
+	_section = -1
+	load_ms = Time.get_ticks_msec() - load_started
 	menus.close()
 	hud.set_playing(true)
 	paused = false
@@ -275,7 +304,7 @@ func start_course(index: int, with_save: bool) -> void:
 		hud.say("Weiter ab Kontrollpunkt %d." % (track.checkpoint + 1), 3.0)
 	if with_save and not restored:
 		hud.say("Der Spielstand passte nicht mehr. Wir starten neu.", 3.5)
-	print("[LumoRun] course %s: %.0f m, %d stars, %d checkpoints" % [course.id, plan.length, plan.star_total, plan.checkpoints.size()])
+	print("[LumoRun] course %s: %.0f m, %d stars, %d checkpoints, built in %d ms" % [course.id, plan.length, plan.star_total, plan.checkpoints.size(), load_ms])
 
 
 func _share(s: float) -> float:
@@ -288,6 +317,9 @@ func _process(delta: float) -> void:
 	if phase == Phase.MENU or phase == Phase.LOADING or not is_instance_valid(world):
 		return
 	var left: float = minf(delta, 0.1)
+	if _slowmo_left > 0.0:
+		_slowmo_left -= left
+		left *= 0.45
 	while left > 0.0001:
 		var step: float = minf(left, 1.0 / 60.0)
 		advance(step)
@@ -302,7 +334,7 @@ func advance(delta: float) -> void:
 		if countdown_left <= 0.0:
 			phase = Phase.RUNNING
 			player.speed = TUNING.START_SPEED
-			if not _reopen_question():
+			if not _reopen_question() and not plan.adventure:
 				hud.say("Lenke mit dem Stick. SPRINGEN tippen oder halten!", 3.5)
 	elif phase == Phase.RUNNING and not paused and not question_open:
 		_step(delta)
@@ -321,6 +353,7 @@ func _step(delta: float) -> void:
 		Input.get_axis("ui_left", "ui_right") + touch_steer.x,
 		Input.get_axis("ui_up", "ui_down") + touch_steer.y
 	).limit_length(1.0)
+	track.clock = run_clock
 	player.step(delta, steer, track)
 	var events: Array[Dictionary] = track.resolve(player, run_clock)
 	for event in player.events:
@@ -331,9 +364,50 @@ func _step(delta: float) -> void:
 	if phase != Phase.RUNNING:
 		return
 	props.advance(delta, run_clock, player.s)
-	_hint_ahead()
+	_combo_left = maxf(0.0, _combo_left - delta)
+	if _combo_left <= 0.0:
+		_combo = 0
+	if plan.adventure:
+		_follow_sections()
+		hud.set_coach(_coach_icon())
+		if hud.skip_visible and player.s > plan.intro_end:
+			hud.set_skip_visible(false)
+	else:
+		_hint_ahead()
+	if is_instance_valid(audio):
+		audio.update(delta, player, track)
 	hud.set_state(track.kept, _share(player.s), solved_count(), track.checkpoint)
 	hud.set_dash_cooldown(player.dash_cooldown / TUNING.DASH_COOLDOWN)
+
+
+func _follow_sections() -> void:
+	if player.s < 0.0:
+		return
+	var index: int = world.section_at(player.s)
+	if index == _section:
+		return
+	_section = index
+	if index > 0 and index < SECTION_SAYINGS.size():
+		hud.banner(SECTION_SAYINGS[index], index)
+
+
+func _coach_icon() -> String:
+	for coach in plan.coaches:
+		if player.s >= float(coach.s0) and player.s <= float(coach.s1):
+			return str(coach.icon)
+	return ""
+
+
+## Leaves the introduction and puts Lumo where the adventure begins.
+func skip_intro() -> void:
+	if not plan.adventure or phase != Phase.RUNNING or paused or question_open or player.s >= plan.intro_end:
+		return
+	for index in range(plan.waits.size()):
+		track.waits_done[index] = true
+	player.place(plan.intro_end, 0.0, player.cruise * 0.6)
+	track.rescue = plan.respawn_index(player.s)
+	hud.set_skip_visible(false)
+	_update_view(0.016, true)
 
 
 func feet_transform() -> Transform3D:
@@ -356,22 +430,43 @@ func _update_view(delta: float, snap: bool) -> void:
 		basis, world.position_at(player.s, player.lat) + Vector3.UP * maxf(floor_height, -40.0)
 	)
 	actor.apply(feet, ground, player, maxf(delta, 0.0001), paused or question_open or phase == Phase.COUNTDOWN)
+	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
+	if plan.adventure and is_instance_valid(world.scenery):
+		world.scenery.follow(camera.global_position, player.s, maxf(delta, 0.0001))
 
 
 func _on_player_event(event: StringName) -> void:
 	var feet: Vector3 = feet_transform().origin
 	match event:
 		&"jump":
-			AudioManager.play_sfx("card_next")
+			_sound("jump", "card_next")
+			if plan.adventure:
+				fx.play("leaves", feet + Vector3.UP * 0.2)
 		&"land":
 			if player.land_impact > 6.0:
 				fx.play("dust", feet + Vector3.UP * 0.15)
+				_sound("land", "")
 			if player.land_impact > 12.0:
 				camera.kick(0.35)
 		&"dash":
 			fx.play("dust", feet + Vector3.UP * 0.3)
-			AudioManager.play_sfx("ui_confirm")
+			_sound("dash", "ui_confirm")
+		&"air_dash":
+			fx.play("leaves", feet + Vector3.UP * 0.8)
+			_sound("dash", "ui_confirm")
+		&"shoot":
+			_sound("barrel_shoot", "ui_confirm")
+			fx.play("burst", feet + Vector3.UP * 0.9, Color("ffd27a"))
+			camera.kick(0.3)
+			if not reduced_motion:
+				_slowmo_left = 0.18
+		&"warp":
+			_update_view(0.016, true)
+		&"tumble":
+			_sound("hit", "ui_cancel")
+			fx.play("burst", feet + Vector3.UP * 0.9, Color("ffffff"))
+			camera.kick(0.4)
 		&"loop_start":
 			hud.say("Looping!", 2.0)
 			camera.follow(world, player, feet, 0.016, true)
@@ -386,7 +481,65 @@ func _on_track_event(event: Dictionary) -> void:
 		"star":
 			props.hide_star(int(event.index))
 			fx.play("sparkle", props.star_position(int(event.index)))
-			AudioManager.play_sfx("star_collected")
+			_combo = mini(_combo + 1, 7) if _combo_left > 0.0 else 0
+			_combo_left = 0.9
+			if is_instance_valid(audio) and audio.has_effects():
+				audio.play_star(_combo)
+			else:
+				AudioManager.play_sfx("star_collected")
+		"letter":
+			props.take_letter(int(event.index))
+			fx.play("burst", props.letter_position(int(event.index)), Color("9ff3ff"))
+			_sound("letter", "celebrate")
+			hud.set_letters(plan.letters.map(func(letter: Dictionary) -> String: return str(letter.char)), track.letters)
+			hud.say("%s! %d von %d Kristallbuchstaben" % [str(event.char), track.letter_count(), plan.letters.size()], 2.2)
+		"ride":
+			props.grab_ride(int(event.index))
+			match str(event.kind):
+				"vine", "zip":
+					_sound("vine", "card_next")
+				_:
+					_sound("barrel_in", "card_next")
+		"stomp":
+			props.squash_enemy(int(event.index))
+			fx.play("burst", feet, Color("fff1b0"))
+			_sound("stomp", "ui_confirm")
+		"hit":
+			if bool(event.leaves):
+				props.squash_enemy(int(event.index))
+			hud.say("Hoppla!", 1.2)
+		"rescue":
+			fx.play("sparkle", feet + Vector3.UP * 0.8)
+			_sound("respawn", "ui_back")
+			if bool(event.helped):
+				hud.say("Lumo hilft dir weiter!", 2.2)
+			props.sync_platforms()
+			_update_view(0.016, true)
+		"bonus":
+			_sound("bonus", "celebrate")
+			hud.say("Geheime Schatzhalle!", 2.6)
+			if is_instance_valid(audio):
+				audio.stinger("bonus")
+		"chase_start":
+			hud.say("Der Felsball rollt! Lauf!", 2.4)
+			if is_instance_valid(audio):
+				audio.set_chase(true)
+			camera.kick(0.5)
+		"chase_end":
+			if is_instance_valid(audio):
+				audio.set_chase(false)
+			camera.kick(0.6)
+			fx.play("dust", props.point(player.s - 6.0, 0.0, 0.5))
+		"caught":
+			if is_instance_valid(audio):
+				audio.set_chase(false)
+			hud.say("Der Fels bleibt stecken. Weiter!" if bool(event.stuck) else "Schnell weg! Noch einmal.", 2.2)
+			_update_view(0.016, true)
+		"cart_on":
+			_sound("cart", "ui_confirm")
+			hud.say("Festhalten! SPRINGEN über die Lücken.", 2.4)
+		"demo":
+			hud.say("", 0.0)
 		"stumble":
 			camera.kick(0.6)
 			AudioManager.play_sfx("ui_cancel")
@@ -417,8 +570,17 @@ func _on_track_event(event: Dictionary) -> void:
 			fx.play("burst", feet + Vector3.UP * 0.9, Color("d6e2f2"))
 		"checkpoint":
 			_reach_checkpoint(int(event.index))
+			_sound("checkpoint", "")
 		"finish":
 			_finish()
+
+
+## Effect from the run's own sound set, or the shared fallback when there is none.
+func _sound(name: String, fallback: String) -> void:
+	if is_instance_valid(audio) and audio.has_effects():
+		audio.effect(name)
+	elif not fallback.is_empty():
+		AudioManager.play_sfx(fallback)
 
 
 func _hint_ahead() -> void:
@@ -498,6 +660,7 @@ func _show_question() -> void:
 			"wrong": wrong_answers.duplicate(),
 			"reveal": reveal,
 			"message": message,
+			"dock": "bottom" if plan.adventure else "center",
 		}
 	)
 
@@ -526,6 +689,11 @@ func answer(text: String) -> void:
 		player.boost(TUNING.ANSWER_BOOST_SECONDS)
 		AudioManager.play_sfx("celebrate")
 		hud.say("Richtig! +%d Sterne" % TUNING.QUESTION_BONUS_STARS, 2.4)
+	props.open_gate(question_checkpoint)
+	if plan.adventure:
+		# Lumo waits a moment while the puzzle gate opens in front of him.
+		player.speed = 0.0
+	_sound("gate", "")
 	_take_snapshot()
 	save()
 
@@ -557,6 +725,8 @@ func pause() -> void:
 	touch_steer = Vector2.ZERO
 	hud.release_controls()
 	hud.set_playing(false)
+	if is_instance_valid(audio):
+		audio.set_paused(true)
 	save()
 	var summary: String = "%s · %d Sterne · %s" % [
 		str(COURSES.course(course_index).name), track.kept, UI.clock(int(elapsed * 1000.0))
@@ -568,6 +738,8 @@ func resume() -> void:
 	if not paused:
 		return
 	paused = false
+	if is_instance_valid(audio):
+		audio.set_paused(false)
 	if question_open:
 		_show_question()
 	else:
@@ -602,7 +774,13 @@ func _restore() -> bool:
 	recent_questions.assign(state.recent_questions)
 	active_question = state.pending_question
 	player.place(track.checkpoint_s(track.checkpoint), 0.0, 0.0)
+	track.rescue = plan.respawn_index(player.s)
+	if plan.adventure and track.rescue >= 0:
+		player.in_cart = bool(plan.respawns[track.rescue].get("cart", false))
+		player.cart_lat = float(plan.cart.get("lat", 0.0))
 	props.sync(track)
+	for index in questions:
+		props.open_gate(int(index))
 	_take_snapshot()
 	return true
 
@@ -643,6 +821,7 @@ func _finish() -> void:
 	var reward: int = TUNING.reward(solved, stars_rating)
 	var time_ms: int = int(elapsed * 1000.0)
 	ProgressStore.add_stars(reward)
+	var best: Dictionary = SESSION.record(child_scope, str(course.id))
 	result_payload = {
 		"game": "run",
 		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
@@ -660,11 +839,16 @@ func _finish() -> void:
 		"firstTry": first_try_count(),
 		"stumbles": track.stumbles,
 	}
+	if plan.adventure:
+		result_payload["letters"] = track.letter_count()
+		result_payload["bonusRoom"] = track.bonus_found
 	var accepted: bool = HostBridge.reward(result_payload)
 	if HostBridge.reward_is_recoverable(result_id):
 		SESSION.erase(session_path)
 	SESSION.store_record(child_scope, str(course.id), stars_rating, time_ms)
-	AudioManager.play_sfx("celebrate")
+	if is_instance_valid(audio):
+		audio.finish()
+	_sound("finish", "celebrate")
 	fx.play("burst", feet_transform().origin + Vector3.UP * 2.2, Color("ffe27a"))
 	actor.celebrate()
 	camera.show_front()
@@ -678,10 +862,20 @@ func _finish() -> void:
 			["Aufgaben", "%d von %d richtig" % [solved, plan.question_checkpoints().size()]],
 			["Belohnung", "+%d Sterne" % reward],
 		],
+		"letters": "",
 		"thresholds": "★ Ziel · ★★ ab %d %% · ★★★ ab %d %% der Sterne" % [
 			roundi(TUNING.RATING_TWO * 100.0), roundi(TUNING.RATING_THREE * 100.0)
 		],
 	}
+	if plan.adventure:
+		content.facts.insert(2, ["Buchstaben", "%d von %d" % [track.letter_count(), plan.letters.size()]])
+		content.facts.insert(3, ["Schatzhalle", "gefunden" if track.bonus_found else "noch geheim"])
+		var record_text: String = "neue Bestzeit!" if best.is_empty() or time_ms < int(best.time_ms) else UI.clock(int(best.time_ms))
+		content.facts.append(["Bestzeit", record_text])
+		var word: String = ""
+		for index in range(plan.letters.size()):
+			word += str(plan.letters[index].char) if track.letters & (1 << index) else "·"
+		content["letters"] = word
 	if HostBridge.is_embedded() and not accepted:
 		content["notice"] = HostBridge.SAVE_FAILURE
 	menus.open("result", content)
