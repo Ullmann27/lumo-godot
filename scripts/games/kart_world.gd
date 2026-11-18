@@ -169,7 +169,9 @@ func build(
 	_terrain()
 	_road()
 	match track_id:
-		"zauberwald": _forest()
+		"zauberwald":
+			_forest()
+			_forest_roadside_trees()
 		"holo_city":
 			_city()
 			_holo_city_dressing()
@@ -640,7 +642,7 @@ func _lighting() -> void:
 	environment.adjustment_saturation=float(visual.saturation)
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
-	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
+	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.0022)
 	environment.fog_aerial_perspective=0.26 if track_id=="sonnenhafen" else 0.22
 	if track_id==JUNGLE.ID:
 		# Bright rainforest noon: green bounce light, thin warm haze for depth.
@@ -1602,6 +1604,50 @@ func _forest() -> void:
 		_prop("ball",p,Vector3.ONE*0.065,Color("e1f0a3"),Basis.IDENTITY,true)
 	_forest_reference_dressing()
 	_arch(length*0.63,"LICHTERHAIN",Color("b2dcdf"))
+
+
+## The forest used to start 18 m from the centre line, so the chase camera saw
+## bare verges. Tall trees now line the road and close their crowns above it.
+## Own random stream: the established forest geometry does not shift.
+func _forest_roadside_trees() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(definition.seed) + 7717
+	var spacing: float = 17.0 if low_detail else 8.5
+	var count: int = floori(length / spacing)
+	var planted: int = 0
+	var reserved: Array[Dictionary] = TRACK_DETAIL.accepted_sites(self)
+	for i in range(count):
+		var d: float = (float(i) + 0.5) * spacing
+		for side in [-1.0, 1.0]:
+			var lateral: float = rng.randf_range(9.4, 13.8)
+			var tree_size: float = rng.randf_range(2.3, 3.4)
+			var along: float = rng.randf_range(-2.4, 2.4)
+			if in_gap(d) or _is_bridge(d) or ADVENTURE_TUNNELS.contains(self, d, 16.0):
+				continue
+			var at: Vector3 = position_at(d + along, side * lateral)
+			var road_height: float = at.y
+			at.y = _ground_height(at.x, at.z)
+			# Keep clear of every other part of the course, of water and of
+			# places where the road runs high above the ground.
+			if _near_road(at, 8.8) or at.y < -1.6 or road_height - at.y > 5.5:
+				continue
+			# Trunks stay off the plots reserved for buildings and markers.
+			var on_plot := false
+			for site: Dictionary in reserved:
+				var plot: Vector3 = site.position
+				if Vector2(at.x - plot.x, at.z - plot.z).length() < float(site.radius) + 2.6:
+					on_plot = true
+					break
+			if on_plot:
+				continue
+			_tree(at, tree_size, rng)
+			if planted % 3 == 0:
+				# A glowing mushroom between trunk and road, on the ground.
+				var beside: Vector3 = position_at(d + along + 1.6, side * (lateral - 1.3))
+				beside.y = _ground_height(beside.x, beside.z)
+				_mushroom(beside, rng.randf_range(0.8, 1.5))
+			planted += 1
+	set_meta("forest_roadside_trees", planted)
 
 
 func _forest_reference_dressing() -> void:
