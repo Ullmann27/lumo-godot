@@ -3,7 +3,7 @@ const STATE = preload("res://scripts/creative/treasure_state.gd")
 const CATALOG = preload("res://scripts/creative/build_catalog.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
-const FOX = preload("res://scripts/games/kart_vehicle.gd")
+const LUMO = preload("res://scripts/characters/lumo/lumo_world_avatar.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const CHEST_MODEL = preload("res://assets/creative/models/lumo_treasure_chest.glb")
@@ -11,6 +11,7 @@ const ISLAND_ART = preload("res://scripts/creative/treasure_island_art.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const CAMERA_OFFSET := Vector3(8.5, 6.8, 14.0)
 const CAMERA_LOOK_OFFSET := Vector3(0.0, 1.15, -2.0)
+const LUMO_HEIGHT := 3.0
 var model = STATE.new()
 var kit = KIT.new()
 var previous: Dictionary
@@ -74,10 +75,11 @@ func _ready() -> void:
 	capsule.shape = shape
 	capsule.position.y = 0.8
 	player.add_child(capsule)
-	fox = FOX.new()
+	# Der echte, geriggte Lumo; der Knoten "fox" bleibt nur Dreh-/Haltepunkt.
+	fox = LUMO.new()
+	fox.name = "Lumo"
 	player.add_child(fox)
-	fox.configure_companion("fox")
-	fox.scale = Vector3.ONE * 1.6
+	fox.setup(LUMO_HEIGHT, bool(SceneRouter.launch_options.get("reduceAnimations", false)))
 	player.position = model.position
 	last_saved = model.position
 	camera = Camera3D.new()
@@ -454,7 +456,7 @@ func _physics_process(delta: float) -> void:
 		player.position.z = maxf(player.position.z, -30)
 	if axis.length() > 0.12:
 		fox.rotation.y = lerp_angle(fox.rotation.y, atan2(-axis.x, -axis.y), delta * 10)
-	fox.set_companion_pose(time, "walk" if axis.length() > 0.12 else "idle")
+	fox.drive(player.velocity, player.is_on_floor(), delta, time)
 	camera.position = camera.position.lerp(
 		player.position + CAMERA_OFFSET, minf(1, delta * 4)
 	)
@@ -462,6 +464,7 @@ func _physics_process(delta: float) -> void:
 	var found := model.try_discover(player.position)
 	if not found.is_empty():
 		toast.text = "Entdeckung: %s!" % found
+		fox.gesture("greeting_wave")
 		wonder.celebrate(player.position + Vector3.UP * 1.7)
 		_update()
 	if not available_goals.is_empty():
@@ -569,6 +572,7 @@ func _answer(choice: int) -> void:
 		return
 	_update()
 	_close_modal()
+	fox.gesture("celebrate")
 	wonder.celebrate(player.position + Vector3.UP * 1.7)
 	_play_fanfare(player.position + Vector3.UP * 1.4, false)
 	toast.text = "Gefunden: " + model.inventory[-1] + "! Dein Rucksack wächst."
@@ -644,6 +648,7 @@ func _win() -> void:
 		}
 	)
 	wonder.celebrate(Vector3(0, 2.2, -65))
+	fox.gesture("celebrate")
 	_play_fanfare(Vector3(0, 1.6, -65), true)
 	_open_modal("Der Sternenschatz gehört euch!")
 	var finds: int = model.discoveries.size()
