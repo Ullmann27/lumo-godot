@@ -86,9 +86,11 @@ func _run() -> void:
 	for id in karts:
 		var kart: Node3D = load("res://scripts/games/kart_vehicle.gd").new()
 		stage.add_child(kart)
+		# The player always sees the real rigged Lumo, never the stand-in figure.
+		kart.set_animated_lumo_enabled(driver == "fox")
 		kart.configure(driver, Color("327cbe"), id)
 		kart.set_motion(12.0, steer, false, false)
-		for i in range(20):
+		for i in range(40):
 			await process_frame
 		for view in VIEWS:
 			camera.look_at_from_position(VIEWS[view][0], VIEWS[view][1],
