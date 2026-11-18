@@ -8,7 +8,7 @@
         "res://assets/kart/production/karts/aurora_comet_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000572976132389158,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "comet",
       "visible_surfaces": 39
     },
@@ -19,7 +19,7 @@
         "res://assets/kart/production/karts/aurora_glider_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000572976132389158,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "glider",
       "visible_surfaces": 39
     },
@@ -30,7 +30,7 @@
         "res://assets/kart/production/karts/aurora_turbo_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000572976132389158,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "turbo",
       "visible_surfaces": 39
     },

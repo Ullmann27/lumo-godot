@@ -245,8 +245,11 @@ func advance_visual(delta: float) -> void:
 			Quaternion(Vector3.FORWARD, _chest_roll))
 		skeleton.set_bone_pose_rotation(chest, skeleton.get_bone_pose_rotation(chest) *
 			Quaternion(Vector3.RIGHT, _boost_pitch + _breath + landing_amount * 0.12))
+		# The head looks into the corner and stays level while the chest leans.
 		skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
-			Quaternion(Vector3.UP, _visual_steering * 0.07))
+			Quaternion(Vector3.UP, _visual_steering * 0.20))
+		skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
+			Quaternion(Vector3.FORWARD, -_chest_roll * 0.6))
 		skeleton.set_bone_pose_rotation(head, skeleton.get_bone_pose_rotation(head) *
 			Quaternion(Vector3.RIGHT, -_breath * 0.45 - landing_amount * 0.06))
 	_apply_attention()
@@ -262,9 +265,12 @@ func _advance_secondary_motion(delta: float) -> void:
 		return
 	var follow := 1.0 - exp(-delta * 9.0)
 	_visual_steering = lerpf(_visual_steering, steering, follow)
+	# Lumo drives with the whole body: leans into the corner (more in a drift),
+	# tucks forward at speed and is pressed back into the seat by a boost.
 	_chest_roll = lerpf(_chest_roll,
-		steering * (-0.075 if drifting else -0.055) + hit_amount * 0.07, follow)
-	_boost_pitch = lerpf(_boost_pitch, -0.025 if boosting else 0.0, follow)
+		steering * (-0.23 if drifting else -0.15) + hit_amount * 0.12, follow)
+	var tuck: float = 0.05 * clampf(speed / 24.0, 0.0, 1.0)
+	_boost_pitch = lerpf(_boost_pitch, -0.10 if boosting else tuck, 1.0 - exp(-delta * 6.0))
 	# The shipped kart_seated clip is a static seated pose. A slow chest
 	# rotation gives it breath without scaling the mesh, moving the seat or
 	# competing with its AnimationPlayer. Strong gestures keep their clip.
