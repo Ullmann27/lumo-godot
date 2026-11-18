@@ -174,7 +174,7 @@ func sync() -> void:
 		sign.font = VHUD.FONT
 		sign.font_size = 46
 		sign.outline_size = 14
-		sign.pixel_size = 0.0011
+		sign.pixel_size = 0.00042
 		sign.fixed_size = true
 		sign.modulate = Color("fff6dc")
 		sign.outline_modulate = Color("1a2c48")
@@ -187,8 +187,8 @@ func sync() -> void:
 		icon.name = "Banner"
 		icon.texture = VHUD.texture("troop_" + leading)
 		icon.position = base + Vector3(0, 6.5, 0)
-		icon.offset = Vector2(0, 150)
-		icon.pixel_size = 0.00045
+		icon.offset = Vector2(0, 170)
+		icon.pixel_size = 0.0002
 		icon.fixed_size = true
 		icon.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		icon.no_depth_test = true

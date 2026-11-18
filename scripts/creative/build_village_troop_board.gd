@@ -75,7 +75,7 @@ func fit(rect: Rect2) -> void:
 func _button(
 	text: String, action: Callable, width := 120.0, variant := "cream", font := 20
 ) -> Button:
-	var control := VHUD.button(text, action, width, variant, font)
+	var control := VHUD.button(text, action, maxf(width, TOUCH), variant, font)
 	control.custom_minimum_size.y = TOUCH
 	control.mouse_filter = Control.MOUSE_FILTER_PASS
 	control.clip_text = false

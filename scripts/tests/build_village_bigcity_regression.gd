@@ -48,6 +48,41 @@ func _capture(name: String) -> void:
 		print("[VillageBigCity] Bild ", capture_dir.path_join(name + ".png"), " ", image.get_size())
 
 
+## Verbände-Tafel: nichts seitlich abgeschnitten, Touch-Ziele ≥ 126 px, alles erreichbar.
+func _check_board(city, screen: Vector2i) -> void:
+	var board: Control = city.troop_board
+	var scale := float(screen.x) / root.get_visible_rect().size.x
+	var area: Rect2 = board.get_global_rect()
+	var safe: Rect2 = city.safe_ui.get_global_rect()
+	_check(safe.grow(1.0).encloses(area), "%s: Tafel liegt ganz im Bild" % str(screen))
+	_check(area.size.y >= safe.size.y * 0.45, "%s: Tafel ist groß (%.0f von %.0f)" % [str(screen), area.size.y, safe.size.y])
+	var buttons := 0
+	var small := 0
+	var cut := 0
+	for node in board.find_children("*", "Button", true, false):
+		var button := node as Button
+		if not button.is_visible_in_tree():
+			continue
+		buttons += 1
+		var rect := button.get_global_rect()
+		if rect.size.y * scale < 125.5 or rect.size.x * scale < 125.5:
+			small += 1
+		if rect.position.x < area.position.x - 1.0 or rect.end.x > area.end.x + 1.0:
+			cut += 1
+	_check(buttons >= 4 * 3 + 5, "%s: alle Knöpfe da (%d)" % [str(screen), buttons])
+	_check(small == 0, "%s: Touch-Ziele mindestens 126 px (%d zu klein)" % [str(screen), small])
+	_check(cut == 0, "%s: kein Knopf seitlich abgeschnitten (%d)" % [str(screen), cut])
+	var cards := board.find_children("TroopCard_*", "", true, false)
+	_check(cards.size() == 4, "%s: vier Truppenkarten" % str(screen))
+	for card in cards:
+		var rect: Rect2 = (card as Control).get_global_rect()
+		_check(rect.position.x >= area.position.x - 1.0 and rect.end.x <= area.end.x + 1.0, "%s: %s passt in die Breite" % [str(screen), card.name])
+	var scroll: ScrollContainer = board.find_child("TroopBoardScroll", true, false)
+	var content: Control = scroll.get_child(0)
+	_check(scroll.get_v_scroll_bar().max_value >= content.size.y - 1.0, "%s: der ganze Inhalt ist durch Rollen erreichbar" % str(screen))
+	print("[VillageBigCity] Tafel %s: Maßstab %.2f, %d Knöpfe, Fläche %s, Inhalt %.0f hoch" % [str(screen), scale, buttons, str(area.size), content.size.y])
+
+
 ## Stadt nach den Spielregeln: innen Häuser mit Brunnen, Märkten, Lernhäusern
 ## und Werkstätten, außen die Felder. Alles auf bebaubaren Plätzen.
 func _city() -> Dictionary:
@@ -312,7 +347,27 @@ func _run() -> void:
 	_check(city.troop_board.visible and city.troop_board.name == "TroopBoard", "Verbände-Tafel geöffnet")
 	_check(city.dock_section() == "schuetzen", "Tafel gehört zum Bereich „Schützen“")
 	if city.troop_board.visible:
-		await _capture("07_verbaende_tafel")
+		var before_size := root.size
+		# Wie auf dem Gerät (canvas_items/expand, Basis 720 × 1280): die Szene
+		# bekommt die Fläche in Projekteinheiten, Pixel = Einheiten × Maßstab.
+		for screen in [Vector2i(1812, 2176), Vector2i(1080, 2340), Vector2i(2176, 1812)]:
+			var device_scale := minf(float(screen.x) / 720.0, float(screen.y) / 1280.0)
+			root.size = Vector2i(roundi(float(screen.x) / device_scale), roundi(float(screen.y) / device_scale))
+			if not capture_dir.is_empty():
+				# Belegbild in echter Größe mit dem Maßstab des Geräts.
+				root.size = screen
+				root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+				root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+				root.content_scale_size = Vector2i(720, 1280)
+			await _frames(4)
+			city._layout()
+			await _frames(3)
+			_check_board(city, screen)
+			await _capture("07_verbaende_tafel_%dx%d" % [screen.x, screen.y])
+		root.size = before_size
+		root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
+		await _frames(4)
+		city._layout()
 		city.troop_board_action("regroup", "", 0)
 		await _frames(4)
 	_check(int(city.raids.guards) == 1000 and city.raids.units.size() <= 5, "Zusammengelegt: 1.000 Wachen in höchstens 5 Verbänden")
