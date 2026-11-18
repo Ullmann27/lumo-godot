@@ -865,7 +865,25 @@ func _refresh_glow() -> void:
 func square_at_point(point: Vector2) -> int:
 	if view == "top" and board2d.visible:
 		return board2d.square_at(point)
-	return chess.pick(camera, point)
+	var sq: int = chess.pick(camera, point)
+	# In 3D sind die hinteren Felder perspektivisch flacher: Ein Tipp knapp
+	# daneben zählt für das nächste sinnvolle Feld (erlaubtes Ziel bzw. eigene
+	# Figur), wenn es höchstens 24 dp entfernt ist.
+	var wanted := {}
+	for m: int in _child_moves():
+		wanted[RULES.move_to(m) if selected >= 0 and RULES.move_from(m) == selected else RULES.move_from(m)] = true
+	if selected >= 0:
+		wanted[selected] = true
+	if wanted.is_empty() or wanted.has(sq):
+		return sq
+	var best := sq
+	var best_d := 24.0 * _density
+	for cand: int in wanted:
+		var d: float = chess.screen_point(camera, cand).distance_to(point)
+		if d < best_d:
+			best_d = d
+			best = cand
+	return best
 
 
 ## Bildschirmpunkt eines Feldes in der aktuellen Ansicht (Tests, Hinweise).

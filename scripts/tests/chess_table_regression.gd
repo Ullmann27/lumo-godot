@@ -47,6 +47,11 @@ func _new_table() -> void:
 		table.queue_free()
 		await _frames(2)
 	table = load(TABLE).instantiate()
+	_check(table.has_method("start_match"), "Tischskript geladen")
+	if not table.has_method("start_match"):
+		print("CHESS_TABLE_FAIL Tischskript lässt sich nicht laden")
+		quit(1)
+		return
 	table.time_scale = 40.0
 	root.add_child(table)
 	await _frames(4)
@@ -459,6 +464,8 @@ func _pro_mode() -> void:
 
 
 func _measure_squares(label: String) -> void:
+	# Ohne Fangradius messen (busy = keine Kinderzüge): jedes Feld genau treffen.
+	table.busy = true
 	var smallest := 100000.0
 	var largest := 0.0
 	for sq in 64:
@@ -469,6 +476,7 @@ func _measure_squares(label: String) -> void:
 		smallest = minf(smallest, w)
 		largest = maxf(largest, w)
 		_check(table.square_at_point(c) == sq, "%s: Antippen trifft Feld %d" % [label, sq])
+	table.busy = false
 	square_sizes[label] = "kleinstes %.0f px, größtes %.0f px" % [smallest, largest]
 	if label.begins_with("Draufsicht") and not label.ends_with("1080x2340"):
 		_check(smallest >= MIN_TOUCH, "%s: Felder ≥ %d px (%.0f)" % [label, MIN_TOUCH, smallest])
@@ -497,4 +505,14 @@ func _views_and_squares() -> void:
 				var rect := b.get_global_rect()
 				_check(Rect2(Vector2.ZERO, Vector2(size)).encloses(rect), "%s: Knopf %s im Bild" % [label, id])
 	root.size = FOLD
+	await _frames(3)
+	table._layout()
+	table.view = "3d"
+	table._update_view()
 	await _frames(2)
+	# Fangradius in 3D: Tipp 20 dp über dem Bauern e2 (Richtung e3) wählt ihn trotzdem.
+	if table.rules.side == 0 and table.rules.played.is_empty():
+		var e2 := RULES.square_from_name("e2")
+		var p: Vector2 = table.square_point(e2) + Vector2(0, -20.0 * table._density)
+		_check(table.chess.pick(table.camera, p) != e2, "Prüfpunkt liegt außerhalb von e2")
+		_check(table.square_at_point(p) == e2, "3D: knapp daneben getippt trifft die eigene Figur")

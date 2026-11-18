@@ -85,6 +85,16 @@ func _wait_idle() -> void:
 	await _frames(20)
 
 
+func _print_squares() -> void:
+	var lo := 100000.0
+	var hi := 0.0
+	for sq in 56:
+		var d: float = table.square_point(sq).distance_to(table.square_point(sq + 8))
+		lo = minf(lo, d)
+		hi = maxf(hi, d)
+	print("[ChessCapture] Feldtiefe %.0f–%.0f px, Fenster %s" % [lo, hi, root.size])
+
+
 func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	out_dir = args[0] if args.size() > 0 else "user://chess_capture"
@@ -148,6 +158,7 @@ func _run() -> void:
 				table._show_position()
 				table.say("Ich ziehe a6.", "Lumo · Militärschachspieler")
 				await _shot("06_fuer_grosse_%s%s" % [view, tag])
+				_print_squares()
 				if size_name == "fold":
 					await _resize(FOLD_WIDE)
 					await _shot("06_fuer_grosse_%s_fold_quer" % view)
