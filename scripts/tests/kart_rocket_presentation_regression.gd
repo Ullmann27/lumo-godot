@@ -214,12 +214,24 @@ func _test_flight_and_hit() -> void:
 		seconds >= 0.8 and seconds <= 3.0,
 		"Flugdauer im Zielbereich 0,8–3,0 s (%.2f s bei %.1f m)" % [seconds, gap0]
 	)
+	print(
+		(
+			"[KartRocketPresentation] Flug %.2f s bei %.1f m, %d Bilder, größter Schritt %.2f m"
+			% [seconds, gap0, steps.size(), steps.max() if not steps.is_empty() else -1.0]
+		)
+	)
 	var zero: int = steps.filter(func(v): return v < 0.001).size()
 	var biggest: float = steps.max() if not steps.is_empty() else 99.0
 	_check(steps.size() >= 40, "Rakete über viele Bilder verfolgbar (%d Bilder)" % steps.size())
 	_check(zero == 0, "kein Bild ohne Bewegung (%d)" % zero)
 	_check(biggest <= 2.2, "kein Sprung über 2,2 m je Bild (%.2f m)" % biggest)
 	_check(trail_seen and light_seen, "Rauchspur und Eigenlicht während des Flugs")
+	_check(int(flight.stats.muzzles) >= 2, "Mündungsblitz an beiden Halterdüsen")
+	_check(int(flight.stats.impacts) >= 1, "Einschlag mit Blitz, Rauchwolke und Funken")
+	_check(
+		game.kart_audio != null and game.kart_audio._loop_fed.has("rocket_fly"),
+		"Fluggeräusch wird während des Flugs gespeist"
+	)
 	_check(assist_seen > 0.5, "Kamera zieht beim Zuschauen leicht auf (%.2f)" % assist_seen)
 	_check(max_display >= 1.0, "Treffer hebt den Rivalen sichtbar an (%.2f m)" % max_display)
 	_check(true_lift < 0.25, "Spiel-Lage des Rivalen bleibt auf der Fahrbahn (%.2f m)" % true_lift)

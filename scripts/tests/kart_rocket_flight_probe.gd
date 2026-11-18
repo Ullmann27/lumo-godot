@@ -16,6 +16,7 @@ const STEP: float = 1.0 / 60.0
 const GAP: float = 30.0
 ## Bilder nach dem Treffer (Bilder nach dem Einschlag).
 const POST_HIT: Array = [0, 8, 18, 30, 44, 62]
+var gap: float = GAP
 var game
 var smoother
 var destination: String = ""
@@ -183,6 +184,8 @@ func _run() -> void:
 			cadence = argument.substr(8)
 		elif argument == "smooth=off":
 			smooth = false
+		elif argument.begins_with("gap="):
+			gap = float(argument.substr(4))
 		elif argument.begins_with("tag="):
 			tag = argument.substr(4)
 	if mode == "frames" and DisplayServer.get_name() == "headless":
@@ -232,7 +235,7 @@ func _run() -> void:
 	for i in range(game.opponents.size()):
 		var od: float = d - 60.0 - i * 6.0
 		if i == 0:
-			od = d + GAP if scenario == "player" else d - 24.0
+			od = d + gap if scenario == "player" else d - 24.0
 		var od_lane: float = float(game.lane) if i == 0 else 3.0
 		game.opponents[i].transform = game.world.reset_transform(od, od_lane)
 		game.opponent_distances[i] = od
