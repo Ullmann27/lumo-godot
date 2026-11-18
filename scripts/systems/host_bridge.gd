@@ -67,6 +67,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 		not in [
 			"kart",
 			"jump",
+			"run",
 			"puzzle",
 			"build",
 			"rhythm",
