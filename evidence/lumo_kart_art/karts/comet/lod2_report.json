@@ -1,5 +1,5 @@
 {
-  "triangles": 15734,
+  "triangles": 15490,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -18,18 +18,18 @@
     "min": [
       -1.0046812295913696,
       -1.2159340381622314,
-      -0.001437842845916748
+      -0.0006617605686187744
     ],
     "max": [
       1.0054080486297607,
-      1.2446027994155884,
-      0.94504714012146
+      1.2539944648742676,
+      0.9450536370277405
     ]
   },
   "dimensions_godot_m": [
     2.0100892782211304,
-    0.9464849829673767,
-    2.46053683757782
+    0.9457153975963593,
+    2.469928503036499
   ],
   "meshes": [
     {
@@ -48,8 +48,8 @@
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 5150,
-      "vertices": 2725,
+      "triangles": 5322,
+      "vertices": 2819,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
@@ -62,8 +62,8 @@
     },
     {
       "node": "Wheel_FL_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2072,
+      "vertices": 1060,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
@@ -76,8 +76,8 @@
     },
     {
       "node": "Wheel_FR_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2072,
+      "vertices": 1060,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
@@ -90,8 +90,8 @@
     },
     {
       "node": "Wheel_RL_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2072,
+      "vertices": 1060,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
@@ -104,8 +104,8 @@
     },
     {
       "node": "Wheel_RR_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2072,
+      "vertices": 1060,
       "material_slots": 4,
       "non_manifold_edges": 0
     },

@@ -180,6 +180,30 @@ def loft(name, rows, mat, parent=None, sections=32, steps=3, vertical=False, pow
     return mesh(name, verts, faces, mat, parent, uv)
 
 
+def wing(name, stations, mat, parent=None, ring=12):
+    """Closed spanwise aerofoil; stations=(x, height, centre_z, chord, thickness).
+
+    The front (-z) edge is blunt and the rear edge thin, so the plane reads as
+    a shaped wing instead of a plank. Both ends are capped: the mesh is closed.
+    """
+    verts, faces, uv = [], [], []
+    for si, (x, y, z, chord, thick) in enumerate(stations):
+        for ci in range(ring):
+            a = ci * math.tau / ring
+            along, up = math.cos(a), math.sin(a)
+            taper = .5 + .5 * (1 - (along + 1) * .5)
+            verts.append((x, y + up * thick * .5 * taper, z + along * chord * .5))
+            uv.append((si / (len(stations) - 1), ci / ring))
+    for si in range(len(stations) - 1):
+        for ci in range(ring):
+            a = si * ring + ci
+            b = si * ring + (ci + 1) % ring
+            faces.append((a, b, b + ring, a + ring))
+    faces.append(tuple(reversed(range(ring))))
+    faces.append(tuple((len(stations) - 1) * ring + i for i in range(ring)))
+    return mesh(name, verts, faces, mat, parent, uv)
+
+
 def torus_x(name, x, radius, minor, mat, parent=None, major_steps=48, minor_steps=8):
     verts, faces, uv = [], [], []
     for i in range(major_steps):
@@ -204,11 +228,11 @@ def tyre(parent, mats):
             (.071,.350),(.082,.338),(.095,.350),(.115,.347),(.142,.331),
             (.175,.298),(.19,.253),(.19,.211),(.16,.204),(-.16,.204)]
     verts, faces, uv = [], [], []
-    n = 80
+    n = 72
     for ri, (x,r) in enumerate(rows):
         for ci in range(n):
             a = ci * math.tau / n
-            cut = .007 if abs(x) < .143 and ci % 5 == (1 if x < 0 else 2) else 0
+            cut = .007 if abs(x) < .143 and ci % 6 == (1 if x < 0 else 3) else 0
             verts.append((x, (r-cut)*math.cos(a), (r-cut)*math.sin(a)))
             uv.append((ci/n, (x+.19)/.38))
     for ri in range(len(rows)):
@@ -322,17 +346,25 @@ def create_kart(variant):
         tube('HeadlightRecess',[(side*.13,.335,-1.165),(side*.24,.372,-1.07),(side*.325,.43,-.93)],.026,mats['carbon'],body)
         tube('HeadlightLens',[(side*.13,.345,-1.182),(side*.24,.384,-1.088),(side*.325,.443,-.948)],.014,mats['lamp'],body)
         # Wide front wing ahead of the tyres with a light strip, as in the target art.
-        tube('FrontWingStay',[(side*.22,.25,-.96),(side*.30,.215,-1.15)],.02,mats['alloy'],body,6)
-        bevel_box('FrontWingEndplate',(side*.80,.235,-1.165),(.035,.15,.15),mats['trim'],body,.012)
-        bevel_box('FrontWingLight',(side*.47,.222,-1.239),(.50,.032,.014),mats['lamp'],body,.005)
+        tube('FrontWingStay',[(side*.13,.30,-1.00),(side*.15,.205,-1.14)],.022,mats['alloy'],body,6)
+        # Second element above the main plane and a rounded end plate.
+        wing('FrontWingFlap',[(side*(.36+.42*k/5),.262+.022*k/5,-1.105+.018*k/5,.105-.012*k/5,.026)
+                              for k in range(6)],mats['trim'],body,10)
+        # Kept clear of the steered front tyres (BVH sweep in inspect_mechanics.py).
+        bevel_box('FrontWingEndplate',(side*.805,.255,-1.163),(.034,.19,.165),mats['trim'],body,.016)
+        bevel_box('FrontWingEndplateFoot',(side*.80,.158,-1.163),(.085,.024,.15),mats['carbon'],body,.01)
+        tube('FrontWingLight',[(side*.20,.193,-1.243),(side*.42,.199,-1.236),(side*.62,.210,-1.224),(side*.76,.222,-1.21)],.011,mats['lamp'],body,6)
         # Pedals inside the footwell: the soles rest here.
         bevel_box('Pedal_'+str(side),(side*.15,.20,-.40),(.15,.045,.20),mats['alloy'],body,.014)
         for k in range(3):
             bevel_box('PedalGrip',(side*.15,.226,-.46+k*.054),(.11,.007,.012),mats['rubber'],body,.003)
         # Seat-back stays; between them the tail leaves the cockpit.
         tube('SeatBackStay',[(side*.245,.19,.46),(side*.255,.42,.47),(side*.215,.60,.44)],.02,mats['alloy'],body,8)
-    bevel_box('FrontWing',(0,.20,-1.165),(1.56,.07,.15),mats['paint'],body,.022)
-    bevel_box('FrontWingIntake',(0,.212,-1.239),(.34,.04,.012),mats['carbon'],body,.005)
+    # Main plane: one curved aerofoil, tips slightly raised and swept back.
+    span=[-.80+1.60*k/16 for k in range(17)]
+    wing('FrontWing',[(x,.176+.034*(abs(x)/.8)**2,-1.152+.03*(abs(x)/.8)**2,.19-.045*abs(x)/.8,.05)
+                      for x in span],mats['paint'],body,12)
+    bevel_box('FrontWingIntake',(0,.196,-1.238),(.30,.026,.014),mats['carbon'],body,.005)
     # Glowing bonnet letter with real thickness; stays an own node for the runtime.
     badge=empty('BonnetBadge',(0,.60,-.66),body)
     badge.rotation_euler[0]=.31

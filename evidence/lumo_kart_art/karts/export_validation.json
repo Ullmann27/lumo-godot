@@ -4,23 +4,23 @@
   "assets": [
     {
       "path": "assets/kart/production/karts/aurora_comet.glb",
-      "sha256": "a8d066d5c0b360c39c3816fb2e8007aa8e96b4cc735e08775805113198b05fd7",
-      "bytes": 1650452,
+      "sha256": "e21ce71170d77194b51c4cb3dec815c6bab42df0593c4b9b2acda5d12ae38c86",
+      "bytes": 1625772,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49194,
-      "triangles_instanced_scene": 49194,
-      "vertices": 41177,
+      "triangles_unique_meshes": 48450,
+      "triangles_instanced_scene": 48450,
+      "vertices": 40506,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.180203668127433e-07,
+      "max_normal_length_error": 1.2438009777682169e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0049999505281448,
         0.0,
-        -1.2459999322891235
+        -1.2539944648742676
       ],
       "static_bounds_max": [
         1.0049999505281448,
@@ -30,7 +30,7 @@
       "static_dimensions_m": [
         2.0099999010562897,
         0.9449999928474426,
-        2.461933970451355
+        2.469928503036499
       ],
       "skins": [],
       "animations": [
@@ -164,13 +164,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
-      "sha256": "c448b6f5840ede775065e9df6e2ad577ce1531dd0be95a6d12de0f3a5d649006",
-      "bytes": 915100,
+      "sha256": "9d5bad4a4cc7de7c8d5315e0110124881200deb0822f03931ac843bda95535bb",
+      "bytes": 905008,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23604,
-      "triangles_instanced_scene": 23604,
-      "vertices": 22936,
+      "triangles_unique_meshes": 23246,
+      "triangles_instanced_scene": 23246,
+      "vertices": 22669,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -179,8 +179,8 @@
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
-        0.0,
-        -1.2455494403839111
+        -0.0006617605686187744,
+        -1.2539944648742676
       ],
       "static_bounds_max": [
         1.004681184887886,
@@ -189,8 +189,8 @@
       ],
       "static_dimensions_m": [
         2.009362369775772,
-        0.9450348019599915,
-        2.4614834785461426
+        0.9456965625286102,
+        2.469928503036499
       ],
       "skins": [],
       "animations": [
@@ -324,33 +324,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
-      "sha256": "9de409ca5463c2fdf086ab88de1b7768f70331bf12fb497285e3e6152a8c1e39",
-      "bytes": 671868,
+      "sha256": "f65ac0b43c57eb06741702954743a636b0f5b819c038089bc420cef164d4fef9",
+      "bytes": 661084,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15734,
-      "triangles_instanced_scene": 15734,
-      "vertices": 16793,
+      "triangles_unique_meshes": 15490,
+      "triangles_instanced_scene": 15490,
+      "vertices": 16490,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.3311646651636977e-07,
+      "max_normal_length_error": 1.44083012409979e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
-        -0.001437842845916748,
-        -1.2446027994155884
+        -0.0006617605686187744,
+        -1.2539944648742676
       ],
       "static_bounds_max": [
         1.0054081082344055,
-        0.94504714012146,
+        0.9450536370277405,
         1.2159340381622314
       ],
       "static_dimensions_m": [
         2.0100892931222916,
-        0.9464849829673767,
-        2.46053683757782
+        0.9457153975963593,
+        2.469928503036499
       ],
       "skins": [],
       "animations": [
@@ -484,33 +484,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider.glb",
-      "sha256": "b6ae5cf312c4c0e217eb041f5bafc014f4f3f578d2148bbdeefedb0e9e1f73ab",
-      "bytes": 1678328,
+      "sha256": "e3d5173e6c884e5d60c073b62ad9095c84cd9edc390fa89940c6bb7bcbbcbcdb",
+      "bytes": 1651488,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49910,
-      "triangles_instanced_scene": 49910,
-      "vertices": 41890,
+      "triangles_unique_meshes": 49166,
+      "triangles_instanced_scene": 49166,
+      "vertices": 41219,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.180203668127433e-07,
+      "max_normal_length_error": 1.2438009777682169e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9357000142335892,
         0.0,
-        -1.2460002310702047
+        -1.2539948862900925
       ],
       "static_bounds_max": [
         0.9357000142335892,
         1.1149998307228088,
-        1.2159340534372822
+        1.2159340557885518
       ],
       "static_dimensions_m": [
         1.8714000284671783,
         1.1149998307228088,
-        2.461934284507487
+        2.4699289420786443
       ],
       "skins": [],
       "animations": [
@@ -644,13 +644,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
-      "sha256": "c091e275cfdb78b16fdd891fe34755274184f262cd63c439f3c92b42bd951727",
-      "bytes": 931728,
+      "sha256": "90f1eccf1c1b444f315cfcacacd773bdf28191c9da2c97890dc57626741241b4",
+      "bytes": 920056,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23948,
-      "triangles_instanced_scene": 23948,
-      "vertices": 23367,
+      "triangles_unique_meshes": 23590,
+      "triangles_instanced_scene": 23590,
+      "vertices": 23097,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -659,18 +659,18 @@
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9356953203678131,
-        0.0,
-        -1.2454881079169589
+        -0.0006617605686187744,
+        -1.2539948862476717
       ],
       "static_bounds_max": [
         0.9356953203678131,
         1.1144404113292694,
-        1.2159340534622844
+        1.2159340557461313
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.1144404113292694,
-        2.461422161379243
+        1.1151021718978882,
+        2.4699289419938033
       ],
       "skins": [],
       "animations": [
@@ -804,13 +804,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
-      "sha256": "51fb2b8c25ec8ad971c380865cb8dd9dd6aa79d219a75b19f187f80709584c76",
-      "bytes": 685828,
+      "sha256": "1a1995c6f388062094673bef994be97f46a97b0ca653051e17b35d1e2e56c922",
+      "bytes": 673224,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15964,
-      "triangles_instanced_scene": 15964,
-      "vertices": 17162,
+      "triangles_unique_meshes": 15720,
+      "triangles_instanced_scene": 15720,
+      "vertices": 16842,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -819,18 +819,18 @@
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9356953203678131,
-        -0.001437842845916748,
-        -1.2443811303574486
+        -0.0006617605686187744,
+        -1.2539948862476717
       ],
       "static_bounds_max": [
         0.9356953203678131,
         1.1137707233428955,
-        1.2159340535154284
+        1.2159340557461313
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.1152085661888123,
-        2.460315183872877
+        1.1144324839115143,
+        2.4699289419938033
       ],
       "skins": [],
       "animations": [
@@ -964,33 +964,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo.glb",
-      "sha256": "8b02cf69600c780dd15ee8ab1c162751dabe790a9ecfa999cc7c5f0be4994203",
-      "bytes": 1672996,
+      "sha256": "be9b19cfaa631e530d32d2c599c618181d2d151ea916621af9825ba2708bdea0",
+      "bytes": 1647724,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49910,
-      "triangles_instanced_scene": 49910,
-      "vertices": 41733,
+      "triangles_unique_meshes": 49166,
+      "triangles_instanced_scene": 49166,
+      "vertices": 41062,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.180203668127433e-07,
+      "max_normal_length_error": 1.2438009777682169e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0819999724626541,
         0.0,
-        -1.2460002317420065
+        -1.2539948862900925
       ],
       "static_bounds_max": [
         1.0819999724626541,
         1.0349999740719795,
-        1.2159341733183733
+        1.2159341749978574
       ],
       "static_dimensions_m": [
         2.1639999449253082,
         1.0349999740719795,
-        2.4619344050603797
+        2.46992906128795
       ],
       "skins": [],
       "animations": [
@@ -1124,13 +1124,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
-      "sha256": "d485eed2a749b491efe7af5ea97d0d4be4db4975bdd934018d121eb3399b5a8f",
-      "bytes": 927888,
+      "sha256": "55461db067645f5626d09a9ab98efe470ef8cedc953970765411f098de6a7c8d",
+      "bytes": 917292,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23948,
-      "triangles_instanced_scene": 23948,
-      "vertices": 23257,
+      "triangles_unique_meshes": 23590,
+      "triangles_instanced_scene": 23590,
+      "vertices": 22993,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -1139,18 +1139,18 @@
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
-        0.0,
-        -1.2454881085652878
+        -0.0006617605686187744,
+        -1.253994886244925
       ],
       "static_bounds_max": [
         1.0816812068223953,
         1.034324511885643,
-        1.2159341733183733
+        1.21593417495269
       ],
       "static_dimensions_m": [
         2.1633624136447906,
-        1.034324511885643,
-        2.461422281883661
+        1.0349862724542618,
+        2.469929061197615
       ],
       "skins": [],
       "animations": [
@@ -1284,13 +1284,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
-      "sha256": "de0e52fb2476042becea85bd335e0605d3810fa62cbc4c8a77734b1f79bc0f80",
-      "bytes": 680612,
+      "sha256": "e9a4b8e21d095f8d35aaa06a530cceb2646e64aacddc7b4364d24d04f24d3ef4",
+      "bytes": 668716,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15964,
-      "triangles_instanced_scene": 15964,
-      "vertices": 17009,
+      "triangles_unique_meshes": 15720,
+      "triangles_instanced_scene": 15720,
+      "vertices": 16690,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -1299,18 +1299,18 @@
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
-        -0.001437842845916748,
-        -1.244381130953787
+        -0.0006617605686187744,
+        -1.253994886244925
       ],
       "static_bounds_max": [
         1.0824081301689148,
         1.03391844779253,
-        1.2159341733183733
+        1.21593417495269
       ],
       "static_dimensions_m": [
         2.16408933699131,
-        1.0353562906384468,
-        2.4603153042721604
+        1.0345802083611488,
+        2.469929061197615
       ],
       "skins": [],
       "animations": [

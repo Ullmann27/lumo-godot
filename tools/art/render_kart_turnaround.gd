@@ -15,7 +15,7 @@ const VIEWS: Dictionary = {
 	"rear": [Vector3(-1.5, 2.2, 4.4), Vector3(0, 0.9, 0)],
 	"top": [Vector3(0.01, 6.2, 0.0), Vector3(0, 0, 0)],
 }
-const CUTOUT_VIEW: Array = [Vector3(2.75, 1.75, -3.75), Vector3(0.0, 0.62, 0.05)]
+const CUTOUT_VIEW: Array = [Vector3(3.05, 1.95, -4.15), Vector3(0.0, 0.60, -0.05)]
 var destination: String = ""
 
 
