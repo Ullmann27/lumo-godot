@@ -155,9 +155,22 @@ static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_v
 		height = maxf((area_dp.y - gap * (count - 1)) / count, 96.0 if short_view else 116.0)
 	for card in shown:
 		card.custom_minimum_size = Vector2(0, floorf(height * scale_factor))
-		card.apply_size(scale_factor)
-		if not side_by_side and card.chevrons == 0:
+		if card.chevrons > 0:
+			# Untereinander (schmales Hochformat) dieselben Aussagen in zwei breiten Zeilen.
+			var facts := level_facts(
+				CATALOG.entry(CATALOG.DIFFICULTIES, str(card.name).trim_prefix("LevelCard_"))
+			)
+			card.lines = (
+				facts
+				if side_by_side
+				else PackedStringArray(
+					["%s · %s" % [facts[0], facts[3]], "%s · %s" % [facts[1], facts[2]]]
+				)
+			)
+			card.art_share = 0.26 if side_by_side else 0.16
+		elif not side_by_side:
 			card.art_share = 0.6
+		card.apply_size(scale_factor)
 
 
 ## Fünf Rennarten: drei bzw. zwei Spalten; alle passen ohne Blättern, solange 64 dp reichen.
