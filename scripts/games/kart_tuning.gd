@@ -46,6 +46,21 @@ const NEONS: Array[Dictionary] = [
 	{"id": "weiss", "name": "Weiß", "cost": 4, "color": Color("f2fbff")},
 ]
 const KINDS: Array[String] = ["paint", "rims", "neon"]
+## Anbauteile (nur Aussehen, kostenlos, schon bei 0 Sternen): Radaufsätze und Auspuffblenden.
+## Serie ist immer wählbar. Die Teile liegen in assets/kart/production/parts/kart_parts.glb
+## (tools/lumo_kart_art/karts/build_parts.py), „node“ ist der Knotenname dort.
+const WHEEL_COVERS: Array[Dictionary] = [
+	{"id": "serie", "name": "Serie", "cost": 0, "node": ""},
+	{"id": "turbine", "name": "Turbinenrad", "cost": 0, "node": "WheelCover_Turbine"},
+	{"id": "stern", "name": "Sternrad", "cost": 0, "node": "WheelCover_Star"},
+]
+const EXHAUSTS: Array[Dictionary] = [
+	{"id": "serie", "name": "Serie", "cost": 0, "node": ""},
+	{"id": "rakete", "name": "Raketendüse", "cost": 0, "node": "ExhaustTip_Rocket"},
+	{"id": "doppel", "name": "Doppelrohr", "cost": 0, "node": "ExhaustTip_Twin"},
+]
+const PART_SLOTS: Array[String] = ["wheel_cover", "exhaust"]
+const SLOT_NAMES: Dictionary = {"wheel_cover": "Räder", "exhaust": "Auspuff"}
 
 var child_key: String = "standalone"
 ## Alle je verdienten Fortschrittssterne (von der App gemeldet, nie kleiner als der Stand beim Laden).
@@ -90,6 +105,10 @@ static func options(kind: String) -> Array[Dictionary]:
 			return RIMS
 		"neon":
 			return NEONS
+		"wheel_cover":
+			return WHEEL_COVERS
+		"exhaust":
+			return EXHAUSTS
 	return []
 
 
@@ -284,6 +303,8 @@ func look(kart_id: String) -> Dictionary:
 		"neon": neon.get("color", base.neon),
 		"rim": rims.get("color", Color("c9d6e6")),
 		"rim_neon": str(rims.id) == "neon",
+		"wheel_cover": chosen(kart_id, "wheel_cover"),
+		"exhaust": chosen(kart_id, "exhaust"),
 		"levels": {},
 		"underglow": str(neon.id) != "werk" or total_level(kart_id) >= 8,
 	}
@@ -311,7 +332,7 @@ func load_from_disk() -> void:
 		if not kart.is_empty():
 			levels[kart_id] = kart
 		var look: Dictionary = {}
-		for kind in KINDS:
+		for kind in KINDS + PART_SLOTS:
 			var id: String = str(config.get_value(section, kind, ""))
 			if not id.is_empty():
 				look[kind] = id

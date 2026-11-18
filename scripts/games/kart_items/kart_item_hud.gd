@@ -1,12 +1,15 @@
 class_name LumoKartItemHud
 extends Control
-## Item layer of the race HUD, drawn in one Control (cheap on phones):
-##  - fighter-jet style lock-on: a seeker sweeps out, brackets close around the nearest
-##    rival ahead, "ZIEL ERFASST" + tone; without a target "Kein Ziel – geradeaus"
-##  - rear warning band when a rival has locked onto the player
-##  - shield time bar, item slot icon with state ring and the short roulette
-##  - a first-time pictogram hint (tap 1x = arm, tap 2x = fire) that needs no reading
-## Nothing here blinks faster than 2.5 Hz; reduced motion keeps every cue steady.
+## Item layer of the race HUD, drawn in one Control (cheap on phones). Die Teile sind in
+## Blender gerendert (tools/art/render_kart_item_hud.py), passend zu den Renn-Knöpfen:
+##  - Zielerfassung wie im Kampfjet: Suchring wandert, verengt sich auf den Rivalen, vier
+##    Klammern rasten ein (einmaliger kurzer Lichtring + Ton aus kart_island), Entfernung als
+##    Balken unter dem Ziel; ohne Ziel „Kein Ziel – geradeaus“
+##  - Raketenhalter links/rechts mit je zwei Schächten (Füllstand = verbleibende Salven)
+##  - Schild-Restzeit als Ring um das Schild-Symbol
+##  - Warnung von hinten: roter Pfeil am unteren Rand
+##  - Item-Symbol im Knopf, kurze Roulette, Piktogramm-Hinweis beim ersten Mal
+## Nichts blinkt periodisch; ruhige Bewegung: kein Aufblitzen, kein Drehen, kein Atmen.
 
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const ROCKET_RED := Color("ff4f6d")
@@ -14,6 +17,8 @@ const LOCK_GOLD := Color("ffd23f")
 const LOCK_RED := Color("ff3b5c")
 const SHIELD_CYAN := Color("66e8ff")
 const INK := Color("071428")
+const ITEM_ART := "res://assets/kart/hud/items/"
+const FLASH_SECONDS: float = 0.32
 const ICON_ORDER: Array[String] = ["star_rocket", "shield", "boost", "spark_ball", "bubble_trap", "pulse", "star_magnet", "aurora", "triple_boost"]
 
 var reduced_motion: bool = false
@@ -27,6 +32,10 @@ var seeker := Vector2.ZERO
 var seeker_ready: bool = false
 var _time: float = 0.0
 var _last_target: int = -99
+## Restzeit des einmaligen Einrast-Lichtrings (startet, wenn der Lock 1.0 erreicht).
+var _flash: float = 0.0
+var _was_locked: bool = false
+static var _textures: Dictionary = {}
 
 
 func _init() -> void:
@@ -38,6 +47,11 @@ func _init() -> void:
 func push_state(next_state: Dictionary, delta: float) -> void:
 	state = next_state
 	_time += delta
+	_flash = maxf(0.0, _flash - delta)
+	var locked_now: bool = lock_stage() == "locked"
+	if locked_now and not _was_locked and not reduced_motion:
+		_flash = FLASH_SECONDS
+	_was_locked = locked_now
 	var centre: Vector2 = _aim_centre()
 	if str(state.get("phase", "")) != "armed":
 		seeker = centre
@@ -89,6 +103,7 @@ func _draw() -> void:
 		_draw_item_slot(clampf(size.x / 112.0, 0.5, 2.5))
 		return
 	var s: float = _ui_scale()
+	_draw_rocket_pods(s)
 	if str(state.get("phase", "")) == "armed" and float(state.get("rearm", 0.0)) <= 0.0:
 		_draw_lock_on(s)
 	if float(state.get("warning", 0.0)) > 0.0:
@@ -129,6 +144,61 @@ func _small_star(centre: Vector2, radius: float, colour: Color) -> void:
 
 
 # --- lock-on ---------------------------------------------------------------------------
+# Gerenderte Teile (tools/art/render_kart_item_hud.py) in der Bildsprache der Renn-Knöpfe:
+# Suchring -> verengt sich aufs Ziel -> Klammern rasten ein (kurzes Aufblitzen, nicht bei
+# ruhiger Bewegung). Entfernung als Balken unter dem Ziel, ohne Zahlen.
+
+
+static func _tex(id: String) -> Texture2D:
+	if not _textures.has(id):
+		var path := ITEM_ART + id + ".webp"
+		_textures[id] = load(path) if ResourceLoader.exists(path) else null
+	return _textures[id]
+
+
+func _draw_tex_centered(id: String, centre: Vector2, edge: float, angle: float = 0.0, tint: Color = Color.WHITE) -> bool:
+	var texture: Texture2D = _tex(id)
+	if texture == null:
+		return false
+	draw_set_transform(centre, angle, Vector2.ONE)
+	draw_texture_rect(texture, Rect2(Vector2(-edge, -edge) * 0.5, Vector2(edge, edge)), false, tint)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	return true
+
+
+func _glass_plate(text: String, centre: Vector2, font_size: float, rim: Color, fill: Color = Color(0.02, 0.06, 0.15, 0.86)) -> void:
+	var size_i: int = maxi(10, int(font_size))
+	var extent: Vector2 = FONT.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size_i)
+	var pad := Vector2(font_size * 0.7, font_size * 0.34)
+	var rect := Rect2(centre - extent * 0.5 - pad - Vector2(0, font_size * 0.05), extent + pad * 2.0)
+	var style := StyleBoxFlat.new()
+	style.bg_color = fill
+	style.border_color = Color(rim, 0.95)
+	style.set_border_width_all(maxi(2, int(font_size * 0.1)))
+	style.set_corner_radius_all(int(rect.size.y * 0.5))
+	style.shadow_color = Color(rim, 0.28)
+	style.shadow_size = maxi(2, int(font_size * 0.3))
+	style.anti_aliasing = true
+	draw_style_box(style, rect)
+	draw_string(FONT, centre + Vector2(-extent.x * 0.5, font_size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, size_i, Color.WHITE)
+
+
+## Laufende Werte, die Tests und Aufnahmen lesen: "search", "acquire", "locked".
+func lock_stage() -> String:
+	if str(state.get("phase", "")) != "armed":
+		return ""
+	if not bool(state.get("has_target", false)):
+		return "search"
+	return "locked" if float(state.get("lock", 0.0)) >= 1.0 else "acquire"
+
+
+## 0 (Ziel am Rand der Reichweite) .. 1 (Ziel ganz nah); -1 ohne Ziel/Entfernung.
+func range_fill() -> float:
+	var distance: float = float(state.get("target_distance", -1.0))
+	var reach: float = float(state.get("lock_range", 0.0))
+	if distance < 0.0 or reach <= 0.0 or not bool(state.get("has_target", false)):
+		return -1.0
+	return clampf(1.0 - distance / reach, 0.0, 1.0)
 
 
 func _draw_lock_on(s: float) -> void:
@@ -136,49 +206,115 @@ func _draw_lock_on(s: float) -> void:
 	var locked: bool = progress >= 1.0
 	var has_target: bool = bool(state.get("has_target", false)) and _target_screen() != null
 	var centre: Vector2 = _aim_centre()
-	# Gun-sight in the middle: always shows where "geradeaus" is.
-	var sight: Color = Color(1, 1, 1, 0.55)
-	draw_arc(centre, 26.0 * s, 0, TAU, 40, sight, 2.5 * s, true)
+	# Visier in der Mitte: zeigt immer, wo „geradeaus“ ist.
+	var sight: Color = Color(0.75, 0.95, 1.0, 0.6)
+	draw_arc(centre, 22.0 * s, 0, TAU, 40, sight, 2.0 * s, true)
 	for k in range(4):
 		var direction := Vector2.RIGHT.rotated(k * PI * 0.5)
-		draw_line(centre + direction * 32.0 * s, centre + direction * 46.0 * s, sight, 3.0 * s, true)
+		draw_line(centre + direction * 28.0 * s, centre + direction * 40.0 * s, sight, 2.5 * s, true)
+	var spin: float = 0.0 if reduced_motion else _time * 0.9
 	if not has_target:
-		var search := Color(1, 1, 1, 0.85)
-		draw_arc(seeker, 34.0 * s, _time * 2.0, _time * 2.0 + PI * 1.4, 30, search, 3.0 * s, true)
-		_label("Kein Ziel – geradeaus", centre + Vector2(0, 92.0 * s), 26.0 * s, Color.WHITE)
-		_arrow(centre + Vector2(0, -70.0 * s), Vector2.UP, 22.0 * s, Color(1, 1, 1, 0.8))
+		if not _draw_tex_centered("seeker_ring", seeker, 150.0 * s, spin, Color(1, 1, 1, 0.92)):
+			draw_arc(seeker, 60.0 * s, 0, TAU, 40, Color(0.5, 0.9, 1.0, 0.9), 4.0 * s, true)
+		_glass_plate("Kein Ziel – geradeaus", centre + Vector2(0, 96.0 * s), 24.0 * s, Color("6fe6ff"))
 		return
-	var colour: Color = LOCK_RED if locked else LOCK_GOLD.lerp(Color("ff8a3c"), progress)
-	# Line from the sight to the seeker: "the rockets will fly there".
-	draw_dashed_line(centre, seeker, Color(colour, 0.55), 2.5 * s, 12.0 * s)
-	# Brackets close from wide to tight while the lock builds.
-	var half: float = lerpf(120.0, 52.0, smoothstep(0.0, 1.0, progress)) * s
-	var turn: float = 0.0 if reduced_motion else (1.0 - progress) * 0.6
-	var corner: float = half * 0.42
-	var width: float = (5.0 if locked else 4.0) * s
+	var ease: float = smoothstep(0.0, 1.0, progress)
+	# 1) Suchring verengt sich auf das Ziel und verblasst, während die Klammern greifen.
+	var ring_edge: float = lerpf(210.0, 112.0, ease) * s
+	if not locked:
+		_draw_tex_centered("seeker_ring", seeker, ring_edge, spin * 0.5, Color(1, 1, 1, lerpf(0.95, 0.35, ease)))
+	# Linie vom Visier zum Ziel: „dorthin fliegen die Raketen“.
+	var line_colour: Color = LOCK_RED if locked else LOCK_GOLD
+	draw_dashed_line(centre, seeker, Color(line_colour, 0.5), 2.5 * s, 12.0 * s)
+	# 2) Vier gerenderte Klammer-Ecken schließen sich von weit nach eng.
+	var half: float = lerpf(120.0, 54.0, ease) * s
+	var corner_edge: float = 46.0 * s * (1.12 if locked else 1.0)
+	var corner_id: String = "lock_corner_red" if locked else "lock_corner_gold"
 	for k in range(4):
-		var diagonal := Vector2(1, 1).rotated(k * PI * 0.5 + turn)
-		var tip: Vector2 = seeker + diagonal * half
-		var along_a: Vector2 = Vector2(-diagonal.x, 0).normalized() * corner
-		var along_b: Vector2 = Vector2(0, -diagonal.y).normalized() * corner
-		draw_polyline(PackedVector2Array([tip + along_a, tip, tip + along_b]), INK, width + 4.0 * s, true)
-		draw_polyline(PackedVector2Array([tip + along_a, tip, tip + along_b]), colour, width, true)
-	# Progress ring around the target.
-	draw_arc(seeker, half * 0.62, -PI * 0.5, -PI * 0.5 + TAU * progress, 48, Color(colour, 0.9), 5.0 * s, true)
+		# Ecke im Bild zeigt nach unten links; die Drehung legt sie an jede Ecke.
+		var angle: float = -k * PI * 0.5
+		var diagonal := Vector2(-1, 1).rotated(angle)
+		var at: Vector2 = seeker + diagonal * half
+		if not _draw_tex_centered(corner_id, at, corner_edge, angle):
+			draw_arc(at, 10.0 * s, 0, TAU, 12, line_colour, 4.0 * s, true)
+	# Fortschrittsring um das Ziel.
+	draw_arc(seeker, half * 0.66, -PI * 0.5, -PI * 0.5 + TAU * progress, 48, Color(INK, 0.6), 8.0 * s, true)
+	draw_arc(seeker, half * 0.66, -PI * 0.5, -PI * 0.5 + TAU * progress, 48, Color(line_colour, 0.95), 4.5 * s, true)
 	if locked:
-		var pulse: float = 1.0 if reduced_motion else 0.85 + 0.15 * sin(_time * TAU * 1.5)
-		var diamond: float = 16.0 * s * pulse
-		var points := PackedVector2Array([
-			seeker + Vector2(0, -diamond), seeker + Vector2(diamond, 0), seeker + Vector2(0, diamond), seeker + Vector2(-diamond, 0),
-		])
-		draw_colored_polygon(points, Color(LOCK_RED, 0.85))
-		draw_polyline(points + PackedVector2Array([points[0]]), Color.WHITE, 2.5 * s, true)
-		_badge("ZIEL ERFASST!", seeker + Vector2(0, -half - 30.0 * s), 30.0 * s, LOCK_RED)
+		_draw_tex_centered("lock_core", seeker, 46.0 * s)
+		# 3) Einrasten: ein einziger kurzer Lichtring nach außen (kein Blinken, kein Loop).
+		if _flash > 0.0 and not reduced_motion:
+			var t: float = 1.0 - _flash / FLASH_SECONDS
+			draw_arc(seeker, half * (0.9 + t * 0.9), 0, TAU, 48, Color(1, 1, 1, (1.0 - t) * 0.9), (7.0 - t * 5.0) * s, true)
+			draw_circle(seeker, half * 0.5, Color(1, 1, 1, (1.0 - t) * 0.35))
+		_glass_plate("ZIEL ERFASST!", seeker + Vector2(0, -half - 34.0 * s), 28.0 * s, LOCK_RED, Color(0.35, 0.0, 0.06, 0.9))
 	else:
-		_badge("ERFASSE …", seeker + Vector2(0, -half - 26.0 * s), 24.0 * s, Color("e09a1a"))
+		_glass_plate("ERFASSE …", seeker + Vector2(0, -half - 30.0 * s), 22.0 * s, LOCK_GOLD)
+	var fill: float = range_fill()
+	var below: Vector2 = seeker + Vector2(0, half + 26.0 * s)
+	if fill >= 0.0:
+		_draw_range_bar(below, s, fill, line_colour)
+		below += Vector2(0, 30.0 * s)
 	var who: String = str(state.get("target_name", ""))
 	if not who.is_empty():
-		_label(who, seeker + Vector2(0, half + 30.0 * s), 24.0 * s, Color.WHITE)
+		_label(who, below, 22.0 * s, Color.WHITE)
+
+
+## Entfernungsbalken: voll = ganz nah, leer = Rand der Reichweite. Keine Zahlen.
+func _draw_range_bar(centre: Vector2, s: float, fill: float, colour: Color) -> void:
+	var width: float = 150.0 * s
+	var height: float = 14.0 * s
+	var rect := Rect2(centre - Vector2(width, height) * 0.5, Vector2(width, height))
+	var back := StyleBoxFlat.new()
+	back.bg_color = Color(0.02, 0.06, 0.15, 0.82)
+	back.border_color = Color("6fe6ff", 0.8)
+	back.set_border_width_all(maxi(1, int(2.0 * s)))
+	back.set_corner_radius_all(int(height * 0.5))
+	back.anti_aliasing = true
+	draw_style_box(back, rect.grow(3.0 * s))
+	var inner := Rect2(rect.position, Vector2(maxf(height, width * fill), height))
+	var bar := StyleBoxFlat.new()
+	bar.bg_color = Color("43d8ff").lerp(colour, fill)
+	bar.set_corner_radius_all(int(height * 0.5))
+	bar.anti_aliasing = true
+	draw_style_box(bar, inner)
+	# Glanzlinie oben und vier Teilstriche wie auf einer Skala.
+	draw_line(inner.position + Vector2(height * 0.5, height * 0.28), inner.position + Vector2(inner.size.x - height * 0.5, height * 0.28), Color(1, 1, 1, 0.45), maxf(1.0, 2.0 * s), true)
+	for k in range(1, 4):
+		var x: float = rect.position.x + width * k / 4.0
+		draw_line(Vector2(x, rect.position.y - 2.0 * s), Vector2(x, rect.end.y + 2.0 * s), Color(INK, 0.7), maxf(1.0, 2.0 * s))
+	_rocket_icon(rect.position + Vector2(-16.0 * s, height * 0.5), 26.0 * s, 1.0)
+
+
+# --- Raketenhalter links/rechts ----------------------------------------------------------
+
+
+## Ein Halter je Seite mit zwei Schächten. Je Salve verlässt eine Rakete jeden Halter:
+## jeder Halter zeigt also so viele Raketen, wie Salven übrig sind (0..2).
+func pod_rockets_loaded() -> int:
+	if str(state.get("item", "")) != "star_rocket" or float(state.get("roulette", 0.0)) > 0.0:
+		return -1
+	return clampi(int(state.get("charges", 0)), 0, 2)
+
+
+func _draw_rocket_pods(s: float) -> void:
+	var loaded: int = pod_rockets_loaded()
+	if loaded < 0:
+		return
+	var armed: bool = str(state.get("phase", "")) == "armed"
+	var centre: Vector2 = _aim_centre()
+	var edge: float = 92.0 * s
+	for side in [-1.0, 1.0]:
+		var at: Vector2 = centre + Vector2(side * 168.0 * s, 132.0 * s)
+		if not _draw_tex_centered("pod_armed" if armed else "pod", at, edge):
+			draw_rect(Rect2(at - Vector2(edge, edge) * 0.4, Vector2(edge, edge) * 0.8), Color(INK, 0.8))
+		for slot in range(2):
+			# Schachtmitten liegen im Bild bei x = ±66 von 384 px.
+			var slot_at: Vector2 = at + Vector2((slot * 2 - 1) * edge * 0.172, edge * 0.01)
+			if slot < loaded:
+				_draw_tex_centered("pod_rocket", slot_at, edge * 0.62)
+			else:
+				draw_circle(slot_at + Vector2(0, edge * 0.2), edge * 0.05, Color(1, 1, 1, 0.18))
 
 
 # --- warning, shield, item slot ----------------------------------------------------------
@@ -187,45 +323,45 @@ func _draw_lock_on(s: float) -> void:
 func _draw_rear_warning(s: float) -> void:
 	var level: float = clampf(float(state.get("warning", 0.0)), 0.0, 1.0)
 	var incoming: bool = bool(state.get("incoming", false))
-	# 2 Hz breathing (well below 3 Hz); steady in reduced motion.
-	var wave: float = 1.0 if reduced_motion else 0.62 + 0.38 * (sin(_time * TAU * 2.0) * 0.5 + 0.5)
-	var band_height: float = 26.0 * s
-	var band := Rect2(Vector2(0, size.y - band_height), Vector2(size.x, band_height))
-	draw_rect(band, Color(LOCK_RED, 0.55 * level * wave))
-	# Glow along both lower corners: "danger from behind".
-	for side in [-1.0, 1.0]:
-		var x: float = size.x * 0.5 + side * size.x * 0.5
-		draw_circle(Vector2(x, size.y), 140.0 * s, Color(LOCK_RED, 0.18 * level * wave))
-	var centre := Vector2(size.x * 0.5, size.y * 0.29)
-	var text: String = "RAKETE KOMMT!" if incoming else "ACHTUNG – DU BIST ERFASST!"
-	_badge(text, centre, 30.0 * s, Color(LOCK_RED, 0.95))
-	# Chevrons pointing up from the bottom edge = "it comes from behind you".
-	for k in range(3):
-		var y: float = size.y - band_height - 18.0 * s - k * 26.0 * s
-		var alpha: float = level * (1.0 if reduced_motion else clampf(wave * 1.4 - k * 0.25, 0.25, 1.0))
-		_arrow(Vector2(size.x * 0.5, y), Vector2.UP, 30.0 * s, Color(1, 0.35, 0.45, alpha))
-	# Little rocket on the bottom edge: "es kommt von hinten".
-	var marker := Vector2(size.x * 0.5, size.y - band_height * 0.5)
-	draw_circle(marker, 22.0 * s, Color(INK, 0.85 * level))
-	_rocket_icon(marker + Vector2(0, 2.0 * s), 34.0 * s, level)
+	# Sanftes Atmen (1.2 Hz); bei ruhiger Bewegung steht alles still.
+	var wave: float = 1.0 if reduced_motion else 0.78 + 0.22 * (sin(_time * TAU * 1.2) * 0.5 + 0.5)
+	# Weiches rotes Licht vom unteren Rand: „es kommt von hinten“.
+	var glow_height: float = 90.0 * s
+	for k in range(6):
+		var t: float = k / 6.0
+		draw_rect(Rect2(Vector2(0, size.y - glow_height * (1.0 - t)), Vector2(size.x, glow_height / 6.0)), Color(LOCK_RED, 0.07 * level * wave * (0.4 + t)))
+	var arrow_edge: float = (104.0 if incoming else 88.0) * s
+	var arrow_at := Vector2(size.x * 0.5, size.y - arrow_edge * 0.62)
+	if not _draw_tex_centered("warn_arrow", arrow_at, arrow_edge, 0.0, Color(1, 1, 1, clampf(level * wave * 1.15, 0.0, 1.0))):
+		_arrow(arrow_at + Vector2(0, -arrow_edge * 0.4), Vector2.UP, 30.0 * s, Color(1, 0.35, 0.45, level))
+	var text: String = "RAKETE KOMMT!" if incoming else "DU BIST ERFASST!"
+	_glass_plate(text, arrow_at + Vector2(0, -arrow_edge * 0.78), 24.0 * s, LOCK_RED, Color(0.35, 0.0, 0.06, 0.88 * level))
 	if bool(state.get("shield_ready", false)):
 		var rect: Rect2 = state.get("item_rect", Rect2())
 		if rect.size.x > 0.0:
 			var tip: Vector2 = rect.get_center() + Vector2(0, -rect.size.y * 0.62)
-			_badge("SCHILD!", tip + Vector2(0, -34.0 * s), 26.0 * s, Color("1aa3c4"))
+			_glass_plate("SCHILD!", tip + Vector2(0, -34.0 * s), 24.0 * s, SHIELD_CYAN, Color(0.0, 0.18, 0.3, 0.9))
 			_arrow(tip, Vector2.DOWN, 18.0 * s, SHIELD_CYAN)
 
 
-func _draw_shield_bar(s: float) -> void:
-	var left: float = float(state.get("shield_left", 0.0))
+## Schild-Restzeit als Ring um das gerenderte Schild-Symbol (oben in der Mitte).
+func shield_fraction() -> float:
 	var total: float = maxf(0.1, float(state.get("shield_total", 6.0)))
-	var width: float = 230.0 * s
-	var origin := Vector2(size.x * 0.5 - width * 0.5, size.y * 0.17)
-	var bar := Rect2(origin + Vector2(44.0 * s, 0), Vector2(width - 44.0 * s, 20.0 * s))
-	draw_rect(bar.grow(3.0 * s), Color(INK, 0.75))
-	draw_rect(Rect2(bar.position, Vector2(bar.size.x * clampf(left / total, 0.0, 1.0), bar.size.y)), SHIELD_CYAN)
-	_icon("shield", origin + Vector2(18.0 * s, 10.0 * s), 22.0 * s, 1.0)
-	_label("%d" % ceili(left), bar.get_center() + Vector2(0, 1), 18.0 * s, INK)
+	return clampf(float(state.get("shield_left", 0.0)) / total, 0.0, 1.0)
+
+
+func _draw_shield_bar(s: float) -> void:
+	var fraction: float = shield_fraction()
+	var centre := Vector2(size.x * 0.5, size.y * 0.17)
+	var radius: float = 40.0 * s
+	draw_circle(centre, radius + 6.0 * s, Color(0.02, 0.06, 0.15, 0.8))
+	draw_arc(centre, radius, 0, TAU, 56, Color(SHIELD_CYAN, 0.22), 8.0 * s, true)
+	draw_arc(centre, radius, -PI * 0.5, -PI * 0.5 + TAU * fraction, 56, SHIELD_CYAN, 7.0 * s, true)
+	# Helles Ende des Rings zeigt, wo die Zeit gerade steht.
+	var tip: Vector2 = centre + Vector2.RIGHT.rotated(-PI * 0.5 + TAU * fraction) * radius
+	draw_circle(tip, 5.0 * s, Color.WHITE)
+	if not _draw_tex_centered("shield_core", centre, radius * 1.55):
+		_icon("shield", centre, radius * 0.6, 1.0)
 
 
 func _draw_item_slot(s: float) -> void:

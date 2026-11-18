@@ -1,5 +1,5 @@
 {
-  "triangles": 49166,
+  "triangles": 59596,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -48,71 +48,71 @@
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 17350,
-      "vertices": 8843,
+      "triangles": 21148,
+      "vertices": 10846,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FL_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FL_Mesh",
-      "triangles": 6480,
-      "vertices": 3264,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FR_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FR_Mesh",
-      "triangles": 6480,
-      "vertices": 3264,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RL_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RL_Mesh",
-      "triangles": 6480,
-      "vertices": 3264,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RR_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RR_Mesh",
-      "triangles": 6480,
-      "vertices": 3264,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "SteeringWheel_Mesh",
-      "triangles": 1380,
-      "vertices": 698,
+      "triangles": 2476,
+      "vertices": 1260,
       "material_slots": 3,
       "non_manifold_edges": 0
     }

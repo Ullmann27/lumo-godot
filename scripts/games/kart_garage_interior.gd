@@ -11,6 +11,7 @@ const STEEL := Color("6d7c90")
 const GOLD := Color("ffc14a")
 const CYAN := Color("3ae0ff")
 const AMBER := Color("ff9a3c")
+const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 
 
 static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "high") -> Dictionary:
@@ -71,18 +72,19 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 		warm_strips.append(_box_transform(Vector3(1.18, 0.06, 0.26), Vector3(x, 3.16, 3.79)))
 	_batch_boxes(root, "BayWarmSoftboxes", warm_strips, materials.warm, false)
 
-	var sign_board := _box(root, "NeonLumoSignBoard", Vector3(3.6, 0.88, 0.10), Vector3(0.0, 2.49, 3.97),
+	var sign_board := _box(root, "NeonLumoSignBoard", Vector3(3.6, 0.88, 0.10), Vector3(0.0, 1.98, 3.97),
 		materials.recess, false)
 	var sign := Label3D.new()
 	sign.name = "NeonLumoSign"
 	sign.text = "LUMO"
 	sign.font_size = 68
 	sign.pixel_size = 0.012
-	sign.modulate = Color("e6f8ff")
-	sign.outline_modulate = Color("103e52")
-	sign.outline_size = 4
+	# Neon-Schrift: warmweißer Kern mit magentafarbenem Leuchtsaum.
+	sign.modulate = Color("fff6ea")
+	sign.outline_modulate = Color("ff4fc8")
+	sign.outline_size = 10
 	sign.billboard = BaseMaterial3D.BILLBOARD_DISABLED
-	sign.position = Vector3(0.0, 2.58, 3.90)
+	sign.position = Vector3(0.0, 2.07, 3.90)
 	sign.rotation.y = PI
 	root.add_child(sign)
 	var motto := Label3D.new()
@@ -90,9 +92,9 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 	motto.text = "DEIN KART. DEIN ABENTEUER."
 	motto.font_size = 24
 	motto.pixel_size = 0.009
-	motto.modulate = Color("a5dce6")
+	motto.modulate = Color("ffe2a8")
 	motto.outline_size = 2
-	motto.position = Vector3(0.0, 2.14, 3.90)
+	motto.position = Vector3(0.0, 1.63, 3.90)
 	motto.rotation.y = PI
 	root.add_child(motto)
 	var sign_light := OmniLight3D.new()
@@ -119,10 +121,12 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 	var hero := SpotLight3D.new()
 	hero.name = "GarageHeroSpot"
 	hero.position = Vector3(0.2, 4.6, -2.6)
-	hero.light_color = Color("fff4de")
-	hero.light_energy = 1.15 if rich else 0.85
+	# Hauptlicht von vorn oben: das Kart ist der Star, der Lichtkegel liegt auf dem Teller.
+	hero.light_color = Color("fff1dc")
+	hero.light_energy = 2.4 if rich else 1.8
 	hero.spot_range = 10.0
-	hero.spot_angle = 32.0
+	hero.spot_angle = 27.0
+	hero.light_specular = 1.0
 	# The existing stage key already supplies contact shadows. A second shadow
 	# pass from this fill added geometry cost without clarifying the car.
 	hero.shadow_enabled = false
@@ -193,7 +197,9 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 		"back": _action_button(root, "back", "Zurück", Vector3(-2.15, 0.52, -1.05), Color("c4d5df")),
 	}
 	root.set_meta("garage_material_families", materials.size())
-	return {"root": root, "sign": sign, "sign_board": sign_board, "turntable": turntable,
+	# Farbiger Konzeptbild-Raum (Neon, Holz, Werkzeugkiste, Hebebühne, Boden-Details, Licht).
+	var showroom: Dictionary = SHOWROOM.build(root, materials, profile)
+	return {"showroom": showroom, "root": root, "sign": sign, "sign_board": sign_board, "turntable": turntable,
 		"hero": hero, "buttons": buttons, "rich": rich, "materials": materials}
 
 

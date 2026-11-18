@@ -285,6 +285,328 @@ def wheel(label, x, z, mats, root):
     return steering, rotor
 
 
+# ---------------------------------------------------------------- Nahdetails (Garage, Start, Ziel)
+# Alles hier nutzt nur Materialien, die das jeweilige Bauteil schon hat: die Renn-LOD
+# behält ihre 39 Oberflächen (Draw-Calls) und wächst nur um wenige Prozent Dreiecke.
+# DejaVu Sans Bold (Systemschrift, freie Lizenz) liefert dichte Glyphen-Netze; Nunito hat
+# sich überlappende Konturen (M, N, R, G), die nach dem Extrudieren offene Kanten erzeugen.
+FONT=Path('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')
+if not FONT.exists():
+    FONT=ROOT/'assets/fonts/Nunito-Black.ttf'
+SIDEWALL_TEXT='LUMO STERNGRIP'
+
+
+def ray_hit(origin, direction, exclude=()):
+    """Echter Oberflächenpunkt der Karosserie (Godot-Koordinaten rein und raus)."""
+    bpy.context.view_layer.update()
+    depsgraph=bpy.context.evaluated_depsgraph_get()
+    hit,location,normal,_index,obj,_m=bpy.context.scene.ray_cast(depsgraph,g(origin),(G_TO_B@Vector(direction)).normalized())
+    if not hit:
+        return None,None
+    back=G_TO_B.transposed()
+    return back@location,(back@normal).normalized()
+
+
+def ribbon(name, points, up, width, thick, mat, parent=None):
+    """Geschlossenes flaches Band (Gurt, Kantenschutz): rechteckiger Querschnitt."""
+    verts,faces=[],[]
+    pts=[Vector(p) for p in points]
+    up=Vector(up).normalized()
+    for i,p in enumerate(pts):
+        t=(pts[min(i+1,len(pts)-1)]-pts[max(i-1,0)]).normalized()
+        side=t.cross(up).normalized()
+        n=side.cross(t).normalized()
+        for sx,sy in ((-1,-1),(1,-1),(1,1),(-1,1)):
+            verts.append(tuple(p+side*sx*width*.5+n*sy*thick*.5))
+    for i in range(len(pts)-1):
+        for k in range(4):
+            a,b=i*4+k,i*4+(k+1)%4
+            faces.append((a,b,b+4,a+4))
+    faces.append((3,2,1,0))
+    last=(len(pts)-1)*4
+    faces.append((last,last+1,last+2,last+3))
+    return mesh(name,verts,faces,mat,parent)
+
+
+def disc(name, at, normal, radius, thick, mat, parent=None, sides=20):
+    """Flache Scheibe (Startnummern-Schild) auf der Oberfläche, Normale nach außen."""
+    n=Vector(normal).normalized()
+    ref=Vector((0,1,0)) if abs(n.y)<.9 else Vector((1,0,0))
+    u=n.cross(ref).normalized();v=n.cross(u).normalized()
+    c=Vector(at)
+    verts=[]
+    for k in range(sides):
+        a=k*math.tau/sides
+        for depth in (-thick*.5,thick*.5):
+            verts.append(tuple(c+n*depth+radius*(u*math.cos(a)+v*math.sin(a))))
+    faces=[tuple(range(0,2*sides,2)),tuple(reversed(range(1,2*sides,2)))]
+    for k in range(sides):
+        a,b=2*k,2*((k+1)%sides)
+        faces.append((a,b,b+1,a+1))
+    return mesh(name,verts,faces,mat,parent)
+
+
+def oriented_marker(name, at, normal, parent, size):
+    """Leeres Objekt, dessen Godot-+Z auf die Flächennormale zeigt (Aufkleber, Nummer)."""
+    o=empty(name,at,parent)
+    o.rotation_mode='QUATERNION'
+    o.rotation_quaternion=(G_TO_B@Vector(normal)).to_track_quat('-Y','Z')
+    o['decal_size_m']=size
+    o['attachment_marker']=True
+    return o
+
+
+def sidewall_lettering(label, side, rotor, mat):
+    """Erhabene Fantasie-Reifenschrift auf der Außenflanke (keine echte Marke)."""
+    curve=bpy.data.curves.new('SidewallText_'+label,'FONT')
+    curve.body=SIDEWALL_TEXT
+    curve.font=bpy.data.fonts.load(str(FONT),check_existing=True)
+    curve.size=.026
+    curve.extrude=.0009
+    curve.resolution_u=1
+    curve.align_x='CENTER'
+    curve.align_y='CENTER'
+    o=bpy.data.objects.new('SidewallTextTmp_'+label,curve)
+    bpy.context.collection.objects.link(o)
+    bpy.ops.object.select_all(action='DESELECT')
+    o.select_set(True);bpy.context.view_layer.objects.active=o
+    bpy.ops.object.convert(target='MESH')
+    o=bpy.context.object
+    data=o.data
+    # Vorder-, Rück- und Seitenflächen der Glyphen teilen sich danach ihre Kanten (dicht).
+    bm=bmesh.new();bm.from_mesh(data)
+    bmesh.ops.remove_doubles(bm,verts=bm.verts,dist=1e-6)
+    bm.to_mesh(data);bm.free()
+    verts,faces=[],[]
+    base,arc_r=.281,.281
+    # Schrift oben vorn auf der Flanke (Godot -Z = vorn): in der Garage gut lesbar.
+    for copy,theta0 in enumerate((-.62,)):
+        start=len(verts)
+        for v in data.vertices:
+            x,y,z=v.co
+            r=base+y
+            a=theta0-side*x/arc_r
+            # Außenflanke des Reifenprofils: x fällt von .19 (r=.253) auf .175 (r=.298).
+            face=.19-(r-.253)/.045*.015
+            verts.append((side*(face+.0011+z),r*math.cos(a),r*math.sin(a)))
+        faces.extend(tuple(start+i for i in p.vertices) for p in data.polygons)
+    bpy.data.objects.remove(o,do_unlink=True)
+    return mesh('SidewallLettering_'+label,verts,faces,mat,rotor)
+
+
+def close_up_details(variant, mats, body, root, wheels, steering):
+    st=STANCES[variant]
+
+    def hit(origin, direction):
+        # Treffer in Weltkoordinaten -> Koordinaten der in X gestreckten Karosserie.
+        at,normal=ray_hit(origin,direction)
+        if at is None:
+            return None,None
+        return Vector((at.x/st,at.y,at.z)),Vector((normal.x*st,normal.y,normal.z)).normalized()
+
+    # Reifenschrift, Sattelschrauben und Federbein-Ausgleichsbehälter je Rad.
+    for pivot,rotor in wheels:
+        label=pivot.name.split('_',1)[1]
+        side=-1 if label.endswith('L') else 1
+        sidewall_lettering(label,side,rotor,mats['gold'])
+        for y in (.018,.102):
+            ellipsoid('CaliperBolt_'+label,(side*.177,y,-.145),(.006,.011,.011),mats['alloy'],pivot,8,4)
+        # Bremsscheibe als flache Ringscheibe mit Bohrungen hinter den Speichen.
+        verts,faces=[],[]
+        for k in range(32):
+            a=k*math.tau/32
+            for r,dx in ((.098,-.007),(.188,-.007),(.188,.007),(.098,.007)):
+                verts.append((side*(.14+dx),r*math.cos(a),r*math.sin(a)))
+        for k in range(32):
+            for j in range(4):
+                a,b=k*4+j,k*4+(j+1)%4
+                c,d=((k+1)%32)*4+(j+1)%4,((k+1)%32)*4+j
+                faces.append((a,d,c,b))
+        mesh('BrakeDiscFace_'+label,verts,faces,mats['alloy'],rotor)
+        for k in range(8):
+            a=k*math.tau/8+.2
+            ellipsoid('BrakeDrill_'+label,(side*.1485,.15*math.cos(a),.15*math.sin(a)),(.003,.009,.009),mats['rubber'],rotor,6,4)
+    # Nieten entlang der Cockpitwand, der Nasen-Zierleiste und der Rückwand.
+    rivets=[]
+    for side in (-1,1):
+        for k in range(5):
+            rivets.append(((side*1.2,.515,-.16+k*.1),(-side,0,0)))
+        for k in range(5):
+            rivets.append(((side*.115,1.5,-1.02+k*.12),(0,-1,0)))
+        for y in (.20,.31):
+            rivets.append(((side*1.6,y,-1.13),(-side,0,0)))
+    for x in (-.30,-.10,.10,.30):
+        rivets.append(((x,.535,2.0),(0,0,-1)))
+    for i,(origin,direction) in enumerate(rivets):
+        at,normal=hit(origin,direction)
+        if at is None:
+            continue
+        ellipsoid('Rivet',tuple(at+normal*.002),(.0075,.0075,.0075),mats['alloy'],body,6,4)
+    # Startnummern-Schilder (Pearl-Weiß), der Rundung des Seitenkastens angeschmiegt.
+    for side,label in ((-1,'L'),(1,'R')):
+        at,normal=hit((side*1.3,.295,.03),(-side,0,0))
+        if at is not None:
+            n=Vector(normal)
+            ref=Vector((0,1,0)) if abs(n.y)<.9 else Vector((1,0,0))
+            ru=n.cross(ref).normalized();rv=n.cross(ru).normalized()
+            ring=[]
+            for k in range(20):
+                a=k*math.tau/20
+                probe=at+.047*(ru*math.cos(a)+rv*math.sin(a))
+                p,pn=hit(tuple(probe+n*.08),tuple(-n))
+                ring.append((p,pn) if p is not None else (probe,n))
+            verts=[tuple(at+n*.0025),tuple(at-n*.004)]
+            for p,pn in ring:
+                verts.append(tuple(p+pn*.0025));verts.append(tuple(p-pn*.004))
+            faces=[]
+            for k in range(20):
+                a,b=2+2*k,2+2*((k+1)%20)
+                faces.append((0,a,b));faces.append((1,b+1,a+1));faces.append((a,a+1,b+1,b))
+            mesh('NumberPlate_'+label,verts,faces,mats['trim'],body)
+            oriented_marker('Decal_Number_'+label,tuple(at+normal*.0045),normal,body,.10)
+        for slot,z in (('Front',-.165),('Rear',.215)):
+            p,hn=hit((side*1.3,.30,z),(-side,0,0))
+            if p is not None:
+                oriented_marker('Decal_Sticker_%s_%s'%(slot,label),tuple(p+hn*.004),hn,body,.10)
+        # Zierstreifen (Akzentfarbe) über die Seitenkästen.
+        line=[]
+        for k in range(7):
+            z=-.13+k*.06
+            p,hn=hit((side*1.3,.352,z),(-side,0,0))
+            if p is not None:
+                line.append(tuple(p+hn*.002))
+        if len(line)>3:
+            ribbon('PinStripe_'+label,line,(0,1,0),.011,.004,mats['gold'],body)
+    # Die Nasen-Nummer steht direkt auf dem hellen Mittelstreifen.
+    at,normal=hit((0,2.0,-.94),(0,-1,0))
+    if at is not None:
+        oriented_marker('Decal_Number_Nose',tuple(at+normal*.004),normal,body,.12)
+    # Kantenschutz am Frontflügel: blank gescheuertes Metall an der Vorderkante.
+    edge=[]
+    for k in range(17):
+        x=-.74+1.48*k/16
+        chord=.19-.045*abs(x)/.8
+        edge.append((x,.176+.034*(abs(x)/.8)**2,-1.152+.03*(abs(x)/.8)**2-chord*.5+.006))
+    tube('WingEdgeWear',edge,.0075,mats['alloy'],body,6)
+    # Scheinwerfer: Reflektorschale (Alu) mit Leuchtkörper (Linse) je Seite.
+    for side in (-1,1):
+        at,normal=hit((side*.205,.305,-2.0),(0,0,1))
+        if at is not None:
+            n=Vector(normal)
+            ref=Vector((0,1,0)) if abs(n.y)<.9 else Vector((1,0,0))
+            ru=n.cross(ref).normalized();rv=n.cross(ru).normalized()
+            torus_ring=[tuple(at+n*.004+.036*(ru*math.cos(a)+rv*math.sin(a))) for a in [i*math.tau/16 for i in range(17)]]
+            tube('HeadlightBezel',torus_ring,.0075,mats['alloy'],body,6)
+            ellipsoid('HeadlightBulb',tuple(at+n*.004),(.029,.029,.014),mats['lamp'],body,12,6)
+            oriented_marker('Lamp_Front_'+('L' if side<0 else 'R'),tuple(at+n*.02),normal,body,.05)
+        # Rücklicht: drei LED-Punkte auf der Linse (reagieren mit der Bremse).
+        for k in range(3):
+            ellipsoid('TailLed',(side*(.192+k*.05),.683,1.0735),(.011,.011,.004),mats['brake'],body,10,5)
+        oriented_marker('Lamp_Rear_'+('L' if side<0 else 'R'),(side*.242,.683,1.08),(0,0,1),body,.05)
+    # Sitz: Keder-Naht am Sitzkissen und Hosenträgergurte mit Schloss.
+    # Offene Bahn (Ende knapp vor dem Anfang): tube() rahmt geschlossene Ringe nur in XY.
+    seam=[(.225*math.cos(a),.30,.20+.19*math.sin(a)) for a in [i*math.tau*.99/28 for i in range(29)]]
+    tube('CushionPiping',seam,.0045,mats['gold'],body,5)
+    for side in (-1,1):
+        strap=[(side*.085,.95,.50),(side*.087,.89,.44),(side*.09,.80,.414),(side*.092,.68,.380),(side*.095,.60,.368)]
+        ribbon('HarnessShoulder',strap,(0,0,-1),.048,.005,mats['gold'],body)
+        bevel_box('HarnessAdjuster',(side*.092,.70,.379),(.058,.03,.012),mats['alloy'],body,.003)
+        lap=[(side*.283,.25,.32),(side*.278,.30,.24),(side*.262,.325,.15)]
+        ribbon('HarnessLap',lap,(side,0,0),.046,.005,mats['gold'],body)
+        bevel_box('HarnessTongue',(side*.255,.33,.125),(.03,.012,.05),mats['alloy'],body,.003)
+    # Lenkrad: Knöpfe, Drehregler und Schaltwippen; Godot-Z+ zeigt zum Fahrer.
+    for x,y in ((-.075,.035),(.075,.035),(-.062,-.03),(.062,-.03)):
+        ellipsoid('WheelButton',(x,y,.014),(.012,.012,.007),mats['paint'],steering,10,5)
+        tube('WheelButtonBezel',[(x+.016*math.cos(a),y+.016*math.sin(a),.009) for a in [i*math.tau/10 for i in range(11)]],.0025,mats['alloy'],steering,4)
+    ellipsoid('WheelRotary',(0,-.05,.014),(.016,.016,.009),mats['alloy'],steering,10,5)
+    for side in (-1,1):
+        bevel_box('ShiftPaddle',(side*.115,.055,-.022),(.05,.07,.008),mats['alloy'],steering,.003)
+    # Auspuff: blank gedrehte Endhülse am Übergang in den Boost-Auslass.
+    for side in (-1,1):
+        tube('ExhaustSleeve',[(side*.2055,.4967,.965),(side*.1675,.4835,1.025)],.037,mats['alloy'],body,10)
+
+
+# ---------------------------------------------------------------- Schaustück (nur Garage/Werkstatt/Podest)
+# Teile mit eigenen Materialien (Glas, Anlauffarben, Staubfilm). Sie liegen in einer eigenen
+# Datei aurora_<v>_showcase.glb und kosten im Rennen keine einzige Oberfläche.
+def showcase_material(name, color, metal, rough, alpha=1.0, emission=0.0):
+    m=material(name,color,metal,rough,emission)
+    if alpha<1.0:
+        p=m.node_tree.nodes.get("Principled BSDF")
+        p.inputs['Alpha'].default_value=alpha
+        if hasattr(m,'surface_render_method'):
+            m.surface_render_method='BLENDED'
+        if hasattr(m,'blend_method'):
+            m.blend_method='BLEND'
+    return m
+
+
+def showcase_parts(variant, body, wheels):
+    """Erzeugt die Schaustück-Teile ohne Eltern; Rückgabe [(Objekt, Ziel-Eltern)]."""
+    glass=showcase_material('LampGlass','eaf6ff',0.0,.04,alpha=.22)
+    blue=showcase_material('HeatTintBlue','4b5fc8',.92,.22)
+    straw=showcase_material('HeatTintStraw','d7a84e',.92,.24)
+    violet=showcase_material('HeatTintViolet','8a4fb0',.92,.22)
+    dust=showcase_material('RoadDustFilm','6b5a48',0.0,.95,alpha=.6)
+    parts=[]
+
+    def keep(o, parent):
+        o.parent=None
+        parts.append((o,parent))
+    st=STANCES[variant]
+    for side in (-1,1):
+        # Scheinwerfer-Glas: flache Kuppel über Reflektor und Leuchtkörper.
+        at,normal=ray_hit((side*.205,.305,-2.0),(0,0,1))
+        if at is not None:
+            at=Vector((at.x/st,at.y,at.z))
+            keep(ellipsoid('HeadlightGlass',tuple(at+Vector(normal)*.006),(.043,.043,.02),glass,None,20,10),body)
+        # Rücklicht-Abdeckung über Linse und LEDs.
+        keep(bevel_box('TailLampGlass',(side*.242,.683,1.079),(.17,.04,.008),glass,None,.004),body)
+        # Anlauffarben am Auspuff: Stroh -> Violett -> Blau zum heißen Auslass hin.
+        a,b=Vector((side*.215,.50,.95)),Vector((side*.12,.467,1.10))
+        for k,mat in enumerate((straw,violet,blue)):
+            t0,t1=.5+k*.15,.5+(k+1)*.15
+            keep(tube('ExhaustHeatTint',[tuple(a.lerp(b,t0)),tuple(a.lerp(b,t1))],.0352,mat,None,12),body)
+    # Staub- und Spritzfilm unten an Seitenkästen, Nase und Heck (Textur: kart_dust_film.png).
+    for source in [o for o in body.children if o.type=='MESH' and o.name.split('.')[0] in ('SculptedSidePod','NoseFairing','RearPaintCowl')]:
+        shell=source.copy();shell.data=source.data.copy();shell.name='DustFilm_'+source.name
+        bpy.context.collection.objects.link(shell)
+        shell.data.materials.clear();shell.data.materials.append(dust)
+        for mod in list(shell.modifiers):
+            shell.modifiers.remove(mod)
+        ys=[v.co.z for v in shell.data.vertices]
+        lo,hi=min(ys),max(ys)
+        layer=shell.data.uv_layers.active or shell.data.uv_layers.new(name="UVMap")
+        for v in shell.data.vertices:
+            v.co=v.co+v.normal*.003
+        for poly in shell.data.polygons:
+            for li in poly.loop_indices:
+                v=shell.data.vertices[shell.data.loops[li].vertex_index].co
+                layer.data[li].uv=((v.x+v.y)*1.5,1.0-(v.z-lo)/max(hi-lo,1e-4))
+        keep(shell,body)
+    return parts
+
+
+def export_showcase(root, parts, path):
+    """Renn-Netze entfernen, Schaustück an die echten Knoten hängen, verbinden, exportieren."""
+    for o in [o for o in descendants(root) if o.type=='MESH']:
+        bpy.data.objects.remove(o,do_unlink=True)
+    for o,parent in parts:
+        o.parent=parent
+        if o.modifiers:
+            bpy.context.view_layer.objects.active=o
+            for modifier in list(o.modifiers):
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+    bpy.context.view_layer.update()
+    for parent in {parent for _o,parent in parts}:
+        batch_assembly(parent)
+        joined=[o for o in parent.children if o.type=='MESH']
+        if joined:
+            joined[0].name=parent.name+'_Show'
+    export_glb(root,path)
+    return sum(len(o.data.polygons) for o in descendants(root) if o.type=='MESH')
+
+
 def create_kart(variant):
     paint, trim, gold, ice = PALETTES[variant]
     mats = {
@@ -416,6 +738,9 @@ def create_kart(variant):
     for side,label in ((-1,'L'),(1,'R')):
         for z,axle in ((-.66,'F'),(.66,'R')):
             wheels.append(wheel(axle+label,side*.77*STANCES[variant],z,mats,root))
+    close_up_details(variant,mats,body,root,wheels,steering)
+    root['showcase_parts']=0
+    create_kart.showcase=showcase_parts(variant,body,wheels)
     markers={
         'DriverSeat':(0,.31,.20),'DriverOrigin':(0,0,0),
         'Grip_L':(-.16,.70,-.04),'Grip_R':(.16,.70,-.04),
@@ -496,6 +821,38 @@ def measurements(root):
     lo=[min(p[i] for p in points) for i in range(3)]
     hi=[max(p[i] for p in points) for i in range(3)]
     return {'triangles':sum(n['triangles'] for n in nodes),'mesh_nodes':len(nodes),'material_count':len(used),'materials':sorted(used),'non_manifold_edges':nonmanifold,'bounds_blender_m':{'min':lo,'max':hi},'dimensions_godot_m':[hi[0]-lo[0],hi[2]-lo[2],hi[1]-lo[1]],'meshes':nodes}
+
+
+def drop_broken_islands(data, limit=240):
+    """Nach dem Ausdünnen: kleine Inseln (Reifenschrift, Bohrungen) mit offenen Kanten
+    entfernen. Auf Distanz sind sie ohnehin unsichtbar; das Netz bleibt dicht."""
+    bm=bmesh.new();bm.from_mesh(data)
+    seen=set();doomed=[]
+    for edge in bm.edges:
+        if edge.is_manifold or not edge.link_faces:
+            continue
+        start=edge.link_faces[0]
+        if start.index in seen:
+            continue
+        island=[];stack=[start];seen.add(start.index)
+        while stack:
+            f=stack.pop();island.append(f)
+            for e in f.edges:
+                for n in e.link_faces:
+                    if n.index not in seen:
+                        seen.add(n.index);stack.append(n)
+        if len(island)<limit:
+            doomed.extend(island)
+    if doomed:
+        bmesh.ops.delete(bm,geom=list(set(doomed)),context='FACES')
+    # Lose Kanten/Punkte ohne Fläche, die das Ausdünnen zurücklässt.
+    loose=[e for e in bm.edges if not e.link_faces]
+    if loose:
+        bmesh.ops.delete(bm,geom=loose,context='EDGES')
+    lonely=[v for v in bm.verts if not v.link_edges]
+    if lonely:
+        bmesh.ops.delete(bm,geom=lonely,context='VERTS')
+    bm.to_mesh(data);bm.free();data.update()
 
 
 def export_glb(root,path):
@@ -619,7 +976,7 @@ def main():
     export_glb(root,asset/('aurora_'+a.variant+'.glb'))
     (evidence/'mesh_report.json').write_text(json.dumps(report,indent=2)+'\n')
     # Explicit LOD assets keep joints/markers identical. Decimation is measured, not assumed.
-    for level,ratio in ((1,.48),(2,.32)):
+    for level,ratio in ((1,.41),(2,.27)):
         duplicates=[]
         for o in descendants(root):
             if o.type!='MESH':continue
@@ -630,8 +987,12 @@ def main():
                 bpy.context.view_layer.objects.active=o
                 m=o.modifiers.new('LOD simplification','DECIMATE');m.ratio=ratio
                 bpy.ops.object.modifier_apply(modifier=m.name)
+                drop_broken_islands(o.data)
+        lod_report=measurements(root)
+        # Vor dem Export messen: der glTF-Export wertet das Netz aus und lässt offene
+        # Hilfskanten im Blender-Netz zurück, die nicht in der Datei landen.
         export_glb(root,asset/('aurora_'+a.variant+'_lod'+str(level)+'.glb'))
-        (evidence/('lod'+str(level)+'_report.json')).write_text(json.dumps(measurements(root),indent=2)+'\n')
+        (evidence/('lod'+str(level)+'_report.json')).write_text(json.dumps(lod_report,indent=2)+'\n')
         for o,original in duplicates:o.data=original
     if a.renders!='none':
         render_view(camera,evidence/'front_three_quarter.png',(3.1,2.25,-3.7))
@@ -661,6 +1022,11 @@ def main():
             angle=math.tau*t-.72
             scene.frame_set(f%48+1)
             render_view(camera,frames/(str(f).zfill(4)+'.png'),(math.cos(angle)*4,2.1,math.sin(angle)*4),(0,.55,0),lens=47)
+    show_path=asset/('aurora_'+a.variant+'_showcase.glb')
+    show_tris=export_showcase(root,create_kart.showcase,show_path)
+    (evidence/'showcase_report.json').write_text(json.dumps({'variant':a.variant,'path':str(show_path.relative_to(ROOT)),
+        'faces':show_tris,'use':'Nur Garage, Werkstatt und Siegerpodest (set_preview_detail); nie im Rennen.',
+        'materials':['LampGlass','HeatTintStraw','HeatTintViolet','HeatTintBlue','RoadDustFilm']},indent=2)+'\n')
     print('LUMO_KART_EXPORT_COMPLETE '+json.dumps({'variant':a.variant,'report':str(evidence/'mesh_report.json'),'triangles':report['triangles'],'materials':report['material_count']}))
 
 

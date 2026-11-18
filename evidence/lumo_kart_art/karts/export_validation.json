@@ -4,18 +4,18 @@
   "assets": [
     {
       "path": "assets/kart/production/karts/aurora_comet.glb",
-      "sha256": "e21ce71170d77194b51c4cb3dec815c6bab42df0593c4b9b2acda5d12ae38c86",
-      "bytes": 1625772,
+      "sha256": "cd938b0680b0532906e3b99517c29cc61a69ba919a4d061253ffa79ce3d4c213",
+      "bytes": 2072640,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 48450,
-      "triangles_instanced_scene": 48450,
-      "vertices": 40506,
+      "triangles_unique_meshes": 58880,
+      "triangles_instanced_scene": 58880,
+      "vertices": 52451,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2438009777682169e-07,
+      "max_normal_length_error": 1.3462705350519855e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0049999505281448,
@@ -24,12 +24,12 @@
       ],
       "static_bounds_max": [
         1.0049999505281448,
-        0.9449999928474426,
+        0.9525658488273621,
         1.2159340381622314
       ],
       "static_dimensions_m": [
         2.0099999010562897,
-        0.9449999928474426,
+        0.9525658488273621,
         2.469928503036499
       ],
       "skins": [],
@@ -66,6 +66,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.756043,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000152,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.756042,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.722561,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.722564,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.734436,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.734434,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.214939,
+          0.307133,
+          -1.16319
+        ],
+        "Lamp_Front_R": [
+          0.21494,
+          0.307134,
+          -1.163188
+        ],
+        "Lamp_Rear_L": [
+          -0.242,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.242,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -160,22 +215,22 @@
       "lod": 0,
       "degenerate_uv_triangles": 0,
       "authored_non_manifold_edges": 0,
-      "triangle_budget": 50000
+      "triangle_budget": 60500
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
-      "sha256": "9d5bad4a4cc7de7c8d5315e0110124881200deb0822f03931ac843bda95535bb",
-      "bytes": 905008,
+      "sha256": "01a8ef9dc0d12a257df2a18ce0d6933cf6b372139112dc0e56368b95995e095b",
+      "bytes": 1016808,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23246,
-      "triangles_instanced_scene": 23246,
-      "vertices": 22669,
+      "triangles_unique_meshes": 24118,
+      "triangles_instanced_scene": 24118,
+      "vertices": 25874,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.4859137342781992e-07,
+      "max_normal_length_error": 1.289108033653008e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
@@ -184,12 +239,12 @@
       ],
       "static_bounds_max": [
         1.004681184887886,
-        0.9450348019599915,
+        0.9513866901397705,
         1.2159340381622314
       ],
       "static_dimensions_m": [
         2.009362369775772,
-        0.9456965625286102,
+        0.9520484507083893,
         2.469928503036499
       ],
       "skins": [],
@@ -226,6 +281,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.756043,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000152,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.756042,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.722561,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.722564,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.734436,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.734434,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.214939,
+          0.307133,
+          -1.16319
+        ],
+        "Lamp_Front_R": [
+          0.21494,
+          0.307134,
+          -1.163188
+        ],
+        "Lamp_Rear_L": [
+          -0.242,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.242,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -324,33 +434,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
-      "sha256": "f65ac0b43c57eb06741702954743a636b0f5b819c038089bc420cef164d4fef9",
-      "bytes": 661084,
+      "sha256": "43f08e3c3330d5b92645d446aa959b36ee9b964eddcce5c3effe155671b8803a",
+      "bytes": 740716,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15490,
-      "triangles_instanced_scene": 15490,
-      "vertices": 16490,
+      "triangles_unique_meshes": 15876,
+      "triangles_instanced_scene": 15876,
+      "vertices": 18791,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.44083012409979e-07,
+      "max_normal_length_error": 1.2544839811390318e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
-        -0.0006617605686187744,
-        -1.2539944648742676
+        -0.0005786716938018799,
+        -1.2533023357391357
       ],
       "static_bounds_max": [
         1.0054081082344055,
-        0.9450536370277405,
+        0.9513866901397705,
         1.2159340381622314
       ],
       "static_dimensions_m": [
         2.0100892931222916,
-        0.9457153975963593,
-        2.469928503036499
+        0.9519653618335724,
+        2.469236373901367
       ],
       "skins": [],
       "animations": [
@@ -386,6 +496,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.756043,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000152,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.756042,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.722561,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.722564,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.734436,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.734434,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.214939,
+          0.307133,
+          -1.16319
+        ],
+        "Lamp_Front_R": [
+          0.21494,
+          0.307134,
+          -1.163188
+        ],
+        "Lamp_Rear_L": [
+          -0.242,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.242,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -484,18 +649,18 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider.glb",
-      "sha256": "e3d5173e6c884e5d60c073b62ad9095c84cd9edc390fa89940c6bb7bcbbcbcdb",
-      "bytes": 1651488,
+      "sha256": "fdaee62eae925122595e506d2d8ff119bb1fe01106955781222a63e043634fd6",
+      "bytes": 2101384,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49166,
-      "triangles_instanced_scene": 49166,
-      "vertices": 41219,
+      "triangles_unique_meshes": 59596,
+      "triangles_instanced_scene": 59596,
+      "vertices": 53170,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2438009777682169e-07,
+      "max_normal_length_error": 1.3462705350519855e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9357000142335892,
@@ -546,6 +711,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.630392,
+          0.294594,
+          0.029916
+        ],
+        "Decal_Number_Nose": [
+          -0.000138,
+          0.501314,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.630392,
+          0.294594,
+          0.02992
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.605969,
+          0.299659,
+          -0.166438
+        ],
+        "Decal_Sticker_Front_R": [
+          0.605972,
+          0.299656,
+          -0.166438
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.61463,
+          0.299712,
+          0.216965
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.614629,
+          0.299728,
+          0.216964
+        ],
+        "Lamp_Front_L": [
+          -0.214044,
+          0.307133,
+          -1.151491
+        ],
+        "Lamp_Front_R": [
+          0.214043,
+          0.30714,
+          -1.15149
+        ],
+        "Lamp_Rear_L": [
+          -0.22022,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.22022,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -640,22 +860,22 @@
       "lod": 0,
       "degenerate_uv_triangles": 0,
       "authored_non_manifold_edges": 0,
-      "triangle_budget": 50000
+      "triangle_budget": 60500
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
-      "sha256": "90f1eccf1c1b444f315cfcacacd773bdf28191c9da2c97890dc57626741241b4",
-      "bytes": 920056,
+      "sha256": "586ceb3baf05a4a0e360d2a2d3fed857426df8dd2bb61d78d65209b8700aa268",
+      "bytes": 1033044,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23590,
-      "triangles_instanced_scene": 23590,
-      "vertices": 23097,
+      "triangles_unique_meshes": 24412,
+      "triangles_instanced_scene": 24412,
+      "vertices": 26321,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.4859137342781992e-07,
+      "max_normal_length_error": 1.4390622626869742e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9356953203678131,
@@ -664,12 +884,12 @@
       ],
       "static_bounds_max": [
         0.9356953203678131,
-        1.1144404113292694,
+        1.1143243685364723,
         1.2159340557461313
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.1151021718978882,
+        1.114986129105091,
         2.4699289419938033
       ],
       "skins": [],
@@ -706,6 +926,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.630392,
+          0.294594,
+          0.029916
+        ],
+        "Decal_Number_Nose": [
+          -0.000138,
+          0.501314,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.630392,
+          0.294594,
+          0.02992
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.605969,
+          0.299659,
+          -0.166438
+        ],
+        "Decal_Sticker_Front_R": [
+          0.605972,
+          0.299656,
+          -0.166438
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.61463,
+          0.299712,
+          0.216965
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.614629,
+          0.299728,
+          0.216964
+        ],
+        "Lamp_Front_L": [
+          -0.214044,
+          0.307133,
+          -1.151491
+        ],
+        "Lamp_Front_R": [
+          0.214043,
+          0.30714,
+          -1.15149
+        ],
+        "Lamp_Rear_L": [
+          -0.22022,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.22022,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -804,23 +1079,23 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
-      "sha256": "1a1995c6f388062094673bef994be97f46a97b0ca653051e17b35d1e2e56c922",
-      "bytes": 673224,
+      "sha256": "98e015b1c54e09f11eb5128fd241d7ac808d14360d4bfcc194099fca25879d9f",
+      "bytes": 750780,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15720,
-      "triangles_instanced_scene": 15720,
-      "vertices": 16842,
+      "triangles_unique_meshes": 16067,
+      "triangles_instanced_scene": 16067,
+      "vertices": 19054,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_normal_length_error": 1.2256226389339986e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9356953203678131,
-        -0.0006617605686187744,
-        -1.2539948862476717
+        -0.0005786716938018799,
+        -1.2533027570195463
       ],
       "static_bounds_max": [
         0.9356953203678131,
@@ -829,8 +1104,8 @@
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.1144324839115143,
-        2.4699289419938033
+        1.1143493950366974,
+        2.4692368127656774
       ],
       "skins": [],
       "animations": [
@@ -866,6 +1141,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.630392,
+          0.294594,
+          0.029916
+        ],
+        "Decal_Number_Nose": [
+          -0.000138,
+          0.501314,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.630392,
+          0.294594,
+          0.02992
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.605969,
+          0.299659,
+          -0.166438
+        ],
+        "Decal_Sticker_Front_R": [
+          0.605972,
+          0.299656,
+          -0.166438
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.61463,
+          0.299712,
+          0.216965
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.614629,
+          0.299728,
+          0.216964
+        ],
+        "Lamp_Front_L": [
+          -0.214044,
+          0.307133,
+          -1.151491
+        ],
+        "Lamp_Front_R": [
+          0.214043,
+          0.30714,
+          -1.15149
+        ],
+        "Lamp_Rear_L": [
+          -0.22022,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.22022,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -964,13 +1294,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo.glb",
-      "sha256": "be9b19cfaa631e530d32d2c599c618181d2d151ea916621af9825ba2708bdea0",
-      "bytes": 1647724,
+      "sha256": "8460482a2da24f96d26844c952f90406a15e856b366ea010eed30805b888ca07",
+      "bytes": 2094320,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49166,
-      "triangles_instanced_scene": 49166,
-      "vertices": 41062,
+      "triangles_unique_meshes": 59596,
+      "triangles_instanced_scene": 59596,
+      "vertices": 53021,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -1026,6 +1356,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.831647,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000167,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.831646,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.794817,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.794821,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.807879,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.807877,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.212481,
+          0.30646,
+          -1.173938
+        ],
+        "Lamp_Front_R": [
+          0.212466,
+          0.306457,
+          -1.173937
+        ],
+        "Lamp_Rear_L": [
+          -0.2662,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.2662,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -1120,22 +1505,22 @@
       "lod": 0,
       "degenerate_uv_triangles": 0,
       "authored_non_manifold_edges": 0,
-      "triangle_budget": 50000
+      "triangle_budget": 60500
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
-      "sha256": "55461db067645f5626d09a9ab98efe470ef8cedc953970765411f098de6a7c8d",
-      "bytes": 917292,
+      "sha256": "b48914572d12393feff94a5f953663bd79f7f74b0305a01e6ad17fcc2df63625",
+      "bytes": 1026304,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23590,
-      "triangles_instanced_scene": 23590,
-      "vertices": 22993,
+      "triangles_unique_meshes": 24412,
+      "triangles_instanced_scene": 24412,
+      "vertices": 26098,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.4859137342781992e-07,
+      "max_normal_length_error": 1.2884530664614147e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
@@ -1144,12 +1529,12 @@
       ],
       "static_bounds_max": [
         1.0816812068223953,
-        1.034324511885643,
+        1.03391844779253,
         1.21593417495269
       ],
       "static_dimensions_m": [
         2.1633624136447906,
-        1.0349862724542618,
+        1.0345802083611488,
         2.469929061197615
       ],
       "skins": [],
@@ -1186,6 +1571,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.831647,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000167,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.831646,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.794817,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.794821,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.807879,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.807877,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.212481,
+          0.30646,
+          -1.173938
+        ],
+        "Lamp_Front_R": [
+          0.212466,
+          0.306457,
+          -1.173937
+        ],
+        "Lamp_Rear_L": [
+          -0.2662,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.2662,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,
@@ -1284,23 +1724,23 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
-      "sha256": "e9a4b8e21d095f8d35aaa06a530cceb2646e64aacddc7b4364d24d04f24d3ef4",
-      "bytes": 668716,
+      "sha256": "ceace31bbb285d63b2b919f9cc1a7b1911fa5d4ca58c8aac85fc6a2eb4bfba3b",
+      "bytes": 745828,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15720,
-      "triangles_instanced_scene": 15720,
-      "vertices": 16690,
+      "triangles_unique_meshes": 16067,
+      "triangles_instanced_scene": 16067,
+      "vertices": 18924,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.3311646651636977e-07,
+      "max_normal_length_error": 1.2300565099820915e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
-        -0.0006617605686187744,
-        -1.253994886244925
+        -0.0005786716938018799,
+        -1.2533027570167996
       ],
       "static_bounds_max": [
         1.0824081301689148,
@@ -1309,8 +1749,8 @@
       ],
       "static_dimensions_m": [
         2.16408933699131,
-        1.0345802083611488,
-        2.469929061197615
+        1.034497119486332,
+        2.4692369319694896
       ],
       "skins": [],
       "animations": [
@@ -1346,6 +1786,61 @@
           0.0,
           0.6,
           -0.66
+        ],
+        "Decal_Number_L": [
+          -0.831647,
+          0.294494,
+          0.029896
+        ],
+        "Decal_Number_Nose": [
+          -0.000167,
+          0.501315,
+          -0.941725
+        ],
+        "Decal_Number_R": [
+          0.831646,
+          0.294494,
+          0.0299
+        ],
+        "Decal_Sticker_Front_L": [
+          -0.794817,
+          0.299589,
+          -0.166732
+        ],
+        "Decal_Sticker_Front_R": [
+          0.794821,
+          0.299585,
+          -0.166732
+        ],
+        "Decal_Sticker_Rear_L": [
+          -0.807879,
+          0.299663,
+          0.217302
+        ],
+        "Decal_Sticker_Rear_R": [
+          0.807877,
+          0.299681,
+          0.217302
+        ],
+        "Lamp_Front_L": [
+          -0.212481,
+          0.30646,
+          -1.173938
+        ],
+        "Lamp_Front_R": [
+          0.212466,
+          0.306457,
+          -1.173937
+        ],
+        "Lamp_Rear_L": [
+          -0.2662,
+          0.683,
+          1.08
+        ],
+        "Lamp_Rear_R": [
+          0.2662,
+          0.683,
+          1.08
         ],
         "DriverOrigin": [
           0.0,

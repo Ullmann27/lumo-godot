@@ -10,6 +10,20 @@ const TRACK_COLOR := Color(0.07, 0.17, 0.30, 0.95)
 var base: Dictionary = {}
 var bonus: Dictionary = {}
 var show_labels: bool = true
+## Kompakte Karte: kurzes Wort mit farbigem Symbolpunkt vor jedem Balken, Balken in der
+## Farbe ihres Wertes (statt fünf gleicher Türkis-Striche ohne Beschriftung).
+var compact_labels: bool = false
+## Nur diese Werte zeigen (leer = alle fünf). Kartkarten: „Tempo“ und „Lenkung“.
+var only_keys: Array[String] = []
+## Kinderwörter statt Fachwörter (z. B. „Lenkung“ statt „Handling“); leer = Flottennamen.
+var label_names: Dictionary = {}
+const SHORT_NAMES: Dictionary = {
+	"speed": "Tempo", "accel": "Antritt", "brake": "Bremse", "handling": "Lenkung", "turbo": "Turbo",
+}
+const STAT_COLORS: Dictionary = {
+	"speed": Color("ff8a3c"), "accel": Color("ffd23f"), "brake": Color("ff5a7a"),
+	"handling": Color("5fe3ff"), "turbo": Color("b48cff"),
+}
 var show_numbers: bool = true
 var reduced_motion: bool = false
 ## Zeilenhöhe in Pixeln (bei Skalierung bereits eingerechnet).
@@ -46,8 +60,12 @@ func set_values(new_base: Dictionary, new_bonus: Dictionary = {}, instant: bool 
 	queue_redraw()
 
 
+func _keys() -> Array[String]:
+	return only_keys if not only_keys.is_empty() else FLEET.STATS
+
+
 func _update_minimum() -> void:
-	custom_minimum_size.y = row_height * FLEET.STATS.size()
+	custom_minimum_size.y = row_height * _keys().size()
 
 
 func _process(delta: float) -> void:
@@ -72,29 +90,41 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var rows: int = FLEET.STATS.size()
+	var keys: Array[String] = _keys()
+	var rows: int = keys.size()
 	var row: float = size.y / float(rows) if size.y > 0.0 else row_height
-	var label_width: float = minf(size.x * 0.40, 168.0 * font_scale) if show_labels else 0.0
+	var compact: bool = compact_labels and show_labels
+	var label_width: float = (minf(size.x * 0.40, 168.0 * font_scale) if show_labels else 0.0)
+	if compact:
+		label_width = clampf(row * 6.3, 48.0, size.x * 0.42)
 	var number_width: float = 74.0 * font_scale if show_numbers else 0.0
 	var bar_left: float = label_width + (8.0 if show_labels else 0.0)
 	var bar_width: float = maxf(20.0, size.x - bar_left - number_width - 4.0)
 	var bar_height: float = clampf(row * 0.34, 5.0, 14.0)
 	var font_size: int = clampi(roundi(row * 0.46), 10, 22)
+	if compact:
+		bar_height = clampf(row * 0.52, 4.0, 12.0)
+		font_size = clampi(roundi(row * 1.05), 9, 16)
 	for index in range(rows):
-		var key: String = FLEET.STATS[index]
+		var key: String = keys[index]
 		var top: float = float(index) * row
 		var middle: float = top + row * 0.5
 		var value_base: float = float(_shown_base.get(key, base.get(key, 0.0)))
 		var value_bonus: float = float(_shown_bonus.get(key, bonus.get(key, 0.0)))
-		if show_labels:
-			var label: String = str(FLEET.STAT_NAMES[key])
+		if compact:
+			var dot: float = maxf(2.0, row * 0.26)
+			draw_circle(Vector2(dot + 1.0, middle), dot, STAT_COLORS[key])
+			draw_string(UI.HEADING, Vector2(dot * 2.0 + 5.0, middle + font_size * 0.36), str(SHORT_NAMES[key]),
+				HORIZONTAL_ALIGNMENT_LEFT, label_width - dot * 2.0 - 5.0, font_size, Color("e4f2ff"))
+		elif show_labels:
+			var label: String = str(label_names.get(key, FLEET.STAT_NAMES[key]))
 			draw_string(UI.BODY, Vector2(0, middle + font_size * 0.36), label, HORIZONTAL_ALIGNMENT_LEFT, label_width, font_size, Color("c4d8ee"))
 		var track := Rect2(bar_left, middle - bar_height * 0.5, bar_width, bar_height)
 		draw_rect(track, TRACK_COLOR, true)
 		var base_width: float = bar_width * FLEET.bar(value_base)
 		var bonus_width: float = bar_width * (FLEET.bar(value_base + value_bonus) - FLEET.bar(value_base))
 		if base_width > 0.5:
-			draw_rect(Rect2(track.position, Vector2(base_width, bar_height)), BASE_COLOR, true)
+			draw_rect(Rect2(track.position, Vector2(base_width, bar_height)), STAT_COLORS[key] if compact else BASE_COLOR, true)
 			draw_rect(Rect2(track.position, Vector2(base_width, bar_height * 0.42)), Color(1, 1, 1, 0.22), true)
 		if bonus_width > 0.5:
 			draw_rect(Rect2(track.position + Vector2(base_width, 0), Vector2(bonus_width, bar_height)), BONUS_COLOR, true)
