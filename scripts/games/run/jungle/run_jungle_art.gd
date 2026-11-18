@@ -145,6 +145,8 @@ static func material_for(original: Material, options: Dictionary = {}) -> Materi
 	var made := ShaderMaterial.new()
 	made.resource_name = name
 	made.shader = shader(str(look.shader))
+	if options.has("lod_window") and str(look.shader) in ["leaf", "surface", "plant"]:
+		made.set_shader_parameter("lod_window", options.lod_window)
 	var standard: BaseMaterial3D = original as BaseMaterial3D
 	var albedo: Texture2D = standard.albedo_texture if standard != null else null
 	var normal: Texture2D = standard.normal_texture if standard != null and standard.normal_enabled else null

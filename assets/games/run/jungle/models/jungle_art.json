@@ -291,21 +291,20 @@
   },
   "flower": {
    "file": "flower.glb",
-   "triangles": 176,
-   "vertices": 174,
+   "triangles": 116,
+   "vertices": 138,
    "materials": [
     "leaves",
     "stem",
-    "petal",
-    "paint_pollen"
+    "petal"
    ],
-   "bytes": 17548,
+   "bytes": 11660,
    "size_m": [
     0.92,
     0.65,
     0.92
    ],
-   "sha256": "65d0249e9bfd21e0ca7c9df1335cbdc5a51f0a89b949defd8a56dce7d5bca3a3"
+   "sha256": "005425b4daff7db83257fd42f90d2834e413d0e9937f400aa52d335e99c6e6b2"
   },
   "gate": {
    "file": "gate.glb",
@@ -721,19 +720,19 @@
   },
   "tree_broad": {
    "file": "tree_broad.glb",
-   "triangles": 7696,
-   "vertices": 7652,
+   "triangles": 6664,
+   "vertices": 6491,
    "materials": [
     "bark",
     "leaves"
    ],
-   "bytes": 416684,
+   "bytes": 354764,
    "size_m": [
-    11.85,
-    18.75,
-    14.17
+    12.26,
+    18.86,
+    14.04
    ],
-   "sha256": "789578d76fabcaf868ef61c8a2d323c6f6a6de7985abeda5994da91891166bcf"
+   "sha256": "498742a501abda68e9f842fdacc04834f52407d9fba5a31321f1810754273fca"
   },
   "tree_broad_lod": {
    "file": "tree_broad_lod.glb",
@@ -753,19 +752,19 @@
   },
   "tree_fig": {
    "file": "tree_fig.glb",
-   "triangles": 9336,
-   "vertices": 8896,
+   "triangles": 7376,
+   "vertices": 6691,
    "materials": [
     "bark",
     "leaves"
    ],
-   "bytes": 486236,
+   "bytes": 368632,
    "size_m": [
-    17.38,
-    21.46,
-    14.04
+    16.46,
+    21.07,
+    13.99
    ],
-   "sha256": "7879812ea2f7be7c7238d8bb5a5b7a61aa18f39a151f417c1e9717cc5ffd98d1"
+   "sha256": "6f5e8bc3c35cfa3210ec25492594bc3c662ff918aaf129339d3d0bfdf8b25454"
   },
   "tree_fig_lod": {
    "file": "tree_fig_lod.glb",
@@ -785,19 +784,19 @@
   },
   "tree_kapok": {
    "file": "tree_kapok.glb",
-   "triangles": 9720,
-   "vertices": 9640,
+   "triangles": 7440,
+   "vertices": 7075,
    "materials": [
     "bark",
     "leaves"
    ],
-   "bytes": 524256,
+   "bytes": 387452,
    "size_m": [
-    22.41,
-    33.07,
-    23.22
+    22.53,
+    32.28,
+    23.78
    ],
-   "sha256": "30887a0ed246392f1b801246d19bbc90c1cc27ce34110c3b97fbd19b08f69ca4"
+   "sha256": "0e416283cd082679b970787ce442ed0f932d699b7a2313fe123e04fffb932590"
   },
   "tree_kapok_lod": {
    "file": "tree_kapok_lod.glb",
@@ -817,19 +816,19 @@
   },
   "tree_slender": {
    "file": "tree_slender.glb",
-   "triangles": 6360,
-   "vertices": 6488,
+   "triangles": 5376,
+   "vertices": 5381,
    "materials": [
     "bark",
     "leaves"
    ],
-   "bytes": 352792,
+   "bytes": 293752,
    "size_m": [
-    8.99,
-    16.56,
-    9.31
+    9.2,
+    16.47,
+    9.76
    ],
-   "sha256": "9cb38f7a1959a0d06e5209efa123cf2095956884e6918a4ee60dfc6313062d5d"
+   "sha256": "fb64eb975c507aa9e18ecbc4d80d3204c80f10ecfa5fd009d0f3fecb29100719"
   },
   "tree_slender_lod": {
    "file": "tree_slender_lod.glb",

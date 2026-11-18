@@ -300,6 +300,7 @@ uniform float translucency = 0.55;
 uniform float variation = 0.35;
 uniform float brightness = 1.0;
 uniform float flutter = 1.0;
+uniform vec2 lod_window = vec2(-1.0, 1000000.0);
 // Lumo's chest in world space (set every frame): leaves between the camera and
 // Lumo, and leaves right in front of the lens, are cut away so the child always
 // sees Lumo and the path.
@@ -315,6 +316,12 @@ void vertex() {
 	VERTEX += gust + NORMAL * sin(f) * 0.035 * w * flutter;
 	leaf_rand = fract(UV2.y * 7.13 + origin.x * 0.37 + origin.z * 0.91);
 	leaf_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	// Per tree level of detail: a tree shows its detailed or its light version
+	// by its own distance to Lumo (the batches are much longer than that).
+	float lod_distance = length(origin - jungle_focus);
+	if (lod_distance < lod_window.x || lod_distance >= lod_window.y) {
+		VERTEX = vec3(0.0);
+	}
 }
 void fragment() {
 	vec4 tex = texture(albedo_tex, UV);
@@ -369,15 +376,21 @@ uniform float floor_light = 0.05;
 uniform float vertex_tint = 1.0;
 uniform vec3 emission_color : source_color = vec3(0.0);
 uniform float emission_energy = 0.0;
+uniform vec2 lod_window = vec2(-1.0, 1000000.0);
+global uniform vec3 jungle_focus;
 varying vec3 world_pos;
 varying vec3 world_nrm;
 void vertex() {
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	world_nrm = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	vec3 origin = MODEL_MATRIX[3].xyz;
 	if (sway > 0.0) {
-		vec3 origin = MODEL_MATRIX[3].xyz;
 		float t = TIME * 1.15 + origin.x * 0.21 + origin.z * 0.17;
 		VERTEX += vec3(sin(t) + 0.35 * sin(t * 2.7), 0.0, cos(t * 0.83)) * 0.07 * UV2.x * sway;
+	}
+	float lod_distance = length(origin - jungle_focus);
+	if (lod_distance < lod_window.x || lod_distance >= lod_window.y) {
+		VERTEX = vec3(0.0);
 	}
 }
 void fragment() {

@@ -9,6 +9,7 @@ extends SceneTree
 ## LUMO_RUN_SIZE=1600x720 limits it to one window size; LUMO_SEED picks the
 ## player's ways (default 4: upper ways, niches and the treasure hall).
 ## LUMO_PROFILE=low|medium|high picks the quality profile (not saved).
+## LUMO_MEASURE_ONLY=1 skips the pictures and only samples draw calls and triangles.
 
 const BOT = preload("res://scripts/tests/helpers/lumo_jungle_bot.gd")
 const COURSES = preload("res://scripts/games/run/run_courses.gd")
@@ -22,6 +23,9 @@ var game
 var bot
 var tag: String = ""
 var measures: Array[Dictionary] = []
+## LUMO_MEASURE_ONLY=1: no pictures, only the draw-call and triangle samples.
+var measure_only: bool = false
+var _mesh_tris: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -29,6 +33,8 @@ func _initialize() -> void:
 
 
 func _capture(name: String) -> void:
+	if measure_only:
+		return
 	for _i in range(4):
 		await process_frame
 	await RenderingServer.frame_post_draw
@@ -64,6 +70,8 @@ func _play_until(done: Callable, limit: int = 60 * 400, answer: bool = true, ren
 
 ## A few live frames so particles, animals and the camera settle, then a picture.
 func _live_shot(name: String, frames: int = 20) -> void:
+	if measure_only:
+		return
 	for _i in range(frames):
 		if game.question_open or game.phase == game.Phase.FINISHED:
 			break
@@ -87,8 +95,59 @@ func _measure(label: String) -> void:
 			"objects": Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
 		}
 	)
+	if OS.get_environment("LUMO_BREAKDOWN") == "1":
+		_breakdown()
 	var last: Dictionary = measures[measures.size() - 1]
 	print("[JungleCapture] sample %s s=%.0f section=%d draws=%d primitives=%d" % [label, float(last.s), int(last.section), int(last.draws), int(last.primitives)])
+
+
+## Rough share of draw calls per scenery kind (visible batches by range and frustum).
+func _breakdown() -> void:
+	var camera: Camera3D = root.get_viewport().get_camera_3d()
+	var planes: Array[Plane] = camera.get_frustum()
+	var eye: Vector3 = camera.global_position
+	var by_kind: Dictionary = {}
+	for child in game.world.scenery.get_children():
+		if not child is GeometryInstance3D or not child.visible:
+			continue
+		var box: AABB = child.global_transform * child.get_aabb()
+		var distance: float = eye.distance_to(box.get_center())
+		if child.visibility_range_end > 0.0 and (distance > child.visibility_range_end or distance < child.visibility_range_begin):
+			continue
+		var inside: bool = true
+		for plane in planes:
+			var far_corner := Vector3(box.end.x if plane.normal.x < 0 else box.position.x, box.end.y if plane.normal.y < 0 else box.position.y, box.end.z if plane.normal.z < 0 else box.position.z)
+			if plane.is_point_over(far_corner):
+				inside = false
+				break
+		var mesh: Mesh = child.multimesh.mesh if child is MultiMeshInstance3D else (child.mesh if child is MeshInstance3D else null)
+		var surfaces: int = mesh.get_surface_count() if mesh != null else 1
+		var tris: int = 0
+		if mesh != null:
+			if not _mesh_tris.has(mesh):
+				var count: int = 0
+				for surface in range(surfaces):
+					var arrays: Array = mesh.surface_get_arrays(surface)
+					var indices = arrays[Mesh.ARRAY_INDEX]
+					count += (indices.size() if indices != null else arrays[Mesh.ARRAY_VERTEX].size()) / 3
+				_mesh_tris[mesh] = count
+			tris = int(_mesh_tris[mesh])
+			if child is MultiMeshInstance3D:
+				tris *= child.multimesh.instance_count
+		var key: String = str(child.name).split("_")[1] if str(child.name).begins_with("Jungle_") else str(child.name).split("_")[0]
+		if not by_kind.has(key):
+			by_kind[key] = [0, 0, 0]
+		if inside and child.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY:
+			by_kind[key][0] += surfaces
+			by_kind[key][2] += tris
+		if child.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF and distance < 80.0:
+			by_kind[key][1] += surfaces
+	var keys: Array = by_kind.keys()
+	keys.sort_custom(func(a, b) -> bool: return by_kind[a][0] + by_kind[a][1] > by_kind[b][0] + by_kind[b][1])
+	var parts: Array[String] = []
+	for key in keys.slice(0, 18):
+		parts.append("%s %d+%d/%dk" % [key, by_kind[key][0], by_kind[key][1], by_kind[key][2] / 1000])
+	print("[JungleCapture] breakdown " + ", ".join(parts))
 
 
 func _run() -> void:
@@ -102,6 +161,7 @@ func _run() -> void:
 		quit(1)
 		return
 	var only: String = OS.get_environment("LUMO_RUN_SIZE")
+	measure_only = OS.get_environment("LUMO_MEASURE_ONLY") == "1"
 	var seed: int = int(OS.get_environment("LUMO_SEED")) if not OS.get_environment("LUMO_SEED").is_empty() else 4
 	var profile: String = OS.get_environment("LUMO_PROFILE")
 	if profile in ["low", "medium", "high"]:
@@ -197,7 +257,7 @@ func _run() -> void:
 			game.advance(STEP)
 		await _capture("40_result")
 		for key in specials:
-			if not bool(specials[key]):
+			if not bool(specials[key]) and not measure_only:
 				failures.append("%s: no %s picture" % [tag, key])
 		game.abandoned = true
 		current_scene = null

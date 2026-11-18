@@ -36,7 +36,7 @@ const DECK: Dictionary = {
 }
 ## Per quality tier (low, medium, high): how far the detailed tree meshes reach,
 ## how far plants are drawn, how dense the jungle grows, how far the sun casts shadows.
-const TREE_DETAIL: Array[float] = [0.0, 38.0, 62.0]
+const TREE_DETAIL: Array[float] = [0.0, 30.0, 62.0]
 const PLANT_RANGE: Array[float] = [48.0, 66.0, 90.0]
 const DENSITY: Array[float] = [0.55, 1.0, 1.35]
 const SHADOW_RANGE: Array[float] = [0.0, 32.0, 60.0]
@@ -65,6 +65,8 @@ var placed: int = 0
 var _rng := RandomNumberGenerator.new()
 var _kinds: Dictionary = {}
 var _buckets: Dictionary = {}
+var _far_buckets: Dictionary = {}
+const FAR_CHUNK: float = 128.0
 var _materials: Dictionary = {}
 var _deck_materials: Dictionary = {}
 var _pollen: CPUParticles3D
@@ -83,11 +85,11 @@ const GRID_CELL: float = 12.0
 const GRID_STEP: float = 3.0
 ## Kinds that may stand on the ground near another part of the path.
 const SOLID_KINDS: Array[String] = [
-	"tree0", "tree1", "tree2", "giant", "palm0", "palm1", "rock0", "rock1", "pillar0", "pillar1", "bush", "leaf0", "leaf1",
+	"tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1", "rock0", "rock1", "pillar0", "pillar1", "bush", "leaf0", "leaf1",
 	"fern0", "fern1", "grass0", "flower0", "statue", "block", "post", "torch", "flame", "bulb", "crystal0", "crystal1",
 	"canopy", "liana0", "liana1", "liana2", "wall", "lantern", "crate", "barrelprop", "cover",
 ]
-const TREE_KINDS: Array[String] = ["tree0", "tree1", "tree2", "giant", "palm0", "palm1"]
+const TREE_KINDS: Array[String] = ["tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1"]
 
 
 func build(world, layout, lightweight: bool) -> void:
@@ -202,14 +204,19 @@ func _kind(name: String, mesh: Mesh, material: String, range_end: float = 140.0,
 ## detail distance. Falls back to `fallback` (code mesh) only if the GLB is missing.
 func _art(name: String, model: String, range_end: float, shadow: bool, fallback: Mesh, fallback_material: String,
 		options: Dictionary = {}, lod_model: String = "", chunk: float = CHUNK, neutral: bool = false) -> void:
-	var mesh: Mesh = ART.mesh(model, options)
+	var near: Dictionary = options.duplicate()
+	var far: Dictionary = options.duplicate()
+	if not lod_model.is_empty() and tier > 0:
+		near["lod_window"] = Vector2(-1.0, TREE_DETAIL[tier])
+		far["lod_window"] = Vector2(TREE_DETAIL[tier], 1000000.0)
+	var mesh: Mesh = ART.mesh(model, near)
 	if mesh == null:
 		_kind(name, fallback, fallback_material, range_end, shadow)
 		return
-	var lod: Mesh = ART.mesh(lod_model, options) if not lod_model.is_empty() else null
+	var lod: Mesh = ART.mesh(lod_model, far) if not lod_model.is_empty() else null
 	_kinds[name] = {
 		"mesh": mesh, "material": "", "range": range_end, "shadow": shadow, "source": "glb:" + model, "lod": lod,
-		"chunk": chunk, "neutral": neutral,
+		"chunk": chunk, "neutral": neutral, "proxy": ART.mesh(lod_model, options) if not lod_model.is_empty() else null,
 	}
 
 
@@ -218,29 +225,32 @@ func _make_kinds() -> void:
 	var shadows: bool = tier > 0
 	var trees: Array[String] = ["tree_broad", "tree_slender", "tree_fig"]
 	for index in range(3):
-		_art("tree%d" % index, trees[index], 190.0 if tier > 0 else 150.0, shadows, MESHES.tree(100 + index, 18.0, 4 + index % 3, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, trees[index] + "_lod", 32.0)
+		_art("tree%d" % index, trees[index], 190.0 if tier > 0 else 150.0, shadows, MESHES.tree(100 + index, 18.0, 4 + index % 3, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, trees[index] + "_lod", 40.0)
+	# Trees away from the path only ever show their light version (no detailed batch).
+	for index in range(3):
+		_art("tree%d_far" % index, trees[index] + "_lod", 190.0 if tier > 0 else 150.0, tier == 2, MESHES.tree(100 + index, 18.0, 4, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, "", 128.0)
 	_art("giant", "tree_kapok", 260.0, shadows, MESHES.tree(77, 30.0, 6, Color("5e4330"), Color("2c8a47")), "trunk", {}, "tree_kapok_lod", 48.0)
 	_art("palm0", "palm_a", 220.0, shadows, MESHES.palm(500, 11.0), "trunk", {}, "palm_a_lod", 48.0)
 	_art("palm1", "palm_b", 220.0, shadows, MESHES.palm(501, 14.0), "trunk", {}, "palm_b_lod", 48.0)
 	for index in range(2):
-		_art("fern%d" % index, ["fern_a", "fern_b"][index], plants, tier == 2, MESHES.fern(200 + index, 7, 1.4, LEAF_GREENS[index]), "foliage", {}, "", 40.0)
-		_art("leaf%d" % index, ["bigleaf_a", "bigleaf_b"][index], plants + 20.0, tier == 2, MESHES.broadleaf(300 + index, 5, 1.3, LEAF_GREENS[index]), "foliage", {}, "", 40.0)
-	_art("cover", "groundcover", plants, false, MESHES.grass(402, 8, 0.4, Color("4f9a3c")), "foliage", {}, "", 40.0)
-	_art("grass0", "grass", plants * 0.8, false, MESHES.grass(400, 10, 0.7, Color("6fb43f")), "foliage", {}, "", 40.0)
-	_art("rock0", "rock_a", 160.0, shadows, MESHES.rock(600, Vector3(1.4, 0.9, 1.2)), "solid")
-	_art("rock1", "rock_b", 160.0, shadows, MESHES.rock(601, Vector3(1.4, 0.9, 1.2)), "solid")
+		_art("fern%d" % index, ["fern_a", "fern_b"][index], plants, tier == 2, MESHES.fern(200 + index, 7, 1.4, LEAF_GREENS[index]), "foliage", {}, "", 64.0)
+		_art("leaf%d" % index, ["bigleaf_a", "bigleaf_b"][index], plants + 20.0, tier == 2, MESHES.broadleaf(300 + index, 5, 1.3, LEAF_GREENS[index]), "foliage", {}, "", 64.0)
+	_art("cover", "groundcover", plants, false, MESHES.grass(402, 8, 0.4, Color("4f9a3c")), "foliage", {}, "", 64.0)
+	_art("grass0", "grass", plants * 0.8, false, MESHES.grass(400, 10, 0.7, Color("6fb43f")), "foliage", {}, "", 64.0)
+	_art("rock0", "rock_a", 160.0, tier == 2, MESHES.rock(600, Vector3(1.4, 0.9, 1.2)), "solid")
+	_art("rock1", "rock_b", 160.0, tier == 2, MESHES.rock(601, Vector3(1.4, 0.9, 1.2)), "solid")
 	_art("pillar0", "pillar_broken", 200.0, shadows, MESHES.pillar(700, 4.5, true), "solid")
 	_art("pillar1", "pillar", 200.0, shadows, MESHES.pillar(701, 6.5, false), "solid")
 	_art("crystal0", "crystal_a", 120.0, false, MESHES.crystal(800, Color("62e6ff")), "glow")
 	_art("crystal1", "crystal_b", 120.0, false, MESHES.crystal(801, Color("b48cff")), "glow")
-	_art("flower0", "flower", plants * 0.8, false, MESHES.flower(900, Color("ffffff")), "foliage", {}, "", 40.0)
+	_art("flower0", "flower", plants * 0.8, false, MESHES.flower(900, Color("ffffff")), "foliage", {}, "", 64.0)
 	var bulb := MESHES.Kit.new()
 	MESHES.blob(bulb, Vector3.ZERO, Vector3.ONE * 0.2, Color("ffe08a"), RandomNumberGenerator.new(), 0.0, 3, 6)
 	_kind("bulb", bulb.mesh(), "glow", 140.0)
 	for index in range(3):
 		_art("liana%d" % index, ["liana_a", "liana_b", "liana_c"][index], 120.0, false, MESHES.liana(1000 + index, 5.0 + 2.0 * float(index)), "foliage")
 	_art("canopy", "canopy", 130.0, shadows, MESHES.liana(1100, 1.0), "foliage")
-	_art("bush", "bush", 120.0, tier == 2, MESHES.grass(1101, 6, 0.6, Color("2f8f3e")), "foliage", {}, "", 40.0)
+	_art("bush", "bush", 120.0, tier == 2, MESHES.grass(1101, 6, 0.6, Color("2f8f3e")), "foliage", {}, "", 64.0)
 	_art("statue", "statue", 220.0, shadows, MESHES.statue(1200), "solid")
 	_art("arch", "arch", 260.0, shadows, MESHES.arch(5.6, 4.8), "solid")
 	_art("wall", "wall", 200.0, shadows, MESHES.box(Vector3(2.0, 1.2, 0.4), Color("bfa77f")), "solid")
@@ -313,7 +323,8 @@ func _put(kind: String, at_s: float, transform: Transform3D, colour: Color = Col
 	var chunk: float = float(_kinds[kind].chunk)
 	var key: String = "%s|%d" % [kind, floori(at_s / chunk) if _kinds[kind].range > 0.0 else 0]
 	if not _buckets.has(key):
-		_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": []}
+		_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": [], "ats": []}
+	_buckets[key].ats.append(at_s)
 	_buckets[key].xforms.append(transform)
 	_buckets[key].colours.append(colour)
 	_buckets[key].custom.append(custom)
@@ -332,13 +343,31 @@ func _flush() -> void:
 			_batch(str(key), bucket, lod, kind, 0.0, range_end, false)
 		else:
 			var detail: float = TREE_DETAIL[tier]
-			_batch(str(key), bucket, kind.mesh, kind, 0.0, detail, bool(kind.shadow))
-			# The far crowns cast no shadow on MEDIUM: the sun's shadow ends before them.
-			_batch(str(key) + "_far", bucket, lod, kind, detail, range_end, bool(kind.shadow) and tier == 2)
+			_far_parts(str(bucket.kind), bucket)
+			# HIGH: the detailed crowns cast the shadows. MEDIUM: a light stand-in casts them.
+			var reach: float = detail + float(kind.chunk) * 0.75
+			_batch(str(key), bucket, kind.mesh, kind, 0.0, reach, bool(kind.shadow) and tier == 2)
+			if bool(kind.shadow) and tier == 1:
+				var proxy: MultiMeshInstance3D = _batch(str(key) + "_shadow", bucket, kind.proxy, kind, 0.0, SHADOW_RANGE[1] + float(kind.chunk) * 0.6, true)
+				proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	# The light far versions of near trees go in long batches: few draw calls.
+	for key in _far_buckets:
+		var bucket: Dictionary = _far_buckets[key]
+		var kind: Dictionary = _kinds[bucket.kind]
+		_batch(str(key) + "_far", bucket, kind.lod, kind, 0.0, float(kind.range), bool(kind.shadow) and tier == 2)
 	_buckets.clear()
+	_far_buckets.clear()
 
 
-func _batch(key: String, bucket: Dictionary, mesh: Mesh, kind: Dictionary, range_begin: float, range_end: float, shadow: bool) -> void:
+func _far_parts(kind: String, bucket: Dictionary) -> void:
+	var key: String = "%s|%d" % [kind, floori(float(bucket.ats[0]) / FAR_CHUNK)]
+	if not _far_buckets.has(key):
+		_far_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": [], "ats": []}
+	for field in ["xforms", "colours", "custom", "ats"]:
+		_far_buckets[key][field].append_array(bucket[field])
+
+
+func _batch(key: String, bucket: Dictionary, mesh: Mesh, kind: Dictionary, range_begin: float, range_end: float, shadow: bool) -> MultiMeshInstance3D:
 	var instances := MultiMesh.new()
 	instances.transform_format = MultiMesh.TRANSFORM_3D
 	instances.use_colors = true
@@ -364,6 +393,7 @@ func _batch(key: String, bucket: Dictionary, mesh: Mesh, kind: Dictionary, range
 	if str(kind.source).begins_with("glb:"):
 		node.set_meta("jungle_glb", ART.path_of(str(kind.source).substr(4)))
 	add_child(node)
+	return node
 
 
 # ------------------------------------------------------------------ helpers in road space
@@ -596,8 +626,15 @@ func _deck(from: float, to: float, kind: String, half: float) -> void:
 			st.add_index(c)
 			st.add_index(d)
 	st.generate_normals()
-	var mesh: ArrayMesh = st.commit()
-	_skirts(mesh, from, to, half, raised, edge.darkened(0.35))
+	var top: ArrayMesh = st.commit()
+	var skirt := ArrayMesh.new()
+	_skirts(skirt, from, to, half, raised, edge.darkened(0.35))
+	# One surface for deck and side skirts: one draw call per deck piece.
+	var merged := SurfaceTool.new()
+	merged.create_from(top, 0)
+	merged.deindex()
+	merged.append_from(skirt, 0, Transform3D.IDENTITY)
+	var mesh: ArrayMesh = merged.commit()
 	var node := MeshInstance3D.new()
 	node.name = "Deck_%s_%d" % [kind, int(from)]
 	node.mesh = mesh
@@ -653,7 +690,7 @@ func _terrain_height(at: float, offset: float) -> float:
 func _terrain() -> void:
 	var step: float = 3.0 if low else 2.0
 	var samples: PackedFloat32Array = _main_samples(step)
-	var stretch: int = int(60.0 / step)
+	var stretch: int = int(120.0 / step)
 	var start: int = 0
 	while start < samples.size() - 1:
 		var stop: int = mini(samples.size() - 1, start + stretch)
@@ -927,10 +964,10 @@ func _trees() -> void:
 			# A wall of forest on the slopes: far trees only ever show their light version.
 			if tier > 0 and kind != "cave" and _rng.randf() < 0.55 * DENSITY[tier]:
 				var wall: float = _rng.randf_range(24.0, 44.0)
-				_put("tree%d" % (_rng.randi() % trees), at, _xf(at, side * (half + wall), _terrain_height(at, wall) - 0.6, Vector3.ONE * _rng.randf_range(1.1, 1.8), _rng.randf() * TAU), _tree_tint())
+				_put("tree%d_far" % (_rng.randi() % trees), at, _xf(at, side * (half + wall), _terrain_height(at, wall) - 0.6, Vector3.ONE * _rng.randf_range(1.1, 1.8), _rng.randf() * TAU), _tree_tint())
 			if _rng.randf() < 0.6:
 				var far: float = _rng.randf_range(13.0, 34.0)
-				_put("tree%d" % (_rng.randi() % trees), at, _xf(at, side * (half + far), _terrain_height(at, far) - 0.5, Vector3.ONE * _rng.randf_range(1.0, 1.7), _rng.randf() * TAU), _tree_tint())
+				_put("tree%d_far" % (_rng.randi() % trees), at, _xf(at, side * (half + far), _terrain_height(at, far) - 0.5, Vector3.ONE * _rng.randf_range(1.0, 1.7), _rng.randf() * TAU), _tree_tint())
 		at += _rng.randf_range(3.6, 5.6) * [1.5, 1.0, 0.82][tier]
 	# Giant trunks carry the treetop walks.
 	at = 0.0

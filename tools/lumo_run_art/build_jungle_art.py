@@ -265,7 +265,7 @@ def tree_generic(name: str, seed: int, lod: bool, *, height: float, r0: float, r
     if top_tip:
         tips.append(spine[-1] + v3(0, 0.4, 0))
     crown_from_branches(geo, rng, tips, crown_centre=crown_centre, crown_radius=crown_radius, lod=lod,
-                        per_tip=int(per_tip * 1.5), lod_per_tip=lod_per_tip + 2, card=card, cell=cell, cluster_r=cluster_r, cells=cells, droop=droop)
+                        per_tip=int(per_tip * 1.25), lod_per_tip=lod_per_tip + 2, card=card, cell=cell, cluster_r=cluster_r, cells=cells, droop=droop)
     if extra is not None:
         extra(geo, rng, spine, radii, tips, lod)
     return geo
@@ -311,13 +311,13 @@ def _fig_extra(geo, rng, spine, radii, tips, lod):
 
 def tree_fig(lod: bool) -> Geo:
     return tree_generic("tree_fig", 303, lod, height=17.0, r0=0.55, r1=0.28, buttress=6, buttress_h=1.2, buttress_reach=1.2,
-                        branch_from=0.45, branch_to=0.9, branches=8, branch_len=5.2, branch_rise=0.35, sub=2, per_tip=10,
+                        branch_from=0.45, branch_to=0.9, branches=8, branch_len=5.2, branch_rise=0.35, sub=2, per_tip=8,
                         lod_per_tip=4, card=2.1, cell="twig", cluster_r=1.8, lean=0.4, extra=_fig_extra, droop=0.4)
 
 
 def tree_kapok(lod: bool) -> Geo:
     return tree_generic("tree_kapok", 404, lod, height=27.0, r0=0.95, r1=0.45, buttress=6, buttress_h=4.2, buttress_reach=4.2,
-                        branch_from=0.74, branch_to=0.98, branches=8, branch_len=8.0, branch_rise=0.2, sub=3, per_tip=10,
+                        branch_from=0.74, branch_to=0.98, branches=8, branch_len=8.0, branch_rise=0.2, sub=3, per_tip=8,
                         lod_per_tip=4, card=2.6, cell="twig", cluster_r=2.4, lean=0.3, flare=1.3, droop=0.25)
 
 
@@ -469,7 +469,6 @@ def flower(seed: int) -> Geo:
             ids = (centre_id, geo.vert(right), geo.vert(tip), geo.vert(left))
             geo.face(ids, [(0.5, 0.0), (1.0, 0.5), (0.5, 1.0), (0.0, 0.5)], "petal", normals=UP,
                      uv2=(0.8, h * 0.3), col=[ao_colour(0.75), ao_colour(0.95), ao_colour(1.0), ao_colour(0.95)])
-        G.blob(geo, top + UP * 0.03, v3(0.03, 0.025, 0.03), "paint_pollen", subdiv=1, rough=0.0)
     return geo
 
 
