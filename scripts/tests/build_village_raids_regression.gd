@@ -6,6 +6,7 @@ extends SceneTree
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const RAIDS = preload("res://scripts/creative/build_village_raids.gd")
+const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
 const CHILD := "village_raids_regression"
 const SLOT := 6
 var checks := 0
@@ -189,18 +190,20 @@ func _rules_targeted() -> void:
 	var lost: Dictionary = raids.advance_day(model, null, 3, true).raid
 	_check(str(lost.outcome) == "verloren", "Ungeschützt: verloren")
 	_check(model.damaged_plots.size() == damaged_before + 2, "Zwei Gebäude beschädigt")
-	_check(str(lost.damaged[0].kind) == "farm", "Räuber beschädigen zuerst den Bauernhof")
+	# Grundversorgung (Heinz TEIL 6): die Höfe, die das Dorf satt machen, bleiben heil.
+	_check(lost.damaged.all(func(entry): return str(entry.kind) not in ["farm", "house", "well"]), "Räuber lassen Höfe, Häuser und Brunnen stehen")
 	var taken := food_before - int(model._player.resources.food)
 	_check(taken > 0 and taken <= int(food_before * RAIDS.MAX_LOSS_SHARE), "Verlust höchstens 30 %% (%d von %d)" % [taken, food_before])
 	_check(model._player.buildings.size() == 6, "Nichts wird zerstört")
 	var plot := int(lost.damaged[0].plot)
 	var with_damage: Dictionary = model.economy_status()
 	var farms_working: int = model._working(model._player, "farm")
-	_check(farms_working == 0, "Beschädigte Höfe arbeiten nicht")
+	_check(farms_working == 2, "Beide Höfe arbeiten weiter")
+	_check(model._working(model._player, str(lost.damaged[0].kind)) == 0, "Beschädigte Gebäude arbeiten nicht")
 	var wood_before := int(model._player.resources.wood)
 	_check(raids.repair(model, plot).is_empty(), "Reparieren")
 	_check(int(model._player.resources.wood) == wood_before - 2, "Reparatur kostet die Hälfte (2 Holz)")
-	_check(model._working(model._player, "farm") == 1, "Reparierter Hof arbeitet wieder")
+	_check(model._working(model._player, str(lost.damaged[0].kind)) == 1, "Repariertes Gebäude arbeitet wieder")
 	_check(not with_damage.is_empty(), "Wirtschaftsstatus lesbar")
 	_check(not raids.stash.is_empty(), "Mitgenommene Vorräte liegen im Lager")
 	_check(not raids.start_expedition("zurueckholen", model).is_empty(), "Zurückholen braucht Wachen")
@@ -357,9 +360,13 @@ func _scene() -> void:
 	model._player.crops.carrots = 50
 	model._player.population = 8
 	model._player.campaign_chapter = 3
-	for index in range(4):
-		model.try_build(["farm", "quarry", "market", "farm"][index], village._next_free_plot())
+	for index in range(5):
+		model.try_build(["farm", "quarry", "market", "farm", "house"][index], village._next_free_plot())
 	model.day = 12
+	# Zeitplan: Versorgung läuft und „Schützen“ wurde schon einmal geöffnet.
+	village.schedule.supply_streak = SCHEDULE.SUPPLY_DAYS
+	village.dock.unlock_all()
+	village.select_dock_section("schuetzen")
 	village._rebuild()
 	# Real input: tap "Nächster Tag" until Krummzahn announces himself.
 	await _tap_control(village, village.day_button)

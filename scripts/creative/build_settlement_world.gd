@@ -28,6 +28,8 @@ const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const GUARDS_VIEW = preload("res://scripts/creative/build_village_guards_view.gd")
 const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
 const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
+const DOCK = preload("res://scripts/creative/build_village_dock.gd")
+const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -131,6 +133,11 @@ var field_button: Button
 var drag_from := -1
 var drag_to := -1
 var field_preview: MeshInstance3D
+var dock
+var schedule
+var area_tabs: Dictionary = {}
+var dock_tools: Array[Control] = []
+var troop_row: HBoxContainer
 
 
 func _ready() -> void:
@@ -1010,6 +1017,8 @@ func _buy(kind: String) -> void:
 		str(STATE.BUILDINGS[kind].title)
 		+ " gebaut. Am nächsten Tag arbeitet deine Siedlung weiter."
 	)
+	if model.living_village:
+		_dock_moment()
 	_save()
 
 
@@ -1063,7 +1072,11 @@ func _next_day() -> void:
 		neighbor_note = _advance_neighbors()
 	var raid_report: Dictionary = {}
 	if bool(report.get("advanced", false)) and raids != null:
-		raid_report = raids.advance_day(model, neighbors, int(model._player.get("campaign_chapter", 0)), not is_instance_valid(tutorial) or not tutorial.active())
+		if schedule != null:
+			schedule.after_day(model, report)
+		if is_instance_valid(tutorial):
+			tutorial.record_day(report)
+		raid_report = raids.advance_day(model, neighbors, int(model._player.get("campaign_chapter", 0)), not is_instance_valid(tutorial) or not tutorial.active(), schedule)
 	_rebuild()
 	if bool(report.get("advanced", false)):
 		_play_day_cycle()
@@ -1086,6 +1099,8 @@ func _next_day() -> void:
 		if not str(report.get("winner", "")).is_empty():
 			feedback.text = _winner_text(str(report.winner))
 		_handle_raid_report(raid_report)
+		if model.living_village:
+			_dock_moment()
 	else:
 		feedback.text = str(report.get("message", model.last_error))
 	_save()
@@ -1619,6 +1634,8 @@ func _pick_plot(point: Vector2) -> void:
 		origin, origin + camera.project_ray_normal(point) * 180, 1
 	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot") and _open_landmark(hit.position):
+		return
 	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot"):
 		# A tap on the slope or meadow between sites selects the cell under it.
 		# Im Dorf gehört auch das Ostufer bis Ring 32 dem Kind; nur der
@@ -1651,6 +1668,8 @@ func _pick_plot(point: Vector2) -> void:
 		return
 	selected_plot = int(hit.collider.get_meta("plot"))
 	_rebuild()
+	if model.living_village:
+		_open_plot_action(selected_plot)
 
 
 func _camera_update(immediate := false) -> void:
@@ -2171,13 +2190,17 @@ func _build_village_ui() -> void:
 	first_row.add_child(primary_row)
 	var chapter_action := VHUD.button("Kapitel", _chapter_dialog, 96, "primary", 15)
 	chapter_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dock_tool(chapter_action, "bauen", true)
 	primary_row.add_child(chapter_action)
 	var map_action := VHUD.button("Karte", open_campaign_map, 84, "teal", 15)
 	map_action.name = "VillageCampaignMap"
 	map_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dock_tool(map_action, "nachbarn")
 	primary_row.add_child(map_action)
 	var find_action := VHUD.button("Freier Bauplatz", _focus_next_free_plot, 140, "leaf", 15)
+	find_action.name = "VillageFindPlot"
 	find_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dock_tool(find_action, "bauen")
 	primary_row.add_child(find_action)
 	actions_scroll_node = ScrollContainer.new()
 	actions_scroll_node.name = "VillageActions"
@@ -2208,14 +2231,29 @@ func _build_village_ui() -> void:
 		transaction_buttons.append(action_button)
 	for index in [4, 5, 2]:
 		actions.add_child(transaction_buttons[index])
+	_dock_tool(transaction_buttons[4], "versorgen", true)
+	_dock_tool(transaction_buttons[5], "versorgen", true)
+	_dock_tool(transaction_buttons[2], "nachbarn")
 	var neighbor_button := VHUD.button("Nachbarn", _from_more.bind(_neighbors_dialog), 110, "teal", 15)
 	neighbor_button.name = "VillageNeighbors"
 	neighbor_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	_dock_tool(neighbor_button, "nachbarn")
 	actions.add_child(neighbor_button)
-	defense_button = VHUD.button("Schutz", _from_more.bind(_defense_dialog), 100, "rose", 15)
+	defense_button = VHUD.button("Schutz-Plan", _from_more.bind(_defense_dialog), 130, "rose", 15)
 	defense_button.name = "VillageDefense"
 	defense_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	_dock_tool(defense_button, "schuetzen")
 	actions.add_child(defense_button)
+	# Platz für Truppenarten und Verbände im Bereich „Schützen“ (Regeln: dorf3).
+	troop_row = HBoxContainer.new()
+	troop_row.name = "VillageTroops"
+	troop_row.add_theme_constant_override("separation", 8)
+	_dock_tool(troop_row, "schuetzen")
+	actions.add_child(troop_row)
+	var guard_quick := VHUD.button("Wache ausbilden", _quick_guard, 150, "cream", 15)
+	guard_quick.name = "VillageTroop_wache"
+	guard_quick.mouse_filter = Control.MOUSE_FILTER_PASS
+	troop_row.add_child(guard_quick)
 	raid_alert = VHUD.button("", _defense_dialog, 300, "rose", 16)
 	raid_alert.name = "VillageRaidAlert"
 	raid_alert.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -2237,6 +2275,7 @@ func _build_village_ui() -> void:
 	more_button = VHUD.button("Mehr ▴", _toggle_more, 96, "dark", 15)
 	more_button.name = "VillageMore"
 	more_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	_dock_tool(more_button, "bauen", true)
 	actions.add_child(more_button)
 	day_button = VHUD.button("Nächster Tag ☀", _day_action, 156, "primary", 16)
 	first_row.add_child(day_button)
@@ -2263,6 +2302,9 @@ func _build_village_ui() -> void:
 		card.mouse_filter = Control.MOUSE_FILTER_PASS
 		buildings.add_child(card)
 		purchase_buttons[kind] = card
+		card.set_meta("dock_section", DOCK.section_of_kind(kind))
+		card.set_meta("dock_card", kind)
+	_build_area_tabs(dock_box)
 	pause_panel = PanelContainer.new()
 	pause_panel.add_theme_stylebox_override("panel", _panel())
 	pause_panel.custom_minimum_size = Vector2(300, 0)
@@ -2274,6 +2316,9 @@ func _build_village_ui() -> void:
 	pause_box.add_child(_label("Deine Siedlung wartet", 22))
 	pause_box.add_child(_button("Weiter", _toggle_pause))
 	pause_box.add_child(_button("Speichern", _save_message))
+	var tour := _button(TUTORIAL.TOUR_CAPTION, _start_tour)
+	tour.name = "VillageTutorialTour"
+	pause_box.add_child(tour)
 	var replay := _button("Lumo zeigt es noch einmal", _tutorial_topics)
 	replay.name = "VillageTutorialReplay"
 	pause_box.add_child(replay)
@@ -2324,6 +2369,23 @@ func _layout_village_hud(size: Vector2) -> void:
 		first_row.add_child(actions_scroll_node)
 		first_row.add_child(day_button)
 	second_row.visible = narrow
+	# Very low landscape screens: the four area tabs share the first row.
+	if not area_tabs.is_empty():
+		var tabs_row: HBoxContainer = area_tabs.bauen.get_parent()
+		var dock_box: VBoxContainer = dock_rows[1].get_parent()
+		if short and tabs_row.get_parent() != first_row:
+			tabs_row.get_parent().remove_child(tabs_row)
+			first_row.add_child(tabs_row)
+		elif not short and tabs_row.get_parent() != dock_box:
+			tabs_row.get_parent().remove_child(tabs_row)
+			dock_box.add_child(tabs_row)
+		tabs_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		# Fit four tabs into the row: smaller letters only on narrow phones.
+		var room := size.x - gap * 2.0 - 24.0
+		var letters := 13 if short else (17 if room >= 560.0 else (15 if room >= 460.0 else 14))
+		for tab: Button in area_tabs.values():
+			tab.custom_minimum_size = Vector2(56.0 if short or room < 460.0 else 92.0, 50.0 if short else 58.0)
+			tab.add_theme_font_size_override("font_size", letters)
 	if narrow:
 		primary_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		for child in primary_row.get_children():
@@ -2394,12 +2456,154 @@ func _home_view() -> void:
 	_camera_update(true)
 
 
+# ------------------------------------------------------------- Vier Bereiche
+# „Bauen“, „Versorgen“, „Nachbarn“, „Schützen“ (Regeln: build_village_dock.gd).
+# „Nächster Tag“ gehört zu keinem Bereich und bleibt immer sichtbar.
+func _dock_tool(control: Control, section: String, advanced := false) -> void:
+	control.set_meta("dock_section", section)
+	control.set_meta("dock_advanced", advanced)
+	dock_tools.append(control)
+
+
+func _build_area_tabs(dock_box: VBoxContainer) -> void:
+	var row := HBoxContainer.new()
+	row.name = "VillageAreaTabs"
+	row.add_theme_constant_override("separation", 8)
+	dock_box.add_child(row)
+	for section in DOCK.ORDER:
+		var tab := VHUD.button(str(DOCK.TITLES[section]), select_dock_section.bind(section), 92, "cream", 17)
+		tab.name = "VillageTab_" + section
+		tab.custom_minimum_size.y = 58
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab.mouse_filter = Control.MOUSE_FILTER_STOP
+		row.add_child(tab)
+		area_tabs[section] = tab
+
+
+func dock_section() -> String:
+	return str(dock.current) if dock != null else "bauen"
+
+
+func select_dock_section(section: String) -> void:
+	if dock == null or not dock.select(section):
+		return
+	if section == "schuetzen" and schedule != null:
+		schedule.defense_seen = true
+	if is_instance_valid(more_panel):
+		more_panel.hide()
+	_apply_dock()
+
+
+## Zeigt den Bereich, in dem ein Bedienelement liegt (für Zeiger und Tests).
+func reveal_dock_control(control: Control) -> void:
+	if dock != null and control.has_meta("dock_section"):
+		select_dock_section(str(control.get_meta("dock_section")))
+
+
+func _apply_dock() -> void:
+	if dock == null or area_tabs.is_empty():
+		return
+	for control in dock_tools:
+		control.visible = (
+			str(control.get_meta("dock_section")) == str(dock.current)
+			and (dock.full_tools or not bool(control.get_meta("dock_advanced", false)))
+		)
+	var cards := 0
+	for kind in purchase_buttons:
+		var card: Control = purchase_buttons[kind]
+		card.visible = str(card.get_meta("dock_section")) == str(dock.current) and dock.card_visible(str(kind))
+		cards += int(card.visible)
+	(dock_rows[1] as ScrollContainer).visible = cards > 0
+	(dock_rows[1] as ScrollContainer).scroll_horizontal = 0
+	actions_scroll_node.scroll_horizontal = 0
+	for section in area_tabs:
+		var tab: Button = area_tabs[section]
+		tab.visible = dock.is_open(section)
+		HUD.style_button(tab, "primary" if section == str(dock.current) else "cream")
+		tab.set_meta("active", section == str(dock.current))
+	_layout()
+
+
+## Weitere Truppenarten/Verbände hängen ihre Knöpfe hier in „Schützen“ ein.
+func add_troop_tool(control: Control) -> void:
+	if is_instance_valid(troop_row):
+		troop_row.add_child(control)
+
+
+func _quick_guard() -> void:
+	if _transactions_blocked() or raids == null:
+		return
+	var error: String = raids.train_guard(model)
+	feedback.text = error if not error.is_empty() else "Eine neue Wache mit Helm und Schild. (%d von %d)" % [int(raids.guards), raids.max_guards(model)]
+	if schedule != null:
+		schedule.defense_seen = true
+	raids_view.sync()
+	_refresh_raid_alert()
+	_save()
+
+
+## Ein Spielmoment ist vorbei (Bau, Tag, Ende der Einführung): öffnet sich etwas?
+func _dock_moment() -> void:
+	if dock == null:
+		return
+	var tutorial_done: bool = not is_instance_valid(tutorial) or tutorial.done or tutorial.offering
+	var opened: Array[String] = dock.update(model, tutorial_done, raids != null and not raids.pending.is_empty())
+	if not opened.is_empty():
+		_apply_dock()
+		feedback.text = str(DOCK.OPENED[opened[-1]])
+		_explain("bereich_" + str(opened[-1]))
+
+
+## Tipp auf ein Kartenobjekt öffnet die passende Handlung direkt.
+func _open_plot_action(plot: int) -> void:
+	if dock == null:
+		return
+	for building in model._player.buildings:
+		if int(building.plot) != plot:
+			continue
+		var kind := str(building.kind)
+		if model.damaged_plots.has(plot) and dock.is_open("schuetzen"):
+			select_dock_section("schuetzen")
+			feedback.text = "%s ist beschädigt. Im Schutz-Plan kannst du es reparieren." % str(STATE.BUILDINGS[kind].title)
+			_defense_dialog()
+			return
+		var section := DOCK.section_of_kind(kind)
+		select_dock_section(section)
+		feedback.text = "%s · mehr davon findest du unter „%s“." % [str(STATE.BUILDINGS[kind].title), str(DOCK.TITLES[section])]
+		return
+	if dock_section() != "versorgen" or not is_instance_valid(tutorial) or not tutorial.active():
+		select_dock_section("bauen")
+
+
+## Nachbarstadt, Räuberlager oder Drachenhöhle angetippt?
+func _open_landmark(where: Vector3) -> bool:
+	if dock == null:
+		return false
+	var flat := Vector2(where.x, where.z)
+	if dock.is_open("nachbarn"):
+		for entry in NEIGHBORS.NEIGHBORS:
+			var site: Vector2 = entry.get("site", Vector2.INF)
+			if flat.distance_to(site) < 24.0:
+				select_dock_section("nachbarn")
+				_neighbors_dialog()
+				return true
+	if dock.is_open("schuetzen"):
+		for home in [RAIDS.ROBBER_CAMP, RAIDS.DRAGON_NEST]:
+			if flat.distance_to(home) < 16.0:
+				select_dock_section("schuetzen")
+				_defense_dialog()
+				return true
+	return false
+
 
 # ------------------------------------------------------------- Tutorial
 func _start_village_systems() -> void:
 	tutorial = TUTORIAL.new()
 	safe_ui.add_child(tutorial)
-	tutorial.setup(self, village_meta.get("tutorial"))
+	var options: Dictionary = HostBridge.launch_options()
+	options.merge(SceneRouter.launch_options, true)
+	dock = DOCK.restore(village_meta.get("dock"), model)
+	tutorial.setup(self, village_meta.get("tutorial"), options)
 	neighbors = NEIGHBORS.restore(village_meta.get("neighbors"))
 	neighbors_view = NEIGHBORS_VIEW.new()
 	add_child(neighbors_view)
@@ -2407,6 +2611,7 @@ func _start_village_systems() -> void:
 		neighbors_view.landscape = village_region.landscape
 	neighbors_view.setup(neighbors)
 	raids = RAIDS.restore(village_meta.get("raids"), model)
+	schedule = SCHEDULE.restore(village_meta.get("schedule"), model, raids if village_meta.has("raids") else null)
 	raids_view = RAIDS_VIEW.new()
 	add_child(raids_view)
 	raids_view.setup(model, raids, LumoQuality.tier())
@@ -2414,7 +2619,9 @@ func _start_village_systems() -> void:
 	guards_view = GUARDS_VIEW.new()
 	add_child(guards_view)
 	guards_view.setup(model, raids)
+	tutorial.finished.connect(_dock_moment)
 	_refresh_raid_alert()
+	_apply_dock()
 	_layout()
 
 
@@ -2427,6 +2634,10 @@ func _village_meta_snapshot() -> Dictionary:
 		data["neighbors"] = neighbors.snapshot()
 	if raids != null:
 		data["raids"] = raids.snapshot(model)
+	if dock != null:
+		data["dock"] = dock.snapshot()
+	if schedule != null:
+		data["schedule"] = schedule.snapshot()
 	return data
 
 
@@ -2478,13 +2689,25 @@ func tutorial_target_rect(target: String) -> Rect2:
 	match target:
 		"card_house", "card_farm":
 			var kind := target.substr(5)
-			return _clip_to_scroll(purchase_buttons[kind]) if purchase_buttons.has(kind) else Rect2()
+			if not purchase_buttons.has(kind):
+				return Rect2()
+			var card: Control = purchase_buttons[kind]
+			if not card.is_visible_in_tree() and dock != null:
+				# The card lives in another area: point at that area's tab first.
+				var tab: Control = area_tabs.get(DOCK.section_of_kind(kind))
+				return _hud_rect(tab) if tab != null and tab.is_visible_in_tree() else Rect2()
+			return _clip_to_scroll(card)
+		"tab_bauen", "tab_versorgen", "tab_nachbarn", "tab_schuetzen":
+			var tab: Control = area_tabs.get(target.substr(4))
+			return _hud_rect(tab) if tab != null and tab.is_visible_in_tree() else Rect2()
+		"harvest":
+			return resource_chip_rect("food")
 		"day":
 			return _hud_rect(day_button) if day_button.is_visible_in_tree() else Rect2()
 		"chips":
 			return _union([resource_chips.wood, resource_chips.stone, resource_chips.food])
 		"people":
-			return _union([resource_chips.population])
+			return resource_chip_rect("population")
 		"goal":
 			return _union([goal_card])
 		"world":
@@ -2507,6 +2730,20 @@ func tutorial_target_rect(target: String) -> Rect2:
 	return Rect2()
 
 
+## Ein Rohstoff in der oberen Leiste: auf schmalen Bildschirmen erst ins Bild
+## rollen, dann nur den sichtbaren Teil melden (Zeiger und Ernteweg).
+func resource_chip_rect(resource: String) -> Rect2:
+	var chip: Control = resource_chips.get(resource)
+	if chip == null or not chip.is_visible_in_tree():
+		return Rect2()
+	var scroll := chip.get_parent().get_parent() as ScrollContainer
+	if scroll != null:
+		var inside := _hud_rect(scroll).grow(0.5).encloses(_hud_rect(chip))
+		if not inside:
+			scroll.scroll_horizontal = maxi(0, int(chip.position.x - (scroll.size.x - chip.size.x) * 0.5))
+	return _clip_to_scroll(chip)
+
+
 func _tutorial_topics() -> void:
 	if paused:
 		_toggle_pause()
@@ -2516,10 +2753,23 @@ func _tutorial_topics() -> void:
 	var body: VBoxContainer = view.body
 	var dialog: Window = view.dialog
 	_village_caption(body, "Was soll ich dir noch einmal zeigen?")
+	var tour := _button(TUTORIAL.TOUR_CAPTION, _start_tour.bind(dialog), 260)
+	tour.mouse_filter = Control.MOUSE_FILTER_PASS
+	body.add_child(tour)
 	for topic in TUTORIAL.TOPICS:
 		var button := _button(topic, _replay_topic.bind(topic, dialog), 220)
 		button.mouse_filter = Control.MOUSE_FILTER_PASS
 		body.add_child(button)
+
+
+## „Lumo, zeig mir mein Dorf“ – jederzeit aus dem Pausenmenü und der Themenliste.
+func _start_tour(dialog: Window = null) -> void:
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	if paused:
+		_toggle_pause()
+	if is_instance_valid(tutorial):
+		tutorial.tour()
 
 
 func _replay_topic(topic: String, dialog: Window) -> void:
@@ -2665,7 +2915,7 @@ func _handle_raid_report(report: Dictionary) -> void:
 	if report.has("warning"):
 		_explain("angriff")
 		var warning: Dictionary = report.warning
-		feedback.text = "Achtung: %s %s" % [str(warning.reason), str(RAIDS.THREATS[str(warning.threat)].advice)]
+		feedback.text = "Achtung: %s %s" % [str(warning.reason), SCHEDULE.simple_help(raids, model)]
 		_defense_dialog.call_deferred()
 	if report.has("raid"):
 		_start_raid_scene(report.raid)
@@ -2718,6 +2968,8 @@ func _raid_button(body: VBoxContainer, text: String, action: Callable, enabled :
 func _defense_dialog() -> void:
 	if raids == null:
 		return
+	if schedule != null:
+		schedule.defense_seen = true
 	_explain("verteidigung")
 	var view: Dictionary = _village_dialog("Schutz für dein Dorf")
 	if view.is_empty():
@@ -2732,6 +2984,9 @@ func _defense_dialog() -> void:
 		_village_caption(body, "%s kommt in %d Tag%s." % [raids.threat_title(pending), days, "" if days == 1 else "en"], 19)
 		_lumo_says(body, "%s %s" % [str(pending.reason), str(forecast.advice)])
 		_village_caption(body, GUARDS.advice(str(pending.threat)))
+		# Wer kommt, warum – und die EINE einfache Handlung, die jetzt hilft.
+		var help := "%s %s" % [SCHEDULE.stage_change(int(pending.level)), SCHEDULE.simple_help(raids, model)]
+		_village_caption(body, help.strip_edges(), 17)
 		var row := VHUD.progress_row()
 		VHUD.set_progress(row, "Dein Schutz", roundi(float(forecast.have)), roundi(float(forecast.need) * 1.1))
 		body.add_child(row)
@@ -2807,7 +3062,10 @@ func _raid_action(action: String, argument: String, dialog: Window) -> void:
 				feedback.text = "%s kommt dir zu Hilfe!" % str(NEIGHBORS.spec(argument).name)
 				neighbors_view.start_caravan(NEIGHBORS.plot_world(argument, 4), _plot_world(4), "Hilfe von " + str(NEIGHBORS.spec(argument).name))
 		"negotiate":
+			var arrive := int(raids.pending.get("arrive_day", -1))
 			error = raids.negotiate(model, neighbors)
+			if error.is_empty() and schedule != null:
+				schedule.release(arrive)
 			if error.is_empty():
 				feedback.text = "Frieden! Das Geschenk hat geholfen."
 		"expedition":
@@ -2861,7 +3119,11 @@ func _raid_result_dialog(result: Dictionary) -> void:
 		elif not loss.is_empty():
 			lines += " Mitgenommen: %s." % _cost_text(loss)
 		_village_caption(body, lines)
-		_lumo_says(body, "Kopf hoch! Niemand ist verletzt. Repariere die Gebäude, baue mehr Schutz – und mit zwei Wachen holst du Vorräte zurück.")
+		_lumo_says(body, "Kopf hoch! Niemand ist verletzt. Häuser, Brunnen und deine wichtigsten Höfe sind heil geblieben.")
+		var rest := maxi(0, int(schedule.recover_until) - int(model.day)) if schedule != null else 0
+		_village_caption(body, "Jetzt hast du %d Tage Ruhe. Repariere, baue Schutz – der nächste Besuch ist nicht stärker." % rest, 17)
+		if not raids.stash.is_empty():
+			_village_caption(body, "Mit zwei Wachen holst du Vorräte zurück.")
 		_raid_button(body, "Zum Schutz-Plan", _open_defense_from.bind(view.dialog))
 
 

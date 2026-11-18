@@ -7,7 +7,7 @@ extends RefCounted
 
 const SIM = preload("res://scripts/creative/build_defense_sim.gd")
 const VERSION := 1
-const FIRST_WAVE_DAY := 4
+const FIRST_WAVE_DAY := 8
 const WAVE_INTERVAL := 4
 const TUTORIAL_STEPS: Array[Dictionary] = [
 	{"id": "build_house", "title": "Baue ein Wohnhaus",

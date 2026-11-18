@@ -206,15 +206,24 @@ func reasons(model, neighbors) -> Array[Dictionary]:
 
 ## One village day (called after the child's own day and the neighbours).
 ## Resolves an arriving attack, brings expeditions home, announces new ones.
-func advance_day(model, neighbors, chapter_index: int, tutorial_done := true) -> Dictionary:
+## With a `schedule` (build_village_schedule.gd) the start follows the child:
+## no chapter gate, but day 8 plus understood house/farm, working supply and a
+## first look at „Schützen“; arrival never shares a day with another system.
+func advance_day(model, neighbors, chapter_index: int, tutorial_done := true, schedule = null) -> Dictionary:
 	var day := int(model.day)
 	var report := {}
 	if not expedition.is_empty() and day >= int(expedition.return_day):
 		report["expedition"] = _finish_expedition(model, day)
 	if not pending.is_empty() and day >= int(pending.arrive_day):
 		report["raid"] = resolve(model, neighbors)
+		if schedule != null:
+			schedule.record_outcome(day, str(report.raid.outcome))
 		return report
-	if not pending.is_empty() or day < next_check or chapter_index < FIRST_CHAPTER or not tutorial_done:
+	if not pending.is_empty() or day < next_check:
+		return report
+	if schedule != null and not schedule.may_announce(model, tutorial_done):
+		return report
+	if schedule == null and (chapter_index < FIRST_CHAPTER or not tutorial_done):
 		return report
 	var options := reasons(model, neighbors)
 	if options.is_empty():
@@ -225,6 +234,10 @@ func advance_day(model, neighbors, chapter_index: int, tutorial_done := true) ->
 	pending = choice.duplicate()
 	pending["announce_day"] = day
 	pending["arrive_day"] = day + WARNING_DAYS
+	if schedule != null:
+		var system: String = schedule.system_for(str(choice.threat))
+		pending["arrive_day"] = schedule.free_day(day + WARNING_DAYS, system)
+		schedule.claim(int(pending.arrive_day), system)
 	pending["level"] = level_for(str(choice.threat))
 	pending["ally"] = ""
 	_note(day, "Warnung: " + str(choice.reason))
@@ -300,8 +313,10 @@ func resolve(model, neighbors) -> Dictionary:
 	var result := {"threat": threat, "by": str(pending.get("by", "")), "reason": str(pending.reason), "day": day,
 		"level": level, "need": snappedf(need, 0.1), "have": snappedf(have, 0.1), "outcome": outcome, "ally": ally,
 		"damaged": [], "loss": {}, "reward": {}, "used": parts.duplicate(), "guards": guards}
-	faced[threat] = int(faced.get(threat, 0)) + 1
+	# Only a won encounter raises the next stage: after a defeat the next try
+	# is the same size (reachable), never a harder one.
 	if outcome == "abgewehrt":
+		faced[threat] = int(faced.get(threat, 0)) + 1
 		defended += 1
 		fame += 1
 		result.reward = _victory(model, neighbors, threat)
@@ -342,22 +357,36 @@ func _victory(model, neighbors, threat: String) -> Dictionary:
 
 ## Damaged (never destroyed): buildings that matter to the attacker's goal first.
 func _damage(model, threat: String, count: int) -> Array:
-	var prefer: Array = {"raeuber": ["farm", "grain", "bakery"], "drache": ["market", "school"],
+	var prefer: Array = {"raeuber": ["grain", "bakery", "farm"], "drache": ["market", "school"],
 		"rivale": ["quarry", "lumber"]}[threat]
+	# Grundversorgung bleibt: Wohnhäuser, Brunnen und die Höfe, die das Dorf
+	# satt machen, werden nie beschädigt.
+	var keep_farms := safe_farms(model)
 	var candidates: Array = []
 	for building in model._player.buildings:
 		var plot := int(building.plot)
-		if model.damaged_plots.has(plot) or str(building.kind) == "house":
+		if model.damaged_plots.has(plot) or str(building.kind) in ["house", "well"]:
+			continue
+		if str(building.kind) == "farm" and int(model._working(model._player, "farm")) <= keep_farms:
 			continue
 		var rank := prefer.find(str(building.kind))
 		candidates.append([rank if rank >= 0 else 99, plot, str(building.kind)])
 	candidates.sort()
 	var result: Array = []
-	for index in range(mini(count, candidates.size())):
+	for index in range(candidates.size()):
+		if result.size() >= count:
+			break
 		var plot: int = candidates[index][1]
+		if str(candidates[index][2]) == "farm" and int(model._working(model._player, "farm")) <= keep_farms:
+			continue
 		model.damaged_plots[plot] = true
 		result.append({"plot": plot, "kind": candidates[index][2]})
 	return result
+
+
+## Höfe, die immer arbeiten müssen: so viele, wie die Bewohner zum Sattwerden brauchen.
+func safe_farms(model) -> int:
+	return maxi(1, int(ceil(float(model._player.population) / 5.0)))
 
 
 func _loss(model, neighbors, threat: String, share: float) -> Dictionary:
@@ -365,7 +394,9 @@ func _loss(model, neighbors, threat: String, share: float) -> Dictionary:
 	var loss := {}
 	match threat:
 		"raeuber":
-			loss = {"food": int(floor(float(town.resources.food) * share))}
+			# Mindestens drei Tage Essen für alle bleiben im Lager.
+			var reserve := int(town.population) * 3
+			loss = {"food": clampi(int(floor(float(town.resources.food) * share)), 0, maxi(0, int(town.resources.food) - reserve))}
 		"drache":
 			loss = {"coins": mini(20, int(floor(float(town.resources.coins) * share)))}
 		"rivale":
