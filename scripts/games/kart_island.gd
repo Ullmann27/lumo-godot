@@ -527,6 +527,9 @@ func _build_world() -> void:
 		var opponent: LumoRaceKart = VEHICLE.new()
 		opponent.set_meta("roadside_speed_factor", 1.0)
 		opponent.set_meta("reference_rival", reference_rivals)
+		# Without the authored roster a fox can race as a rival: then it is
+		# the real Lumo too, never the stand-in figure.
+		opponent.set_animated_lumo_enabled(animals[i] == "fox")
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.set_reference_rival_enabled(reference_rivals)
 		opponent.reduced_motion = reduced_motion
@@ -576,6 +579,8 @@ func _build_world() -> void:
 			records.begin(track_id, selected_kart, difficulty)
 			if not records.replay.is_empty():
 				ghost = VEHICLE.new()
+				# Lumo's ghost is the real Lumo as well, not the stand-in figure.
+				ghost.set_animated_lumo_enabled(selected_driver == "fox")
 				ghost.configure(selected_driver, Color("d3faff"), selected_kart)
 				ghost.reduced_motion = reduced_motion
 				# Lock the replay skin before applying transparency; a later driver
