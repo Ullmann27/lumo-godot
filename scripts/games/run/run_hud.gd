@@ -7,6 +7,7 @@ signal pause_pressed
 signal jump_changed(held: bool)
 signal dash_pressed
 signal steer_changed(axis: Vector2)
+signal skip_pressed
 
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/run/run_touch_button.gd")
@@ -32,6 +33,16 @@ var _toast_left: float = 0.0
 var _unit: float = 1.0
 var _bar := Rect2()
 var _two_rows: bool = false
+## Adventure path: the four crystal letters, the wordless coach and the skip button.
+var letter_chars: Array = []
+var letter_mask: int = 0
+var coach_icon: String = ""
+var skip_visible: bool = false
+var skip_button: Button
+var coach: Control
+var banner_label: Label
+var _banner_left: float = 0.0
+var _pulse: float = 0.0
 
 
 func _ready() -> void:
@@ -75,6 +86,25 @@ func _ready() -> void:
 	jump_button.configure("jump", "SPRINGEN", "Tippen: kleiner Sprung. Halten: hoher, weiter Sprung.")
 	jump_button.hold_changed.connect(func(value: bool) -> void: jump_changed.emit(value))
 	add_child(jump_button)
+	coach = Control.new()
+	coach.name = "Coach"
+	coach.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	coach.draw.connect(_draw_coach)
+	add_child(coach)
+	move_child(coach, 0)
+	skip_button = Button.new()
+	skip_button.name = "SkipIntro"
+	skip_button.text = "▶▶"
+	skip_button.tooltip_text = "Einführung überspringen"
+	skip_button.focus_mode = Control.FOCUS_NONE
+	skip_button.pressed.connect(func() -> void: skip_pressed.emit())
+	skip_button.hide()
+	add_child(skip_button)
+	banner_label = UI.label("", 34.0, 1.0, UI.GOLD, true)
+	banner_label.name = "SectionBanner"
+	banner_label.add_theme_color_override("font_outline_color", UI.INK)
+	banner_label.hide()
+	add_child(banner_label)
 	get_viewport().size_changed.connect(layout)
 	MobileRuntime.safe_area_changed.connect(layout)
 	layout()
@@ -112,6 +142,31 @@ func set_state(star_count: int, share: float, solved_count: int, checkpoint: int
 	top.queue_redraw()
 
 
+func set_letters(chars: Array, mask: int) -> void:
+	letter_chars = chars
+	letter_mask = mask
+	top.queue_redraw()
+
+
+func set_skip_visible(value: bool) -> void:
+	skip_visible = value
+	skip_button.visible = value and top.visible
+
+
+func set_coach(icon: String) -> void:
+	if icon != coach_icon:
+		coach_icon = icon
+		coach.queue_redraw()
+
+
+## Big title of a new section, shown for a moment.
+func banner(text: String, _index: int) -> void:
+	banner_label.text = text
+	banner_label.visible = not text.is_empty()
+	banner_label.modulate.a = 1.0
+	_banner_left = 2.4
+
+
 func set_dash_cooldown(value: float) -> void:
 	dash_button.set_cooldown(value)
 
@@ -136,8 +191,11 @@ func set_playing(value: bool) -> void:
 	pause_button.visible = value
 	pause_button.disabled = not value
 	top.visible = value
+	coach.visible = value
+	skip_button.visible = value and skip_visible
 	if not value:
 		toast.hide()
+		banner_label.hide()
 
 
 func release_controls() -> void:
@@ -147,6 +205,14 @@ func release_controls() -> void:
 
 
 func _process(delta: float) -> void:
+	if not coach_icon.is_empty():
+		_pulse += delta
+		coach.queue_redraw()
+	if _banner_left > 0.0:
+		_banner_left -= delta
+		banner_label.modulate.a = clampf(_banner_left / 0.5, 0.0, 1.0)
+		if _banner_left <= 0.0:
+			banner_label.hide()
 	if _toast_left > 0.0:
 		_toast_left -= delta
 		if _toast_left <= 0.0:
@@ -206,6 +272,22 @@ func layout() -> void:
 	countdown.add_theme_constant_override("outline_size", roundi(16.0 * u))
 	countdown.position = Vector2(0, view.y * 0.24)
 	countdown.size = Vector2(view.x, 150.0 * u)
+	coach.position = Vector2.ZERO
+	coach.size = view
+	skip_button.position = Vector2(view.x - m.z - 64.0 * u, top.position.y + top.size.y + 10.0 * u)
+	skip_button.size = Vector2(56.0, 48.0) * u
+	skip_button.add_theme_font_size_override("font_size", roundi(20.0 * u))
+	var skip_style := StyleBoxFlat.new()
+	skip_style.bg_color = Color(0.02, 0.09, 0.22, 0.82)
+	skip_style.border_color = UI.GOLD
+	skip_style.set_border_width_all(maxi(1, roundi(2.0 * u)))
+	skip_style.set_corner_radius_all(roundi(14.0 * u))
+	for state in ["normal", "hover", "pressed", "focus"]:
+		skip_button.add_theme_stylebox_override(state, skip_style)
+	banner_label.add_theme_font_size_override("font_size", roundi(34.0 * u))
+	banner_label.add_theme_constant_override("outline_size", roundi(10.0 * u))
+	banner_label.position = Vector2(0, view.y * 0.2)
+	banner_label.size = Vector2(view.x, 60.0 * u)
 
 
 func _place_toast() -> void:
@@ -255,6 +337,26 @@ func _draw_top() -> void:
 		font, star_pill.position + Vector2(42.0 * u, star_pill.size.y * 0.5 + font_size * 0.36), count,
 		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, UI.WHITE
 	)
+	# Crystal letters of the adventure path, under the star count.
+	if not letter_chars.is_empty():
+		var x: float = star_pill.position.x + 4.0 * u
+		var y: float = star_pill.end.y + 4.0 * u
+		if _two_rows:
+			x = star_pill.end.x + 10.0 * u
+			y = star_pill.position.y
+		for index in range(letter_chars.size()):
+			var found: bool = (letter_mask & (1 << index)) != 0
+			var cell := Rect2(x + float(index) * 30.0 * u, y, 26.0 * u, 26.0 * u)
+			var style := StyleBoxFlat.new()
+			style.bg_color = Color(0.25, 0.75, 0.95, 0.9) if found else Color(0.02, 0.09, 0.22, 0.7)
+			style.border_color = Color(0.6, 0.95, 1.0, 0.9)
+			style.set_border_width_all(maxi(1, roundi(1.5 * u)))
+			style.set_corner_radius_all(roundi(6.0 * u))
+			top.draw_style_box(style, cell)
+			top.draw_string(
+				font, cell.position + Vector2(0, 19.0 * u), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
+				cell.size.x, roundi(17.0 * u), UI.WHITE if found else Color(1, 1, 1, 0.35)
+			)
 	# Learning stops solved.
 	var tasks: String = "%d/%d" % [solved, question_total]
 	var tasks_width: float = font.get_string_size(tasks, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
@@ -324,3 +426,51 @@ func _pill(rect: Rect2, accent: Color) -> void:
 	style.set_border_width_all(maxi(1, roundi(1.5 * _unit)))
 	style.set_corner_radius_all(roundi(rect.size.y * 0.5))
 	top.draw_style_box(style, rect)
+
+
+## Wordless coach of the introduction: a pulsing ring on the button to press
+## and a small picture of what happens next.
+func _draw_coach() -> void:
+	if coach_icon.is_empty():
+		return
+	var u: float = _unit
+	var wave: float = 0.5 + 0.5 * sin(_pulse * 6.0)
+	if coach_icon != "bounce":
+		var rect: Rect2 = jump_button.get_global_rect()
+		var centre: Vector2 = rect.get_center() - coach.global_position
+		var radius: float = rect.size.x * (0.56 + 0.1 * wave)
+		coach.draw_arc(centre, radius, 0.0, TAU, 48, Color(1.0, 0.86, 0.3, 0.9 - 0.5 * wave), 6.0 * u, true)
+		# A tapping finger above the button.
+		var finger: Vector2 = centre + Vector2(-rect.size.x * 0.1, -rect.size.y * (0.75 + 0.12 * wave))
+		coach.draw_circle(finger, 13.0 * u, UI.WHITE)
+		coach.draw_rect(Rect2(finger + Vector2(-8.0 * u, -34.0 * u), Vector2(16.0 * u, 34.0 * u)), UI.WHITE)
+	var view: Vector2 = coach.size
+	var box := Rect2(view.x * 0.5 - 70.0 * u, view.y * 0.30, 140.0 * u, 92.0 * u)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.02, 0.09, 0.22, 0.75)
+	style.border_color = UI.GOLD
+	style.set_border_width_all(maxi(1, roundi(2.0 * u)))
+	style.set_corner_radius_all(roundi(18.0 * u))
+	coach.draw_style_box(style, box)
+	var c: Vector2 = box.get_center()
+	var fox := Color("ff8a2a")
+	var hop: float = sin(_pulse * 4.0) * 0.5 + 0.5
+	match coach_icon:
+		"jump":
+			coach.draw_rect(Rect2(box.position + Vector2(10, 62) * u, Vector2(40, 10) * u), Color("7a5a3c"))
+			coach.draw_rect(Rect2(box.position + Vector2(90, 62) * u, Vector2(40, 10) * u), Color("7a5a3c"))
+			coach.draw_rect(Rect2(box.position + Vector2(50, 66) * u, Vector2(40, 18) * u), Color("2fd0c8"))
+			coach.draw_circle(c + Vector2(lerpf(-40.0, 40.0, hop), -10.0 - 26.0 * sin(hop * PI)) * u, 10.0 * u, fox)
+		"bounce":
+			coach.draw_circle(c + Vector2(0, 26) * u, 20.0 * u, Color("ff5a4e"))
+			coach.draw_rect(Rect2(c + Vector2(-6, 26) * u, Vector2(12, 16) * u), Color("f3ead2"))
+			coach.draw_circle(c + Vector2(0, -8.0 - 22.0 * hop) * u, 10.0 * u, fox)
+		"stomp":
+			coach.draw_circle(c + Vector2(0, 28) * u, 16.0 * u, Color("ff6f3c"))
+			coach.draw_circle(c + Vector2(0, -26.0 + 30.0 * hop) * u, 10.0 * u, fox)
+			coach.draw_line(c + Vector2(26, -20) * u, c + Vector2(26, 10) * u, UI.GOLD, 4.0 * u)
+			coach.draw_colored_polygon(PackedVector2Array([c + Vector2(18, 8) * u, c + Vector2(34, 8) * u, c + Vector2(26, 20) * u]), UI.GOLD)
+		"barrel":
+			coach.draw_rect(Rect2(c + Vector2(-50, 4) * u, Vector2(32, 26) * u), Color("a8683a"))
+			coach.draw_arc(c + Vector2(0, 30) * u, 44.0 * u, PI * 1.15, PI * 1.85, 16, UI.GOLD, 3.0 * u)
+			coach.draw_circle(c + Vector2(-34.0 + 76.0 * hop, 18.0 - 40.0 * sin(hop * PI)) * u, 9.0 * u, fox)
