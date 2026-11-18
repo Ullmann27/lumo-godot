@@ -374,6 +374,7 @@ func _on_player_event(event: StringName) -> void:
 			AudioManager.play_sfx("ui_confirm")
 		&"loop_start":
 			hud.say("Looping!", 2.0)
+			camera.follow(world, player, feet, 0.016, true)
 		&"loop_end":
 			fx.play("sparkle", feet + Vector3.UP * 1.0)
 			camera.follow(world, player, feet, 0.016, true)

@@ -36,11 +36,20 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 	var desired: Vector3
 	var look: Vector3
 	if player.loop_u >= 0.0:
-		# Side-on view of the stunt loop while Lumo runs it.
+		# Side view through the open ring, as in Lumo Kart: Lumo stays visible on
+		# the inner deck all the way round, also upside down at the top.
 		var start: float = float(player.loop.start)
+		var lane: float = float(player.loop.lane)
+		var radius: float = float(player.loop.layout.get("radius", 6.5))
 		var basis: Basis = world.frame(start)
-		desired = world.position_at(start - 15.0, float(player.loop.lane) - 6.5) + basis.y * 7.0
-		look = feet + Vector3.UP * 1.0
+		var hub: Vector3 = (
+			world.position_at(
+				(start + float(player.loop.exit_s)) * 0.5, (lane + float(player.loop.exit_lane)) * 0.5
+			)
+			+ basis.y * radius
+		)
+		desired = hub - basis.x * radius * 2.7 + basis.z * radius * 0.45 - basis.y * radius * 0.15
+		look = (feet + Vector3.UP * 0.9).lerp(hub, 0.35)
 	elif _front > 0.0:
 		desired = world.position_at(player.s + 5.6, clampf(player.lat + 2.2, -wall, wall)) + Vector3.UP * 2.0
 		# Leave room for the result card: Lumo stands in the free part of the screen.
