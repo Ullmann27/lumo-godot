@@ -208,6 +208,8 @@ func evaluate(g: RefCounted, alpha: int = -INF, beta: int = INF) -> int:
 	for c in 2:
 		var sign := 1 if c == 0 else -1
 		var ksq: int = g.king_sq[c]
+		if ksq < 0:
+			continue
 		var kf := ksq & 7
 		var kr := ksq >> 3
 		var home := kr == 0 if c == 0 else kr == 7

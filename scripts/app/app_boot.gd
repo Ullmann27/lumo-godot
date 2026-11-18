@@ -32,6 +32,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"cards": "LUMO CARDS",
 	"connect_four": "VIER GEWINNT",
 	"memory": "LUMO MEMORY",
+	"chess": "LUMO SCHACH",
 	"quiz": "LUMO QUIZSHOW",
 }
 signal load_state_changed(state: String)
@@ -82,7 +83,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "home", "games"
+		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
 	] else "games"
 	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
 	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.

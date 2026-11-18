@@ -70,6 +70,9 @@ var ep_key := -1  # Linie, die im Schlüssel steht (nur wenn en passant möglich
 var undo_stack := PackedInt64Array()  # je Zug 3 Werte: Zug, Info, Schlüssel davor
 var start_fen := START_FEN
 var played: Array[String] = []  # Züge seit start_fen in UCI-Schreibweise
+## Lern- und Probespiele ohne Könige (z. B. Bauernrennen). Nur dann darf eine
+## FEN ganz ohne Könige sein; Schach gibt es dort nicht.
+var allow_kingless := false
 
 
 static func ensure_tables() -> void:
@@ -235,7 +238,8 @@ func set_fen(fen: String) -> bool:
 		if file != 8:
 			return false
 	if kings[0] != 1 or kings[1] != 1:
-		return false
+		if not (allow_kingless and kings[0] == 0 and kings[1] == 0):
+			return false
 	var new_side := WHITE
 	if parts[1] == "b":
 		new_side = BLACK
@@ -347,6 +351,8 @@ func _refresh_ep_key() -> void:
 
 ## Wird `sq` von Figuren der Farbe `by` angegriffen?
 func is_attacked(sq: int, by: int) -> bool:
+	if sq < 0:
+		return false
 	var b := board
 	var f := sq & 7
 	var col := by << 3
@@ -880,7 +886,10 @@ func winner() -> int:
 
 
 func snapshot() -> Dictionary:
-	return {"start": start_fen, "moves": played.duplicate()}
+	var out := {"start": start_fen, "moves": played.duplicate()}
+	if allow_kingless:
+		out["kingless"] = true
+	return out
 
 
 ## Stellt einen Stand aus `snapshot()` wieder her (Start + alle Züge, damit
@@ -888,6 +897,7 @@ func snapshot() -> Dictionary:
 func restore(data: Dictionary) -> bool:
 	var keep_fen := start_fen
 	var keep_moves := played.duplicate()
+	allow_kingless = bool(data.get("kingless", false))
 	if not set_fen(str(data.get("start", START_FEN))):
 		return false
 	var moves: Variant = data.get("moves", [])
