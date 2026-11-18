@@ -2584,7 +2584,7 @@ func _update_passages(delta: float) -> void:
 					message.text = str(entry.get("warn_text", "Uh-uh-AAH! Kiri holt Schwung. Kurz warten!"))
 		_passage_last_phase[entry.id] = phase
 		if (
-			PASSAGES.blocker_hits(world, entry, previous_road_distance, lane, elapsed)
+			PASSAGES.blocker_hits(world, entry, previous_road_distance, lane, elapsed, absf(speed))
 			and _passage_hit_cooldown <= 0.0 and shield_time <= 0.0 and not open_edge_fall
 		):
 			_passage_hit_cooldown = 1.6
@@ -2602,7 +2602,9 @@ func _update_passages(delta: float) -> void:
 			_sound_effect("collision")
 		for i in range(opponents.size()):
 			var rival_lane: float = opponent_lanes[i] if i < opponent_lanes.size() else 0.0
-			if PASSAGES.blocker_hits(world, entry, opponent_distances[i], rival_lane, elapsed):
+			if PASSAGES.blocker_hits(
+				world, entry, opponent_distances[i], rival_lane, elapsed, absf(opponents[i].motion_speed)
+			):
 				opponent_stuns[i] = maxf(opponent_stuns[i], 0.8)
 
 

@@ -265,3 +265,47 @@ static func gate_wait(test, track: String, entry: Dictionary, difficulty: String
 	)
 	test._park_rival(0, -600.0)
 	test.hold_rivals_from = 99
+
+
+## Lava pulse with momentum: arriving at race pace while the stream glows is no fall
+## (heiße Zone 7,5 m in < 0,4 s), and the measured entry speed is above min_speed.
+static func lava_fast(test, entry: Dictionary, cruise: float) -> void:
+	var guard: float = 0.0
+	while guard < 20.0:
+		test._place(float(entry.wait_line) - 150.0, 0.0, 0.0)
+		test._tick()
+		guard += STEP
+		var state: Dictionary = PASSAGES.swing_state(entry, test.game.elapsed)
+		if str(state.phase) == "swing" and float(state.progress) < 0.1:
+			break
+	var band: Vector2 = PASSAGES.gate_band(entry, PASSAGES.swing_state(entry, test.game.elapsed))
+	var lane: float = (band.x + band.y) * 0.5
+	test._place(float(entry.plane) - cruise * 0.7, lane, cruise)
+	var falls: int = test.game.passage_falls
+	var hits: int = test.game.passage_hits
+	var entry_speed: float = -1.0
+	var t: float = 0.0
+	while test._local() < float(entry.plane) + 8.0 and t < 4.0:
+		test._touch_steer(lane, 0.0)
+		test._tick()
+		t += STEP
+		var hot: bool = (
+			absf(test._local() - float(entry.plane))
+			<= float(entry.band) + PASSAGES.KART_HALF_LENGTH
+		)
+		if hot and entry_speed < 0.0:
+			entry_speed = test.game.speed
+			test._check(
+				str(PASSAGES.swing_state(entry, test.game.elapsed).phase) == "swing",
+				"%s: the fast kart meets the glowing stream" % entry.id
+			)
+	test._check(
+		test.game.passage_falls == falls and test.game.passage_hits == hits,
+		"%s: with momentum (%.1f m/s) over the lava" % [entry.id, entry_speed]
+	)
+	test._note(
+		(
+			"%s: mit Schwung %.1f m/s über den Lavapuls (Mindesttempo %.1f m/s) → kein Sturz"
+			% [entry.id, entry_speed, float(entry.min_speed)]
+		)
+	)

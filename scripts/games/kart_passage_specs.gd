@@ -49,6 +49,35 @@ const SPECS: Dictionary = {
 			"hit_text": "Bumm – die Schranke! Bei Rot innen kurz warten.",
 		},
 	],
+	"volcano_night":
+	[
+		{
+			"kind": "gate",
+			"id": "lavapuls",
+			"name": "Lavapuls am Glutstollen",
+			"theme": "volcano",
+			"object": "lava",
+			"cue": "lava_hiss",
+			"effect": "reset",
+			"min_speed": 18.0,
+			"wait_start": 76.0,
+			"wait_line": 104.0,
+			"plane": 112.0,
+			"respawn": 86.0,
+			"lat_min": -5.0,
+			"lat_max": -0.8,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 1.0,
+			"sign": "LAVAPULS\nGlüht es: warten oder mit Schwung",
+			"approach_text":
+			"Lavapuls! Glüht der Boden: warten oder mit Schwung drüber – außen ist die Basaltspur frei.",
+			"warn_text": "Zisch! Der Boden glüht – gleich kommt die Lava. Außen ist frei.",
+			"hit_text": "Zu heiß! Die Lumo-Wolke holt dich vor den Lavastrom zurück.",
+		},
+	],
 	"jungle_emerald_3600":
 	[
 		{

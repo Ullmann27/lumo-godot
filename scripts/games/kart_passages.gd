@@ -12,6 +12,14 @@ extends RefCounted
 ##   Brückendeck Entwurf ................................................. 3,60 m (1,64 ×)
 ##   Absturz erst, wenn die Kartmitte DECK_FALL_MARGIN über der Kante ist.
 ##   Langsamstes Kart (boru_rally) Beschleunigung ......................... 35,2 m/s²
+## Lavapuls (Volcano Night Run): Während des Pulses fließt Lava quer über die Innenlinie.
+##   Heiße Zone = Band 2 × 2,5 m + Kartlänge 2 × 1,24 m ............... 7,5 m
+##   Ein Kart darf höchstens 0,4 s über der Lava sein → Mindesttempo 7,5 / 0,4 ≈ 18,7 m/s;
+##   Entwurf min_speed 18 m/s (65 km/h) je Frame geprüft.
+##   Normales Tempo (Kinderkart volles Eigentempo 48 m/s, nach der Kurve ≥ 30 m/s): drüber.
+##   Aus dem Stand an der Wartelinie (8 m vor der Mitte, 4,3 m bis zur Lava) erreicht auch das
+##   stärkste Kart nur √(2 · 40 · 4,3) ≈ 18,5 m/s – knapp; das langsamste (35,2 m/s²) 17,3 m/s
+##   → wer steht, wartet den Puls ab (2,2 s). Außen bleibt die Basaltspur immer kühl.
 ## Bewegte Hindernisse: Offenzeit ≥ Reaktionszeit 1,0 s + Fahrzeit des langsamsten Karts aus
 ## dem Stand von der Wartelinie bis hinter das Band (gemessen im Regressionstest).
 
@@ -297,12 +305,17 @@ static func free_lane(world, entry: Dictionary, state: Dictionary) -> float:
 	return (-half + band.x) * 0.5 if left_room >= right_room else (band.y + half) * 0.5
 
 
-static func gate_hits(world, entry: Dictionary, distance: float, lateral: float, t: float) -> bool:
+static func gate_hits(
+	world, entry: Dictionary, distance: float, lateral: float, t: float, speed: float = 0.0
+) -> bool:
 	var d: float = fposmod(distance, float(world.length))
 	if absf(d - float(entry.plane)) > float(entry.band) + KART_HALF_LENGTH:
 		return false
 	var state: Dictionary = swing_state(entry, t)
 	if str(state.phase) != "swing":
+		return false
+	# Lava pulse: with enough momentum the kart skims over the hot stream (see LAVA_MIN_SPEED).
+	if entry.has("min_speed") and absf(speed) >= float(entry.min_speed):
 		return false
 	var band: Vector2 = gate_band(entry, state)
 	if str(entry.get("object", "")) == "robot":
@@ -316,12 +329,12 @@ static func gate_hits(world, entry: Dictionary, distance: float, lateral: float,
 
 ## Any moving blocker (Kiri or a gate) touching the kart at this place and time.
 static func blocker_hits(
-	world, entry: Dictionary, distance: float, lateral: float, t: float
+	world, entry: Dictionary, distance: float, lateral: float, t: float, speed: float = 0.0
 ) -> bool:
 	if str(entry.kind) == "swing":
 		return swing_hits(world, entry, distance, lateral, t)
 	if str(entry.kind) == "gate":
-		return gate_hits(world, entry, distance, lateral, t)
+		return gate_hits(world, entry, distance, lateral, t, speed)
 	return false
 
 

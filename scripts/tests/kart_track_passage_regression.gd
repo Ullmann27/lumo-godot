@@ -640,20 +640,31 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 	var hit_before: int = game.passage_hits
 	var into_lane: float = 0.0
 	var guard2: float = 0.0
-	var lead: float = 1.5
+	var slow_lava: bool = entry.has("min_speed")
+	# Lava: arrive mid-pulse just before the hot zone, too slow (55 % of the minimum speed).
+	var lead: float = 0.15 if slow_lava else 1.5
 	while guard2 < 20.0:
 		_place(float(entry.wait_line) - 150.0, 0.0, 0.0)
 		_tick()
 		guard2 += STEP
 		var state: Dictionary = PASSAGES.swing_state(entry, game.elapsed)
 		var until_centre: float = float(state.until_swing) + PASSAGES._blocking_seconds(entry) * 0.5
-		if str(state.phase) != "swing" and absf(until_centre - lead) < STEP:
+		var mid_pulse: bool = (
+			slow_lava and str(state.phase) == "swing" and absf(float(state.progress) - 0.3) < 0.02
+		)
+		if mid_pulse or (str(state.phase) != "swing" and absf(until_centre - lead) < STEP):
 			if str(entry.kind) == "gate":
-				var future: Dictionary = PASSAGES.swing_state(entry, game.elapsed + lead)
+				var future: Dictionary = PASSAGES.swing_state(
+					entry, game.elapsed + (0.0 if slow_lava else lead)
+				)
 				var band: Vector2 = PASSAGES.gate_band(entry, future)
 				into_lane = (band.x + band.y) * 0.5
 			break
-	_place(float(entry.plane) - cruise * lead, into_lane, cruise)
+	var arrive: float = float(entry.get("min_speed", 0.0)) * 0.55 if slow_lava else cruise
+	var before_plane: float = (
+		float(entry.band) + PASSAGES.KART_HALF_LENGTH + 1.0 if slow_lava else cruise * lead
+	)
+	_place(float(entry.plane) - before_plane, into_lane, arrive)
 	var t2: float = 0.0
 	while _local() < float(entry.plane) + 8.0 and t2 < 6.0 and game.passage_falls == falls_before:
 		_touch_steer(into_lane, 0.0)
@@ -664,7 +675,10 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 		"%s: driving into the swing is a vine hit (%d)" % [entry.id, game.passage_hits - hit_before]
 	)
 	if str(entry.get("effect", "bump")) == "reset":
-		_tick(1.6)
+		var fall_wait: float = 0.0
+		while game.passage_falls == falls_before and fall_wait < 3.0:
+			_tick()
+			fall_wait += STEP
 		_check(game.passage_falls == falls_before + 1, "%s: the hot stream is a fall" % entry.id)
 		_check(
 			absf(_local() - float(entry.respawn)) < 0.6,
@@ -672,6 +686,8 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 		)
 	else:
 		_check(game.reset_count == resets, "%s: a vine hit is no reset" % entry.id)
+	if slow_lava:
+		await RIVAL_CHECKS.lava_fast(self, entry, cruise)
 	if str(entry.kind) == "gate":
 		await _gate_outer_lane(entry)
 	_note(
