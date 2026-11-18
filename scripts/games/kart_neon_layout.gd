@@ -26,8 +26,11 @@ static func arrange(hub: Control) -> void:
 	k = maxf(k, 0.25)
 	hub._layout_scale = k
 	hub._layout_root.size = hub.size
+	hub.apply_kit_skins(k)
 	hub._veil.position = Vector2.ZERO
 	hub._veil.size = hub.size
+	hub._floor.position = Vector2(0, hub.size.y * 0.42).round()
+	hub._floor.size = Vector2(hub.size.x, hub.size.y - hub._floor.position.y)
 	var area := hub.size / k
 	var landscape := area.x >= area.y * 1.15
 	var short := landscape and area.y < 560.0
@@ -46,7 +49,7 @@ static func arrange(hub: Control) -> void:
 		_portrait(hub, Rect2(m, top, area.x - 2 * m, bottom - top), k, g)
 	if hub._overlay.visible:
 		var w := minf(area.x - 2 * m, 560.0)
-		var h := minf(area.y - 2 * m, 620.0)
+		var h := minf(area.y - 2 * m, 640.0)
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
 		hub._overlay.scale = Vector2.ONE
@@ -56,19 +59,15 @@ static func arrange(hub: Control) -> void:
 
 static func _scale_overlay(hub: Control, k: float) -> void:
 	hub._overlay_title.add_theme_font_size_override("font_size", roundi(24 * k))
-	for label in hub._overlay_list.get_children():
-		label.add_theme_font_size_override("font_size", roundi(17 * k))
+	hub.scale_overlay_lines(k, 15.0 if hub._race_kinds.visible else 17.0)
 	for kind in hub._race_kinds.get_children():
 		kind.custom_minimum_size = Vector2(0, 60) * k
-		kind.add_theme_font_size_override("font_size", roundi(16 * k))
+		kind.add_theme_font_size_override("font_size", roundi(13.5 * k))
 	hub._live_start.custom_minimum_size = Vector2(0, 64) * k
 	hub._live_start.add_theme_font_size_override("font_size", roundi(22 * k))
 	var close: Button = hub._overlay.find_child("CloseOverlay", true, false)
 	close.custom_minimum_size = Vector2(120, 56) * k
 	close.add_theme_font_size_override("font_size", roundi(18 * k))
-	var skin: StyleBoxFlat = hub._overlay.get_theme_stylebox("panel")
-	skin.set_content_margin_all(16 * k)
-	skin.set_corner_radius_all(roundi(20 * k))
 
 
 static func _header(hub: Control, r: Rect2, k: float) -> void:
@@ -118,11 +117,7 @@ static func _hero_and_rotators(hub: Control, r: Rect2, k: float) -> void:
 
 static func _highlight(hub: Control, r: Rect2, k: float, strip: bool) -> void:
 	_place(hub._highlight, r, k)
-	var skin: StyleBoxFlat = hub._highlight.get_theme_stylebox("panel")
-	skin.set_corner_radius_all(roundi(16 * k))
-	skin.set_border_width_all(maxi(1, roundi(2 * k)))
-	skin.shadow_size = roundi(8 * k)
-	var pad := 4.0 if strip else 8.0
+	var pad := 5.0 if strip else 9.0
 	var inner := Rect2(pad, pad, r.size.x - 2 * pad, r.size.y - 2 * pad)
 	var thumbs: Array = []
 	for id in hub._track_buttons:
@@ -131,43 +126,72 @@ static func _highlight(hub: Control, r: Rect2, k: float, strip: bool) -> void:
 		thumb.visible = id != hub._featured_track
 		if thumb.visible:
 			thumbs.append(thumb)
+	hub._highlight_icon.visible = not strip
 	if strip:
 		hub._highlight_title.visible = false
 		hub._dots.visible = false
-		var big_w := inner.size.x * 0.4
+		var big_w := inner.size.x * 0.36
 		_place(hub._highlight_pick, Rect2(inner.position, Vector2(big_w, inner.size.y)), k)
 		var tw := (inner.size.x - big_w - 6.0 * thumbs.size()) / maxf(thumbs.size(), 1)
+		_thumb_labels(thumbs, tw - 14.0, k)
 		for i in range(thumbs.size()):
 			_place(thumbs[i], Rect2(inner.position.x + big_w + 6 + i * (tw + 6), inner.position.y, tw, inner.size.y), k)
 		return
 	hub._highlight_title.visible = true
 	hub._dots.visible = true
-	var title_h := 26.0
-	hub._highlight_title.position = (Vector2(inner.position.x + 4, inner.position.y) * k).round()
-	hub._highlight_title.size = (Vector2(inner.size.x, title_h) * k).round()
-	hub._highlight_title.add_theme_font_size_override("font_size", roundi(17 * k))
+	var title_h := 28.0
+	# Die obere linke Ecke des Glasrahmens ist abgeschrägt: Icon und Titel rücken ein.
+	var title_x := inner.position.x + 8
+	var icon_w := title_h - 2 if inner.size.x >= 200.0 else 20.0
+	_place(hub._highlight_icon, Rect2(title_x, inner.position.y + (title_h - icon_w) * 0.5, icon_w, icon_w), k)
+	title_x += icon_w + 4
+	hub._highlight_title.position = (Vector2(title_x, inner.position.y) * k).round()
+	hub._highlight_title.size = (Vector2(inner.end.x - title_x, title_h) * k).round()
+	hub._highlight_title.clip_text = true
+	var title_px := 17.0
+	while title_px > 11.0 and hub._highlight_title.get_theme_font("font").get_string_size(hub._highlight_title.text,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, roundi(title_px * k)).x > (inner.end.x - title_x) * k:
+		title_px -= 1.0
+	hub._highlight_title.add_theme_font_size_override("font_size", roundi(title_px * k))
 	var dots_h := 10.0
 	var thumb_h := clampf(inner.size.y * 0.26, 48.0, 84.0)
 	var big_h := inner.size.y - title_h - thumb_h - dots_h - 12
 	_place(hub._highlight_pick, Rect2(inner.position.x, inner.position.y + title_h + 2, inner.size.x, big_h), k)
 	var ty := inner.position.y + title_h + 2 + big_h + 6
 	var tw2 := (inner.size.x - 5.0 * (thumbs.size() - 1)) / maxf(thumbs.size(), 1)
+	_thumb_labels(thumbs, tw2 - 14.0, k)
 	for i in range(thumbs.size()):
 		_place(thumbs[i], Rect2(inner.position.x + i * (tw2 + 5), ty, tw2, thumb_h), k)
 	_place(hub._dots, Rect2(inner.position.x, ty + thumb_h + 2, inner.size.x, dots_h), k)
+
+
+## Platz über jeder Kachelreihe, in den die großen 3D-Icons der Modus-Kacheln hineinragen.
+const ICON_POP := 10.0
+
+
+## Streckennamen stehen nur auf den kleinen Bildern, wenn jeder Name in lesbarer Größe
+## (11 dp) passt; sonst bleibt die ganze Reihe ohne Schrift (das große Bild nennt die Strecke).
+static func _thumb_labels(thumbs: Array, width_dp: float, k: float) -> void:
+	var font: Font = load("res://assets/fonts/Nunito-Black.ttf")
+	var fits := true
+	for thumb in thumbs:
+		if font.get_string_size(str(thumb.title), HORIZONTAL_ALIGNMENT_LEFT, -1, roundi(11.0 * k)).x > width_dp * k:
+			fits = false
+	for thumb in thumbs:
+		thumb.label_hidden = not fits
 
 
 static func _mode_row(hub: Control, r: Rect2, k: float, columns: int, compact: bool) -> void:
 	var ids := ["race", "cup", "season", "event"]
 	var rows := ceili(4.0 / columns)
 	var w := (r.size.x - 8.0 * (columns - 1)) / columns
-	var h := (r.size.y - 8.0 * (rows - 1)) / rows
+	var h := (r.size.y - (8.0 + ICON_POP) * (rows - 1) - ICON_POP) / rows
 	for i in range(4):
 		var tile = hub._mode_tiles[ids[i]]
 		tile.compact = compact
 		var col := i % columns
 		var row := i / columns
-		_place(tile, Rect2(r.position.x + col * (w + 8), r.position.y + row * (h + 8), w, h), k)
+		_place(tile, Rect2(r.position.x + col * (w + 8), r.position.y + ICON_POP + row * (h + 8 + ICON_POP), w, h), k)
 
 
 static func _feature_row(hub: Control, r: Rect2, k: float, compact: bool) -> void:
@@ -189,7 +213,7 @@ static func _portrait(hub: Control, r: Rect2, k: float, g: float) -> void:
 		feature_h = maxf(64.0, feature_h - deficit * 0.5)
 		mode_h = maxf(76.0, mode_h - deficit * 0.5)
 		top_h = r.size.y - season_h - mode_h - feature_h - 3 * g
-	var hero_w := r.size.x * (0.5 if r.size.x >= 560.0 else 0.46)
+	var hero_w := r.size.x * 0.5
 	_hero_and_rotators(hub, Rect2(r.position, Vector2(hero_w - g * 0.5, top_h)), k)
 	_highlight(hub, Rect2(r.position.x + hero_w + g * 0.5, r.position.y, r.size.x - hero_w - g * 0.5, top_h), k, false)
 	var y := r.position.y + top_h + g
@@ -214,12 +238,23 @@ static func _landscape(hub: Control, r: Rect2, k: float, g: float, short: bool) 
 		_mode_row(hub, Rect2(right.position.x, right.position.y + strip_h + g, right.size.x, modes_h), k, 4 if modes_h < 150.0 else 2, true)
 		_feature_row(hub, Rect2(right.position.x, right.end.y - feature_h, right.size.x, feature_h), k, true)
 		return
-	var hero_h := r.size.y * 0.56
-	_hero_and_rotators(hub, Rect2(r.position, Vector2(left_w, hero_h)), k)
-	_highlight(hub, Rect2(r.position.x, r.position.y + hero_h + g, left_w, r.size.y - hero_h - g), k, false)
-	var season_h := clampf(right.size.y * 0.13, 58.0, 80.0)
-	var feature_h := clampf(right.size.y * 0.2, 70.0, 120.0)
-	var modes_h := right.size.y - season_h - feature_h - 2 * g
-	_mode_row(hub, Rect2(right.position, Vector2(right.size.x, modes_h)), k, 2, false)
-	_feature_row(hub, Rect2(right.position.x, right.position.y + modes_h + g, right.size.x, feature_h), k, false)
-	_place(hub._progress, Rect2(right.position.x, right.end.y - season_h, right.size.x, season_h), k)
+	# Tablet/Fold quer wie im Zielbild: links die Schnellzugriff-Spalte aus dunklem Glas
+	# (Garage, Strecken, Belohnungen), in der Mitte Lumo neben dem Strecken-Highlight,
+	# darunter der Sternenpfad und unten die Reihe der vier farbigen Modus-Kacheln.
+	var modes_h := clampf(r.size.y * 0.24, 96.0, 150.0)
+	var season_h := clampf(r.size.y * 0.11, 58.0, 76.0)
+	var top_h := r.size.y - modes_h - season_h - 2 * g
+	var column_w := clampf(r.size.x * 0.22, 170.0, 250.0)
+	var column_h := top_h + g + season_h
+	var ids := ["garage", "world", "rewards"]
+	var tile_h := (column_h - 2 * g) / 3.0
+	for i in range(3):
+		var tile = hub._feature_tiles[ids[i]]
+		tile.compact = false
+		_place(tile, Rect2(r.position.x, r.position.y + i * (tile_h + g), column_w, tile_h), k)
+	var centre := Rect2(r.position.x + column_w + g, r.position.y, r.size.x - column_w - g, top_h)
+	var stage_w := centre.size.x * 0.5
+	_hero_and_rotators(hub, Rect2(centre.position, Vector2(stage_w - g * 0.5, top_h)), k)
+	_highlight(hub, Rect2(centre.position.x + stage_w + g * 0.5, centre.position.y, centre.size.x - stage_w - g * 0.5, top_h), k, false)
+	_place(hub._progress, Rect2(centre.position.x, centre.end.y + g, centre.size.x, season_h), k)
+	_mode_row(hub, Rect2(r.position.x, r.end.y - modes_h, r.size.x, modes_h), k, 4, false)
