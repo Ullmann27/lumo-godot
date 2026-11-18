@@ -59,6 +59,7 @@ func _run() -> void:
 	await _drift_tiers()
 	await _launch_and_landing()
 	await _rivals()
+	await _extras()
 	await _pause_freezes()
 	await _budgets()
 	_surfaces()
@@ -293,6 +294,42 @@ func _rivals() -> void:
 	_check(int(fx.counts.get("rail_burst", 0)) > 0, "a rival hard hit bursts")
 	_check(rival.driver_hit_pending, "the rival driver flinches")
 	_check(fx.shake == 0.0, "a rival's hit does not jolt the player camera")
+
+
+func _extras() -> void:
+	# Lift off the gas at speed: one overrun pop from the exhaust, then quiet.
+	_clean(18.0)
+	game.auto_gas = true
+	_tick(3)
+	game.auto_gas = false
+	_tick(30)
+	_check(int(fx.counts.get("backfire", 0)) == 1, "lifting off at speed pops once")
+	_check(int(fx.sounds.get("backfire", 0)) == 1, "overrun pop sound once")
+	# Slipstream charge from the race shows wind streaks; none without it.
+	_clean(22.0)
+	_tick(20)
+	_check(int(fx.counts.get("slipstream", 0)) == 0, "no wind streaks without slipstream")
+	game.slipstream_charge = 0.8
+	_tick(20)
+	_check(int(fx.counts.get("slipstream", 0)) > 0, "slipstream draws the sucking wind")
+	game.slipstream_charge = 0.0
+	# Taking the lead: confetti exactly once.
+	_clean(22.0)
+	var saved: Array = game.opponent_distances.duplicate()
+	game.elapsed = 10.0
+	for i in range(game.opponent_distances.size()):
+		game.opponent_distances[i] = -1000.0
+	game.opponent_distances[0] = game.distance + 50.0
+	_tick(2)
+	_check(int(fx.counts.get("confetti", 0)) == 0, "no confetti while second")
+	game.opponent_distances[0] = -1000.0
+	_tick(10)
+	_check(int(fx.counts.get("confetti", 0)) > 10, "confetti when taking the lead")
+	_check(int(fx.sounds.get("confetti", 0)) == 1, "one cheer sound")
+	_tick(30)
+	_check(int(fx.sounds.get("confetti", 0)) == 1, "staying first does not repeat it")
+	for i in range(saved.size()):
+		game.opponent_distances[i] = saved[i]
 
 
 func _pause_freezes() -> void:
