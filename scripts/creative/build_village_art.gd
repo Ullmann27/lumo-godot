@@ -5,7 +5,9 @@ extends RefCounted
 const DIR := "res://assets/creative/village3d/models/"
 const TEX := "res://assets/creative/village3d/textures/"
 const SHADER = preload("res://assets/creative/village3d/shaders/village_building.gdshader")
+const FOLIAGE_SHADER = preload("res://assets/creative/village3d/shaders/village_foliage.gdshader")
 static var _material_ref: WeakRef
+static var _foliage_ref: WeakRef
 static var _bundles: Dictionary = {}
 
 
@@ -15,6 +17,7 @@ class Bundle:
 	var parts: Array[Dictionary] = []
 	var aabb := AABB()
 	var material: ShaderMaterial
+	var foliage: ShaderMaterial
 	var triangles := 0
 
 
@@ -29,6 +32,17 @@ static func material() -> ShaderMaterial:
 	return shared
 
 
+## Blattbüschel-Material (Alpha-Karten), geteilt von allen Bäumen und Büschen.
+static func foliage_material() -> ShaderMaterial:
+	var shared: ShaderMaterial = _foliage_ref.get_ref() if _foliage_ref != null else null
+	if shared == null:
+		shared = ShaderMaterial.new()
+		shared.shader = FOLIAGE_SHADER
+		shared.set_shader_parameter("leaf_texture", load(TEX + "leaf_cards.png"))
+		_foliage_ref = weakref(shared)
+	return shared
+
+
 static func exists(name: String) -> bool:
 	return ResourceLoader.exists(DIR + name + ".glb")
 
@@ -39,6 +53,7 @@ static func bundle(name: String) -> Bundle:
 		return entry
 	entry = Bundle.new()
 	entry.material = material()
+	entry.foliage = foliage_material()
 	if exists(name):
 		var scene: PackedScene = load(DIR + name + ".glb")
 		var source: Node = scene.instantiate() if scene != null else null
@@ -52,6 +67,13 @@ static func bundle(name: String) -> Bundle:
 				while cursor != source and cursor is Node3D:
 					xform = (cursor as Node3D).transform * xform
 					cursor = cursor.get_parent()
+				# Every surface gets the shared village material by its Blender slot name.
+				for surface in range(mesh_node.mesh.get_surface_count()):
+					var source_material := mesh_node.mesh.surface_get_material(surface)
+					var slot_name := source_material.resource_name if source_material != null else ""
+					mesh_node.mesh.surface_set_material(
+						surface, entry.foliage if slot_name.contains("foliage") else entry.material
+					)
 				var part := {"name": str(mesh_node.name), "mesh": mesh_node.mesh, "transform": xform}
 				entry.parts.append(part)
 				var box: AABB = xform * mesh_node.mesh.get_aabb()
@@ -75,7 +97,6 @@ static func instance(name: String, shadows := true) -> Node3D:
 		mesh_instance.name = str(part.name)
 		mesh_instance.mesh = part.mesh
 		mesh_instance.transform = part.transform
-		mesh_instance.material_override = entry.material
 		if not shadows:
 			mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(mesh_instance)
@@ -108,7 +129,6 @@ static func batch(
 	var node := MultiMeshInstance3D.new()
 	node.name = label
 	node.multimesh = multi
-	node.material_override = material()
 	node.set_meta("village_art_bundle", bundle(name))
 	if range_end > 0.0:
 		node.visibility_range_end = range_end

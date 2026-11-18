@@ -71,12 +71,12 @@ static func create(kind: String, opponent := false, variant := 0) -> StaticBody3
 	sign.text = TITLES.get(kind, kind)
 	sign.position = Vector3(0, size.y + 0.55, 0)
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	sign.font_size = 44
-	sign.pixel_size = 0.0075
+	sign.font_size = 40
+	sign.pixel_size = 0.006
 	sign.modulate = Color("fff6dd")
 	sign.outline_modulate = Color("193b47")
 	sign.outline_size = 10
-	sign.visibility_range_end = 26
+	sign.visibility_range_end = 17
 	sign.no_depth_test = false
 	body.add_child(sign)
 	var spinning: Array[Node3D] = []

@@ -13,7 +13,7 @@ const TOWN_CENTER := 100.0
 const MAX_PLOTS := 1089
 const HALF_EXTENT := 94.0
 const CHUNK_SIZE := 47.0
-const WILD_CHUNK := 96.0
+const WILD_CHUNK := 160.0
 const BRIDGES := [-58.3, 0.0, 58.3]
 ## Pro Qualitätsstufe: Vegetationsdichte, Sichtweiten, Wiesendetails.
 const BUDGETS := {
@@ -156,6 +156,7 @@ func _build_bank(opponent: bool) -> void:
 	garden.name = "WildflowerBeltNeighbor" if opponent else "WildflowerBeltPlayer"
 	add_child(garden)
 	_garden_groups[opponent] = garden
+	var hill_lists := {"rock_a": [], "rock_b": [], "rock_c": [], "tree_fir": [], "bush": []}
 	for z_index in range(4):
 		for x_index in range(4):
 			var chunk := Node3D.new()
@@ -165,7 +166,13 @@ func _build_bank(opponent: bool) -> void:
 			)
 			add_child(chunk)
 			_chunks.append(chunk)
-			_decorate_chunk(chunk, opponent)
+			_decorate_chunk(chunk, opponent, hill_lists)
+	# One batch per kind and town: rocky hills cost five draw calls in total.
+	var hills := Node3D.new()
+	hills.name = "DistrictHills" + ("Neighbor" if opponent else "Player")
+	add_child(hills)
+	for kind in hill_lists:
+		ART.batch(hills, "Hill_" + kind, kind, hill_lists[kind], 260.0, kind != "bush")
 	set_unlocked_plots(9, opponent)
 
 
@@ -234,7 +241,7 @@ func _replant_village_edge(count: int, opponent: bool) -> void:
 		node.queue_free()
 	var distance := extent_for_plots(count) + 5.0
 	var center := TOWN_CENTER if opponent else -TOWN_CENTER
-	var lists := {"tree_oak": [], "tree_birch": [], "bush": [], "flowers": [], "grass_tuft": []}
+	var lists := {"tree_oak": [], "tree_birch": [], "bush": [], "flowers": [], "grass_tuft": [], "rock_c": []}
 	for index in range(110):
 		var angle := float(index) * 2.3999632 + (0.4 if opponent else 0.0)
 		var radius := distance + float(index % 6) * 2.2
@@ -251,7 +258,7 @@ func _replant_village_edge(count: int, opponent: bool) -> void:
 			1:
 				kind = "bush"
 			3:
-				kind = "grass_tuft"
+				kind = "grass_tuft" if index % 2 else "rock_c"
 		lists[kind].append(_place(x, z, 0.8 + float(index % 4) * 0.12, angle))
 	var total := 0
 	for kind in lists:
@@ -262,11 +269,10 @@ func _replant_village_edge(count: int, opponent: bool) -> void:
 
 ## Rocky hills and the district's outer meadow: firs, rocks and bushes on the
 ## cells that are NOT buildable, so the rule is visible in the world.
-func _decorate_chunk(chunk: Node3D, opponent: bool) -> void:
+func _decorate_chunk(chunk: Node3D, opponent: bool, lists: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(chunk.name)
 	var half := CHUNK_SIZE * 0.5
-	var lists := {"rock_a": [], "rock_b": [], "rock_c": [], "tree_fir": [], "bush": []}
 	var center := TOWN_CENTER if opponent else -TOWN_CENTER
 	for index in range(int(46 * float(budget.rocks))):
 		var x := chunk.position.x + rng.randf_range(-half, half)
@@ -286,8 +292,6 @@ func _decorate_chunk(chunk: Node3D, opponent: bool) -> void:
 			kind = "tree_fir"
 		var scale := rng.randf_range(0.7, 1.4) if kind.begins_with("rock") else rng.randf_range(0.8, 1.2)
 		lists[kind].append(_place(x, z, scale, rng.randf() * TAU, 0.2 if kind.begins_with("rock") else 0.05))
-	for kind in lists:
-		ART.batch(chunk, "Hill_" + kind, kind, lists[kind], 210.0, true)
 
 
 ## Wälder, Felsen und Wiesen außerhalb der Ortsteile, in groben Gebieten
@@ -318,11 +322,11 @@ func _build_wilderness() -> void:
 			var kind := ""
 			if steep > 0.42 or h > 40.0:
 				if rng.randf() < 0.18 * float(budget.rocks):
-					kind = ["rock_b", "rock_a"][rng.randi() % 2]
+					kind = "rock_b"
 			elif forest > 0.42 or (h > 9.0 and forest > 0.3):
 				kind = "tree_fir" if (h > 8.0 or rng.randf() < 0.35) else ("tree_oak" if rng.randf() < 0.6 else "tree_birch")
 			elif rng.randf() < 0.12:
-				kind = ["bush", "rock_c", "tree_oak"][rng.randi() % 3]
+				kind = ["bush", "rock_b", "tree_oak"][rng.randi() % 3]
 			if kind.is_empty():
 				continue
 			var key := Vector2i(floori((px - origin.x) / WILD_CHUNK), floori((pz - origin.y) / WILD_CHUNK))
@@ -342,14 +346,18 @@ func _build_wilderness() -> void:
 		holder.position = Vector3.ZERO
 		add_child(holder)
 		_wild.append(holder)
+		var far_lists := {"tree_low": [], "fir_low": []}
 		for kind in cells[key]:
 			var transforms: Array = cells[key][kind]
 			if far_kind.has(kind):
 				trees += transforms.size()
 				ART.batch(holder, kind, kind, transforms, near, true)
-				ART.batch(holder, kind + "_far", far_kind[kind], transforms, 0.0, bool(budget.shadows_far), near - 12.0)
+				far_lists[far_kind[kind]].append_array(transforms)
 			else:
-				ART.batch(holder, kind, kind, transforms, near * 1.6, true)
+				ART.batch(holder, kind, kind, transforms, near * 1.6, kind != "bush")
+		# Broadleaf trees share one far crown: two far batches per area.
+		for far in far_lists:
+			ART.batch(holder, far, far, far_lists[far], 0.0, bool(budget.shadows_far), near - 12.0)
 	set_meta("wilderness_trees", trees)
 
 

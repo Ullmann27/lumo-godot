@@ -9,6 +9,7 @@
 !assets/kart/production/**/*.glb.import
 # Dorfwelt: Mipmaps für Gelände-/Atlas-Texturen und Mesh-LODs der Modelle sind Teil des Laufzeitvertrags.
 !assets/creative/village3d/**/*.import
+!assets/creative/bauwelt_voxel/*.import
 # Die Bildliste ist keine Übersetzung. Als CSV-Übersetzung importiert löst sie
 # im Importer TRANSLATION_CHANGED aus einem Arbeits-Thread aus (Absturz im CI).
 !assets/characters/lumo/reference/lumo_reference_manifest.csv.import

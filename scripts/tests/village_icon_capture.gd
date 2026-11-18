@@ -23,7 +23,10 @@ func _run() -> void:
 	environment.background_mode = Environment.BG_CLEAR_COLOR
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("c6d6e6")
-	environment.ambient_light_energy = 0.7
+	environment.ambient_light_energy = 0.5
+	environment.adjustment_enabled = true
+	environment.adjustment_saturation = 1.25
+	environment.adjustment_contrast = 1.1
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.environment = environment
 	viewport.add_child(env)
@@ -42,13 +45,14 @@ func _run() -> void:
 		var box: AABB = ART.bundle(model).aabb
 		var center := box.get_center()
 		var extent := box.size.length()
-		camera.position = center + Vector3(0.75, 0.62, 1.0).normalized() * extent * 1.95
+		center.y = maxf(center.y, box.size.y * 0.35)
+		camera.position = center + Vector3(0.75, 0.55, 1.0).normalized() * extent * 1.5
 		camera.look_at(center)
 		for _i in range(8):
 			await process_frame
 		await RenderingServer.frame_post_draw
 		var image := viewport.get_texture().get_image()
-		image.resize(192, 192, Image.INTERPOLATE_LANCZOS)
+		image.resize(256, 256, Image.INTERPOLATE_LANCZOS)
 		image.save_png(ProjectSettings.globalize_path(OUT + "bld_" + kind + ".png"))
 		node.queue_free()
 		await process_frame

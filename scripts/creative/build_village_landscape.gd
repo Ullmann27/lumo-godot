@@ -132,6 +132,9 @@ func _build_terrain() -> void:
 			chunk.name = "TerrainChunk_%d_%d" % [cx / CHUNK_CELLS, cz / CHUNK_CELLS]
 			chunk.mesh = mesh
 			chunk.material_override = terrain_material
+			# Only HIGH lets the mountains throw shadows across the valley.
+			if tier != "high":
+				chunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			add_child(chunk)
 			chunks.append(chunk)
 			triangles += indices.size() / 3

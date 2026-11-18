@@ -70,6 +70,20 @@ def _tile_means():
 TILE_MEANS = _tile_means()
 
 
+def _leaf_mean():
+    try:
+        from PIL import Image
+        img = Image.open(ROOT / "assets/creative/village3d/textures/leaf_cards.png").convert("RGBA").resize((64, 64))
+    except Exception:
+        return (0.08, 0.2, 0.04)
+    px = [q for q in img.getdata() if q[3] > 128]
+    lin_px = [[(c / 255.0 / 12.92 if c / 255.0 <= 0.04045 else ((c / 255.0 + 0.055) / 1.055) ** 2.4) for c in q[:3]] for q in px]
+    return tuple(sum(q[i] for q in lin_px) / max(len(lin_px), 1) for i in range(3))
+
+
+LEAF_MEAN = _leaf_mean()
+
+
 NEUTRAL_TILES = {"plain", "plaster", "cloth"}
 
 
@@ -84,7 +98,10 @@ def tint(tile: str, hex_color: str, alpha: float):
         return (0.5 * value, 0.5 * value, 0.5 * value, alpha)
     target = lin(hex_color)
     mean = TILE_MEANS[tile]
-    return tuple(min(1.0, target[i] / max(2.0 * mean[i], 0.02)) for i in range(3)) + (alpha,)
+    # Neutral tiles take any colour; textured tiles only shift by ±40 % so
+    # leaves, wood and roofs keep their painted detail instead of blowing out.
+    low, high = (0.0, 1.0) if tile in NEUTRAL_TILES else (0.3, 0.7)
+    return tuple(min(high, max(low, target[i] / max(2.0 * mean[i], 0.02))) for i in range(3)) + (alpha,)
 
 
 def lin(hex_color: str, alpha: float = 1.0):
@@ -106,6 +123,9 @@ class Builder:
         self.tile = self.bm.faces.layers.int.new("tile")
         self.fit = self.bm.faces.layers.int.new("fit")
         self.smooth = self.bm.faces.layers.int.new("smooth")
+        self.card = self.bm.faces.layers.int.new("card")
+        self.card_center = {}
+        self._card_meta = []
         self.col = self.bm.loops.layers.float_color.new("Color")
         self.stack = [Matrix.Identity(4)]
         self.rng = random.Random(hash(name) & 0xFFFF)
@@ -401,6 +421,49 @@ class Builder:
                 self.blob((c[0] + off[0], c[1] + off[1], c[2] + off[2]), (rad, rad * 0.85, rad), "leaves",
                           ["8ab84f", "7aa846", "9cc25a"][i], subdiv=2, seed=seed * 10 + i, wave=wave)
 
+    def cards(self, c, radius, count, seed, color="5f8f38", size=(0.75, 1.15), up_bias=0.35, droop=0.0,
+              vertical=1.0, inner=0.55):
+        """Alpha-cut leaf cards around a crown cluster (material slot 1, leaf_cards.png).
+        Normals point away from the cluster centre so the crown shades like a soft volume;
+        cards low in the crown are darker (self-shadowed underside)."""
+        r = random.Random(seed)
+        cx, cy, cz = c
+        base = lin(color)
+        for _ in range(count):
+            while True:
+                d = Vector((r.uniform(-1, 1), r.uniform(-1, 1) + up_bias, r.uniform(-1, 1)))
+                if 0.05 < d.length <= 1.25:
+                    break
+            d.normalize()
+            dist = radius * r.uniform(inner, 1.0)
+            pos = Vector((cx + d.x * dist, cy + d.y * dist * vertical, cz + d.z * dist))
+            n = (d + Vector((r.uniform(-0.6, 0.6), r.uniform(-0.6, 0.6) - droop, r.uniform(-0.6, 0.6)))).normalized()
+            helper = Vector((0, 1, 0)) if abs(n.y) < 0.9 else Vector((1, 0, 0))
+            u = n.cross(helper).normalized()
+            v = n.cross(u).normalized()
+            spin = r.uniform(0, math.tau)
+            u, v = u * math.cos(spin) + v * math.sin(spin), v * math.cos(spin) - u * math.sin(spin)
+            half = r.uniform(*size) * 0.5
+            pts = [pos - u * half - v * half, pos + u * half - v * half, pos + u * half + v * half, pos - u * half + v * half]
+            verts = [self._v(tuple(q)) for q in pts]
+            try:
+                f = self.bm.faces.new(verts)
+            except ValueError:
+                continue
+            f[self.tile] = TILES.index("leaves")
+            f[self.card] = 1
+            height = (pos.y - (cy - radius)) / max(2 * radius, 0.01)
+            shade = 0.42 + 0.58 * max(0.0, min(1.0, height)) * (0.75 + 0.25 * dist / radius)
+            jitter = r.uniform(0.85, 1.12)
+            rel = [min(0.85, max(0.2, 0.5 * base[i] / max(LEAF_MEAN[i], 0.01))) for i in range(3)]
+            col = (rel[0] * shade * jitter, rel[1] * shade, rel[2] * shade * (2.0 - jitter), 1.0 - 0.35)
+            centre = self.stack[-1] @ Vector((cx, cy, cz))
+            self.card_center[f.index if False else id(f)] = None
+            for loop in f.loops:
+                loop[self.col] = col
+            f.normal_update()
+            self._card_meta.append((f, g2b(centre)))
+
     # -- finish --
     def to_object(self, name, parent=None):
         bm = self.bm
@@ -408,7 +471,17 @@ class Builder:
         uv0 = bm.loops.layers.uv.new("UVMap")
         uv1 = bm.loops.layers.uv.new("TileMap")
         up = Vector((0, 0, 1))
+        card_centres = {}
+        for f, centre in self._card_meta:
+            if f.is_valid:
+                card_centres[f] = centre
         for f in bm.faces:
+            if f[self.card]:
+                f.material_index = 1
+                for loop, uv in zip(f.loops, [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]):
+                    loop[uv0].uv = uv
+                    loop[uv1].uv = (0.0, 0.0)
+                continue
             tile = TILES[f[self.tile]]
             col = TILES.index(tile) % 4
             row = TILES.index(tile) // 4
@@ -431,15 +504,42 @@ class Builder:
             for loop, uv in zip(f.loops, coords):
                 loop[uv0].uv = uv
                 loop[uv1].uv = ((col + 0.5) / 4.0, 1.0 - (row + 0.5) / 4.0)
+        # Per-loop normals: cards bend away from their crown centre (soft volume).
+        normal_layer = bm.loops.layers.float_vector.new("card_normal") if hasattr(bm.loops.layers, "float_vector") else None
+        for f in bm.faces:
+            for loop in f.loops:
+                if f in card_centres:
+                    n = (loop.vert.co - card_centres[f])
+                    n = (n.normalized() * 0.75 + Vector((0, 0, 1)) * 0.35).normalized() if n.length > 1e-4 else Vector((0, 0, 1))
+                elif f[self.smooth]:
+                    n = loop.vert.normal.copy()
+                else:
+                    n = f.normal.copy()
+                if normal_layer is not None:
+                    loop[normal_layer] = n
         bmesh.ops.triangulate(bm, faces=bm.faces[:])
+        loop_normals = []
+        for f in bm.faces:
+            for loop in f.loops:
+                loop_normals.append(None)
         mesh = bpy.data.meshes.new(name + "_mesh")
         bm.to_mesh(mesh)
+        has_cards = bool(card_centres)
         bm.free()
         obj = bpy.data.objects.new(name, mesh)
         bpy.context.collection.objects.link(obj)
         obj.parent = parent
         mat = bpy.data.materials.get("village_atlas") or bpy.data.materials.new("village_atlas")
         mesh.materials.append(mat)
+        if has_cards:
+            foliage = bpy.data.materials.get("village_foliage") or bpy.data.materials.new("village_foliage")
+            mesh.materials.append(foliage)
+            attr = mesh.attributes.get("card_normal")
+            if attr is not None:
+                values = [0.0] * (len(mesh.loops) * 3)
+                attr.data.foreach_get("vector", values)
+                normals = [tuple(values[i * 3:i * 3 + 3]) for i in range(len(mesh.loops))]
+                mesh.normals_split_custom_set(normals)
         smooth_layer = mesh.attributes.get("smooth")
         flags = [0] * len(mesh.polygons)
         if smooth_layer is not None:
@@ -1003,23 +1103,30 @@ def model_fence(b):
 
 
 def model_tree_oak(b):
-    b.cylinder((0, 1.0, 0), 0.26, 2.0, 8, "bark", "ffffff", r_top=0.17)
-    for i, (x, z, a) in enumerate([(0.5, 0.2, 0.6), (-0.4, -0.3, -0.7), (0.0, 0.5, 0.3)]):
-        b.push((x * 0.4, 1.8, z * 0.4), rot_z=a * 0.6, rot_x=z)
-        b.cylinder((0, 0.5, 0), 0.1, 1.1, 6, "bark", "ffffff", r_top=0.05)
+    """Laubbaum: knorriger Stamm mit Ästen, dunkler Kronenkern, Blattbüschel-Karten."""
+    b.cylinder((0, 1.0, 0), 0.27, 2.0, 9, "bark", "ffffff", r_top=0.18)
+    b.cylinder((0, 0.12, 0), 0.38, 0.24, 9, "bark", "ffffff", r_top=0.27)
+    for i, (x, z, a) in enumerate([(0.5, 0.2, 0.7), (-0.45, -0.3, -0.75), (0.05, 0.55, 0.35), (-0.2, -0.6, -0.3)]):
+        b.push((x * 0.35, 1.75, z * 0.35), rot_z=a * 0.7, rot_x=z * 0.8)
+        b.cylinder((0, 0.6, 0), 0.11, 1.3, 6, "bark", "ffffff", r_top=0.05)
         b.pop()
-    for i, (x, y, z, r) in enumerate([(0, 3.3, 0, 1.7), (1.0, 2.8, 0.4, 1.2), (-0.9, 2.9, -0.3, 1.25),
-                                      (0.2, 2.7, -1.0, 1.1), (-0.3, 2.6, 1.0, 1.1), (0.3, 4.1, 0.2, 1.1)]):
-        b.blob((x, y, z), (r, r * 0.85, r), "leaves", ["7aa846", "8ab84f", "6c9a3e", "9cc25a", "7fb04a", "a3c862"][i],
-               subdiv=2, seed=40 + i, wave=0.15)
+    clusters = [(0, 3.4, 0, 1.55), (1.05, 2.9, 0.35, 1.15), (-0.95, 3.0, -0.3, 1.2), (0.25, 2.75, -1.0, 1.05),
+                (-0.35, 2.7, 1.0, 1.05), (0.3, 4.25, 0.2, 1.0)]
+    shades = ["4f7f2c", "5c8d34", "467628", "66983a", "557f30", "6fa040"]
+    for i, (x, y, z, r) in enumerate(clusters):
+        b.blob((x, y, z), (r * 0.62, r * 0.55, r * 0.62), "leaves", "3a5f22", subdiv=1, seed=40 + i, wave=0.1)
+        b.cards((x, y, z), r, 26, 140 + i, shades[i], size=(0.8, 1.2))
 
 
 def model_tree_fir(b):
-    b.cylinder((0, 0.9, 0), 0.2, 1.8, 7, "bark", "c8a080")
+    """Tanne: Stamm, gestufte dunkle Zweigkegel, hängende Nadelbüschel."""
+    b.cylinder((0, 1.2, 0), 0.2, 2.4, 8, "bark", "c8a080", r_top=0.1)
     for i in range(5):
-        y = 1.0 + i * 1.05
-        r = 1.6 - i * 0.28
-        b.cone((0, y, 0), r, 1.7, 10, "leaves", ["3d6b3a", "456f3c", "3a6436", "4b7840", "52804a"][i], wave=0.08)
+        y = 1.0 + i * 1.0
+        r = 1.65 - i * 0.3
+        b.cone((0, y, 0), r * 0.8, 1.6, 9, "leaves", ["2f5a2c", "335f2e", "2d5529", "3a6633", "40703a"][i], wave=0.06)
+        b.cards((0, y + 0.55, 0), r, 12 - i, 170 + i, ["2e5a2a", "34622f", "2b5527", "3b6a34", "467a3c"][i],
+                size=(0.6, 0.95), up_bias=-0.25, droop=0.6, vertical=0.45, inner=0.7)
 
 
 def model_tree_birch(b):
@@ -1027,8 +1134,8 @@ def model_tree_birch(b):
     for y in (0.6, 1.3, 2.1, 2.7):
         b.cylinder((0, y, 0), 0.135, 0.05, 7, "plain", "3a3a3a", caps=False)
     for i, (x, y, z, r) in enumerate([(0, 3.6, 0, 1.0), (0.5, 3.0, 0.3, 0.75), (-0.5, 3.1, -0.2, 0.8), (0.1, 4.3, 0.1, 0.7)]):
-        b.blob((x, y, z), (r, r * 1.15, r), "leaves", ["a6cc5a", "b4d468", "98c050", "bedd72"][i], subdiv=2, seed=60 + i,
-               wave=0.2)
+        b.blob((x, y, z), (r * 0.55, r * 0.6, r * 0.55), "leaves", "4a7a2a", subdiv=1, seed=60 + i, wave=0.15)
+        b.cards((x, y, z), r, 18, 160 + i, ["7aa83e", "86b446", "6f9c38", "92bc4e"][i], size=(0.55, 0.85), vertical=1.2)
 
 
 def model_tree_low(b):
@@ -1044,11 +1151,11 @@ def model_fir_low(b):
 
 def model_bush(b):
     for i, (x, z, r) in enumerate([(0, 0, 0.7), (0.5, 0.2, 0.5), (-0.45, -0.1, 0.55), (0.1, -0.45, 0.45)]):
-        b.blob((x, r * 0.6, z), (r, r * 0.8, r), "leaves", ["6c9a3e", "7aa846", "5f8f38", "86b24c"][i], subdiv=2,
-               seed=80 + i, wave=0.08)
-    for i in range(5):
+        b.blob((x, r * 0.55, z), (r * 0.75, r * 0.6, r * 0.75), "leaves", "3f6a28", subdiv=1, seed=80 + i, wave=0.06)
+        b.cards((x, r * 0.6, z), r, 9, 190 + i, ["5a8a34", "679a3c", "4f7f2e", "73a444"][i], size=(0.45, 0.7), up_bias=0.5)
+    for i in range(6):
         a = i * 1.3
-        b.blob((math.cos(a) * 0.5, 0.75, math.sin(a) * 0.4), (0.07, 0.07, 0.07), "plain", "f78fb3", subdiv=1, seed=i)
+        b.blob((math.cos(a) * 0.55, 0.8, math.sin(a) * 0.45), (0.07, 0.07, 0.07), "plain", "f78fb3", subdiv=1, seed=i)
 
 
 def model_rock_a(b):
@@ -1128,6 +1235,58 @@ def model_bird(b):
         b.face([(0, 0, 0.05), (s * 0.35, 0.05, -0.02), (0, 0, -0.08)][:: (-1 if s > 0 else 1)], "plain", "3a434c", wave=1.0)
 
 
+def model_camp(b):
+    """Gründerlager: Zelt, Lagerfeuer mit Steinkreis, Wegweiser, Sitzstämme, Vorräte."""
+    # tent (A-frame) facing +Z, at the back left
+    b.push((-1.6, 0, -1.0), 0.25)
+    w, d, h = 2.2, 2.4, 1.7
+    for side in (-1, 1):
+        q = [(side * w / 2, 0.02, d / 2), (side * w / 2, 0.02, -d / 2), (0, h, -d / 2), (0, h, d / 2)]
+        b.face(q if side > 0 else q[::-1], "cloth", "e9dcc0")
+        q2 = [(side * w / 2 * 0.98, 0.02, -d / 2), (side * w / 2 * 0.98, 0.02, d / 2), (0, h * 0.98, d / 2), (0, h * 0.98, -d / 2)]
+        b.face(q2 if side > 0 else q2[::-1], "cloth", "b8a888")
+    b.face([(-w / 2, 0.02, -d / 2), (w / 2, 0.02, -d / 2), (0, h, -d / 2)][::-1], "cloth", "d8c8a8")
+    b.face([(-w / 2, 0.02, d / 2), (-0.25, 0.02, d / 2), (0, h, d / 2)], "cloth", "d8c8a8")
+    b.face([(0.25, 0.02, d / 2), (w / 2, 0.02, d / 2), (0, h, d / 2)], "cloth", "d8c8a8")
+    b.face([(-0.25, 0.02, d / 2 - 0.05), (0.25, 0.02, d / 2 - 0.05), (0, h * 0.85, d / 2 - 0.05)], "plain", "4a3a2a")
+    b.box((0, h + 0.05, 0), (0.08, 0.08, d + 0.3), "beam", "6b4a2f")
+    for z in (-d / 2 - 0.1, d / 2 + 0.1):
+        b.box((0, h / 2, z), (0.07, h + 0.1, 0.07), "beam", "6b4a2f")
+    b.box((0.35, h + 0.45, d / 2 + 0.1), (0.5, 0.3, 0.02), "cloth", "e85d4a", wave=0.8)
+    b.pop()
+    # campfire
+    for i in range(10):
+        a = i / 10 * math.tau
+        b.blob((0.9 + math.cos(a) * 0.55, 0.1, 0.6 + math.sin(a) * 0.55), (0.16, 0.12, 0.14), "stone_wall", "9a9284",
+               subdiv=1, seed=300 + i, jitter=0.25, flat_bottom=True)
+    for i in range(4):
+        b.push((0.9, 0.18, 0.6), rot_y=i * math.pi / 4)
+        b.push((0, 0, 0), rot_z=0.5)
+        b.cylinder((0, 0.15, 0), 0.06, 0.7, 6, "bark", "ffffff")
+        b.pop()
+        b.pop()
+    b.cone((0.9, 0.12, 0.6), 0.3, 0.75, 7, "plain", "ff8a2a", wave=0.5)
+    b.cone((0.9, 0.12, 0.6), 0.17, 0.55, 6, "plain", "ffe066", wave=0.6)
+    # seats
+    for x, z, rot in ((0.0, 1.5, 0.3), (1.9, 1.3, -0.5)):
+        b.push((x, 0.2, z), rot)
+        b.cylinder((0, 0, 0), 0.2, 1.1, 8, "bark", "ffffff", axis="x", cap_tile="planks")
+        b.pop()
+    # signpost
+    b.cylinder((2.1, 1.0, -1.2), 0.07, 2.0, 6, "beam", "6b4a2f")
+    for y, rot, col in ((1.75, 0.4, "f2d38a"), (1.45, -0.6, "e8b56a"), (1.15, 1.9, "f2d38a")):
+        b.push((2.1, y, -1.2), rot)
+        b.box((0.42, 0, 0), (0.85, 0.2, 0.05), "planks", col)
+        b.face([(0.85, -0.1, 0.03), (1.0, 0, 0.03), (0.85, 0.1, 0.03)], "planks", col)
+        b.pop()
+    # supplies
+    b.crate((-0.2, 0.0, -2.0), 0.45)
+    b.crate((0.3, 0.0, -2.1), 0.4, rot=0.4)
+    b.barrel((-0.3, 0.0, -1.5))
+    for i in range(3):
+        b.cylinder((1.5 + i * 0.05, 0.12 + i * 0.22, -1.9), 0.12, 0.9, 7, "bark", "ffffff", axis="z", cap_tile="planks")
+
+
 def model_beacon(b):
     """Lumos Geschichtstafel: stone pedestal, two pillars with a carved arch."""
     b.cylinder((0, 0.22, 0), 2.6, 0.44, 16, "stone_wall", "c9c0b0")
@@ -1153,7 +1312,7 @@ MODELS = {
     "rock_a": (model_rock_a, {}), "rock_b": (model_rock_b, {}), "rock_c": (model_rock_c, {}),
     "flowers": (model_flowers, {}), "grass_tuft": (model_grass_tuft, {}), "reeds": (model_reeds, {}),
     "sheep": (model_sheep, {}), "cow": (model_cow, {}), "chicken": (model_chicken, {}), "bird": (model_bird, {}),
-    "beacon": (model_beacon, {}),
+    "beacon": (model_beacon, {}), "camp": (model_camp, {}),
 }
 
 

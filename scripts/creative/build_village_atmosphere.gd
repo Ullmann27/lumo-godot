@@ -6,15 +6,15 @@ extends RefCounted
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const SHADOWS := {
 	"low": {"enabled": false, "distance": 0.0, "mode": DirectionalLight3D.SHADOW_ORTHOGONAL},
-	"medium": {"enabled": true, "distance": 110.0, "mode": DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS},
+	"medium": {"enabled": true, "distance": 80.0, "mode": DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS},
 	"high": {"enabled": true, "distance": 190.0, "mode": DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS},
 }
 ## Zwei Schlüsselbilder; dazwischen wird weich gemischt.
 const DAY := {
-	"sun_color": Color("fff1da"), "sun_energy": 1.6, "sun_pitch": -38.0, "sun_yaw": -32.0,
+	"sun_color": Color("fff1da"), "sun_energy": 1.75, "sun_pitch": -38.0, "sun_yaw": -32.0,
 	"sky_top": Color("2f6fb4"), "sky_horizon": Color("b9d4e4"), "ground_horizon": Color("a7bccb"),
-	"ambient": Color("aac2da"), "ambient_energy": 0.42, "fog": Color("a4bfd6"), "fog_density": 0.0015,
-	"exposure": 0.9, "night": 0.0, "fill": 0.18,
+	"ambient": Color("aac2da"), "ambient_energy": 0.32, "fog": Color("a4bfd6"), "fog_density": 0.0016,
+	"exposure": 0.86, "night": 0.0, "fill": 0.18,
 }
 const EVENING := {
 	"sun_color": Color("ffa868"), "sun_energy": 1.05, "sun_pitch": -15.0, "sun_yaw": -68.0,

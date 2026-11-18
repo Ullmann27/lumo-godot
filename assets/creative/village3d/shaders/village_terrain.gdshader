@@ -20,7 +20,7 @@ uniform float snow_height = 44.0;
 uniform float cloud_shadow : hint_range(0.0, 1.0) = 0.32;
 uniform vec2 cloud_wind = vec2(0.0045, 0.0018);
 uniform float detail_strength : hint_range(0.0, 2.0) = 1.0;
-uniform vec4 grass_tint : source_color = vec4(0.84, 0.92, 0.74, 1.0);
+uniform vec4 grass_tint : source_color = vec4(0.76, 0.86, 0.66, 1.0);
 
 varying vec3 world_pos;
 varying vec3 world_nrm;
@@ -52,6 +52,15 @@ void fragment() {
 	grass *= mix(vec3(0.72, 0.88, 0.64), vec3(1.12, 1.06, 0.80), smoothstep(0.2, 0.8, macro));
 	grass *= mix(1.0, 0.9, smoothstep(0.55, 0.85, noise_near.g));
 	grass *= grass_tint.rgb;
+	// Meadow life: darker lush patches, dry sunny spots and flower fields.
+	float lush = smoothstep(0.55, 0.8, noise_near.r);
+	grass = mix(grass, grass * vec3(0.72, 0.86, 0.7), lush * 0.7);
+	grass = mix(grass, grass * vec3(1.2, 1.1, 0.78), smoothstep(0.62, 0.85, noise_far.b) * 0.6);
+	vec2 cell = floor(p * 5.0);
+	float speck = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
+	vec2 inner = fract(p * 5.0) - 0.5;
+	float bloom = step(0.9, speck) * smoothstep(0.22, 0.08, length(inner)) * smoothstep(0.5, 0.75, noise_far.r);
+	vec3 petal = speck > 0.97 ? vec3(0.95, 0.92, 0.85) : (speck > 0.935 ? vec3(0.95, 0.78, 0.2) : vec3(0.72, 0.5, 0.88));
 	vec3 dirt = texture(dirt_albedo, p * 0.21).rgb;
 	vec3 sand = texture(sand_albedo, p * 0.17).rgb;
 	vec3 rock = triplanar_rock(world_pos, world_nrm);
@@ -73,7 +82,7 @@ void fragment() {
 	float path_w = smoothstep(0.18, 0.6, paint.r + breakup * 0.35);
 	float yard_w = smoothstep(0.2, 0.7, paint.g + breakup * 0.3) * 0.55;
 
-	vec3 col = grass;
+	vec3 col = mix(grass, petal, bloom);
 	col = mix(col, mix(grass, dirt, 0.65), yard_w);
 	vec3 path = mix(dirt, vec3(dot(dirt, vec3(0.33))) * vec3(1.05, 0.98, 0.88), 0.45);
 	col = mix(col, path, path_w * 0.92);

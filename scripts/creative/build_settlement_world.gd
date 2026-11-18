@@ -99,6 +99,8 @@ var dock_rows: Array[Control] = []
 var actions_scroll_node: ScrollContainer
 var primary_row: HBoxContainer
 var evening_button: Button
+var more_panel: PanelContainer
+var more_button: Button
 
 
 func _ready() -> void:
@@ -870,6 +872,8 @@ func _refresh_labels() -> void:
 		else "Tippe einen freien Bauplatz oder „Freier Bauplatz“. "
 			+ "Dein Dorf hat %d Grundstücke – sechs sind nur die Speicherplätze." % int(town.plots)
 	)
+	if model.living_village and selected_plot < 0:
+		plot_label.text = "Bauplatz antippen oder gleich ein Gebäude wählen."
 	var occupied := false
 	for building in town.buildings:
 		if int(building.plot) == selected_plot:
@@ -881,6 +885,12 @@ func _refresh_labels() -> void:
 	var blocked := _transactions_blocked()
 	for kind in purchase_buttons:
 		purchase_buttons[kind].disabled = blocked or selected_plot < 0 or occupied
+		if model.living_village:
+			# Cards stay lit while affordable; without a chosen site the next
+			# free meadow plot is used (camera flies there, scaffold rises).
+			purchase_buttons[kind].disabled = (
+				blocked or occupied or not model._affords(town, model.building_cost(str(kind)))
+			)
 		purchase_buttons[kind].text = (
 			str(STATE.BUILDINGS[str(kind)].title) + "\n" + _cost_text(model.building_cost(str(kind)))
 		)
@@ -920,6 +930,12 @@ func _winner_text(winner: String) -> String:
 func _buy(kind: String) -> void:
 	if _transactions_blocked():
 		return
+	if model.living_village and selected_plot < 0:
+		var free := _next_free_plot()
+		if free >= 0:
+			selected_plot = free
+			focus = _plot_world(free)
+			_camera_update(true)
 	selected_kind = kind
 	if not model.try_build(kind, selected_plot):
 		feedback.text = model.last_error
@@ -939,6 +955,17 @@ func _buy(kind: String) -> void:
 
 # Keyboard/touch-accessible plot finding. This changes only camera and
 # selection, never a save, a purchase, a day or a child's resources.
+func _next_free_plot() -> int:
+	var town: Dictionary = model.player()
+	var used: Dictionary = {}
+	for building in town.buildings:
+		used[int(building.plot)] = true
+	for candidate in range(int(town.plots)):
+		if not used.has(candidate) and model.plot_buildable(candidate):
+			return candidate
+	return -1
+
+
 func _focus_next_free_plot() -> void:
 	if _transactions_blocked():
 		return
@@ -1442,8 +1469,12 @@ func _input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 
+func _hud_rect(control: Control) -> Rect2:
+	return Rect2(control.global_position - safe_ui.global_position, control.size)
+
+
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast]:
+	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel]:
 		if not is_instance_valid(control) or not control.is_visible_in_tree():
 			continue
 		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
@@ -2042,21 +2073,38 @@ func _build_village_ui() -> void:
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 8)
 	actions_scroll_node.add_child(actions)
+	# Frequent story actions stay in the toolbar; rarely used tools sit in
+	# the "Mehr" panel (same buttons, same rules, same state handling).
+	more_panel = PanelContainer.new()
+	more_panel.name = "VillageMoreTools"
+	more_panel.add_theme_stylebox_override("panel", VHUD.panel("glass", 10))
+	more_panel.hide()
+	safe_ui.add_child(more_panel)
+	var more_box := VBoxContainer.new()
+	more_box.add_theme_constant_override("separation", 8)
+	more_panel.add_child(more_box)
 	for spec in [
-		["Rückgängig", _undo], ["Wiederholen", _redo], ["Handeln", _trade_dialog],
-		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor],
-		["Tilda · Lieferung", _tilda_dialog], ["Stadtkasse", _public_project_dialog]
+		["Rückgängig", _undo, more_box], ["Wiederholen", _redo, more_box], ["Handeln", _trade_dialog, actions],
+		["Nachbar ansehen" if mode == "rival" else "Überblick", _look_neighbor, more_box],
+		["Tilda · Lieferung", _tilda_dialog, actions], ["Stadtkasse", _public_project_dialog, actions]
 	]:
-		var action_button := VHUD.button(spec[0], spec[1], 104, "cream", 15)
+		var action_button := VHUD.button(spec[0], _from_more.bind(spec[1]), 150 if spec[2] == more_box else 104, "cream", 15)
 		action_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		actions.add_child(action_button)
 		transaction_buttons.append(action_button)
-	demolish_button = VHUD.button("Rückbauen", _demolish, 104, "rose", 15)
+	for index in [4, 5, 2]:
+		actions.add_child(transaction_buttons[index])
+	for index in [0, 1, 3]:
+		more_box.add_child(transaction_buttons[index])
+	demolish_button = VHUD.button("Rückbauen", _from_more.bind(_demolish), 150, "rose", 15)
 	demolish_button.mouse_filter = Control.MOUSE_FILTER_PASS
-	actions.add_child(demolish_button)
-	expand_button = VHUD.button("Erweitern", _expand, 104, "sky", 15)
+	more_box.add_child(demolish_button)
+	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
-	actions.add_child(expand_button)
+	more_box.add_child(expand_button)
+	more_button = VHUD.button("Mehr ▴", _toggle_more, 96, "dark", 15)
+	more_button.name = "VillageMore"
+	more_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	actions.add_child(more_button)
 	day_button = VHUD.button("Nächster Tag ☀", _day_action, 156, "primary", 16)
 	first_row.add_child(day_button)
 	var second_row := HBoxContainer.new()
@@ -2148,7 +2196,6 @@ func _layout_village_hud(size: Vector2) -> void:
 		primary_row.size_flags_horizontal = Control.SIZE_FILL
 		for child in primary_row.get_children():
 			child.size_flags_horizontal = Control.SIZE_FILL
-	plot_label.visible = not short
 	var top_end := top.position.y + top.size.y
 	var card_width := clampf(size.x * (0.94 if portrait else 0.36), 260.0, 460.0)
 	goal_card.custom_minimum_size = Vector2(card_width, 0)
@@ -2172,8 +2219,27 @@ func _layout_village_hud(size: Vector2) -> void:
 	toast.reset_size()
 	toast.position = Vector2((size.x - toast_width) * 0.5, dock_top - toast.size.y - gap)
 	toast.visible = not short and toast.position.y > top_end + gap
+	plot_label.visible = portrait and not short
+	if more_panel.visible:
+		more_panel.reset_size()
+		var anchor := _hud_rect(more_button)
+		more_panel.position = Vector2(
+			clampf(anchor.end.x - more_panel.size.x, gap, size.x - more_panel.size.x - gap),
+			maxf(top_end + gap, anchor.position.y - more_panel.size.y - gap)
+		)
 	if is_instance_valid(evening_button):
 		evening_button.text = "☀" if time_of_day > 0.6 else "☾"
+
+
+func _toggle_more() -> void:
+	more_panel.visible = not more_panel.visible
+	_layout()
+
+
+func _from_more(action: Callable) -> void:
+	if is_instance_valid(more_panel):
+		more_panel.hide()
+	action.call()
 
 
 func _home_view() -> void:

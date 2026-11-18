@@ -31,6 +31,14 @@ var cart_path: Array[Vector3] = []
 var cart_progress := 0.0
 var clock := 0.0
 var town_center := Vector3(-100, 0, 0)
+## Gründerlager (Kapitel-1-Szene): Zelt, Lagerfeuer, Wegweiser, ein paar Tiere.
+## Sichtbar, bis das Dorf über die ersten neun Felder hinauswächst.
+const CAMP_AT := Vector3(-110.6, 0, 8.6)
+var camp: Node3D
+var camp_light: OmniLight3D
+var camp_animals: Array[Node3D] = []
+var smoke_points: Array[Vector3] = []
+var night := 0.0
 
 
 func configure(quality: String) -> void:
@@ -45,6 +53,7 @@ func configure(quality: String) -> void:
 	_build_herds()
 	_build_cart()
 	_build_lumo()
+	_build_camp()
 	set_meta("life_budget", budget)
 
 
@@ -68,9 +77,14 @@ func _build_smoke() -> void:
 	add_child(smoke)
 
 
-func set_smoke_sources(points: Array[Vector3]) -> void:
+func set_smoke_sources(source_points: Array[Vector3]) -> void:
 	if smoke == null:
 		return
+	smoke_points = source_points
+	var points: Array[Vector3] = []
+	if camp != null and camp.visible:
+		points.append(camp.position + Vector3(0.9, 0.7, 0.6))
+	points.append_array(source_points)
 	var count := mini(points.size(), int(budget.smoke))
 	var multi := smoke.multimesh
 	for source in range(count):
@@ -85,12 +99,22 @@ func set_smoke_sources(points: Array[Vector3]) -> void:
 
 
 func set_night(value: float) -> void:
+	night = value
+	if camp_light != null:
+		camp_light.light_energy = 0.4 + value * 2.6
+		camp_light.visible = camp != null and camp.visible and (value > 0.05 or tier == "high")
 	if smoke_material != null:
 		smoke_material.set_shader_parameter("smoke_color", Color(0.88, 0.88, 0.9).lerp(Color(0.62, 0.58, 0.66), value))
 
 
 func set_town(town: Dictionary, view_focus: Vector3) -> void:
 	town_center = Vector3(-REGION.TOWN_CENTER, 0, 0)
+	if camp != null:
+		var show: bool = int(town.get("plots", 9)) <= 9 or town.get("buildings", []).size() < 3
+		if camp.visible != show:
+			camp.visible = show
+			set_smoke_sources(smoke_points)
+			set_night(night)
 	if lumo != null:
 		_plan_lumo_walk(town)
 	set_meta("view_focus", view_focus)
@@ -212,6 +236,38 @@ func _build_cart() -> void:
 		cart_path.append(Vector3(x, 0, -2.65))
 
 
+func _build_camp() -> void:
+	if not ART.exists("camp"):
+		return
+	camp = ART.instance("camp")
+	camp.name = "FoundersCamp"
+	camp.position = Vector3(CAMP_AT.x, TERRAIN.height(CAMP_AT.x, CAMP_AT.z), CAMP_AT.z)
+	camp.rotation.y = 0.35
+	add_child(camp)
+	camp_light = OmniLight3D.new()
+	camp_light.name = "Campfire"
+	camp_light.light_color = Color("ff9a48")
+	camp_light.omni_range = 9.0
+	camp_light.shadow_enabled = false
+	camp_light.position = Vector3(0.9, 0.9, 0.6)
+	camp.add_child(camp_light)
+	var spots := [["sheep", Vector3(3.2, 0, -2.4), 0.6], ["sheep", Vector3(4.4, 0, -1.2), 2.2],
+		["chicken", Vector3(-0.8, 0, 2.6), 0.0], ["chicken", Vector3(-0.2, 0, 3.1), 1.4], ["chicken", Vector3(0.5, 0, 2.8), 2.8],
+		["cow", Vector3(5.2, 0, 1.6), -0.8]]
+	for spec in spots:
+		if not ART.exists(spec[0]):
+			continue
+		var animal := ART.instance(spec[0])
+		var local: Vector3 = spec[1]
+		var world := camp.transform * local
+		animal.position = local
+		animal.position.y = TERRAIN.height(world.x, world.z) - camp.position.y
+		animal.rotation.y = float(spec[2])
+		camp.add_child(animal)
+		camp_animals.append(animal)
+	set_night(0.0)
+
+
 func _build_lumo() -> void:
 	lumo = LUMO.new()
 	lumo.name = "VillageLumo"
@@ -237,7 +293,7 @@ func _plan_lumo_walk(_town: Dictionary) -> void:
 		return
 	# A loop along the painted main lanes around the founders' first plots.
 	var c := town_center
-	for offset in [Vector2(-7.95, -2.65), Vector2(7.95, -2.65), Vector2(7.95, 2.65), Vector2(2.65, 7.95), Vector2(-2.65, 7.95), Vector2(-7.95, 2.65)]:
+	for offset in [Vector2(-7.95, -2.65), Vector2(7.95, -2.65), Vector2(7.95, 2.65), Vector2(2.65, 7.95), Vector2(-7.4, 7.3), Vector2(-7.95, 2.65)]:
 		lumo_path.append(Vector3(c.x + offset.x, 0, c.z + offset.y))
 	lumo.position = lumo_path[0]
 
@@ -249,6 +305,13 @@ func advance(delta: float, camera_position: Vector3) -> void:
 	_advance_herds()
 	_advance_cart(delta)
 	_advance_lumo(delta)
+	if camp != null and camp.visible:
+		for index in range(camp_animals.size()):
+			var animal := camp_animals[index]
+			animal.rotation.y += sin(clock * 0.3 + float(index)) * delta * 0.25
+			animal.scale = Vector3.ONE * (1.0 + absf(sin(clock * (5.0 if index >= 2 and index <= 4 else 1.4) + float(index))) * 0.02)
+		if camp_light != null and camp_light.visible:
+			camp_light.light_energy = (0.4 + night * 2.6) * (0.9 + 0.1 * sin(clock * 13.0) * sin(clock * 7.3))
 	set_meta("camera_position", camera_position)
 
 

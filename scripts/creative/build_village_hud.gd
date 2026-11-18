@@ -98,14 +98,14 @@ static func round_button(text: String, action: Callable, tooltip: String) -> But
 
 ## Gebäudekarte: echtes Modellbild links, Name und Kosten rechts.
 static func building_card(kind: String, text: String, action: Callable) -> Button:
-	var card := HUD.button(text, action, 236.0, "cream")
+	var card := HUD.button(text, action, 218.0, "cream")
 	card.name = "BuildCard_" + kind
-	card.custom_minimum_size = Vector2(236, 74)
+	card.custom_minimum_size = Vector2(218, 86)
 	card.add_theme_font_size_override("font_size", 15)
 	card.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	card.icon = texture("bld_" + kind)
 	card.expand_icon = true
-	card.add_theme_constant_override("icon_max_width", 62)
+	card.add_theme_constant_override("icon_max_width", 80)
 	card.add_theme_constant_override("h_separation", 8)
 	card.clip_text = false
 	return card
