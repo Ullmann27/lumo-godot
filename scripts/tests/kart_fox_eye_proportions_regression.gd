@@ -51,19 +51,14 @@ func _run() -> void:
 	assert(teeth.position.z < smile_volume.position.z + 0.010)
 	assert(tongue.position.z < smile_volume.position.z + 0.015)
 	fox.free()
-	# The rabbit keeps its existing joints with a smaller recessed eye shell.
+	# The rabbit races as its authored 3D figure; the sculpted stand-in with
+	# its own eye shells and ear joints is no longer built for it.
 	var rabbit := AuthoredDriver.new()
 	rabbit.configure("rabbit", Color("e9eff8"), "comet")
 	root.add_child(rabbit)
-	assert(rabbit.eyes.size() == 2)
-	for eye: Node3D in rabbit.eyes:
-		var white: MeshInstance3D = eye.get_child(1)
-		assert(white.scale.x <= 0.075 and white.scale.y <= 0.095)
-		assert(white.scale.z <= 0.022)
-	assert(rabbit.head.get_node_or_null("LumoSmileCavity") == null)
-	assert(rabbit.ear_joints.size() == 2)
-	for ear: Node3D in rabbit.ear_joints:
-		assert(absf(ear.rotation.z) < 0.24)
+	assert(is_instance_valid(rabbit.production_driver) and rabbit.production_driver.is_usable())
+	assert(rabbit.eyes.is_empty() and rabbit.ear_joints.is_empty())
+	assert(rabbit.head == null or rabbit.head.get_node_or_null("LumoSmileCavity") == null)
 	rabbit.free()
-	print("[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; rabbit eyes recessed with original ear joints")
+	print("[LumoEyeProportions] PASS: fox eyes, swept ears, open smile; rabbit races as its authored 3D figure")
 	quit(0)
