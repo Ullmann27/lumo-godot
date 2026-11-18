@@ -108,6 +108,17 @@ func _test_runtime_unit() -> void:
 		for event in runtime.step(STEP, [{"key": -1, "progress": 14.0, "lateral": 0.0}, {"key": 0, "progress": 0.0, "lateral": 0.0}]):
 			intercepted = intercepted or str(event.type) == "intercepted"
 	_check(intercepted and runtime.active_count() == 0, "a bubble behind the player swallows the rocket")
+	# A racer drives into a bubble: one clean hit event (found by the two-lap
+	# race in CI: traps carried no pair field and the hit raised an error).
+	runtime.clear()
+	runtime.drop_trap("bubble_trap", 3, 30.0, 0.0)
+	var trap_events: Array[Dictionary] = []
+	for i in range(30):
+		trap_events.append_array(runtime.step(STEP, [{"key": -1, "progress": 27.8, "lateral": 0.0}]))
+	_check(trap_events.size() == 1 and str(trap_events[0].type) == "hit" and int(trap_events[0].target) == -1
+		and int(trap_events[0].source) == 3 and int(trap_events[0].pair) == 0 and runtime.traps.is_empty(),
+		"driving into a bubble gives exactly one hit event")
+	runtime.clear()
 	runtime.fire_bouncing("spark_ball", -1, 0.0, 4.0, 8.0)
 	var widest := 0.0
 	for frame in range(60):

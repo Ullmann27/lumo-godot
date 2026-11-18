@@ -190,6 +190,8 @@ var landing_count: int = 0
 var landing_settle: float = 0.0
 ## Camera FOV punch for mini-turbo and item bursts (visual only).
 var camera_punch: float = 0.0
+## Eased field of view without the short kicks (0 = not set yet).
+var camera_base_fov: float = 0.0
 var gap_falls: int = 0
 ## Sonnenhafen precision jump: the kicker in flight, and the measured results.
 var precision_kicker: Dictionary = {}
@@ -3308,18 +3310,23 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
 	var target_fov: float = _resize_compensated_fov(baseline_fov, aspect)
-	camera.fov = (
+	# The eased base value is kept apart from the short kicks: easing from a
+	# value that already contains a kick lets the kicks pile up frame by frame
+	# until the field of view leaves its valid range.
+	camera_base_fov = (
 		target_fov
-		if snap
-		else lerpf(camera.fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+		if snap or camera_base_fov <= 0.0
+		else lerpf(camera_base_fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
 	)
+	var kicked_fov: float = camera_base_fov
 	if camera_punch > 0.0 and not reduced_motion:
-		camera.fov += camera_punch * 9.5
+		kicked_fov += camera_punch * 9.5
 		camera_punch = maxf(0.0, camera_punch - delta * 2.2)
 	if is_instance_valid(fx) and not snap:
 		# Drive-through push: brief FOV punch and a tiny shake (both off in reduced motion).
-		camera.fov += fx.camera_fov_kick()
+		kicked_fov += fx.camera_fov_kick()
 		camera.position += camera.basis * fx.camera_shake()
+	camera.fov = clampf(kicked_fov, 20.0, 140.0)
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 
