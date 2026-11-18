@@ -83,7 +83,7 @@ static func set_time(root: Node3D, t: float) -> void:
 	env.ambient_light_color = (DAY.ambient as Color).lerp(EVENING.ambient, k)
 	env.ambient_light_energy = lerpf(DAY.ambient_energy, EVENING.ambient_energy, k)
 	env.fog_light_color = (DAY.fog as Color).lerp(EVENING.fog, k)
-	env.fog_density = lerpf(DAY.fog_density, EVENING.fog_density, k)
+	env.fog_density = lerpf(DAY.fog_density, EVENING.fog_density, k) * float(root.get_meta("village_fog_scale", 1.0))
 	env.tonemap_exposure = lerpf(DAY.exposure, EVENING.exposure, k)
 	if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
 		var sky := env.sky.sky_material as ProceduralSkyMaterial
@@ -101,3 +101,13 @@ static func set_time(root: Node3D, t: float) -> void:
 	ART.material().set_shader_parameter("night", k)
 	root.set_meta("village_time_of_day", t)
 	root.set_meta("village_night", k)
+
+
+## Aus großer Höhe (Übersicht, Karte der Nachbarstädte) weniger Dunst: der
+## Nebel wird mit dem Kameraabstand dünner, damit Schilder und Städte klar bleiben.
+static func set_view_distance(root: Node3D, distance: float) -> void:
+	var scale := clampf(110.0 / maxf(distance, 1.0), 0.2, 1.0)
+	if is_equal_approx(scale, float(root.get_meta("village_fog_scale", 1.0))):
+		return
+	root.set_meta("village_fog_scale", scale)
+	set_time(root, float(root.get_meta("village_time_of_day", 0.35)))

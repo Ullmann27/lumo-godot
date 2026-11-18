@@ -1819,6 +1819,8 @@ func _camera_update(immediate := false) -> void:
 	if model.living_village:
 		camera.position.y = maxf(camera.position.y, REGION.ground(camera.position.x, camera.position.z) + 3.0)
 	camera.look_at(look)
+	if model.living_village:
+		ATMOSPHERE.set_view_distance(self, snappedf(target_radius, 5.0))
 	if is_instance_valid(village_region):
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
