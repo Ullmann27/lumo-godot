@@ -143,9 +143,10 @@ func _run() -> void:
 	if failed:
 		return
 
-	# No rubber-banding: the same stretch at the same difficulty must yield the
-	# same travel whether the player is far ahead or far behind. Place the field
-	# far enough along the course that "80 m behind" does not clamp to 0.
+	# Kein Schub für Überholte: Ein Rivale, den das Kind 80 m hinter sich gelassen hat,
+	# fährt genauso weit wie mit dem Kind 300 m vor ihm (beide weit außer Sicht).
+	# Seit 18.11.2026 gibt es keinen Aufhol-Schub für Rivalen hinter dem Kind mehr; nur
+	# weit enteilte Rivalen werden etwas langsamer (kart_race_rules.rival_rubber_band).
 	_restore(baseline)
 	var rb_start: float = game.opponent_distances[0] + 200.0
 	for i in range(game.opponents.size()):
@@ -167,7 +168,7 @@ func _run() -> void:
 	var travel_ahead: float = game.opponent_distances[0] - before_ahead
 
 	_restore(rb)
-	game.distance = rb.distances[0] - 80.0
+	game.distance = rb.distances[0] + 300.0
 	game.lane = 0.0
 	game.player.transform = game.world.reset_transform(game.distance, 0.0)
 	var before_behind: float = game.opponent_distances[0]
@@ -178,13 +179,13 @@ func _run() -> void:
 	_check(
 		absf(travel_ahead - travel_behind) <= 0.45,
 		(
-			"No rubber-banding: ahead travel %.3f m vs behind travel %.3f m"
+			"No push for an overtaken rival: child 80 m ahead %.3f m vs 300 m ahead %.3f m"
 			% [travel_ahead, travel_behind]
 		)
 	)
 	print(
 		(
-			"[KartAI] rubber-band check: ahead %.3f m, behind %.3f m (diff %.3f m)"
+			"[KartAI] rubber-band check: child 80 m ahead %.3f m, 300 m ahead %.3f m (diff %.3f m)"
 			% [travel_ahead, travel_behind, absf(travel_ahead - travel_behind)]
 		)
 	)

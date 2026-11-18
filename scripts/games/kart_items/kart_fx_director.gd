@@ -30,6 +30,12 @@ const EVENTS: Dictionary = {
 	"shield_deflect": [Color("8af4ff"), 30, 0.16, 0.25, "shield_ping"],
 	"shield_up": [Color("66e8ff"), 24, 0.10, 0.2, "shield_up"],
 	"rocket_fizzle": [Color("d8dcf0"), 12, 0.0, 0.0, ""],
+	# Item-Rückmeldungen ohne Spielwirkung: Funkenkugel an der Bande, Blase legen/platzen,
+	# Ende von Sternmagnet und Nordlicht.
+	"spark_bounce": [Color("58f0a0"), 14, 0.0, 0.0, "rail_hit_soft"],
+	"bubble_drop": [Color("7fd8ff"), 12, 0.0, 0.0, "whoosh"],
+	"bubble_pop": [Color("bfefff"), 18, 0.0, 0.0, "shield_ping"],
+	"item_end": [Color("e8f2ff"), 10, 0.0, 0.0, "whoosh"],
 }
 ## Events that also throw big five-pointed stars (kids read: "Sterne, nicht Schaden").
 const STAR_EVENTS: Dictionary = {"rocket_hit": 22, "hit_spin": 12, "rocket_pop": 8, "shield_deflect": 6}
@@ -137,7 +143,8 @@ func setup(overlay_parent: Node, quality: String, reduced: bool) -> void:
 			stars.name = "StarBurst%d" % index
 			stars.emitting = false
 			stars.one_shot = true
-			stars.explosiveness = 0.95
+			# 1.0: sonst zeigt gl_compatibility noch nicht ausgestoßene Sterne kurz schwarz.
+			stars.explosiveness = 1.0
 			stars.lifetime = 0.95
 			stars.mesh = star_mesh
 			stars.direction = Vector3.UP

@@ -2,7 +2,6 @@ extends Node3D
 ## Roadside badger crews throw a clearly telegraphed lasso at one side lane.
 ## Geometry and gameplay share one plan. The controller owns the only clock.
 
-const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const RULES = preload("res://scripts/games/kart_lasso_rules.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -45,9 +44,6 @@ static func plan(race_world) -> Array[Dictionary]:
 		blocked.append(Vector2(float(gate.distance) - 25.0, float(gate.distance) + 20.0))
 	if str(race_world.track_id) == "sonnenhafen":
 		blocked.append(Vector2(track_length * 0.675, track_length * 0.815))
-	# LUMO passages (bridge plaza, waiting line, calm view) never share space with a lasso.
-	for passage in PASSAGES.blocked_ranges(race_world):
-		blocked.append(Vector2(passage.x - 60.0, passage.y + 40.0))
 	var taken: Array = []
 	var fractions: Array = [0.28, 0.87] if track_length > 900.0 else [0.51]
 	for fraction in fractions:

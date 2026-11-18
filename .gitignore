@@ -16,6 +16,8 @@
 # Die Bildliste ist keine Übersetzung. Als CSV-Übersetzung importiert löst sie
 # im Importer TRANSLATION_CHANGED aus einem Arbeits-Thread aus (Absturz im CI).
 !assets/characters/lumo/reference/lumo_reference_manifest.csv.import
+# Lumo Schach: Holz-, Brett- und Symboltexturen mit Mipmaps (scharf unter flachem Blickwinkel).
+!assets/chess/**/*.import
 
 # Export-Output (lokale Builds nicht ins Repo)
 exports/

@@ -7,7 +7,9 @@ const TEX := "res://assets/creative/village3d/textures/"
 const TERRAIN_SHADER = preload("res://assets/creative/village3d/shaders/village_terrain.gdshader")
 const WATER_SHADER = preload("res://assets/creative/village3d/shaders/village_water.gdshader")
 const CHUNK_CELLS := 64
-const PAINT_RECT := Rect2(-192.0, -96.0, 384.0, 192.0)
+## Stadt des Kindes bis Ring 32 (x −276 … 76) und die drei Nachbarstädte am
+## Ostufer (bis x 240); 2 Pixel je Meter.
+const PAINT_RECT := Rect2(-282.0, -182.0, 528.0, 364.0)
 const PAINT_SCALE := 2.0
 const SPACING := 5.3
 var tier := "medium"
@@ -185,26 +187,52 @@ func paint_town(center_x: float, unlocked: Array, built: Dictionary, ring: int) 
 	var half := float(ring) * SPACING + SPACING * 0.5
 	var area := Rect2(center_x - half - 2.0, -half - 2.0, half * 2.0 + 4.0, half * 2.0 + 4.0)
 	_fill(area, Color(0, 0, 0))
-	# Gassen zwischen allen erschlossenen Feldern, Hauptstraßen breiter.
-	for grid in range(-ring - 1, ring + 1):
-		var offset := (float(grid) + 0.5) * SPACING
-		var main := grid == -1 or grid == 0
-		var width := 2.2 if main else 1.2
-		var strength := 1.0 if main else 0.75
-		_fill(Rect2(center_x + offset - width * 0.5, -half, width, half * 2.0), Color(strength, 0, 0))
-		_fill(Rect2(center_x - half, offset - width * 0.5, half * 2.0, width), Color(strength, 0, 0))
+	# Gassen rund um jedes erschlossene Feld (nie durch Fluss oder Fels),
+	# die beiden Hauptstraßen durch die Ortsmitte breiter.
+	for point: Vector2 in unlocked:
+		for side in [-1.0, 1.0]:
+			var lane_x: float = point.x + side * SPACING * 0.5
+			var lane_z: float = point.y + side * SPACING * 0.5
+			var main_x := absf(lane_x - center_x) < 0.1 + SPACING * 0.5 and absf(lane_x - center_x) > 0.1
+			var main_z := absf(lane_z) < 0.1 + SPACING * 0.5 and absf(lane_z) > 0.1
+			var wide_x := 2.2 if main_x else 1.2
+			var wide_z := 2.2 if main_z else 1.2
+			_fill(Rect2(lane_x - wide_x * 0.5, point.y - SPACING * 0.5 - 0.6, wide_x, SPACING + 1.2),
+				Color(1.0 if main_x else 0.75, 0, 0))
+			_fill(Rect2(point.x - SPACING * 0.5 - 0.6, lane_z - wide_z * 0.5, SPACING + 1.2, wide_z),
+				Color(1.0 if main_z else 0.75, 0, 0))
 	for point: Vector2 in unlocked:
 		var cell := Rect2(point.x - 2.3, point.y - 2.3, 4.6, 4.6)
 		if built.has(point):
 			_fill(cell.grow(-0.15), Color(0, 0.85, 0))
 		else:
 			_fill(cell.grow(-0.6), Color(0, 0.32, 0))
-	# Landstraße vom Ortsrand zur mittleren Brücke.
+	# Landstraße vom Ortsrand zur mittleren Brücke (solange der Ort diesseits
+	# des Flusses endet).
 	var edge := center_x + (half if center_x < 0 else -half)
 	var river := TERRAIN.river_center(0.0)
 	var start := minf(edge, river)
 	var finish := maxf(edge, river)
-	_fill(Rect2(start, -1.1 - SPACING * 0.5, finish - start, 2.2), Color(1, 0, 0))
+	if (edge < river) == (center_x < river):
+		_fill(Rect2(start, -1.1 - SPACING * 0.5, finish - start, 2.2), Color(1, 0, 0))
+	paint_texture.update(paint_image)
+
+
+## Nachbarstadt: Gassen und Höfe in ihrem eigenen Gebiet (nur Darstellung).
+func paint_site(center: Vector2, cells: Array, built: Dictionary, ring: int) -> void:
+	if paint_image == null:
+		return
+	var half := float(ring) * SPACING + SPACING * 0.5
+	_fill(Rect2(center.x - half - 2.0, center.y - half - 2.0, half * 2.0 + 4.0, half * 2.0 + 4.0), Color(0, 0, 0))
+	for point: Vector2 in cells:
+		for side in [-1.0, 1.0]:
+			_fill(Rect2(point.x + side * SPACING * 0.5 - 0.6, point.y - SPACING * 0.5 - 0.6, 1.2, SPACING + 1.2),
+				Color(0.7, 0, 0))
+			_fill(Rect2(point.x - SPACING * 0.5 - 0.6, point.y + side * SPACING * 0.5 - 0.6, SPACING + 1.2, 1.2),
+				Color(0.7, 0, 0))
+	for point: Vector2 in cells:
+		if built.has(point):
+			_fill(Rect2(point.x - 2.15, point.y - 2.15, 4.3, 4.3), Color(0, 0.85, 0))
 	paint_texture.update(paint_image)
 
 

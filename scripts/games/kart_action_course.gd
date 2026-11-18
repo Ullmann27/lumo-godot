@@ -7,7 +7,6 @@ extends RefCounted
 
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const RAMP = preload("res://scripts/games/track_pieces/kart_ramp_piece.gd")
-const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
 const PAD_BOOST_SECONDS: float = 1.0
@@ -170,7 +169,6 @@ static func _blocked_ranges(world, length: float) -> Array:
 	var loop: Dictionary = world.loop_layout
 	if not loop.is_empty():
 		blocked.append(Vector2(float(loop.start) - CLEARANCE, float(loop.start) + 70.0))
-	blocked.append_array(PASSAGES.blocked_ranges(world))
 	return blocked
 
 

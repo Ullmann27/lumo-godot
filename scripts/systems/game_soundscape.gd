@@ -51,6 +51,7 @@ const ROUTES: Dictionary = {
 	"stars": HUB,
 	"cards": {"music": "cards", "ambience": "playroom"},
 	"memory": {"music": "memory", "ambience": "playroom"},
+	"chess": {"music": "memory", "ambience": "playroom", "music_db": -3.0},
 	"connect_four": {"music": "connect_four", "ambience": "playroom"},
 	"quiz": {"music": "quiz", "ambience": "studio", "layers": ["tension"]},
 	"treasure": {

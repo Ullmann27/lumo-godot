@@ -193,6 +193,16 @@ def whoosh():
     return sweep * shape
 
 
+def rocket_fly(seconds):
+    """Sternraketen-Flug: helles Fauchen + weicher Pfeifton, nahtlos als Schleife."""
+    t = t_axis(seconds)
+    hiss = noise(len(t), 900, 7000) * periodic_mod(t, seconds, 12, 0.18)
+    rumble = noise(len(t), 70, 420) * 0.55 * periodic_mod(t, seconds, 5, 0.25, 0.7)
+    whistle_f = round(1320 * seconds) / seconds
+    whistle = np.sin(TAU * whistle_f * t + 0.6 * np.sin(TAU * 6 / seconds * t)) * 0.22
+    return hiss + rumble + whistle
+
+
 # name -> (builder, loop)
 SOUNDS = {
     "engine_low": (lambda: engine_layer(62, 1.0, 14, 1.15, 1.0), True),
@@ -211,6 +221,8 @@ SOUNDS = {
     "land_thump": (land_thump, False),
     "confetti": (confetti, False),
     "whoosh": (whoosh, False),
+    # Appended last: the earlier cues keep their random stream (identical files).
+    "rocket_fly": (lambda: rocket_fly(1.0), True),
 }
 
 

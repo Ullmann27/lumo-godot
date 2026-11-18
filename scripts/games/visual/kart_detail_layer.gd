@@ -189,8 +189,6 @@ func _blocked(d: float, padding: float = 10.0) -> bool:
 		return true
 	if world.in_gap(d) or world.in_gap(d + padding) or world.in_gap(d - padding):
 		return true
-	if world.PASSAGES.keeps_clear(world, d, padding):
-		return true
 	if world.ramp_height(d) > 0.0:
 		return true
 	if not world.jump.is_empty() and world.jump.has("ramp_start") and world.jump.has("gap_end"):
@@ -334,8 +332,6 @@ func _place(kind: String, site: Dictionary, category: String, offset: Vector3 = 
 ## Flaches Decal auf der Fahrbahn: Mittelpunkt (d, lateral), Größe along x across.
 func _road_decal(tile: String, d: float, lateral: float, along: float, across: float, color: Color, spin: float = 0.0, wet: bool = false) -> void:
 	d = fposmod(d, _length())
-	if world.PASSAGES.keeps_clear(world, d, along * 0.5 + 1.0):
-		return  # LUMO passage: no wear decals floating over the gap or on the narrow deck.
 	var basis: Basis = world.frame(d)
 	var up: Vector3 = basis.y
 	var centre: Vector3 = world.position_at(d, lateral) + up * DECAL_LIFT_M
@@ -423,7 +419,7 @@ func _edge_drifts() -> void:
 	var d: float = 12.0
 	while d < _length():
 		d += step * rng.randf_range(0.6, 1.4)
-		if world.ADVENTURE_TUNNELS.contains(world, d, 0.0) or world.in_gap(d) or world.PASSAGES.keeps_clear(world, d, 5.0):
+		if world.ADVENTURE_TUNNELS.contains(world, d, 0.0) or world.in_gap(d):
 			continue
 		var side: float = -1.0 if rng.randf() < 0.5 else 1.0
 		var half: float = _half_width(d)

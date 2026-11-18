@@ -128,6 +128,9 @@ func _reveal_toolbar(village: Node, control: Button) -> bool:
 	if not ancestor is ScrollContainer:
 		return false
 	var scroll: ScrollContainer = ancestor
+	# Four areas: the control lives in one of them (Bauen/Versorgen/Nachbarn/Schützen).
+	village.reveal_dock_control(control)
+	await _frames(3)
 	var before: Dictionary = village.model.snapshot()
 	var camera_before: Array = [village.orbit, village.tilt, village.radius, village.focus]
 	for attempt in range(24):
@@ -222,6 +225,8 @@ func _surface_checks(village: Node) -> void:
 		_check(entry != null, "Production toolbar contains " + caption)
 		if entry == null:
 			continue
+		village.reveal_dock_control(entry)
+		await _frames(3)
 		if caption != "Kapitel" and not await _reveal_toolbar(village, entry):
 			continue
 		_target(entry, "toolbar " + caption)
@@ -334,8 +339,8 @@ func _run() -> void:
 	_check(village.purchase_buttons.size() == 11, "All eleven village buildings are offered")
 	_check(
 		village.village_region != null
-		and village.village_region.get_meta("max_plots_per_town", 0) == 1089,
-		"The 1089-plot region is attached to the production scene"
+		and village.village_region.get_meta("max_plots_per_town", 0) == 4225,
+		"The 4225-plot region (65 × 65) is attached to the production scene"
 	)
 	_check(village.village_region.get_meta("road_lines_player", 0) == 8,
 		"The opening nine plots have a real 3x3 street grid, not 1089 empty plots")
@@ -460,6 +465,11 @@ func _run() -> void:
 		restored.model.player().buildings[0].purchase_cost == {"wood": 6, "stone": 4},
 		"Save/reload retains the exact market cost receipt"
 	)
+	# Toolbar checks need the full toolset: it opens after Lumo's introduction.
+	restored.tutorial.skip()
+	restored.dock.unlock_all()
+	restored._apply_dock()
+	await _frames(2)
 	await _surface_checks(restored)
 	restored.queue_free()
 	await _frames(5)

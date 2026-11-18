@@ -50,7 +50,45 @@ static func dress(game: Node) -> void:
 	relayout(game, 1.0, false)
 
 
+## Linkshänder: Lenk-Stick rechts, Knopf-Feld links und darin gespiegelt. Läuft am Ende jedes
+## Layout-Durchgangs (die Positionen der Knöpfe stehen dann schon fest).
+static func apply_handedness(game: Node) -> void:
+	var left_handed: bool = bool(game.get("left_handed"))
+	var row: Container = game.controls_row
+	if not is_instance_valid(row) or not is_instance_valid(game.joystick) or not is_instance_valid(game.pedal_pad):
+		return
+	var stick: Control = game.joystick
+	var pad: Control = game.pedal_pad
+	var first: Control = pad if left_handed else stick
+	var last: Control = stick if left_handed else pad
+	if first.get_index() != 0:
+		row.move_child(first, 0)
+	if last.get_index() != row.get_child_count() - 1:
+		row.move_child(last, row.get_child_count() - 1)
+	pad.set_meta("kart_mirrored", left_handed)
+	var width: float = maxf(pad.custom_minimum_size.x, pad.size.x)
+	for child in pad.get_children():
+		if not child is Control:
+			continue
+		# Idempotent: "kart_mirror_x" merkt sich die gespiegelte Lage. Steht der Knopf schon
+		# dort, ist nichts zu tun; beim Zurückschalten wird genau diese Lage aufgehoben.
+		var mirrored_already: bool = child.has_meta("kart_mirror_x") and absf(child.position.x - float(child.get_meta("kart_mirror_x"))) < 0.01
+		if left_handed and not mirrored_already:
+			child.position.x = width - child.position.x - child.size.x
+			child.set_meta("kart_mirror_x", child.position.x)
+		elif not left_handed:
+			if mirrored_already:
+				child.position.x = width - child.position.x - child.size.x
+			if child.has_meta("kart_mirror_x"):
+				child.remove_meta("kart_mirror_x")
+
+
+static func handedness_text(left_handed: bool) -> String:
+	return "Steuerung: Linkshänder (Lenken rechts)" if left_handed else "Steuerung: Rechtshänder (Lenken links)"
+
+
 static func relayout(game: Node, ui_scale: float, short_landscape: bool) -> void:
+	apply_handedness(game)
 	var panel: PanelContainer = game.hud.get_parent()
 	var k: float = ui_scale
 	var bar_style := glass_style(18.0 * k, 2.0 * k)

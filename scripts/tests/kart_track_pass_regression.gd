@@ -200,17 +200,17 @@ func _run() -> void:
 				"%s / %s has identical achievable goals" % [track.id, difficulty.id]
 			)
 		_check(
-			all_tracks.total(str(difficulty.id)) == 36,
-			"all twelve tracks expose exactly 36 goals for " + str(difficulty.id)
+			all_tracks.total(str(difficulty.id)) == CATALOG.TRACKS.size() * 3,
+			"every catalog track exposes exactly three goals for " + str(difficulty.id)
 		)
 	var full_reload = TRACK_PASS.new(all_tracks.child_key)
 	_check(
 		(
-			full_reload.total("gemuetlich") == 36
-			and full_reload.total("flott") == 36
-			and full_reload.total("pro") == 36
+			full_reload.total("gemuetlich") == CATALOG.TRACKS.size() * 3
+			and full_reload.total("flott") == CATALOG.TRACKS.size() * 3
+			and full_reload.total("pro") == CATALOG.TRACKS.size() * 3
 		),
-		"all 108 goals persist independently with no required difficulty escalation"
+		"all goals of every level persist independently with no required difficulty escalation"
 	)
 
 	# A copied or malformed save cannot import another child's achievement.
@@ -285,7 +285,7 @@ func _run() -> void:
 		await process_frame
 	_check(
 		(
-			game.garage.choices.get_child_count() == 12
+			game.garage.choices.get_child_count() == CATALOG.TRACKS.size()
 			and game.garage.choices.get_child(0).caption_label.visible
 		),
 		"all existing track choices show goals through the production menu"

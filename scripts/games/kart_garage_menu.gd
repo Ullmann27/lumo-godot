@@ -38,7 +38,8 @@ var kart_bars
 var workshop_button: Button
 var kart_summary: Label
 var has_saved_race: bool = false
-var choices: VBoxContainer
+## Senkrechte Liste; die Streckenwahl stellt sie im Hochformat auf eine waagrechte Bildleiste um.
+var choices: BoxContainer
 var setup_row: GridContainer
 var setup_left: VBoxContainer
 var setup_right: VBoxContainer
@@ -259,7 +260,8 @@ void fragment() {
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	left.add_child(scroll)
-	choices = VBoxContainer.new()
+	choices = BoxContainer.new()
+	choices.vertical = true
 	choices.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	choices.add_theme_constant_override("separation", 9)
 	scroll.add_child(choices)

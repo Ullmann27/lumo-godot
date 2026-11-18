@@ -15,6 +15,7 @@ extends RefCounted
 ## Zeit läuft nur mit „Nächster Tag“ des Kindes – nie, wenn die App zu ist.
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
+const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const VERSION := 1
 ## Keine Angriffe in den ersten Tagen und nicht vor Kapitel 3 (Index 2).
 const FIRST_DAY := 8
@@ -68,6 +69,10 @@ const DRAGON_NEST := Vector2(-196.0, -86.0)
 var world_seed := 20261118
 var parts: Dictionary = {"wall": 0, "tower": 0, "gate": 0, "ditch": 0, "trap": 0}
 var guards := 0
+## Wachen-Verbände (build_village_guards.gd): Summe der Größen == guards.
+var units: Array = []
+## Ausbildungsstätten der Truppenarten (Schießplatz, Kaserne, Stall).
+var troop_sites: Dictionary = {}
 var fame := 0
 var next_check := FIRST_DAY
 ## Angekündigter Angriff oder leer: {threat, by, reason, announce_day, arrive_day, level, ally, source}
@@ -142,7 +147,21 @@ func train_guard(model) -> String:
 	if not model.exchange({"coins": 1}, {}):
 		return "Eine Wache braucht 1 Münze für Helm und Schild."
 	guards += 1
+	GUARDS.reconcile(self)
 	return ""
+
+
+## Schutzpunkte, wenn `more` weitere Wachen ausgebildet wären. Für Lumos Rat;
+## ändert nichts dauerhaft.
+func defense_with_more_guards(threat: String, more: int) -> float:
+	var kept: Array = units.duplicate(true)
+	var before: int = guards
+	guards += more
+	GUARDS.reconcile(self)
+	var points: float = defense_points(threat)
+	guards = before
+	units = kept
+	return points
 
 
 ## Defence points against one threat. Guards on an expedition do not count.
@@ -151,8 +170,8 @@ func defense_points(threat: String, ally := false) -> float:
 	var total := 0.0
 	for kind in parts:
 		total += float(parts[kind]) * float(UNIT[kind]) * float(weights[kind])
-	var home_guards := guards - int(expedition.get("guards", 0))
-	total += float(maxi(0, home_guards)) * UNIT.guard * float(weights.guard)
+	# Soldaten zählen nach Art, Aufstellung und Schutzbauten (build_village_troops.gd).
+	total += GUARDS.defense(self, threat)
 	if ally:
 		total += UNIT.ally * float(weights.ally)
 	return total
@@ -200,15 +219,24 @@ func reasons(model, neighbors) -> Array[Dictionary]:
 
 ## One village day (called after the child's own day and the neighbours).
 ## Resolves an arriving attack, brings expeditions home, announces new ones.
-func advance_day(model, neighbors, chapter_index: int, tutorial_done := true) -> Dictionary:
+## With a `schedule` (build_village_schedule.gd) the start follows the child:
+## no chapter gate, but day 8 plus understood house/farm, working supply and a
+## first look at „Schützen“; arrival never shares a day with another system.
+func advance_day(model, neighbors, chapter_index: int, tutorial_done := true, schedule = null) -> Dictionary:
 	var day := int(model.day)
 	var report := {}
 	if not expedition.is_empty() and day >= int(expedition.return_day):
 		report["expedition"] = _finish_expedition(model, day)
 	if not pending.is_empty() and day >= int(pending.arrive_day):
 		report["raid"] = resolve(model, neighbors)
+		if schedule != null:
+			schedule.record_outcome(day, str(report.raid.outcome))
 		return report
-	if not pending.is_empty() or day < next_check or chapter_index < FIRST_CHAPTER or not tutorial_done:
+	if not pending.is_empty() or day < next_check:
+		return report
+	if schedule != null and not schedule.may_announce(model, tutorial_done):
+		return report
+	if schedule == null and (chapter_index < FIRST_CHAPTER or not tutorial_done):
 		return report
 	var options := reasons(model, neighbors)
 	if options.is_empty():
@@ -219,6 +247,10 @@ func advance_day(model, neighbors, chapter_index: int, tutorial_done := true) ->
 	pending = choice.duplicate()
 	pending["announce_day"] = day
 	pending["arrive_day"] = day + WARNING_DAYS
+	if schedule != null:
+		var system: String = schedule.system_for(str(choice.threat))
+		pending["arrive_day"] = schedule.free_day(day + WARNING_DAYS, system)
+		schedule.claim(int(pending.arrive_day), system)
 	pending["level"] = level_for(str(choice.threat))
 	pending["ally"] = ""
 	_note(day, "Warnung: " + str(choice.reason))
@@ -294,8 +326,10 @@ func resolve(model, neighbors) -> Dictionary:
 	var result := {"threat": threat, "by": str(pending.get("by", "")), "reason": str(pending.reason), "day": day,
 		"level": level, "need": snappedf(need, 0.1), "have": snappedf(have, 0.1), "outcome": outcome, "ally": ally,
 		"damaged": [], "loss": {}, "reward": {}, "used": parts.duplicate(), "guards": guards}
-	faced[threat] = int(faced.get(threat, 0)) + 1
+	# Only a won encounter raises the next stage: after a defeat the next try
+	# is the same size (reachable), never a harder one.
 	if outcome == "abgewehrt":
+		faced[threat] = int(faced.get(threat, 0)) + 1
 		defended += 1
 		fame += 1
 		result.reward = _victory(model, neighbors, threat)
@@ -336,22 +370,36 @@ func _victory(model, neighbors, threat: String) -> Dictionary:
 
 ## Damaged (never destroyed): buildings that matter to the attacker's goal first.
 func _damage(model, threat: String, count: int) -> Array:
-	var prefer: Array = {"raeuber": ["farm", "grain", "bakery"], "drache": ["market", "school"],
+	var prefer: Array = {"raeuber": ["grain", "bakery", "farm"], "drache": ["market", "school"],
 		"rivale": ["quarry", "lumber"]}[threat]
+	# Grundversorgung bleibt: Wohnhäuser, Brunnen und die Höfe, die das Dorf
+	# satt machen, werden nie beschädigt.
+	var keep_farms := safe_farms(model)
 	var candidates: Array = []
 	for building in model._player.buildings:
 		var plot := int(building.plot)
-		if model.damaged_plots.has(plot) or str(building.kind) == "house":
+		if model.damaged_plots.has(plot) or str(building.kind) in ["house", "well"]:
+			continue
+		if str(building.kind) == "farm" and int(model._working(model._player, "farm")) <= keep_farms:
 			continue
 		var rank := prefer.find(str(building.kind))
 		candidates.append([rank if rank >= 0 else 99, plot, str(building.kind)])
 	candidates.sort()
 	var result: Array = []
-	for index in range(mini(count, candidates.size())):
+	for index in range(candidates.size()):
+		if result.size() >= count:
+			break
 		var plot: int = candidates[index][1]
+		if str(candidates[index][2]) == "farm" and int(model._working(model._player, "farm")) <= keep_farms:
+			continue
 		model.damaged_plots[plot] = true
 		result.append({"plot": plot, "kind": candidates[index][2]})
 	return result
+
+
+## Höfe, die immer arbeiten müssen: so viele, wie die Bewohner zum Sattwerden brauchen.
+func safe_farms(model) -> int:
+	return maxi(1, int(ceil(float(model._player.population) / 5.0)))
 
 
 func _loss(model, neighbors, threat: String, share: float) -> Dictionary:
@@ -359,7 +407,9 @@ func _loss(model, neighbors, threat: String, share: float) -> Dictionary:
 	var loss := {}
 	match threat:
 		"raeuber":
-			loss = {"food": int(floor(float(town.resources.food) * share))}
+			# Mindestens drei Tage Essen für alle bleiben im Lager.
+			var reserve := int(town.population) * 3
+			loss = {"food": clampi(int(floor(float(town.resources.food) * share)), 0, maxi(0, int(town.resources.food) - reserve))}
 		"drache":
 			loss = {"coins": mini(20, int(floor(float(town.resources.coins) * share)))}
 		"rivale":
@@ -473,7 +523,8 @@ func snapshot(model = null) -> Dictionary:
 	return {"version": VERSION, "seed": world_seed, "damaged": snapshot_damage(model) if model != null else [], "parts": parts.duplicate(), "guards": guards, "fame": fame,
 		"next_check": next_check, "pending": pending.duplicate(true), "last": last_result.duplicate(true),
 		"stash": stash.duplicate(), "expedition": expedition.duplicate(), "defended": defended, "lost": lost,
-		"faced": faced.duplicate(), "log": chronicle.slice(-24)}
+		"faced": faced.duplicate(), "log": chronicle.slice(-24), "units": GUARDS.snapshot(self),
+		"troop_sites": troop_sites.duplicate()}
 
 
 ## Damaged plots live in the village model (production) but are saved here.
@@ -489,12 +540,20 @@ static func restore(raw: Variant, model = null):
 	var result = load("res://scripts/creative/build_village_raids.gd").new()
 	if model != null:
 		result.next_check = maxi(FIRST_DAY, int(model.day) + 2)
+		GUARDS.apply_upkeep(model, result)
 	if not raw is Dictionary or raw.get("version") != VERSION:
 		return result
 	result.world_seed = int(raw.get("seed", result.world_seed))
 	for kind in result.parts:
 		result.parts[kind] = clampi(int(raw.get("parts", {}).get(kind, 0)), 0, int(PARTS[kind].max))
 	result.guards = clampi(int(raw.get("guards", 0)), 0, 9999)
+	GUARDS.restore(result, raw.get("units", []))
+	var sites: Variant = raw.get("troop_sites", {})
+	if sites is Dictionary:
+		for key in sites:
+			if GUARDS.TROOPS.SITES.has(str(key)) and sites[key] == true:
+				result.troop_sites[str(key)] = true
+	GUARDS.apply_upkeep(model, result)
 	result.fame = clampi(int(raw.get("fame", 0)), 0, 9999)
 	result.next_check = int(raw.get("next_check", FIRST_DAY))
 	result.defended = maxi(0, int(raw.get("defended", 0)))

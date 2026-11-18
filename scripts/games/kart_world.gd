@@ -35,8 +35,6 @@ const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tu
 const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const DETAIL_LAYER = preload("res://scripts/games/visual/kart_detail_layer.gd")
 const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
-const PASSAGES = preload("res://scripts/games/kart_passages.gd")
-const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
 var _piece_markers: Array = []
@@ -120,7 +118,6 @@ func build(
 	loop_layout={}
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
-		PASSAGE_ART.build(self)
 		if not geometry_only:
 			# Without its own sky and sun the course fell back to the project's
 			# sunset default and drowned in orange haze.
@@ -221,7 +218,6 @@ func _make_curve() -> void:
 	else:
 		_make_legacy_curve()
 	length = curve.get_baked_length()
-	PASSAGES.plan(self)
 	adventure_tunnel = {} if track_id == JUNGLE.ID else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
@@ -269,15 +265,9 @@ func _make_legacy_curve() -> void:
 		curve.add_point(points[index], -tangent, tangent)
 
 func road_width_at(distance: float) -> float:
-	var deck: float = PASSAGES.deck_half(self, distance)
-	if deck > 0.0:
-		return deck * 2.0
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
-	var deck_wall: float = PASSAGES.rival_wall(self, distance)
-	if deck_wall < INF:
-		return deck_wall
 	if track_id == JUNGLE.ID:
 		return JUNGLE.wall_at(distance)
 	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), WALL_LATERAL)
@@ -424,11 +414,6 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	var lower: float = maxf(0.0, floor_distance)
 	var upper: float = maxf(lower + 0.5, ceiling_distance)
 	var safe: float = clampf(candidate, lower, upper)
-	# LUMO-Passage: never set a kart down on a narrow deck or under the swinging vine.
-	var passage_point: float = PASSAGES.respawn_for(self, safe)
-	if passage_point >= 0.0:
-		var lap_start: float = safe - fposmod(safe, length)
-		return clampf(lap_start + passage_point, lower, upper)
 	if jump.is_empty():
 		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
 		if stunt_gap.is_empty():
@@ -950,7 +935,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 	for i in range(count):
 		var d: float=float(i)*length/count
 		var next: float=float(i+1)*length/count
-		if in_gap((d+next)*0.5) or PASSAGES.void_at(self,(d+next)*0.5): continue
+		if in_gap((d+next)*0.5): continue
 		var vertices: Array[Vector3]=[position_at(d,left)+frame(d).y*height,position_at(d,right)+frame(d).y*(height-down),position_at(next,left)+frame(next).y*height,position_at(next,right)+frame(next).y*(height-down)]
 		for index in ([0,2,1,1,2,3] if left < right else [0,1,2,1,3,2]):
 			surface.set_uv(Vector2(left if index%2==0 else right,d if index<2 else next))
@@ -967,7 +952,6 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 
 func _road() -> void:
 	action = ACTION.plan(self)
-	PASSAGES.extend_action(self)
 	TRACK_PIECES.plan(self, _piece_markers)
 	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
@@ -1011,7 +995,7 @@ func _road() -> void:
 	var step: float=length/count
 	for i in range(count):
 		var d: float=i*step+step*0.5
-		if in_gap(d) or PASSAGES.void_at(self,d): continue
+		if in_gap(d): continue
 		var p: Vector3=position_at(d)
 		var basis: Basis=frame(d)
 		var bridge: bool=_is_bridge(d)
@@ -1040,7 +1024,6 @@ func _road() -> void:
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
 	ACTION.build(self)
 	TRACK_PIECES.build(self)
-	PASSAGE_ART.build(self)
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
@@ -1199,8 +1182,6 @@ const SCENERY_HEIGHTS: Dictionary = {
 
 ## Merkt eine Kulissenpflanze vor; SCENERY.build() instanziert sie je Zelle und LOD.
 func plant_scenery(species: String, at: Vector3, scale: float, yaw: float, tint: Color, phase: float) -> void:
-	if PASSAGES.in_view_corridor(self, at):
-		return  # Keep the sightline of a LUMO view moment (Wasserfall-Blick) open.
 	if not scenery_plants.has(species):
 		scenery_plants[species] = {"transforms": [], "custom": []}
 	var basis := Basis(Vector3.UP, yaw).scaled(Vector3.ONE*scale)

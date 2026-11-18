@@ -19,6 +19,12 @@ VIEWS={
     'underside':((2.3,-1.4,-2.4),(0,.44,0),48),
     'steering_clearance':((2.0,2.8,-2.4),(0,.45,-.3),50),
     'chase_camera':((0,2.52,4.35),(0,.78,-4.15),24/(2*math.tan(math.radians(55)/2))),
+    # Nahaufnahmen für die Garage: Reifenschrift/Bremse, Startnummer, Cockpit, Heck.
+    'closeup_wheel':((2.05,.78,-1.5),(.77,.35,-.66),50),
+    'closeup_sidepod':((1.95,.75,.35),(.6,.33,.0),55),
+    'closeup_cockpit':((.42,1.32,.78),(0,.62,-.12),42),
+    'closeup_rear':((.75,1.0,2.15),(0,.55,1.0),50),
+    'closeup_nose':((-.7,1.05,-2.15),(0,.35,-1.0),50),
 }
 
 
@@ -32,6 +38,7 @@ def main():
     parser.add_argument('--views',default='rear_three_quarter,side_profile,seat_controls,underside,chase_camera,steering_clearance')
     parser.add_argument('--samples',type=int,default=32)
     parser.add_argument('--width',type=int,default=1440)
+    parser.add_argument('--out',default='')
     a=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     source=ROOT/'art/lumo_kart/blender/karts'/('aurora_'+a.variant+'.blend')
     source_hash=hashlib.sha256(source.read_bytes()).hexdigest()
@@ -42,7 +49,8 @@ def main():
     s.render.image_settings.file_format='PNG';s.render.resolution_percentage=100
     camera=s.camera
     camera.data.sensor_width=36;camera.data.sensor_height=24
-    evidence=ROOT/'evidence/lumo_kart_art/karts'/a.variant
+    evidence=Path(a.out) if a.out else ROOT/'evidence/lumo_kart_art/karts'/a.variant
+    evidence.mkdir(parents=True,exist_ok=True)
     for name in a.views.split(','):
         at,target,lens=VIEWS[name]
         s.frame_set(13 if name=='steering_clearance' else 1)

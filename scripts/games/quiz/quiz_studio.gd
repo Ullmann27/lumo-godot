@@ -74,6 +74,11 @@ var answer_buttons: Array[Button] = []
 var answer_labels: Array[Label] = []
 var joker_buttons: Array[Button] = []
 var subject_buttons: Array[Button] = []
+## Ohne bestätigte Runde darf niemand im Studio festsitzen: nach dieser Wartezeit
+## führt "Zurück" direkt in die App (die Zurück-Geste sofort).
+const ESCAPE_AFTER_SECONDS: float = 4.0
+var _unready_seconds: float = 0.0
+var _escape_open: bool = false
 
 
 func _ready() -> void:
@@ -119,11 +124,54 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST or what == NOTIFICATION_WM_CLOSE_REQUEST:
-		_send("pause")
+		if _round_attached():
+			_send("pause")
+		else:
+			# Die Zurück-Geste ist ein ausdrücklicher Wunsch zu gehen.
+			_escape_open = true
+			_leave_without_round()
+
+
+func _round_attached() -> bool:
+	return _authority_ready and not _state.is_empty()
+
+
+## "Zurück" im Kopf: mit Runde der gesicherte Ausstieg, ohne Runde der Notausgang.
+func _on_return_pressed() -> void:
+	if _round_attached():
+		_send("exit")
+	else:
+		_leave_without_round()
+
+
+## Ohne Runde gibt es nichts zu sichern: direkt zur App zurück, statt für immer
+## bei "Die Spielverbindung wird geprüft" zu warten.
+func _leave_without_round() -> void:
+	if _closed or not _escape_open or _round_attached():
+		return
+	if not HostBridge.supports_method(_host, &"returnToApp"):
+		return
+	_closed = HostBridge.durable_ack(_host.call("returnToApp", "games", ""))
+	if _closed:
+		_remove_observation()
+
+
+func _track_escape(delta: float) -> void:
+	if _closed or _round_attached():
+		_unready_seconds = 0.0
+		if _escape_open:
+			_escape_open = false
+			_update_ui()
+		return
+	_unready_seconds += delta
+	if not _escape_open and _unready_seconds >= ESCAPE_AFTER_SECONDS:
+		_escape_open = true
+		_update_ui()
 
 
 func _process(delta: float) -> void:
 	_animate_studio(delta)
+	_track_escape(delta)
 	_poll += delta
 	if _poll >= 0.08:
 		_poll = 0.0
@@ -642,7 +690,7 @@ func _build_ui() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	header.add_child(row)
-	return_button = _button("Zurück", _send.bind("exit"))
+	return_button = _button("Zurück", _on_return_pressed)
 	return_button.name = "BackToFlutter"
 	row.add_child(return_button)
 	title = _label("Lumos Quizshow", 21)
@@ -800,7 +848,7 @@ func _update_ui() -> void:
 	var paused := bool(_state.get("paused", true))
 	var finished := bool(_state.get("gameOver", false))
 	var revealed := bool(_state.get("revealed", false))
-	return_button.disabled = not ready or waiting
+	return_button.disabled = (not ready or waiting) and not (_escape_open and not ready)
 	pause_button.disabled = not ready or waiting or paused
 	for button in answer_buttons:
 		button.disabled = true
@@ -824,6 +872,10 @@ func _update_ui() -> void:
 	if is_instance_valid(fox):
 		fox.suspended = paused or not ready
 	if not ready:
+		if _escape_open and not _closed:
+			progress.text = "Die Spielverbindung fehlt gerade."
+			status.text = "Tippe auf „Zurück“ und starte die Quizshow noch einmal. Dein Spielstand bleibt erhalten."
+			return
 		progress.text = "Die Spielverbindung wird geprüft …"
 		status.text = "Bitte kurz warten. Deine Eingaben bleiben gesperrt, bis die gespeicherte Runde bestätigt ist."
 		return

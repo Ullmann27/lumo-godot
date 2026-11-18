@@ -18,14 +18,10 @@ const ITEM_EFFECTS := [
 const TONE_EFFECTS := ["lock_beep", "roulette_tick", "missile_warning"]
 ## Driving sounds (tools/art/generate_kart_fx_audio.py) in assets/audio/kart/fx/.
 ## One-shots go through effect(); loops are driven every frame with set_loop().
-## LUMO-Passagen: Kiris Ruf vor dem Schwung (assets/audio/kart/passage/).
-const PASSAGE_EFFECTS := [
-	"monkey_call", "gate_bell", "stone_rumble", "switch_chime", "lava_hiss", "robot_beep"
-]
 const FX_EFFECTS := ["rail_hit", "rail_hit_soft", "backfire", "land_thump", "confetti", "whoosh"]
 const FX_LOOPS := [
 	"engine_low", "engine_mid", "engine_high", "engine_off", "scrape", "squeal", "gravel", "snow",
-	"turbo", "wind",
+	"turbo", "wind", "rocket_fly",
 ]
 ## One-shot trims: the race already plays its own collision/boost cue on the same
 ## event, so these sit underneath it (worst-case sum stays below clipping).
@@ -39,6 +35,7 @@ const DUCK_DB := 3.0
 const LOOP_TRIM := {
 	"engine_low": -13.0, "engine_mid": -14.0, "engine_high": -16.0, "engine_off": -15.0,
 	"scrape": -9.0, "squeal": -15.0, "gravel": -12.0, "snow": -11.0, "turbo": -12.0, "wind": -15.0,
+	"rocket_fly": -13.0,
 }
 const MUSIC_DB := -17.0
 const EFFECT_DB := -9.0
@@ -206,8 +203,7 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 	var fx_cue: bool = FX_EFFECTS.has(kind)
 	if fx_cue:
 		fx_requests[kind] = int(fx_requests.get(kind, 0)) + 1
-	var passage_cue: bool = PASSAGE_EFFECTS.has(kind)
-	if _blocked() or not (EFFECTS.has(kind) or item_cue or fx_cue or passage_cue):
+	if _blocked() or not (EFFECTS.has(kind) or item_cue or fx_cue):
 		return
 	_ensure_players()
 	var now := Time.get_ticks_msec()
@@ -217,8 +213,6 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 	var key := JUNGLE_ID + "/" + kind if _track_id == JUNGLE_ID and kind in ["start", "finish"] else kind
 	if item_cue:
 		key = "items/" + kind
-	elif passage_cue:
-		key = "passage/" + kind
 	elif fx_cue:
 		key = "fx/" + kind
 	var stream := _load_stream(key, false)
