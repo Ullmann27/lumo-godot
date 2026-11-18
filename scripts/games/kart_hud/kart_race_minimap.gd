@@ -28,17 +28,6 @@ func _draw() -> void:
 			var t: float = (float(i) - 1.5) * 2.4 * u
 			var colour: Color = Color.WHITE if i % 2 == 0 else INK
 			draw_line(mapped[0] + across * (t - 1.2 * u), mapped[0] + across * (t + 1.2 * u), colour, 3.2 * u)
-	# LUMO passages: a short cross bar for a narrow bridge, a dot for Kiri's vine.
-	for mark in passage_marks:
-		var centre: Vector2 = _map(mark.at)
-		var along: Vector2 = mark.along
-		var across := Vector2(-along.y, along.x)
-		if str(mark.kind) == "bridge":
-			draw_line(centre - across * 5.0 * u, centre + across * 5.0 * u, INK, 4.6 * u)
-			draw_line(centre - across * 4.2 * u, centre + across * 4.2 * u, mark.colour, 2.6 * u)
-		else:
-			draw_circle(centre, 4.4 * u, INK)
-			draw_circle(centre, 3.2 * u, mark.colour)
 	for i in range(race.opponents.size()):
 		var rival: Node3D = race.opponents[i]
 		var at: Vector2 = _map(Vector2(rival.position.x, rival.position.z))

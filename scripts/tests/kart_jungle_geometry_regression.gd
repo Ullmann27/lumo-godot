@@ -48,9 +48,7 @@ func _run() -> void:
 	assert(world.position_at(0.0).distance_to(world.position_at(world.length)) < 0.001)
 	assert(world.frame(0.0).is_equal_approx(world.frame(world.length)))
 	assert(is_equal_approx(world.road_width_at(0.0), 18.0))
-	assert(is_equal_approx(world.road_width_at(1960.0), 14.0))
-	# Kronenbrücke: the precision deck (kart_passages.gd) is the road at 1886–1922 m.
-	assert(world.road_width_at(1900.0) >= 2.19 * 1.6 and world.road_width_at(1900.0) < 4.0)
+	assert(is_equal_approx(world.road_width_at(1900.0), 14.0))
 	checks += 1
 	var mesh_seam_maximum: float = 0.0
 	var road_root: Node3D = world.get_node("DschungelherzRoad")
@@ -71,8 +69,6 @@ func _run() -> void:
 	for i in range(145):
 		var d: float = float(i) * world.length / 145.0
 		for lateral in [-4.5, 0.0, 4.5]:
-			if absf(lateral) > world.road_width_at(d) * 0.5:
-				continue  # Open precision deck: no ground beside it, on purpose.
 			var at: Vector3 = world.position_at(d, lateral)
 			var query := PhysicsRayQueryParameters3D.create(at + Vector3.UP * 2.0, at - Vector3.UP * 2.0, 1)
 			var hit: Dictionary = world.get_world_3d().direct_space_state.intersect_ray(query)
