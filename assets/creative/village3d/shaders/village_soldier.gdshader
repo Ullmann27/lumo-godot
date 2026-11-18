@@ -175,7 +175,7 @@ void fragment() {
 	NORMAL_MAP = nrm;
 	NORMAL_MAP_DEPTH = normal_strength;
 	ROUGHNESS = mix(0.84, 0.32, metal);
-	SPECULAR = mix(0.3, 0.9, metal);
-	RIM = metal * 0.25;
+	SPECULAR = mix(0.3, 0.65, metal);
+	RIM = metal * 0.15;
 	RIM_TINT = 0.5;
 }

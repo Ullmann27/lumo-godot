@@ -29,7 +29,14 @@ var _close: Button
 func setup(village_host) -> void:
 	host = village_host
 	name = "TroopBoard"
-	add_theme_stylebox_override("panel", VHUD.panel("glass", 14))
+	# Undurchsichtig: die Karte darunter stört das Lesen nicht.
+	var face := StyleBoxFlat.new()
+	face.bg_color = Color(0.05, 0.16, 0.23, 0.97)
+	face.border_color = Color("64d7c8")
+	face.set_border_width_all(3)
+	face.set_corner_radius_all(18)
+	face.set_content_margin_all(14)
+	add_theme_stylebox_override("panel", face)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var outer := VBoxContainer.new()
 	outer.add_theme_constant_override("separation", 10)
@@ -119,7 +126,7 @@ func refresh() -> void:
 		"%d Soldaten in %d Verbänden · Platz für %d weitere."
 		% [int(info.total), int(info.units), int(info.room)]
 	)
-	_content.add_child(_text(summary + " Höchstens die halbe Bevölkerung kann Soldat sein.", 18))
+	_content.add_child(_text(summary + " Höchstens die halbe Bevölkerung kann Soldat sein.", 17))
 	var food := (
 		"Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag."
 		% [int(info.food_per_day)]
@@ -160,7 +167,7 @@ func _lumo(text: String) -> void:
 
 
 func _post_picker() -> void:
-	_content.add_child(_text("Neue Soldaten stellen sich hier auf:", 18))
+	_content.add_child(_text("Neue Soldaten stellen sich auf am:", 16))
 	var posts := HFlowContainer.new()
 	posts.name = "TroopPosts"
 	posts.add_theme_constant_override("h_separation", 10)
@@ -171,8 +178,9 @@ func _post_picker() -> void:
 		var button := _button(
 			str(GUARDS.POSTS[post]),
 			_act.bind("post", post, 0),
-			150.0,
-			"primary" if chosen else "cream"
+			104.0,
+			"primary" if chosen else "cream",
+			16
 		)
 		button.name = "TroopPost_" + post
 		posts.add_child(button)
@@ -194,9 +202,11 @@ func _card(kind: String, info: Dictionary) -> Control:
 	var picture := TextureRect.new()
 	picture.name = "TroopPicture"
 	picture.texture = VHUD.texture("troop_" + kind)
-	picture.custom_minimum_size = Vector2(112, 112)
+	picture.custom_minimum_size = Vector2(96, 150)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Das Bild ist quadratisch, die Figur schmal: Ränder abschneiden, Figur groß.
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	picture.clip_contents = true
 	top.add_child(picture)
 	var facts := VBoxContainer.new()
 	facts.size_flags_horizontal = Control.SIZE_EXPAND_FILL

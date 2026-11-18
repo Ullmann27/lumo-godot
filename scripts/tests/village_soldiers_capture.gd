@@ -112,7 +112,7 @@ func _cards() -> void:
 		viewport.add_child(figure)
 		var tall := 2.65 if kind == "reiter" else 1.85
 		camera.fov = 30
-		camera.position = Vector3(0.0, tall * 0.62, tall * 2.15)
+		camera.position = Vector3(0.0, tall * 0.6, tall * 1.8)
 		camera.look_at(Vector3(0.05, tall * 0.5, 0))
 		for _i in range(10):
 			await process_frame

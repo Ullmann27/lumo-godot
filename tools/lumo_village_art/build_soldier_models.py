@@ -44,8 +44,8 @@ TRIM = "f0c64a"      # Gold-Borte, Stern
 SKIN = ["e2b08c", "c98f6a", "f0c4a0", "a8714f"]
 LEATHER = "6e4a2e"
 LEATHER_DARK = "3e2a1c"
-MAIL = "9aa2ad"
-STEEL = "c9d0d8"
+MAIL = "838b96"
+STEEL = "a6aeb8"
 WOOD = "9a6b40"
 LINEN = "d9cfb8"
 
@@ -481,7 +481,7 @@ def kettle_hat(b, pose):
     sol = obj.modifiers.new("solid", "SOLIDIFY")
     sol.thickness = 0.006
     place(obj, (hx, 0, hz - 0.005))
-    add_object(b, obj, solid("metal", "b7bec6", HEAD))
+    add_object(b, obj, solid("metal", "979fa9", HEAD))
     with Part(b, HEAD):
         b.box((hx, hy + 0.17, hz - 0.005), (0.012, 0.02, 0.2), "metal", "8d939c")
         b.box((hx, hy - 0.085, hz + 0.02), (0.012, 0.012, 0.17), "plain", LEATHER_DARK)

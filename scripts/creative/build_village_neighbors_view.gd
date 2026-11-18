@@ -67,7 +67,7 @@ func _build_border(entry: Dictionary) -> void:
 	var sign := Label3D.new()
 	sign.name = "ProjectSign"
 	sign.font = VHUD_FONT
-	sign.font_size = 44
+	sign.font_size = 38
 	sign.pixel_size = 0.0006
 	sign.fixed_size = true
 	sign.outline_size = 14
@@ -89,11 +89,12 @@ func _build_site(entry: Dictionary) -> void:
 	var center: Vector3 = NEIGHBORS.plot_world(str(entry.id), 4)
 	var sign := Label3D.new()
 	sign.name = "TownSign"
-	sign.text = "%s · %s" % [str(entry.town).to_upper(), str(entry.name)]
+	sign.text = "%s\n%s" % [str(entry.town).to_upper(), str(entry.name)]
 	# Gut lesbar aus jeder Entfernung: feste Bildschirmgröße, hell, dunkler Rand, nie verdeckt.
 	sign.position = center + Vector3(0, 12.0, -9.0)
 	sign.font = VHUD_FONT
-	sign.font_size = 64
+	sign.font_size = 54
+	sign.line_spacing = -8.0
 	sign.pixel_size = 0.0006
 	sign.fixed_size = true
 	sign.outline_size = 18
@@ -219,11 +220,11 @@ func _project_sign(entry: Dictionary, _town: Dictionary) -> void:
 	if project.is_empty():
 		return
 	var days := int(project.days_left)
-	sign.text = "baut: %s · noch %s\n%s" % [str(project.title), "1 Tag" if days == 1 else "%d Tage" % days,
-		str(project.why)]
+	# Kurz und schmal, damit drei Städte nebeneinander lesbar bleiben (Begründung im Dialog).
+	sign.text = "baut: %s\nnoch %s" % [str(project.title), "1 Tag" if days == 1 else "%d Tage" % days]
 	# Direkt unter dem Ortsschild: Name und Bau-Hinweis gehören zusammen.
 	sign.position = NEIGHBORS.plot_world(id, 4) + Vector3(0, 12.0, -9.0)
-	sign.offset = Vector2(0, -78)
+	sign.offset = Vector2(0, -112)
 
 
 ## Halbe Kantenlänge des bebauten Ortskerns eines Nachbarn.

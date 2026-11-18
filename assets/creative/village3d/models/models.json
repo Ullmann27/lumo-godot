@@ -269,7 +269,7 @@
  "site_kaserne": {
   "bytes": 100600,
   "parts": [],
-  "sha256": "a7e545d9a29777ca9c3129f381ef6834fc1fccfcea9bb06116a0e951dd1c65ba",
+  "sha256": "4518075c107787674bb97463ec19eecdbdeab2fa95137e7ee083a52264724064",
   "triangles": 700
  },
  "site_schiessplatz": {
@@ -287,25 +287,25 @@
  "soldier_bogen": {
   "bytes": 519920,
   "parts": [],
-  "sha256": "d85b9f791f09e4957204ba8f589563aaec485dbd7961be00a106959109df06b1",
+  "sha256": "70c04bcf82f55542ab573203d1db4e30d31d0030530cabe50e70e7d871bb3212",
   "triangles": 3850
  },
  "soldier_reiter": {
   "bytes": 906148,
   "parts": [],
-  "sha256": "819ea9a78f5c20cbf59a7d6ad73e65f3b47f24a2d310750173b1bc68f5fb7e0c",
+  "sha256": "799aa9fac056fe737e8f74d85917c1a292aed10d4f0910b18e9ee85a8460a787",
   "triangles": 6396
  },
  "soldier_schild": {
   "bytes": 514724,
   "parts": [],
-  "sha256": "7837f3dc4b507b3ba14cca60b76c4810830801f1949ca57fb161733313462ee0",
+  "sha256": "f9fdc654593304ce1459c3fbec462b2ba544f9a23a12006604a00a59907e871e",
   "triangles": 3624
  },
  "soldier_speer": {
   "bytes": 539352,
   "parts": [],
-  "sha256": "386927024e155b995cc83e95156643818dad357858403cc3d5afac861f12d058",
+  "sha256": "bff49088fed788f6edd030801cc235e2d3cbdb76e44807f24a376f7ad33e19dd",
   "triangles": 3846
  },
  "tree_birch": {

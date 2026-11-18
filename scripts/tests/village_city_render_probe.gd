@@ -11,7 +11,7 @@ const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
 const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const CHILD := "village_render_probe"
-const SLOT := 7
+const SLOT := 4
 
 
 func _initialize() -> void:
