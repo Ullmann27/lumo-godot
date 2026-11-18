@@ -2288,6 +2288,23 @@ func _layout_village_hud(size: Vector2) -> void:
 		first_row.add_child(actions_scroll_node)
 		first_row.add_child(day_button)
 	second_row.visible = narrow
+	# Very low landscape screens: the four area tabs share the first row.
+	if not area_tabs.is_empty():
+		var tabs_row: HBoxContainer = area_tabs.bauen.get_parent()
+		var dock_box: VBoxContainer = dock_rows[1].get_parent()
+		if short and tabs_row.get_parent() != first_row:
+			tabs_row.get_parent().remove_child(tabs_row)
+			first_row.add_child(tabs_row)
+		elif not short and tabs_row.get_parent() != dock_box:
+			tabs_row.get_parent().remove_child(tabs_row)
+			dock_box.add_child(tabs_row)
+		tabs_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		# Fit four tabs into the row: smaller letters only on narrow phones.
+		var room := size.x - gap * 2.0 - 24.0
+		var letters := 13 if short else (17 if room >= 560.0 else (15 if room >= 460.0 else 14))
+		for tab: Button in area_tabs.values():
+			tab.custom_minimum_size = Vector2(56.0 if short or room < 460.0 else 92.0, 50.0 if short else 58.0)
+			tab.add_theme_font_size_override("font_size", letters)
 	if narrow:
 		primary_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		for child in primary_row.get_children():
@@ -2422,7 +2439,6 @@ func _apply_dock() -> void:
 		var tab: Button = area_tabs[section]
 		tab.visible = dock.is_open(section)
 		HUD.style_button(tab, "primary" if section == str(dock.current) else "cream")
-		tab.add_theme_font_size_override("font_size", 17)
 		tab.set_meta("active", section == str(dock.current))
 	_layout()
 
