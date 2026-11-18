@@ -12,6 +12,7 @@ var playable := false
 var body: MeshInstance3D
 var glow: MeshInstance3D
 var _move: Tween
+var _riffle: Tween
 var _look := ""
 
 
@@ -57,13 +58,16 @@ func set_glow(color: Color) -> void:
 
 
 func is_moving() -> bool:
-	return _move != null and _move.is_valid() and _move.is_running()
+	return (_move != null and _move.is_valid() and _move.is_running()) or (_riffle != null and _riffle.is_valid() and _riffle.is_running())
 
 
 func stop() -> void:
 	if _move != null and _move.is_valid():
 		_move.kill()
 	_move = null
+	if _riffle != null and _riffle.is_valid():
+		_riffle.kill()
+	_riffle = null
 
 
 func snap_to(target: Transform3D) -> void:
@@ -73,8 +77,12 @@ func snap_to(target: Transform3D) -> void:
 
 ## Fliegt im Bogen zum Ziel (lokaler Raum des Elternknotens).
 func fly_to(target: Transform3D, duration: float, delay: float = 0.0, arc: float = 0.0, spin: float = 0.0) -> Tween:
-	stop()
+	# Ein laufendes Mischen darf zu Ende spielen; der Flug wartet auf seine Verzögerung.
+	if _move != null and _move.is_valid():
+		_move.kill()
+	_move = null
 	if duration <= 0.001:
+		stop()
 		transform = target
 		return null
 	var from := transform
@@ -91,7 +99,34 @@ func _step(t: float, from: Transform3D, target: Transform3D, arc: float, spin: f
 	now.origin += Vector3.UP * arc * lift
 	if spin != 0.0:
 		now.basis = now.basis * Basis(Vector3.UP, spin * (1.0 - t) * lift)
+	if arc > 0.0:
+		# Geworfene Karten kippen in der Luft leicht über die Längsachse und
+		# landen flach – wie ein Schnipsen aus dem Handgelenk.
+		now.basis = now.basis * Basis(Vector3.FORWARD, 0.35 * lift * signf(spin if spin != 0.0 else 1.0))
+		# Kurz vor dem Aufsetzen drückt die Luft die Karte noch einmal an.
+		if t > 0.82:
+			now.origin.y -= 0.004 * sin((t - 0.82) / 0.18 * PI)
 	transform = now
+
+
+## Mischen: die Karte rutscht zu einer Hälfte des Stapels und fällt
+## verschränkt zurück (Riffle). Rein optisch, ändert keine Zuordnung.
+func riffle(side: float, height: float, duration: float, delay: float = 0.0) -> void:
+	if _riffle != null and _riffle.is_valid():
+		_riffle.kill()
+	if duration <= 0.001:
+		return
+	var home := transform
+	var apart := home
+	apart.origin += Vector3(side * 0.2, 0.02 + height, 0.0)
+	apart.basis = home.basis * Basis(Vector3.FORWARD, side * 0.28) * Basis(Vector3.UP, side * 0.12)
+	_riffle = create_tween()
+	if delay > 0.0:
+		_riffle.tween_interval(delay)
+	_riffle.tween_method(func(t: float) -> void: transform = home.interpolate_with(apart, t), 0.0, 1.0, duration * 0.45) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_riffle.tween_method(func(t: float) -> void: transform = apart.interpolate_with(home, t), 0.0, 1.0, duration * 0.55) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 
 ## Kurzes Kopfschütteln der Karte: „geht gerade nicht“.

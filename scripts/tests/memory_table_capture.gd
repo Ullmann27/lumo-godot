@@ -13,6 +13,8 @@ const MOTIFS := ["panda","giraffe","lumo","hase","pinguin","stern","laterne","tr
 const PROFILES := [
 	{"name":"landscape","size":Vector2i(1920,1080),"density":2.0,"insets":Rect2()},
 	{"name":"phone","size":Vector2i(1080,2400),"density":2.625,"insets":Rect2(0,136,0,63)},
+	{"name":"quer","size":Vector2i(1600,720),"density":1.75,"insets":Rect2()},
+	{"name":"hoch","size":Vector2i(720,1600),"density":1.75,"insets":Rect2(0,48,0,32)},
 ]
 
 class Transport extends RefCounted:
@@ -95,10 +97,19 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	var performance: Node = root.get_node("PerformanceManager")
 	var original: int = int(performance.get("current_profile"))
-	for tier in [0,2]:
+	# --tiers=0,1,2 und --profiles=quer,hoch beschränken den Lauf (Standard: low+high, landscape+phone).
+	var tiers: Array = [0,2]
+	var names: Array = ["landscape","phone"]
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--tiers="):
+			tiers = Array(argument.trim_prefix("--tiers=").split(",")).map(func(v): return int(v))
+		elif argument.begins_with("--profiles="):
+			names = Array(argument.trim_prefix("--profiles=").split(","))
+	for tier in tiers:
 		performance.call("set_profile",tier,false)
 		var tier_name: String = ["low","medium","high"][tier]
 		for profile in PROFILES:
+			if not str(profile.name) in names: continue
 			_profile(profile)
 			var transport := Transport.new()
 			transport.state = _state("profi",0,0)
