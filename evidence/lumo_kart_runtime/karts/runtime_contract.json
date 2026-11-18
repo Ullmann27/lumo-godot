@@ -8,9 +8,9 @@
         "res://assets/kart/production/karts/aurora_comet_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000476616522064433,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "comet",
-      "visible_surfaces": 38
+      "visible_surfaces": 39
     },
     {
       "lod_paths": [
@@ -19,7 +19,7 @@
         "res://assets/kart/production/karts/aurora_glider_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000476616522064433,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "glider",
       "visible_surfaces": 39
     },
@@ -30,7 +30,7 @@
         "res://assets/kart/production/karts/aurora_turbo_lod2.glb"
       ],
       "mechanics_pause_lod_passed": true,
-      "original_lumo_steering_sample_hand_error_m": 0.000476616522064433,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
       "variant": "turbo",
       "visible_surfaces": 39
     },
@@ -38,27 +38,27 @@
       "tuning_and_shared_material_isolation": true
     },
     {
-      "maximum_sampled_grip_error_m": 0.000000134110450744629,
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
       "shared_vehicle_driver_hook": true,
       "species": "rabbit"
     },
     {
-      "maximum_sampled_grip_error_m": 0.000000134110450744629,
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
       "shared_vehicle_driver_hook": true,
       "species": "lion"
     },
     {
-      "maximum_sampled_grip_error_m": 0.000000134110450744629,
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
       "shared_vehicle_driver_hook": true,
       "species": "squirrel"
     },
     {
-      "maximum_sampled_grip_error_m": 0.000000134110450744629,
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
       "shared_vehicle_driver_hook": true,
       "species": "owl"
     },
     {
-      "maximum_sampled_grip_error_m": 0.000000134110450744629,
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
       "shared_vehicle_driver_hook": true,
       "species": "turtle"
     },

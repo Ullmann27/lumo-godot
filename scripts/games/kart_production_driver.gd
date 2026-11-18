@@ -3,6 +3,7 @@ extends Node3D
 ## This adapter never changes vehicle transforms, physics or race progress.
 
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
+const AUTHORED_SEAT := Vector3(0.0, 0.69, 0.07)
 const FIRST_KEY_SECONDS := 1.0 / 24.0
 const VISUAL_TICK_SECONDS := 1.0 / 30.0
 const MAX_VISUAL_STEP_SECONDS := 0.1
@@ -68,11 +69,30 @@ func bind_visual(vehicle: Node3D, identity: String) -> bool:
 	species = identity
 	name = "ProductionDriver_" + species
 	transform = Transform3D.IDENTITY
+	# The rival rigs were authored for the former seat at (0, 0.69, 0.07).
+	# Follow the kart's actual DriverSeat marker so they sit in the cockpit.
+	var production: Variant = vehicle.get("production_vehicle")
+	if is_instance_valid(production):
+		var seat: Node3D = production.asset_root.find_child("DriverSeat", true, false)
+		if seat != null:
+			position = _position_in(vehicle, seat) - AUTHORED_SEAT
 	return _load_lod(_effective_lod())
 
 
 func is_usable() -> bool:
 	return is_instance_valid(visual) and is_instance_valid(skeleton) and is_instance_valid(player)
+
+
+## Position of [param node] in the space of its [param ancestor], from local
+## transforms only: the factory binds before the kart enters the scene tree.
+static func _position_in(ancestor: Node3D, node: Node3D) -> Vector3:
+	var chain := Transform3D.IDENTITY
+	var current: Node = node
+	while current != null and current != ancestor:
+		if current is Node3D:
+			chain = (current as Node3D).transform * chain
+		current = current.get_parent()
+	return chain.origin
 
 
 func _find_type(node: Node, type_name: String) -> Node:

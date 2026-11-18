@@ -1,5 +1,5 @@
 {
-  "triangles": 23542,
+  "triangles": 23948,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -17,19 +17,19 @@
   "bounds_blender_m": {
     "min": [
       -1.081681251525879,
-      -1.1749999523162842,
+      -1.2159340381622314,
       0.0
     ],
     "max": [
       1.081681251525879,
-      1.2208051681518555,
-      1.1914149522781372
+      1.2454876899719238,
+      1.0343245267868042
     ]
   },
   "dimensions_godot_m": [
     2.163362503051758,
-    1.1914149522781372,
-    2.3958051204681396
+    1.0343245267868042,
+    2.4614217281341553
   ],
   "meshes": [
     {
@@ -48,8 +48,8 @@
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 7756,
-      "vertices": 4012,
+      "triangles": 8070,
+      "vertices": 4195,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
@@ -111,8 +111,8 @@
     },
     {
       "node": "SteeringWheel_Mesh",
-      "triangles": 570,
-      "vertices": 293,
+      "triangles": 662,
+      "vertices": 339,
       "material_slots": 3,
       "non_manifold_edges": 0
     }

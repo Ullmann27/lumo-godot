@@ -625,6 +625,7 @@ func _build() -> void:
 	chassis_look = spec
 	if _build_production_vehicle():
 		_make_driver()
+		_seat_stand_in_driver()
 		_make_far_mesh()
 		_merge_static(self)
 		return
@@ -649,6 +650,16 @@ func _build() -> void:
 	_make_driver()
 	_make_far_mesh()
 	_merge_static(self)
+
+
+## The stand-in figure (far proxy, never the real Lumo) was modelled for the
+## former high seat. On production karts it follows the lowered cockpit, and
+## every driver's hands use the grips of the real steering wheel.
+func _seat_stand_in_driver() -> void:
+	if is_instance_valid(production_driver) or not is_instance_valid(driver):
+		return
+	driver.position += Vector3(0.0, -0.38, 0.13)
+	wheel_rest_grips.assign(production_vehicle.wheel_rest_grips)
 
 
 func _build_production_vehicle() -> bool:

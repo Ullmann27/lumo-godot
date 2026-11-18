@@ -24,6 +24,14 @@ func _run() -> void:
 			"low" if lightweight else "full", props])
 		assert(world.get_meta("jungle_road_collision_sections") == 12, "road collision unchanged")
 		assert(environment.get_node_or_null("JungleFloor") != null, "jungle floor exists")
+		# The course owns its daylight; the project's sunset default once
+		# drowned the whole race in orange haze.
+		var skies: Array[Node] = world.find_children("*", "WorldEnvironment", false, false)
+		assert(skies.size() == 1, "Dschungelherz needs exactly one own WorldEnvironment")
+		var daylight: Environment = (skies[0] as WorldEnvironment).environment
+		assert(daylight.background_mode == Environment.BG_SKY and daylight.fog_density <= 0.002,
+			"bright rainforest sky with thin haze")
+		assert(world.find_children("*", "DirectionalLight3D", false, false).size() >= 1, "sun exists")
 		assert(environment.get_node_or_null("Glühwürmchen") != null, "fireflies exist")
 		var player: Vector3 = world.position_at(10.0 * COURSE.SECTION_LENGTH + 50.0)
 		for frame in 10:

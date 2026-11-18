@@ -283,100 +283,111 @@ def create_kart(variant):
     root['stance_multiplier']=STANCES[variant]
     body=empty('Coachwork',parent=root)
     body.scale.x=STANCES[variant]
-    # Narrow lower envelope leaves room for the 0.34 rad steering sweep.
-    loft('ClosedChassis', [(-1.12,.018,.016,.36),(-.94,.30,.052,.36),(-.64,.40,.072,.35),
-         (-.29,.43,.078,.35),(.18,.46,.08,.35),(.60,.40,.074,.35),(.93,.30,.055,.37),(1.09,.03,.02,.39)],mats['carbon'],body)
-    loft('SculptedNose', [(-1.15,.014,.012,.49),(-1.05,.21,.055,.50),(-.85,.34,.10,.54),
-         (-.61,.385,.145,.60),(-.46,.34,.12,.63),(-.35,.28,.04,.64),(-.33,.015,.015,.62)],mats['paint'],body)
-    # A true closed cockpit floor, with its exterior bottom and bevelled rim.
-    bevel_box('FootwellFloor',(0,.535,-.10),(.65,.12,.66),mats['carbon'],body,.06)
+    # 2026-11-18 cockpit rework: the driver sits IN the kart. Seat pan 0.31 m
+    # above ground (was 0.69 m, above the tyres), feet in a footwell under the
+    # front fairing, steering wheel in front of the chest. Wheel pivots, track,
+    # wheelbase and the boost ports are unchanged, so driving physics, collision
+    # and cameras keep their values.
+    bevel_box('FloorPan',(0,.115,-.02),(.84,.05,1.96),mats['carbon'],body,.02)
+    # Front fairing: closed shell that hides the footwell; highest at the dash.
+    loft('NoseFairing',[(-1.19,.09,.03,.29),(-1.12,.25,.07,.305),(-.96,.35,.115,.35),
+         (-.74,.385,.16,.405),(-.52,.40,.195,.445),(-.37,.40,.215,.46),(-.30,.385,.205,.452)],mats['paint'],body,32,3)
+    loft('NoseStripe',[(-1.16,.035,.012,.345),(-1.0,.06,.014,.455),(-.80,.07,.014,.545),
+         (-.62,.075,.013,.622),(-.47,.075,.012,.664),(-.40,.07,.01,.674)],mats['trim'],body,12,2)
+    # Dark footwell mouth behind the dash: the legs disappear into it.
+    bevel_box('FootwellMouth',(0,.40,-.292),(.60,.27,.02),mats['carbon'],body,.006)
+    tube('DashHoop',[(-.385,.47,-.305),(-.33,.62,-.315),(-.18,.69,-.325),(0,.705,-.33),
+         (.18,.69,-.325),(.33,.62,-.315),(.385,.47,-.305)],.026,mats['carbon'],body,10)
     for side in (-1,1):
+        # Cockpit wall from dash to seat back; the driver's hips sit between them.
+        o=loft('CockpitWall',[(-.31,.03,.11,.33),(-.20,.055,.17,.37),(.10,.06,.185,.385),
+               (.40,.06,.20,.40),(.60,.05,.18,.41),(.68,.02,.10,.40)],mats['paint'],body,16,3)
+        o.location.x=side*.345
+        tube('CockpitRimPad',[(side*.345,.545,-.20),(side*.345,.572,.10),(side*.345,.602,.40),(side*.345,.595,.62)],.022,mats['cloth'],body,8)
         # A fixed-width tyre moves inward on Glider's original 0.91 axle stance.
-        # Narrow its sidepod locally instead of changing the physical wheel track.
-        pod_center=.46 if variant=='glider' else .49
+        pod_center=.555 if variant=='glider' else .585
         pod_scale=.80 if variant=='glider' else 1.0
         def pod_x(x):
-            return side*(pod_center+(x-.49)*pod_scale)
-        o=loft('SculptedSidePod', [(-.24,.012,.025,.51),(-.14,.11,.11,.52),(.16,.12,.12,.51),
-               (.36,.105,.13,.51),(.49,.03,.07,.51),(.51,.008,.01,.51)],mats['paint'],body,24,4)
+            return side*(pod_center+(x-.585)*pod_scale)
+        o=loft('SculptedSidePod',[(-.235,.02,.03,.325),(-.17,.135,.10,.33),(-.02,.168,.125,.335),
+               (.18,.165,.13,.34),(.265,.10,.10,.34),(.295,.02,.04,.34)],mats['paint'],body,24,4)
         o.location.x=side*pod_center
         o.scale.x=pod_scale
-        tube('SideGoldWaist',[(pod_x(.51),.425,-.17),(pod_x(.593),.425,.05),(pod_x(.593),.435,.28),(pod_x(.535),.445,.44)],.007,mats['gold'],body)
+        tube('SidePodLightStrip',[(pod_x(.735),.385,-.15),(pod_x(.752),.392,-.02),(pod_x(.750),.398,.17),(pod_x(.72),.40,.255)],.012,mats['lamp'],body,6)
+        tube('SideGoldWaist',[(pod_x(.60),.462,-.15),(pod_x(.62),.468,.0),(pod_x(.62),.474,.18)],.007,mats['gold'],body,6)
         for i in range(3):
-            bevel_box('InsetCoolingVent',(pod_x(.607),.54,.16+i*.064),(.013,.068,.032),mats['carbon'],body,.005)
-        tube('HeadlightRecess',[(side*.16,.555,-1.064),(side*.26,.592,-.978),(side*.31,.625,-.90)],.026,mats['carbon'],body)
-        tube('HeadlightLens',[(side*.16,.570,-1.088),(side*.26,.607,-1.002),(side*.31,.640,-.924)],.013,mats['lamp'],body)
-        tube('FrontBumperSupport',[(side*.29,.32,-.88),(side*.32,.34,-1.08)],.018,mats['alloy'],body)
-        tube('LowerBumper',[(side*.39,.345,-.87),(side*.32,.345,-1.09),(0,.345,-1.20)],.022,mats['carbon'],body)
-        bevel_box('Pedal_'+str(side),(side*.18,.689,-.24),(.18,.045,.24),mats['alloy'],body,.018)
+            bevel_box('InsetCoolingVent',(pod_x(.59),.455,-.08+i*.085),(.11,.012,.05),mats['carbon'],body,.004)
+        tube('NerfBar',[(pod_x(.78),.20,-.21),(pod_x(.81),.215,0),(pod_x(.78),.20,.27)],.02,mats['alloy'],body,6)
+        # Headlight band on the fairing shoulder.
+        tube('HeadlightRecess',[(side*.13,.335,-1.165),(side*.24,.372,-1.07),(side*.325,.43,-.93)],.026,mats['carbon'],body)
+        tube('HeadlightLens',[(side*.13,.345,-1.182),(side*.24,.384,-1.088),(side*.325,.443,-.948)],.014,mats['lamp'],body)
+        # Wide front wing ahead of the tyres with a light strip, as in the target art.
+        tube('FrontWingStay',[(side*.22,.25,-.96),(side*.30,.215,-1.15)],.02,mats['alloy'],body,6)
+        bevel_box('FrontWingEndplate',(side*.80,.235,-1.165),(.035,.15,.15),mats['trim'],body,.012)
+        bevel_box('FrontWingLight',(side*.47,.222,-1.239),(.50,.032,.014),mats['lamp'],body,.005)
+        # Pedals inside the footwell: the soles rest here.
+        bevel_box('Pedal_'+str(side),(side*.15,.20,-.40),(.15,.045,.20),mats['alloy'],body,.014)
         for k in range(3):
-            bevel_box('PedalGrip',(side*.18,.714,-.30+k*.054),(.13,.007,.012),mats['rubber'],body,.003)
-    # Bonnet badge has thickness and rounded edges, independent of UV scale.
-    badge=empty('BonnetBadge',(0,.766,-.62),body)
-    bevel_box('LetterLStem',(-.035,0,0),(.033,.014,.15),mats['gold'],badge,.006)
-    bevel_box('LetterLFoot',(.009,0,.058),(.12,.014,.033),mats['gold'],badge,.006)
-    # Seat follows the existing cushion and back silhouette, leaving the tail exit clear.
-    loft('BucketSeatShell',[(.60,.20,.13,.10),(.70,.31,.15,.14),(.80,.32,.12,.24),
-         (.98,.315,.075,.38),(1.09,.245,.052,.42),(1.115,.055,.016,.42)],mats['carbon'],body,28,4,True,.73)
-    # The original seat marker remains fixed, while the cushion's front edge
-    # stops behind the boot heels. A long ellipsoid otherwise intersects shoes.
-    ellipsoid('SeatCushion',(0,.69,.12),(.29,.09,.20),mats['cloth'],body)
-    loft('BackCushion',[(.77,.19,.028,.315),(.88,.24,.03,.314),(1.02,.235,.033,.352),(1.07,.17,.024,.377)],mats['cloth'],body,24,3,True,.7)
+            bevel_box('PedalGrip',(side*.15,.226,-.46+k*.054),(.11,.007,.012),mats['rubber'],body,.003)
+        # Seat-back stays; between them the tail leaves the cockpit.
+        tube('SeatBackStay',[(side*.245,.19,.46),(side*.255,.42,.47),(side*.215,.60,.44)],.02,mats['alloy'],body,8)
+    bevel_box('FrontWing',(0,.20,-1.165),(1.56,.07,.15),mats['paint'],body,.022)
+    bevel_box('FrontWingIntake',(0,.212,-1.239),(.34,.04,.012),mats['carbon'],body,.005)
+    # Glowing bonnet letter with real thickness; stays an own node for the runtime.
+    badge=empty('BonnetBadge',(0,.60,-.66),body)
+    badge.rotation_euler[0]=.31
+    bevel_box('LetterLStem',(-.05,0,-.01),(.05,.016,.21),mats['lamp'],badge,.007)
+    bevel_box('LetterLFoot',(.012,0,.072),(.175,.016,.05),mats['lamp'],badge,.007)
+    # Bucket seat: base on the floor, cushion top at 0.31 m, back from 0.56 m up.
+    bevel_box('SeatBase',(0,.205,.22),(.56,.13,.50),mats['carbon'],body,.04)
+    ellipsoid('SeatCushion',(0,.272,.20),(.265,.05,.225),mats['cloth'],body)
+    loft('BucketSeatShell',[(.555,.215,.05,.445),(.66,.275,.058,.46),(.80,.27,.056,.495),
+         (.90,.20,.05,.522),(.945,.06,.02,.535)],mats['carbon'],body,28,4,True,.73)
+    loft('BackCushion',[(.585,.175,.024,.402),(.68,.225,.028,.416),(.80,.22,.028,.45),(.885,.15,.022,.475)],mats['cloth'],body,24,3,True,.7)
+    for j in range(3):
+        y=.63+j*.085
+        tube('UpholsteryStitch',[(x,y,.387+(y-.585)*.26-.004) for x in (-.15,-.075,0,.075,.15)],.0016,mats['gold'],body,5)
+    # Engine and tail: readable from the chase camera behind the kart.
+    bevel_box('PowerModule',(0,.36,.84),(.62,.36,.52),mats['carbon'],body,.06)
+    loft('RearPaintCowl',[(.52,.27,.07,.55),(.66,.33,.105,.565),(.90,.335,.10,.555),(1.06,.28,.07,.53),(1.10,.10,.03,.52)],mats['paint'],body,24,3)
+    bevel_box('RearPanel',(0,.60,1.035),(.70,.21,.05),mats['carbon'],body,.02)
     for side in (-1,1):
-        bolster=[(.73,.045,.12,.10),(.84,.066,.11,.20),(1.02,.065,.10,.28),(1.075,.035,.055,.33)]
-        loft('SeatBolster'+str(side),bolster,mats['cloth'],body,16,3,True,.8).location.x=side*.27
-        seam=[]
-        for j in range(len(bolster)-1):
-            a,b,c,d=[Vector(bolster[min(max(k,0),len(bolster)-1)]) for k in (j-1,j,j+1,j+2)]
-            for k in range(5):
-                t=k/5
-                r=.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)
-                seam.append((side*(.27+r[1]*(.5**.8)),r[0],r[3]-r[2]*(math.sqrt(.75)**.8)-.0015))
-        tube('SeatPiping',seam,.0022,mats['gold'],body,6)
-    for j in range(4):
-        z=.035+j*.044
-        tube('UpholsteryStitch',[(x,.69+.09*math.sqrt(max(.01,1-(x/.29)**2-((z-.12)/.20)**2))+.0015,z) for x in (-.20,-.15,-.10,-.05,0,.05,.10,.15,.20)],.0012,mats['carbon'],body,5)
-    # Compact rear machinery, readable from the player's actual camera.
-    bevel_box('PowerModule',(0,.51,.86),(.55,.38,.45),mats['carbon'],body,.065)
-    bevel_box('RearPaintCowl',(0,.73,.80),(.66,.13,.43),mats['paint'],body,.06)
-    for side in (-1,1):
-        tube('RearProtection',[(side*.31,.40,.72),(side*.39,.40,.98),(side*.24,.40,1.15),(0,.40,1.15)],.025,mats['alloy'],body)
-        bevel_box('TailLampHousing',(side*.242,.678,1.027),(.20,.075,.05),mats['carbon'],body,.018)
-        bevel_box('TailLampLens',(side*.242,.683,1.058),(.157,.029,.012),mats['brake'],body,.006)
+        tube('RearProtection',[(side*.50,.26,.74),(side*.47,.26,1.02),(side*.28,.26,1.17),(0,.26,1.19)],.026,mats['alloy'],body)
+        tube('ExhaustPipe',[(side*.20,.47,.70),(side*.215,.50,.95),(side*.12,.467,1.10)],.034,mats['alloy'],body,8)
+        bevel_box('TailLampHousing',(side*.242,.678,1.045),(.20,.075,.04),mats['carbon'],body,.014)
+        bevel_box('TailLampLens',(side*.242,.683,1.066),(.157,.029,.012),mats['brake'],body,.006)
         bevel_box('RearBoostOutlet',(side*.12,.465,1.104),(.15,.07,.028),mats['carbon'],body,.014)
         bevel_box('RearBoostLens',(side*.12,.467,1.122),(.10,.018,.009),mats['lamp'],body,.004)
     for j in range(5):
-        bevel_box('PowerModuleFin',(0,.455+j*.043,1.091),(.33,.014,.023),mats['alloy'],body,.004)
+        bevel_box('PowerModuleFin',(0,.33+j*.043,1.105),(.33,.014,.02),mats['alloy'],body,.004)
     for x in (-.18,0,.18):
-        bevel_box('UnderbodyDiffuser',(x,.28,.90),(.018,.07,.29),mats['carbon'],body,.005)
+        bevel_box('UnderbodyDiffuser',(x,.15,.98),(.018,.07,.26),mats['carbon'],body,.005)
     # Original Comet has no elevated wing. Other existing fleet liveries keep their wing.
     if variant != 'comet':
         wing_span=1.65 if variant=='glider' else (1.35 if variant=='turbo' else 1.38)
-        wing_height=1.04 if variant=='glider' else .95
+        wing_height=1.02 if variant=='glider' else .94
         for side in (-1,1):
-            tube('WingUpright',[(side*.29,.74,.84),(side*.40,wing_height,1.00)],.022,mats['alloy'],body)
-            bevel_box('WingEndplate',(side*wing_span*.46,wing_height+.025,1.00),(.035,.14,.29),mats['trim'],body,.012)
-        o=loft('AeroWing',[(-wing_span/2,.01,.01,0),(-wing_span*.43,.12,.025,0),(0,.145,.032,0),(wing_span*.43,.12,.025,0),(wing_span/2,.01,.01,0)],mats['paint'],body,20,3)
+            tube('WingUpright',[(side*.29,.66,.90),(side*.40,wing_height,1.04)],.022,mats['alloy'],body)
+            bevel_box('WingEndplate',(side*wing_span*.46,wing_height+.025,1.04),(.035,.14,.29),mats['trim'],body,.012)
+        o=loft('AeroWing',[(-wing_span/2,.01,.01,0),(-wing_span*.43,.12,.025,0),(0,.145,.032,0),(wing_span*.43,.12,.025,0),(wing_span/2,.01,.01,0)],mats['paint'],body,16,2)
         o.rotation_euler[2]=math.pi/2
-        o.location=g((0,wing_height,1.00))
-        for side in (-1,1):
-            tube('BonnetLiveryPinstripe',[(side*.06,.638,-.92),(side*.07,.704,-.81),(side*.07,.759,-.66),(side*.06,.751,-.52)],.007,mats['trim'],body)
-    steering=empty('SteeringWheel',(0,1.035,-.33),root)
+        o.location=g((0,wing_height,1.04))
+    steering=empty('SteeringWheel',(0,.68,-.03),root)
     steering.rotation_euler[0]=-.45
     ring_points=[(.155*math.cos(i*math.tau/48),.155*math.sin(i*math.tau/48),0) for i in range(49)]
-    tube('LeatherSteeringRim',ring_points,.018,mats['rubber'],steering,8)
+    tube('LeatherSteeringRim',ring_points,.02,mats['rubber'],steering,10)
     for a in (0,math.pi,math.pi*1.5):
-        tube('SteeringSpoke',[(0,0,0),(.135*math.cos(a),.135*math.sin(a),0)],.013,mats['alloy'],steering,6)
+        tube('SteeringSpoke',[(0,0,0),(.135*math.cos(a),.135*math.sin(a),0)],.014,mats['alloy'],steering,6)
     ellipsoid('SteeringBoss',(0,0,-.012),(.055,.038,.018),mats['paint'],steering,20,10)
-    tube('SteeringColumn',[(0,.65,-.22),(0,1.035,-.33)],.024,mats['alloy'],root)
+    tube('SteeringColumn',[(0,.40,-.33),(0,.68,-.03)],.024,mats['alloy'],root)
     wheels=[]
     for side,label in ((-1,'L'),(1,'R')):
         for z,axle in ((-.66,'F'),(.66,'R')):
             wheels.append(wheel(axle+label,side*.77*STANCES[variant],z,mats,root))
     markers={
-        'DriverSeat':(0,.69,.07),'DriverOrigin':(0,0,0),
-        'Grip_L':(-.16,1.055,-.34),'Grip_R':(.16,1.055,-.34),
-        'Foot_L':(-.18,.80,-.24),'Foot_R':(.18,.80,-.24),
+        'DriverSeat':(0,.31,.20),'DriverOrigin':(0,0,0),
+        'Grip_L':(-.16,.70,-.04),'Grip_R':(.16,.70,-.04),
+        'Foot_L':(-.15,.31,-.34),'Foot_R':(.15,.31,-.34),
         'FrontAxle':(0,.35,-.66),'RearAxle':(0,.35,.66),
         'Boost_L':(-.12,.467,1.13),'Boost_R':(.12,.467,1.13),
     }
@@ -466,6 +477,20 @@ def export_glb(root,path):
         export_cameras=False,export_lights=False)
 
 
+def action_fcurves(o):
+    """F-curves of an object's action in Blender 4 (flat) and 5 (layered, slotted)."""
+    action=o.animation_data.action
+    if hasattr(action,'fcurves'):
+        return list(action.fcurves)
+    curves=[]
+    for layer in action.layers:
+        for strip in layer.strips:
+            bag=strip.channelbag(o.animation_data.action_slot)
+            if bag:
+                curves.extend(bag.fcurves)
+    return curves
+
+
 def mechanical_animation(wheels, steering):
     """Actual editable keyframed wheel-spin and steering clip, 2 s at 24 FPS."""
     scene=bpy.context.scene
@@ -475,7 +500,7 @@ def mechanical_animation(wheels, steering):
             rotor.rotation_euler.x=angle
             rotor.keyframe_insert(data_path='rotation_euler',frame=f)
         rotor.animation_data.action.name='mechanical_demo_'+rotor.name
-        for fc in rotor.animation_data.action.fcurves:
+        for fc in action_fcurves(rotor):
             for k in fc.keyframe_points:k.interpolation='LINEAR'
         if pivot.name.startswith('Steer_F'):
             for f,angle in ((1,0),(13,.34),(25,0),(37,-.34),(49,0)):

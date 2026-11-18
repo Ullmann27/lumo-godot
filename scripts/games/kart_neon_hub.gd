@@ -18,6 +18,11 @@ const PLAYER_CARD = preload("res://scripts/games/kart_neon_player_card.gd")
 const SEASON_BAR = preload("res://scripts/games/kart_neon_season_bar.gd")
 const PATH = preload("res://scripts/games/kart_star_path.gd")
 const ADAPTIVE_LAYOUT = preload("res://scripts/games/kart_neon_layout.gd")
+const KIT = preload("res://scripts/games/kart_ui3d.gd")
+const ICONS = preload("res://scripts/games/kart_neon_icons.gd")
+## Kit-Icon je Rennart des Katalogs (Overlay "Rennarten").
+const RACE_KIND_ICONS := {"race": "icon_flag", "cup": "icon_trophy", "time_trial": "icon_stopwatch",
+	"training": "icon_route", "arena": "icon_star_crystal"}
 const NEON := Color("21ccff")
 const AMBER := Color("ffa91f")
 const VIOLET := Color("8a5cff")
@@ -41,12 +46,17 @@ var reduced_motion := false
 var _layout_scale := 1.0
 var _layout_root: Control
 var _veil: ColorRect
+var _floor: Control
 var _back: Button
 var _logo: Control
 var _player: Button
 var _stars_chip: Button
 var _highlight: Panel
 var _highlight_title: Label
+var _highlight_icon: Control
+var _highlight_flat: StyleBoxFlat
+var _overlay_flat: StyleBoxFlat
+var _skin_scale := -1.0
 var _highlight_pick: Button
 var _track_buttons: Dictionary = {}
 var _featured_track := "volcano_night"
@@ -77,6 +87,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = THEME.create()
+	_adopt_owner_motion()
 	_layout_root = Control.new()
 	_layout_root.name = "NeonLayout"
 	_layout_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -86,6 +97,13 @@ func _ready() -> void:
 	_veil.color = Color("020a24", 0.10)
 	_veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_layout_root.add_child(_veil)
+	# Blaues Bodenleuchten hinter den Kacheln (ein Vieleck mit Verlauf), wie die Halle im Zielbild.
+	_floor = Control.new()
+	_floor.name = "NeonFloorGlow"
+	_floor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_floor.draw.connect(_draw_floor)
+	_floor.resized.connect(_floor.queue_redraw)
+	_layout_root.add_child(_floor)
 	_build_header()
 	_build_highlight()
 	_build_modes()
@@ -99,6 +117,28 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_layout)
 	_layout()
 	call_deferred("_layout")
+
+
+## Die Einstellung "weniger Bewegung" gehört dem Spiel (kart_island). Das Menü übernimmt
+## sie vom nächsten Elternknoten, der sie führt, falls sie nicht schon gesetzt wurde.
+func _adopt_owner_motion() -> void:
+	var node := get_parent()
+	while node != null and not reduced_motion:
+		if "reduced_motion" in node:
+			reduced_motion = bool(node.get("reduced_motion"))
+			break
+		node = node.get_parent()
+
+
+func _draw_floor() -> void:
+	var s := _floor.size
+	var top := Color("0a2a9a", 0.0)
+	var mid := Color("0a2a9a", 0.42)
+	var low := Color("061a66", 0.62)
+	_floor.draw_polygon(PackedVector2Array([Vector2.ZERO, Vector2(s.x, 0), Vector2(s.x, s.y * 0.45), Vector2(0, s.y * 0.45)]),
+		PackedColorArray([top, top, mid, mid]))
+	_floor.draw_polygon(PackedVector2Array([Vector2(0, s.y * 0.45), Vector2(s.x, s.y * 0.45), s, Vector2(0, s.y)]),
+		PackedColorArray([mid, mid, low, low]))
 
 
 func _tile(node_name: String, title: String, caption: String, icon: String, accent: Color, style: String) -> Button:
@@ -127,7 +167,7 @@ func _build_header() -> void:
 		_player.avatar = load(avatar_path)
 	_player.pressed.connect(func(): mode_selected.emit("driver"))
 	_layout_root.add_child(_player)
-	_stars_chip = _tile("StarsChip", str(total_stars), "", "star", Color("ffc23d"), "chip")
+	_stars_chip = _tile("StarsChip", str(total_stars), "", "star_gold", Color("ffc23d"), "chip")
 	_stars_chip.tooltip_text = "Deine echten Sterne"
 	_stars_chip.pressed.connect(func(): _open_overlay("rewards"))
 	_layout_root.add_child(_stars_chip)
@@ -144,8 +184,16 @@ func _build_highlight() -> void:
 	skin.set_corner_radius_all(16)
 	skin.shadow_color = Color(NEON.r, NEON.g, NEON.b, 0.28)
 	skin.shadow_size = 8
+	_highlight_flat = skin
 	_highlight.add_theme_stylebox_override("panel", skin)
 	_layout_root.add_child(_highlight)
+	_highlight_icon = Control.new()
+	_highlight_icon.name = "HighlightIcon"
+	_highlight_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_highlight_icon.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	_highlight_icon.draw.connect(func(): ICONS.draw3d(_highlight_icon, "flag", _highlight_icon.size * 0.5,
+		minf(_highlight_icon.size.x, _highlight_icon.size.y), Color.WHITE))
+	_highlight.add_child(_highlight_icon)
 	_highlight_title = Label.new()
 	_highlight_title.text = "Strecken-Highlight"
 	_highlight_title.add_theme_font_override("font", THEME.HEADING)
@@ -225,13 +273,15 @@ func _build_modes() -> void:
 	_weekly_track = PATH.weekly_track(tracks)
 	var weekly_name: String = TRACK_NAMES.get(_weekly_track, "Abenteuer")
 	for spec in [
-		["race", "Rennen", "Schnelles Rennen – sofort los!", "flag", AMBER],
-		["cup", "Turniere", "Sternen-Cup über alle Welten", "trophy", VIOLET],
-		["season", "Saison", "Sternenpfad: echte Freischaltungen", "star", TEAL],
-		["event", "Event", "Wochen-Abenteuer: " + weekly_name, "calendar", MAGENTA],
+		["race", "Rennen", "Schnelles Rennen – sofort los!", "flag", AMBER, "plate_hero_amber", "Sofort los!"],
+		["cup", "Turniere", "Sternen-Cup über alle Welten", "trophy", VIOLET, "plate_hero_violet", "Sternen-Cup"],
+		["season", "Saison", "Sternenpfad: echte Freischaltungen", "star", TEAL, "plate_hero_teal", "Sternenpfad"],
+		["event", "Event", "Wochen-Abenteuer: " + weekly_name, "calendar", MAGENTA, "plate_hero_magenta", weekly_name],
 	]:
 		var id: String = spec[0]
 		var tile = _tile("Mode_" + id, spec[1], spec[2], spec[3], spec[4], "hero")
+		tile.plate = spec[5]
+		tile.short_caption = spec[6]
 		tile.pressed.connect(func(): _press_mode(id))
 		_mode_tiles[id] = tile
 		_layout_root.add_child(tile)
@@ -262,12 +312,13 @@ func _start(mode: String) -> void:
 
 func _build_features() -> void:
 	for spec in [
-		["garage", "Garage", "Karts ansehen, tunen und lackieren", "wrench", VIOLET, "assets/kart/landing/garage_art.webp"],
-		["world", "Strecken", "Alle Strecken entdecken und wählen", "flag", NEON, ""],
-		["rewards", "Belohnungen", "Deine freigeschalteten Fahrer und Karts", "gift", MAGENTA, ""],
+		["garage", "Garage", "Karts tunen und lackieren", "wrench", VIOLET, "assets/kart/landing/garage_art.webp", ""],
+		["world", "Strecken", "Alle Strecken entdecken", "flag", NEON, "", "road"],
+		["rewards", "Belohnungen", "Deine Fahrer und Karts", "gift", MAGENTA, "", "gift"],
 	]:
 		var id: String = spec[0]
 		var tile = _tile("Feature_" + id, spec[1], spec[2], spec[3], spec[4], "feature")
+		tile.art_icon = spec[6]
 		if not str(spec[5]).is_empty() and ResourceLoader.exists("res://" + str(spec[5]), "Texture2D"):
 			tile.art = load("res://" + str(spec[5]))
 		tile.pressed.connect(func(): _route(id))
@@ -279,6 +330,7 @@ func _build_features() -> void:
 func _build_progress() -> void:
 	_progress = SEASON_BAR.new()
 	_progress.stars = total_stars
+	_progress.reduced_motion = reduced_motion
 	_progress.pressed.connect(func(): _open_overlay("season"))
 	_layout_root.add_child(_progress)
 	# Zugänglicher Klartext des Fortschritts (auch für Tests und Screenreader).
@@ -301,18 +353,20 @@ func _build_dock() -> void:
 	_navigation.name = "NeonNavigation"
 	_dock.add_child(_navigation)
 	for spec in [
-		["Dock_home", "Home", "home", "home", AMBER],
-		["Dock_race", "Rennen", "race", "flag", NEON],
-		["Open_garage", "Garage", "garage", "wrench", NEON],
-		["Open_world", "Strecken", "world", "road", NEON],
-		["Dock_cup", "Turniere", "cup", "trophy", NEON],
-		["Dock_season", "Saison", "season", "star", NEON],
-		["Dock_rewards", "Belohnungen", "rewards", "gift", NEON],
-		["Dock_event", "Event", "event", "calendar", NEON],
-		["Landing_settings", "Einstellungen", "settings", "gear", NEON],
+		["Dock_home", "Home", "home", "home", AMBER, ""],
+		["Dock_race", "Rennen", "race", "flag", NEON, ""],
+		["Open_garage", "Garage", "garage", "wrench", NEON, ""],
+		["Open_world", "Strecken", "world", "road", NEON, ""],
+		["Dock_cup", "Turniere", "cup", "trophy", NEON, ""],
+		["Dock_season", "Saison", "season", "star", NEON, ""],
+		["Dock_rewards", "Belohnungen", "rewards", "gift", NEON, "Preise"],
+		["Dock_event", "Event", "event", "calendar", NEON, ""],
+		["Landing_settings", "Einstellungen", "settings", "gear", NEON, "Optionen"],
 	]:
 		var target: String = spec[2]
 		var tile = _tile(spec[0], spec[1], "", spec[3], spec[4], "nav")
+		# Kurzform nur für schmale Handys, auf denen das volle Wort unter 11 sp fiele.
+		tile.short_title = spec[5]
 		tile.active = target == "home"
 		tile.pressed.connect(func(): _route(target))
 		_navigation.add_child(tile)
@@ -359,6 +413,7 @@ func _build_overlay() -> void:
 	skin.set_content_margin_all(16)
 	skin.shadow_color = Color(0, 0, 0, 0.5)
 	skin.shadow_size = 18
+	_overlay_flat = skin
 	_overlay.add_theme_stylebox_override("panel", skin)
 	_overlay.visible = false
 	add_child(_overlay)
@@ -413,6 +468,9 @@ func _build_race_kinds(column: VBoxContainer) -> void:
 		kind.set_meta("race_kind_name", str(entry.name))
 		kind.set_meta("race_kind_description", str(entry.description))
 		THEME.premium_button(kind, NEON, false)
+		kind.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		kind.icon = KIT.texture(str(RACE_KIND_ICONS.get(id, "")))
+		kind.expand_icon = true
 		kind.pressed.connect(func(): _select_race_kind(id))
 		_race_kinds.add_child(kind)
 		_race_kind_buttons[id] = kind
@@ -443,6 +501,61 @@ func _refresh_race_kinds() -> void:
 		kind.tooltip_text = str(kind.get_meta("race_kind_description"))
 		kind.alignment = HORIZONTAL_ALIGNMENT_CENTER if _race_kinds_compact else HORIZONTAL_ALIGNMENT_LEFT
 		kind.modulate = Color.WHITE if chosen else Color(1, 1, 1, 0.82)
+	_skin_race_kinds()
+
+
+## Kit-Optik für Panels und Knöpfe des Menüs im dp-Maßstab `k`. Die StyleBoxen kommen aus
+## dem Zwischenspeicher des Kits; fehlt das Kit, bleiben die flachen Ersatz-Stile.
+func apply_kit_skins(k: float) -> void:
+	if is_equal_approx(k, _skin_scale):
+		return
+	_skin_scale = k
+	var glass := KIT.themed("panel_glass_navy", k, Vector4(16, 14, 16, 16), Color.WHITE, Color("050d33", 0.93))
+	if glass != null:
+		_overlay.add_theme_stylebox_override("panel", glass)
+		_highlight.add_theme_stylebox_override("panel", KIT.themed("panel_glass_navy", k, Vector4(0, 0, 0, 0)))
+	else:
+		_overlay_flat.set_content_margin_all(16 * k)
+		_overlay_flat.set_corner_radius_all(roundi(20 * k))
+		_highlight_flat.set_corner_radius_all(roundi(16 * k))
+		_highlight_flat.set_border_width_all(maxi(1, roundi(2 * k)))
+		_highlight_flat.shadow_size = roundi(8 * k)
+	var close: Button = _overlay.find_child("CloseOverlay", true, false)
+	_skin_button(close, "button_secondary_blue", k, Color.WHITE)
+	_skin_button(_live_start, "button_primary_gold", k, Color("3a1c00"))
+	_skin_race_kinds()
+
+
+func _skin_button(button: Button, plate: String, k: float, face: Color) -> void:
+	var margins := Vector4(14, 8, 14, 12)
+	var normal := KIT.themed(plate, k, margins)
+	if normal == null:
+		return
+	var pressed := KIT.themed(plate + "_pressed", k, Vector4(14, 11, 14, 9))
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", KIT.themed(plate, k, margins, Color(1.1, 1.1, 1.1)))
+	button.add_theme_stylebox_override("pressed", pressed if pressed != null else KIT.themed(plate, k, margins, Color(0.75, 0.77, 0.86)))
+	button.add_theme_stylebox_override("focus", KIT.focus_ring(roundi(12 * k), roundi(2.5 * k)))
+	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(state, face)
+
+
+func _skin_race_kinds() -> void:
+	if _skin_scale <= 0.0:
+		return
+	var k := _skin_scale
+	var margins := Vector4(10, 5, 10, 6)
+	if KIT.themed("row_stat", k, margins) == null:
+		return
+	for id in _race_kind_buttons:
+		var kind: Button = _race_kind_buttons[id]
+		var plate := "button_secondary_blue" if id == current_mode else "row_stat"
+		kind.add_theme_stylebox_override("normal", KIT.themed(plate, k, margins))
+		kind.add_theme_stylebox_override("hover", KIT.themed(plate, k, margins, Color(1.12, 1.12, 1.12)))
+		kind.add_theme_stylebox_override("pressed", KIT.themed(plate, k, margins, Color(0.75, 0.77, 0.86)))
+		kind.add_theme_stylebox_override("focus", KIT.focus_ring(roundi(10 * k), roundi(2.5 * k)))
+		kind.add_theme_constant_override("icon_max_width", roundi((30 if _race_kinds_compact else 34) * k))
+		kind.add_theme_constant_override("h_separation", roundi(8 * k))
 
 
 ## Querformat: drei Spalten nur mit Namen, damit alle fünf Rennarten und START
@@ -484,10 +597,13 @@ func _open_overlay(kind: String) -> void:
 		var done := total_stars >= int(entry.stars)
 		if kind == "rewards" and not done and entry != PATH.next_milestone(total_stars):
 			continue
-		var text := "★ Frei: %s %s (%d ★)" % [entry.kind, entry.name, entry.stars]
+		var text := "Frei: %s %s (%d ★)" % [entry.kind, entry.name, entry.stars]
 		if not done:
 			text = "Noch %d ★: %s %s" % [int(entry.stars) - total_stars, entry.kind, entry.name]
-		_overlay_line(text, Color("ffd568") if done else Color("9fb4d8"))
+		if KIT.has("icon_star_gold"):
+			_overlay_line(text, Color("ffe08a") if done else Color("b8c8e8"), "icon_star_gold" if done else "icon_lock")
+		else:
+			_overlay_line(("★ " if done else "") + text, Color("ffd568") if done else Color("9fb4d8"))
 	_overlay.visible = true
 	_overlay.move_to_front()
 	_layout()
@@ -495,13 +611,42 @@ func _open_overlay(kind: String) -> void:
 		tile.set_active(tile.name == ("Dock_season" if kind == "season" else "Dock_rewards"))
 
 
-func _overlay_line(text: String, color: Color) -> void:
+## Zeile im Overlay; mit `icon` (Kit-Icon) steht links ein gerendertes Zeichen.
+func _overlay_line(text: String, color: Color, icon: String = "") -> void:
 	var label := Label.new()
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_font_size_override("font_size", 18)
-	_overlay_list.add_child(label)
+	var picture := KIT.texture(icon) if not icon.is_empty() else null
+	if picture == null:
+		_overlay_list.add_child(label)
+		return
+	var row := HBoxContainer.new()
+	row.set_meta("overlay_row", true)
+	var image := TextureRect.new()
+	image.texture = picture
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	image.custom_minimum_size = Vector2(26, 26)
+	row.add_child(image)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+	_overlay_list.add_child(row)
+
+
+## Schrift und Icons der Overlay-Zeilen im dp-Maßstab.
+func scale_overlay_lines(k: float, font_dp: float) -> void:
+	for child in _overlay_list.get_children():
+		if child == _race_kinds:
+			continue
+		if child.has_meta("overlay_row"):
+			child.add_theme_constant_override("separation", roundi(8 * k))
+			child.get_child(0).custom_minimum_size = Vector2(26, 26) * k
+			child.get_child(1).add_theme_font_size_override("font_size", roundi(font_dp * k))
+		else:
+			child.add_theme_font_size_override("font_size", roundi(font_dp * k))
 
 
 func _close_overlay() -> void:

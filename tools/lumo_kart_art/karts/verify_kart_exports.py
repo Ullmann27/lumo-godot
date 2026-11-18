@@ -49,7 +49,7 @@ def main():
                             errors.append('Incorrect wheel pivot '+prefix+axle+label)
             for side,label in ((-1,'L'),(1,'R')):
                 actual=np.array(report['node_positions_m']['Grip_'+label])
-                if np.linalg.norm(actual-np.array([side*.16,1.055,-.34]))>1e-5:
+                if np.linalg.norm(actual-np.array([side*.16,.70,-.04]))>1e-5:
                     errors.append('Incorrect driver grip '+label)
             budget=(50000,25000,17000)[level]
             if report['triangles_unique_meshes']>budget:

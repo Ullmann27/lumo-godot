@@ -4,33 +4,33 @@
   "assets": [
     {
       "path": "assets/kart/production/karts/aurora_comet.glb",
-      "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
-      "bytes": 1614724,
+      "sha256": "a8d066d5c0b360c39c3816fb2e8007aa8e96b4cc735e08775805113198b05fd7",
+      "bytes": 1650452,
       "mesh_resources": 12,
-      "surfaces": 38,
-      "triangles_unique_meshes": 47996,
-      "triangles_instanced_scene": 47996,
-      "vertices": 40227,
+      "surfaces": 39,
+      "triangles_unique_meshes": 49194,
+      "triangles_instanced_scene": 49194,
+      "vertices": 41177,
       "degenerate_triangles": 0,
-      "materials": 8,
+      "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.3170043788868213e-07,
+      "max_normal_length_error": 1.180203668127433e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0049999505281448,
         0.0,
-        -1.2208051681518555
+        -1.2459999322891235
       ],
       "static_bounds_max": [
         1.0049999505281448,
-        1.1986066917986151,
-        1.1749999523162842
+        0.9449999928474426,
+        1.2159340381622314
       ],
       "static_dimensions_m": [
         2.0099999010562897,
-        1.1986066917986151,
-        2.3958051204681396
+        0.9449999928474426,
+        2.461933970451355
       ],
       "skins": [],
       "animations": [
@@ -64,8 +64,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -74,18 +74,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -139,18 +139,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -164,33 +164,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
-      "sha256": "25e89ab45e62ad8f62235db3e3e81632f85a348c0c19d6f11094bb95baac449e",
-      "bytes": 889416,
+      "sha256": "c448b6f5840ede775065e9df6e2ad577ce1531dd0be95a6d12de0f3a5d649006",
+      "bytes": 915100,
       "mesh_resources": 12,
-      "surfaces": 38,
-      "triangles_unique_meshes": 23030,
-      "triangles_instanced_scene": 23030,
-      "vertices": 22373,
+      "surfaces": 39,
+      "triangles_unique_meshes": 23604,
+      "triangles_instanced_scene": 23604,
+      "vertices": 22936,
       "degenerate_triangles": 0,
-      "materials": 8,
+      "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.287950379680325e-07,
+      "max_normal_length_error": 1.4859137342781992e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
         0.0,
-        -1.2208051681518555
+        -1.2455494403839111
       ],
       "static_bounds_max": [
         1.004681184887886,
-        1.1984922347604412,
-        1.1749999523162842
+        0.9450348019599915,
+        1.2159340381622314
       ],
       "static_dimensions_m": [
         2.009362369775772,
-        1.1984922347604412,
-        2.3958051204681396
+        0.9450348019599915,
+        2.4614834785461426
       ],
       "skins": [],
       "animations": [
@@ -224,8 +224,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -234,18 +234,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -299,18 +299,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -324,33 +324,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
-      "sha256": "76820a7193022768702f25b0b621c54e23f8241dd27d8f4d2a62a6b930a63b3c",
-      "bytes": 653756,
+      "sha256": "9de409ca5463c2fdf086ab88de1b7768f70331bf12fb497285e3e6152a8c1e39",
+      "bytes": 671868,
       "mesh_resources": 12,
-      "surfaces": 38,
-      "triangles_unique_meshes": 15352,
-      "triangles_instanced_scene": 15352,
-      "vertices": 16381,
+      "surfaces": 39,
+      "triangles_unique_meshes": 15734,
+      "triangles_instanced_scene": 15734,
+      "vertices": 16793,
       "degenerate_triangles": 0,
-      "materials": 8,
+      "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_normal_length_error": 1.3311646651636977e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.004681184887886,
         -0.001437842845916748,
-        -1.2208051681518555
+        -1.2446027994155884
       ],
       "static_bounds_max": [
         1.0054081082344055,
-        1.1984922347604412,
-        1.1749999523162842
+        0.94504714012146,
+        1.2159340381622314
       ],
       "static_dimensions_m": [
         2.0100892931222916,
-        1.199930077606358,
-        2.3958051204681396
+        0.9464849829673767,
+        2.46053683757782
       ],
       "skins": [],
       "animations": [
@@ -384,8 +384,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -394,18 +394,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -459,18 +459,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -484,33 +484,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider.glb",
-      "sha256": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
-      "bytes": 1652492,
+      "sha256": "b6ae5cf312c4c0e217eb041f5bafc014f4f3f578d2148bbdeefedb0e9e1f73ab",
+      "bytes": 1678328,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49064,
-      "triangles_instanced_scene": 49064,
-      "vertices": 41240,
+      "triangles_unique_meshes": 49910,
+      "triangles_instanced_scene": 49910,
+      "vertices": 41890,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2487601108723823e-07,
+      "max_normal_length_error": 1.180203668127433e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9357000142335892,
         0.0,
-        -1.220805338964142
+        -1.2460002310702047
       ],
       "static_bounds_max": [
         0.9357000142335892,
-        1.1986066917986151,
-        1.17500002707048
+        1.1149998307228088,
+        1.2159340534372822
       ],
       "static_dimensions_m": [
         1.8714000284671783,
-        1.1986066917986151,
-        2.395805366034622
+        1.1149998307228088,
+        2.461934284507487
       ],
       "skins": [],
       "animations": [
@@ -544,8 +544,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -554,18 +554,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -619,18 +619,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -644,33 +644,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
-      "sha256": "0257090e8c8f7316a10734b9ef3b72e2aeea9057f955d61aed138b3ea31b9dee",
-      "bytes": 919260,
+      "sha256": "c091e275cfdb78b16fdd891fe34755274184f262cd63c439f3c92b42bd951727",
+      "bytes": 931728,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23542,
-      "triangles_instanced_scene": 23542,
-      "vertices": 22981,
+      "triangles_unique_meshes": 23948,
+      "triangles_instanced_scene": 23948,
+      "vertices": 23367,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2545427652277397e-07,
+      "max_normal_length_error": 1.4859137342781992e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -0.9356953203678131,
         0.0,
-        -1.2208053389855245
+        -1.2454881079169589
       ],
       "static_bounds_max": [
         0.9356953203678131,
-        1.1984922347604412,
-        1.1750000270940726
+        1.1144404113292694,
+        1.2159340534622844
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.1984922347604412,
-        2.395805366079597
+        1.1144404113292694,
+        2.461422161379243
       ],
       "skins": [],
       "animations": [
@@ -704,8 +704,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -714,18 +714,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -779,18 +779,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -804,13 +804,13 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
-      "sha256": "e91a9d83379e776396a346277820dc7334da208dd383680de35f376e34f42421",
-      "bytes": 678472,
+      "sha256": "51fb2b8c25ec8ad971c380865cb8dd9dd6aa79d219a75b19f187f80709584c76",
+      "bytes": 685828,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15694,
-      "triangles_instanced_scene": 15694,
-      "vertices": 16910,
+      "triangles_unique_meshes": 15964,
+      "triangles_instanced_scene": 15964,
+      "vertices": 17162,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
@@ -820,17 +820,17 @@
       "static_bounds_min": [
         -0.9356953203678131,
         -0.001437842845916748,
-        -1.22080533896411
+        -1.2443811303574486
       ],
       "static_bounds_max": [
         0.9356953203678131,
-        1.1984922347604412,
-        1.175000027070448
+        1.1137707233428955,
+        1.2159340535154284
       ],
       "static_dimensions_m": [
         1.8713906407356262,
-        1.199930077606358,
-        2.395805366034558
+        1.1152085661888123,
+        2.460315183872877
       ],
       "skins": [],
       "animations": [
@@ -864,8 +864,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -874,18 +874,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -939,18 +939,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -964,33 +964,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo.glb",
-      "sha256": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
-      "bytes": 1649432,
+      "sha256": "8b02cf69600c780dd15ee8ab1c162751dabe790a9ecfa999cc7c5f0be4994203",
+      "bytes": 1672996,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 49064,
-      "triangles_instanced_scene": 49064,
-      "vertices": 41073,
+      "triangles_unique_meshes": 49910,
+      "triangles_instanced_scene": 49910,
+      "vertices": 41733,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.3170043788868213e-07,
+      "max_normal_length_error": 1.180203668127433e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0819999724626541,
         0.0,
-        -1.2208055572289283
+        -1.2460002317420065
       ],
       "static_bounds_max": [
         1.0819999724626541,
-        1.1986066917986151,
-        1.1750000665213074
+        1.0349999740719795,
+        1.2159341733183733
       ],
       "static_dimensions_m": [
         2.1639999449253082,
-        1.1986066917986151,
-        2.3958056237502356
+        1.0349999740719795,
+        2.4619344050603797
       ],
       "skins": [],
       "animations": [
@@ -1024,8 +1024,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -1034,18 +1034,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -1099,18 +1099,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -1124,33 +1124,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
-      "sha256": "d4e8545fd4555fa02e32741be604848c6fe9083681cea4731a74ab4bd70ecf99",
-      "bytes": 915688,
+      "sha256": "d485eed2a749b491efe7af5ea97d0d4be4db4975bdd934018d121eb3399b5a8f",
+      "bytes": 927888,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 23542,
-      "triangles_instanced_scene": 23542,
-      "vertices": 22870,
+      "triangles_unique_meshes": 23948,
+      "triangles_instanced_scene": 23948,
+      "vertices": 23257,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2487601108723823e-07,
+      "max_normal_length_error": 1.4859137342781992e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
         0.0,
-        -1.2208055572481564
+        -1.2454881085652878
       ],
       "static_bounds_max": [
         1.0816812068223953,
-        1.1984922347604412,
-        1.1750000665424896
+        1.034324511885643,
+        1.2159341733183733
       ],
       "static_dimensions_m": [
         2.1633624136447906,
-        1.1984922347604412,
-        2.395805623790646
+        1.034324511885643,
+        2.461422281883661
       ],
       "skins": [],
       "animations": [
@@ -1184,8 +1184,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -1194,18 +1194,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -1259,18 +1259,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],
@@ -1284,33 +1284,33 @@
     },
     {
       "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
-      "sha256": "db58cd4ee6c5a74689618acd748da41aa0a69f68b7069a7eddb0684954685a2b",
-      "bytes": 672436,
+      "sha256": "de0e52fb2476042becea85bd335e0605d3810fa62cbc4c8a77734b1f79bc0f80",
+      "bytes": 680612,
       "mesh_resources": 12,
       "surfaces": 39,
-      "triangles_unique_meshes": 15694,
-      "triangles_instanced_scene": 15694,
-      "vertices": 16722,
+      "triangles_unique_meshes": 15964,
+      "triangles_instanced_scene": 15964,
+      "vertices": 17009,
       "degenerate_triangles": 0,
       "materials": 9,
       "textures": [],
       "surfaces_without_uv": 0,
-      "max_normal_length_error": 1.2775161484235298e-07,
+      "max_normal_length_error": 1.3311646651636977e-07,
       "max_skin_weight_sum_error": 0.0,
       "static_bounds_min": [
         -1.0816812068223953,
         -0.001437842845916748,
-        -1.2208055572918024
+        -1.244381130953787
       ],
       "static_bounds_max": [
         1.0824081301689148,
-        1.1984922347604412,
-        1.1750000665841815
+        1.03391844779253,
+        1.2159341733183733
       ],
       "static_dimensions_m": [
         2.16408933699131,
-        1.199930077606358,
-        2.395805623875984
+        1.0353562906384468,
+        2.4603153042721604
       ],
       "skins": [],
       "animations": [
@@ -1344,8 +1344,8 @@
         ],
         "BonnetBadge": [
           0.0,
-          0.766,
-          -0.62
+          0.6,
+          -0.66
         ],
         "DriverOrigin": [
           0.0,
@@ -1354,18 +1354,18 @@
         ],
         "DriverSeat": [
           0.0,
-          0.69,
-          0.07
+          0.31,
+          0.2
         ],
         "Foot_L": [
-          -0.18,
-          0.8,
-          -0.24
+          -0.15,
+          0.31,
+          -0.34
         ],
         "Foot_R": [
-          0.18,
-          0.8,
-          -0.24
+          0.15,
+          0.31,
+          -0.34
         ],
         "FrontAxle": [
           0.0,
@@ -1419,18 +1419,18 @@
         ],
         "SteeringWheel": [
           0.0,
-          1.035,
-          -0.33
+          0.68,
+          -0.03
         ],
         "Grip_L": [
           -0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ],
         "Grip_R": [
           0.16,
-          1.055,
-          -0.34
+          0.7,
+          -0.04
         ]
       },
       "errors": [],

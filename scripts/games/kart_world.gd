@@ -15,6 +15,7 @@ const MESHY_START_GATE = preload("res://scripts/games/kart_meshy_start_gate.gd")
 const FLEET_DRESSING = preload("res://scripts/games/kart_fleet_dressing.gd")
 const HARBOR_DRESSING = preload("res://scripts/games/kart_harbor_dressing.gd")
 const TRACK_DETAIL = preload("res://scripts/games/kart_track_detail.gd")
+const ROAD_SURFACES = preload("res://scripts/games/kart_road_surfaces.gd")
 const MODULAR_PARTS = preload("res://scripts/games/kart_modular_route_props.gd")
 const PREMIUM_RAIL_KIT = preload("res://scripts/games/kart_premium_rail_kit.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
@@ -112,6 +113,9 @@ func build(
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
 		if not geometry_only:
+			# Without its own sky and sun the course fell back to the project's
+			# sunset default and drowned in orange haze.
+			_lighting()
 			var environment_script: Script = load("res://scripts/games/kart_jungle_environment.gd")
 			assert(environment_script != null, "Dschungelherz environment is part of the track package")
 			var jungle_environment: Node3D = environment_script.new()
@@ -165,7 +169,9 @@ func build(
 	_terrain()
 	_road()
 	match track_id:
-		"zauberwald": _forest()
+		"zauberwald":
+			_forest()
+			_forest_roadside_trees()
 		"holo_city":
 			_city()
 			_holo_city_dressing()
@@ -636,8 +642,13 @@ func _lighting() -> void:
 	environment.adjustment_saturation=float(visual.saturation)
 	environment.fog_enabled=true
 	environment.fog_light_color=definition.fog
-	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
+	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.0022)
 	environment.fog_aerial_perspective=0.26 if track_id=="sonnenhafen" else 0.22
+	if track_id==JUNGLE.ID:
+		# Bright rainforest noon: green bounce light, thin warm haze for depth.
+		environment.ambient_light_color=Color("cfe8c4")
+		environment.ambient_light_energy=0.36
+		environment.fog_density=0.0016
 	# Additive desktop polish with a strict Mobile/GL fallback; no new environment node.
 	set_meta("aaa_visual_profile", AAA_ENV.configure(environment, low_detail))
 	var world_environment := WorldEnvironment.new()
@@ -647,6 +658,9 @@ func _lighting() -> void:
 	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
 	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.90 if low_detail else 1.00) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	if track_id==JUNGLE.ID:
+		sun.rotation_degrees=Vector3(-52,-28,0)
+		sun.light_energy=1.05
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -943,6 +957,8 @@ func _road() -> void:
 		asphalt.set_shader_parameter("surface_grit",0.0 if low_detail else 0.86)
 	if track_id == "candy_cloud":
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
+	else:
+		ROAD_SURFACES.apply(asphalt, track_id)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
@@ -959,7 +975,7 @@ func _road() -> void:
 				_material(edge_color,true)
 			)
 		_ribbon("RoadFoundation",side*6.1,side*6.13,-0.06,_material(Color("566b74")),0.70)
-		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(Color("f5f7e9")))
+		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(ROAD_SURFACES.marking(track_id,Color("f5f7e9"))))
 		if track_id=="holo_city": _ribbon("ContinuousLightEdge",side*5.83,side*5.94,0.045,_material(edge_color,true))
 	var count: int=ceili(length/1.4)
 	var step: float=length/count
@@ -980,7 +996,7 @@ func _road() -> void:
 			# Premium section follows exactly the existing path sample and the
 			# same RAIL_LATERAL. Kart collision is deliberately unchanged.
 			PREMIUM_RAIL_KIT.build_segment(self, i, d, step, side, basis)
-		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),Color("e6ead9"),basis)
+		if i%8<3: _prop("box",p+basis.y*0.02,Vector3(0.13,0.018,step+0.02),ROAD_SURFACES.marking(track_id,Color("e6ead9")),basis)
 		if bridge and i%13==0 and track_id!="bergwelt":
 			var base_y: float=maxf(-2.3,_ground_height(p.x,p.z))
 			var pillar_height: float=maxf(0.3,p.y-base_y-0.4)
@@ -1588,6 +1604,50 @@ func _forest() -> void:
 		_prop("ball",p,Vector3.ONE*0.065,Color("e1f0a3"),Basis.IDENTITY,true)
 	_forest_reference_dressing()
 	_arch(length*0.63,"LICHTERHAIN",Color("b2dcdf"))
+
+
+## The forest used to start 18 m from the centre line, so the chase camera saw
+## bare verges. Tall trees now line the road and close their crowns above it.
+## Own random stream: the established forest geometry does not shift.
+func _forest_roadside_trees() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = int(definition.seed) + 7717
+	var spacing: float = 17.0 if low_detail else 8.5
+	var count: int = floori(length / spacing)
+	var planted: int = 0
+	var reserved: Array[Dictionary] = TRACK_DETAIL.accepted_sites(self)
+	for i in range(count):
+		var d: float = (float(i) + 0.5) * spacing
+		for side in [-1.0, 1.0]:
+			var lateral: float = rng.randf_range(9.4, 13.8)
+			var tree_size: float = rng.randf_range(2.3, 3.4)
+			var along: float = rng.randf_range(-2.4, 2.4)
+			if in_gap(d) or _is_bridge(d) or ADVENTURE_TUNNELS.contains(self, d, 16.0):
+				continue
+			var at: Vector3 = position_at(d + along, side * lateral)
+			var road_height: float = at.y
+			at.y = _ground_height(at.x, at.z)
+			# Keep clear of every other part of the course, of water and of
+			# places where the road runs high above the ground.
+			if _near_road(at, 8.8) or at.y < -1.6 or road_height - at.y > 5.5:
+				continue
+			# Trunks stay off the plots reserved for buildings and markers.
+			var on_plot := false
+			for site: Dictionary in reserved:
+				var plot: Vector3 = site.position
+				if Vector2(at.x - plot.x, at.z - plot.z).length() < float(site.radius) + 2.6:
+					on_plot = true
+					break
+			if on_plot:
+				continue
+			_tree(at, tree_size, rng)
+			if planted % 3 == 0:
+				# A glowing mushroom between trunk and road, on the ground.
+				var beside: Vector3 = position_at(d + along + 1.6, side * (lateral - 1.3))
+				beside.y = _ground_height(beside.x, beside.z)
+				_mushroom(beside, rng.randf_range(0.8, 1.5))
+			planted += 1
+	set_meta("forest_roadside_trees", planted)
 
 
 func _forest_reference_dressing() -> void:

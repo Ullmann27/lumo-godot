@@ -1,6 +1,26 @@
 extends RefCounted
-## Eigene Vektor-Icons für das Kart-Menü (keine Emoji-Schrift nötig, keine fremden Assets).
-## draw(canvas, kind, mitte, größe, farbe) zeichnet in ein beliebiges CanvasItem.
+## Icons für das Kart-Menü. draw3d() nimmt das gerenderte 3D-Icon aus dem UI-Kit
+## (assets/kart/ui3d); fehlt es, zeichnet draw() das eigene Vektor-Icon als Ersatz.
+## Keine Emoji-Schrift nötig, keine fremden Assets.
+const KIT = preload("res://scripts/games/kart_ui3d.gd")
+## Menü-Icon -> Datei im Kit. "rotate_left" ist das gespiegelte "icon_rotate".
+const KIT_ICONS := {
+	"flag": "icon_flag", "trophy": "icon_trophy", "star": "icon_star_crystal", "star_gold": "icon_star_gold",
+	"calendar": "icon_calendar", "wrench": "icon_wrench", "road": "icon_route", "gift": "icon_gift",
+	"home": "icon_home", "gear": "icon_gear", "back": "icon_back", "play": "icon_play",
+	"rotate_left": "icon_rotate", "rotate_right": "icon_rotate", "chevrons": "icon_chevrons",
+	"alert": "icon_alert", "lock": "icon_lock", "crown": "icon_crown", "laurel": "icon_laurel",
+	"stopwatch": "icon_stopwatch",
+}
+## Vektor-Ersatz für Kit-Icons ohne eigene Vektorform.
+const VECTOR_FALLBACK := {"star_gold": "star", "crown": "star", "laurel": "star", "stopwatch": "play"}
+
+
+## Gerendertes Icon mit Kantenlänge `s` um `c`; Vektor-Ersatz in `color`, wenn es fehlt.
+static func draw3d(canvas: CanvasItem, kind: String, c: Vector2, s: float, color: Color = Color.WHITE, tint: Color = Color.WHITE) -> void:
+	if KIT_ICONS.has(kind) and KIT.draw_icon(canvas, KIT_ICONS[kind], c, s, tint, kind == "rotate_left"):
+		return
+	draw(canvas, VECTOR_FALLBACK.get(kind, kind), c, s * 0.86, color)
 
 
 static func draw(canvas: CanvasItem, kind: String, c: Vector2, s: float, color: Color) -> void:
@@ -66,6 +86,18 @@ static func draw(canvas: CanvasItem, kind: String, c: Vector2, s: float, color: 
 			for x in [-0.28, 0.28]:
 				canvas.draw_circle(c + Vector2(x, 0.24) * s, s * 0.13, color.darkened(0.45))
 				canvas.draw_circle(c + Vector2(x, 0.24) * s, s * 0.06, color)
+		"chevrons":
+			for i in range(2):
+				var x := (-0.2 + i * 0.36) * s
+				canvas.draw_polyline(PackedVector2Array([c + Vector2(x - 0.16 * s, -0.3 * s), c + Vector2(x + 0.1 * s, 0),
+					c + Vector2(x - 0.16 * s, 0.3 * s)]), color, w * 1.4, true)
+		"alert":
+			canvas.draw_circle(c, s * 0.46, Color("ffd23f"))
+			canvas.draw_line(c + Vector2(0, -0.26) * s, c + Vector2(0, 0.06) * s, Color("3a2400"), w * 1.5, true)
+			canvas.draw_circle(c + Vector2(0, 0.24) * s, w * 0.85, Color("3a2400"))
+		"lock":
+			canvas.draw_arc(c + Vector2(0, -0.12) * s, s * 0.2, PI, TAU, 12, color, w * 1.4)
+			canvas.draw_rect(Rect2(c + Vector2(-0.32, -0.1) * s, Vector2(0.64, 0.5) * s), color)
 		"back":
 			canvas.draw_polyline(PackedVector2Array([c + Vector2(0.16, -0.34) * s, c + Vector2(-0.18, 0) * s,
 				c + Vector2(0.16, 0.34) * s]), color, w * 1.6, true)
