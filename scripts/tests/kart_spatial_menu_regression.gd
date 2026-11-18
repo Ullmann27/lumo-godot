@@ -213,6 +213,12 @@ func _run() -> void:
 		DirAccess.make_dir_recursive_absolute(output)
 	var scene: PackedScene = load("res://scenes/games/kart_island.tscn")
 	var host = root.get_node("HostBridge")
+	# Eine früher gefahrene Stufe im Testprofil darf die Erwartung "neues Kind" nicht kippen.
+	var stored := ConfigFile.new()
+	stored.load("user://kart_preferences.cfg")
+	if stored.has_section("levels"):
+		stored.erase_section("levels")
+		stored.save("user://kart_preferences.cfg")
 	for dimensions in [Vector2i(1280, 720), Vector2i(412, 915), Vector2i(690, 829), Vector2i(640, 320), Vector2i(2400, 1080)]:
 		print("[SpatialMenu] CASE ", dimensions)
 		expected_pixels = dimensions
@@ -239,7 +245,7 @@ func _run() -> void:
 			"3D stage fills the safe width")
 		_check(garage.preview_container.get_global_rect().size.y >= game.safe_ui.size.y * 0.98,
 			"3D stage fills the safe height")
-		_check(garage.setup.difficulty == "pro", "new setups default to the requested extreme difficulty")
+		_check(garage.setup.difficulty == "gemuetlich", "a fresh child starts on the entry level Entdecken")
 		_check(not garage.world_backdrop.is_visible_in_tree(), "live scene owns the backdrop")
 		_check_camera_clear(garage)
 		_check_landing_raster_scale(landing)
@@ -299,7 +305,7 @@ func _run() -> void:
 			_check(action.size.y / dp_scale >= 47.99, "%s has at least 48dp height" % action.name)
 		await _tap(garage.next_button)
 		_check(not game.menu_active and game.mode == "time_trial", "start keeps the selected real race mode")
-		_check(game.selected_kart == "gecko_velo" and game.difficulty == "pro", "start preserves chosen kart and difficulty")
+		_check(game.selected_kart == "gecko_velo" and game.difficulty == "gemuetlich", "start preserves chosen kart and the entry level")
 		_check(is_instance_valid(game.player), "a real playable race is constructed")
 		game.queue_free()
 		await _settle()

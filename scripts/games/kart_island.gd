@@ -685,6 +685,10 @@ func _show_garage() -> void:
 		var restored: Dictionary = setup_snapshot.duplicate(true)
 		restored["mode"] = _known_mode(str(restored.get("mode", "race")))
 		garage.setup = restored
+	else:
+		# Frischer Einstieg: ein neues Kind beginnt auf "Entdecken", sonst gilt
+		# die Stufe, die dieses Kind zuletzt gefahren oder eingestellt hat.
+		garage.setup["difficulty"] = known_level(difficulty)
 	garage.start_requested.connect(_start_selected_race)
 	garage.resume_requested.connect(_resume_saved_race)
 	garage.main_menu_requested.connect(func(): _show_reference_landing(true))
@@ -4452,15 +4456,35 @@ func _load_preferences() -> void:
 	# Touch devices start with the GAS pedal; keyboard and automated runs keep auto-gas.
 	var touch_device: bool = OS.has_feature("android") or OS.has_feature("ios")
 	auto_gas = bool(config.get_value("race", "auto_gas", not touch_device))
-	difficulty = str(config.get_value("race", "difficulty", "gemuetlich"))
+	# Die Stufe gehört zum Kind. Der frühere gemeinsame Wert "race/difficulty" stammte
+	# aus der erzwungenen Startstufe "Extrem" und war keine Wahl – er zählt nicht mehr.
+	difficulty = known_level(str(config.get_value("levels", _level_key(), "gemuetlich")))
 	graphics_profile = str(config.get_value("race", "graphics_profile", "low" if lightweight else "high"))
 	if graphics_profile not in ["high", "medium", "low"]:
 		graphics_profile = "high"
 	lightweight = graphics_profile == "low"
 
 
+## Schlüssel des Kindes für seine gespeicherte Gegnerstufe (wie beim Streckenpass).
+func _level_key() -> String:
+	var options: Dictionary = SceneRouter.launch_options.duplicate(true)
+	options.merge(HostBridge.launch_options(), true)
+	var child: String = str(options.get("childKey", "standalone"))
+	return (child if not child.is_empty() else "standalone").sha256_text()
+
+
+## Unbekannte oder beschädigte Werte fallen auf die Einstiegsstufe "Entdecken" zurück.
+static func known_level(id: String) -> String:
+	for entry in CATALOG.DIFFICULTIES:
+		if str(entry.id) == id:
+			return id
+	return "gemuetlich"
+
+
 func _save_preferences() -> void:
 	var config := ConfigFile.new()
+	# Vorhandene Datei behalten: darin stehen die Stufen der anderen Kinder.
+	config.load(PREFERENCES)
 	config.set_value("race", "reduced_motion", preferred_reduced_motion)
 	config.set_value("race", "lightweight", lightweight)
 	config.set_value("race", "graphics_profile", graphics_profile)
@@ -4469,6 +4493,7 @@ func _save_preferences() -> void:
 	config.set_value("race", "effects_volume", effects_volume)
 	config.set_value("race", "auto_gas", auto_gas)
 	config.set_value("race", "difficulty", difficulty)
+	config.set_value("levels", _level_key(), known_level(difficulty))
 	config.save(PREFERENCES)
 	_update_audio()
 	for kart in opponents:
