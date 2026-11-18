@@ -56,5 +56,29 @@ func _run() -> void:
 		image.save_png(ProjectSettings.globalize_path(OUT + "bld_" + kind + ".png"))
 		node.queue_free()
 		await process_frame
+	# Lumo's face for the tutorial bubble, from the real rigged model.
+	var lumo: Node3D = load("res://scripts/characters/lumo/lumo_rigged_actor.gd").new()
+	viewport.add_child(lumo)
+	for _i in range(4):
+		await process_frame
+	if lumo.is_usable():
+		var head: Transform3D = lumo.skeleton.get_bone_global_pose(lumo.skeleton.get_bone_count() - 1)
+		var top := -INF
+		var low := INF
+		for bone in range(lumo.skeleton.get_bone_count()):
+			var at: Vector3 = (lumo.skeleton.global_transform * lumo.skeleton.get_bone_global_pose(bone)).origin
+			top = maxf(top, at.y)
+			low = minf(low, at.y)
+		var face := Vector3(0, low + (top - low) * 0.8, 0)
+		camera.fov = 26
+		camera.position = face + Vector3(0.25, 0.08, 1.0).normalized() * (top - low) * 1.25
+		camera.look_at(face)
+		for _i in range(10):
+			await process_frame
+		await RenderingServer.frame_post_draw
+		var portrait := viewport.get_texture().get_image()
+		portrait.resize(160, 160, Image.INTERPOLATE_LANCZOS)
+		portrait.save_png(ProjectSettings.globalize_path(OUT + "lumo_portrait.png"))
+		print("[VillageIcons] lumo portrait head bone ", head.origin)
 	print("[VillageIcons] PASS ", VISUAL.MODELS.size())
 	quit(0)

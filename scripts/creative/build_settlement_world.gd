@@ -19,6 +19,7 @@ const ATMOSPHERE = preload("res://scripts/creative/build_village_atmosphere.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const LIFE = preload("res://scripts/creative/build_village_life.gd")
 const VHUD = preload("res://scripts/creative/build_village_hud.gd")
+const TUTORIAL = preload("res://scripts/creative/build_village_tutorial.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -100,6 +101,11 @@ var actions_scroll_node: ScrollContainer
 var primary_row: HBoxContainer
 var evening_button: Button
 var more_panel: PanelContainer
+## Dorfwelt-Zusatzdaten im selben Speicher-Umschlag ("village_meta"): Tutorial,
+## Nachbardörfer, Verteidigung, Kampagne. Alte Dateien ohne den Schlüssel laden
+## mit Standardwerten; ältere Spielversionen ignorieren den Schlüssel.
+var village_meta: Dictionary = {}
+var tutorial: Control
 var more_button: Button
 
 
@@ -139,6 +145,8 @@ func _ready() -> void:
 		if parser.parse(FileAccess.get_file_as_string(save_path)) == OK:
 			raw = parser.data
 		var restored = restore_project(raw, child_key, slot, mode)
+		if raw is Dictionary and raw.get("village_meta") is Dictionary:
+			village_meta = raw.village_meta.duplicate(true)
 		if restored != null and restored.living_village == village_requested:
 			model = restored
 		elif restored != null and village_requested and not restored.living_village:
@@ -180,6 +188,8 @@ func _ready() -> void:
 		_build_ui()
 	_rebuild()
 	_camera_update(true)
+	if model.living_village:
+		_start_village_systems()
 	get_viewport().size_changed.connect(_layout)
 	RUNTIME.watch_safe_area(self, _layout)
 	_layout()
@@ -1275,6 +1285,7 @@ func _enter_campaign_chapter(_index: int) -> void:
 
 
 func _tilda_dialog() -> void:
+	_explain("tilda")
 	var view: Dictionary = _village_dialog("Tildas Lieferwagen")
 	if view.is_empty():
 		return
@@ -1316,6 +1327,7 @@ func _order_village_delivery(id: String, dialog: Window) -> void:
 
 
 func _public_project_dialog() -> void:
+	_explain("stadtkasse")
 	var view: Dictionary = _village_dialog("Unsere Stadtkasse")
 	if view.is_empty():
 		return
@@ -1359,6 +1371,7 @@ func _trade_dialog() -> void:
 		or is_instance_valid(demolition_window)
 	):
 		return
+	_explain("handel")
 	var dialog := Window.new()
 	trade_window = dialog
 	dialog.title = "Handeln am Markt"
@@ -1470,7 +1483,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _hud_rect(control: Control) -> Rect2:
-	return Rect2(control.global_position - safe_ui.global_position, control.size)
+	var xform := safe_ui.get_global_transform().affine_inverse() * control.get_global_transform()
+	return Rect2(xform.origin, xform.basis_xform(control.size))
 
 
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
@@ -1685,6 +1699,15 @@ func _save() -> bool:
 	file.store_string(
 		JSON.stringify(
 			{
+				"version": 1,
+				"child": child_key,
+				"settlement": model.snapshot(),
+				"mode": mode,
+				"slot": slot,
+				"village_meta": _village_meta_snapshot()
+			}
+			if model.living_village
+			else {
 				"version": 1,
 				"child": child_key,
 				"settlement": model.snapshot(),
@@ -2141,6 +2164,9 @@ func _build_village_ui() -> void:
 	pause_box.add_child(_label("Deine Siedlung wartet", 22))
 	pause_box.add_child(_button("Weiter", _toggle_pause))
 	pause_box.add_child(_button("Speichern", _save_message))
+	var replay := _button("Lumo zeigt es noch einmal", _tutorial_topics)
+	replay.name = "VillageTutorialReplay"
+	pause_box.add_child(replay)
 	pause_box.add_child(_button("Zur Spielewelt" if host_entry else "Zur Bauwelt", _leave))
 	if host_entry:
 		var build_return := _button("Zur Bauwelt", _leave.bind("build"))
@@ -2252,3 +2278,119 @@ func _home_view() -> void:
 	pan_velocity = Vector3.ZERO
 	_rebuild()
 	_camera_update(true)
+
+
+
+# ------------------------------------------------------------- Tutorial
+func _start_village_systems() -> void:
+	tutorial = TUTORIAL.new()
+	safe_ui.add_child(tutorial)
+	tutorial.setup(self, village_meta.get("tutorial"))
+	_layout()
+
+
+func _village_meta_snapshot() -> Dictionary:
+	var data := village_meta.duplicate(true)
+	data["meta_version"] = 1
+	if is_instance_valid(tutorial):
+		data["tutorial"] = tutorial.snapshot()
+	return data
+
+
+func _explain(topic: String) -> void:
+	if is_instance_valid(tutorial):
+		tutorial.explain_once(topic)
+
+
+## Called by the tutorial; the state is written with the next regular save.
+func tutorial_changed() -> void:
+	if is_instance_valid(tutorial):
+		village_meta["tutorial"] = tutorial.snapshot()
+
+
+func tutorial_focus(target: String) -> void:
+	if target == "lumo" and is_instance_valid(village_life) and village_life.lumo != null:
+		pass
+
+
+func tutorial_safe_band() -> Vector2:
+	var top_end := top.position.y + top.size.y if is_instance_valid(top) else 0.0
+	var dock_top := bottom.position.y if is_instance_valid(bottom) and bottom.visible else safe_ui.size.y
+	if is_instance_valid(toast) and toast.visible:
+		dock_top = minf(dock_top, toast.position.y)
+	return Vector2(top_end, dock_top)
+
+
+func _union(controls: Array) -> Rect2:
+	var result := Rect2()
+	for control: Control in controls:
+		if not is_instance_valid(control) or not control.is_visible_in_tree():
+			continue
+		var rect := _hud_rect(control)
+		result = rect if result.size == Vector2.ZERO else result.merge(rect)
+	return result
+
+
+func _clip_to_scroll(control: Control) -> Rect2:
+	var rect := _hud_rect(control)
+	var parent := control.get_parent()
+	while parent != null and not parent is ScrollContainer:
+		parent = parent.get_parent()
+	if parent is ScrollContainer:
+		rect = rect.intersection(_hud_rect(parent))
+	return rect
+
+
+func tutorial_target_rect(target: String) -> Rect2:
+	match target:
+		"card_house", "card_farm":
+			var kind := target.substr(5)
+			return _clip_to_scroll(purchase_buttons[kind]) if purchase_buttons.has(kind) else Rect2()
+		"day":
+			return _hud_rect(day_button) if day_button.is_visible_in_tree() else Rect2()
+		"chips":
+			return _union([resource_chips.wood, resource_chips.stone, resource_chips.food])
+		"people":
+			return _union([resource_chips.population])
+		"goal":
+			return _union([goal_card])
+		"world":
+			var band := tutorial_safe_band()
+			var center := Vector2(safe_ui.size.x * 0.5, (band.x + band.y) * 0.5)
+			return Rect2(center - Vector2(110, 50), Vector2(220, 100))
+		"plot", "lumo":
+			var where := Vector3.INF
+			if target == "plot":
+				var free := _next_free_plot()
+				if free >= 0:
+					where = _plot_world(free) + Vector3.UP * 0.2
+			elif is_instance_valid(village_life) and village_life.lumo != null:
+				where = village_life.lumo.global_position + Vector3.UP * 0.8
+			if where == Vector3.INF or camera.is_position_behind(where):
+				return Rect2()
+			var screen := camera.unproject_position(where)
+			var local := safe_ui.get_global_transform_with_canvas().affine_inverse() * screen
+			return Rect2(local - Vector2(36, 36), Vector2(72, 72))
+	return Rect2()
+
+
+func _tutorial_topics() -> void:
+	if paused:
+		_toggle_pause()
+	var view: Dictionary = _village_dialog("Lumo zeigt es noch einmal")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	_village_caption(body, "Was soll ich dir noch einmal zeigen?")
+	for topic in TUTORIAL.TOPICS:
+		var button := _button(topic, _replay_topic.bind(topic, dialog), 220)
+		button.mouse_filter = Control.MOUSE_FILTER_PASS
+		body.add_child(button)
+
+
+func _replay_topic(topic: String, dialog: Window) -> void:
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	if is_instance_valid(tutorial):
+		tutorial.replay(topic)
