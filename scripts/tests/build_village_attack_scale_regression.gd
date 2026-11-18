@@ -213,7 +213,25 @@ func _old_saves() -> void:
 	)
 
 
+## Belagerer sind eigene Figuren: Speerträger in der Farbe der Nachbarstadt.
+func _figures() -> void:
+	var view: Node3D = load("res://scripts/creative/build_village_raids_view.gd").new()
+	var rival: Node3D = view._rival_figure("leo")
+	_check(
+		rival != null and rival.has_meta("soldier"),
+		"Belagerer aus Burgheim sind Menschen (Speerträger)"
+	)
+	if rival != null and rival.get_child_count() > 0:
+		var material: ShaderMaterial = (rival.get_child(0) as GeometryInstance3D).material_override
+		var team: Color = material.get_shader_parameter("team_color")
+		_check(team.a > 0.5 and team.is_equal_approx(Color("f4ae52")), "… in Burgheims Farbe")
+	if rival != null:
+		rival.free()
+	view.free()
+
+
 func _run() -> void:
+	_figures()
 	_sizes()
 	_thousand()
 	_old_saves()

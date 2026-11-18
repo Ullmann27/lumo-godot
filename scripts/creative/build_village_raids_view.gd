@@ -13,7 +13,7 @@ const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
-const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
+const SOLDIERS = preload("res://scripts/creative/build_village_soldiers.gd")
 const SEGMENT := 5.0
 const SCENE_SECONDS := 9.0
 const MAX_GUARDS_SHOWN := 8
@@ -29,6 +29,8 @@ var scene_time := -1.0
 var scene_result: Dictionary = {}
 var gate_position := Vector3.ZERO
 var gate_bridge: Node3D
+## Wachen am Tor: Blender-Menschen als eine Formation (Bewegung im Shader).
+var gate_guards: MultiMeshInstance3D
 var _key := ""
 var clock := 0.0
 var shadows := true
@@ -239,17 +241,12 @@ func _build_ring() -> void:
 	if not trap_transforms.is_empty():
 		ART.batch(ring, "Traps", "net_trap", trap_transforms, 200.0, false)
 	var guard_count := mini(int(raids.guards), MAX_GUARDS_SHOWN)
+	var guard_spots: Array = []
 	for index in range(guard_count):
-		var guard := _actor("guard")
-		if guard == null:
-			break
-		guard.name = "Guard%d" % index
 		var side := -1.0 if index % 2 == 0 else 1.0
 		var spot := (gate_position if gate_position != Vector3.ZERO else c + Vector3(-half, 0, 0)) + Vector3(2.2 + float(index / 2) * 1.4, 0, side * (3.6 + float(index / 2) * 0.4))
-		guard.position = ground(spot.x, spot.z)
-		guard.rotation.y = -PI * 0.5
-		guard.scale = Vector3.ONE * 1.25
-		ring.add_child(guard)
+		guard_spots.append(Transform3D(Basis(Vector3.UP, -PI * 0.5).scaled(Vector3.ONE * 1.1), ground(spot.x, spot.z)))
+	gate_guards = SOLDIERS.formation(ring, "GateGuards", "schild", guard_spots, "stehen") if not guard_spots.is_empty() else null
 	ring.set_meta("walls", walls.size())
 	ring.set_meta("towers", mini(towers, 4))
 	ring.set_meta("guards", guard_count)
@@ -304,6 +301,7 @@ func play(result: Dictionary) -> void:
 	var from := _origin(threat, str(result.get("by", "")))
 	var front := _front(from)
 	var won := str(result.outcome) == "abgewehrt"
+	SOLDIERS.set_state(gate_guards, "abwehr")
 	# One property per stage (build_village_schedule.gd): group size or sides.
 	var stage: Dictionary = SCHEDULE.stage(int(result.get("level", 1)))
 	var count := 1 if threat == "drache" else clampi(int(stage.group), 3, 12)
@@ -340,18 +338,17 @@ func play(result: Dictionary) -> void:
 	set_meta("scene_actors", actors.size())
 
 
-## A rival's helpers are the neighbour's own animal (same figure as on its cart).
+## Belagerer eines Nachbarn: Speerträger in der Farbe seiner Stadt (eigene,
+## unterscheidbare Gegner; dieselben Menschen wie die eigenen Soldaten).
 func _rival_figure(id: String) -> Node3D:
-	var path := ROSTER.racing_model_path(str(NEIGHBORS.spec(id).get("animal", "")), 2)
-	if path.is_empty() or not ResourceLoader.exists(path):
+	var colour := Color(str(NEIGHBORS.spec(id).get("color", "c94a3a")))
+	var figure := SOLDIERS.figure("speer", "marschieren", Color(colour.r, colour.g, colour.b, 1.0))
+	if figure.get_child_count() == 0:
+		figure.free()
 		return _actor("guard")
-	var figure := (load(path) as PackedScene).instantiate() as Node3D
-	figure.scale = Vector3.ONE * 0.9
-	for mesh in figure.find_children("*", "MeshInstance3D", true, false):
-		(mesh as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var player := figure.find_child("AnimationPlayer", true, false) as AnimationPlayer
-	if player != null and player.has_animation("idle"):
-		player.play("idle")
+	figure.set_meta("soldier", true)
+	figure.set_meta("actor_kind", "belagerer")
+	(figure.get_child(0) as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	return figure
 
 
@@ -388,6 +385,8 @@ func _advance_scene(delta: float) -> void:
 		var at: Vector3
 		if local < 0.45:
 			# approach
+			if node.has_meta("soldier") and str((node.get_child(0) as Node).get_meta("state", "")) != "marschieren":
+				SOLDIERS.set_state(node.get_child(0) as MultiMeshInstance3D, "marschieren")
 			at = from.lerp(front, local / 0.45)
 			node.rotation = Vector3(0, atan2(front.x - from.x, front.z - from.z), 0)
 		elif local < 0.6:
@@ -401,6 +400,8 @@ func _advance_scene(delta: float) -> void:
 				at = front.lerp(center(), bump * 0.35)
 		else:
 			var back := (local - 0.6) / 0.4
+			if node.has_meta("soldier") and str((node.get_child(0) as Node).get_meta("state", "")) != "zurueck":
+				SOLDIERS.set_state(node.get_child(0) as MultiMeshInstance3D, "zurueck" if bool(actor.won) else "marschieren")
 			var start: Vector3 = front if bool(actor.won) else front.lerp(center(), 0.35)
 			at = start.lerp(from, back)
 			node.rotation = Vector3(0, atan2(from.x - start.x, from.z - start.z), 0)
@@ -419,8 +420,13 @@ func _advance_scene(delta: float) -> void:
 		# The drawbridge goes up while the attackers are at the gate.
 		var up := clampf(1.0 - absf(t - 0.5) * 3.0, 0.0, 1.0)
 		gate_bridge.rotation.x = -up * 1.3
+	if is_instance_valid(gate_guards) and t > 0.62:
+		var mood := "jubeln" if str(scene_result.get("outcome", "")) == "abgewehrt" else "senken"
+		if str(gate_guards.get_meta("state", "")) != mood:
+			SOLDIERS.set_state(gate_guards, mood)
 	if scene_time >= SCENE_SECONDS:
 		scene_time = -1.0
+		SOLDIERS.set_state(gate_guards, "stehen")
 		_clear_actors()
 		if gate_bridge != null:
 			gate_bridge.rotation.x = 0.0
