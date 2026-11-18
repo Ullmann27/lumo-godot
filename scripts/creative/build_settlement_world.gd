@@ -191,7 +191,7 @@ func _ready() -> void:
 	add_child(camera)
 	camera.current = true
 	explorer = EXPLORER.new()
-	explorer.horizontal_limit = Vector2(196, 95) if model.living_village else Vector2(31, 18)
+	explorer.horizontal_limit = FOCUS_LIMIT if model.living_village else Vector2(31, 18)
 	add_child(explorer)
 	if model.living_village:
 		_build_village_ui()
@@ -654,6 +654,7 @@ func _layout() -> void:
 func _rebuild() -> void:
 	if model.living_village and is_instance_valid(village_region):
 		village_region.set_unlocked_plots(int(model.player().plots), false)
+		village_region.set_far_bank_open(bool(model.player().get("city_projects", {}).get("bridge", false)))
 		if mode == "rival":
 			village_region.set_unlocked_plots(int(model.rival().plots), true)
 	_sync_visible_plots(true)
@@ -692,7 +693,7 @@ func _sync_visible_plots(force := false) -> void:
 		if opponent and mode != "rival":
 			continue
 		var town: Dictionary = model.rival() if opponent else model.player()
-		for index in range(int(town.plots)):
+		for index in _plots_near(view_focus, int(town.plots), opponent):
 			var where := _plot_world(index, opponent)
 			# Only load touch colliders around the view; the 1089-plot model stays persistent.
 			if model.living_village and where.distance_squared_to(view_focus) > 75.0 * 75.0:
@@ -734,6 +735,26 @@ func _sync_visible_plots(force := false) -> void:
 		village_residents.set_focus(view_focus)
 
 
+## Bauplatz-Nummern im Umkreis der Ansicht (statt alle bis zu 4.225 Felder
+## jedes Mal durchzugehen). Die klassische Siedlung ist klein: alle Felder.
+func _plots_near(view_focus: Vector3, count: int, opponent: bool) -> Array[int]:
+	var result: Array[int] = []
+	if not model.living_village:
+		for index in range(count):
+			result.append(index)
+		return result
+	var center := REGION.TOWN_CENTER if opponent else -REGION.TOWN_CENTER
+	var cx := roundi((view_focus.x - center) / REGION.SPACING)
+	var cz := roundi(view_focus.z / REGION.SPACING)
+	var reach := ceili(75.0 / REGION.SPACING)
+	for z in range(cz - reach, cz + reach + 1):
+		for x in range(cx - reach, cx + reach + 1):
+			var index := REGION.plot_index_at(Vector2i(x, z))
+			if index >= 0 and index < count:
+				result.append(index)
+	return result
+
+
 func _sync_facilities(view_focus: Vector3) -> void:
 	# Existing living-village batching: preserve every saved building while
 	# loading detailed meshes and colliders only around the camera or explorer.
@@ -745,12 +766,13 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		var town: Dictionary = model.rival() if opponent else model.player()
 		var ordered: Array = town.buildings.duplicate()
 		if model.living_village:
+			# Entfernung je Gebäude einmal rechnen (große Städte: >2.000 Gebäude).
+			var distance: Dictionary = {}
+			for building: Dictionary in ordered:
+				distance[int(building.plot)] = _plot_world(int(building.plot), opponent).distance_squared_to(view_focus)
 			ordered.sort_custom(
 				func(a: Dictionary, b: Dictionary) -> bool:
-					return (
-						_plot_world(int(a.plot), opponent).distance_squared_to(view_focus)
-						< _plot_world(int(b.plot), opponent).distance_squared_to(view_focus)
-					)
+					return float(distance[int(a.plot)]) < float(distance[int(b.plot)])
 			)
 		var detailed := 0
 		for building: Dictionary in ordered:
@@ -1451,10 +1473,11 @@ func _look_neighbor() -> void:
 func _pan_village(dx: int, dz: int) -> void:
 	if _transactions_blocked() or not model.living_village:
 		return
-	var side := 1.0 if focus.x >= 0 else -1.0
+	var side := 1.0 if focus.x >= 0 and mode == "rival" else -1.0
 	var home := side * REGION.TOWN_CENTER
-	focus.x = clampf(focus.x + float(dx) * REGION.SPACING * 4.0, home - 85.0, home + 85.0)
-	focus.z = clampf(focus.z + float(dz) * REGION.SPACING * 4.0, -85.0, 85.0)
+	var reach := REGION.extent_for_plots(int((model.rival() if side > 0.0 else model.player()).plots))
+	focus.x = clampf(focus.x + float(dx) * REGION.SPACING * 4.0, home - reach, home + reach)
+	focus.z = clampf(focus.z + float(dz) * REGION.SPACING * 4.0, -reach, reach)
 	selected_plot = -1
 	_rebuild()
 	_camera_update(true)
@@ -1463,7 +1486,7 @@ func _pan_village(dx: int, dz: int) -> void:
 func _zoom_village(direction: int) -> void:
 	if _transactions_blocked() or not model.living_village:
 		return
-	radius = clampf(radius + float(direction) * 8.0, 15.0, 94.0)
+	radius = clampf(radius + float(direction) * 8.0, 15.0, RADIUS_RANGE.y)
 	_rebuild()
 	_camera_update(true)
 
@@ -1578,7 +1601,14 @@ func _pick_plot(point: Vector2) -> void:
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot"):
 		# A tap on the slope or meadow between sites selects the cell under it.
-		var side := 1.0 if float(hit.position.x) > 0.0 else -1.0
+		# Im Dorf gehört auch das Ostufer bis Ring 32 dem Kind; nur der
+		# klassische Wettbau hat dort Miras Ortsteil.
+		var side := 1.0 if float(hit.position.x) > 0.0 and mode == "rival" else -1.0
+		var owner := TERRAIN.territory_at(float(hit.position.x), float(hit.position.z))
+		if not owner.is_empty() and neighbors != null:
+			feedback.text = "Das ist das Stadtgebiet von %s. Dort baut %s selbst." % [
+				str(NEIGHBORS.spec(owner).town), str(NEIGHBORS.spec(owner).name)]
+			return
 		var center := side * REGION.TOWN_CENTER
 		var cell := Vector2i(
 			roundi((float(hit.position.x) - center) / REGION.SPACING), roundi(float(hit.position.z) / REGION.SPACING)
@@ -1589,7 +1619,7 @@ func _pick_plot(point: Vector2) -> void:
 		if index < 0 or index >= int(town.plots) or (opponent and mode != "rival"):
 			return
 		if not model.plot_buildable(index, opponent):
-			feedback.text = "Hier ist Fels, Hang oder Ufer. Gebaut wird auf flacher Wiese."
+			feedback.text = model.blocked_text(index, opponent)
 			return
 		hit = {"collider": plot_nodes.get("%s_%d" % ["r" if opponent else "p", index])}
 		if hit.collider == null:
@@ -1765,10 +1795,13 @@ func _leave(destination: String = "") -> void:
 # ----------------------------------------------------------------- Dorfwelt
 # Kamera, Tageszeit und lebendige Details der großen Dorfkarte. Nichts davon
 # verändert Spielstand, Rohstoffe, Zeitlauf oder Belohnungen.
-const FOCUS_LIMIT := Vector2(205.0, 108.0)
+## Ganze Stadt des Kindes bis Ring 32 (x −276 … 76) und die Nachbarstädte
+## am Ostufer (bis x 240), z ±180.
+const FOCUS_LIMIT := Vector2(280.0, 182.0)
 ## Startblick über das Tal: von Süden auf den Ort, Berge und Fluss dahinter.
 const START_VIEW := Vector3(-0.38, 0.38, 64.0)
-const RADIUS_RANGE := Vector2(14.0, 110.0)
+## Weit genug heraus, um eine Großstadt mit 65 × 65 Bauplätzen zu überblicken.
+const RADIUS_RANGE := Vector2(14.0, 170.0)
 const TILT_RANGE := Vector2(0.28, 1.25)
 var touches: Dictionary = {}
 var gesture_moved := false
@@ -2333,6 +2366,8 @@ func _start_village_systems() -> void:
 	neighbors = NEIGHBORS.restore(village_meta.get("neighbors"))
 	neighbors_view = NEIGHBORS_VIEW.new()
 	add_child(neighbors_view)
+	if is_instance_valid(village_region):
+		neighbors_view.landscape = village_region.landscape
 	neighbors_view.setup(neighbors)
 	raids = RAIDS.restore(village_meta.get("raids"), model)
 	raids_view = RAIDS_VIEW.new()

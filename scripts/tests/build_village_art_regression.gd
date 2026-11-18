@@ -34,23 +34,25 @@ func _run() -> void:
 	for index in range(REGION.MAX_PLOTS):
 		var point := REGION.plot_coordinate(index)
 		_check(not coordinates.has(point), "Every plot has one unique address: " + str(index))
-		_check(absi(point.x) <= 16 and absi(point.y) <= 16, "Plot inside 33x33 bounds")
+		_check(absi(point.x) <= 32 and absi(point.y) <= 32, "Plot inside 65x65 bounds")
 		coordinates[point] = true
 		if index < 25:
 			_check(
 				point == _legacy_coordinate(index),
 				"Existing save keeps plot address: " + str(index)
 			)
-	_check(coordinates.size() == 1089, "Full contiguous 1089-cell district")
+	_check(coordinates.size() == 4225, "Full contiguous 4225-cell town (65 x 65)")
 	_check(
-		REGION.extent_for_plots(1089) < REGION.HALF_EXTENT,
+		REGION.extent_for_plots(1089) < REGION.HALF_EXTENT
+		and REGION.extent_for_plots(4225) < REGION.PLAYER_HALF_EXTENT,
 		"Largest building district fits walkable land"
 	)
 	var region = REGION.new()
 	root.add_child(region)
 	region.build_landscape("rival")
 	_check(
-		int(region.get_meta("scenery_chunks")) == 32, "Two towns have bounded 4x4 decoration chunks"
+		int(region.get_meta("scenery_chunks")) == 64 + 16,
+		"Bounded decoration chunks: 8x8 for the grown town, 4x4 for the east-bank district"
 	)
 	_check(
 		region.find_children("VillageRiverBridge*", "StaticBody3D", false, false).size() == 3,

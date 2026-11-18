@@ -1,7 +1,8 @@
 extends Node3D
 ## Die große Dorfkarte: Tal mit Hügeln, Fluss, Seen, Küste und Bergen aus der
-## Höhenkarte (build_village_terrain.gd). Zwei 33 × 33 Ortsteile behalten ihre
-## stabilen Grundstücks-IDs; die ersten 25 Felder liegen exakt wie früher.
+## Höhenkarte (build_village_terrain.gd). Die Stadt des Kindes wächst in Ringen
+## bis 65 × 65 Bauplätze (4.225); der alte 33 × 33 Ortsteil behält alle
+## Grundstücks-IDs und Lagen, die ersten 25 Felder liegen exakt wie früher.
 ## Vegetation, Felsen und Landmarken sind gebündelt (MultiMesh je Gebiet).
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const DAY = preload("res://scripts/creative/creative_nextgen_environment.gd")
@@ -10,8 +11,14 @@ const LANDSCAPE = preload("res://scripts/creative/build_village_landscape.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const SPACING := 5.3
 const TOWN_CENTER := 100.0
-const MAX_PLOTS := 1089
+const MAX_PLOTS := 4225
+## Größter Ring (65 × 65 = Ring 32). Der klassische Wettbau-Ortsteil am
+## Ostufer bleibt 33 × 33 (Ring 16).
+const MAX_RING := 32
+const RIVAL_RING := 16
 const HALF_EXTENT := 94.0
+## Halbe Kantenlänge der ganzen Stadt des Kindes (Ring 32 + Rand).
+const PLAYER_HALF_EXTENT := 176.0
 const CHUNK_SIZE := 47.0
 const WILD_CHUNK := 160.0
 const BRIDGES := [-58.3, 0.0, 58.3]
@@ -30,6 +37,7 @@ var _road_layers: Dictionary = {}
 var _garden_groups: Dictionary = {}
 var _unlocked_counts: Dictionary = {}
 var _built_plots: Dictionary = {false: [], true: []}
+var _far_bank_open := false
 var landscape: Node3D
 var tier := "medium"
 var budget: Dictionary = BUDGETS.medium
@@ -61,7 +69,7 @@ static func plot_coordinate(index: int) -> Vector2i:
 ## Inverse of plot_coordinate for taps on the terrain itself.
 static func plot_index_at(coordinate: Vector2i) -> int:
 	var ring := maxi(absi(coordinate.x), absi(coordinate.y))
-	if ring > 16:
+	if ring > MAX_RING:
 		return -1
 	if ring <= 1:
 		return (coordinate.y + 1) * 3 + coordinate.x + 1
@@ -157,12 +165,14 @@ func _build_bank(opponent: bool) -> void:
 	add_child(garden)
 	_garden_groups[opponent] = garden
 	var hill_lists := {"rock_a": [], "rock_b": [], "rock_c": [], "tree_fir": [], "bush": []}
-	for z_index in range(4):
-		for x_index in range(4):
+	var count := ceili(_half(opponent) * 2.0 / CHUNK_SIZE)
+	var start := -float(count) * CHUNK_SIZE * 0.5
+	for z_index in range(count):
+		for x_index in range(count):
 			var chunk := Node3D.new()
 			chunk.name = "District_%s_%d_%d" % ["neighbor" if opponent else "home", x_index, z_index]
 			chunk.position = Vector3(
-				center - HALF_EXTENT + CHUNK_SIZE * (x_index + 0.5), 0, -HALF_EXTENT + CHUNK_SIZE * (z_index + 0.5)
+				center + start + CHUNK_SIZE * (x_index + 0.5), 0, start + CHUNK_SIZE * (z_index + 0.5)
 			)
 			add_child(chunk)
 			_chunks.append(chunk)
@@ -174,6 +184,19 @@ func _build_bank(opponent: bool) -> void:
 	for kind in hill_lists:
 		ART.batch(hills, "Hill_" + kind, kind, hill_lists[kind], 260.0, kind != "bush")
 	set_unlocked_plots(9, opponent)
+
+
+## Halbe Kantenlänge des ganzen Ortsteils einer Seite (größter Ring + Rand).
+static func _half(opponent: bool) -> float:
+	return HALF_EXTENT if opponent else PLAYER_HALF_EXTENT
+
+
+## Erst die Lieferbrücke macht das andere Flussufer zu Bauland.
+func set_far_bank_open(open: bool) -> void:
+	if open == _far_bank_open:
+		return
+	_far_bank_open = open
+	_paint(false)
 
 
 ## Only the actually unlocked district is drawn. This changes no plot IDs,
@@ -218,6 +241,8 @@ func _paint(opponent: bool) -> void:
 	for index in range(count):
 		if TERRAIN.plot_blocked(index, opponent):
 			continue
+		if not opponent and not _far_bank_open and TERRAIN.plot_far_bank(index):
+			continue
 		var at := plot_position(index, opponent)
 		unlocked.append(Vector2(at.x, at.z))
 	for index in _built_plots[opponent]:
@@ -247,7 +272,7 @@ func _replant_village_edge(count: int, opponent: bool) -> void:
 		var radius := distance + float(index % 6) * 2.2
 		var x := center + sin(angle) * radius
 		var z := cos(angle) * radius
-		if maxf(absf(x - center), absf(z)) > HALF_EXTENT - 3.0:
+		if maxf(absf(x - center), absf(z)) > _half(opponent) - 3.0:
 			continue
 		if TERRAIN.is_water(x, z) or absf(x - TERRAIN.river_center(z)) < 13.0:
 			continue
@@ -279,7 +304,8 @@ func _decorate_chunk(chunk: Node3D, opponent: bool, lists: Dictionary) -> void:
 		var z := chunk.position.z + rng.randf_range(-half, half)
 		var coordinate := Vector2i(roundi((x - center) / SPACING), roundi(z / SPACING))
 		var plot := plot_index_at(coordinate)
-		var outside := maxf(absf(x - center), absf(z)) > 87.5
+		var ring := RIVAL_RING if opponent else MAX_RING
+		var outside := maxf(absf(x - center), absf(z)) > (float(ring) + 0.5) * SPACING
 		if not outside and (plot < 0 or not TERRAIN.plot_blocked(plot, opponent)):
 			continue
 		if TERRAIN.is_water(x, z) or absf(x - TERRAIN.river_center(z)) < 9.0:
@@ -312,7 +338,13 @@ func _build_wilderness() -> void:
 			var px := x + rng.randf_range(-0.45, 0.45) * spacing
 			var pz := z + rng.randf_range(-0.45, 0.45) * spacing
 			x += spacing
-			if absf(absf(px) - TOWN_CENTER) < 92.0 and absf(pz) < 92.0:
+			# Kein Wald auf Bauland: weder in der Stadt des Kindes (bis Ring 32)
+			# noch im alten Ostufer-Ortsteil noch in den Nachbarstädten.
+			if absf(px + TOWN_CENTER) < PLAYER_HALF_EXTENT and absf(pz) < PLAYER_HALF_EXTENT:
+				continue
+			if absf(px - TOWN_CENTER) < 92.0 and absf(pz) < 92.0:
+				continue
+			if not TERRAIN.territory_at(px, pz).is_empty():
 				continue
 			var h := TERRAIN.height(px, pz)
 			if h < TERRAIN.WATER_LEVEL + 0.7 or absf(px - TERRAIN.river_center(pz)) < 12.0:
@@ -436,7 +468,8 @@ func _build_landmarks() -> void:
 	_landmark("watermill", Vector3(mill_x, TERRAIN.height(mill_x - 1.0, mill_z), mill_z), 0.0)
 	for spot in [Vector2(-172.0, 50.0), Vector2(168.0, 62.0)]:
 		_landmark("watchtower", Vector3(spot.x, TERRAIN.height(spot.x, spot.y) - 0.4, spot.y), 0.6)
-	var shop_x := -TOWN_CENTER - 92.0 + 4.0
+	# Vor dem Westrand der ganz ausgebauten Stadt, nie auf einem Bauplatz.
+	var shop_x := -TOWN_CENTER - PLAYER_HALF_EXTENT - 8.0
 	_landmark("workshop", Vector3(shop_x, TERRAIN.height(shop_x, 6.0), 6.0), PI * 0.5)
 	for index in range(6):
 		var lz := -34.0 + index * 12.0

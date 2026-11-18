@@ -31,8 +31,8 @@ func _initialize() -> void:
 		"production opt-in owns a version-two economy"
 	)
 	check(
-		city.player().plots == 9 and MODEL.PLOTS.back() == 1089,
-		"world expands from nine to 1089 plots"
+		city.player().plots == 9 and MODEL.PLOTS[11] == 1089 and MODEL.PLOTS.back() == 4225,
+		"world expands from nine over 1089 to 4225 plots"
 	)
 	# Reproduce the zero-coin campaign soft-lock on a fresh village.
 	var broke = MODEL.new("settlement", true)
@@ -475,7 +475,7 @@ func _test_long_campaign() -> void:
 		turns += 1
 	check(city.campaign_status().complete, "all twelve campaign chapters are legally reachable")
 	check(
-		city.player().plots == 1089 and city.player().population >= 80,
+		city.player().plots >= 1089 and city.player().population >= 80,
 		"largest playable region and growing town are actually reached"
 	)
 	check(

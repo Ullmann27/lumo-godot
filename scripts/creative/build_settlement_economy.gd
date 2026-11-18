@@ -16,9 +16,21 @@ const REGIONS := [
 	"Hügelstadt",
 	"Blütenpark",
 	"Sternental",
-	"Lumo-Land"
+	"Lumo-Land",
+	# Seit 11/2026: die Stadt wächst bis 65 × 65 Bauplätze (Versorgungsrechnung
+	# für 4.000 Menschen, build_village_supply.gd). Alte IDs bleiben gleich.
+	"Uferwiesen",
+	"Mühlbachtal",
+	"Hasenhügel",
+	"Lindenhof",
+	"Seeblick",
+	"Sonnenfelder",
+	"Fernweide",
+	"Großes Tal"
 ]
-const PLOTS := [9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089]
+const PLOTS := [
+	9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089, 1369, 1681, 2025, 2401, 2809, 3249, 3721, 4225
+]
 const PROJECTS := {
 	"playground":
 	{

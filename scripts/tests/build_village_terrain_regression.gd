@@ -29,8 +29,8 @@ func _frames(count := 4) -> void:
 func _run() -> void:
 	_check(TERRAIN.ensure(), "Die Höhenkarte ist geladen")
 	var grid := TERRAIN.grid_size()
-	_check(grid == Vector2i(321, 241), "Höhenkarte 321 × 241 Punkte (2 m)")
-	_check(TERRAIN.size().x >= 600.0 and TERRAIN.size().y >= 450.0, "Große zusammenhängende Karte")
+	_check(grid == Vector2i(353, 257), "Höhenkarte 353 × 257 Punkte (2,5 m)")
+	_check(TERRAIN.size().x >= 860.0 and TERRAIN.size().y >= 630.0, "Große zusammenhängende Karte (880 × 640 m)")
 	var lowest := INF
 	var highest := -INF
 	for iz in range(grid.y):
@@ -41,22 +41,26 @@ func _run() -> void:
 	_check(lowest < TERRAIN.WATER_LEVEL - 4.0, "See, Fluss und Küste liegen unter dem Wasserspiegel")
 	_check(highest > 45.0, "Berge über der Schneegrenze")
 	_check(TERRAIN.is_water(TERRAIN.river_center(0.0), 0.0), "Der Fluss fließt durch die Talmitte")
-	_check(TERRAIN.height(-100, -200) > 20.0, "Bergkette im Norden")
-	_check(TERRAIN.height(0, 200) < TERRAIN.WATER_LEVEL, "Küste im Süden")
+	_check(TERRAIN.height(-100, -270) > 20.0, "Bergkette im Norden")
+	_check(TERRAIN.height(0, 260) < TERRAIN.WATER_LEVEL, "Küste im Süden")
 	# Inverse plot addressing (taps on terrain select the cell underneath).
 	for index in range(REGION.MAX_PLOTS):
 		if REGION.plot_index_at(REGION.plot_coordinate(index)) != index:
 			_check(false, "Feldadresse umkehrbar: %d" % index)
 			break
-	_check(REGION.plot_index_at(Vector2i(17, 0)) == -1, "Außerhalb des Ortsteils gibt es kein Feld")
+	_check(REGION.plot_index_at(Vector2i(33, 0)) == -1, "Außerhalb der Stadt (Ring 32) gibt es kein Feld")
+	_check(REGION.plot_index_at(Vector2i(17, 0)) >= 1089, "Ring 17 ist neues Bauland hinter dem alten Ortsteil")
 	# Buildability: early rings always buildable, rocky hills/shore not.
 	for opponent in [false, true]:
 		for index in range(225):
 			if TERRAIN.plot_blocked(index, opponent):
 				_check(false, "Frühe Felder sind bebaubar: %d" % index)
 				break
-		var blocked := TERRAIN.blocked_count(opponent)
-		_check(blocked > 40 and blocked < 300, "Felshügel/Ufer sperren einige äußere Felder: %d" % blocked)
+		var blocked := 0
+		for index in range(1089):
+			if TERRAIN.plot_blocked(index, opponent):
+				blocked += 1
+		_check(blocked > 40 and blocked < 300, "Felshügel/Ufer sperren einige äußere Felder im alten Ortsteil: %d" % blocked)
 	var steep_found := 0
 	for index in range(225, REGION.MAX_PLOTS):
 		if not TERRAIN.plot_blocked(index, false):
