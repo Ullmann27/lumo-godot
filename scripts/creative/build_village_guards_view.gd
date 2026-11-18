@@ -13,6 +13,9 @@ const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const TROOPS = preload("res://scripts/creative/build_village_troops.gd")
 const SOLDIERS = preload("res://scripts/creative/build_village_soldiers.gd")
 const VHUD = preload("res://scripts/creative/build_village_hud.gd")
+const ART = preload("res://scripts/creative/build_village_art.gd")
+## Ausbildungsstätten stehen vor dem Tor ihrer Truppe (Blender-Modelle site_*).
+const SITE_GATES := {"schiessplatz": "nord", "kaserne": "west", "stall": "sued"}
 const MAX_SHOWN := 24
 const MAX_PER_KIND := 12
 ## Reihenfolge von vorn nach hinten: Schild hält, Speer stützt, Bogen schießt darüber.
@@ -88,7 +91,15 @@ func sync() -> void:
 	var states := PackedStringArray()
 	for post in GUARDS.POST_ORDER:
 		states.append(post_state(post))
-	var key := "%s|%d|%s" % [JSON.stringify(info.mix), int(model._player.plots), ",".join(states)]
+	var key := (
+		"%s|%d|%s|%s"
+		% [
+			JSON.stringify(info.mix),
+			int(model._player.plots),
+			",".join(states),
+			str(raids.troop_sites)
+		]
+	)
 	if key == _key:
 		return
 	_key = key
@@ -201,6 +212,37 @@ func sync() -> void:
 		holder.set_meta("anchor", sign.position)
 	set_meta("shown_figures", shown_total)
 	set_meta("total", int(info.total))
+	_sites()
+
+
+## Gebaute Ausbildungsstätten als echte Gebäude vor ihrem Tor, seitlich der Formation.
+func _sites() -> void:
+	var placed := 0
+	for site in SITE_GATES:
+		if not bool(raids.troop_sites.get(site, false)):
+			continue
+		var model_name := "site_" + str(site)
+		if not ART.exists(model_name):
+			continue
+		var front := facing(str(SITE_GATES[site]))
+		var node := ART.instance(model_name)
+		node.name = "Site_" + str(site)
+		node.position = site_position(site)
+		# Die Vorderseite schaut zur Straße vor dem Tor.
+		node.rotation.y = atan2(front.x, front.z) + PI * 0.5
+		node.set_meta("site", site)
+		add_child(node)
+		placed += 1
+	set_meta("sites", placed)
+
+
+func site_position(site: String) -> Vector3:
+	var gate := str(SITE_GATES.get(site, "sued"))
+	var front := facing(gate)
+	var lateral := Vector3(-front.z, 0, front.x)
+	var at := post_position(gate) - lateral * 16.0 + front * 7.0
+	at.y = TERRAIN.height(at.x, at.z) - 0.05
+	return at
 
 
 ## Standarte: Stange mit Tuch in Stadtfarbe und goldenem Stern (nah sichtbar).

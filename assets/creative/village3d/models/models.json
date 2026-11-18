@@ -266,6 +266,24 @@
   "sha256": "95c4ef767fd77bb6949fabd5f6cd55a88e64e7ddddd49a530ce6e00cde61d8c9",
   "triangles": 164
  },
+ "site_kaserne": {
+  "bytes": 100600,
+  "parts": [],
+  "sha256": "a7e545d9a29777ca9c3129f381ef6834fc1fccfcea9bb06116a0e951dd1c65ba",
+  "triangles": 700
+ },
+ "site_schiessplatz": {
+  "bytes": 192732,
+  "parts": [],
+  "sha256": "3d9b673ec527ff6ffd28659a89c014c05a3946d602bbebea61058038f3bf77a8",
+  "triangles": 1572
+ },
+ "site_stall": {
+  "bytes": 796820,
+  "parts": [],
+  "sha256": "cd0be71566b569be6204418dfe1c0c8fc0eb8b5e00ac565cc6e6e8d7b933d6df",
+  "triangles": 5758
+ },
  "soldier_bogen": {
   "bytes": 519920,
   "parts": [],

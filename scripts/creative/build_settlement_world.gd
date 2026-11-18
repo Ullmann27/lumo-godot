@@ -783,7 +783,7 @@ func _sync_facilities(view_focus: Vector3) -> void:
 	# Existing living-village batching: preserve every saved building while
 	# loading detailed meshes and colliders only around the camera or explorer.
 	var active: Dictionary = {}
-	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": []}
+	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": [], "trees": []}
 	for opponent in [false, true]:
 		if opponent and mode != "rival":
 			continue
@@ -824,19 +824,16 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				var field := str(building.kind) in ["farm", "grain", "road"]
 				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
 				var height := 0.22 if field else 2.1
-				silhouettes[group].append(
-					Transform3D(
-						Basis.from_scale(Vector3(3.35, height, 3.35)),
-						at + Vector3.UP * (height * 0.5 + 0.06)
+				if not model.living_village:
+					silhouettes[group].append(
+						Transform3D(Basis.from_scale(Vector3(3.35, height, 3.35)), at + Vector3.UP * (height * 0.5 + 0.06))
 					)
-				)
-				if not field:
-					silhouettes.roofs.append(
-						Transform3D(
-							Basis.from_scale(Vector3(3.8, 1.3 if model.living_village else 0.44, 3.8)),
-							at + Vector3.UP * (height + (0.7 if model.living_village else 0.25))
+					if not field:
+						silhouettes.roofs.append(
+							Transform3D(Basis.from_scale(Vector3(3.8, 0.44, 3.8)), at + Vector3.UP * (height + 0.25))
 						)
-					)
+					continue
+				_city_silhouette(silhouettes, str(building.kind), int(building.plot), at, opponent)
 	for key in facility_nodes.keys():
 		if not active.has(key):
 			facility_nodes[key].queue_free()
@@ -846,6 +843,11 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		remove_child(previous_node)
 		previous_node.queue_free()
 	overview_nodes.clear()
+	if model.living_village:
+		_city_batches(silhouettes)
+		set_meta("detailed_facilities", facility_nodes.size())
+		set_meta("map_batches", overview_nodes.size())
+		return
 	var colors := {
 		"homes": Color("eed8a6"), "fields": Color("89ae63"),
 		"services": Color("80b7b1"), "roofs": Color("b96c50")
@@ -878,6 +880,89 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		overview_nodes.append(proxy)
 	set_meta("detailed_facilities", facility_nodes.size())
 	set_meta("map_batches", overview_nodes.size())
+
+
+## Stadtbild aus der Ferne: Häuser in verschiedenen Größen, Wandfarben und
+## Dachfarben je Viertel, Dächer in wechselnder Richtung, Wegeplätze mit Baum.
+## Weiterhin ein MultiMesh je Gruppe (Zeichenaufrufe wie vorher).
+const CITY_ROOFS: Array[Color] = [
+	Color("b4573c"), Color("8e4a32"), Color("5f6b78"), Color("a8683f"), Color("7a3b2e"), Color("4f5d6b")
+]
+const CITY_WALLS: Array[Color] = [
+	Color("e9dcc2"), Color("f1e7d0"), Color("dcc7a1"), Color("e8d5b5"), Color("d9cdb8"), Color("f3ead8")
+]
+
+
+func _city_silhouette(silhouettes: Dictionary, kind: String, plot: int, at: Vector3, opponent: bool) -> void:
+	var hash_value := posmod(plot * 2654435761, 1000003)
+	var quarter := 0
+	var center := REGION.TOWN_CENTER if opponent else -REGION.TOWN_CENTER
+	var offset := Vector2(at.x - center, at.z)
+	if offset.length() > 12.0:
+		quarter = 1 + posmod(int(floor((offset.angle() + PI) / TAU * 6.0)), 6)
+	var roof: Color = CITY_ROOFS[posmod(quarter + (1 if hash_value % 7 == 0 else 0), CITY_ROOFS.size())]
+	var wall: Color = CITY_WALLS[hash_value % CITY_WALLS.size()]
+	if kind in ["farm", "grain"]:
+		var crop := Color("c7b06a") if kind == "grain" else Color("8fae5a").lerp(Color("b5a35e"), float(hash_value % 5) / 8.0)
+		silhouettes.fields.append([Transform3D(Basis.from_scale(Vector3(3.35, 0.22, 3.35)), at + Vector3.UP * 0.17), crop])
+		return
+	if kind == "road":
+		# Wegeplatz: heller Platz mit Baum (Auflockerung).
+		silhouettes.fields.append([Transform3D(Basis.from_scale(Vector3(4.2, 0.12, 4.2)), at + Vector3.UP * 0.1), Color("cdbf9e")])
+		silhouettes.trees.append([Transform3D(Basis.from_scale(Vector3(2.6, 3.0, 2.6)), at + Vector3.UP * 3.0), Color("5f8f3a")])
+		return
+	var service := kind != "house"
+	var width := 3.6 if service else 2.7 + float(hash_value % 4) * 0.2
+	var depth := 3.4 if service else 2.6 + float((hash_value / 4) % 3) * 0.25
+	var height := 2.6 if service else 1.7 + float((hash_value / 12) % 3) * 0.55
+	var turned := (hash_value / 36) % 2 == 1
+	var yaw := PI * 0.5 if turned else 0.0
+	var basis := Basis(Vector3.UP, yaw)
+	silhouettes["services" if service else "homes"].append(
+		[Transform3D(basis.scaled(Vector3(width, height, depth)), at + Vector3.UP * (height * 0.5 + 0.06)),
+			Color("d8cdb8") if service else wall]
+	)
+	silhouettes.roofs.append(
+		[Transform3D(basis.scaled(Vector3(width + 0.5, 1.1 + float(hash_value % 3) * 0.2, depth + 0.5)),
+			at + Vector3.UP * (height + 0.62)), roof.darkened(0.1) if service else roof]
+	)
+
+
+func _city_batches(silhouettes: Dictionary) -> void:
+	for group: String in silhouettes:
+		var entries: Array = silhouettes[group]
+		if entries.is_empty():
+			continue
+		var batch := MultiMesh.new()
+		batch.transform_format = MultiMesh.TRANSFORM_3D
+		batch.use_colors = true
+		var shape: PrimitiveMesh = BoxMesh.new()
+		if group == "roofs":
+			shape = PrismMesh.new()
+		elif group == "trees":
+			var crown := SphereMesh.new()
+			crown.radial_segments = 8
+			crown.rings = 5
+			crown.radius = 0.5
+			crown.height = 1.0
+			shape = crown
+		if shape is BoxMesh or shape is PrismMesh:
+			shape.size = Vector3.ONE
+		batch.mesh = shape
+		batch.instance_count = entries.size()
+		for index in range(entries.size()):
+			batch.set_instance_transform(index, entries[index][0])
+			batch.set_instance_color(index, entries[index][1])
+		var proxy := MultiMeshInstance3D.new()
+		proxy.name = "VillageMap_" + group
+		proxy.multimesh = batch
+		var paint := StandardMaterial3D.new()
+		paint.vertex_color_use_as_albedo = true
+		paint.roughness = 0.88
+		proxy.material_override = paint
+		proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(proxy)
+		overview_nodes.append(proxy)
 
 
 func _refresh_labels() -> void:

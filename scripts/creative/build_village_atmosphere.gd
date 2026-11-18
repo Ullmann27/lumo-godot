@@ -13,13 +13,13 @@ const SHADOWS := {
 const DAY := {
 	"sun_color": Color("fff1da"), "sun_energy": 1.75, "sun_pitch": -38.0, "sun_yaw": -32.0,
 	"sky_top": Color("2f6fb4"), "sky_horizon": Color("b9d4e4"), "ground_horizon": Color("a7bccb"),
-	"ambient": Color("aac2da"), "ambient_energy": 0.32, "fog": Color("a4bfd6"), "fog_density": 0.0016,
+	"ambient": Color("aac2da"), "ambient_energy": 0.32, "fog": Color("a4bfd6"), "fog_density": 0.0009,
 	"exposure": 0.86, "night": 0.0, "fill": 0.18,
 }
 const EVENING := {
 	"sun_color": Color("ffa868"), "sun_energy": 1.05, "sun_pitch": -15.0, "sun_yaw": -68.0,
 	"sky_top": Color("34407a"), "sky_horizon": Color("f2a072"), "ground_horizon": Color("8c6f86"),
-	"ambient": Color("8a8fbf"), "ambient_energy": 0.42, "fog": Color("b88f96"), "fog_density": 0.0024,
+	"ambient": Color("8a8fbf"), "ambient_energy": 0.42, "fog": Color("b88f96"), "fog_density": 0.0016,
 	"exposure": 1.05, "night": 1.0, "fill": 0.12,
 }
 
@@ -40,7 +40,7 @@ static func apply(root: Node3D, tier: String) -> void:
 	env.fog_aerial_perspective = 0.06
 	env.fog_sun_scatter = 0.18
 	env.fog_height = 6.0
-	env.fog_height_density = 0.0 if tier == "low" else 0.012
+	env.fog_height_density = 0.0 if tier == "low" else 0.006
 	env.glow_enabled = tier != "low"
 	env.glow_intensity = 0.35
 	env.glow_strength = 0.9

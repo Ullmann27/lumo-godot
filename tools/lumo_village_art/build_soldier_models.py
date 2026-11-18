@@ -130,7 +130,8 @@ def add_object(b, obj, classify):
         f[b.tile] = V.TILES.index(tile)
         f[b.fit] = 0
         f[b.smooth] = 1 if smooth else 0
-        f[b.team] = 1 if team else 0
+        if hasattr(b, "team"):
+            f[b.team] = 1 if team else 0
         col = V.tint(tile, colour, 1.0)
         if part is not None:
             col = (col[0], col[1], col[2], part_alpha(part))
@@ -871,6 +872,122 @@ def model_soldier_reiter(b):
     return pose
 
 
+# ------------------------------------------------------------------ Ausbildungsstätten
+# Gebäude im Dorf-Stil (village_building.gdshader, starr): Kaserne, Schießplatz, Stall.
+
+def site_flag(b, at, h=5.0):
+    b.cylinder((at[0], h / 2, at[2]), 0.06, h, 6, "beam", "6b4a2f")
+    b.box((at[0] + 0.55, h - 0.5, at[2]), (1.0, 0.75, 0.03), "cloth", TEAM, wave=0.8)
+    b.box((at[0] + 0.55, h - 0.92, at[2]), (1.0, 0.1, 0.035), "cloth", TRIM, wave=0.8)
+
+
+def model_site_kaserne(b):
+    """Kaserne (8 × 5 m): Steinbau mit Schieferdach, Tor, Fenster, Waffenständer, Übungspuppen, Fahne."""
+    w, d, wh = 7.6, 4.6, 2.6
+    b.plinth(w + 0.3, d + 0.3, color="8f877a")
+    b.box((0, 0.22 + wh / 2, 0), (w, wh, d), "stone_wall", "cfc6b4", bottom=False)
+    for x in (-w / 2, 0.0, w / 2):
+        for z in (-d / 2, d / 2):
+            b.box((x, 0.22 + wh / 2, z), (0.36, wh + 0.06, 0.36), "stone_wall", "aaa290")
+    b.gable_roof((0, 0.22 + wh, 0), w, d, 1.9, tile="roof_slate", color="ffffff", gable_tile="stone_wall",
+                 gable_color="cfc6b4")
+    b.door((0, 0.22, d / 2), w=1.5, h=2.0, frame="4a3a2a", lamp=True)
+    for x in (-2.6, -1.5, 1.5, 2.6):
+        b.window((x, 0.22 + 1.5, d / 2 + 0.01), w=0.5, h=0.7, shutters="2f5f9a", box=False)
+    b.box((0, 0.22 + wh + 0.2, d / 2 + 0.05), (1.6, 0.6, 0.06), "cloth", TEAM)
+    # Waffenständer mit Speeren und Schilden, Übungspuppen aus Stroh.
+    b.box((-2.8, 0.7, d / 2 + 1.2), (1.6, 0.08, 0.12), "beam", "6b4a2f")
+    for i in range(5):
+        b.cylinder((-3.4 + i * 0.3, 1.2, d / 2 + 1.25), 0.02, 2.4, 5, "beam", WOOD)
+        b.cone((-3.4 + i * 0.3, 2.4, d / 2 + 1.25), 0.035, 0.18, 4, "metal", STEEL)
+    for i, x in enumerate((1.8, 3.1)):
+        b.cylinder((x, 0.7, d / 2 + 1.6), 0.05, 1.4, 6, "beam", "6b4a2f")
+        b.blob((x, 1.2, d / 2 + 1.6), (0.22, 0.35, 0.18), "thatch", "e0c070", subdiv=1, seed=70 + i)
+        b.blob((x, 1.7, d / 2 + 1.6), (0.14, 0.15, 0.14), "thatch", "e0c070", subdiv=1, seed=80 + i)
+        b.box((x, 1.35, d / 2 + 1.6), (0.9, 0.08, 0.08), "beam", "6b4a2f")
+    site_flag(b, (-w / 2 - 0.8, 0, d / 2 + 0.8), 5.6)
+    b.box((0, 0.03, d / 2 + 1.4), (w + 1.2, 0.06, 2.6), "cobble", "b1a998")
+
+
+def model_site_schiessplatz(b):
+    """Schießplatz: Unterstand, Schießlinie, drei Strohscheiben mit Ringen, Zaun, Bogenständer."""
+    b.box((0, 0.03, 0), (9.0, 0.06, 7.0), "field", "c9b98a")
+    for z in (-3.4, 3.4):
+        b.fence((-4.4, 0, z), (4.4, 0, z), color="9a7048", h=0.8)
+    # Unterstand (offenes Pultdach) an der Schießlinie.
+    for x in (-3.8, -1.8):
+        for z in (1.6, 3.0):
+            b.box((x, 1.2, z), (0.14, 2.4, 0.14), "beam", "6b4a2f")
+    b.push((-2.8, 2.45, 2.3), rot_x=0.18)
+    b.box((0, 0, 0), (2.6, 0.1, 1.9), "thatch", "d6b870")
+    b.pop()
+    b.box((0, 0.06, 1.2), (8.6, 0.04, 0.12), "plain", "f2ead0")
+    for i in range(4):
+        b.cylinder((-3.6 + i * 0.4, 0.9, 2.4), 0.02, 1.7, 5, "beam", "7a4a26")
+    for i, x in enumerate((-2.4, 0.0, 2.4)):
+        b.push((x, 0, -2.4))
+        for s in (-1, 1):
+            b.push((s * 0.35, 0.65, -0.2), rot_x=0.25)
+            b.box((0, 0, 0), (0.08, 1.4, 0.08), "beam", "6b4a2f")
+            b.pop()
+        b.cylinder((0, 1.15, 0.0), 0.62, 0.3, 18, "thatch", "e3c878", axis="z")
+        for r, col in ((0.5, "f4efe2"), (0.36, "c94a3a"), (0.22, "f4efe2"), (0.1, "f0c64a")):
+            b.cylinder((0, 1.15, 0.16 + (0.5 - r) * 0.02), r, 0.01, 18, "plain", col, axis="z")
+        b.pop()
+    site_flag(b, (4.0, 0, 2.6), 4.4)
+
+
+def model_site_stall(b):
+    """Stall: Holzscheune mit großem Tor, Heuboden, Koppelzaun, Tränke, Heuballen, zwei Pferde."""
+    w, d, wh = 6.4, 4.2, 2.5
+    b.plinth(w + 0.2, d + 0.2, color="8f877a")
+    b.box((0, 0.22 + wh / 2, 0), (w, wh, d), "planks", "8a5a36", bottom=False)
+    b.timber_frame(w + 0.02, wh, d + 0.02, y0=0.22, color="4a3020")
+    b.gable_roof((0, 0.22 + wh, 0), w, d, 1.8, tile="thatch", color="ffffff", gable_tile="planks", gable_color="8a5a36")
+    for x in (-1.6, 1.6):
+        b.box((x, 0.22 + 1.0, d / 2 + 0.03), (1.4, 2.0, 0.06), "planks", "5e3c22")
+        b.box((x, 0.22 + 1.0, d / 2 + 0.07), (1.3, 0.1, 0.03), "beam", "3e2a1c")
+    b.box((0, 0.22 + wh + 0.6, d / 2 + 0.05), (1.0, 0.8, 0.05), "planks", "3e2a1c")
+    b.blob((0, 0.22 + wh + 0.45, d / 2 + 0.12), (0.4, 0.2, 0.1), "thatch", "e0c070", subdiv=1, seed=91)
+    for a, c in (((-3.6, 0, 2.6), (3.6, 0, 2.6)), ((-3.6, 0, 6.6), (3.6, 0, 6.6)), ((-3.6, 0, 2.6), (-3.6, 0, 6.6)),
+                 ((3.6, 0, 2.6), (3.6, 0, 6.6))):
+        b.fence(a, c, color="9a7048", h=0.95)
+    b.box((2.4, 0.3, 3.4), (1.4, 0.4, 0.5), "planks", "6b4a2f")
+    b.box((2.4, 0.46, 3.4), (1.25, 0.06, 0.38), "plain", "4f8fae")
+    for i, (x, z) in enumerate(((-3.0, -2.6), (-2.2, -2.7), (3.4, -2.2))):
+        b.cylinder((x, 0.45, z), 0.45, 0.9, 12, "thatch", "e0c070", axis="z")
+    start = len(b.bm.faces)
+    b.push((-1.2, 0, 4.6), rot_y=0.6)
+    horse(b, colour="7a4a2c")
+    b.pop()
+    b.push((1.0, 0, 5.4), rot_y=-2.2)
+    horse(b, colour="3e2c22", mane="1a1410")
+    b.pop()
+    b.bm.faces.ensure_lookup_table()
+    for f in b.bm.faces[start:]:
+        for loop in f.loops:
+            c = loop[b.col]
+            loop[b.col] = (c[0], c[1], c[2], 1.0)
+    site_flag(b, (-w / 2 - 0.6, 0, d / 2 + 0.4), 5.0)
+
+
+SITES = {
+    "site_kaserne": model_site_kaserne,
+    "site_schiessplatz": model_site_schiessplatz,
+    "site_stall": model_site_stall,
+}
+
+
+def build_site(name):
+    V.tint = _VILLAGE_TINT
+    try:
+        V.MODELS[name] = (SITES[name], {})
+        info = V.build_model(name)
+    finally:
+        V.tint = _soldier_tint
+    return info
+
+
 MODELS = {
     "soldier_schild": model_soldier_schild,
     "soldier_bogen": model_soldier_bogen,
@@ -988,6 +1105,14 @@ def main():
         print(f"{name}: {info['triangles']} tris, {info['bytes']} bytes")
     if len(rigs) == len(MODELS):
         write_rig(rigs)
+    for name in SITES:
+        if args.only and name not in args.only.split(","):
+            continue
+        info = build_site(name)
+        info["sha256"] = hashlib.sha256((V.OUT / f"{name}.glb").read_bytes()).hexdigest()
+        assert info["triangles"] < 20000 and info["bytes"] < 2 * 1024 * 1024, name
+        report[name] = info
+        print(f"{name}: {info['triangles']} tris, {info['bytes']} bytes")
     report_path.write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
 
 
