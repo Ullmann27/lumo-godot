@@ -1618,7 +1618,7 @@ func show_neighbor_towns() -> void:
 	tilt = 1.3
 	var half_fov := deg_to_rad(camera.fov * 0.5)
 	# Oben und unten liegen Leisten: nur gut zwei Drittel der Höhe zählen.
-	var need := maxf(along * 0.5 / (tan(half_fov) * 0.68), across * 0.5 / (tan(half_fov) * aspect * 0.92))
+	var need := maxf(along * 0.5 / (tan(half_fov) * 0.68), across * 0.5 / (tan(half_fov) * aspect * 0.7))
 	radius = need
 	focus = Vector3(middle.x, 0, middle.y)
 	focus.y = REGION.ground(focus.x, focus.z)

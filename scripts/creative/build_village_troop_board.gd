@@ -5,12 +5,12 @@ extends PanelContainer
 ## darunter die Tore mit ihren Verbänden (Antippen wählt, „hierher“ verlegt).
 ## Liest nur echte Zahlen aus build_village_guards.gd / build_village_troops.gd;
 ## jede Handlung geht über host.troop_board_action(...).
-## Bedienflächen mindestens TOUCH hoch: 126 px am offenen Fold (Maßstab ≤ 1,42).
+## Bedienflächen mindestens TOUCH (dp) hoch: ≥ 126 px am offenen Fold (2,625 px je dp).
 const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const TROOPS = preload("res://scripts/creative/build_village_troops.gd")
 const VHUD = preload("res://scripts/creative/build_village_hud.gd")
 const HUD = preload("res://scripts/creative/build_hud_style.gd")
-const TOUCH := 90.0
+const TOUCH := 52.0
 const STRENGTH := {
 	"schild": "Hält Tor und Mauer. Stark gegen Belagerer, schwach gegen Flieger.",
 	"bogen": "Schießt von Mauer und Turm. Stark gegen Flieger, Türme machen sie besser.",
@@ -37,11 +37,11 @@ func setup(village_host) -> void:
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 12)
 	outer.add_child(head)
-	_title = VHUD.label("Deine Truppen", 30)
+	_title = VHUD.label("Deine Truppen", 24)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	head.add_child(_title)
-	_close = _button("Schließen", close, 180.0, "cream", 22)
+	_close = _button("Schließen", close, 120.0, "cream", 18)
 	_close.name = "TroopBoardClose"
 	head.add_child(_close)
 	_scroll = ScrollContainer.new()
@@ -66,7 +66,7 @@ func fit(rect: Rect2) -> void:
 	position = rect.position
 	size = rect.size
 	custom_minimum_size = Vector2.ZERO
-	var wanted := 4 if rect.size.x >= 1400.0 else (2 if rect.size.x >= 640.0 else 1)
+	var wanted := 4 if rect.size.x >= 1150.0 else (2 if rect.size.x >= 560.0 else 1)
 	if wanted != columns:
 		columns = wanted
 		refresh()
@@ -83,7 +83,7 @@ func _button(
 	return control
 
 
-func _text(text: String, font := 20, color := VHUD.INK_LIGHT) -> Label:
+func _text(text: String, font := 17, color := VHUD.INK_LIGHT) -> Label:
 	var label := VHUD.label(text, font, color)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -115,27 +115,16 @@ func refresh() -> void:
 		child.queue_free()
 	var info: Dictionary = GUARDS.overview(model, raids)
 	_title.text = "Deine Truppen · %d Soldaten" % int(info.total)
-	(
-		_content
-		. add_child(
-			_text(
-				(
-					"%d Soldaten in %d Verbänden · Platz für %d weitere (höchstens die halbe Bevölkerung)."
-					% [int(info.total), int(info.units), int(info.room)]
-				),
-				22
-			)
-		)
+	var summary := (
+		"%d Soldaten in %d Verbänden · Platz für %d weitere."
+		% [int(info.total), int(info.units), int(info.room)]
 	)
-	_content.add_child(
-		_text(
-			(
-				"Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag. %s"
-				% [int(info.food_per_day), str(info.reserve_text)]
-			),
-			19
-		)
+	_content.add_child(_text(summary + " Höchstens die halbe Bevölkerung kann Soldat sein.", 18))
+	var food := (
+		"Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag."
+		% [int(info.food_per_day)]
 	)
+	_content.add_child(_text(food + " " + str(info.reserve_text), 16))
 	if not raids.pending.is_empty():
 		var view: Dictionary = raids.forecast()
 		_lumo(
@@ -162,16 +151,16 @@ func _lumo(text: String) -> void:
 	row.add_theme_constant_override("separation", 10)
 	var face := TextureRect.new()
 	face.texture = VHUD.texture("lumo_portrait")
-	face.custom_minimum_size = Vector2(72, 72)
+	face.custom_minimum_size = Vector2(56, 56)
 	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	row.add_child(face)
-	row.add_child(_text("Lumo: " + text, 20, VHUD.GOLD))
+	row.add_child(_text("Lumo: " + text, 17, VHUD.GOLD))
 	_content.add_child(row)
 
 
 func _post_picker() -> void:
-	_content.add_child(_text("Neue Soldaten stellen sich hier auf:", 22))
+	_content.add_child(_text("Neue Soldaten stellen sich hier auf:", 18))
 	var posts := HFlowContainer.new()
 	posts.name = "TroopPosts"
 	posts.add_theme_constant_override("h_separation", 10)
@@ -205,7 +194,7 @@ func _card(kind: String, info: Dictionary) -> Control:
 	var picture := TextureRect.new()
 	picture.name = "TroopPicture"
 	picture.texture = VHUD.texture("troop_" + kind)
-	picture.custom_minimum_size = Vector2(150, 150)
+	picture.custom_minimum_size = Vector2(112, 112)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	top.add_child(picture)
@@ -213,12 +202,12 @@ func _card(kind: String, info: Dictionary) -> Control:
 	facts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(facts)
 	var ink := HUD.INK
-	facts.add_child(_text(TROOPS.title(kind, 2), 26, ink))
-	var count := _text("%d" % int(info.kinds[kind]), 40, Color("1d4f8a"))
+	facts.add_child(_text(TROOPS.title(kind, 2), 21, ink))
+	var count := _text("%d" % int(info.kinds[kind]), 30, Color("1d4f8a"))
 	count.name = "TroopCount"
 	facts.add_child(count)
-	facts.add_child(_text(str(STRENGTH[kind]), 19, ink))
-	box.add_child(_text("Je Soldat: " + host._cost_text(TROOPS.cost(kind, 1)), 19, ink))
+	facts.add_child(_text(str(STRENGTH[kind]), 16, ink))
+	box.add_child(_text("Je Soldat: " + host._cost_text(TROOPS.cost(kind, 1)), 16, ink))
 	var site := TROOPS.site_needed(kind)
 	if not site.is_empty() and not GUARDS.has_site(raids, kind):
 		var spec: Dictionary = TROOPS.SITES[site]
@@ -232,7 +221,7 @@ func _card(kind: String, info: Dictionary) -> Control:
 		build.disabled = not model._affords(model._player, spec.cost)
 		build.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		box.add_child(build)
-		box.add_child(_text("Danach stehen sie auf der Karte und du kannst ausbilden.", 18, ink))
+		box.add_child(_text("Danach stehen sie auf der Karte und du kannst ausbilden.", 16, ink))
 		return card
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
@@ -241,7 +230,7 @@ func _card(kind: String, info: Dictionary) -> Control:
 	for step in GUARDS.STEPS:
 		var error := GUARDS.train_error(model, raids, int(step), str(host.guard_post), kind)
 		var plus := _button(
-			"+%d" % int(step), _act.bind("train_" + kind, "", int(step)), 80.0, "leaf", 24
+			"+%d" % int(step), _act.bind("train_" + kind, "", int(step)), 80.0, "leaf", 20
 		)
 		plus.name = "TroopTrain_%s_%d" % [kind, int(step)]
 		plus.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -250,15 +239,15 @@ func _card(kind: String, info: Dictionary) -> Control:
 		if not error.is_empty() and hint.is_empty():
 			hint = error
 	if not hint.is_empty():
-		box.add_child(_text(hint, 17, Color("7a3b1c")))
+		box.add_child(_text(hint, 15, Color("7a3b1c")))
 	return card
 
 
 func _gates(info: Dictionary) -> void:
 	var raids = host.raids
-	_content.add_child(_text("Tore und Verbände", 26))
+	_content.add_child(_text("Tore und Verbände", 21))
 	_content.add_child(
-		_text("Tipp einen Verband an und dann „hierher“ beim Tor, an das er gehen soll.", 19)
+		_text("Tipp einen Verband an und dann „hierher“ beim Tor, an das er gehen soll.", 16)
 	)
 	var chosen := GUARDS.find(raids, selected_unit)
 	if not chosen.is_empty():
@@ -285,7 +274,7 @@ func _gates(info: Dictionary) -> void:
 		head.add_theme_constant_override("separation", 10)
 		box.add_child(head)
 		head.add_child(
-			_text("%s · %d Soldaten" % [str(GUARDS.POSTS[post]), int(info.posts[post])], 22)
+			_text("%s · %d Soldaten" % [str(GUARDS.POSTS[post]), int(info.posts[post])], 18)
 		)
 		if not chosen.is_empty() and str(chosen.post) != post:
 			var here := _button("hierher", _act.bind("move", post, selected_unit), 150.0, "primary")
@@ -312,7 +301,7 @@ func _gates(info: Dictionary) -> void:
 				_act.bind("select", "", id),
 				230.0,
 				"primary" if id == selected_unit else "cream",
-				19
+				16
 			)
 			pick.name = "TroopUnit_%d" % id
 			units.add_child(pick)
