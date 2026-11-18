@@ -14,6 +14,10 @@ const JUMP = preload("res://scripts/games/jump_touch_button.gd")
 const FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 const HUD = preload("res://scripts/creative/build_hud_style.gd")
 const CAMPAIGN_MAP = preload("res://scripts/creative/build_campaign_map.gd")
+const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
+const ATMOSPHERE = preload("res://scripts/creative/build_village_atmosphere.gd")
+const ART = preload("res://scripts/creative/build_village_art.gd")
+const LIFE = preload("res://scripts/creative/build_village_life.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -79,6 +83,13 @@ var last_view_radius := -1.0
 var overview_nodes: Array[MultiMeshInstance3D] = []
 # Twelve real chapter milestones share one lightweight world landmark.
 var beacon_progress: Array[MeshInstance3D] = []
+var village_life: Node3D
+var art_material: ShaderMaterial
+var quality := "medium"
+var time_of_day := 0.35
+var day_cycle: Tween
+var fresh_builds: Dictionary = {}
+var spinning_parts: Array[Node3D] = []
 
 
 func _ready() -> void:
@@ -134,10 +145,19 @@ func _ready() -> void:
 	return_scene = "games" if host_entry else "build"
 	kit.environment(self, "bauwelt_day")
 	NEXTGEN_ENV.apply_day(self)
+	quality = LumoQuality.tier()
+	if model.living_village:
+		# Strong reference: every village building shares this one material.
+		art_material = ART.material()
+		ATMOSPHERE.apply(self, quality)
+		focus = _start_focus()
+		orbit = 0.42
+		tilt = 0.62
+		radius = 52.0
 	_build_landscape()
 	camera = Camera3D.new()
 	camera.fov = 51
-	camera.far = 600 if model.living_village else 180
+	camera.far = {"low": 420.0, "medium": 620.0, "high": 900.0}.get(quality, 620.0) if model.living_village else 180.0
 	add_child(camera)
 	camera.current = true
 	explorer = EXPLORER.new()
@@ -288,6 +308,9 @@ func _build_landscape() -> void:
 		village_residents = RESIDENTS.new()
 		add_child(village_residents)
 		village_residents.configure()
+		village_life = LIFE.new()
+		add_child(village_life)
+		village_life.configure(quality)
 		return
 	for x in [-16.0, 16.0]:
 		var bank := StaticBody3D.new()
@@ -638,6 +661,9 @@ func _sync_visible_plots(force := false) -> void:
 			if model.living_village and where.distance_squared_to(view_focus) > 75.0 * 75.0:
 				continue
 			var key := "%s_%d" % ["r" if opponent else "p", index]
+			if model.living_village and not model.plot_buildable(index, opponent):
+				# Rock, slope or shore: no building site and nothing to tap.
+				continue
 			active_plots[key] = true
 			if not plot_nodes.has(key):
 				var body := StaticBody3D.new()
@@ -646,14 +672,19 @@ func _sync_visible_plots(force := false) -> void:
 				body.set_meta("plot", index)
 				body.set_meta("opponent", opponent)
 				add_child(body)
-				var plot_mesh := kit.box(
-					body,
-					Vector3(0, 0, 0),
-					Vector3(4.65, 0.06, 4.65),
-					Color("b6bc86") if opponent else Color("bad39c")
-				)
-				plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
-				kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
+				if model.living_village:
+					# The site is painted into the terrain; the collider reaches
+					# above small bumps so a tap always lands on the plot.
+					kit.collision(body, Vector3(0, -0.12, 0), Vector3(4.65, 0.5, 4.65))
+				else:
+					var plot_mesh := kit.box(
+						body,
+						Vector3(0, 0, 0),
+						Vector3(4.65, 0.06, 4.65),
+						Color("b6bc86") if opponent else Color("bad39c")
+					)
+					plot_mesh.material_override = NEXTGEN_ENV.plot_material(opponent)
+					kit.collision(body, Vector3(0, -0.01, 0), Vector3(4.65, 0.08, 4.65))
 				plot_nodes[key] = body
 	for key in plot_nodes.keys():
 		if not active_plots.has(key):
@@ -693,12 +724,19 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				active[key] = true
 				detailed += 1
 				if not facility_nodes.has(key):
-					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent)
+					var variant := posmod(int(building.plot) * 7 + (3 if opponent else 0), 3)
+					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent, variant)
 					facility.position = at + Vector3.UP * 0.06
+					if model.living_village:
+						# A slight, stable turn per plot keeps streets from looking stamped.
+						facility.rotation.y = (float(posmod(int(building.plot) * 13, 5)) - 2.0) * 0.035
 					facility.set_meta("plot", int(building.plot))
 					facility.set_meta("opponent", opponent)
 					add_child(facility)
 					facility_nodes[key] = facility
+					if fresh_builds.has(key):
+						fresh_builds.erase(key)
+						VISUAL.animate_construction(facility)
 			else:
 				var field := str(building.kind) in ["farm", "grain", "road"]
 				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
@@ -712,14 +750,15 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				if not field:
 					silhouettes.roofs.append(
 						Transform3D(
-							Basis.from_scale(Vector3(3.8, 0.44, 3.8)),
-							at + Vector3.UP * (height + 0.25)
+							Basis.from_scale(Vector3(3.8, 1.3 if model.living_village else 0.44, 3.8)),
+							at + Vector3.UP * (height + (0.7 if model.living_village else 0.25))
 						)
 					)
 	for key in facility_nodes.keys():
 		if not active.has(key):
 			facility_nodes[key].queue_free()
 			facility_nodes.erase(key)
+	_collect_living_details()
 	for previous_node in overview_nodes:
 		remove_child(previous_node)
 		previous_node.queue_free()
@@ -728,13 +767,20 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		"homes": Color("eed8a6"), "fields": Color("89ae63"),
 		"services": Color("80b7b1"), "roofs": Color("b96c50")
 	}
+	if model.living_village:
+		colors = {
+			"homes": Color("e9dcc2"), "fields": Color("c7b06a"),
+			"services": Color("d8cdb8"), "roofs": Color("b4573c")
+		}
 	for group: String in silhouettes:
 		var transforms: Array = silhouettes[group]
 		if transforms.is_empty():
 			continue
 		var batch := MultiMesh.new()
 		batch.transform_format = MultiMesh.TRANSFORM_3D
-		var cube := BoxMesh.new()
+		var cube: PrimitiveMesh = BoxMesh.new()
+		if group == "roofs" and model.living_village:
+			cube = PrismMesh.new()
 		cube.size = Vector3.ONE
 		batch.mesh = cube
 		batch.instance_count = transforms.size()
@@ -858,6 +904,9 @@ func _buy(kind: String) -> void:
 	if not model.try_build(kind, selected_plot):
 		feedback.text = model.last_error
 		return
+	var built: Array = model.player().buildings
+	if not built.is_empty():
+		fresh_builds["p_" + str(built[-1].id)] = true
 	selected_plot = -1
 	_rebuild()
 	feedback.text = (
@@ -880,7 +929,7 @@ func _focus_next_free_plot() -> void:
 	var count: int = int(town.plots)
 	for offset in range(count):
 		var candidate: int = (selected_plot + 1 + offset) % count
-		if used.has(candidate):
+		if used.has(candidate) or not model.plot_buildable(candidate):
 			continue
 		selected_plot = candidate
 		focus = _plot_world(candidate)
@@ -903,6 +952,7 @@ func _next_day() -> void:
 	var report: Dictionary = model.next_day()
 	_rebuild()
 	if bool(report.get("advanced", false)):
+		_play_day_cycle()
 		var own: Dictionary = report.player
 		feedback.text = (
 			"Tag %d: %s erhalten · %d Essen gebraucht%s"
@@ -1341,6 +1391,8 @@ func _zoom_village(direction: int) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
 		return
+	if model.living_village and _village_release(event):
+		return
 	if pointer < 0:
 		return
 	var release: bool = (
@@ -1398,6 +1450,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if walking and event is InputEventKey and not event.echo and event.keycode == KEY_SPACE:
 		explorer.hold_jump(event.pressed)
+	if model.living_village and not walking:
+		_village_gesture(event)
+		return
 	if event is InputEventScreenTouch:
 		if event.pressed and pointer < 0:
 			pointer = event.index
@@ -1436,6 +1491,24 @@ func _pick_plot(point: Vector2) -> void:
 		origin, origin + camera.project_ray_normal(point) * 180, 1
 	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot"):
+		# A tap on the slope or meadow between sites selects the cell under it.
+		var side := 1.0 if float(hit.position.x) > 0.0 else -1.0
+		var center := side * REGION.TOWN_CENTER
+		var cell := Vector2i(
+			roundi((float(hit.position.x) - center) / REGION.SPACING), roundi(float(hit.position.z) / REGION.SPACING)
+		)
+		var index := REGION.plot_index_at(cell)
+		var opponent := side > 0.0
+		var town: Dictionary = model.rival() if opponent else model.player()
+		if index < 0 or index >= int(town.plots) or (opponent and mode != "rival"):
+			return
+		if not model.plot_buildable(index, opponent):
+			feedback.text = "Hier ist Fels, Hang oder Ufer. Gebaut wird auf flacher Wiese."
+			return
+		hit = {"collider": plot_nodes.get("%s_%d" % ["r" if opponent else "p", index])}
+		if hit.collider == null:
+			return
 	if hit.is_empty() or not hit.collider.has_meta("plot"):
 		return
 	if bool(hit.collider.get_meta("opponent", false)):
@@ -1450,10 +1523,15 @@ func _camera_update(immediate := false) -> void:
 		return
 	var aspect := get_viewport().get_visible_rect().size.aspect()
 	var target_radius := maxf(radius, 20.0 / maxf(0.35, aspect))
+	var look := focus
+	if model.living_village:
+		look.y = REGION.ground(focus.x, focus.z) + 0.6
 	camera.position = (
-		focus + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
+		look + Vector3(sin(orbit) * cos(tilt), sin(tilt), cos(orbit) * cos(tilt)) * target_radius
 	)
-	camera.look_at(focus)
+	if model.living_village:
+		camera.position.y = maxf(camera.position.y, REGION.ground(camera.position.x, camera.position.z) + 3.0)
+	camera.look_at(look)
 	if is_instance_valid(village_region):
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
@@ -1506,6 +1584,8 @@ func _physics_process(delta: float) -> void:
 			_sync_visible_plots()
 	if is_instance_valid(village_residents):
 		village_residents.advance(delta)
+	if model.living_village:
+		_advance_village_details(delta)
 	if is_instance_valid(rival_host):
 		rival_host.position = rival_host.position.move_toward(rival_destination, 1.5 * delta)
 		rival_host.set_companion_pose(Time.get_ticks_msec() / 1000.0, "happy")
@@ -1579,3 +1659,223 @@ func _save_message() -> void:
 func _leave(destination: String = "") -> void:
 	if save_blocked or _save():
 		SceneRouter.goto(return_scene if destination.is_empty() else destination)
+
+
+# ----------------------------------------------------------------- Dorfwelt
+# Kamera, Tageszeit und lebendige Details der großen Dorfkarte. Nichts davon
+# verändert Spielstand, Rohstoffe, Zeitlauf oder Belohnungen.
+const FOCUS_LIMIT := Vector2(205.0, 108.0)
+const RADIUS_RANGE := Vector2(14.0, 110.0)
+const TILT_RANGE := Vector2(0.28, 1.25)
+var touches: Dictionary = {}
+var gesture_moved := false
+var gesture_start := Vector2.ZERO
+var pinch_distance := 0.0
+var pinch_angle := 0.0
+var pinch_center := Vector2.ZERO
+var pan_velocity := Vector3.ZERO
+var mouse_orbit := false
+
+
+func _start_focus() -> Vector3:
+	return Vector3(-REGION.TOWN_CENTER + 2.0, REGION.ground(-REGION.TOWN_CENTER, 0.0), 4.0)
+
+
+## Für Darstellung und Bildprüfungen: dieselbe Regel wie im Spielmodell.
+func plot_buildable(plot: int, opponent := false) -> bool:
+	return model.plot_buildable(plot, opponent)
+
+
+func set_time_of_day(value: float) -> void:
+	time_of_day = clampf(value, 0.0, 1.0)
+	if model.living_village:
+		ATMOSPHERE.set_time(self, time_of_day)
+		if is_instance_valid(village_life):
+			village_life.set_night(float(get_meta("village_night", 0.0)))
+
+
+func toggle_evening() -> void:
+	if day_cycle != null and day_cycle.is_valid():
+		day_cycle.kill()
+	var target := 0.35 if time_of_day > 0.6 else 0.82
+	day_cycle = create_tween()
+	day_cycle.tween_method(set_time_of_day, time_of_day, target, 1.6).set_trans(Tween.TRANS_SINE)
+
+
+## „Nächster Tag“: der Abend zieht über das Tal, Fenster gehen an, dann wird
+## es wieder Morgen. Nur Bild – der Tag im Modell ist schon weitergezählt.
+func _play_day_cycle() -> void:
+	if not model.living_village or not is_inside_tree():
+		return
+	if day_cycle != null and day_cycle.is_valid():
+		day_cycle.kill()
+	day_cycle = create_tween()
+	day_cycle.tween_method(set_time_of_day, time_of_day, 0.86, 1.1).set_trans(Tween.TRANS_SINE)
+	day_cycle.tween_interval(0.5)
+	day_cycle.tween_method(set_time_of_day, 0.86, 0.35, 1.3).set_trans(Tween.TRANS_SINE)
+
+
+func _collect_living_details() -> void:
+	if not model.living_village:
+		return
+	spinning_parts.clear()
+	var chimneys: Array[Vector3] = []
+	var built: Array = []
+	for building in model.player().buildings:
+		built.append(int(building.plot))
+	for key in facility_nodes:
+		var facility: Node3D = facility_nodes[key]
+		for part in facility.get_meta("spin_parts", []):
+			if is_instance_valid(part):
+				spinning_parts.append(part)
+		for local in facility.get_meta("chimneys", []):
+			chimneys.append(facility.transform * (local as Vector3))
+	if is_instance_valid(village_region):
+		village_region.set_built_plots(built, false)
+		if mode == "rival":
+			var rival_built: Array = []
+			for building in model.rival().buildings:
+				rival_built.append(int(building.plot))
+			village_region.set_built_plots(rival_built, true)
+	if is_instance_valid(village_life):
+		var view_focus: Vector3 = explorer.position if walking else focus
+		chimneys.sort_custom(
+			func(a: Vector3, b: Vector3) -> bool:
+				return a.distance_squared_to(view_focus) < b.distance_squared_to(view_focus)
+		)
+		village_life.set_smoke_sources(chimneys)
+		village_life.set_town(model.player(), view_focus)
+
+
+func _advance_village_details(delta: float) -> void:
+	var step := minf(delta, 0.1)
+	for part in spinning_parts:
+		if is_instance_valid(part):
+			part.rotate_object_local(Vector3.RIGHT, step * (2.6 if str(part.name) == "Spin_Saw" else 0.7))
+	if is_instance_valid(village_region):
+		village_region.advance(step)
+	if is_instance_valid(village_life):
+		village_life.advance(step, camera.global_position if is_instance_valid(camera) else focus)
+	if not walking and touches.is_empty() and pan_velocity.length_squared() > 0.0004:
+		focus += pan_velocity * step
+		pan_velocity *= exp(-4.5 * step)
+		_clamp_focus()
+		_camera_update()
+
+
+func _clamp_focus() -> void:
+	focus.x = clampf(focus.x, -FOCUS_LIMIT.x, FOCUS_LIMIT.x)
+	focus.z = clampf(focus.z, -FOCUS_LIMIT.y, FOCUS_LIMIT.y)
+	focus.y = REGION.ground(focus.x, focus.z)
+
+
+func _pan_by(relative: Vector2) -> Vector3:
+	var height := maxf(1.0, get_viewport().get_visible_rect().size.y)
+	var scale := maxf(radius, 20.0) * 1.15 / height
+	var right := Vector3(cos(orbit), 0.0, -sin(orbit))
+	var forward := Vector3(-sin(orbit), 0.0, -cos(orbit))
+	var move := -right * relative.x * scale + forward * relative.y * scale / maxf(0.35, sin(tilt))
+	focus += move
+	_clamp_focus()
+	return move
+
+
+## Ein Finger: verschieben. Zwei Finger: zoomen, drehen, neigen.
+## Maus: linke Taste verschieben, rechte Taste drehen, Rad zoomen.
+func _village_gesture(event: InputEvent) -> void:
+	if paused or is_instance_valid(campaign_map):
+		return
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touches[event.index] = event.position
+			pan_velocity = Vector3.ZERO
+			if touches.size() == 1:
+				gesture_start = event.position
+				gesture_moved = false
+			elif touches.size() == 2:
+				gesture_moved = true
+				_reset_pinch()
+		else:
+			_village_release(event)
+	elif event is InputEventScreenDrag and touches.has(event.index):
+		touches[event.index] = event.position
+		if touches.size() == 1:
+			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
+			if gesture_moved:
+				var move := _pan_by(event.relative)
+				pan_velocity = pan_velocity.lerp(move / maxf(get_physics_process_delta_time(), 0.008), 0.35)
+				_camera_update()
+		elif touches.size() >= 2:
+			_pinch_update()
+	elif event is InputEventMouseButton:
+		if event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and event.pressed:
+			radius = clampf(radius * (0.9 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1.1), RADIUS_RANGE.x, RADIUS_RANGE.y)
+			_camera_update()
+			_sync_visible_plots()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			mouse_orbit = event.pressed
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				touches[-1] = event.position
+				gesture_start = event.position
+				gesture_moved = false
+				pan_velocity = Vector3.ZERO
+			else:
+				_village_release(event)
+	elif event is InputEventMouseMotion:
+		if mouse_orbit:
+			orbit -= event.relative.x * 0.006
+			tilt = clampf(tilt + event.relative.y * 0.004, TILT_RANGE.x, TILT_RANGE.y)
+			_camera_update()
+		elif touches.has(-1):
+			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
+			if gesture_moved:
+				_pan_by(event.relative)
+				_camera_update()
+
+
+func _reset_pinch() -> void:
+	var points: Array = touches.values()
+	pinch_distance = (points[0] as Vector2).distance_to(points[1])
+	pinch_angle = ((points[1] as Vector2) - (points[0] as Vector2)).angle()
+	pinch_center = ((points[0] as Vector2) + (points[1] as Vector2)) * 0.5
+
+
+func _pinch_update() -> void:
+	var points: Array = touches.values()
+	var a: Vector2 = points[0]
+	var b: Vector2 = points[1]
+	var distance := a.distance_to(b)
+	var angle := (b - a).angle()
+	var center := (a + b) * 0.5
+	if pinch_distance > 8.0 and distance > 8.0:
+		radius = clampf(radius * pinch_distance / distance, RADIUS_RANGE.x, RADIUS_RANGE.y)
+	orbit += wrapf(angle - pinch_angle, -PI, PI)
+	tilt = clampf(tilt + (center.y - pinch_center.y) * 0.004, TILT_RANGE.x, TILT_RANGE.y)
+	pinch_distance = distance
+	pinch_angle = angle
+	pinch_center = center
+	_camera_update()
+	_sync_visible_plots()
+
+
+## Owns every world-finger release, even above HUD controls, so no stale
+## finger blocks the next plot selection. Returns true when consumed.
+func _village_release(event: InputEvent) -> bool:
+	var index := -2
+	if event is InputEventScreenTouch and not event.pressed:
+		index = event.index
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		index = -1
+	if index == -2 or not touches.has(index):
+		return false
+	var was_single := touches.size() == 1
+	touches.erase(index)
+	var canceled: bool = event is InputEventScreenTouch and event.canceled
+	if was_single and not gesture_moved and not canceled and not walking and not paused:
+		_pick_plot(event.position)
+	if touches.size() == 1:
+		gesture_start = touches.values()[0]
+		gesture_moved = true
+	get_viewport().set_input_as_handled()
+	return true

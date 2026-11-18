@@ -2,6 +2,7 @@ extends RefCounted
 ## Deterministic, offline settlement rules. Both towns use the same prices,
 ## production and needs. Time advances only through the child's Next Day action.
 const VILLAGE = preload("res://scripts/creative/build_settlement_economy.gd")
+const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const CLASSIC_KINDS := ["house", "farm", "lumber", "quarry", "market", "school"]
 const BUILDINGS := {
 	"house":
@@ -124,6 +125,9 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 		return false
 	if plot < 0 or plot >= int(town.plots):
 		last_error = "Dieses Grundstück ist noch nicht erschlossen."
+		return false
+	if not plot_buildable(plot, is_same(town, _rival)):
+		last_error = "Hier ist Fels, Hang oder Ufer. Bauen geht nur auf flacher Wiese."
 		return false
 	if int(town.next_id) >= 10000:
 		last_error = "Dieses Projekt hat seine Baugeschichte gefüllt. Öffne ein weiteres Projekt."
@@ -427,10 +431,18 @@ func _free_plot(town: Dictionary) -> int:
 	var occupied := {}
 	for building: Dictionary in town.buildings:
 		occupied[int(building.plot)] = true
+	var opponent := is_same(town, _rival)
 	for plot in range(int(town.plots)):
-		if not occupied.has(plot):
+		if not occupied.has(plot) and plot_buildable(plot, opponent):
 			return plot
 	return -1
+
+
+## Gelände der Dorfwelt: Berge, Felshügel, Ufer und Wasser sind nicht bebaubar.
+## Bestehende Gebäude auf solchen Feldern bleiben beim Laden erhalten; nur neue
+## Bauten werden abgelehnt. Die klassische Siedlung bleibt komplett flach.
+func plot_buildable(plot: int, opponent := false) -> bool:
+	return not living_village or not TERRAIN.plot_blocked(plot, opponent)
 
 
 func _affords(town: Dictionary, cost: Dictionary) -> bool:
