@@ -64,6 +64,7 @@ func _run() -> void:
 	await _pause_freezes()
 	await _budgets()
 	_surfaces()
+	await _photo_finish()
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
@@ -497,6 +498,75 @@ func _budgets() -> void:
 		_check(state.lights <= (2 if profile == "high" else 0), "%s light budget" % profile)
 	game.graphics_profile = "high"
 	_clean()
+
+
+func _new_race() -> void:
+	if is_instance_valid(game):
+		game.abandoned = true
+		game.queue_free()
+		await process_frame
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.graphics_profile = "high"
+	await process_frame
+	game._start_selected_race({
+		"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"
+	})
+	game.countdown = 0.0
+	game.racing = true
+	game.paused = false
+	game._end_preview(false)
+	game.auto_gas = false
+	fx = game.drive_fx
+
+
+## Cross the line [param gap_metres] ahead of the nearest rival at 20 m/s.
+func _cross_line(gap_metres: float, reduced: bool) -> Dictionary:
+	await _new_race()
+	game.reduced_motion = reduced
+	game.speed = 20.0
+	along = game.track_length * 0.5
+	_tick(3)
+	game.elapsed = 61.5
+	game.checkpoint_index = game.TOTAL_LAPS * 8
+	game.distance = game.track_length * game.TOTAL_LAPS + 0.3
+	for i in range(game.opponent_distances.size()):
+		game.opponent_distances[i] = game.distance - 80.0
+	game.opponent_distances[0] = game.distance - gap_metres
+	game._update_vehicles(STEP)
+	game._finish()
+	var payload: Dictionary = game.result_payload.duplicate(true)
+	await process_frame
+	await process_frame
+	return payload
+
+
+func _photo_finish() -> void:
+	var payload: Dictionary = await _cross_line(3.0, false)
+	_check(fx.photo_finish.active and Engine.time_scale < 0.5, "close finish (0.15 s) plays in slow motion")
+	_check(fx.photo_finish.last_gap < 0.35, "gap measured at the line: %.3f s" % fx.photo_finish.last_gap)
+	await create_timer(1.1, true, false, true).timeout
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "slow motion ends after 0.8 s real time")
+	_check(game.result_payload.hash() == payload.hash(), "slow motion changes no result field")
+	_check(is_equal_approx(float(payload.elapsedSeconds), 61.5), "finish time stays the time at the line")
+	_check(int(payload.place) == 1 and int(payload.stars) == 3, "place and reward unchanged (%s)" % str(payload))
+	payload = await _cross_line(20.0, false)
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "clear win (1 s): no slow motion")
+	payload = await _cross_line(3.0, true)
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "reduced motion: no slow motion")
+	await _cross_line(3.0, false)
+	game.paused = true
+	await process_frame
+	_check(Engine.time_scale == 1.0, "pausing during the slow motion restores normal time")
+	game.paused = false
+	await _cross_line(3.0, false)
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
+	await process_frame
+	_check(Engine.time_scale == 1.0, "leaving the race restores normal time")
+	await _new_race()
 
 
 func _surfaces() -> void:
