@@ -97,6 +97,8 @@ func drop_trap(item: String, owner: int, progress: float, lateral: float) -> boo
 	var entry := {
 		"item": item, "kind": "trap", "owner": owner, "progress": progress - 2.2,
 		"lateral": lateral, "age": 0.0, "life": CATALOG.number(item, "life", 25.0), "node": node,
+		# Traps are single objects; rockets fly in pairs (pair > 0).
+		"pair": 0,
 	}
 	traps.append(entry)
 	stats.dropped += 1
@@ -293,7 +295,7 @@ func _resolve(entry: Dictionary, racer: Dictionary) -> Dictionary:
 	return {
 		"type": "blocked" if blocked else "hit", "target": int(racer.key), "source": int(entry.owner),
 		"item": str(entry.item), "spin": CATALOG.number(str(entry.item), "spin_seconds", 1.0),
-		"position": _node_position(entry.node), "pair": int(entry.pair),
+		"position": _node_position(entry.node), "pair": int(entry.get("pair", 0)),
 	}
 
 
