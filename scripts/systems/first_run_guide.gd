@@ -63,6 +63,7 @@ var _clock: float = 0.0
 var _left: float = 0.0
 var _praise: String = ""
 var _was_on: bool = false
+var _step_live: bool = false
 
 # ------------------------------------------------------------------ Ablage je Kind
 
@@ -168,10 +169,15 @@ func _process(delta: float) -> void:
 		if on and state == "running":
 			_begin_step(false)
 	if not on:
+		# Eine Handlung, die das Spiel sofort weiterschaltet (z. B. Lumo ist dran),
+		# zählt trotzdem; das Lob erscheint, sobald das Kind wieder dran ist.
+		if state == "running" and _step_live and bool(steps[index].done.call(self)):
+			_complete_step()
 		return
 	match state:
 		"running":
 			_skip_unavailable()
+			_step_live = state == "running"
 			if state == "running" and bool(steps[index].done.call(self)):
 				_complete_step()
 		"praise":
@@ -205,6 +211,7 @@ func _begin_step(fresh: bool = true) -> void:
 	if fresh:
 		_events.clear()
 		_hold = 0.0
+		_step_live = false
 	if index >= steps.size():
 		_start_outro()
 		return
