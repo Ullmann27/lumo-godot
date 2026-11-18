@@ -520,8 +520,29 @@ func _process(delta: float) -> void:
 	step(delta)
 
 
+## Beim Beenden alle Wiedergaben lösen, damit der Audio-Thread keine
+## Stream-Ressourcen über das Programmende hinaus festhält.
+func release_audio() -> void:
+	for deck in _music + _ambience + [_ambience_layer]:
+		if deck == null:
+			continue
+		deck.player.stop()
+		deck.player.stream = null
+		deck.sync = null
+		deck.key = ""
+		deck.level = 0.0
+		deck.target = 0.0
+	_streams.clear()
+
+
+func _exit_tree() -> void:
+	release_audio()
+
+
 func _notification(what: int) -> void:
 	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST, NOTIFICATION_PREDELETE:
+			release_audio()
 		NOTIFICATION_APPLICATION_PAUSED:
 			set_backgrounded(true)
 		NOTIFICATION_APPLICATION_RESUMED:

@@ -64,6 +64,7 @@ var _muted: bool = false
 var _player: AudioStreamPlayer
 var _cache: Dictionary = {}
 var _samples: Dictionary = {}
+var _last_variant: Dictionary = {}
 var _pool: Array[AudioStreamPlayer] = []
 var _next_voice: int = 0
 var _sfx_volume: float = 1.0
@@ -88,6 +89,14 @@ func _ready() -> void:
 		if store.has_method("is_audio_muted"):
 			_muted = store.call("is_audio_muted")
 	print("[Audio] manager ready (muted:%s)" % _muted)
+
+
+func _exit_tree() -> void:
+	# Wiedergaben vor dem Programmende lösen (keine festgehaltenen Ressourcen).
+	for voice in _pool:
+		voice.stop()
+		voice.stream = null
+	_samples.clear()
 
 
 func set_muted(b: bool) -> void:
@@ -134,9 +143,9 @@ func is_voice_playing() -> bool:
 func play_sfx(name: String) -> void:
 	if _muted:
 		return
-	var sample := _sample_stream(name)
-	if sample != null:
-		_play_sample(name, sample)
+	var variants := _sample_variants(name)
+	if not variants.is_empty():
+		_play_variant(name, variants)
 		return
 	if not SFX_PRESETS.has(name):
 		push_warning("[Audio] unknown sfx: %s" % name)
@@ -154,7 +163,7 @@ func _mark_sfx(name: String) -> void:
 	sfx_played.emit(name)
 
 
-func _play_sample(name: String, stream: AudioStream) -> void:
+func _play_sample(name: String, stream: AudioStream, pitch: float = 1.0, gain_db: float = 0.0) -> void:
 	if _sfx_volume <= 0.01 or _pool.is_empty():
 		_mark_sfx(name)
 		return
@@ -167,22 +176,35 @@ func _play_sample(name: String, stream: AudioStream) -> void:
 			break
 	_next_voice = (_pool.find(voice) + 1) % _pool.size()
 	voice.stream = stream
-	voice.volume_db = SFX_DB + linear_to_db(_sfx_volume)
+	voice.pitch_scale = pitch
+	voice.volume_db = SFX_DB + gain_db + linear_to_db(_sfx_volume)
 	voice.play()
 	_mark_sfx(name)
 
 
-func _sample_stream(name: String) -> AudioStream:
+## Zufällige Variante (nie zweimal dieselbe hintereinander) mit leichter
+## Tonhöhen- und Pegelvariation. Bewusst ohne AudioStreamRandomizer: dessen
+## Wiedergabe hält beim Programmende Ressourcen fest.
+func _play_variant(name: String, variants: Array) -> void:
+	var key := str(SFX_ALIASES.get(name, name))
+	var index := 0
+	if variants.size() > 1:
+		index = randi() % (variants.size() - 1)
+		if index >= int(_last_variant.get(key, -1)):
+			index += 1
+	_last_variant[key] = index
+	var spread := float(PITCH_SPREAD.get(key, 1.025))
+	var pitch := exp(randf_range(-log(spread), log(spread)))
+	_play_sample(name, variants[index], pitch, randf_range(-1.2, 0.0))
+
+
+func _sample_variants(name: String) -> Array:
 	var key := str(SFX_ALIASES.get(name, name))
 	if not SFX_SAMPLES.has(key):
-		return null
+		return []
 	if _samples.has(key):
 		return _samples[key]
-	var randomizer := AudioStreamRandomizer.new()
-	randomizer.playback_mode = AudioStreamRandomizer.PLAYBACK_RANDOM_NO_REPEATS
-	randomizer.random_pitch = float(PITCH_SPREAD.get(key, 1.025))
-	randomizer.random_volume_offset_db = 1.2
-	var loaded := 0
+	var loaded: Array = []
 	for path in sample_paths(key):
 		if not ResourceLoader.exists(path):
 			continue
@@ -191,15 +213,11 @@ func _sample_stream(name: String) -> AudioStream:
 			continue
 		if stream is AudioStreamOggVorbis:
 			(stream as AudioStreamOggVorbis).loop = false
-		randomizer.add_stream(loaded, stream, 1.0)
-		loaded += 1
-	var result: AudioStream = randomizer if loaded > 0 else null
-	if loaded == 1:
-		randomizer.playback_mode = AudioStreamRandomizer.PLAYBACK_RANDOM
-	if result == null and not SFX_PRESETS.has(key):
+		loaded.append(stream)
+	if loaded.is_empty() and not SFX_PRESETS.has(key):
 		push_warning("[Audio] sample missing: %s" % key)
-	_samples[key] = result
-	return result
+	_samples[key] = loaded
+	return loaded
 
 
 ## Spielt eine Voice-WAV-Datei aus assets/audio/voice/ ab.
