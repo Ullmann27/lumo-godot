@@ -87,6 +87,10 @@ func check_target(guide, expected: Control, step: String) -> void:
 	check(
 		view.grow(2.0).encloses(rect), "%s: Zeigerziel liegt im Bild %s in %s" % [step, rect, view]
 	)
+	if guide.bubble.visible:
+		var bubble: Rect2 = guide.bubble.get_global_rect()
+		check(view.grow(2.0).encloses(bubble), "%s: Sprechblase ganz im Bild %s" % [step, bubble])
+		check(not bubble.intersects(rect), "%s: Sprechblase verdeckt das Ziel nicht" % step)
 	if expected != null:
 		check(expected.is_visible_in_tree(), "%s: Ziel-Element ist sichtbar" % step)
 		check(

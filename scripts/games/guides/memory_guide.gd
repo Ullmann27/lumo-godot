@@ -30,6 +30,7 @@ static func attach(game: Node) -> CanvasLayer:
 	var options := {
 		"outro": "Ein Paar! Jetzt spielst du allein gegen Lumo.",
 		"replay_position": _replay_spot.bind(game),
+		"bubble_position": _bubble_top.bind(game),
 	}
 	return GUIDE.attach(game, ID, steps, _active.bind(game), options)
 
@@ -71,6 +72,11 @@ static func _hidden_card(game: Node) -> Variant:
 		if not bool(cards[index].faceUp) and button.is_visible_in_tree():
 			return button
 	return null
+
+
+## Über der Fußleiste: die Karten auf dem Tisch bleiben frei.
+static func _bubble_top(size: Vector2, game: Node) -> float:
+	return game.footer.get_global_rect().position.y - size.y - 10.0
 
 
 ## Rechts unter der Kopfleiste.

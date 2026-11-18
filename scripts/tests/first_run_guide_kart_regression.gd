@@ -17,6 +17,7 @@ func _initialize() -> void:
 
 func _open(child: String, manual_gas: bool = true) -> Variant:
 	kit_script.use_child(child)
+	root.get_node("HostBridge")._options = {"displayDensity": kit_script.density()}
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -42,6 +43,11 @@ func _open(child: String, manual_gas: bool = true) -> Variant:
 	game.countdown = 0.0
 	game.racing = true
 	game._update_hud()
+	var wanted: Vector2i = kit_script.window_size(Vector2i(1280, 720))
+	if root.size != wanted:
+		root.size = wanted
+		DisplayServer.window_set_size(wanted)
+		await kit.frames(4)
 	await kit.frames(3)
 	return guide
 
@@ -69,6 +75,7 @@ func _run() -> void:
 	kit.check(guide.current_step_id() == "steer", "Schritt 1 ist Lenken")
 	kit.check(guide.portrait.texture != null, "Lumos Bild ist geladen")
 	kit.check_target(guide, game.joystick, "Lenken")
+	await kit.snap("kart-schritt1")
 	kit.check_touch_size(guide, guide.skip_button, "Überspringen")
 	var stick: Vector2 = kit.press(game.joystick, 0)
 	kit.drag(stick + Vector2(game.joystick.size.x * 0.4, 0.0), Vector2(60, 0), 0)

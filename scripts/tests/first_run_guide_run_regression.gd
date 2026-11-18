@@ -17,6 +17,7 @@ func _initialize() -> void:
 
 func _open(child: String) -> Variant:
 	kit_script.use_child(child)
+	root.get_node("HostBridge")._options = {"displayDensity": kit_script.density()}
 	game = load("res://scenes/games/lumo_run.tscn").instantiate()
 	root.add_child(game)
 	await kit.frames(2)
@@ -55,7 +56,8 @@ func _tap(control: Control, index: int = 1) -> void:
 func _run() -> void:
 	kit_script = load("res://scripts/tests/first_run_guide_kit.gd")
 	kit = kit_script.new(self, "RunGuide")
-	root.size = Vector2i(720, 1280)
+	root.size = kit_script.window_size(Vector2i(720, 1280))
+	DisplayServer.window_set_size(root.size)
 	kit_script.reset_child(CHILD_A)
 	kit_script.reset_child(CHILD_B)
 
@@ -63,6 +65,7 @@ func _run() -> void:
 	kit.check(guide.root.visible and guide.bubble.visible, "erster Lauf zeigt Lumos Sprechblase")
 	kit.check(guide.current_step_id() == "steer", "Schritt 1 ist Lenken")
 	kit.check_target(guide, game.hud.stick, "Lenken")
+	await kit.snap("lauf-schritt1")
 	kit.check_touch_size(guide, guide.skip_button, "Überspringen")
 	var stick: Vector2 = kit.press(game.hud.stick, 0)
 	kit.drag(stick + Vector2(game.hud.stick.size.x * 0.4, 0.0), Vector2(50, 0), 0)

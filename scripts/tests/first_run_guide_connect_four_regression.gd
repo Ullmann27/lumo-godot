@@ -105,7 +105,9 @@ func _kid_drop(column: int) -> void:
 
 func _open(child: String) -> Variant:
 	kit_script.use_child(child)
-	root.get_node("HostBridge")._options = {"displayDensity": 1.0, "connectFourToken": TOKEN}
+	root.get_node("HostBridge")._options = {
+		"displayDensity": kit_script.density(), "connectFourToken": TOKEN
+	}
 	var mobile = root.get_node("MobileRuntime")
 	mobile._android_safe_area_enabled = true
 	mobile._safe_area_reader = func(_callback): return false
@@ -147,7 +149,8 @@ func _tap(control: Control) -> void:
 func _run() -> void:
 	kit_script = load("res://scripts/tests/first_run_guide_kit.gd")
 	kit = kit_script.new(self, "ConnectFourGuide")
-	root.size = Vector2i(720, 1280)
+	root.size = kit_script.window_size(Vector2i(720, 1280))
+	DisplayServer.window_set_size(root.size)
 	kit_script.reset_child(CHILD_A)
 	kit_script.reset_child(CHILD_B)
 
@@ -155,6 +158,7 @@ func _run() -> void:
 	kit.check(guide.bubble.visible and guide.root.visible, "erstes Öffnen zeigt Lumos Sprechblase")
 	kit.check(guide.current_step_id() == "drop", "Schritt 1: Stein einwerfen")
 	kit.check_target(guide, table.column_buttons[3], "Spalte 4")
+	await kit.snap("vier-gewinnt-schritt1")
 	kit.check_touch_size(guide, guide.skip_button, "Überspringen")
 	await _kid_drop(3)
 	kit.check(guide.completed.has("drop"), "Einwerfen erfüllt Schritt 1")

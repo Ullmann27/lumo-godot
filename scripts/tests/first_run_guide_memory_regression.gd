@@ -107,7 +107,9 @@ func _flip(index: int, motif: String, matched: bool = false, extra: Dictionary =
 
 func _open(child: String) -> Variant:
 	kit_script.use_child(child)
-	root.get_node("HostBridge")._options = {"displayDensity": 1.0, "tableToken": TOKEN}
+	root.get_node("HostBridge")._options = {
+		"displayDensity": kit_script.density(), "tableToken": TOKEN
+	}
 	var mobile = root.get_node("MobileRuntime")
 	mobile._android_safe_area_enabled = true
 	mobile._safe_area_reader = func(_callback): return false
@@ -144,7 +146,8 @@ func _close() -> void:
 func _run() -> void:
 	kit_script = load("res://scripts/tests/first_run_guide_kit.gd")
 	kit = kit_script.new(self, "MemoryGuide")
-	root.size = Vector2i(720, 1280)
+	root.size = kit_script.window_size(Vector2i(720, 1280))
+	DisplayServer.window_set_size(root.size)
 	kit_script.reset_child(CHILD_A)
 	kit_script.reset_child(CHILD_B)
 
@@ -152,6 +155,7 @@ func _run() -> void:
 	kit.check(guide.bubble.visible and guide.root.visible, "erstes Öffnen zeigt Lumos Sprechblase")
 	kit.check(guide.current_step_id() == "first_card", "Schritt 1: Karte aufdecken")
 	kit.check_target(guide, table._cards[0].button, "Karte 1")
+	await kit.snap("memory-schritt1")
 	kit.check_touch_size(guide, guide.skip_button, "Überspringen")
 	await _flip(0, "panda")
 	kit.check(guide.completed.has("first_card"), "Aufdecken erfüllt Schritt 1")

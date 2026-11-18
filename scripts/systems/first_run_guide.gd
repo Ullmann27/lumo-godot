@@ -506,6 +506,8 @@ func _layout_bubble(view: Vector2, u: float, touch: float) -> void:
 		y = minf(view.y - bubble.size.y - 24.0 * u, target.end.y + 40.0 * u)
 	if bubble_position.is_valid():
 		y = float(bubble_position.call(bubble.size))
+	# Immer ganz im Bild (schmale, hohe Handys): notfalls an den unteren Rand.
+	y = minf(y, view.y - bubble.size.y - 16.0 * u)
 	var x: float = (view.x - bubble.size.x) * 0.5
 	bubble.position = Vector2(maxf(12.0, x), maxf(12.0, y))
 	# Nie über dem Ziel: notfalls an den oberen Rand.
@@ -520,11 +522,14 @@ func _draw_pointer() -> void:
 	var u: float = unit()
 	var wave: float = 0.0 if reduced_motion else 0.5 + 0.5 * sin(_clock * 5.0)
 	var glow: Rect2 = rect.grow((10.0 + 6.0 * wave) * u)
+	# Dunkle Kante unter dem Goldrahmen: hebt sich auch von goldenen Karten ab.
+	_rounded_outline(glow.grow(3.0 * u), 20.0 * u, Color(INK, 0.85), 10.0 * u)
 	for ring in range(3):
 		var grow_by: float = float(ring) * 5.0 * u
-		var alpha: float = 0.85 - 0.25 * float(ring) - 0.25 * wave
+		var alpha: float = 0.95 - 0.25 * float(ring) - 0.2 * wave
+		var tone: Color = Color.WHITE.lerp(GOLD, 0.35) if ring == 0 else GOLD
 		_rounded_outline(
-			glow.grow(grow_by), 18.0 * u + grow_by, Color(GOLD, alpha), (5.0 - ring) * u
+			glow.grow(grow_by), 18.0 * u + grow_by, Color(tone, alpha), (6.0 - ring) * u
 		)
 	# Pfeil von der Sprechblase zum Ziel.
 	var from: Vector2 = (
