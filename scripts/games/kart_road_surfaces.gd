@@ -66,3 +66,26 @@ static func apply(material: ShaderMaterial, track_id: String) -> void:
 	material.set_shader_parameter("detail_tint", entry.detail)
 	material.set_shader_parameter("surface_style", int(entry.style))
 	material.set_shader_parameter("surface_matte", float(entry.matte))
+
+
+## Kulissen-Paket: Pfuetzen/Naesse je Strecke (0 trocken .. 1 nass nach Regen).
+const WETNESS: Dictionary = {
+	"holo_city": 0.75, "zauberwald": 0.4, "jungle_temple": 0.3, "sonnenhafen": 0.12,
+	"bergwelt": 0.15, "crystal_canyon": 0.2,
+}
+## Grasnarbe im Bankett je Strecke.
+const VERGE_GRASS: Dictionary = {
+	"winter_sprint": Color("dfe8f2"), "desert_drift": Color("b89a62"), "volcano_night": Color("4a3a36"),
+	"holo_city": Color("3a4a5a"), "galaxy_ringway": Color("3a3460"), "learning_lab": Color("9ab0c0"),
+	"crystal_canyon": Color("6a5a8a"), "bergwelt": Color("4f7a5a"),
+}
+
+
+static func verge_grass(track_id: String) -> Color:
+	return VERGE_GRASS.get(track_id, Color("5f8a3e"))
+
+
+## Plastische Feinstruktur, Risse, Gullys, Reifenabrieb und Pfuetzen (nicht auf LOW).
+static func apply_detail(material: ShaderMaterial, track_id: String, low_detail: bool) -> void:
+	material.set_shader_parameter("road_detail", 0.0 if low_detail else 1.0)
+	material.set_shader_parameter("wetness", 0.0 if low_detail else float(WETNESS.get(track_id, 0.0)))

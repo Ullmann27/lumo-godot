@@ -284,7 +284,8 @@ static func _theme_decor(world, decor: String, length: float, glow: Color) -> vo
 				if i % 3 == 0:
 					world._prop("box", at + basis.y * 0.05, Vector3(3.2, 0.06, 0.5) * s, Color("ff6a1f"), basis.rotated(basis.y, rng.randf() * TAU), true)
 			"winter":
-				world._prop("fir", at + basis.y * 2.2 * s, Vector3(1.6, 4.4, 1.6) * s, Color("e9f6ff"), basis)
+				# Kulissen-Paket: verschneiter Nadelbaum (Blender-Modell) statt Kegel.
+				world.plant_scenery("winterbaum", at, 0.55 * s, float(i) * 1.3, Color(0.5, 0.5, 0.53), fposmod(float(i) * 0.29, 1.0))
 				if i % 4 == 0:
 					world._prop("crystal", at + basis.x * 2.0 + basis.y * 0.9, Vector3(0.6, 1.8, 0.6) * s, Color("9fe8ff"), basis, true)
 			"galaxy":
@@ -299,10 +300,10 @@ static func _theme_decor(world, decor: String, length: float, glow: Color) -> vo
 				else:
 					world._prop("rock", at + basis.y * 0.6 * s, Vector3(2.6, 1.3, 2.0) * s, Color("b77b45"), basis.rotated(basis.y, rng.randf() * TAU))
 			"jungle":
-				world._prop("cylinder", at + basis.y * 3.0 * s, Vector3(0.35, 6.0, 0.35) * s, Color("5a3e26"), basis)
-				world._prop("ball", at + basis.y * 6.4 * s, Vector3(2.2, 1.2, 2.2) * s, Color("2f8f45"), basis)
+				# Kulissen-Paket: Dschungelbaum und Busch (Blender-Modelle) statt Kugelkronen.
+				world.plant_scenery("dschungelbaum", at, 0.47 * s, float(i) * 2.1, Color(0.48, 0.52, 0.47), fposmod(float(i) * 0.31, 1.0))
 				if i % 3 == 0:
-					world._prop("ball", at + basis.x * 1.4 + basis.y * 0.5, Vector3(0.9, 0.6, 0.9), Color("3fa85a"), basis)
+					world.plant_scenery("busch_bluehend", at + basis.x * 1.4, 0.8, float(i), Color(0.5, 0.52, 0.48), 0.4)
 					world._prop("ball", at + basis.x * 1.4 + basis.y * 1.0, Vector3(0.16, 0.16, 0.16), Color("ff7ad9"), basis, true)
 			"harbor":
 				if i % 4 == 0:

@@ -433,7 +433,7 @@ func _update_view(delta: float, snap: bool) -> void:
 	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
 	if plan.adventure and is_instance_valid(world.scenery):
-		world.scenery.follow(camera.global_position, player.s, maxf(delta, 0.0001))
+		world.scenery.follow(camera.global_position, player.s, maxf(delta, 0.0001), feet.origin)
 
 
 func _on_player_event(event: StringName) -> void:

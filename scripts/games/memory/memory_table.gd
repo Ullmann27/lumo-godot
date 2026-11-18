@@ -4,6 +4,19 @@ extends Node3D
 
 const LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const LOOK = preload("res://scripts/games/memory/memory_table_look.gd")
+const KIT = preload("res://scripts/games/table_room/table_room_kit.gd")
+const SEAT = preload("res://scripts/games/cards/cards_seat.gd")
+## Echte 3D-Tischszene: Tischplatte waagrecht, Kamera schräg von vorn oben.
+const CAMERA_ELEVATION := 56.0
+const CAMERA_FOV := 30.0
+const TABLE_HEIGHT := 0.98
+## Längste Seite der Tischplatte in Metern.
+const TABLE_SPAN := 1.8
+## Die hinteren Karten erscheinen in der Schrägsicht kleiner; die Rasterwahl
+## plant dafür Reserve ein, damit jede Karte ≥ 48 dp bleibt.
+const PERSPECTIVE_RESERVE := 1.3
+## Karten liegen mit der Rückseite knapp auf dem Filz (Brett-Einheiten).
+const CARD_Z := 0.058
 const OBSERVATION := "user://memory_layout_v1.json"
 const LEVELS := ["leicht", "mittel", "schwer", "knifflig", "profi"]
 const COUNTS := [8, 12, 16, 20, 24]
@@ -45,6 +58,15 @@ var _board_rect := Rect2()
 var _dismissed_result := ""
 var camera: Camera3D
 var fox: Node3D
+var lumo_seat: Node3D
+var room_root: Node3D
+var _board: Node3D
+var _legs: Array[MeshInstance3D] = []
+var _chair: Node3D
+var _room_light: SpotLight3D
+var _lumo_pairs_seen := -1
+var _lumo_turn := false
+var _was_complete := false
 var ui: Control
 var safe: Control
 var header: PanelContainer
@@ -135,6 +157,7 @@ func _process(delta: float) -> void:
 		_poll = 0.0
 		_poll_state()
 	_update_shadows()
+	if is_instance_valid(lumo_seat): lumo_seat.advance(delta)
 	_publish_layout()
 
 
@@ -226,14 +249,44 @@ func apply_state(value: Dictionary) -> bool:
 		_sync_card(index, new_round)
 	var kind_pairs := int(value.kindPairs)
 	if not new_round and kind_pairs > _kind_pairs_seen and _kind_pairs_seen >= 0 and \
-			not bool(value.reduceMotion) and is_instance_valid(fox) and fox.visible:
-		fox.call("play_behavior","celebrate")
+			not bool(value.reduceMotion) and is_instance_valid(lumo_seat):
+		# Lumo freut sich mit, wenn das Kind ein Paar findet.
+		lumo_seat.react("happy")
 	_kind_pairs_seen = kind_pairs
+	_react_lumo(value,new_round)
 	_invalidate()
 	_update_ui()
 	if value.exit and _pending == 0 and is_instance_valid(_host):
 		_closed = HostBridge.durable_ack(_host.call("returnToApp","games",""))
 	return true
+
+
+## Lumo spielt mit: überlegt an seinem Zug, schaut auf aufgedeckte Karten,
+## ärgert sich kurz über ein verpasstes Paar, jubelt über sein eigenes.
+func _react_lumo(value: Dictionary,new_round: bool) -> void:
+	if not is_instance_valid(lumo_seat) or not lumo_seat.usable(): return
+	var lumo_pairs := int(value.lumoPairs)
+	if not new_round and lumo_pairs > _lumo_pairs_seen and _lumo_pairs_seen >= 0:
+		lumo_seat.react("happy")
+	_lumo_pairs_seen = lumo_pairs
+	var lumo_turn := str(value.turn) == "lumo" and not bool(value.complete)
+	if lumo_turn and not _lumo_turn:
+		lumo_seat.react("think")
+	elif not lumo_turn and _lumo_turn:
+		lumo_seat.calm()
+	_lumo_turn = lumo_turn
+	# Blick auf die zuletzt aufgedeckte, noch offene Karte – sonst zum Kind.
+	var focus := -1
+	for index in range(mini(_cards.size(),value.cards.size())):
+		if bool(value.cards[index].faceUp) and not bool(value.cards[index].matched) and _cards[index].root.visible:
+			focus = index
+	if focus >= 0:
+		lumo_seat.look_at_point(_cards[focus].root.global_position)
+	elif is_instance_valid(camera):
+		lumo_seat.look_at_point(camera.global_position)
+	if bool(value.complete) and not _was_complete and not new_round:
+		lumo_seat.react("happy" if int(value.kindPairs) >= lumo_pairs else "wave")
+	_was_complete = bool(value.complete)
 
 
 func _send(action: String, extras: Dictionary = {}) -> bool:
@@ -308,7 +361,7 @@ func _rounded_mesh(width: float,height: float,depth: float) -> ArrayMesh:
 func _create_card(index: int) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "AcknowledgedCard%d" % index
-	add_child(root)
+	_board.add_child(root)
 	var body := MeshInstance3D.new()
 	body.material_override = LOOK.card_body()
 	root.add_child(body)
@@ -438,7 +491,11 @@ func _animating() -> bool:
 
 
 func _lift(t: float,root: Node3D) -> void:
-	if is_instance_valid(root): root.scale = Vector3.ONE*(1.0+0.13*sin(t*PI))
+	if not is_instance_valid(root): return
+	# Beim Umdrehen hebt die Karte vom Filz ab und setzt wieder auf.
+	var arc := sin(t*PI)
+	root.scale = Vector3.ONE*(1.0+0.06*arc)
+	root.position.z = CARD_Z+arc*maxf(0.35,root.get_meta("height",0.6)*0.55)
 
 
 func _celebrate(index: int,delay: float) -> void:
@@ -468,7 +525,7 @@ func _burst(index: int,round_id: String) -> void:
 	if round_id != _round or index >= _cards.size() or _sparkles.is_empty(): return
 	var emitter := _sparkles[_next_sparkle % _sparkles.size()]
 	_next_sparkle += 1
-	emitter.global_position = _cards[index].root.global_position+Vector3(0,0,0.25)
+	emitter.global_position = _cards[index].root.global_position+Vector3(0,0.08,0)
 	emitter.restart()
 
 
@@ -482,64 +539,95 @@ func _update_shadows() -> void:
 		if not root.visible:
 			multimesh.set_instance_transform(index,Transform3D(Basis().scaled(Vector3(0.001,0.001,1)),Vector3(0,0,-0.4)))
 			continue
-		var lift := root.scale.x-1.0
-		var spread := 1.10+lift*2.2
+		var lift := clampf((root.position.z-CARD_Z)/maxf(0.01,card.size.y),0.0,1.0)
+		var spread := 1.08+lift*0.5
 		var size: Vector2 = card.size*spread
-		var offset := Vector2(0.05,-0.07)*(1.0+lift*6.0)
+		# Die Lampe steht hinten oben: der Schatten fällt leicht nach vorn.
+		var offset := Vector2(0.0,-0.04-lift*0.25*card.size.y)
 		multimesh.set_instance_transform(index,Transform3D(Basis().scaled(Vector3(size.x,size.y,1)),
-			Vector3(root.position.x+offset.x,root.position.y+offset.y,-0.2)))
-		multimesh.set_instance_color(index,Color(1,1,1,clampf(0.62-lift*1.8,0.25,0.62)))
+			Vector3(root.position.x+offset.x,root.position.y+offset.y,0.004)))
+		multimesh.set_instance_color(index,Color(1,1,1,clampf(0.55-lift*0.6,0.15,0.55)))
 
 
 func _build_room() -> void:
 	_budget = LumoQuality.budget()
+	var tier := KIT.tier()
 	var world := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color("0b1a2a")
+	environment.background_color = Color("120d1c")
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("a9d4e4")
-	environment.ambient_light_energy = 0.55
+	environment.ambient_light_color = Color("8a7fc0")
+	environment.ambient_light_energy = 0.5
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.05
+	environment.tonemap_exposure = 1.1
+	environment.glow_enabled = tier != "low"
+	environment.glow_intensity = 0.5
+	environment.glow_hdr_threshold = 1.0
+	environment.adjustment_enabled = true
+	environment.adjustment_saturation = 1.08
+	if tier == "high":
+		environment.ssao_enabled = true
+		environment.ssao_radius = 0.5
 	world.environment = environment
 	add_child(world)
-	# Warm key light from the upper left, cool fill from the lower right.
+	room_root = Node3D.new()
+	room_root.name = "Room"
+	add_child(room_root)
+	# Warmes Lampenlicht von hinten oben über den Tisch, dazu kühles Fensterlicht.
+	_room_light = SpotLight3D.new()
+	_room_light.name = "LampLight"
+	_room_light.position = Vector3(0.0,2.3,-1.1)
+	_room_light.light_color = Color("ffd9a0")
+	_room_light.light_energy = 3.0
+	_room_light.spot_range = 6.0
+	_room_light.spot_angle = 52.0
+	_room_light.spot_angle_attenuation = 1.1
+	_room_light.shadow_enabled = bool(_budget.get("shadows",false))
+	_room_light.shadow_blur = 1.6
+	_room_light.shadow_normal_bias = 1.2
+	room_root.add_child(_room_light)
+	_room_light.look_at(Vector3(0,0,0.2))
 	_sun = DirectionalLight3D.new()
-	_sun.rotation_degrees = Vector3(-38,-32,0)
-	_sun.light_energy = 1.05
-	_sun.light_color = Color("ffe1ae")
-	_sun.shadow_enabled = bool(_budget.get("shadows",false))
-	_sun.shadow_opacity = 0.55
-	_sun.shadow_blur = 1.6
-	add_child(_sun)
-	if String(LumoQuality.tier()) == "high":
-		_fill = DirectionalLight3D.new()
-		_fill.rotation_degrees = Vector3(28,150,0)
-		_fill.light_energy = 0.32
-		_fill.light_color = Color("8fd0ff")
-		add_child(_fill)
-	_backdrop_material = LOOK.material(LOOK.BACKDROP,{"bokeh":float(_budget.get("decor_density",0.7))})
-	var backdrop := MeshInstance3D.new()
-	backdrop.name = "RoomBackdrop"
-	var plane := QuadMesh.new()
-	plane.size = Vector2(60,60)
-	backdrop.mesh = plane
-	backdrop.position = Vector3(0,0,-1.2)
-	backdrop.material_override = _backdrop_material
-	add_child(backdrop)
+	_sun.rotation_degrees = Vector3(-34,-150,0)
+	_sun.light_energy = 0.45
+	_sun.light_color = Color("9cbcff")
+	_sun.shadow_enabled = false
+	room_root.add_child(_sun)
+	_fill = DirectionalLight3D.new()
+	_fill.rotation_degrees = Vector3(-30,10,0)
+	_fill.light_energy = 0.42
+	_fill.light_color = Color("ffd0b0")
+	room_root.add_child(_fill)
+	_build_room_set(tier)
+	# Das Spielbrett: Brett-Raum XY mit Kartenseite +Z, auf die waagrechte
+	# Tischplatte gedreht. Karten, Filz und Kanten bleiben im Brett-Raum.
+	_board = Node3D.new()
+	_board.name = "Board"
+	_board.rotation.x = -PI*0.5
+	add_child(_board)
 	# The wooden rim and felt mat follow the actual card grid in _layout.
 	_rim = MeshInstance3D.new()
 	_rim.name = "WoodenRim"
-	_rim.material_override = LOOK.material(LOOK.WOOD)
-	_rim.position = Vector3(0,0,-0.42)
-	add_child(_rim)
+	_rim.material_override = KIT.material("oak")
+	_board.add_child(_rim)
 	_felt_material = LOOK.material(LOOK.FELT)
 	_mat = MeshInstance3D.new()
 	_mat.name = "FeltMat"
 	_mat.material_override = _felt_material
-	_mat.position = Vector3(0,0,-0.30)
-	add_child(_mat)
+	_board.add_child(_mat)
+	for corner in range(4):
+		var leg := MeshInstance3D.new()
+		leg.name = "TableLeg%d" % corner
+		var mesh := CylinderMesh.new()
+		mesh.top_radius = 0.045
+		mesh.bottom_radius = 0.032
+		mesh.height = TABLE_HEIGHT-0.07
+		mesh.radial_segments = 12
+		leg.mesh = mesh
+		leg.material_override = KIT.material("walnut")
+		room_root.add_child(leg)
+		_legs.append(leg)
 	_back_material = LOOK.material(LOOK.CARD_BACK)
 	# All contact shadows are a single MultiMesh draw.
 	var multimesh := MultiMesh.new()
@@ -553,42 +641,164 @@ func _build_room() -> void:
 	_shadows.multimesh = multimesh
 	_shadows.material_override = LOOK.material(LOOK.SHADOW)
 	_shadows.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(_shadows)
+	_board.add_child(_shadows)
 	var sparkles := int(_budget.get("sparkles",0))
 	if sparkles > 0:
 		for i in range(2):
 			var emitter := LOOK.sparkle_emitter(mini(sparkles,40))
+			emitter.direction = Vector3(0,1,0.3)
 			add_child(emitter)
 			_sparkles.append(emitter)
-	fox = LUMO.new()
-	fox.position = Vector3(4.5,-2,1.0)
-	fox.rotation = Vector3(0,-0.35,0)
-	fox.scale = Vector3.ONE*0.8
-	add_child(fox)
+	# Lumo sitzt als Mitspieler am Tisch: das echte Modell auf seinem Platz.
+	lumo_seat = SEAT.new()
+	lumo_seat.name = "LumoSeat"
+	add_child(lumo_seat)
+	lumo_seat.setup("lumo",Transform3D.IDENTITY,0)
+	fox = lumo_seat.model
+	_chair = KIT.prop("chair")
+	if _chair != null:
+		room_root.add_child(_chair)
 	camera = Camera3D.new()
-	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+	camera.fov = CAMERA_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	camera.near = 0.05
+	camera.far = 40.0
 	camera.current = true
-	camera.position = Vector3(0,0,14)
-	camera.rotation = Vector3(-0.035,0.035,0)
 	add_child(camera)
 
 
+## Spielzimmer rund um den Tisch: Dielen, Teppich, Bretterwand mit Fenster,
+## Regal, Wanduhr, Pflanze. Alles liegt hinter bzw. unter dem Brett.
+func _build_room_set(tier: String) -> void:
+	var floor_y := -TABLE_HEIGHT
+	var ground := MeshInstance3D.new()
+	ground.name = "Floor"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(14,14)
+	ground.mesh = plane
+	var floor_material: StandardMaterial3D = (KIT.material("floor") as StandardMaterial3D).duplicate()
+	floor_material.uv1_scale = Vector3(5,5,1)
+	ground.material_override = floor_material
+	ground.position.y = floor_y
+	room_root.add_child(ground)
+	var rug := MeshInstance3D.new()
+	rug.name = "Rug"
+	var rug_quad := QuadMesh.new()
+	rug_quad.size = Vector2(3.6,3.6)
+	rug_quad.orientation = PlaneMesh.FACE_Y
+	rug.mesh = rug_quad
+	rug.material_override = KIT.material("rug")
+	rug.position = Vector3(0,floor_y+0.005,0)
+	rug.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	room_root.add_child(rug)
+	var wall := MeshInstance3D.new()
+	wall.name = "BackWall"
+	var wall_box := BoxMesh.new()
+	wall_box.size = Vector3(12,4.2,0.16)
+	wall.mesh = wall_box
+	wall.material_override = KIT.material("wall")
+	wall.position = Vector3(0,floor_y+2.1,-2.6)
+	room_root.add_child(wall)
+	for entry: Array in [["shelf",Vector3(2.0,floor_y,-2.33),0.0],["window",Vector3(-1.35,floor_y+0.3,-2.5),0.0],
+			["clock",Vector3(0.55,floor_y+2.55,-2.47),0.0],["plant",Vector3(-2.7,floor_y,-1.9),0.0],
+			["scoreboard",Vector3(3.4,floor_y+1.2,-2.48),0.0]]:
+		if tier == "low" and entry[0] in ["plant","scoreboard"]: continue
+		var node := KIT.prop(str(entry[0]))
+		if node == null: continue
+		node.position = entry[1]
+		node.rotation.y = float(entry[2])
+		room_root.add_child(node)
+	var snacks := KIT.prop("snacks")
+	if snacks != null:
+		snacks.name = "Snacks"
+		room_root.add_child(snacks)
+
+
 func _fit_table(grid_rect: Rect2,pixel_factor: Vector2) -> void:
-	var a := camera.project_position(grid_rect.position*pixel_factor,14.0)
-	var b := camera.project_position(grid_rect.end*pixel_factor,14.0)
-	var size := Vector2(absf(b.x-a.x),absf(b.y-a.y))
-	var center := (a+b)*0.5
+	var size := grid_rect.size/100.0
 	var margin := TABLE_MARGIN*_table_scale
 	var mat_size := size+Vector2.ONE*margin*2.0
-	_mat.position = Vector3(center.x,center.y,-0.30)
-	_rim.position = Vector3(center.x,center.y,-0.42)
+	# Breite Holzkante: Platz für Kakao und Kekse an den hinteren Ecken.
+	var rim := mat_size+Vector2.ONE*(TABLE_RIM*_table_scale*2.0+0.6)
+	# Echte Tischgröße: die längste Seite misst TABLE_SPAN Meter.
+	var scale := TABLE_SPAN/maxf(rim.x,rim.y)
+	var slab := 0.07/scale
+	_board.scale = Vector3.ONE*scale
+	_mat.position = Vector3(0,0,-0.03)
+	_rim.position = Vector3(0,0,0.012-slab*0.5)
 	if not mat_size.is_equal_approx(_mat_size):
 		_mat_size = mat_size
 		_mat.mesh = _rounded_mesh(mat_size.x,mat_size.y,0.06)
-		var rim := mat_size+Vector2.ONE*TABLE_RIM*_table_scale*2.0
-		_rim.mesh = _rounded_mesh(rim.x,rim.y,0.18)
+		_rim.mesh = _rounded_mesh(rim.x,rim.y,slab)
 		_felt_material.set_shader_parameter("extent",mat_size*0.5)
+	var half := rim*0.5*scale
+	for corner in range(4):
+		var x := (half.x-0.12)*(1 if corner in [0,3] else -1)
+		var z := (half.y-0.12)*(1 if corner in [0,1] else -1)
+		_legs[corner].position = Vector3(x,-0.07-(TABLE_HEIGHT-0.07)*0.5,z)
+	_place_props(half)
+	_frame_camera(size,pixel_factor)
+
+
+## Kamera so stellen, dass das projizierte Kartenraster in die Brettfläche passt.
+func _frame_camera(grid_size: Vector2,pixel_factor: Vector2) -> void:
+	var elevation := deg_to_rad(CAMERA_ELEVATION)
+	var back := Vector3(0,sin(elevation),cos(elevation))
+	camera.global_basis = Basis.looking_at(-back,Vector3.UP)
+	var corners: Array[Vector3] = []
+	for corner in [Vector2(-0.5,-0.5),Vector2(0.5,-0.5),Vector2(0.5,0.5),Vector2(-0.5,0.5)]:
+		corners.append(_board.to_global(Vector3(corner.x*grid_size.x,corner.y*grid_size.y,CARD_Z)))
+	var target := _board_rect
+	var pan := Vector2.ZERO
+	var distance := 4.0
+	for iteration in range(3):
+		var near := 0.5
+		var far := 60.0
+		for step in range(24):
+			distance = (near+far)*0.5
+			var box := _projected(corners,back,distance,pan,pixel_factor)
+			if box.size.x <= target.size.x and box.size.y <= target.size.y: far = distance
+			else: near = distance
+		distance = far
+		var fitted := _projected(corners,back,distance,pan,pixel_factor)
+		var per_px := 2.0*distance*tan(deg_to_rad(CAMERA_FOV)*0.5)/maxf(1.0,get_viewport().get_visible_rect().size.y/pixel_factor.y)
+		var delta := target.get_center()-fitted.get_center()
+		pan += Vector2(-delta.x,delta.y)*per_px
+	_projected(corners,back,distance,pan,pixel_factor)
+
+
+func _projected(corners: Array[Vector3],back: Vector3,distance: float,pan: Vector2,pixel_factor: Vector2) -> Rect2:
+	camera.global_position = back*distance+camera.global_basis.x*pan.x+camera.global_basis.y*pan.y
+	var box := Rect2(camera.unproject_position(corners[0])/pixel_factor,Vector2.ZERO)
+	for point in corners: box = box.expand(camera.unproject_position(point)/pixel_factor)
+	return box
+
+
+## Stuhl, Lumo, Kakao und Kekse wandern mit der Tischgröße mit.
+func _place_props(half: Vector2) -> void:
+	var side := _safe_rect.size.x >= 850.0 and _safe_rect.size.y >= 480.0
+	var seat: Transform3D
+	if side:
+		# Breites Querformat: Lumo sitzt rechts am Tisch, Blick zur Mitte.
+		var at := Vector3(half.x+0.22,-TABLE_HEIGHT,-0.1)
+		seat = Transform3D(Basis.IDENTITY,at).looking_at(Vector3(0,-TABLE_HEIGHT,-0.1),Vector3.UP)
+	else:
+		# Sonst sitzt er hinten am Tisch und schaut zum Kind.
+		var at := Vector3(0.35,-TABLE_HEIGHT,-half.y-0.14)
+		seat = Transform3D(Basis.IDENTITY,at).looking_at(Vector3(0.35,-TABLE_HEIGHT,2.0),Vector3.UP)
+	lumo_seat.transform = seat
+	if is_instance_valid(_chair):
+		_chair.global_transform = seat.translated_local(Vector3(0,0,0.08))
+	var snacks := room_root.get_node_or_null("Snacks")
+	if snacks != null:
+		# Nur an den hinteren Ecken: dort verdeckt nichts eine Karte.
+		for child in snacks.get_children():
+			if child is Node3D:
+				match str(child.name):
+					"Mug": child.position = Vector3(half.x-0.07,0.0,-half.y+0.07)
+					"CookiePlate": child.position = Vector3(-half.x+0.1,0.0,-half.y+0.09)
+					_: child.visible = false
 
 
 func _panel(color: Color,radius: int=18,border: Color=Color("f2c25a"),border_width: int=2) -> StyleBoxFlat:
@@ -783,7 +993,8 @@ func _choose_grid(count: int,width: float,height: float) -> Dictionary:
 		for cols in range(1,mini(page_count,8)+1):
 			var rows := ceili(float(page_count)/cols)
 			var cw := minf((width-8*(cols-1))/cols,(height-8*(rows-1))/rows*CARD_ASPECT)
-			if cw < 50.0: continue
+			# Schrägsicht: hintere Reihen wirken kleiner, daher Reserve.
+			if cw < 50.0*PERSPECTIVE_RESERVE: continue
 			if cw*cw > best_area:
 				best = {"page_size":page_count,"cols":cols,"rows":rows,"width":cw,"height":cw/CARD_ASPECT}
 				best_area = cw*cw
@@ -831,17 +1042,23 @@ func _layout() -> void:
 		Vector2(maxf(50,safe.size.x-28-inset*2.0),maxf(66,safe.size.y-board_top-footer_height-14-inset*2.0)))
 	var fox_room := safe.size.x >= 850.0 and safe.size.y >= 480.0
 	if fox_room: _board_rect.size.x -= 170.0
+	elif _board_rect.size.y > _board_rect.size.x*1.25:
+		# Hochformat: oben bleibt Platz für Lumo hinter dem Tisch.
+		_board_rect.position.y += 110.0
+		_board_rect.size.y -= 110.0
 	overlay.position = Vector2(8,header_height+10)
 	overlay.size = Vector2(safe.size.x-16,maxf(80,safe.size.y-header_height-18))
 	camera.size = logical.y/100.0
 	var count: int = int(_state.get("count",8))
 	var grid := _choose_grid(count,_board_rect.size.x,_board_rect.size.y)
+	var grid_center := Vector2.ZERO
 	_page_size = int(grid.page_size)
 	_columns = int(grid.cols)
 	_rows = int(grid.rows)
 	_page = clampi(_page,0,maxi(0,ceili(float(count)/_page_size)-1))
 	var grid_size := Vector2(_columns*grid.width+8*(_columns-1),_rows*grid.height+8*(_rows-1))
 	var start := _board_rect.get_center()-grid_size/2
+	grid_center = _board_rect.get_center()
 	var pixel_factor := get_viewport().get_visible_rect().size/logical
 	_fit_table(Rect2(start,grid_size),pixel_factor)
 	_back_material.set_shader_parameter("aspect",CARD_ASPECT)
@@ -857,7 +1074,9 @@ func _layout() -> void:
 		var target := Rect2(pos,Vector2(grid.width,grid.height))
 		card.target = target
 		card.size = target.size/100.0
-		card.root.position = camera.project_position(target.get_center()*pixel_factor,14.0)
+		var centre := target.get_center()-grid_center
+		card.root.position = Vector3(centre.x/100.0,-centre.y/100.0,CARD_Z)
+		card.root.set_meta("height",card.size.y)
 		card.body.mesh = _rounded_mesh(card.size.x,card.size.y,0.11)
 		# The motif sits inset so the gold frame stays visible all around it.
 		card.front.mesh.size = card.size*0.86
@@ -871,10 +1090,6 @@ func _layout() -> void:
 		card.button.position = rect.position-safe.position
 		card.button.size = rect.size
 	_update_shadows()
-	fox.visible = fox_room
-	if fox_room:
-		fox.position = camera.project_position(Vector2(_safe_rect.end.x-86,_safe_rect.position.y+_safe_rect.size.y*0.72)*pixel_factor,12.8)
-		fox.scale = Vector3.ONE*0.74
 	_update_ui()
 
 
@@ -922,8 +1137,8 @@ func _update_ui() -> void:
 		_mark_selected(pack_buttons[i],_state.pack == PACKS[i])
 	for i in range(_cards.size()):
 		_cards[i].button.disabled = waiting or paused or complete or not bool(_state.canFlip) or _animating() or bool(_state.cards[i].faceUp) or bool(_state.cards[i].matched)
-	fox.set("reduced_motion",bool(_state.reduceMotion))
-	fox.set("suspended",paused)
+	lumo_seat.set_reduced_motion(bool(_state.reduceMotion))
+	lumo_seat.set_suspended(paused)
 
 
 ## The current board size and motif pack read as a golden, chosen tile.
@@ -946,8 +1161,8 @@ func _card_quad(card: Dictionary) -> Array[Vector2]:
 	var result: Array[Vector2] = []
 	# Axis-aligned rest geometry, independent of its animated flip transform.
 	for corner in [Vector2(-0.5,0.5),Vector2(0.5,0.5),Vector2(0.5,-0.5),Vector2(-0.5,-0.5)]:
-		var world: Vector3 = card.root.position+Vector3(corner.x*card.size.x,corner.y*card.size.y,0.057)
-		result.append(camera.unproject_position(world))
+		var local: Vector3 = Vector3(card.root.position.x,card.root.position.y,CARD_Z)+Vector3(corner.x*card.size.x,corner.y*card.size.y,0.057)
+		result.append(camera.unproject_position(_board.to_global(local)))
 	return result
 
 
@@ -1015,7 +1230,7 @@ func _publish_layout() -> void:
 		"coordinate_space":"godot_window_px; map through android_observation.render_rect for decor screenshots",
 		"observation_source":"android_window_insets" if OS.has_feature("android") and not observed.is_empty() else "platform_fixture" if MobileRuntime.requires_safe_area_observation() else "platform_safe_area",
 		"android_observation":android,"buttons":buttons,"cards":cards,
-		"camera":{"projection":"orthogonal","size":camera.size,"keep_aspect":int(camera.keep_aspect),
+		"camera":{"projection":"perspective","fov":camera.fov,"keep_aspect":int(camera.keep_aspect),
 			"origin":_v3(camera.global_position),"basis":[_v3(camera.global_basis.x),_v3(camera.global_basis.y),_v3(camera.global_basis.z)]}}
 	var file := FileAccess.open(OBSERVATION+".tmp",FileAccess.WRITE)
 	if file == null:

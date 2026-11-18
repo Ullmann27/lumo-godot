@@ -11,6 +11,9 @@ const JUMP_BUTTON = preload("res://scripts/games/jump_touch_button.gd")
 const FRONTIER = preload("res://scripts/creative/build_frontier_landscape.gd")
 const HUD = preload("res://scripts/creative/build_hud_style.gd")
 const MINIMAP = preload("res://scripts/creative/build_hud_minimap.gd")
+const ATMOSPHERE = preload("res://scripts/creative/build_village_atmosphere.gd")
+const VHUD = preload("res://scripts/creative/build_village_hud.gd")
+const WATER_SHADER = preload("res://assets/creative/village3d/shaders/village_water.gdshader")
 const GOAL_IDS: Array[String] = ["house", "bridge", "tower", "garden", "castle", "village"]
 const CATEGORY_VARIANTS := {
 	"Bauen": "primary", "Dächer": "rose", "Wege": "sky", "Natur": "leaf", "Deko": "teal"
@@ -114,6 +117,9 @@ func _ready() -> void:
 	slot = clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6)
 	save_path = "user://lumo_build_" + child_key + "_" + str(slot) + ".json"
 	kit.environment(self, "bauwelt_day")
+	# Same light pipeline as the Dorfwelt: sun shadows per quality tier, soft
+	# sky ambience, valley haze and a calm filmic grade. No rules change.
+	ATMOSPHERE.apply(self, LumoQuality.tier())
 	_ground()
 	world = Node3D.new()
 	world.name = "Construction"
@@ -180,9 +186,7 @@ func _ground() -> void:
 		var size := Vector3(width, 2.4, half * 2.0)
 		kit.collision(bank, center, size)
 	var water := kit.box(self, Vector3(2, -0.38, 0), Vector3(4, 0.14, half * 2.0), Color("1b81bd"))
-	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://assets/shaders/kart_water.gdshader")
-	water.material_override = mat
+	water.material_override = _river_material(half)
 	# Buildable river islands (tops at y=0, same support rule as the main banks).
 	for island_z in [-12.0, 20.0]:
 		var isle := StaticBody3D.new()
@@ -236,7 +240,7 @@ func _ui() -> void:
 	margin.add_child(hud)
 	var top_bar := PanelContainer.new()
 	top_bar.name = "BuildTopBar"
-	var top_style := HUD.bar()
+	var top_style := VHUD.panel("glass", 5)
 	top_style.set_content_margin_all(5)
 	top_bar.add_theme_stylebox_override("panel", top_style)
 	hud.add_child(top_bar)
@@ -375,7 +379,7 @@ func _ui() -> void:
 	dock_backdrop = Panel.new()
 	dock_backdrop.name = "BuildDockBackdrop"
 	dock_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	dock_backdrop.add_theme_stylebox_override("panel", HUD.bar())
+	dock_backdrop.add_theme_stylebox_override("panel", VHUD.panel("glass", 8))
 	root.add_child(dock_backdrop)
 	editor_controls.append(dock_backdrop)
 	var lower := VBoxContainer.new()
@@ -1837,3 +1841,23 @@ func _place_tone() -> AudioStreamWAV:
 		data[i * 2 + 1] = (value >> 8) & 255
 	stream.data = data
 	return stream
+
+
+## Fluss der Bauwelt mit dem Wasser der Dorfwelt: Tiefe quer zum Bett,
+## Uferschaum, Strömung nach Süden, Himmelsreflex-Ersatz (Mobile/gl_compat).
+func _river_material(half: float) -> ShaderMaterial:
+	var material := ShaderMaterial.new()
+	material.shader = WATER_SHADER
+	var profile := Image.create(12, 2, false, Image.FORMAT_L8)
+	for x in range(12):
+		var t := float(x) / 11.0
+		var depth := clampf(sin(t * PI) * 1.3, 0.0, 1.0)
+		for y in range(2):
+			profile.set_pixel(x, y, Color(depth * 0.55, 0, 0))
+	material.set_shader_parameter("depth_map", ImageTexture.create_from_image(profile))
+	material.set_shader_parameter("depth_rect", Vector4(0.0, -half, 4.0, half * 2.0))
+	material.set_shader_parameter("water_normal", load("res://assets/creative/village3d/textures/water_normal.png"))
+	material.set_shader_parameter("noise_map", load("res://assets/creative/village3d/textures/cloud_noise.png"))
+	material.set_shader_parameter("sea_swell", 0.0)
+	material.set_shader_parameter("wave_strength", 0.8)
+	return material

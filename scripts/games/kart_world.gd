@@ -34,6 +34,9 @@ const PRODUCTION_TUNNELS = preload("res://scripts/games/kart_production_tunnels.
 const PRODUCTION_TUNNEL_LAYOUT = preload("res://scripts/games/kart_production_tunnel_layout.gd")
 const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const DETAIL_LAYER = preload("res://scripts/games/visual/kart_detail_layer.gd")
+const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
+## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
+var scenery_plants: Dictionary = {}
 var _piece_markers: Array = []
 ## Abenteuer-Dramaturgie je Strecke (Menü/Strecken-Bot, 17.11.2026); nur Deko, Licht,
 ## Platzierung und Bauteil-Marker, keine Straßen-/Loop-/Rampengeometrie.
@@ -100,6 +103,7 @@ func build(
 	if has_meta("adventure_tunnel"):
 		remove_meta("adventure_tunnel")
 	action_obstacles.clear()
+	scenery_plants = {}
 	decoration_count = 0
 	low_detail = lightweight
 	_only_geometry = geometry_only
@@ -108,7 +112,7 @@ func build(
 	track_name = definition.name
 	road_width = float(definition.get("road_width_m", WIDTH))
 	_rng.seed = definition.seed
-	Callable(DETAIL_LAYER, "apply").call_deferred(self, track_id, DETAIL_LAYER.profile_for(self))  # Detail-Schicht (Verwitterung, Kleinteile, Publikum, Licht, Start/Ziel-Bühne) – läuft deferred, also nach dem gesamten Weltaufbau aller Zweige.
+	DETAIL_LAYER.schedule(self)  # Detail-Schicht (Verwitterung, Kleinteile, Publikum, Licht, Start/Ziel-Bühne) – läuft deferred, also nach dem gesamten Weltaufbau aller Zweige.
 	_make_curve()
 	jump={}
 	loop_layout={}
@@ -127,6 +131,8 @@ func build(
 		if not geometry_only:
 			ADVENTURE_DRESSING.build(self)
 		_flush_instances()
+		if not geometry_only:
+			SCENERY.build(self)
 		return
 	if track_id=="bergwelt":
 		# Himmelsinseln Sprint (reference k07): the road is carried by floating islands.
@@ -146,6 +152,7 @@ func build(
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
+			SCENERY.build(self)
 		return
 	if not geometry_only:
 		_lighting()
@@ -166,6 +173,7 @@ func build(
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
+			SCENERY.build(self)
 		return
 	STUNT.prepare(self)
 	_terrain()
@@ -202,6 +210,7 @@ func build(
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)
+		SCENERY.build(self)
 
 func _make_curve() -> void:
 	if track_id == JUNGLE.ID:
@@ -932,6 +941,8 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 			surface.set_uv(Vector2(left if index%2==0 else right,d if index<2 else next))
 			surface.add_vertex(vertices[index])
 	surface.generate_normals()
+	if not low_detail and not _only_geometry:
+		surface.generate_tangents()
 	var node := MeshInstance3D.new()
 	node.name=mesh_name
 	node.mesh=surface.commit()
@@ -961,13 +972,14 @@ func _road() -> void:
 		asphalt.shader = preload("res://assets/shaders/kart_candy_road.gdshader")
 	else:
 		ROAD_SURFACES.apply(asphalt, track_id)
+		ROAD_SURFACES.apply_detail(asphalt, track_id, low_detail)
 	road=_ribbon("BankedRoad",-WIDTH*0.5,WIDTH*0.5,0.0,asphalt)
 	var shoulder_color := Color("d9d9c5") if track_id=="sonnenhafen" else Color("90b4bd")
 	if track_id=="bergwelt": shoulder_color=Color("2a3f8f")
 	if track_id=="volcano_night": shoulder_color=Color("3b303c")
 	var edge_color: Color=definition.accent
 	for side in [-1.0,1.0]:
-		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_material(shoulder_color))
+		_ribbon("RaisedShoulder",side*5.42,side*6.10,-0.06,_verge_material(shoulder_color))
 		if not low_detail and track_id!="bergwelt":
 			_ribbon(
 				"CinematicLightEdge",
@@ -977,7 +989,7 @@ func _road() -> void:
 				_material(edge_color,true)
 			)
 		_ribbon("RoadFoundation",side*6.1,side*6.13,-0.06,_material(Color("566b74")),0.70)
-		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_material(ROAD_SURFACES.marking(track_id,Color("f5f7e9"))))
+		_ribbon("EdgePaint",side*5.1,side*5.24,0.015,_marking_material(ROAD_SURFACES.marking(track_id,Color("f5f7e9")),asphalt))
 		if track_id=="holo_city": _ribbon("ContinuousLightEdge",side*5.83,side*5.94,0.045,_material(edge_color,true))
 	var count: int=ceili(length/1.4)
 	var step: float=length/count
@@ -1029,6 +1041,36 @@ func _road() -> void:
 			SKY_ISLANDS.cave_crystals(self,length*SKY_ISLANDS.CAVE)
 		"holo_city":
 			for fraction in [0.21,0.45,0.69]: _holo_gate(length*fraction)
+
+## Abgenutzte Randmarkierung (Shader) ausser auf LOW; dort die alte Flachfarbe.
+func _marking_material(color: Color, road_material: ShaderMaterial) -> Material:
+	if low_detail or _only_geometry:
+		return _material(color)
+	var key := "marking_" + color.to_html()
+	if not materials.has(key):
+		var marking := ShaderMaterial.new()
+		marking.shader = preload("res://assets/shaders/kart_road_marking.gdshader")
+		marking.set_shader_parameter("paint", color)
+		var tint: Variant = road_material.get_shader_parameter("road_tint")
+		marking.set_shader_parameter("under", tint if tint is Color else Color("4d525b"))
+		materials[key] = marking
+	return materials[key]
+
+
+## Bankett aus Splitt mit Grasnarbe statt einfarbiger Schulter (nicht auf LOW).
+func _verge_material(color: Color) -> Material:
+	if low_detail or _only_geometry:
+		return _material(color)
+	var key := "verge_" + color.to_html()
+	if not materials.has(key):
+		var verge := ShaderMaterial.new()
+		verge.shader = preload("res://assets/shaders/kart_road_marking.gdshader")
+		verge.set_shader_parameter("mode", 1)
+		verge.set_shader_parameter("under", color.darkened(0.25))
+		verge.set_shader_parameter("paint", ROAD_SURFACES.verge_grass(track_id))
+		materials[key] = verge
+	return materials[key]
+
 
 func _beam(a: Vector3, b: Vector3, width: float, color: Color, glow: bool=false) -> void:
 	var delta: Vector3=b-a
@@ -1118,16 +1160,33 @@ func _arch(distance: float, text: String, color: Color) -> void:
 func _near_road(at: Vector3, radius: float) -> bool:
 	return _nearest_horizontal(at).x<radius
 
+## Ein Baum der Kulisse. Statt einfarbiger Kronen-Kugeln steht hier ein strukturiertes
+## Blender-Modell (Stamm mit Wurzelanlauf, Aeste, Blattkarten; siehe SCENERY).
+## Die Zufallszuege bleiben exakt wie frueher, damit keine andere Kulisse verrutscht.
 func _tree(at: Vector3, size: float, rng: RandomNumberGenerator) -> void:
-	var trunk := Color("73553f")
-	_prop("cylinder",at+Vector3.UP*size*2.0,Vector3(0.23,4.0,0.23)*size,trunk)
-	var branch_basis := Basis(Vector3.UP,rng.randf_range(-PI,PI))
-	for side in [-1.0,1.0]: _beam(at+Vector3.UP*size*2.0,at+branch_basis.x*side*size+Vector3.UP*size*3.55,0.18*size,trunk)
-	var tint := Color("367969") if rng.randf()>0.5 else Color("4c956b")
-	if track_id=="zauberwald": tint=Color("428978") if rng.randf()>0.35 else Color("7688b7")
-	_prop("crown",at+Vector3.UP*size*4.1,Vector3(2.1,1.75,1.85)*size,tint,branch_basis)
-	_prop("crown",at+branch_basis.x*size*1.0+Vector3.UP*size*3.55,Vector3(1.45,1.1,1.35)*size,tint.lightened(0.055),branch_basis)
-	if not low_detail: _prop("crown",at-branch_basis.x*size*0.95+Vector3.UP*size*3.65,Vector3(1.25,1.2,1.35)*size,tint.darkened(0.06),branch_basis)
+	var yaw: float = rng.randf_range(-PI,PI)
+	var light: bool = rng.randf()>0.5
+	if track_id=="zauberwald": light = rng.randf()>0.35
+	var species: String = SCENERY.tree_species(track_id, at)
+	var tint := Color(0.5,0.52,0.47) if light else Color(0.47,0.5,0.5)
+	# Alte Kronen reichten bis etwa 5,4 x size ueber den Fuss.
+	plant_scenery(species, at, size*5.4/float(SCENERY_HEIGHTS.get(species, 10.0)), yaw, tint, absf(sin(at.x*1.7+at.z)))
+
+
+## Ungefaehre Modellhoehen (m) der Blender-Baeume fuer die Hoehenanpassung.
+const SCENERY_HEIGHTS: Dictionary = {
+	"laubbaum": 10.4, "laubbaum_b": 8.6, "nadelbaum": 11.4, "palme": 8.9, "zauberbaum": 15.5,
+	"dschungelbaum": 15.6, "winterbaum": 9.9,
+}
+
+
+## Merkt eine Kulissenpflanze vor; SCENERY.build() instanziert sie je Zelle und LOD.
+func plant_scenery(species: String, at: Vector3, scale: float, yaw: float, tint: Color, phase: float) -> void:
+	if not scenery_plants.has(species):
+		scenery_plants[species] = {"transforms": [], "custom": []}
+	var basis := Basis(Vector3.UP, yaw).scaled(Vector3.ONE*scale)
+	scenery_plants[species].transforms.append(Transform3D(basis, at))
+	scenery_plants[species].custom.append(Color(tint.r, tint.g, tint.b, fposmod(phase, 1.0)))
 
 func _flower_patch(at: Vector3, color: Color, count: int=8) -> void:
 	for i in range(count):

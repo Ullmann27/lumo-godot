@@ -1,5 +1,35 @@
 # TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
 
+## Nachtrag 18.11.2026, Teil 4 – Klangwelt, Dorfwelt, Lumo-Lauf-Kulisse, Spielzimmer (Stand `6e54cfb`; alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, Klänge nicht angehört)
+
+Die Helfer dieser vier Pakete wurden am Nutzungslimit gestoppt. Ihr letzter Arbeitsstand wurde gesichert, mit dem Hauptstand zusammengeführt, getestet und – wo es Bilder gibt – gesichtet:
+- **Klangwelt** (`b594543`): eigene Musik, Atmosphären, Ereignistöne; `AudioManager` mit echten Samples, Autoload `GameSoundscape`. `game_soundscape_regression` 308 Prüfungen (nach Zuordnung des neuen Vier-gewinnt-Tons `disc_clack` → `piece_drop`, `6e54cfb`), `kart_audio`, `lumo_run` (490), `cards_table`, `rhythm_party`, `treasure_island`, `validate_project` PASS.
+- **Dorfwelt** (`cbeb7c0`): Höhenkarten-Gelände, Fluss, Fachwerkhäuser, Blattbüschel-Bäume, Gründerlager, Kapitel 1/12, HUD mit Kamera-Gesten. 17 Tests grün (u. a. `build_village_scene` 232, `build_village_economy` 339, `build_settlement_play` 127, `build_settlement` 194, `build_defense` 162, `build_dialog_density` 2016). Ein Typfehler im letzten Arbeitsschritt (Laub-Material) wurde behoben; 14 Bilder gesichtet. `build_premium_props_regression` braucht einen Renderer und hängt im reinen Rechenmodus (auch im Hauptstand vor dem Merge) – NICHT AUSGEFÜHRT.
+- **Lumo Lauf – Dschungelkulisse** (`abbc3f3`): Bäume, Farne, Bodendecker, Schatz, Kristalllicht aus eigenen Blender-Modellen. `lumo_run_regression` 496 Prüfungen; 24 Bilder aus dem gespielten Lauf gesichtet (alle sechs Abschnitte, Fass, Liane, Seilbahn, Felsball, Schatzhalle, Lore, Lernstopp).
+- **Spielzimmer** (`fbac669`): Kartentisch, Memory, 4 Gewinnt, Quiz mit eigenen Texturen und Blender-Möbeln. `cards_table` 591, `cards_safe_area` 2176 (9 Bildschirmformen), `cards_rules` 212 968, `connect_four_return` 21, `native_table_boot` 26. Kartentisch-Bilder gesichtet. Offen: am 3D-Memory-Tisch ist Lumo im Querformat angeschnitten (von der App nicht gestartet); `memory_table_regression`, `connect_four_runtime`, `quiz_studio_runtime` brauchen Aufnahme-Verzeichnisse – NICHT AUSGEFÜHRT.
+- Kombination im Hauptstand nach allen Merges: Import ohne Fehler; `kart_track_selection` (Fall A), `kart_items_all_courses` (3 Strecken, 164), `kart_complete_flow`, `kart_real_lumo`, `real_lumo_everywhere` (369), `game_hub_magic`, `native_table_boot`, Dorf- und Lauf-Tests grün; die fünf Vorprüfungen des APK-Workflows grün.
+
+Noch nicht zusammengeführt (Helfer laufen weiter): Figuren der Rivalen, Garage/Fahrzeug-Feinheiten/Item-Anzeige/Siegerbild, Kart-Detailschicht (eigener Test: 2 Fehler bei Zauberwald-Zählern, 12 Fehlerzeilen aus einem verzögerten Aufruf).
+
+## Nachtrag 18.11.2026, Teil 3 – Streckenwahl (#204), Items auf allen Strecken (#205), Zusammenführungen (alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, kein Mobile-Renderer)
+
+**Issue #204 – gewählte Strecke startete Sonnenhafen.** Reproduziert mit echten Bildschirm-Tipps (`kart_track_selection_regression`, vor der Reparatur 18 Fehler):
+- Ursache 1: Ein angetipptes Streckenbild im Hauptmenü wurde nur hervorgehoben, nicht an das Rennen übergeben; die Kachel „Rennen“ startete die Voreinstellung Sonnenhafen. Auch ohne Tippen war Vulkan hervorgehoben und Sonnenhafen wurde gestartet.
+- Ursache 2: Die große Strecken-Kachel öffnete die Rennwelten mit der Vorgabe „Sternen-Cup“; START begann den Cup auf Strecke 1, die Streckenliste war nicht sichtbar.
+- Nach der Reparatur (`932b33f`): 150 Prüfungen / 0 Fehler, 29 Rennstarts, 13 verschiedene geladene Strecken, 71 echte Touch-Eingaben. Wege: Streckenbild → „Rennen“ (Vulkan, Dschungelherz, Wüste, Sonnenhafen); angezeigtes Highlight → „Rennen“; Highlight-Kachel → Rennwelten → START; Leiste „Strecken“ → Streckenkarte → START für alle 13 Strecken (Liste wird gescrollt); Zeitfahren und Training; Rückkehr ins Menü und erneuter Start; nach einem Cup. Geprüft wird die tatsächlich gebaute Welt (`world.track_id`), nicht die Menüauswahl.
+- Bildbelege mit Renderer: 14 Bilder (Menü nach dem Tipp und laufendes Rennen), gesichtet.
+- Dazu grün: `kart_complete_flow`, `kart_regression`, `kart_modes`, `kart_race_bridge`, `kart_race_kinds` (125), `kart_neon_home` (40, an den neuen Vertrag angepasst), `kart_neon_readability` (1180), `kart_nextgen_garage` (93, erwartet jetzt 13 statt 12 Strecken); mit Renderer `kart_menu_flow`, `kart_start_hero`, `kart_reference_landing_fit`.
+- Diagnosezeilen im Log: `[Kart] track_selected: <id> mode=<modus>` und `[Kart] race_world_ready: <id> mode=<modus>` (mit Fehlerzeile, falls die gebaute Welt abweicht). Unbekannte Strecken starten nicht mehr stillschweigend Sonnenhafen.
+- **Nicht geprüft:** Android-Emulator und Fold. Der Fehler gilt erst nach Heinz' Gerätetest als abgenommen.
+
+**Issue #205 – Items und Fahr-Effekte auf allen 13 Strecken** (`kart_items_all_courses_regression`, 634 Prüfungen / 0 Fehler): je Strecke 6 Überraschungsboxen (innerhalb der Planken, auf Kart-Höhe, nicht an Rampe/Looping/Hindernis), 5–12 Könner-Ringe, 2 Turbo-Ringe; eine Box wird durch echtes Fahren eingesammelt (etwa 67 Physikschritte), das Item-Rad kommt zur Ruhe; Sternraketen: schärfen, Zielerfassung, Paar feuern, Rivale dreht sich, Schonzeit; Schild wehrt ab; ohne Schild genau ein Treffer und keine Trefferschleife in der Schonzeit; Rivale warnt und feuert; Drift-Funken und -Spuren; Belag je Strecke (Wald, Sand, Schnee, Lava, Sternenglas, Stein, Fliesen). Dschungelherz fuhr mit Asphalt-Effekten und nutzt jetzt den Waldboden. **Nicht geprüft:** Balance im echten Rennen über mehrere Runden, Gerät.
+
+**Zusammengeführt** (jeweils auf dem zusammengeführten Stand geprüft):
+- Abenteuerwelten (`5a3747d`): Schatzinsel, Konzertbühne, Puzzle-Atelier, Spielewelt. 14 Tests grün; ein Rückschritt der neuen Kamera (Meldungszeile verdeckte Lumo im Hochformat, `treasure_title_contrast_regression` 4 Fehler) wurde vor der Übernahme behoben (941 Prüfungen).
+- Kart-Kulisse und Fahr-Effekte Runde 2: siehe Merge-Commit darunter.
+
+Bekannt veraltet (prüfen das frühere Menü, laufen in keinem Workflow dieses Zweigs): `kart_home_experience_regression`, `kart_spatial_menu_regression` (greifen auf `_mode_buttons`/`_modes` zu, die es im Neon-Menü nicht gibt).
+
 ## Nachtrag 18.11.2026, Teil 2 (Stand `8ec2910`, alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, kein Mobile-Renderer)
 
 Zusammengeführt und auf dem jeweils zusammengeführten Stand geprüft (headless, ohne `ERROR`-Zeilen):

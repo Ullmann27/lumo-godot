@@ -3,6 +3,7 @@ extends Node3D
 ## bot, winning-rule evaluator or reward API. Only acknowledged legal history
 ## drives geometry. The host owns the round and its profile-bound persistence.
 const LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const KIT = preload("res://scripts/games/table_room/table_room_kit.gd")
 const CYAN := Color("53ddfd")
 const GOLD := Color("ffd166")
 const NAVY := Color("123555")
@@ -26,6 +27,9 @@ var _drop_tween: Tween
 var _discs: Array[MeshInstance3D] = []
 var _disc_roots: Node3D
 var _win_root: Node3D
+var _win_material: StandardMaterial3D
+var _disc_mesh: ArrayMesh
+var _time := 0.0
 var camera: Camera3D
 var fox
 var ui: Control
@@ -102,6 +106,11 @@ func _notification(what: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_time += delta
+	if _win_material != null:
+		# Die Gewinnreihe pulsiert sanft (bei „Ruhige Bewegung“ ruhig).
+		var calm := bool(_state.get("reduceMotion", false))
+		_win_material.emission_energy_multiplier = 1.6 if calm else 1.3 + 0.9 * (0.5 + 0.5 * sin(_time * 4.0))
 	_poll += delta
 	if _poll >= 0.08:
 		_poll = 0.0
@@ -269,10 +278,25 @@ func _start_drop() -> void:
 	var duration := 0.06 if bool(_state.reduceMotion) else 0.25 + float(next.row) * 0.04
 	_drop_tween.tween_property(disc, "position", target, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	if not bool(_state.reduceMotion):
+		# Aufprall: Stein staucht kurz, springt zweimal nach und klackert.
+		_drop_tween.tween_callback(_clack)
+		_drop_tween.tween_property(disc, "scale", Vector3(1.12, 1.0, 0.86), 0.04)
 		_drop_tween.tween_property(disc, "position:y", target.y + 0.10, 0.07).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_drop_tween.parallel().tween_property(disc, "scale", Vector3.ONE, 0.07)
 		_drop_tween.tween_property(disc, "position:y", target.y, 0.09).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		_drop_tween.tween_callback(_clack)
+		_drop_tween.tween_property(disc, "position:y", target.y + 0.025, 0.04).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_drop_tween.tween_property(disc, "position:y", target.y, 0.04).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		# Der Stein dreht sich beim Fallen ein wenig um die eigene Achse.
+		disc.rotation.y = randf_range(-0.6, 0.6)
+		_drop_tween.parallel().tween_property(disc, "rotation:y", 0.0, 0.08)
 	_drop_tween.tween_callback(_drop_finished)
 	_update_ui()
+
+
+func _clack() -> void:
+	if bool(HostBridge.launch_options().get("soundEnabled", true)) and has_node("/root/AudioManager"):
+		get_node("/root/AudioManager").play_sfx("disc_clack")
 
 
 func _drop_finished() -> void:
@@ -284,13 +308,8 @@ func _drop_finished() -> void:
 
 
 func _disc(piece: int) -> MeshInstance3D:
-	var cylinder := CylinderMesh.new()
-	cylinder.top_radius = 0.34
-	cylinder.bottom_radius = 0.34
-	cylinder.height = 0.22
-	cylinder.radial_segments = 24
 	var mesh := MeshInstance3D.new()
-	mesh.mesh = cylinder
+	mesh.mesh = _disc_shape()
 	mesh.rotation.x = PI / 2
 	mesh.material_override = _disc_materials[piece - 1]
 	_disc_roots.add_child(mesh)
@@ -298,12 +317,41 @@ func _disc(piece: int) -> MeshInstance3D:
 	return mesh
 
 
+## Spielstein mit gerundeter Kante, Mulde und erhabenem Ring – ein Mesh für alle.
+func _disc_shape() -> ArrayMesh:
+	if _disc_mesh != null:
+		return _disc_mesh
+	# Querschnitt (Radius, Höhe) von der Mitte oben über den Rand zur Mitte unten.
+	var top: Array[Vector2] = [Vector2(0.0, 0.085), Vector2(0.17, 0.085), Vector2(0.2, 0.1), Vector2(0.235, 0.1),
+		Vector2(0.255, 0.085), Vector2(0.3, 0.095), Vector2(0.33, 0.085), Vector2(0.342, 0.06), Vector2(0.345, 0.0)]
+	var profile: Array[Vector2] = top.duplicate()
+	for index in range(top.size() - 2, -1, -1):
+		profile.append(Vector2(top[index].x, -top[index].y))
+	var tool := SurfaceTool.new()
+	tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segments := 32
+	for segment in range(segments):
+		var a0 := TAU * segment / segments
+		var a1 := TAU * (segment + 1) / segments
+		for k in range(profile.size() - 1):
+			var p0 := profile[k]
+			var p1 := profile[k + 1]
+			var quad := [Vector3(cos(a0) * p0.x, p0.y, sin(a0) * p0.x), Vector3(cos(a1) * p0.x, p0.y, sin(a1) * p0.x),
+				Vector3(cos(a1) * p1.x, p1.y, sin(a1) * p1.x), Vector3(cos(a0) * p1.x, p1.y, sin(a0) * p1.x)]
+			for corner: int in [0, 2, 1, 0, 3, 2]:
+				tool.add_vertex(quad[corner])
+	tool.generate_normals()
+	_disc_mesh = tool.commit()
+	return _disc_mesh
+
+
 func _update_win() -> void:
 	for node in _win_root.get_children():
 		node.queue_free()
 	if _state.is_empty() or _state.phase != "won" or _dropping or not _drop_queue.is_empty():
 		return
-	var material := _material(Color("fff4b5"), 0.28, 0.1, 0.5)
+	_win_material = _material(Color("fff4b5"), 0.28, 0.1, 1.6)
+	var material := _win_material
 	for point in _state.winningLine:
 		var torus := TorusMesh.new()
 		torus.inner_radius = 0.34
@@ -329,6 +377,20 @@ func _material(color: Color, roughness: float = 0.6, metallic: float = 0.0, glow
 		material.emission_enabled = true
 		material.emission = color
 		material.emission_energy_multiplier = glow
+	return material
+
+
+## Glänzender Spielstein-Kunststoff mit Lichtkante.
+func _plastic(color: Color) -> StandardMaterial3D:
+	var material := _material(color, 0.22, 0.0)
+	material.metallic_specular = 0.75
+	material.rim_enabled = true
+	material.rim = 0.4
+	material.rim_tint = 0.3
+	if KIT.tier() == "high":
+		material.clearcoat_enabled = true
+		material.clearcoat = 0.6
+		material.clearcoat_roughness = 0.15
 	return material
 
 
@@ -381,21 +443,29 @@ func _quad(st: SurfaceTool, points: Array, center: Vector3, reverse: bool) -> vo
 
 
 func _build_room() -> void:
+	var tier := KIT.tier()
 	var world := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color("091b34")
+	environment.background_color = Color("140e1e")
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color("86b9d5")
-	environment.ambient_light_energy = 0.42
+	environment.ambient_light_color = Color("8f86c6")
+	environment.ambient_light_energy = 0.48
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	environment.tonemap_exposure = 1.08
+	environment.glow_enabled = tier != "low"
+	environment.glow_intensity = 0.45
+	environment.glow_hdr_threshold = 1.0
+	if tier == "high":
+		environment.ssao_enabled = true
 	world.environment = environment
 	add_child(world)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-28, -28, 0)
-	sun.light_color = Color("ffedce")
-	sun.light_energy = 0.85
-	sun.shadow_enabled = true
+	sun.light_color = Color("ffe2c0")
+	sun.light_energy = 0.8
+	sun.shadow_enabled = tier != "low"
+	sun.shadow_blur = 1.5
 	add_child(sun)
 	var rim := OmniLight3D.new()
 	rim.position = Vector3(-3, 5, 4)
@@ -403,9 +473,37 @@ func _build_room() -> void:
 	rim.light_energy = 0.28
 	rim.light_color = CYAN
 	add_child(rim)
-	var wood := _material(Color("74544b"), 0.72)
-	_box(self, Vector3(20, 0.2, 14), Vector3(0, -0.25, -1), _material(Color("213d54")))
-	_box(self, Vector3(10, 0.22, 3.4), Vector3(0, 0.1, -0.35), wood)
+	# Warme Hängelampe über dem Brett, sichtbar als Lichtfleck auf der Wand.
+	var lamp := SpotLight3D.new()
+	lamp.position = Vector3(0.6, 7.6, 2.4)
+	lamp.light_color = Color("ffd29a")
+	lamp.light_energy = 2.6
+	lamp.spot_range = 12.0
+	lamp.spot_angle = 40.0
+	lamp.shadow_enabled = false
+	add_child(lamp)
+	lamp.look_at(Vector3(0, 2.6, 0))
+	# Spielzimmer: Dielen, Bretterwand mit Fenster, Regal, Uhr und Pflanze.
+	var floor_box := _box(self, Vector3(24, 0.2, 16), Vector3(0, -0.25, -2), null)
+	var floor_material: StandardMaterial3D = (KIT.material("floor") as StandardMaterial3D).duplicate()
+	floor_material.uv1_triplanar = true
+	floor_material.uv1_world_triplanar = true
+	floor_material.uv1_scale = Vector3.ONE * 0.4
+	floor_box.material_override = floor_material
+	var wall := _box(self, Vector3(26, 12, 0.3), Vector3(0, 5.6, -6.5), KIT.material("wall"))
+	wall.name = "BackWall"
+	for entry: Array in [["window", Vector3(-7.4, -0.15, -6.3), 2.4], ["shelf", Vector3(8.2, -0.15, -6.1), 2.2],
+			["clock", Vector3(-3.6, 7.1, -6.3), 2.0], ["plant", Vector3(-10.5, -0.15, -5.0), 2.4], ["plant", Vector3(11.6, -0.15, -4.6), 2.0]]:
+		if tier == "low" and entry[0] == "plant":
+			continue
+		var node := KIT.prop(str(entry[0]))
+		if node != null:
+			node.position = entry[1]
+			node.scale = Vector3.ONE * float(entry[2])
+			add_child(node)
+	# Eichentisch unter dem Brett, Messingkante vorn.
+	_box(self, Vector3(10, 0.22, 3.4), Vector3(0, 0.1, -0.35), KIT.material("oak"))
+	_box(self, Vector3(10.05, 0.05, 0.06), Vector3(0, 0.02, 1.33), KIT.material("brass"))
 	_box(self, Vector3(7, 0.20, 1.25), Vector3(0, 0.40, 0), _material(Color("19334c"), 0.38, 0.1))
 	var frame := _material(NAVY, 0.68, 0.04)
 	var board := MeshInstance3D.new()
@@ -417,7 +515,7 @@ func _build_room() -> void:
 		_box(self, Vector3(0.18, 5.45, 0.48), Vector3(side * 3.14, 3.0, 0), frame)
 		_box(self, Vector3(0.45, 0.36, 1.0), Vector3(side * 3.14, 0.57, 0), _material(GOLD, 0.35, 0.2))
 	_box(self, Vector3(6.45, 0.14, 0.48), Vector3(0, 5.65, 0), frame)
-	_disc_materials = [_material(CYAN, 0.54, 0.02), _material(GOLD, 0.54, 0.02)]
+	_disc_materials = [_plastic(CYAN), _plastic(GOLD)]
 	_disc_roots = Node3D.new()
 	_disc_roots.name = "AcknowledgedDiscs"
 	add_child(_disc_roots)

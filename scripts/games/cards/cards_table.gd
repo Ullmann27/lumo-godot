@@ -17,8 +17,9 @@ const HUD = preload("res://scripts/games/cards/cards_hud.gd")
 const SESSION = preload("res://scripts/games/cards/cards_session.gd")
 const INTRO = preload("res://scripts/games/cards/cards_intro.gd")
 const DECK = preload("res://scripts/games/cards/rules/star_deck.gd")
+const TABLE_KIT = preload("res://scripts/games/table_room/table_room_kit.gd")
 
-const LUMO_ANGLE := -60.0
+const LUMO_ANGLE := -96.0
 const OPPONENT_ANGLES := {1: [180.0], 2: [-138.0, 138.0], 3: [-122.0, 180.0, 122.0]}
 const ROSTER: Array[String] = ["squirrel", "owl", "turtle", "lion", "rabbit"]
 const GOLD := Color(1.0, 0.78, 0.25, 0.95)
@@ -89,6 +90,7 @@ var _drag_card := -1
 var _hand_metrics: Dictionary = {}
 var _ghosts: Array[Node3D] = []
 var _burst: CPUParticles3D
+var _card_shadows: MultiMeshInstance3D
 var _final_data: Dictionary = {}
 var _closed := false
 var _seat_ids: Array = []
@@ -120,6 +122,7 @@ func _ready() -> void:
 	hand_root.name = "Hand"
 	add_child(hand_root)
 	_burst = _make_burst()
+	_card_shadows = _make_card_shadows()
 	var layer := CanvasLayer.new()
 	layer.name = "Interface"
 	add_child(layer)
@@ -205,7 +208,8 @@ func _frame_camera() -> void:
 	var portrait := aspect < 1.0
 	var ladder := game == "leiter" and screen == "play"
 	if portrait:
-		room.frame(aspect, 1.52 if ladder else 1.9, 1.6, 52.0 if ladder else 40.0, 0.2 if ladder else 0.10)
+		# Etwas weiter als der Tisch: Lumo sitzt links am Rand und bleibt ganz im Bild.
+		room.frame(aspect, 1.72 if ladder else 2.08, 1.6, 52.0 if ladder else 40.0, 0.2 if ladder else 0.10)
 	else:
 		# Querformat: steiler von oben, damit Stich und Auslage zwischen
 		# Kopfzeile und Hand ganz zu sehen sind.
@@ -245,6 +249,55 @@ func _process(delta: float) -> void:
 		if is_instance_valid(seat):
 			seat.advance(delta)
 	_place_plates()
+	_update_card_shadows()
+
+
+## Weiche Kontaktschatten aller Tischkarten in einem einzigen MultiMesh.
+func _make_card_shadows() -> MultiMeshInstance3D:
+	var multimesh := MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	multimesh.use_colors = true
+	var quad := QuadMesh.new()
+	quad.orientation = PlaneMesh.FACE_Y
+	quad.size = Vector2(ART.WIDTH * 1.3, ART.HEIGHT * 1.22)
+	multimesh.mesh = quad
+	multimesh.instance_count = 64
+	multimesh.visible_instance_count = 0
+	var node := MultiMeshInstance3D.new()
+	node.name = "CardShadows"
+	node.multimesh = multimesh
+	var material: StandardMaterial3D = TABLE_KIT.shadow_material(1.0).duplicate()
+	material.vertex_color_use_as_albedo = true
+	material.albedo_color = Color(1, 1, 1, 1)
+	node.material_override = material
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(node)
+	return node
+
+
+func _update_card_shadows() -> void:
+	if not is_instance_valid(_card_shadows):
+		return
+	var multimesh := _card_shadows.multimesh
+	var used := 0
+	for id: int in cards:
+		var node: Node3D = cards[id]
+		if used >= multimesh.instance_count or node.get_parent() != cards_root:
+			continue
+		var at := node.global_position
+		var height := at.y - ROOM.TABLE_Y
+		if height > 0.7 or Vector2(at.x, at.z).length() > ROOM.TABLE_RADIUS - 0.08:
+			continue
+		var axis := node.global_basis.x
+		var yaw := atan2(-axis.z, axis.x)
+		var size := node.global_basis.x.length() * (1.0 + height * 1.4)
+		# Die Lampe hängt über der Mitte: der Schatten wandert nach außen.
+		var drift := Vector3(at.x, 0, at.z) * height * 0.35
+		var spot := Vector3(at.x, ROOM.TABLE_Y + 0.0015, at.z) + drift
+		multimesh.set_instance_transform(used, Transform3D(Basis(Vector3.UP, yaw).scaled(Vector3.ONE * size), spot))
+		multimesh.set_instance_color(used, Color(0.03, 0.015, 0.04, clampf(0.5 - height * 1.1, 0.06, 0.5)))
+		used += 1
+	multimesh.visible_instance_count = used
 
 
 func _place_plates() -> void:
@@ -268,9 +321,10 @@ func _build_seats(opponents: Array) -> void:
 	var lumo: Node3D = SEAT.new()
 	lumo.name = "SeatLumo"
 	add_child(lumo)
-	lumo.setup("lumo", ROOM.seat_transform(LUMO_ANGLE, ROOM.SEAT_RADIUS + 0.2), 0)
+	# Lumo rückt nah an die Kante: seine Hände liegen auf dem Tisch.
+	lumo.setup("lumo", ROOM.seat_transform(LUMO_ANGLE, ROOM.LUMO_RADIUS), 0)
 	lumo.set_reduced_motion(reduced_motion)
-	room.add_stool(LUMO_ANGLE, lumo.tint, ROOM.SEAT_RADIUS + 0.2)
+	room.add_stool(LUMO_ANGLE, lumo.tint, ROOM.LUMO_RADIUS, false, ROOM.LUMO_LIFT)
 	seats.append(lumo)
 	var angles: Array = OPPONENT_ANGLES[clampi(opponents.size(), 1, 3)]
 	for index in range(mini(opponents.size(), 3)):
@@ -905,7 +959,15 @@ func _spawn_round(deal: bool) -> void:
 	if not deal or reduced_motion:
 		_layout_all(0.0)
 		return
-	# Reihum austeilen: jede Karte startet etwas später.
+	# Erst mischen (zwei Hälften rutschen auseinander und fallen verschränkt
+	# zurück), dann reihum austeilen: jede Karte startet etwas später.
+	var shuffle := 0.62
+	var shuffle_quick := shuffle / maxf(0.01, time_scale)
+	for index in range(all.size()):
+		var lower := index * 2 < all.size()
+		cards[int(all[index])].riffle(-1.0 if lower else 1.0, 0.0 if lower else 0.012, shuffle_quick,
+			float(index % 9) * 0.004 / maxf(0.01, time_scale))
+	_sfx("card_deal")
 	var order := 0
 	var hand_size := 0
 	for hand: Array in rules.s.r.hands:
@@ -916,7 +978,7 @@ func _spawn_round(deal: bool) -> void:
 			var seat: int = (int(rules.s.r.turn) + player) % rules.players()
 			var hand: Array = rules.s.r.hands[seat]
 			if index < hand.size():
-				delays[int(hand[index])] = 0.25 + 0.045 * order
+				delays[int(hand[index])] = shuffle + 0.12 + 0.045 * order
 				order += 1
 	_layout_all(0.42, delays, 0.32)
 	_deal_ticks(order)
@@ -1491,6 +1553,7 @@ func _refresh_hud() -> void:
 		return
 	if rules == null or screen != "play":
 		hud.set_plates([])
+		room.set_scoreboard("", [])
 		return
 	var info: Dictionary = GAMES[game]
 	var round_text := "Runde %d von %d" % [rules.round_number(), rules.rounds_total()]
@@ -1528,6 +1591,12 @@ func _refresh_hud() -> void:
 			"target": target,
 		})
 	hud.set_plates(plates)
+	# Die Kreidetafel an der Wand zeigt denselben echten Stand.
+	var board: Array = []
+	for plate: Dictionary in plates:
+		var value := str(plate.info) if str(plate.extra).is_empty() else str(plate.extra)
+		board.append(["Du" if board.is_empty() else str(plate.name), value])
+	room.set_scoreboard(str(info.title), board)
 	if _can_act():
 		hud.set_hint(_turn_hint())
 		var legal: Array = rules.legal_moves(0)

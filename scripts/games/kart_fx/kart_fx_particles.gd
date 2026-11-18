@@ -16,6 +16,13 @@ var _death := PackedFloat32Array()
 var _birth := PackedFloat32Array()
 var _last_death: float = -1.0
 var _material: ShaderMaterial
+## Spark layout: CUSTOM.z packs cooling (x2) + white core, CUSTOM.w carries an
+## optional ground height for one analytic bounce (+10000 marks "bounce on").
+var spark_layout: bool = false
+const NO_BOUNCE := -1.0e9
+## Data of the newest particle (tests; headless keeps no MultiMesh data).
+var last_data := Color()
+var bounced_total: int = 0
 
 
 func setup(label: String, shader: Shader, count: int) -> void:
@@ -76,8 +83,16 @@ func spawn(
 	life: float,
 	gravity: float,
 	color: Color,
-	data: Color
+	data: Color,
+	bounce_y: float = NO_BOUNCE
 ) -> void:
+	if spark_layout:
+		var cooling := 2.0 if data.b > 0.5 else 0.0
+		data = Color(data.r, data.g, cooling + clampf(data.a, 0.0, 1.0),
+			bounce_y + 10000.0 if bounce_y > NO_BOUNCE else 0.0)
+		if bounce_y > NO_BOUNCE:
+			bounced_total += 1
+	last_data = data
 	var slot := _cursor
 	_cursor = (_cursor + 1) % (capacity - PINNED)
 	_write(slot, at, velocity, size_start, size_end, streak, life, gravity, color, data)
@@ -86,7 +101,7 @@ func spawn(
 
 func pin(index: int, at: Vector3, size: float, life: float, color: Color) -> void:
 	_write(capacity - PINNED + clampi(index, 0, PINNED - 1), at, Vector3.ZERO, size, size, 0.0, life,
-		0.0, color, Color(1.0, 0.0, 0.0, 0.6))
+		0.0, color, Color(1.0, 0.0, 0.6 if spark_layout else 0.0, 0.0 if spark_layout else 0.6))
 
 
 func _write(

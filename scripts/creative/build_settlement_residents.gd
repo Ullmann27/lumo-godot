@@ -3,6 +3,7 @@ extends Node3D
 ## Animation time is advanced by the world, so pause cannot move residents or deliveries.
 const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
+const ART = preload("res://scripts/creative/build_village_art.gd")
 const FRIENDS := [
 	preload("res://assets/creative/village/nelli_rabbit.glb"),
 	preload("res://assets/creative/village/bruno_beaver.glb"),
@@ -162,19 +163,13 @@ func _build_cart() -> void:
 	_cart.name = "TildasLieferwagen"
 	_crowd.add_child(_cart)
 	_cart.position = _cart_home
-	_kit.box(_cart, Vector3(0, 0.53, 0), Vector3(1.8, 0.70, 0.95), Color("e9b24e"))
-	_kit.box(_cart, Vector3(0.52, 1.03, 0), Vector3(0.70, 0.70, 0.90), Color("67b8b9"))
-	_kit.box(_cart, Vector3(0.55, 1.11, -0.46), Vector3(0.52, 0.37, 0.025), Color("b7e1e5"))
-	_kit.box(_cart, Vector3(-0.40, 0.91, 0), Vector3(0.68, 0.11, 0.93), Color("9f7543"))
-	for x in [-0.62, 0.62]:
-		for z in [-0.51, 0.51]:
-			var wheel := _kit.cylinder(_cart, Vector3(x, 0.27, z), 0.24, 0.14, Color("445661"))
-			wheel.rotation.x = PI * 0.5
-			_wheels.append(wheel)
-	for x in [-0.58, -0.20]:
-		_kit.box(_cart, Vector3(x, 1.09, 0.03), Vector3(0.32, 0.34, 0.58), Color("c5975b"))
-		for z in [-0.14, 0.12]:
-			_kit.sphere(_cart, Vector3(x, 1.29, z), Vector3(0.14, 0.15, 0.14), Color("ed913d"))
+	if ART.exists("cart"):
+		# The authored Blender hay cart (with shafts and wheels) from the village set.
+		var wagon := ART.instance("cart")
+		wagon.rotation.y = PI * 0.5
+		_cart.add_child(wagon)
+	else:
+		_kit.box(_cart, Vector3(0, 0.53, 0), Vector3(1.8, 0.70, 0.95), Color("e9b24e"))
 	var merchant := FRIENDS[2].instantiate() as Node3D
 	merchant.name = "Tilda"
 	merchant.scale = Vector3.ONE * 0.64

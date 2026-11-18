@@ -119,7 +119,11 @@ static func build(world) -> void:
 				_palm(world, at, 6 + i % 4, basis)
 				if i % 5 == 0:
 					_temple(world, at + basis.x * side * 5, basis, Color("adb49b"))
-				world._prop("crown", at + Vector3(4, 0, 2), Vector3(5, 1.7, 4), Color("3d8262"))
+				# Strukturierter Dschungelbaum statt flacher Kronen-Scheibe.
+				world.plant_scenery(
+					"dschungelbaum", at + Vector3(4, -0.2, 2), 0.72, float(i) * 1.7,
+					Color(0.48, 0.52, 0.47), fposmod(float(i) * 0.37, 1.0)
+				)
 			"candy_cloud":
 				# The architectural kit supplies palaces, iced donuts and cloud islands.
 				if i % 5 == 0:
@@ -147,8 +151,15 @@ static func build(world) -> void:
 				world._prop(
 					"mountain", at - Vector3.UP * 7, Vector3(10, 15, 12), Color("d7eaf3"), angle
 				)
-				world._prop("fir", at + Vector3.UP * 2.5, Vector3(4, 8, 4), Color("8cadc4"))
-				world._prop("fir", at + Vector3.UP * 3.5, Vector3(3.2, 6.5, 3.2), Color("eef5ff"))
+				# Verschneite Nadelbaeume (Blender-Modell) statt Kegel.
+				world.plant_scenery(
+					"winterbaum", at - Vector3.UP * 0.5, 1.05, float(i) * 2.3,
+					Color(0.5, 0.5, 0.52), fposmod(float(i) * 0.41, 1.0)
+				)
+				world.plant_scenery(
+					"winterbaum", at + Vector3(3.5, -0.5, -2.0), 0.8, float(i) * 1.1,
+					Color(0.47, 0.5, 0.53), fposmod(float(i) * 0.73, 1.0)
+				)
 				if i % 3 == 0:
 					world._prop(
 						"crystal",
@@ -251,23 +262,12 @@ static func build(world) -> void:
 
 
 static func _palm(world, at: Vector3, height: float, basis: Basis) -> void:
-	world._prop(
-		"cylinder",
-		at + Vector3.UP * height * 0.4,
-		Vector3(0.33, height, 0.33),
-		Color("98755b"),
-		basis
+	# Palme aus Blender (Ringrinde, gefiederte Wedel) statt Zylinder und Kronen-Bloecken.
+	var yaw: float = atan2(basis.z.x, basis.z.z) + height * 0.9
+	world.plant_scenery(
+		"palme", at - Vector3.UP * 0.2, height / 8.9 * 1.1, yaw, Color(0.5, 0.52, 0.48),
+		fposmod(height * 0.31 + at.x * 0.01, 1.0)
 	)
-	for j in range(6):
-		var angle: float = j * TAU / 6
-		var leaf_basis := Basis(Vector3.UP, angle).rotated(Vector3.FORWARD, 0.3)
-		world._prop(
-			"crown",
-			at + Vector3(sin(angle) * 2, height * 0.94, cos(angle) * 2),
-			Vector3(1.3, 0.55, 4.5),
-			Color("57a776"),
-			leaf_basis
-		)
 
 
 static func _temple(world, at: Vector3, basis: Basis, color: Color) -> void:

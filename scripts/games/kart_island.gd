@@ -4351,13 +4351,13 @@ func _spawn_finish_confetti() -> void:
 	particles.gravity = Vector3(0, -7.5, 0)
 	particles.scale_amount_min = 0.6
 	particles.scale_amount_max = 1.1
-	var quad := QuadMesh.new()
-	quad.size = Vector2(0.12, 0.07)
+	# Quad with vertex colours: a plain QuadMesh drew single confetti pieces black.
+	var quad: ArrayMesh = preload("res://scripts/systems/particle_quad.gd").make(Vector2(0.12, 0.07))
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.vertex_color_use_as_albedo = true
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	quad.material = mat
+	quad.surface_set_material(0, mat)
 	particles.mesh = quad
 	var ramp := Gradient.new()
 	ramp.set_color(0, Color("ffd86b"))
