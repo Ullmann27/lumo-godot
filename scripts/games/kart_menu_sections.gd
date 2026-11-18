@@ -143,7 +143,10 @@ static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_v
 	if shown.is_empty():
 		return
 	var count := shown.size()
-	var side_by_side := area_dp.x >= 150.0 * count
+	# Fahrerbilder sind hochkant und kommen mit schmalen Karten aus; Stufenkarten brauchen
+	# Breite für ihre vier Aussagen.
+	var min_width := 110.0 if shown[0].chevrons == 0 else 150.0
+	var side_by_side := area_dp.x >= min_width * count
 	var gap := 8.0
 	menu.choices.vertical = not side_by_side
 	menu.choices.add_theme_constant_override("separation", roundi(gap * scale_factor))
