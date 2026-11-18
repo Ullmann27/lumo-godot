@@ -1,8 +1,9 @@
 extends "res://scripts/games/cards/cards_table.gd"
-## Only platform observations and the external app-return boundary are isolated.
+## Nur die Plattformgrenzen sind ersetzt: gemessene Ränder und die Rückkehr zur App.
 var display_insets := Rect2()
 var inset_reads := 0
 var return_calls := 0
+var observation: Dictionary = {}
 
 
 func _safe_area_insets() -> Rect2:
@@ -11,13 +12,9 @@ func _safe_area_insets() -> Rect2:
 
 
 func _get_safe_area_observation() -> Dictionary:
-	return _android_safe_area
-
-
-func _observation_source() -> String:
-	return "fixture"
+	return observation
 
 
 func _leave() -> void:
-	# The production Back button still receives a genuine touch and calls this.
+	# Der echte Zurück-Knopf wird berührt und landet hier.
 	return_calls += 1
