@@ -11,6 +11,9 @@ var _ready_to_follow: bool = false
 var _lag: float = 0.0
 var _shake: float = 0.0
 var _front: float = 0.0
+## Set by the game while the stone ball rolls: the camera rises and pulls back
+## so the ball is seen right behind Lumo.
+var chase_view: bool = false
 
 
 func kick(strength: float) -> void:
@@ -32,6 +35,25 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 	# High enough to see the star line on the road over Lumo's ears.
 	var back: float = (6.6 if portrait else 5.6) + pace * 1.1
 	var height: float = (4.4 if portrait else 3.7) + pace * 0.2
+	var path: bool = world.has_method("ceiling_at")
+	var ahead: float = 16.0 if portrait else 13.0
+	var swing: float = 0.0
+	if path:
+		# Closer behind Lumo on the narrow path; nearer still in tight passages.
+		var half: float = float(world.half_width_at(player.s))
+		var tight: float = clampf((2.4 - half) / 1.0, 0.0, 1.0)
+		back = (5.9 if portrait else 5.0) - tight * 0.7 + pace * 0.8
+		height = (3.7 if portrait else 2.9) - tight * 0.25
+		ahead = 11.0 if portrait else 9.5
+		if player.in_cart or player.is_riding():
+			back += 1.2
+			height += 0.5
+		if chase_view:
+			back = 11.5 if portrait else 10.5
+			height = 6.4 if portrait else 5.6
+			ahead = 13.0
+		if (player.in_cart or player.tumble_time > 0.0) and not reduced_motion:
+			swing = sin(Time.get_ticks_msec() * 0.0011) * 0.9
 	var wall: float = float(world.wall_lateral_at(player.s)) - 0.6
 	var desired: Vector3
 	var look: Vector3
@@ -57,17 +79,28 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 		look = feet + Vector3.UP * (-1.5 if portrait else 1.1) + side * (0.0 if portrait else 3.1)
 	else:
 		var above: float = maxf(0.0, player.h)
+		var follow_s: float = player.s
+		if path and player.s >= 0.0 and player.s - back < 0.0:
+			follow_s = back
 		desired = (
-			world.position_at(player.s - back, clampf(player.lat * 0.72, -wall, wall))
+			world.position_at(follow_s - back, clampf(player.lat * 0.72 + swing, -wall - 0.4, wall + 0.4))
 			+ Vector3.UP * (height + above * 0.5)
 		)
 		# Behind a crest the road falls away: never sink below Lumo's shoulders.
 		desired.y = maxf(desired.y, feet.y + 2.6)
 		desired = world.clip_tunnel_camera(feet + Vector3.UP, desired)
+		if path:
+			var roof: float = float(world.ceiling_at(player.s - back))
+			if roof < 100.0:
+				desired.y = minf(desired.y, world.position_at(player.s - back).y + roof - 1.0)
+				desired.y = maxf(desired.y, feet.y + 1.6)
 		look = (
-			world.position_at(player.s + (16.0 if portrait else 13.0), player.lat * 0.5)
+			world.position_at(player.s + ahead, player.lat * 0.5)
 			+ Vector3.UP * (1.0 + above * 0.4)
 		)
+		if path and not player.grounded and player.vy > 4.0:
+			# A big bounce: look up a little to show where Lumo is going.
+			look += Vector3.UP * clampf(player.vy * 0.15, 0.0, 2.0)
 		# Keep Lumo himself in the lower middle of the picture on steep ground.
 		look.y = clampf(look.y, feet.y - 2.0, feet.y + 4.5)
 	if snap or not _ready_to_follow or reduced_motion and _front > 0.0:
