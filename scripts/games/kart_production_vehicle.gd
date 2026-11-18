@@ -176,8 +176,9 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 			# Jede Lackschicht ist eine eigene Kopie: Lackart je Design, ohne Stock-Material
 			# anderer Karts zu verändern.
 			finish = original.duplicate() as StandardMaterial3D
-			if custom_paint:
-				finish.albedo_color = look.get("paint", original.albedo_color)
+			# Serienlack kommt aus der Flotte (Comet: kräftiges Kometenblau statt Nachtblau,
+			# damit Lack und Glanz im Schauraum und auf der Strecke lesbar sind).
+			finish.albedo_color = look.get("paint", original.albedo_color) if custom_paint else stock.get("paint", original.albedo_color)
 			_paints.append(finish)
 		elif material_name == "CeramicPearl" and custom_paint:
 			finish = original.duplicate() as StandardMaterial3D

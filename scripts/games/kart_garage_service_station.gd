@@ -3,8 +3,8 @@ extends Node3D
 ## material families, GLB and clips are reused; no reward or vehicle state lives here.
 const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const INTERIOR = preload("res://scripts/games/kart_garage_interior.gd")
-const BALANCER_X := -3.15
-const BALANCER_Z := 0.35
+const BALANCER_X := -2.95
+const BALANCER_Z := 1.25
 var host
 var balance_wheel: Node3D
 var selection_time := 0.0
@@ -126,6 +126,9 @@ func build(materials: Dictionary) -> void:
 	var grip_materials := {"red": INTERIOR._mat(Color("e8423a"), 0.1, 0.4), "yellow": INTERIOR._mat(Color("ffc532"), 0.1, 0.4), "blue": INTERIOR._mat(Color("2f7bff"), 0.1, 0.4)}
 	for key in grips:
 		INTERIOR._batch_boxes(self, "ToolGrips_" + key, grips[key], grip_materials[key], false)
+	# Ruhende Möbel und Werkzeuge je Material zusammenfassen; das drehende Rad, der
+	# Werkzeug-Stapel und Lumo bleiben eigene Knoten.
+	INTERIOR.SHOWROOM.merge_static(self, [balance_wheel, find_child("ToolSteel", false, false)])
 	# Original model is instantiated only once and survives all kart replacements.
 	host = ACTOR.new()
 	host.name = "OriginalWorkshopLumo"
@@ -156,7 +159,7 @@ func _fit_host() -> bool:
 	host.scale = Vector3.ONE * scale_factor
 	# Neben und etwas hinter dem Kart, Blick schräg zum Kart: verdeckt es nicht.
 	host.rotation.y = PI - 0.55
-	host.position = Vector3(-1.95, -0.31 - lowest * scale_factor, 0.85)
+	host.position = Vector3(-1.75, -0.31 - lowest * scale_factor, 1.15)
 	return true
 
 

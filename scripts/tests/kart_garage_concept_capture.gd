@@ -29,6 +29,10 @@ func _run() -> void:
 	game.set_physics_process(false)
 	await _settle()
 	var garage = game.garage
+	if garage == null:
+		push_error("garage missing")
+		quit(1)
+		return
 	garage.stars = 200
 	garage.unlocked_ids = []
 	garage.workshop = TUNING.new("capture_child", 200)

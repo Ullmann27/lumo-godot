@@ -67,7 +67,8 @@ func _ready() -> void:
 	role_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	column.add_child(role_label)
 	bars = BARS.new()
-	bars.show_labels = false
+	bars.show_labels = true
+	bars.compact_labels = true
 	bars.show_numbers = false
 	bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(bars)
@@ -121,7 +122,7 @@ func _draw() -> void:
 func apply_size(scale_factor: float, compact: bool) -> void:
 	if not is_instance_valid(title_label):
 		return
-	var thumb_width: float = (86.0 if compact else 150.0) * scale_factor
+	var thumb_width: float = (100.0 if compact else 150.0) * scale_factor
 	thumb.custom_minimum_size = Vector2(thumb_width, 0)
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, roundi(10 * scale_factor))
@@ -131,7 +132,7 @@ func apply_size(scale_factor: float, compact: bool) -> void:
 	role_label.add_theme_font_size_override("font_size", roundi((10 if compact else 12) * scale_factor))
 	lock_label.add_theme_font_size_override("font_size", roundi((11 if compact else 13) * scale_factor))
 	badge.add_theme_font_size_override("font_size", roundi(11 * scale_factor))
-	bars.row_height = (7.0 if compact else 10.0) * scale_factor
+	bars.row_height = (9.5 if compact else 10.0) * scale_factor
 	bars.visible = not compact or not locked
 	role_label.visible = not compact
 	queue_redraw()

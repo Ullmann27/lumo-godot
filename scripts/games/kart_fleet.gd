@@ -35,7 +35,7 @@ static func _build() -> Array[Dictionary]:
 			"description": "Lumos Rennkart: gut in allem. Ein sicherer Start auf jeder Strecke.",
 			"stats": {"speed": 6, "accel": 6, "brake": 6, "handling": 6, "turbo": 6},
 			"traits": {"offroad": 0.54, "stability": 0.45},
-			"look": {"body": "loft", "paint": Color("0f2450"), "trim": Color("dfe9f6"), "accent": Color("f08a2c"), "neon": Color("2fd0ff")},
+			"look": {"body": "loft", "paint": Color("2557d6"), "trim": Color("dfe9f6"), "accent": Color("f08a2c"), "neon": Color("2fd0ff")},
 		},
 		{
 			"id": "gecko_velo", "name": "Gecko Velo", "role": "Flink", "tag": "FLINK DURCH KURVEN", "unlock": 0,

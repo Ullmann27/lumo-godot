@@ -55,6 +55,7 @@ static func build(root: Node3D, materials: Dictionary, profile: String) -> Dicti
 		floor.metallic = 0.08
 		floor.metallic_specular = 0.4
 	_led_backdrop(showroom)
+	_ceiling(showroom, mats)
 	_neon_frame(showroom, mats)
 	_hazard_ring(showroom, mats)
 	_start_box(showroom, mats)
@@ -71,7 +72,119 @@ static func build(root: Node3D, materials: Dictionary, profile: String) -> Dicti
 		_cables(showroom, mats)
 	if profile == "high":
 		_dust(showroom)
+	# Ruhende Teile gleichen Materials zu je einem Netz zusammenfassen (Draw-Calls sparen).
+	merge_static(showroom, [])
 	return {"root": showroom, "materials": mats}
+
+
+## Fasst alle ruhenden MeshInstance3D/MultiMeshInstance3D unter root je Material und
+## Schattenwurf zu einem einzigen Netz zusammen. Ausgenommene Knoten (und alles darunter)
+## bleiben unverändert, ebenso Netze mit Skin, Kindern oder Instanzfarben.
+## Gibt die Zahl der ersetzten Knoten zurück.
+static func merge_static(root: Node3D, exclude: Array) -> int:
+	var groups: Dictionary = {}
+	var order: Array = []
+	var merged: Array[Node] = []
+	for node in root.find_children("*", "GeometryInstance3D", true, false):
+		if not _mergeable(node, root, exclude):
+			continue
+		var material: Material = node.material_override
+		var local: Transform3D = _relative_transform(node, root)
+		var parts: Array = []
+		if node is MeshInstance3D:
+			parts.append([node.mesh, local])
+		else:
+			var instances: MultiMesh = node.multimesh
+			for index in range(instances.instance_count):
+				parts.append([instances.mesh, local * instances.get_instance_transform(index)])
+		var shadow: bool = node.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var key := "%d:%s" % [material.get_instance_id(), shadow]
+		if not groups.has(key):
+			groups[key] = {"material": material, "shadow": shadow, "vertices": PackedVector3Array(),
+				"normals": PackedVector3Array(), "uvs": PackedVector2Array(), "indices": PackedInt32Array()}
+			order.append(key)
+		for part in parts:
+			_append_mesh(groups[key], part[0], part[1])
+		merged.append(node)
+	if merged.size() < 2:
+		return 0
+	for node in merged:
+		node.get_parent().remove_child(node)
+		node.free()
+	for index in range(order.size()):
+		var group: Dictionary = groups[order[index]]
+		if group.indices.is_empty():
+			continue
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = group.vertices
+		arrays[Mesh.ARRAY_NORMAL] = group.normals
+		arrays[Mesh.ARRAY_TEX_UV] = group.uvs
+		arrays[Mesh.ARRAY_INDEX] = group.indices
+		var mesh := ArrayMesh.new()
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var item := MeshInstance3D.new()
+		item.name = "MergedStatic%d" % index
+		item.mesh = mesh
+		item.material_override = group.material
+		item.cast_shadow = (GeometryInstance3D.SHADOW_CASTING_SETTING_ON if group.shadow
+			else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		root.add_child(item)
+	root.set_meta("merged_static_nodes", merged.size())
+	return merged.size()
+
+
+static func _mergeable(node: Node, root: Node3D, exclude: Array) -> bool:
+	if not node is GeometryInstance3D or node.material_override == null or node.get_child_count() > 0:
+		return false
+	if node is MeshInstance3D:
+		if node.mesh == null or node.skin != null:
+			return false
+	elif node is MultiMeshInstance3D:
+		var instances: MultiMesh = node.multimesh
+		if instances == null or instances.mesh == null or instances.use_colors or instances.use_custom_data:
+			return false
+	else:
+		return false
+	var walker: Node = node
+	while walker != root:
+		if walker == null or exclude.has(walker) or not walker is Node3D or not walker.visible:
+			return false
+		walker = walker.get_parent()
+	return true
+
+
+static func _relative_transform(node: Node3D, root: Node3D) -> Transform3D:
+	var result: Transform3D = Transform3D.IDENTITY
+	var walker: Node = node
+	while walker != root:
+		result = (walker as Node3D).transform * result
+		walker = walker.get_parent()
+	return result
+
+
+## Hängt alle Flächen eines Netzes transformiert an (Normalen mit der inversen Transponierten).
+static func _append_mesh(group: Dictionary, mesh: Mesh, xform: Transform3D) -> void:
+	var normal_basis: Basis = xform.basis.inverse().transposed()
+	for surface in range(mesh.get_surface_count()):
+		if mesh is ArrayMesh and (mesh as ArrayMesh).surface_get_primitive_type(surface) != Mesh.PRIMITIVE_TRIANGLES:
+			continue
+		var arrays: Array = mesh.surface_get_arrays(surface)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var normals = arrays[Mesh.ARRAY_NORMAL]
+		var uvs = arrays[Mesh.ARRAY_TEX_UV]
+		var indices = arrays[Mesh.ARRAY_INDEX]
+		var offset: int = group.vertices.size()
+		for v in range(vertices.size()):
+			group.vertices.append(xform * vertices[v])
+			group.normals.append((normal_basis * normals[v]).normalized() if normals != null and normals.size() == vertices.size() else Vector3.UP)
+			group.uvs.append(uvs[v] if uvs != null and uvs.size() == vertices.size() else Vector2.ZERO)
+		if indices != null and indices.size() > 0:
+			for i in indices:
+				group.indices.append(offset + i)
+		else:
+			for v in range(vertices.size()):
+				group.indices.append(offset + v)
 
 
 ## Ecken des Schild-Rahmens: die Garage-Kamera hält sie frei von Reitern und Knöpfen.
@@ -188,6 +301,50 @@ static func _led_backdrop(parent: Node3D) -> void:
 	wall.position = Vector3(0.0, 1.57, 4.135)
 	wall.rotation.y = PI
 	parent.add_child(wall)
+
+
+## Decke mit warmen Lichtbändern: im Hochformat sieht die Kamera über die Wände hinaus.
+static func _ceiling(parent: Node3D, mats: Dictionary) -> void:
+	INTERIOR._box(parent, "ShowroomCeiling", Vector3(11.6, 0.12, 9.2), Vector3(0.0, 5.62, -0.2), mats.dark, false)
+	var panels: Array[Transform3D] = []
+	for x in [-2.6, 0.0, 2.6]:
+		panels.append(INTERIOR._box_transform(Vector3(1.6, 0.04, 6.4), Vector3(x, 5.55, -0.4)))
+	INTERIOR._batch_boxes(parent, "CeilingLightPanels", panels, INTERIOR._emit(Color("fff3de"), Color("ffe8c4"), 1.4), false)
+	# Drei Industrie-Pendelleuchten über dem Drehteller: farbige Schirme, warm leuchtende Unterseite.
+	var shades := [INTERIOR._mat(Color("ff5a4e"), 0.3, 0.35), INTERIOR._mat(Color("ffc532"), 0.3, 0.35),
+		INTERIOR._mat(Color("3ae0ff"), 0.3, 0.35)]
+	var glow := INTERIOR._emit(Color("fff4dc"), Color("ffe4b0"), 2.6)
+	var cable: Material = mats.dark
+	for k in range(3):
+		var x: float = -1.7 + k * 1.7
+		var at := Vector3(x, 4.25, 0.6)
+		_tube(parent, "PendantCable", at + Vector3(0, 0.25, 0), Vector3(x, 5.56, 0.6), 0.01, cable)
+		var shade := MeshInstance3D.new()
+		shade.name = "PendantShade"
+		var cone := CylinderMesh.new()
+		cone.top_radius = 0.07
+		cone.bottom_radius = 0.34
+		cone.height = 0.32
+		cone.radial_segments = 24
+		cone.rings = 1
+		shade.mesh = cone
+		shade.position = at + Vector3(0, 0.1, 0)
+		shade.material_override = shades[k]
+		shade.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(shade)
+		var bulb := MeshInstance3D.new()
+		bulb.name = "PendantGlow"
+		var disc := CylinderMesh.new()
+		disc.top_radius = 0.3
+		disc.bottom_radius = 0.3
+		disc.height = 0.01
+		disc.radial_segments = 24
+		disc.rings = 1
+		bulb.mesh = disc
+		bulb.position = at + Vector3(0, -0.055, 0)
+		bulb.material_override = glow
+		bulb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(bulb)
 
 
 ## Neonrahmen um das LUMO-Schild: Magenta außen, Orange als Unterstrich.
@@ -318,6 +475,7 @@ static func _bunting(parent: Node3D) -> void:
 	batch.material_override = material
 	batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(batch)
+	var cord := INTERIOR._mat(Color("f4efe6"), 0.0, 0.6)
 	for strand in range(2):
 		var x0: float = -3.3 if strand == 0 else 0.0
 		var x1: float = 0.0 if strand == 0 else 3.3
@@ -325,7 +483,7 @@ static func _bunting(parent: Node3D) -> void:
 			var a: float = float(k) / 4.0
 			var b: float = float(k + 1) / 4.0
 			_tube(parent, "BuntingCord", Vector3(lerpf(x0, x1, a), 3.30 - sin(a * PI) * 0.22, 3.80),
-				Vector3(lerpf(x0, x1, b), 3.30 - sin(b * PI) * 0.22, 3.80), 0.006, INTERIOR._mat(Color("f4efe6"), 0.0, 0.6))
+				Vector3(lerpf(x0, x1, b), 3.30 - sin(b * PI) * 0.22, 3.80), 0.006, cord)
 
 
 ## Holzregale mit goldenen Pokalen (gebaute Modelle: Fuß, Stiel, Kelch, Henkel).
