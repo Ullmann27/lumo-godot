@@ -434,6 +434,9 @@ func tumble_lift(key: int) -> float:
 
 
 func tick(delta: float) -> void:
+	# „Ruhige Bewegung“ kann mitten im Rennen umgeschaltet werden.
+	if is_instance_valid(host):
+		reduced_motion = bool(host.get("reduced_motion"))
 	for key in tumbles.keys():
 		tumbles[key].age = float(tumbles[key].age) + delta
 		if float(tumbles[key].age) >= float(tumbles[key].total):
