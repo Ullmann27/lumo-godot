@@ -194,6 +194,10 @@ func _flash_node(node_name: String) -> MeshInstance3D:
 	var flash := MeshInstance3D.new()
 	flash.name = node_name
 	flash.mesh = _flash_mesh
+	# Eigenes Material je Blitz: das Ausblenden läuft über Alpha (gl_compatibility-sicher).
+	var material := (_flash_mesh.surface_get_material(0) as StandardMaterial3D).duplicate()
+	material.albedo_color = Color(1.0, 0.9, 0.68, 1.0)
+	flash.material_override = material
 	flash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	flash.top_level = true
 	flash.visible = false
@@ -221,7 +225,10 @@ func _burst(node_name: String, mesh: Mesh, amount: int, lifetime: float) -> CPUP
 	particles.name = node_name
 	particles.emitting = false
 	particles.one_shot = true
-	particles.explosiveness = 0.9
+	# Alle Teilchen auf einmal: mit < 1,0 zeigt gl_compatibility die noch nicht
+	# ausgestoßenen Teilchen kurz als schwarze Scheibe am Auslöser (im Bild gefunden).
+	particles.explosiveness = 1.0
+	particles.lifetime_randomness = 0.35
 	particles.amount = maxi(2, amount)
 	particles.lifetime = lifetime
 	particles.mesh = mesh
@@ -687,7 +694,7 @@ func _advance_flash(pack: Dictionary, delta: float, life: float) -> void:
 	var t: float = clampf(float(pack.age) / life, 0.0, 1.0)
 	var grow: float = 1.0 - pow(1.0 - minf(1.0, t * 2.5), 3.0)
 	flash.scale = Vector3.ONE * maxf(0.05, float(pack.size) * (0.3 + 0.7 * grow))
-	flash.transparency = clampf(t * t, 0.0, 1.0)
+	(flash.material_override as StandardMaterial3D).albedo_color.a = 1.0 - t * t
 
 
 func _sync_trails() -> void:

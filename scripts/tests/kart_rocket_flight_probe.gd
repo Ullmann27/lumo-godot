@@ -17,6 +17,7 @@ const GAP: float = 30.0
 ## Bilder nach dem Treffer (Bilder nach dem Einschlag).
 const POST_HIT: Array = [0, 8, 18, 30, 44, 62]
 var gap: float = GAP
+var child_slow: bool = false
 var game
 var smoother
 var destination: String = ""
@@ -37,6 +38,9 @@ func _initialize() -> void:
 
 
 func _tick() -> void:
+	if child_slow:
+		# Das Kind fährt gemütlich (z. B. nach einem Rempler): die Rakete holt es ein.
+		game.speed = minf(float(game.speed), 17.0)
 	if smoother != null:
 		smoother.begin_tick()
 	game._physics_process(STEP)
@@ -248,9 +252,20 @@ func _run() -> void:
 		game.opponent_shield_times[i] = 0.0
 		game.opponent_aurora_times[i] = 0.0
 		game.opponent_grace_times[i] = 0.0
+	# Befund ohne Zufall: keine Kugeln oder Blasen von vorher auf der Strecke.
+	game.item_runtime.clear()
+	if game.get("rocket_flight") != null:
+		game.rocket_flight.clear()
 	for _i in range(4):
 		_tick()
 	await process_frame
+	var hide: String = OS.get_environment("LUMO_ROCKET_HIDE")
+	if not hide.is_empty() and game.get("rocket_flight") != null:
+		# Fehlersuche: einzelne Effekt-Teile ausblenden (Name enthält den Text).
+		for node in game.rocket_flight.find_children("*" + hide + "*", "", true, false):
+			if node is VisualInstance3D:
+				(node as VisualInstance3D).layers = 0
+			print("[RocketProbe] ausgeblendet %s" % node.name)
 	if scenario == "player":
 		game._grant_item("star_rocket")
 		game.item_hint = ""
@@ -273,8 +288,7 @@ func _run() -> void:
 			_tick()
 			guard_rival += 1
 		# Das Kind rollt aus (z. B. nach einem Rempler): erst dann holt die Rakete es ein.
-		game.auto_gas = false
-		game.speed = minf(float(game.speed), 16.0)
+		child_slow = true
 	var start_ticks: int = ticks_done
 	var shot_at: Array = [1, 8, 20, 38, 70, 110, 170, 240, 320, 380]
 	var post_index: int = -1
