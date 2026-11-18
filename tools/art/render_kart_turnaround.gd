@@ -5,6 +5,9 @@ extends SceneTree
 ## Usage (native renderer):
 ##   LUMO_KART_TURNAROUND_DIR=/abs/dir godot --path . \
 ##     --script res://tools/art/render_kart_turnaround.gd -- [kart ...] [--driver=fox] [--steer=0.6]
+## With --cutout it renders one square three-quarter view per kart without
+## ground, once on black and once on white; tools/art/cut_out_kart_pictures.py
+## turns each pair into a picture with a transparent background.
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const VIEWS: Dictionary = {
 	"side": [Vector3(4.6, 1.1, 0.0), Vector3(0, 0.75, 0)],
@@ -12,6 +15,7 @@ const VIEWS: Dictionary = {
 	"rear": [Vector3(-1.5, 2.2, 4.4), Vector3(0, 0.9, 0)],
 	"top": [Vector3(0.01, 6.2, 0.0), Vector3(0, 0, 0)],
 }
+const CUTOUT_VIEW: Array = [Vector3(2.75, 1.75, -3.75), Vector3(0.0, 0.62, 0.05)]
 var destination: String = ""
 
 
@@ -26,7 +30,8 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(destination)
-	root.size = Vector2i(900, 700)
+	var cutout: bool = OS.get_cmdline_user_args().has("--cutout")
+	root.size = Vector2i(960, 960) if cutout else Vector2i(900, 700)
 	root.msaa_3d = Viewport.MSAA_4X
 	var stage := Node3D.new()
 	root.add_child(stage)
@@ -58,6 +63,7 @@ func _run() -> void:
 	ground_material.roughness = 0.9
 	ground.material_override = ground_material
 	stage.add_child(ground)
+	ground.visible = not cutout
 	# One metre grid marks for scale.
 	for i in range(-3, 4):
 		var mark := MeshInstance3D.new()
@@ -65,6 +71,7 @@ func _run() -> void:
 		box.size = Vector3(0.02, 0.002, 6.0)
 		mark.mesh = box
 		mark.position = Vector3(float(i), 0.002, 0)
+		mark.visible = not cutout
 		stage.add_child(mark)
 	var camera := Camera3D.new()
 	camera.fov = 32.0
@@ -92,6 +99,19 @@ func _run() -> void:
 		kart.set_motion(12.0, steer, false, false)
 		for i in range(40):
 			await process_frame
+		if cutout:
+			camera.look_at_from_position(CUTOUT_VIEW[0], CUTOUT_VIEW[1], Vector3.UP)
+			for backdrop in ["black", "white"]:
+				env.background_color = Color.BLACK if backdrop == "black" else Color.WHITE
+				for i in range(3):
+					await process_frame
+					await RenderingServer.frame_post_draw
+				var cut_file := destination.path_join("%s_%s.png" % [id, backdrop])
+				if root.get_texture().get_image().save_png(cut_file) == OK:
+					saved += 1
+			kart.queue_free()
+			await process_frame
+			continue
 		for view in VIEWS:
 			camera.look_at_from_position(VIEWS[view][0], VIEWS[view][1],
 				Vector3.FORWARD if view == "top" else Vector3.UP)
@@ -105,4 +125,4 @@ func _run() -> void:
 		kart.queue_free()
 		await process_frame
 	print("[KartTurnaround] %d pictures" % saved)
-	quit(0 if saved == karts.size() * VIEWS.size() else 1)
+	quit(0 if saved == karts.size() * (2 if cutout else VIEWS.size()) else 1)
