@@ -1,0 +1,128 @@
+{
+ "busch": {
+  "bytes": 25864,
+  "lod0": 132,
+  "lod1": 36,
+  "lod2": 8
+ },
+ "busch_bluehend": {
+  "bytes": 26636,
+  "lod0": 132,
+  "lod1": 36,
+  "lod2": 8
+ },
+ "dschungelbaum": {
+  "bytes": 303468,
+  "lod0": 2632,
+  "lod1": 368,
+  "lod2": 68
+ },
+ "farnflur": {
+  "bytes": 11596,
+  "lod0": 36,
+  "lod1": 20,
+  "lod2": 6
+ },
+ "fels": {
+  "bytes": 31360,
+  "lod0": 320,
+  "lod1": 80,
+  "lod2": 20
+ },
+ "fels_flach": {
+  "bytes": 33516,
+  "lod0": 320,
+  "lod1": 80,
+  "lod2": 20
+ },
+ "laubbaum": {
+  "bytes": 278788,
+  "lod0": 2428,
+  "lod1": 328,
+  "lod2": 68
+ },
+ "laubbaum_b": {
+  "bytes": 253384,
+  "lod0": 2224,
+  "lod1": 288,
+  "lod2": 68
+ },
+ "leuchte_fackel": {
+  "bytes": 34436,
+  "lod0": 150,
+  "lod1": 112,
+  "lod2": 88
+ },
+ "leuchte_hafen": {
+  "bytes": 75956,
+  "lod0": 430,
+  "lod1": 326,
+  "lod2": 230
+ },
+ "leuchte_kette": {
+  "bytes": 59820,
+  "lod0": 314,
+  "lod1": 198,
+  "lod2": 88
+ },
+ "leuchte_neon": {
+  "bytes": 54908,
+  "lod0": 188,
+  "lod1": 184,
+  "lod2": 120
+ },
+ "leuchte_wald": {
+  "bytes": 45612,
+  "lod0": 280,
+  "lod1": 210,
+  "lod2": 134
+ },
+ "nadelbaum": {
+  "bytes": 171400,
+  "lod0": 1516,
+  "lod1": 179,
+  "lod2": 53
+ },
+ "palme": {
+  "bytes": 80960,
+  "lod0": 642,
+  "lod1": 205,
+  "lod2": 75
+ },
+ "schneegras": {
+  "bytes": 11416,
+  "lod0": 36,
+  "lod1": 20,
+  "lod2": 6
+ },
+ "trockengras": {
+  "bytes": 11756,
+  "lod0": 36,
+  "lod1": 20,
+  "lod2": 6
+ },
+ "wiese": {
+  "bytes": 11480,
+  "lod0": 36,
+  "lod1": 20,
+  "lod2": 6
+ },
+ "winterbaum": {
+  "bytes": 173948,
+  "lod0": 1516,
+  "lod1": 179,
+  "lod2": 53
+ },
+ "zauberbaum": {
+  "bytes": 325316,
+  "lod0": 2836,
+  "lod1": 408,
+  "lod2": 68
+ },
+ "zauberflur": {
+  "bytes": 11464,
+  "lod0": 36,
+  "lod1": 20,
+  "lod2": 6
+ }
+}

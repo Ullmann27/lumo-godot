@@ -158,11 +158,20 @@ func _dress_station(distance: float, side: float, section: int) -> void:
 			_tree(far, _rng.randf_range(18.0, 30.0))
 
 
+## Kulissen-Paket: Farn, Baeume und Palmen sind strukturierte Blender-Modelle
+## (kart_scenery.gd) statt Kegel/Kugeln. Die Zufallszuege bleiben unveraendert.
 func _fern(at: Vector3) -> void:
 	var colour: Color = _pick(LEAF_GREENS)
+	var turn := 0.0
 	for blade in 5:
-		var tilt := Basis(Vector3.UP, blade * TAU / 5.0 + _rng.randf()) * Basis(Vector3.RIGHT, 0.75)
-		_put("cone", at + tilt.y * 0.7, Vector3(0.28, 1.6, 0.12), colour, tilt)
+		turn += _rng.randf()
+	_plant("farnflur", at + Vector3.UP * 0.35, 1.3, turn, colour)
+
+
+func _plant(species: String, at: Vector3, scale: float, yaw: float, colour: Color) -> void:
+	var tint := Color(0.5, 0.5 + (colour.g - 0.55) * 0.15, 0.48)
+	_world.plant_scenery(species, at, scale, yaw, tint, fposmod(at.x * 0.13 + at.z * 0.07, 1.0))
+	placed_props += 1
 
 
 func _flower_bed(at: Vector3) -> void:
@@ -173,17 +182,15 @@ func _flower_bed(at: Vector3) -> void:
 
 func _tree(at: Vector3, height: float) -> void:
 	var bark: Color = _pick(BARK)
-	var radius: float = clampf(height * 0.035, 0.35, 1.0)
-	_put("cylinder", at + Vector3.UP * height * 0.5, Vector3(radius, height, radius), bark)
 	var leaf: Color = _pick(LEAF_GREENS)
 	var crown: float = clampf(height * 0.22, 2.6, 6.5)
-	_put("ball", at + Vector3.UP * height, Vector3(crown, crown * 0.62, crown), leaf)
+	var yaw := 0.0
 	for lobe in (2 if _low else 3):
-		var angle: float = lobe * TAU / 3.0 + _rng.randf()
-		var offset := Vector3(cos(angle), 0.0, sin(angle)) * crown * 0.75
-		var size: float = crown * _rng.randf_range(0.55, 0.75)
-		_put("ball", at + Vector3.UP * (height - crown * 0.25) + offset,
-			Vector3(size, size * 0.6, size), leaf.darkened(_rng.randf_range(0.0, 0.18)))
+		yaw += _rng.randf()
+		_rng.randf_range(0.55, 0.75)
+		_rng.randf_range(0.0, 0.18)
+	var species: String = "dschungelbaum" if int(at.x * 3.0 + at.z) % 3 != 0 else "laubbaum"
+	_plant(species, at, height / (15.6 if species == "dschungelbaum" else 10.4), yaw * 2.0, leaf)
 	if _rng.randf() < 0.35:
 		# Hanging liana with a blossom at its end.
 		var vine_length: float = minf(height * 0.45, 9.0)
@@ -194,30 +201,17 @@ func _tree(at: Vector3, height: float) -> void:
 
 func _giant_tree(at: Vector3, height: float) -> void:
 	var bark: Color = _pick(BARK)
-	_put("cylinder", at + Vector3.UP * height * 0.5, Vector3(1.6, height, 1.6), bark)
-	# Buttress roots of the Riesenwurzeln.
+	# Riesenwurzeln sind im Modell (Brettwurzeln am Stammfuss).
+	var yaw := 0.0
 	for root in 5:
-		var angle: float = root * TAU / 5.0 + _rng.randf() * 0.4
-		var outward := Vector3(cos(angle), 0.0, sin(angle))
-		var root_basis := Basis(Vector3.UP, -angle) * Basis(Vector3.FORWARD, 0.0)
-		_put("box", at + outward * 1.9 + Vector3.UP * 1.4, Vector3(3.2, 2.8, 0.45), bark.darkened(0.1), root_basis)
+		yaw += _rng.randf()
 	var leaf: Color = _pick(LEAF_GREENS)
-	for layer in 3:
-		var y: float = height - layer * 3.2
-		var size: float = 7.5 - layer * 1.2
-		_put("ball", at + Vector3.UP * y, Vector3(size, size * 0.45, size), leaf.darkened(layer * 0.08))
-	_put("ball", at + Vector3.UP * (height * 0.55) + Vector3(1.7, 0, 0), Vector3.ONE * 0.9, Color("7fbf4d"))
+	_plant("dschungelbaum", at, height / 15.6 * 1.15, yaw, leaf)
 
 
 func _palm(at: Vector3, height: float) -> void:
-	var lean := Basis(Vector3.FORWARD, _rng.randf_range(-0.12, 0.12))
-	var top: Vector3 = at + lean.y * height
-	_put("cylinder", at + lean.y * height * 0.5, Vector3(0.32, height, 0.32), Color("8a6a45"), lean)
-	for frond in 7:
-		var angle: float = frond * TAU / 7.0
-		var frond_basis := Basis(Vector3.UP, angle) * Basis(Vector3.RIGHT, 1.15)
-		_put("cone", top + frond_basis.y * 2.0, Vector3(0.55, 4.2, 0.12), Color("3c9a4a"), frond_basis)
-	_put("ball", top - Vector3.UP * 0.4, Vector3.ONE * 0.45, Color("6b4a2a"))
+	var lean: float = _rng.randf_range(-0.12, 0.12)
+	_plant("palme", at, height / 8.9, lean * 30.0, Color("3c9a4a"))
 
 
 # --- landmarks per section ---------------------------------------------------

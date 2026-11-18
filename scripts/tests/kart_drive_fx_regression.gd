@@ -49,7 +49,7 @@ func _run() -> void:
 	fx = game.drive_fx
 	_check(is_instance_valid(fx), "race builds the driving-effects node")
 	_check(fx.get_parent() == game.race_root, "effects live in the race root (freed with the race)")
-	_check(fx.get_child_count() == 4, "three particle/mark batches + one speed-line ring")
+	_check(fx.get_child_count() == 7, "3 particle/mark batches, speed lines, flames, impact light, photo finish")
 	_check(fx.profile == "high", "effects follow the race quality profile")
 	_check(fx.owns_engine_sound(), "layered engine replaces the single sine")
 	await _cruise_is_quiet()
@@ -60,9 +60,11 @@ func _run() -> void:
 	await _launch_and_landing()
 	await _rivals()
 	await _extras()
+	await _round_two()
 	await _pause_freezes()
 	await _budgets()
 	_surfaces()
+	await _photo_finish()
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
@@ -79,7 +81,10 @@ func _place(distance: float, lane: float = 0.0) -> void:
 	game.distance = distance
 	game.previous_road_distance = distance
 	game.lane = lane
-	game.player.transform = game.world.reset_transform(distance, lane)
+	# reset_transform clamps the lateral to +-3.5 m; rail tests need the real wall position.
+	var placed: Transform3D = game.world.reset_transform(distance, 0.0)
+	placed.origin += placed.basis.x.normalized() * lane
+	game.player.transform = placed
 	game.player.position.y += 0.035
 	game.player_heading = game._heading(distance)
 
@@ -140,6 +145,7 @@ func _rail_contact() -> void:
 	_check(int(state.counts.get("rail_burst", 0)) >= 20, "hard hit adds a spark burst")
 	_check(int(state.sounds.get("rail_hit", 0)) == 1, "hard hit requests the metal impact sound")
 	_check(int(game.kart_audio.fx_requests.get("rail_hit", 0)) >= 1, "the sound request reaches the race audio")
+	_check(int(game.kart_audio.get("_duck_until_msec")) > Time.get_ticks_msec(), "a hard hit ducks the music briefly")
 	_check(state.scrape_level > 0.3, "scrape loop is driven by the contact")
 	_check(state.shake > 0.0 and fx.camera_shake() != Vector3.ZERO, "hard hit jolts the camera")
 	_check(game.player.driver_hit_pending, "the real Lumo driver flinches on a hard hit")
@@ -296,6 +302,116 @@ func _rivals() -> void:
 	_check(fx.shake == 0.0, "a rival's hit does not jolt the player camera")
 
 
+func _round_two() -> void:
+	# (1) Brake marks are one continuous band: each piece starts on the last piece's end edge.
+	_clean(24.0)
+	_tick(3)
+	game.brake_visual_amount = 1.0
+	for _i in range(30):
+		game.speed = maxf(6.0, game.speed - 0.3)
+		game.steering = 0.4
+		_tick(1)
+	var marks = fx.marks
+	var joined := 0
+	var pieces := 0
+	for slot in range(marks.segments_total):
+		var end: Vector3 = marks.piece_end[slot]
+		for other in range(slot + 1, mini(slot + 4, marks.segments_total)):
+			if marks.piece_start[other].distance_to(end) < 0.0001:
+				pieces += 1
+				if marks.piece_half_start[other].distance_to(marks.piece_half_end[slot]) < 0.0001:
+					joined += 1
+				break
+	_check(pieces > 20 and joined == pieces, "brake band pieces share their joints (%d of %d)" % [joined, pieces])
+	# (2) Brake smoke grows with speed.
+	_clean(24.0)
+	game.brake_visual_amount = 1.0
+	_tick(30)
+	var fast_smoke: int = int(fx.counts.get("brake_smoke", 0))
+	_clean(8.0)
+	game.brake_visual_amount = 1.0
+	_tick(30, 8.0 * STEP)
+	var slow_smoke: int = int(fx.counts.get("brake_smoke", 0))
+	_check(fast_smoke > slow_smoke * 2 and fast_smoke > 60, "full brake at speed billows (%d vs %d)" % [fast_smoke, slow_smoke])
+	# (3) Loose ground: a real plume behind the cruising kart.
+	_clean(22.0)
+	fx.style = STYLES.for_track("desert_drift")
+	_tick(60)
+	_check(int(fx.counts.get("surface_trail", 0)) > 80, "sand plume (%d puffs/s)" % int(fx.counts.get("surface_trail", 0)))
+	fx.style = STYLES.for_track("sonnenhafen")
+	# (4) Turbo flames: two flame bodies + road glow, Mach rings only at ignition, light on HIGH.
+	_clean(22.0)
+	game.boost_time = 2.0
+	_tick(1)
+	_check(fx.flames.used >= 3, "turbo draws two flames and the road glow (%d)" % fx.flames.used)
+	_check(fx.flames.data[0].g > 0.9, "Mach rings at ignition")
+	_check(fx.flames.light.visible, "HIGH: turbo lights road and tail")
+	_tick(45)
+	_check(fx.flames.data[0].g == 0.0, "Mach rings fade after ignition")
+	game.boost_time = 0.0
+	_tick(2)
+	_check(int(fx.counts.get("afterglow", 0)) > 0 and fx.flames.used == 2, "pipes glow after the turbo")
+	_tick(110)
+	_check(fx.flames.used == 0 and not fx.flames.light.visible, "afterglow cools down completely")
+	game.graphics_profile = "medium"
+	_clean(22.0)
+	game.boost_time = 2.0
+	_tick(2)
+	_check(not fx.flames.light.visible and fx.flames.used >= 3, "MEDIUM: glow patch instead of a light")
+	game.graphics_profile = "high"
+	_clean(22.0)
+	_tick(1)
+	# (5) Rail impact: burst, flash light (HIGH), paint flakes, hot scratch, bouncing sparks.
+	var road: Dictionary = game.world.sample_road(game.player.position, along)
+	game.lane = game._wall_lateral_at(along) + 0.4
+	_place(along, game.lane)
+	game.physical_velocity = -(road.basis as Basis).z * 22.0 + (road.basis as Basis).x * 12.0
+	game._collide_with_rail(road)
+	game._update_vehicles(STEP)
+	_check(int(fx.counts.get("rail_burst", 0)) >= 60, "hard hit: big spark fan")
+	_check(int(fx.counts.get("paint_flakes", 0)) > 5, "hard hit: paint flakes in kart colour")
+	_check(fx.flash_light.visible, "hard hit: short light flash on HIGH")
+	_tick(20)
+	_check(not fx.flash_light.visible, "the flash is short")
+	_check(fx.sparks.bounced_total > 60, "rail sparks carry a ground height and bounce")
+	game.reduced_motion = true
+	_clean(22.0)
+	game.reduced_motion = true
+	_tick(1)
+	road = game.world.sample_road(game.player.position, along)
+	game.lane = game._wall_lateral_at(along) + 0.4
+	_place(along, game.lane)
+	game.physical_velocity = -(road.basis as Basis).z * 22.0 + (road.basis as Basis).x * 12.0
+	game._collide_with_rail(road)
+	game._update_vehicles(STEP)
+	_check(not fx.flash_light.visible, "reduced motion: no light flash")
+	game.reduced_motion = false
+	# (6) Rivals: same effects, strict budget.
+	for profile in ["high", "low"]:
+		game.graphics_profile = profile
+		_clean(20.0)
+		fx.style = STYLES.for_track("desert_drift")
+		var rival = game.opponents[0]
+		for _i in range(30):
+			_tick(1)
+			rival.global_transform = game.player.global_transform.translated(game.player.global_basis.x * 3.0)
+			rival.set_motion(20.0, 0.8, true, true)
+			rival.set_drift_spark_tier(1)
+			rival.motion_brake = 0.0
+		var lively: int = int(fx.counts.get("rival_drift_sparks", 0)) + int(fx.counts.get("rival_dust", 0))
+		if profile == "high":
+			_check(int(fx.counts.get("rival_drift_sparks", 0)) > 0, "HIGH: a drifting rival sprays sparks")
+			_check(int(fx.counts.get("rival_dust", 0)) > 0, "HIGH: a rival raises dust on sand")
+			_check(int(fx.counts.get("rival_marks", 0)) > 0, "HIGH: a rival leaves drift marks")
+			_check(int(fx.counts.get("flame", 0)) > 0, "HIGH: a boosting rival shows flames")
+		else:
+			_check(lively == 0, "LOW: rivals get no extra particles (budget)")
+		rival.set_motion(0.0, 0.0, false, false)
+		fx.style = STYLES.for_track("sonnenhafen")
+	game.graphics_profile = "high"
+	_clean()
+
+
 func _extras() -> void:
 	# Lift off the gas at speed: one overrun pop from the exhaust, then quiet.
 	_clean(18.0)
@@ -382,9 +498,79 @@ func _budgets() -> void:
 		print("[KartDriveFx] %s worst case: %d sparks, %d soft, %d marks, %d draw batches" % [
 			profile, state.sparks_live, state.soft_live, state.marks_live, state.draw_batches
 		])
-		_check(state.draw_batches <= 4, "%s at most four effect draw batches" % profile)
+		_check(state.draw_batches <= 5, "%s at most five effect draw batches" % profile)
+		_check(state.lights <= (2 if profile == "high" else 0), "%s light budget" % profile)
 	game.graphics_profile = "high"
 	_clean()
+
+
+func _new_race() -> void:
+	if is_instance_valid(game):
+		game.abandoned = true
+		game.queue_free()
+		await process_frame
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.graphics_profile = "high"
+	await process_frame
+	game._start_selected_race({
+		"mode": "race", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "gemuetlich"
+	})
+	game.countdown = 0.0
+	game.racing = true
+	game.paused = false
+	game._end_preview(false)
+	game.auto_gas = false
+	fx = game.drive_fx
+
+
+## Cross the line [param gap_metres] ahead of the nearest rival at 20 m/s.
+func _cross_line(gap_metres: float, reduced: bool) -> Dictionary:
+	await _new_race()
+	game.reduced_motion = reduced
+	game.speed = 20.0
+	along = game.track_length * 0.5
+	_tick(3)
+	game.elapsed = 61.5
+	game.checkpoint_index = game.TOTAL_LAPS * 8
+	game.distance = game.track_length * game.TOTAL_LAPS + 0.3
+	for i in range(game.opponent_distances.size()):
+		game.opponent_distances[i] = game.distance - 80.0
+	game.opponent_distances[0] = game.distance - gap_metres
+	game._update_vehicles(STEP)
+	game._finish()
+	var payload: Dictionary = game.result_payload.duplicate(true)
+	await process_frame
+	await process_frame
+	return payload
+
+
+func _photo_finish() -> void:
+	var payload: Dictionary = await _cross_line(3.0, false)
+	_check(fx.photo_finish.active and Engine.time_scale < 0.5, "close finish (0.15 s) plays in slow motion")
+	_check(fx.photo_finish.last_gap < 0.35, "gap measured at the line: %.3f s" % fx.photo_finish.last_gap)
+	await create_timer(1.1, true, false, true).timeout
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "slow motion ends after 0.8 s real time")
+	_check(game.result_payload.hash() == payload.hash(), "slow motion changes no result field")
+	_check(is_equal_approx(float(payload.elapsedSeconds), 61.5), "finish time stays the time at the line")
+	_check(int(payload.place) == 1 and int(payload.stars) == 3, "place and reward unchanged (%s)" % str(payload))
+	payload = await _cross_line(20.0, false)
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "clear win (1 s): no slow motion")
+	payload = await _cross_line(3.0, true)
+	_check(not fx.photo_finish.active and Engine.time_scale == 1.0, "reduced motion: no slow motion")
+	await _cross_line(3.0, false)
+	game.paused = true
+	await process_frame
+	_check(Engine.time_scale == 1.0, "pausing during the slow motion restores normal time")
+	game.paused = false
+	await _cross_line(3.0, false)
+	game.abandoned = true
+	game.queue_free()
+	await process_frame
+	await process_frame
+	_check(Engine.time_scale == 1.0, "leaving the race restores normal time")
+	await _new_race()
 
 
 func _surfaces() -> void:
