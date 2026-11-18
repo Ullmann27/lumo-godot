@@ -6,13 +6,16 @@ extends SceneTree
 ## Gemessen wird, wie weit die Rakete je Bild auf dem Bildschirm springt.
 ## Modi:
 ##   measure  – ohne Bilder (auch headless), schreibt JSON
-##   frames   – Bildfolge (PNG, 1600x720) aus der Fahrerkamera, 60 Bilder/s
+##   frames   – Bildfolge (PNG, 1600x720) aus der Fahrerkamera, 60 Bilder/s; mit
+##              --fixed-fps 60 starten, damit jedes Bild genau 1/60 s Spielzeit ist
 ## Aufruf: LUMO_ROCKET_DIR=/abs/dir godot --path . [--headless] \
 ##   --script res://scripts/tests/kart_rocket_flight_probe.gd -- measure|frames player|rival \
 ##   [reduced] [cadence=60|50|45|jitter|120cap] [smooth=off] [tag=name]
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const STEP: float = 1.0 / 60.0
 const GAP: float = 30.0
+## Bilder nach dem Treffer (Bilder nach dem Einschlag).
+const POST_HIT: Array = [0, 8, 18, 30, 44, 62]
 var game
 var smoother
 var destination: String = ""
@@ -62,7 +65,12 @@ func _present(frame_ticks: float) -> void:
 		_tick()
 	if smoother != null:
 		smoother.manual_fraction = clampf(frame_ticks - float(ticks_done), 0.0, 1.0)
+		if mode == "frames":
+			# Echtes Bild (mit --fixed-fps 60): Partikel, Glätter und Spur laufen selbst.
+			return
 		smoother._process(0.0)
+	if mode == "frames":
+		return
 	var flight = game.get("rocket_flight")
 	if flight != null and is_instance_valid(flight):
 		flight._process(STEP * (60.0 / 50.0 if cadence == "50" else 60.0 / 45.0 if cadence == "45" else 1.0))
@@ -104,6 +112,17 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 		row["screen"] = [snappedf(s.x, 0.1), snappedf(s.y, 0.1)]
 		row["cam_dist"] = snappedf(cam.global_position.distance_to(p), 0.01)
 		row["to_target"] = snappedf(p.distance_to(target.global_position), 0.01)
+		# Dieselbe Szene ohne Glättung: Lage nach dem letzten Physiktakt (wie vorher).
+		var raw_rocket: Variant = _raw_global(rocket)
+		var raw_cam: Variant = _raw_global(cam)
+		if raw_rocket is Transform3D and raw_cam is Transform3D:
+			var shown_cam: Transform3D = cam.global_transform
+			cam.global_transform = raw_cam
+			var rp: Vector3 = (raw_rocket as Transform3D).origin
+			var rs: Vector2 = cam.unproject_position(rp) if not cam.is_position_behind(rp) else Vector2(-1, -1)
+			cam.global_transform = shown_cam
+			row["raw_rocket"] = [snappedf(rp.x, 0.001), snappedf(rp.y, 0.001), snappedf(rp.z, 0.001)]
+			row["raw_screen"] = [snappedf(rs.x, 0.1), snappedf(rs.y, 0.1)]
 	var particles: int = 0
 	for child in game.item_runtime.find_children("*", "CPUParticles3D", true, false):
 		if (child as CPUParticles3D).emitting:
@@ -115,6 +134,14 @@ func _record(label: String, frame: int, tick_count: int) -> Dictionary:
 	)
 	row["laps"] = [game.checkpoint_index, snappedf(float(game.distance), 0.01)]
 	return row
+
+
+func _raw_global(node: Node3D) -> Variant:
+	if smoother == null or not smoother._entries.has(node.get_instance_id()):
+		return null
+	var local: Transform3D = smoother._entries[node.get_instance_id()].curr
+	var parent := node.get_parent() as Node3D
+	return parent.global_transform * local if parent != null else local
 
 
 func _shot(name: String) -> void:
@@ -193,6 +220,12 @@ func _run() -> void:
 		game.opponent_lanes[i] = od_lane
 		game.opponent_headings[i] = game._heading(od)
 		game.opponents[i].motion_speed = float(game.speed) * (0.85 if i == 0 else 0.5)
+		# Befund ohne Zufall: niemand hält gerade ein Item oder einen Schild.
+		game.opponent_items[i] = ""
+		game.opponent_item_cooldowns[i] = 30.0
+		game.opponent_shield_times[i] = 0.0
+		game.opponent_aurora_times[i] = 0.0
+		game.opponent_grace_times[i] = 0.0
 	for _i in range(4):
 		_tick()
 	await process_frame
@@ -206,6 +239,9 @@ func _run() -> void:
 			guard += 1
 		game._use_item()
 	else:
+		game.item = ""
+		game.shield_time = 0.0
+		game.player_grace_time = 0.0
 		game.opponent_items[0] = "star_rocket"
 		game.opponent_item_charges[0] = 2
 		game.opponent_rocket_hold[0] = 99.0
@@ -214,8 +250,12 @@ func _run() -> void:
 		while _rocket() == null and guard_rival < 600:
 			_tick()
 			guard_rival += 1
+		# Das Kind rollt aus (z. B. nach einem Rempler): erst dann holt die Rakete es ein.
+		game.auto_gas = false
+		game.speed = minf(float(game.speed), 16.0)
 	var start_ticks: int = ticks_done
-	var shot_at: Array = [1, 6, 14, 26, 45, 70, 110, 170, 240, 320]
+	var shot_at: Array = [1, 8, 20, 38, 70, 110, 170, 240, 320, 380]
+	var post_index: int = -1
 	var hit_frame: int = -1
 	var frame: int = 0
 	var landed_frame: int = -1
@@ -229,15 +269,23 @@ func _run() -> void:
 		)
 		if spinning and hit_frame < 0:
 			hit_frame = frame
+		if frame == 3 and not OS.get_environment("LUMO_ROCKET_DEBUG").is_empty():
+			for node in game.race_root.find_children("*", "GeometryInstance3D", true, false):
+				var g := node as GeometryInstance3D
+				if g.is_visible_in_tree() and g.global_position.distance_to(game.camera.global_position) < 14.0 and not "Kart_" in str(g.get_path()):
+					print("[RocketDebug] %s %s d=%.2f" % [g.get_path(), g.get_class(), g.global_position.distance_to(game.player.global_position)])
 		var label: String = "flight" if hit_frame < 0 else "after_hit"
 		rows.append(_record(label, frame, ticks_done - last_ticks))
 		last_ticks = ticks_done
 		if mode == "frames" and saved.size() < shot_at.size():
 			var due: bool = frame >= int(shot_at[saved.size()])
-			if hit_frame >= 0 and saved.size() < 4:
-				due = true
-			if hit_frame >= 0 and saved.size() >= 4:
-				due = frame - hit_frame >= [0, 0, 0, 0, 6, 14, 24, 36, 50, 66][saved.size()]
+			if hit_frame >= 0:
+				# Nach dem Treffer: Einschlag, Wirbel, Landung im festen Abstand.
+				if post_index < 0:
+					post_index = 0
+				due = post_index < POST_HIT.size() and frame - hit_frame >= int(POST_HIT[post_index])
+				if due:
+					post_index += 1
 			if due:
 				await _shot("%s%s%s_%02d_f%03d_%s" % [
 					scenario, "_reduced" if reduced else "", "_" + tag if not tag.is_empty() else "",
@@ -245,7 +293,8 @@ func _run() -> void:
 				])
 		if hit_frame >= 0 and not spinning and landed_frame < 0:
 			landed_frame = frame
-		if landed_frame >= 0 and frame - landed_frame > 30 and (mode == "measure" or saved.size() >= shot_at.size()):
+		var pictures_done: bool = saved.size() >= shot_at.size() or post_index >= POST_HIT.size()
+		if landed_frame >= 0 and frame - landed_frame > 30 and (mode == "measure" or pictures_done):
 			break
 	RenderingServer.render_loop_enabled = true
 	var summary := _summarise(hit_frame, start_ticks)
@@ -265,7 +314,7 @@ func _run() -> void:
 
 func _present_async(frame_ticks: float) -> void:
 	_present(frame_ticks)
-	if mode == "measure" and rows.size() % 20 == 0:
+	if mode == "frames" or rows.size() % 20 == 0:
 		await process_frame
 
 
@@ -273,6 +322,8 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 	var flight: Array = rows.filter(func(r): return r.label == "flight" and r.has("rocket"))
 	var steps: Array[float] = []
 	var screen_steps: Array[float] = []
+	var raw_steps: Array[float] = []
+	var raw_screen_steps: Array[float] = []
 	var ticks_hist: Dictionary = {}
 	var visible_frames: int = 0
 	for i in range(flight.size()):
@@ -285,6 +336,14 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 		var a: Array = flight[i - 1].rocket
 		var b: Array = r.rocket
 		steps.append(Vector3(a[0], a[1], a[2]).distance_to(Vector3(b[0], b[1], b[2])))
+		if r.has("raw_rocket") and flight[i - 1].has("raw_rocket"):
+			var ra: Array = flight[i - 1].raw_rocket
+			var rb: Array = r.raw_rocket
+			raw_steps.append(Vector3(ra[0], ra[1], ra[2]).distance_to(Vector3(rb[0], rb[1], rb[2])))
+			var rsa: Array = flight[i - 1].raw_screen
+			var rsb: Array = r.raw_screen
+			if rsa[0] >= 0 and rsb[0] >= 0 and bool(r.get("on_screen", false)):
+				raw_screen_steps.append(Vector2(rsa[0], rsa[1]).distance_to(Vector2(rsb[0], rsb[1])))
 		var sa: Array = flight[i - 1].screen
 		var sb: Array = r.screen
 		if sa[0] >= 0 and sb[0] >= 0 and bool(r.get("on_screen", false)):
@@ -306,6 +365,7 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 		"visible_seconds": snappedf(visible_frames / fps, 0.001),
 		"ticks_per_render_frame": ticks_hist,
 		"world_step_m": _stats(steps), "screen_step_px": _stats(screen_steps),
+		"raw_world_step_m": _stats(raw_steps), "raw_screen_step_px": _stats(raw_screen_steps),
 		"target_max_lift_m": snappedf(max_lift, 0.001), "target_end_lift_m": snappedf(end_lift, 0.001),
 		"max_display_lift_m": snappedf(max_display, 0.001),
 		"player_speed": rows[0].player_speed if not rows.is_empty() else 0.0,
@@ -314,6 +374,11 @@ func _summarise(hit_frame: int, start_ticks: int) -> Dictionary:
 		"max_trail_points": rows.map(func(r): return int(r.get("trail_points", 0))).max() if not rows.is_empty() else 0,
 		"pip_frames": rows.filter(func(r): return bool(r.get("pip", false))).size(),
 		"ticks_total": ticks_done - start_ticks,
+		"runtime_stats": game.item_runtime.stats.duplicate(),
+		"flight_stats": game.rocket_flight.stats.duplicate() if game.get("rocket_flight") != null else {},
+		"smoother": {
+			"frames": smoother.interpolated_frames, "adopted": smoother.adopted_writes,
+		} if smoother != null else {},
 	}
 
 

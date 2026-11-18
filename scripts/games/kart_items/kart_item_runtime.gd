@@ -23,6 +23,12 @@ const SPIRAL_RADIUS: float = 0.32
 const SPIRAL_RATE: float = 8.5
 ## Flying rockets are shown larger than the pod rockets so they stay readable at range.
 const ROCKET_SCALE: float = 2.1
+## The child's rockets inherit the kart's speed and fly this much faster (m/s), so they
+## visibly pull away and reach a rival 30 m ahead in about 1.4 s (eye can follow).
+## Before, they flew a fixed 33 m/s – slower than the kart at race pace (~34 m/s).
+const PLAYER_CLOSING_SPEED: float = 21.0
+## Visual arc of a homing rocket over its flight (m above the corkscrew line).
+const FLIGHT_ARC: float = 0.85
 
 var track_length: float = 1.0
 var wall_lateral: float = 4.6
@@ -71,7 +77,10 @@ func fire_homing(item: String, owner: int, progress: float, lateral: float, targ
 
 ## Two rockets at once (left + right pod). `launches` are the pod nozzle transforms;
 ## both chase the same target, and the pair counts as ONE hit.
-func fire_pair(item: String, owner: int, progress: float, lateral: float, target: int, launches: Array = []) -> bool:
+func fire_pair(
+	item: String, owner: int, progress: float, lateral: float, target: int, launches: Array = [],
+	carrier_speed: float = 0.0
+) -> bool:
 	if projectiles.size() + 2 > MAX_PROJECTILES:
 		return false
 	var pair: int = _next_pair
@@ -80,6 +89,9 @@ func fire_pair(item: String, owner: int, progress: float, lateral: float, target
 		var side: float = -1.0 if side_index == 0 else 1.0
 		var launch: Variant = launches[side_index] if side_index < launches.size() else null
 		_launch(item, "homing", owner, progress + 1.2, lateral + side * 0.55, 0.0, target, pair, side, launch)
+		if owner == PLAYER_KEY and carrier_speed > 0.0:
+			var rocket: Dictionary = projectiles[-1]
+			rocket.speed = maxf(float(rocket.speed), carrier_speed + PLAYER_CLOSING_SPEED)
 	stats.pairs += 1
 	return true
 
@@ -166,6 +178,9 @@ func step(delta: float, racers: Array) -> Array[Dictionary]:
 		var target_racer: Dictionary = _racer(racers, int(entry.target))
 		if entry.kind == "homing" and not target_racer.is_empty():
 			var to_target: float = float(target_racer.progress) - float(entry.progress)
+			if not entry.has("gap0"):
+				entry.gap0 = maxf(1.0, to_target)
+			entry.to_target = to_target
 			if to_target < -HIT_PROGRESS * 2.0:
 				# The target dropped behind the rocket: it fizzles harmlessly.
 				entry.life = 0.0
@@ -383,8 +398,13 @@ func _place(entry: Dictionary) -> void:
 		# Gentle corkscrew around the track line; the pair spirals in opposite phase.
 		var swirl: float = 0.0 if reduced_motion else SPIRAL_RADIUS * clampf(age * 3.0, 0.0, 1.0)
 		var angle: float = age * SPIRAL_RATE + float(entry.phase)
+		# A flat arc over the whole flight: up from the pod, down onto the target.
+		var arc: float = 0.0
+		if entry.has("gap0"):
+			var flown: float = 1.0 - clampf(float(entry.get("to_target", 0.0)) / float(entry.gap0), 0.0, 1.0)
+			arc = FLIGHT_ARC * (0.5 if reduced_motion else 1.0) * sin(PI * flown)
 		var target_position: Vector3 = (
-			frame.origin + frame.basis.y * (0.95 + sin(angle) * swirl * 0.7)
+			frame.origin + frame.basis.y * (0.95 + arc + sin(angle) * swirl * 0.7)
 			+ frame.basis.x * cos(angle) * swirl
 		)
 		var launch: Variant = entry.get("launch")
