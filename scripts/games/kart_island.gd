@@ -50,6 +50,9 @@ const RACE_RULES = preload("res://scripts/games/kart_items/kart_race_rules.gd")
 const ITEM_RUNTIME = preload("res://scripts/games/kart_items/kart_item_runtime.gd")
 const FX_DIRECTOR = preload("res://scripts/games/kart_items/kart_fx_director.gd")
 const ITEM_BOX_SCENE = preload("res://scenes/games/props/kart_item_box.tscn")
+const ITEM_HUD = preload("res://scripts/games/kart_items/kart_item_hud.gd")
+const ROCKET_PODS = preload("res://scripts/games/kart_items/kart_rocket_pods.gd")
+const SHIELD_DOME = preload("res://scripts/games/kart_items/kart_shield_dome.gd")
 const BOOST_RING_SCENE = preload("res://scenes/games/props/kart_boost_ring.tscn")
 const TRIGGER_GROUP := "lumo_kart_triggers"
 ## Built-in boost ring layout per course (fraction of lap, lateral offset).
@@ -526,25 +529,8 @@ func _build_world() -> void:
 	drive_feedback.reduced_motion = reduced_motion
 	race_root.add_child(drive_feedback)
 	drive_feedback.bind_vehicle(player)
-	shield_visual = MeshInstance3D.new()
-	var bubble := SphereMesh.new()
-	bubble.radius = 1.7
-	bubble.height = 3.4
-	bubble.radial_segments = 24
-	bubble.rings = 12
-	shield_visual.mesh = bubble
-	shield_visual.position.y = 1.0
-	var shield_material := StandardMaterial3D.new()
-	shield_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	shield_material.albedo_color = Color(0.45, 0.88, 1.0, 0.24)
-	shield_material.emission_enabled = true
-	shield_material.emission = Color("66e8ff")
-	shield_material.emission_energy_multiplier = 1.25
-	shield_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	shield_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	shield_visual.material_override = shield_material
-	shield_visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	shield_visual.visible = false
+	shield_visual = SHIELD_DOME.new()
+	shield_visual.reduced_motion = reduced_motion
 	player.add_child(shield_visual)
 	pulse_visual = MeshInstance3D.new()
 	var pulse_mesh := TorusMesh.new()
@@ -1106,7 +1092,7 @@ func _build_pedal_pad() -> Control:
 	boost_button = _action("SPEED\n◆ 1", _boost, Color("66f7e8"), 112)
 	boost_button.name = "BoostAction"
 	boost_button.icon_id = "boost"
-	item_button = _action("TAKTIK\n◇", _use_item, Color("a7c5ff"), 94)
+	item_button = _action("TAKTIK\n◇", _use_item, Color("a7c5ff"), 112)
 	item_button.name = "ItemAction"
 	item_button.icon_id = "item"
 	var layout: Array = [
@@ -1114,7 +1100,7 @@ func _build_pedal_pad() -> Control:
 		[brake_button, Vector2(222, 242), 116],
 		[drift_button, Vector2(228, 108), 106],
 		[boost_button, Vector2(370, 66), 112],
-		[item_button, Vector2(98, 228), 94]
+		[item_button, Vector2(96, 226), 112]
 	]
 	for entry in layout:
 		var button: Control = entry[0]
@@ -1903,10 +1889,9 @@ func _physics_process(delta: float) -> void:
 			if catalog_boxes[i].visible and catalog_boxes[i].has_method("advance_managed"):
 				catalog_boxes[i].advance_managed(0.0 if paused else delta, reduced_motion)
 	if is_instance_valid(shield_visual):
-		shield_visual.visible = shield_time > 0
-		if shield_visual.visible and not reduced_motion:
-			var shield_pulse: float = 1.0 + sin(elapsed * 4.2) * 0.045
-			shield_visual.scale = Vector3.ONE * shield_pulse
+		shield_visual.reduced_motion = reduced_motion
+		shield_visual.advance(0.0 if paused else delta, shield_time)
+	_update_item_hud(0.0 if paused else delta)
 	if is_instance_valid(pulse_visual):
 		if not paused:
 			pulse_age += delta
@@ -2501,7 +2486,10 @@ func _sync_rival_item_fx(index: int) -> void:
 		opponent_pulse_warning_times[index] if index < opponent_pulse_warning_times.size() else 0.0,
 		RIVAL_PULSE_WARNING_SECONDS
 	)
-	fx.set_stunned(opponent_stuns[index] if index < opponent_stuns.size() else 0.0)
+	fx.set_stunned(maxf(
+		opponent_stuns[index] if index < opponent_stuns.size() else 0.0,
+		opponent_spin_times[index] if index < opponent_spin_times.size() else 0.0
+	))
 
 
 func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) -> void:
@@ -3017,7 +3005,13 @@ func _track_events() -> void:
 
 
 func _use_item() -> void:
-	if item.is_empty() or not racing or paused or finished:
+	if item.is_empty() or not racing or paused or finished or item_roulette_time > 0.0:
+		return
+	if item == ROCKET_ID:
+		if rocket_phase != "armed":
+			_arm_rockets()
+		else:
+			_fire_player_rockets()
 		return
 	_sound_effect("item")
 	if item not in ["boost", "shield", "pulse"]:
@@ -3030,8 +3024,11 @@ func _use_item() -> void:
 			message.text = "Rückenwind!"
 		"shield":
 			shield_time = 6.0
-			camera_punch = maxf(camera_punch, 0.14)
+			camera_punch = maxf(camera_punch, 0.0 if reduced_motion else 0.14)
 			message.text = "Sternenschild: sechs Sekunden geschützt."
+			_sound_effect("shield_up")
+			_fx("shield_up", player.global_position + Vector3.UP * 0.6)
+			_mark_item_hint_seen("shield")
 		"pulse":
 			pulse_age = 0
 			camera_punch = maxf(camera_punch, 0.36)
@@ -3044,6 +3041,8 @@ func _use_item() -> void:
 					opponent_stuns[i] = 2.3
 			message.text = "Lichtimpuls: Rivalen in deiner Nähe werden kurz langsamer."
 	item = ""
+	item_charges = 0
+	_sync_player_rocket_phase()
 
 
 func _update_arena(delta: float) -> void:
@@ -4608,6 +4607,10 @@ func _restore_item_continuity(config: ConfigFile) -> void:
 	var saved_charges = config.get_value("race", "item_charges", 0)
 	var max_charges: int = maxi(1, int(ITEM_CATALOG.entry(item).get("charges", 1)))
 	item_charges = 0 if item.is_empty() else clampi(int(saved_charges) if typeof(saved_charges) in [TYPE_INT, TYPE_FLOAT] else 1, 1, max_charges)
+	# A resumed race never starts armed: pods unfold again and wait for the first tap.
+	rocket_phase = ""
+	item_roulette_time = 0.0
+	_sync_player_rocket_phase()
 	for key in RIVAL_SESSION_TIMERS:
 		var timers: Array = get(key)
 		var saved_timers = config.get_value("race", key, [])
@@ -4879,9 +4882,9 @@ func _apply_volumes() -> void:
 		kart_audio.set_volumes(music_volume, effects_volume)
 
 
-func _sound_effect(kind: String) -> void:
+func _sound_effect(kind: String, pitch: float = 1.0) -> void:
 	if is_instance_valid(kart_audio):
-		kart_audio.effect(kind)
+		kart_audio.effect(kind, pitch)
 
 
 # --- Arcade gameplay layer (Lumo-Kart items, spins, slipstream, tricks, combos) ---
@@ -4933,6 +4936,7 @@ func _build_gameplay_layer() -> void:
 			catalog_box_laterals.append(float(sampled_box.lateral))
 		else:
 			track_triggers.append(node)
+	_build_item_experience()
 
 
 func _frame_at(progress: float, lateral: float) -> Transform3D:
@@ -4956,6 +4960,7 @@ func _reset_gameplay_layer() -> void:
 		opponent_aurora_times[i] = 0.0
 	if is_instance_valid(item_runtime):
 		item_runtime.clear()
+	_reset_item_experience()
 	gameplay_stats = {
 		"items_used": 0, "rival_items_used": 0, "player_hits_taken": 0, "player_hits_scored": 0,
 		"blocked": 0, "intercepted": 0, "slipstreams": 0, "tricks": 0, "rings": 0, "max_combo": 0,
@@ -5062,6 +5067,8 @@ func _rival_threatened(index: int) -> bool:
 func _grant_item(id: String) -> void:
 	item = id
 	item_charges = maxi(1, int(ITEM_CATALOG.entry(id).get("charges", 1)))
+	rocket_phase = ""
+	_sync_player_rocket_phase()
 
 
 func _consume_item() -> void:
@@ -5070,6 +5077,7 @@ func _consume_item() -> void:
 		item = ""
 		item_charges = 0
 	_stat("items_used")
+	_sync_player_rocket_phase()
 
 
 func _use_catalog_item() -> void:
@@ -5120,6 +5128,9 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 	var id: String = opponent_items[index]
 	if not ITEM_CATALOG.has(id):
 		opponent_items[index] = ""
+		return
+	if id == ROCKET_ID:
+		# Sternraketen: hold, lock on (with a warning for the player), then fire pairs.
 		return
 	var behaviour: String = ITEM_CATALOG.behaviour(id)
 	var ahead: Dictionary = _neighbour(index, true)
@@ -5175,6 +5186,7 @@ func _update_gameplay_layer(delta: float) -> void:
 	_update_slipstream(delta)
 	_update_track_triggers()
 	_update_aurora_contacts()
+	_update_item_experience(delta)
 	_apply_spin_visuals()
 	player_previous_position = player.global_position
 	for i in range(opponents.size()):
@@ -5198,30 +5210,60 @@ func _apply_item_event(event: Dictionary) -> void:
 	var target: int = int(event.target)
 	var source: int = int(event.get("source", -99))
 	var at: Vector3 = event.get("position", Vector3.ZERO)
+	var rocket: bool = str(event.get("item", "")) == ROCKET_ID
 	if str(event.type) == "intercepted":
 		_stat("intercepted")
 		_fx("blocked", at)
 		if source == -1 or target == -1:
 			message.text = "Die Blubberblase hat die Rakete gefangen!"
 		return
+	if str(event.type) == "expired":
+		_fx("rocket_fizzle", at)
+		if source == -1:
+			message.text = "Daneben – die Sternraketen verpuffen."
+		return
 	if str(event.type) == "blocked":
 		_stat("blocked")
-		_fx("blocked", at)
+		_fx("shield_deflect" if rocket else "blocked", at)
 		if target == -1:
-			message.text = "Dein Schild hält – nichts passiert!"
+			if is_instance_valid(shield_visual) and shield_visual.has_method("impact"):
+				shield_visual.impact(at)
+			message.text = "Abgeprallt! Dein Sternenschild hält." if rocket else "Dein Schild hält – nichts passiert!"
+			_popup("ABGEPRALLT!", player.global_position + Vector3.UP * 2.3, Color("1aa3c4"))
+		elif target >= 0 and target < opponent_item_fx.size():
+			opponent_item_fx[target].shield_impact(at)
+			if source == -1:
+				message.text = "%s hat einen Schild – abgeprallt!" % _rival_name(target)
+				_popup("ABGEPRALLT!", opponents[target].global_position + Vector3.UP * 2.3, Color("1aa3c4"))
 		return
+	# Schonzeit: a racer who was just hit is not spun again straight away.
+	var in_grace: bool = (
+		player_grace_time > 0.0 if target == -1
+		else (target >= 0 and target < opponent_grace_times.size() and opponent_grace_times[target] > 0.0)
+	)
+	if in_grace:
+		_fx("rocket_pop", at)
+		return
+	var grace: float = float(_lock_rules().grace)
 	if target == -1:
 		_spin_player(float(event.spin))
-		_fx("hit_spin", player.global_position + Vector3.UP * 0.8)
+		player_grace_time = grace
+		_fx("rocket_hit" if rocket else "hit_spin", player.global_position + Vector3.UP * 0.8)
 		message.text = "Huch, gedreht! Gleich geht's weiter."
 		if source >= 0 and source < opponents.size():
-			opponents[source].cheer_briefly(1.2)
+			opponents[source].cheer_in_race(1.2)
 	elif target >= 0 and target < opponents.size():
 		_spin_rival(target, float(event.spin))
-		_fx("hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
+		if target < opponent_grace_times.size():
+			opponent_grace_times[target] = grace
+		_fx("rocket_hit" if rocket else "hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
 		if source == -1:
 			_stat("player_hits_scored")
 			message.text = "Treffer! %s dreht sich im Kreis." % _rival_name(target)
+			_popup("TREFFER!", opponents[target].global_position + Vector3.UP * 2.4, Color("ff3b5c"))
+			# Lumo cheers briefly (real rigged Lumo: its own celebrate clip).
+			player.cheer_in_race(1.3)
+			_cheer_timer = 1.3
 
 
 func _update_slipstream(delta: float) -> void:
@@ -5411,9 +5453,8 @@ func _collect_catalog_boxes(lap: int) -> void:
 		catalog_boxes[i].visible = false
 		_fx("item_box", catalog_boxes[i].global_position)
 		if item.is_empty():
-			_grant_item(_roll_catalog_item(_place()))
-			message.text = "%s! Tippe ITEM." % str(ITEM_CATALOG.entry(item).get("name", "Überraschung"))
-			_sound_effect("item")
+			_grant_item_with_roulette(_roll_catalog_item(_place()))
+			message.text = "Überraschung!"
 
 
 func _rival_collect_catalog_box(index: int) -> void:
@@ -5422,3 +5463,448 @@ func _rival_collect_catalog_box(index: int) -> void:
 			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index])
 			opponent_item_cooldowns[index] = 1.8
 			return
+
+
+# --- Sternraketen, Zielerfassung und Sternenschild (item experience) ---------------------
+
+## Lock-on per difficulty: cone half-angle (deg), range (m), seconds to a full lock.
+## "Entdecken" (gemuetlich) is generous so a child locks on almost at once.
+const LOCK_RULES: Dictionary = {
+	"gemuetlich": {"cone": 38.0, "range": 85.0, "lock": 0.45, "rival_lock": 2.2, "rival_hold": 7.0, "rival_salvo_gap": 7.0, "grace": 3.5},
+	"normal": {"cone": 28.0, "range": 65.0, "lock": 0.7, "rival_lock": 1.5, "rival_hold": 3.5, "rival_salvo_gap": 4.0, "grace": 2.6},
+	"profi": {"cone": 22.0, "range": 55.0, "lock": 0.9, "rival_lock": 1.1, "rival_hold": 1.8, "rival_salvo_gap": 2.5, "grace": 2.0},
+}
+const ROCKET_ID := "star_rocket"
+const ROULETTE_SECONDS: float = 1.05
+const ITEM_HINTS_PATH := "user://kart_item_hints.cfg"
+## Lock counts as "good enough" for homing from this progress on.
+const LOCK_HOMING_THRESHOLD: float = 0.5
+
+var rocket_phase: String = ""
+var lock_target: int = -99
+var lock_progress: float = 0.0
+var player_grace_time: float = 0.0
+var opponent_grace_times: Array[float] = []
+var opponent_lock_times: Array[float] = []
+var opponent_lock_targets: Array[int] = []
+var opponent_rocket_hold: Array[float] = []
+var opponent_pods: Array = []
+var item_roulette_time: float = 0.0
+var item_hint: String = ""
+var item_hint_time: float = 0.0
+var item_hints_seen: Dictionary = {}
+var player_pods: Node3D
+var item_hud: Control
+var item_slot: Control
+var player_warning: float = 0.0
+var _lock_beep_timer: float = 0.0
+var _warning_tone_timer: float = 0.0
+var _lock_announced: bool = false
+var _cheer_timer: float = 0.0
+## After a salvo the sight rests briefly, so the flight stays the centre of attention.
+var lock_rearm_time: float = 0.0
+## Short world-anchored HUD call-outs ("TREFFER!", "ABGEPRALLT!").
+var item_popups: Array[Dictionary] = []
+
+
+func _popup(text: String, world: Vector3, color: Color) -> void:
+	item_popups.append({"text": text, "world": world, "age": 0.0, "color": color})
+	if item_popups.size() > 3:
+		item_popups.pop_front()
+
+
+func _lock_rules() -> Dictionary:
+	return LOCK_RULES.get(difficulty, LOCK_RULES.normal)
+
+
+func _build_item_experience() -> void:
+	_load_item_hints()
+	opponent_grace_times.clear()
+	opponent_lock_times.clear()
+	opponent_lock_targets.clear()
+	opponent_rocket_hold.clear()
+	opponent_pods.clear()
+	for _i in range(opponents.size()):
+		opponent_grace_times.append(0.0)
+		opponent_lock_times.append(0.0)
+		opponent_lock_targets.append(-99)
+		opponent_rocket_hold.append(0.0)
+		opponent_pods.append(null)
+	player_pods = _make_pods(player)
+	if is_instance_valid(item_runtime):
+		item_runtime.quality = graphics_profile
+	if not is_instance_valid(item_hud) and is_instance_valid(safe_ui):
+		item_hud = ITEM_HUD.new()
+		safe_ui.add_child(item_hud)
+		safe_ui.move_child(item_hud, 0)
+	if is_instance_valid(item_hud):
+		item_hud.camera = camera
+		item_hud.reduced_motion = reduced_motion
+	if is_instance_valid(item_button) and not is_instance_valid(item_slot):
+		item_slot = ITEM_HUD.new()
+		item_slot.name = "ItemSlotOverlay"
+		item_slot.mode = "slot"
+		item_button.add_child(item_slot)
+
+
+func _make_pods(kart: Node3D) -> Node3D:
+	if not is_instance_valid(kart):
+		return null
+	var pods: Node3D = ROCKET_PODS.new()
+	var body: String = "code"
+	var production: Variant = kart.get("production_vehicle")
+	if is_instance_valid(production):
+		body = str(production.variant)
+	pods.reduced_motion = reduced_motion
+	kart.add_child(pods)
+	if not pods.setup(body):
+		pods.queue_free()
+		return null
+	return pods
+
+
+func _reset_item_experience() -> void:
+	rocket_phase = ""
+	lock_target = -99
+	lock_progress = 0.0
+	player_grace_time = 0.0
+	item_roulette_time = 0.0
+	item_hint = ""
+	player_warning = 0.0
+	_lock_announced = false
+	for i in range(opponent_grace_times.size()):
+		opponent_grace_times[i] = 0.0
+		opponent_lock_times[i] = 0.0
+		opponent_lock_targets[i] = -99
+		opponent_rocket_hold[i] = 0.0
+	if is_instance_valid(player_pods):
+		player_pods.deploy(0)
+	for pods in opponent_pods:
+		if is_instance_valid(pods):
+			pods.deploy(0)
+
+
+## Called whenever the player's held item changes (grant, restore, use up).
+func _sync_player_rocket_phase() -> void:
+	if item == ROCKET_ID and item_charges > 0:
+		if rocket_phase.is_empty():
+			rocket_phase = "ready"
+		if is_instance_valid(player_pods):
+			player_pods.deploy(item_charges)
+			player_pods.arm(rocket_phase == "armed")
+	else:
+		rocket_phase = ""
+		lock_target = -99
+		lock_progress = 0.0
+		if is_instance_valid(player_pods):
+			player_pods.stow()
+
+
+## Item box pickup: the slot wheel spins briefly, then the item is ready.
+func _grant_item_with_roulette(id: String) -> void:
+	_grant_item(id)
+	item_roulette_time = 0.35 if reduced_motion else ROULETTE_SECONDS
+	_sound_effect("roulette_tick")
+
+
+func _show_item_hint(id: String) -> void:
+	if id not in [ROCKET_ID, "shield"] or bool(item_hints_seen.get(id, false)):
+		return
+	item_hint = id
+	item_hint_time = 6.0
+
+
+func _load_item_hints() -> void:
+	var config := ConfigFile.new()
+	if config.load(ITEM_HINTS_PATH) == OK:
+		for key in [ROCKET_ID, "shield"]:
+			item_hints_seen[key] = bool(config.get_value("seen", key, false))
+
+
+func _mark_item_hint_seen(id: String) -> void:
+	if item_hint == id:
+		item_hint = ""
+	if bool(item_hints_seen.get(id, false)):
+		return
+	item_hints_seen[id] = true
+	var config := ConfigFile.new()
+	for key in item_hints_seen:
+		config.set_value("seen", key, item_hints_seen[key])
+	config.save(ITEM_HINTS_PATH)
+
+
+func _player_forward() -> Vector3:
+	var forward := Vector3(-sin(player_heading), 0.0, -cos(player_heading))
+	return forward.normalized()
+
+
+## Nearest rival ahead inside the sight cone; keeps the current one unless another is
+## clearly closer (no jitter between two rivals side by side).
+func _pick_lock_target() -> int:
+	var rules: Dictionary = _lock_rules()
+	var origin: Vector3 = player.global_position
+	var forward: Vector3 = _player_forward()
+	var best: int = -99
+	var best_distance: float = INF
+	var current_distance: float = INF
+	for i in range(opponents.size()):
+		if i < opponent_grace_times.size() and opponent_grace_times[i] > 0.0:
+			continue
+		var offset: Vector3 = opponents[i].global_position - origin
+		offset.y = 0.0
+		var distance_m: float = offset.length()
+		if distance_m < 2.0 or distance_m > float(rules.range):
+			continue
+		var cone: float = float(rules.cone) * (1.15 if i == lock_target else 1.0)
+		if rad_to_deg(forward.angle_to(offset.normalized())) > cone:
+			continue
+		if i == lock_target:
+			current_distance = distance_m
+		if distance_m < best_distance:
+			best_distance = distance_m
+			best = i
+	if lock_target >= 0 and current_distance < INF and best_distance > current_distance * 0.7:
+		return lock_target
+	return best
+
+
+func _arm_rockets() -> void:
+	rocket_phase = "armed"
+	lock_target = -99
+	lock_progress = 0.0
+	_lock_announced = false
+	if is_instance_valid(player_pods):
+		player_pods.arm(true)
+	_sound_effect("rocket_arm")
+	_fx("rocket_fire", player.global_position + Vector3.UP * 0.6, 0.3)
+	message.text = "Raketen scharf! Ziel suchen – nochmal tippen = FEUER!"
+	_mark_item_hint_seen(ROCKET_ID)
+
+
+func _fire_player_rockets() -> void:
+	var target: int = lock_target if lock_progress >= LOCK_HOMING_THRESHOLD else -99
+	var launches: Array = []
+	if is_instance_valid(player_pods):
+		launches = player_pods.take_pair()
+	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
+		item_runtime.fire_pair(ROCKET_ID, -1, distance, lane, target, launches)
+	_fx("rocket_fire", player.global_position + Vector3.UP * 0.7)
+	_sound_effect("rocket_launch")
+	camera_punch = maxf(camera_punch, 0.0 if reduced_motion else 0.42)
+	message.text = (
+		"FEUER! Sternraketen auf %s!" % _rival_name(target) if target >= 0
+		else "FEUER! Sternraketen fliegen geradeaus!"
+	)
+	_consume_item()
+	lock_progress = 0.0
+	lock_target = -99
+	lock_rearm_time = 0.9
+	_lock_announced = false
+	if item == ROCKET_ID:
+		# Second salvo ready: stay armed and lock again.
+		rocket_phase = "armed"
+	_sync_player_rocket_phase()
+
+
+func _update_player_lock(delta: float) -> void:
+	if rocket_phase != "armed":
+		return
+	if lock_rearm_time > 0.0:
+		lock_rearm_time = maxf(0.0, lock_rearm_time - delta)
+		return
+	var target: int = _pick_lock_target()
+	if target != lock_target:
+		# Switching springs the brackets back open; a quick re-lock is still easy.
+		lock_progress = 0.0 if target < 0 else minf(lock_progress, 0.25)
+		lock_target = target
+		_lock_announced = false
+	if lock_target < 0:
+		return
+	var before: float = lock_progress
+	lock_progress = minf(1.0, lock_progress + delta / maxf(0.05, float(_lock_rules().lock)))
+	_lock_beep_timer -= delta
+	if lock_progress < 1.0 and _lock_beep_timer <= 0.0:
+		_lock_beep_timer = lerpf(0.22, 0.09, lock_progress)
+		_sound_effect("lock_beep", 1.0 + lock_progress * 0.6)
+	if before < 1.0 and lock_progress >= 1.0 and not _lock_announced:
+		_lock_announced = true
+		_sound_effect("lock_on")
+		message.text = "ZIEL ERFASST: %s – tippe FEUER!" % _rival_name(lock_target)
+
+
+## Rival rocket logic: hold, lock (the player gets warned), then fire a pair.
+func _update_rival_rockets(index: int, delta: float) -> bool:
+	if index >= opponent_lock_times.size() or opponent_items[index] != ROCKET_ID:
+		if index < opponent_lock_times.size():
+			opponent_lock_times[index] = 0.0
+			opponent_lock_targets[index] = -99
+			opponent_rocket_hold[index] = 0.0
+		_sync_rival_pods(index, 0, false)
+		return false
+	var rules: Dictionary = _lock_rules()
+	opponent_rocket_hold[index] += delta
+	var pairs: int = maxi(1, int(opponent_rival_charges(index)))
+	_sync_rival_pods(index, pairs, opponent_lock_times[index] > 0.0)
+	if opponent_rocket_hold[index] < float(rules.rival_hold) or opponent_item_cooldowns[index] > 0.0:
+		return true
+	var ahead: Dictionary = _neighbour(index, true)
+	var target: int = int(ahead.key)
+	var valid: bool = target != -99 and float(ahead.gap) < float(rules.range) * 0.8
+	if target == -1 and player_grace_time > 0.0:
+		valid = false
+	if target >= 0 and opponent_grace_times[target] > 0.0:
+		valid = false
+	if not valid:
+		opponent_lock_times[index] = 0.0
+		opponent_lock_targets[index] = -99
+		return true
+	if opponent_lock_targets[index] != target:
+		opponent_lock_targets[index] = target
+		opponent_lock_times[index] = 0.0
+	opponent_lock_times[index] += delta
+	if opponent_lock_times[index] < float(rules.rival_lock):
+		return true
+	# Fire one pair from the rival's pods.
+	var launches: Array = []
+	var pods: Variant = opponent_pods[index]
+	if is_instance_valid(pods):
+		launches = pods.take_pair()
+	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
+		item_runtime.fire_pair(ROCKET_ID, index, opponent_distances[index], opponent_lanes[index], target, launches)
+	_fx("rocket_fire", opponents[index].global_position + Vector3.UP * 0.8, 0.5)
+	if target == -1:
+		message.text = "%s feuert Sternraketen auf dich – Schild!" % _rival_name(index)
+		_sound_effect("rocket_launch")
+	_stat("rival_items_used")
+	opponent_lock_times[index] = 0.0
+	opponent_lock_targets[index] = -99
+	opponent_rocket_hold[index] = float(rules.rival_hold) - float(rules.rival_salvo_gap)
+	var left: int = int(opponent_item_charges.get(index, 2)) - 1
+	opponent_item_charges[index] = left
+	if left <= 0:
+		opponent_items[index] = ""
+		opponent_item_charges.erase(index)
+		opponent_item_cooldowns[index] = 3.0
+	return true
+
+
+var opponent_item_charges: Dictionary = {}
+
+
+func opponent_rival_charges(index: int) -> int:
+	if not opponent_item_charges.has(index):
+		opponent_item_charges[index] = maxi(1, int(ITEM_CATALOG.entry(ROCKET_ID).get("charges", 2)))
+	return int(opponent_item_charges[index])
+
+
+func _sync_rival_pods(index: int, pairs: int, armed: bool) -> void:
+	if index >= opponent_pods.size():
+		return
+	var pods: Variant = opponent_pods[index]
+	if pairs <= 0:
+		if is_instance_valid(pods):
+			pods.stow()
+		return
+	if not is_instance_valid(pods):
+		pods = _make_pods(opponents[index])
+		opponent_pods[index] = pods
+		if not is_instance_valid(pods):
+			return
+	if pods.pairs_left() != pairs:
+		pods.deploy(pairs)
+	pods.arm(armed)
+
+
+func _update_item_experience(delta: float) -> void:
+	player_grace_time = maxf(0.0, player_grace_time - delta)
+	for i in range(opponent_grace_times.size()):
+		opponent_grace_times[i] = maxf(0.0, opponent_grace_times[i] - delta)
+	if item_roulette_time > 0.0:
+		var before: float = item_roulette_time
+		item_roulette_time = maxf(0.0, item_roulette_time - delta)
+		if int(before * 9.0) != int(item_roulette_time * 9.0):
+			_sound_effect("roulette_tick", 1.0 + (1.0 - item_roulette_time / ROULETTE_SECONDS) * 0.4)
+		if item_roulette_time <= 0.0:
+			_sound_effect("roulette_done")
+			message.text = "%s! Tippe ITEM." % str(ITEM_CATALOG.entry(item).get("name", "Überraschung"))
+			_show_item_hint(item)
+	if item_hint_time > 0.0:
+		item_hint_time = maxf(0.0, item_hint_time - delta)
+		if item_hint_time <= 0.0:
+			item_hint = ""
+	_update_player_lock(delta)
+	for i in range(opponents.size()):
+		_update_rival_rockets_safe(i, delta)
+	# Warning: a rival is locking on, or rockets are on their way to the player.
+	var locked_on: float = 0.0
+	for i in range(opponent_lock_targets.size()):
+		if opponent_lock_targets[i] == -1:
+			locked_on = maxf(locked_on, clampf(opponent_lock_times[i] / maxf(0.1, float(_lock_rules().rival_lock)), 0.25, 1.0))
+	var incoming: bool = is_instance_valid(item_runtime) and item_runtime.incoming_for(-1, distance) < INF
+	player_warning = 1.0 if incoming else locked_on
+	if player_warning > 0.0:
+		_warning_tone_timer -= delta
+		if _warning_tone_timer <= 0.0:
+			_warning_tone_timer = 0.62
+			_sound_effect("missile_warning", 1.12 if incoming else 1.0)
+	else:
+		_warning_tone_timer = 0.0
+	if is_instance_valid(player_pods):
+		player_pods.reduced_motion = reduced_motion
+		player_pods.advance(delta)
+	for pods in opponent_pods:
+		if is_instance_valid(pods):
+			pods.reduced_motion = reduced_motion
+			pods.advance(delta)
+	if is_instance_valid(item_runtime):
+		for at in item_runtime.popped_debris():
+			_fx("rocket_pop", at)
+	if _cheer_timer > 0.0:
+		_cheer_timer = maxf(0.0, _cheer_timer - delta)
+		if _cheer_timer <= 0.0 and not finished and is_instance_valid(player):
+			player.end_in_race_cheer()
+
+
+func _update_rival_rockets_safe(index: int, delta: float) -> void:
+	if index < opponent_items.size():
+		_update_rival_rockets(index, delta)
+
+
+func _update_item_hud(delta: float) -> void:
+	if not is_instance_valid(item_hud):
+		return
+	for popup in item_popups:
+		popup.age = float(popup.age) + delta
+	item_popups = item_popups.filter(func(popup: Dictionary) -> bool: return float(popup.age) < 1.1)
+	var shown_item: String = item
+	var target_world := Vector3.ZERO
+	var has_target: bool = rocket_phase == "armed" and lock_target >= 0 and lock_target < opponents.size()
+	if has_target:
+		target_world = opponents[lock_target].global_position + Vector3.UP * 1.0
+	var shield_ready: bool = item == "shield" and item_roulette_time <= 0.0
+	item_hud.reduced_motion = reduced_motion
+	item_hud.camera = camera
+	item_hud.visible = racing and not finished and not menu_active
+	item_hud.push_state({
+		"phase": rocket_phase if item_roulette_time <= 0.0 else "",
+		"item": shown_item, "charges": item_charges,
+		"item_color": ITEM_CATALOG.color(shown_item).to_html() if not shown_item.is_empty() else "#ffffff",
+		"roulette": item_roulette_time / ROULETTE_SECONDS if item_roulette_time > 0.0 else 0.0,
+		"has_target": has_target, "target": lock_target, "target_world": target_world,
+		"target_name": _rival_name(lock_target) if has_target else "", "lock": lock_progress,
+		"rearm": lock_rearm_time,
+		"popups": item_popups,
+		"warning": player_warning, "incoming": is_instance_valid(item_runtime) and item_runtime.incoming_for(-1, distance) < INF,
+		"shield_ready": shield_ready,
+		"shield_left": shield_time, "shield_total": 6.0,
+		"hint": item_hint if item_roulette_time <= 0.0 else "",
+		"item_rect": item_button.get_global_rect() if is_instance_valid(item_button) and item_button.is_visible_in_tree() else Rect2(),
+	}, delta)
+	if is_instance_valid(item_slot):
+		item_slot.reduced_motion = reduced_motion
+		item_slot.push_state(item_hud.state, delta)
+
+
+func _sync_rival_item_fx_all() -> void:
+	for i in range(opponent_item_fx.size()):
+		_sync_rival_item_fx(i)

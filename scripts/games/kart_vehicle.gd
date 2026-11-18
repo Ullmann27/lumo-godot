@@ -321,6 +321,33 @@ func set_driver_character(value: String) -> void:
 		_rebuild()
 
 
+## Short in-race cheer after a successful item hit, for every driver type: the real
+## rigged Lumo and the 3D rivals play their own celebrate clip (one hand stays on the
+## wheel while driving); code-built drivers raise a fist. The race ends it again.
+func cheer_in_race(seconds: float = 1.2) -> void:
+	if celebration_place > 0:
+		return
+	if is_instance_valid(lumo_animation):
+		lumo_animation.celebrate_finished_race(1)
+	elif is_instance_valid(production_driver):
+		production_driver.celebrate_finished_race(1)
+	elif is_instance_valid(rival_visual):
+		rival_visual.celebrate_finished_race(1)
+	else:
+		cheer_briefly(seconds)
+
+
+func end_in_race_cheer() -> void:
+	if celebration_place > 0:
+		return
+	if is_instance_valid(lumo_animation):
+		lumo_animation.clear_celebration()
+	elif is_instance_valid(production_driver):
+		production_driver.clear_celebration()
+	elif is_instance_valid(rival_visual):
+		rival_visual.clear_celebration()
+
+
 ## Short in-race cheer (e.g. after a successful item hit): fist up, happy hop.
 func cheer_briefly(seconds: float = 1.2) -> void:
 	if is_instance_valid(lumo_animation) or celebration_place > 0:

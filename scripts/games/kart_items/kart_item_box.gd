@@ -30,6 +30,21 @@ func _ready() -> void:
 	# The prism (core + gold edges) is built directly on this node: two draw surfaces.
 	if get_node_or_null("MysteryPrismCore") == null:
 		PRISM.build(self)
+	if get_node_or_null("SurpriseStar") == null:
+		# A glowing star inside the prism says "Überraschung" without any text.
+		var star := Label3D.new()
+		star.name = "SurpriseStar"
+		star.text = "★"
+		star.font_size = 120
+		star.pixel_size = 0.0062
+		star.modulate = Color("fff1a8")
+		star.outline_modulate = Color("ff7ad9")
+		star.outline_size = 18
+		star.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		star.no_depth_test = false
+		star.shaded = false
+		star.double_sided = true
+		add_child(star)
 	_base_scale = scale
 
 
@@ -63,5 +78,13 @@ func _process(delta: float) -> void:
 ## Race-managed boxes are animated by the race (spin and a gentle bob).
 func advance_managed(delta: float, reduced_motion: bool) -> void:
 	_age += delta
-	if not reduced_motion:
-		rotation.y += delta * spin_speed
+	if reduced_motion:
+		return
+	# Spin the prism around its own up axis (the root keeps the track frame).
+	for child in get_children():
+		if child is MeshInstance3D:
+			(child as Node3D).rotation.y += delta * spin_speed
+	var star := get_node_or_null("SurpriseStar") as Node3D
+	if star != null:
+		star.position.y = sin(_age * 2.4) * 0.06
+		star.scale = Vector3.ONE * (1.0 + sin(_age * 3.1) * 0.08)

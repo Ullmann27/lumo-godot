@@ -1,0 +1,77 @@
+{
+  "generator": "tools/art/generate_kart_item_audio.py",
+  "seed": 20261118,
+  "original_samples_only": true,
+  "assets": [
+    {
+      "file": "rocket_arm.ogg",
+      "seconds": 0.75,
+      "bytes": 10975,
+      "sha256": "cbbc056ccffc5d375e41b2e05dff10c45d3cbe54ce90d9ae527e7ae13136df73",
+      "description": "Original synthesized rocket_arm cue"
+    },
+    {
+      "file": "lock_beep.ogg",
+      "seconds": 0.075,
+      "bytes": 5063,
+      "sha256": "6216661cb20db7a9eb297e46b8efbec68ee9fd8bf249011781c3f727451459da",
+      "description": "Original synthesized lock_beep cue"
+    },
+    {
+      "file": "lock_on.ogg",
+      "seconds": 0.42,
+      "bytes": 6856,
+      "sha256": "66a39972984d5a7337f53e547d77219dbca6f5bdd81b4b3c0863721e97ca2eba",
+      "description": "Original synthesized lock_on cue"
+    },
+    {
+      "file": "rocket_launch.ogg",
+      "seconds": 1.1,
+      "bytes": 19111,
+      "sha256": "3ad490a638165429a7f3f0ae97212a58e94063eb6064cb6e72564d8d68204b92",
+      "description": "Original synthesized rocket_launch cue"
+    },
+    {
+      "file": "rocket_hit.ogg",
+      "seconds": 1.0,
+      "bytes": 12232,
+      "sha256": "7e100f2a32486ff93271403cd7c572c4592f038fb7fd1b7677eb9c16088df763",
+      "description": "Original synthesized rocket_hit cue"
+    },
+    {
+      "file": "shield_up.ogg",
+      "seconds": 0.8,
+      "bytes": 8533,
+      "sha256": "b1b04977a19aaa5cee17656ede1aeadf401d3926d424f859992c5fa0912cb008",
+      "description": "Original synthesized shield_up cue"
+    },
+    {
+      "file": "shield_ping.ogg",
+      "seconds": 0.7,
+      "bytes": 8071,
+      "sha256": "84b0be2545e8e50d31c82c831d1cb07f9e3103e7410f9a497ac328bcc007de03",
+      "description": "Original synthesized shield_ping cue"
+    },
+    {
+      "file": "missile_warning.ogg",
+      "seconds": 0.5,
+      "bytes": 6745,
+      "sha256": "ccd037e23bafa8482bf9619cbc442d75a6776d0b00b374e9d92b9bd82953ec06",
+      "description": "Original synthesized missile_warning cue"
+    },
+    {
+      "file": "roulette_tick.ogg",
+      "seconds": 0.05,
+      "bytes": 4376,
+      "sha256": "f409182d9b4ac30e61b7e9875e00a651a2ce0e6ba5dfbd2582895e2d9aae8e7a",
+      "description": "Original synthesized roulette_tick cue"
+    },
+    {
+      "file": "roulette_done.ogg",
+      "seconds": 0.6,
+      "bytes": 8899,
+      "sha256": "55350884f13f44259df1d8fb36d840376ea29bc5419b51af0213ad5167452abe",
+      "description": "Original synthesized roulette_done cue"
+    }
+  ]
+}

@@ -139,7 +139,7 @@ func _test_props() -> void:
 	_check(not ring.crossed(Vector3(4, 1, 1), Vector3(4, 1, -1)), "passing beside the ring does not")
 	var box: Node3D = load("res://scenes/games/props/kart_item_box.tscn").instantiate()
 	root.add_child(box)
-	_check(box.get_node_or_null("MysteryPrismCore") != null and box.get_child_count() == 2, "item box scene reuses the two-surface prism")
+	_check(box.get_node_or_null("MysteryPrismCore") != null and box.get_node_or_null("SurpriseStar") is Label3D and box.get_child_count() == 3, "item box scene reuses the two-surface prism plus a star emblem")
 	_check(box.contains(Vector3(0, 0, 1.0)), "item box pickup radius")
 	box.pop()
 	_check(not box.contains(Vector3.ZERO), "popped box waits for respawn")
@@ -174,24 +174,43 @@ func _test_race_integration() -> void:
 	_check(not game.item_boxes.is_empty() and str(game.item_boxes[0].name).begins_with("SkillResonanceRing"), "skill resonance rings stay")
 	_check(game.track_triggers.size() == 2, "two built-in boost rings")
 	_check(is_instance_valid(game.item_runtime) and is_instance_valid(game.fx), "item runtime and fx director live")
-	# Player rocket hits the rival ahead and the rival spins (no damage, just a spin).
+	# Player rockets: pods unfold, first tap arms + locks the rival ahead, second tap fires a pair.
 	game.distance = 60.0
 	game.lane = 0.0
 	for i in range(game.opponents.size()):
 		game.opponent_distances[i] = 5.0 + i
 	game.opponent_distances[1] = 85.0
 	game.opponent_lanes[1] = 1.5
+	_place_racers()
 	game._grant_item("star_rocket")
+	_check(game.rocket_phase == "ready" and game.item_charges == 2, "rockets: two salvos ready after pickup")
+	_check(is_instance_valid(game.player_pods) and game.player_pods.pairs_left() == 2, "rocket pods are filled (2 per side)")
 	game._use_item()
-	_check(game.item.is_empty() and game.item_runtime.projectiles.size() == 1, "rocket launched and item consumed")
-	_check(int(game.item_runtime.projectiles[0].target) == 1, "rocket targets the next kart ahead")
-	for frame in range(90):
+	_check(game.rocket_phase == "armed" and game.item_runtime.projectiles.is_empty(), "first tap arms, nothing fired yet")
+	for frame in range(60):
+		game._update_item_experience(STEP)
+	_check(game.lock_target == 1 and game.lock_progress >= 1.0, "lock-on picks the nearest rival ahead in the sight cone")
+	game._use_item()
+	_check(game.item == "star_rocket" and game.item_charges == 1 and game.item_runtime.projectiles.size() == 2, "second tap fires one pair, one salvo left")
+	_check(int(game.item_runtime.projectiles[0].target) == 1 and int(game.item_runtime.projectiles[1].target) == 1, "both rockets chase the locked rival")
+	_check(game.player_pods.pairs_left() == 1 and game.rocket_phase == "armed", "pods keep the second pair armed")
+	for frame in range(120):
 		game.opponent_distances[1] += 6.0 * STEP
 		game._update_gameplay_layer(STEP)
 		if game.opponent_spin_times[1] > 0.0:
 			break
 	_check(game.opponent_spin_times[1] > 0.0 and int(game.gameplay_stats.player_hits_scored) == 1, "rival spins after the hit")
 	_check("dreht sich" in game.message.text, "friendly hit message")
+	for frame in range(30):
+		game._update_gameplay_layer(STEP)
+	_check(int(game.gameplay_stats.player_hits_scored) == 1 and game.item_runtime.projectiles.is_empty(), "a pair counts as one hit")
+	_check(game.opponent_grace_times[1] > 0.0, "Schonzeit after a hit")
+	game.item_runtime.clear()
+	game.item = ""
+	game.item_charges = 0
+	game._sync_player_rocket_phase()
+	game.opponent_spin_times[1] = 0.0
+	game.opponent_grace_times[1] = 0.0
 	# Spin visual is applied on top of physics and never accumulates.
 	var before: Basis = game.player.basis
 	game._spin_player(1.0)
@@ -207,16 +226,23 @@ func _test_race_integration() -> void:
 	game._use_item()
 	game._use_item()
 	_check(game.item.is_empty(), "all charges used")
-	# Rival AI fires a rocket at the player ahead; a shield blocks it.
+	# Rival AI locks onto the player ahead (warning first), then fires; a shield blocks it.
 	game.item_runtime.clear()
 	game.distance = 200.0
 	game.opponent_distances[0] = 175.0
 	game.opponent_lanes[0] = game.lane
 	game.opponent_items[0] = "star_rocket"
 	game.opponent_item_cooldowns[0] = 0.0
-	game._update_rival_item_tactics(0, Vector3(0, 0, 25), STEP)
-	_check(game.opponent_items[0].is_empty() and game.item_runtime.projectiles.size() == 1, "rival AI fires its rocket")
-	_check("Sternrakete" in game.message.text, "player is warned about the rocket")
+	game.opponent_rocket_hold[0] = 99.0
+	var warned := false
+	for frame in range(240):
+		game._update_item_experience(STEP)
+		warned = warned or game.player_warning > 0.0
+		if not game.item_runtime.projectiles.is_empty():
+			break
+	_check(warned, "player is warned while a rival locks on")
+	_check(game.item_runtime.projectiles.size() == 2 and game.opponent_items[0] == "star_rocket", "rival AI fires a pair and keeps one salvo")
+	_check("Sternraketen" in game.message.text, "player is warned about the rocket")
 	game.shield_time = 3.0
 	var hits_before: int = int(game.gameplay_stats.player_hits_taken)
 	for frame in range(90):
@@ -287,6 +313,13 @@ func _test_race_integration() -> void:
 	game.opponents[4].global_position = game.player.global_position + Vector3(0.5, 0, 0)
 	game._update_aurora_contacts()
 	_check(game.opponent_spin_times[4] > 0.0, "Nordlicht bumps rivals into a spin")
+
+
+func _place_racers() -> void:
+	game.player.global_position = game._track_position(fposmod(game.distance, game.track_length), game.lane)
+	game.player_heading = game._heading(fposmod(game.distance, game.track_length))
+	for i in range(game.opponents.size()):
+		game.opponents[i].global_position = game._track_position(fposmod(game.opponent_distances[i], game.track_length), game.opponent_lanes[i])
 
 
 func _test_session_validation() -> void:

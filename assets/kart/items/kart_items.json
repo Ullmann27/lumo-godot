@@ -11,7 +11,14 @@
       "behaviour": "boost",
       "seconds": 3.0,
       "role": "speed",
-      "weights": [4, 5, 5, 6, 6, 6],
+      "weights": [
+        4,
+        5,
+        5,
+        6,
+        6,
+        6
+      ],
       "sound": "boost"
     },
     {
@@ -24,7 +31,14 @@
       "seconds": 1.6,
       "charges": 3,
       "role": "speed",
-      "weights": [0, 0, 2, 4, 6, 7],
+      "weights": [
+        0,
+        0,
+        2,
+        4,
+        6,
+        7
+      ],
       "sound": "boost"
     },
     {
@@ -36,7 +50,14 @@
       "behaviour": "shield",
       "seconds": 6.0,
       "role": "defence",
-      "weights": [7, 5, 4, 3, 2, 1],
+      "weights": [
+        7,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
       "sound": "item"
     },
     {
@@ -49,23 +70,39 @@
       "seconds": 2.3,
       "radius": 13.0,
       "role": "area",
-      "weights": [5, 4, 3, 2, 1, 1],
+      "weights": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        1
+      ],
       "sound": "item"
     },
     {
       "id": "star_rocket",
-      "name": "Sternrakete",
-      "short": "RAKETE",
+      "name": "Sternraketen",
+      "short": "RAKETEN",
       "glyph": "✦",
       "color": "#ff6b8b",
       "behaviour": "homing_projectile",
-      "speed": 44.0,
-      "life": 4.5,
+      "speed": 33.0,
+      "life": 5.5,
       "spin_seconds": 1.1,
       "range": 70.0,
       "role": "attack",
-      "weights": [0, 3, 5, 5, 4, 3],
-      "sound": "item"
+      "weights": [
+        0,
+        3,
+        5,
+        5,
+        4,
+        3
+      ],
+      "sound": "item",
+      "charges": 2,
+      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer."
     },
     {
       "id": "spark_ball",
@@ -78,7 +115,14 @@
       "life": 5.0,
       "spin_seconds": 0.9,
       "role": "attack",
-      "weights": [4, 5, 4, 3, 2, 1],
+      "weights": [
+        4,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
       "sound": "item"
     },
     {
@@ -91,7 +135,14 @@
       "life": 25.0,
       "spin_seconds": 0.9,
       "role": "defence",
-      "weights": [6, 4, 3, 2, 1, 0],
+      "weights": [
+        6,
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
       "sound": "item"
     },
     {
@@ -103,7 +154,14 @@
       "behaviour": "magnet",
       "seconds": 4.0,
       "role": "catch_up",
-      "weights": [0, 1, 2, 3, 3, 3],
+      "weights": [
+        0,
+        1,
+        2,
+        3,
+        3,
+        3
+      ],
       "sound": "item"
     },
     {
@@ -116,7 +174,14 @@
       "seconds": 4.5,
       "spin_seconds": 1.0,
       "role": "catch_up",
-      "weights": [0, 0, 0, 1, 3, 5],
+      "weights": [
+        0,
+        0,
+        0,
+        1,
+        3,
+        5
+      ],
       "sound": "boost"
     }
   ]

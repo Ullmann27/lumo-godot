@@ -5,6 +5,7 @@ extends Node3D
 
 const SYMBOLS = preload("res://scripts/games/kart_item_symbols.gd")
 const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
+const SHIELD_SHADER = preload("res://assets/shaders/kart_shield_dome.gdshader")
 
 const ITEM_COLORS := {
 	"boost": Color("ffd166"),
@@ -29,6 +30,8 @@ var _held_symbols: Dictionary = {}
 var _held_ring_materials: Dictionary = {}
 var _rendered_item: String = "__unbuilt__"
 var _pulse_material: StandardMaterial3D
+var _shield_material: ShaderMaterial
+var _shield_hit_age: float = 9.0
 
 
 func _ready() -> void:
@@ -92,7 +95,11 @@ func _build() -> void:
 	shield_mesh.rings = 9
 	shield_bubble.mesh = shield_mesh
 	shield_bubble.position.y = 0.95
-	shield_bubble.material_override = _material(Color("66e8ff"), 0.32, 1.55)
+	# Same honeycomb energy dome as the player's Sternenschild (one shader draw call).
+	_shield_material = ShaderMaterial.new()
+	_shield_material.shader = SHIELD_SHADER
+	_shield_material.set_shader_parameter("time_offset", randf() * 10.0)
+	shield_bubble.material_override = _shield_material
 	shield_bubble.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	shield_bubble.visible = false
 	add_child(shield_bubble)
@@ -159,6 +166,15 @@ func set_shield(seconds: float) -> void:
 		shield_ring.scale = Vector3.ONE * scale_value
 
 
+## A rocket bounced off this rival's dome: ripple from the contact point.
+func shield_impact(world_point: Vector3) -> void:
+	if not is_instance_valid(shield_bubble) or not shield_bubble.is_inside_tree():
+		return
+	var local: Vector3 = shield_bubble.to_local(world_point)
+	_shield_hit_age = 0.0
+	_shield_material.set_shader_parameter("hit_direction", local.normalized() if local.length_squared() > 0.0001 else Vector3.FORWARD)
+
+
 func set_pulse_warning(remaining: float, duration: float) -> void:
 	if not is_instance_valid(warning_ring):
 		return
@@ -190,6 +206,10 @@ func advance(delta: float, paused: bool = false, reduce_motion: bool = false) ->
 		return
 	reduced_motion = reduce_motion
 	elapsed += delta
+	_shield_hit_age = minf(9.0, _shield_hit_age + delta)
+	if _shield_material != null:
+		_shield_material.set_shader_parameter("hit_age", _shield_hit_age)
+		_shield_material.set_shader_parameter("pulse_amount", 0.0 if reduced_motion else 0.22)
 	_apply_motion()
 	if pulse_age < 0.72 and is_instance_valid(pulse_ring):
 		pulse_age = minf(0.72, pulse_age + delta)

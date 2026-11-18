@@ -8,6 +8,14 @@ const JUNGLE_ID := "jungle_emerald_3600"
 const JUNGLE_AMBIENCE = preload("res://scripts/games/kart_jungle_audio.gd")
 const TRACKS := ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
 const EFFECTS := ["start", "boost", "drift", "item", "finish", "countdown", "collision"]
+## Item cues (tools/art/generate_kart_item_audio.py) in assets/audio/kart/items/.
+const ITEM_EFFECTS := [
+	"rocket_arm", "lock_beep", "lock_on", "rocket_launch", "rocket_hit", "shield_up",
+	"shield_ping", "missile_warning", "roulette_tick", "roulette_done",
+]
+## Short repeating cues (lock tone, roulette, warning) use their own player so they
+## never cut the launch or hit sounds.
+const TONE_EFFECTS := ["lock_beep", "roulette_tick", "missile_warning"]
 const MUSIC_DB := -17.0
 const EFFECT_DB := -9.0
 const QUIET_DB := -60.0
@@ -18,6 +26,7 @@ var _streams: Dictionary = {}
 var _last_effect: Dictionary = {}
 var _active: int = 0
 var _effect_cursor: int = 0
+var _tone: AudioStreamPlayer
 var _current: String = ""
 var _track_id: String = ""
 var _ambience: Node3D
@@ -53,6 +62,11 @@ func _ensure_players() -> void:
 		player.volume_db = EFFECT_DB
 		add_child(player)
 		_effects.append(player)
+	_tone = AudioStreamPlayer.new()
+	_tone.name = "ItemTone"
+	_tone.bus = "Master"
+	_tone.volume_db = EFFECT_DB
+	add_child(_tone)
 
 
 func set_volumes(music: float, effects: float) -> void:
@@ -148,24 +162,29 @@ func update_course_state(delta: float, distance: float, length: float, final_lap
 		_ambience.advance(delta, listener)
 
 
-func effect(kind: String) -> void:
-	if _blocked() or not EFFECTS.has(kind):
+func effect(kind: String, pitch: float = 1.0) -> void:
+	var item_cue: bool = ITEM_EFFECTS.has(kind)
+	if _blocked() or not (EFFECTS.has(kind) or item_cue):
 		return
 	_ensure_players()
 	var now := Time.get_ticks_msec()
-	var cooldown := 300 if kind in ["drift", "collision"] else 85
+	var cooldown := 300 if kind in ["drift", "collision"] else (40 if kind in TONE_EFFECTS else 85)
 	if now - int(_last_effect.get(kind, -1000)) < cooldown:
 		return
 	var key := JUNGLE_ID + "/" + kind if _track_id == JUNGLE_ID and kind in ["start", "finish"] else kind
+	if item_cue:
+		key = "items/" + kind
 	var stream := _load_stream(key, false)
 	if stream == null:
 		return
 	_last_effect[kind] = now
-	var player := _effects[_effect_cursor]
-	_effect_cursor = (_effect_cursor + 1) % _effects.size()
+	var player: AudioStreamPlayer = _tone if kind in TONE_EFFECTS else _effects[_effect_cursor]
+	if player != _tone:
+		_effect_cursor = (_effect_cursor + 1) % _effects.size()
 	player.stop()
 	player.stream = stream
-	player.volume_db = effect_db() - 4.0 if kind == "collision" else effect_db()
+	player.pitch_scale = clampf(pitch, 0.5, 2.0)
+	player.volume_db = effect_db() - 4.0 if kind == "collision" else (effect_db() - 3.0 if kind in TONE_EFFECTS else effect_db())
 	player.play()
 
 
@@ -190,6 +209,8 @@ func _apply_pause() -> void:
 	if blocked:
 		for player in _effects:
 			player.stop()
+		if is_instance_valid(_tone):
+			_tone.stop()
 	if _track_id == JUNGLE_ID and is_instance_valid(_fade) and _fade.is_valid():
 		if blocked:
 			_fade.pause()
