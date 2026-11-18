@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "note": "Original Lumo-Kart items. Data-driven: add a row here and a behaviour id that kart_item_runtime.gd knows. Weights are per race place 1..6 (index 0 = 1st place).",
+  "items": [
+    {
+      "id": "boost",
+      "name": "Rückenwind",
+      "short": "WIND",
+      "glyph": "➜",
+      "color": "#ffd166",
+      "behaviour": "boost",
+      "seconds": 3.0,
+      "role": "speed",
+      "weights": [
+        4,
+        5,
+        5,
+        6,
+        6,
+        6
+      ],
+      "sound": "boost"
+    },
+    {
+      "id": "triple_boost",
+      "name": "Kometen-Trio",
+      "short": "TRIO",
+      "glyph": "➜➜➜",
+      "color": "#ffb347",
+      "behaviour": "boost",
+      "seconds": 1.6,
+      "charges": 3,
+      "role": "speed",
+      "weights": [
+        0,
+        0,
+        2,
+        4,
+        6,
+        7
+      ],
+      "sound": "boost"
+    },
+    {
+      "id": "shield",
+      "name": "Sternenschild",
+      "short": "SCHILD",
+      "glyph": "◎",
+      "color": "#66e8ff",
+      "behaviour": "shield",
+      "seconds": 6.0,
+      "role": "defence",
+      "weights": [
+        7,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "sound": "item"
+    },
+    {
+      "id": "pulse",
+      "name": "Lichtimpuls",
+      "short": "IMPULS",
+      "glyph": "✧",
+      "color": "#c58cff",
+      "behaviour": "pulse",
+      "seconds": 2.3,
+      "radius": 13.0,
+      "role": "area",
+      "weights": [
+        5,
+        4,
+        3,
+        2,
+        1,
+        1
+      ],
+      "sound": "item"
+    },
+    {
+      "id": "star_rocket",
+      "name": "Sternraketen",
+      "short": "RAKETEN",
+      "glyph": "✦",
+      "color": "#ff6b8b",
+      "behaviour": "homing_projectile",
+      "speed": 33.0,
+      "life": 5.5,
+      "spin_seconds": 1.1,
+      "range": 70.0,
+      "role": "attack",
+      "weights": [
+        0,
+        3,
+        5,
+        5,
+        4,
+        3
+      ],
+      "sound": "item",
+      "charges": 2,
+      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer."
+    },
+    {
+      "id": "spark_ball",
+      "name": "Funkenkugel",
+      "short": "FUNKEN",
+      "glyph": "●",
+      "color": "#58f0a0",
+      "behaviour": "bouncing_projectile",
+      "speed": 34.0,
+      "life": 5.0,
+      "spin_seconds": 0.9,
+      "role": "attack",
+      "weights": [
+        4,
+        5,
+        4,
+        3,
+        2,
+        1
+      ],
+      "sound": "item"
+    },
+    {
+      "id": "bubble_trap",
+      "name": "Blubberblase",
+      "short": "BLASE",
+      "glyph": "◌",
+      "color": "#7fd8ff",
+      "behaviour": "dropped_trap",
+      "life": 25.0,
+      "spin_seconds": 0.9,
+      "role": "defence",
+      "weights": [
+        6,
+        4,
+        3,
+        2,
+        1,
+        0
+      ],
+      "sound": "item"
+    },
+    {
+      "id": "star_magnet",
+      "name": "Sternmagnet",
+      "short": "MAGNET",
+      "glyph": "∩",
+      "color": "#ffe066",
+      "behaviour": "magnet",
+      "seconds": 4.0,
+      "role": "catch_up",
+      "weights": [
+        0,
+        1,
+        2,
+        3,
+        3,
+        3
+      ],
+      "sound": "item"
+    },
+    {
+      "id": "aurora",
+      "name": "Nordlicht-Lauf",
+      "short": "NORDLICHT",
+      "glyph": "✺",
+      "color": "#8affd8",
+      "behaviour": "aurora",
+      "seconds": 4.5,
+      "spin_seconds": 1.0,
+      "role": "catch_up",
+      "weights": [
+        0,
+        0,
+        0,
+        1,
+        3,
+        5
+      ],
+      "sound": "boost"
+    }
+  ]
+}

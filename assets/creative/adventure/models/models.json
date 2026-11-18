@@ -1,0 +1,554 @@
+{
+ "generator": "tools/lumo_adventure_art/build_models.py",
+ "license": "Eigenbau in Blender per Skript, keine fremde Geometrie",
+ "sets": {
+  "atelier": {
+   "bytes": 38136,
+   "file": "adventure_atelier.glb",
+   "objects": {
+    "atelier_lamp": {
+     "materials": [
+      "brass",
+      "lamp_shade",
+      "lamp_glass"
+     ],
+     "size": [
+      1.23,
+      0.68,
+      1.549
+     ],
+     "triangles": 304
+    },
+    "easel": {
+     "materials": [
+      "wood",
+      "paper"
+     ],
+     "size": [
+      1.3,
+      0.971,
+      2.318
+     ],
+     "triangles": 118
+    },
+    "paint_jars": {
+     "materials": [
+      "lamp_glass",
+      "paint_red",
+      "paint_blue",
+      "paint_yellow",
+      "paint_green",
+      "wood"
+     ],
+     "size": [
+      1.082,
+      0.317,
+      0.453
+     ],
+     "triangles": 504
+    }
+   }
+  },
+  "fauna": {
+   "bytes": 40284,
+   "file": "adventure_fauna.glb",
+   "objects": {
+    "butterfly": {
+     "materials": [
+      "eye_black",
+      "butterfly_wing"
+     ],
+     "size": [
+      0.64,
+      0.4,
+      0.05
+     ],
+     "triangles": 12
+    },
+    "crab": {
+     "materials": [
+      "crab_shell",
+      "crab_claw",
+      "eye_black"
+     ],
+     "size": [
+      1.666,
+      1.17,
+      0.617
+     ],
+     "triangles": 556
+    },
+    "gull": {
+     "materials": [
+      "bird_body",
+      "beak",
+      "bird_wing"
+     ],
+     "size": [
+      3.8,
+      1.572,
+      0.41
+     ],
+     "triangles": 220
+    }
+   }
+  },
+  "flora": {
+   "bytes": 322644,
+   "file": "adventure_flora.glb",
+   "objects": {
+    "bush_a": {
+     "materials": [
+      "bark",
+      "leaves_broad"
+     ],
+     "size": [
+      2.471,
+      2.59,
+      1.988
+     ],
+     "triangles": 176
+    },
+    "bush_b": {
+     "materials": [
+      "bark",
+      "leaves_autumn"
+     ],
+     "size": [
+      1.792,
+      1.484,
+      1.482
+     ],
+     "triangles": 144
+    },
+    "fern": {
+     "materials": [
+      "fern_frond"
+     ],
+     "size": [
+      2.603,
+      2.291,
+      0.648
+     ],
+     "triangles": 180
+    },
+    "grass_flowers": {
+     "materials": [
+      "grass_tuft"
+     ],
+     "size": [
+      1.3,
+      1.246,
+      0.75
+     ],
+     "triangles": 6
+    },
+    "grass_tuft": {
+     "materials": [
+      "grass_tuft"
+     ],
+     "size": [
+      1.3,
+      1.246,
+      0.75
+     ],
+     "triangles": 6
+    },
+    "palm_a": {
+     "materials": [
+      "palm_bark",
+      "coconut",
+      "palm_frond"
+     ],
+     "size": [
+      9.47,
+      9.408,
+      10.589
+     ],
+     "triangles": 924
+    },
+    "palm_b": {
+     "materials": [
+      "palm_bark",
+      "coconut",
+      "palm_frond"
+     ],
+     "size": [
+      10.993,
+      10.951,
+      12.379
+     ],
+     "triangles": 956
+    },
+    "tree_oak_a": {
+     "materials": [
+      "bark",
+      "leaves_broad"
+     ],
+     "size": [
+      11.737,
+      11.157,
+      10.383
+     ],
+     "triangles": 1016
+    },
+    "tree_oak_b": {
+     "materials": [
+      "bark",
+      "leaves_broad"
+     ],
+     "size": [
+      12.581,
+      13.357,
+      12.313
+     ],
+     "triangles": 1016
+    },
+    "tree_oak_c": {
+     "materials": [
+      "bark",
+      "leaves_autumn"
+     ],
+     "size": [
+      8.448,
+      8.141,
+      8.934
+     ],
+     "triangles": 952
+    }
+   }
+  },
+  "hub": {
+   "bytes": 61528,
+   "file": "adventure_hub.glb",
+   "objects": {
+    "gate_ring": {
+     "materials": [
+      "metal_dark",
+      "lamp_glass"
+     ],
+     "size": [
+      4.7,
+      0.7,
+      4.9
+     ],
+     "triangles": 200
+    },
+    "gate_stone": {
+     "materials": [
+      "stone_block"
+     ],
+     "size": [
+      4.956,
+      0.956,
+      5.953
+     ],
+     "triangles": 1012
+    },
+    "gate_wood": {
+     "materials": [
+      "bark",
+      "wood"
+     ],
+     "size": [
+      5.221,
+      0.55,
+      4.885
+     ],
+     "triangles": 116
+    }
+   }
+  },
+  "props": {
+   "bytes": 89468,
+   "file": "adventure_props.glb",
+   "objects": {
+    "barrel": {
+     "materials": [
+      "wood",
+      "metal_dark"
+     ],
+     "size": [
+      1.11,
+      1.11,
+      1.2
+     ],
+     "triangles": 384
+    },
+    "campfire": {
+     "materials": [
+      "rock",
+      "bark",
+      "embers",
+      "flame"
+     ],
+     "size": [
+      4.977,
+      4.953,
+      1.57
+     ],
+     "triangles": 396
+    },
+    "crate": {
+     "materials": [
+      "wood",
+      "wood_dark"
+     ],
+     "size": [
+      1.04,
+      1.04,
+      1.0
+     ],
+     "triangles": 132
+    },
+    "lighthouse": {
+     "materials": [
+      "stone_block",
+      "lighthouse_white",
+      "lighthouse_red",
+      "metal_dark",
+      "lamp_glass",
+      "wood",
+      "window_dark"
+     ],
+     "size": [
+      6.0,
+      5.706,
+      18.27
+     ],
+     "triangles": 884
+    },
+    "signpost": {
+     "materials": [
+      "wood"
+     ],
+     "size": [
+      4.14,
+      0.905,
+      3.4
+     ],
+     "triangles": 66
+    },
+    "tent": {
+     "materials": [
+      "fabric",
+      "wood"
+     ],
+     "size": [
+      3.0,
+      3.89,
+      2.45
+     ],
+     "triangles": 36
+    }
+   }
+  },
+  "ruins": {
+   "bytes": 493852,
+   "file": "adventure_ruins.glb",
+   "objects": {
+    "arch_gate": {
+     "materials": [
+      "stone_block"
+     ],
+     "size": [
+      7.321,
+      1.073,
+      3.806
+     ],
+     "triangles": 748
+    },
+    "arch_welcome": {
+     "materials": [
+      "stone_block"
+     ],
+     "size": [
+      5.951,
+      0.938,
+      6.492
+     ],
+     "triangles": 1012
+    },
+    "boulder_cliff": {
+     "materials": [
+      "rock_moss"
+     ],
+     "size": [
+      11.773,
+      8.282,
+      4.55
+     ],
+     "triangles": 1280
+    },
+    "cave_entrance": {
+     "materials": [
+      "cave_dark",
+      "rock_moss"
+     ],
+     "size": [
+      12.884,
+      10.284,
+      7.787
+     ],
+     "triangles": 1384
+    },
+    "rock_a": {
+     "materials": [
+      "rock_moss"
+     ],
+     "size": [
+      3.706,
+      2.825,
+      1.212
+     ],
+     "triangles": 320
+    },
+    "rock_b": {
+     "materials": [
+      "rock_moss"
+     ],
+     "size": [
+      2.206,
+      2.785,
+      1.72
+     ],
+     "triangles": 320
+    },
+    "rock_c": {
+     "materials": [
+      "rock_moss"
+     ],
+     "size": [
+      5.147,
+      3.712,
+      1.577
+     ],
+     "triangles": 320
+    },
+    "ruin_arch": {
+     "materials": [
+      "ruin_moss"
+     ],
+     "size": [
+      4.949,
+      0.949,
+      5.638
+     ],
+     "triangles": 792
+    },
+    "ruin_column": {
+     "materials": [
+      "ruin_moss"
+     ],
+     "size": [
+      1.315,
+      1.325,
+      6.33
+     ],
+     "triangles": 456
+    },
+    "ruin_column_broken": {
+     "materials": [
+      "ruin_moss"
+     ],
+     "size": [
+      2.697,
+      2.444,
+      4.056
+     ],
+     "triangles": 448
+    },
+    "ruin_column_fallen": {
+     "materials": [
+      "ruin_moss"
+     ],
+     "size": [
+      4.073,
+      1.924,
+      0.949
+     ],
+     "triangles": 164
+    },
+    "ruin_wall": {
+     "materials": [
+      "ruin_moss"
+     ],
+     "size": [
+      7.934,
+      2.73,
+      3.648
+     ],
+     "triangles": 1660
+    },
+    "shells": {
+     "materials": [
+      "shell"
+     ],
+     "size": [
+      0.838,
+      1.231,
+      0.154
+     ],
+     "triangles": 560
+    },
+    "star_castle": {
+     "materials": [
+      "stone_block",
+      "roof_tiles",
+      "metal_dark",
+      "window_glow",
+      "wood_dark"
+     ],
+     "size": [
+      19.496,
+      5.892,
+      17.2
+     ],
+     "triangles": 2656
+    }
+   }
+  },
+  "stage": {
+   "bytes": 84896,
+   "file": "adventure_stage.glb",
+   "objects": {
+    "moving_head": {
+     "materials": [
+      "metal_dark",
+      "lamp_glass"
+     ],
+     "size": [
+      0.74,
+      0.6,
+      1.01
+     ],
+     "triangles": 324
+    },
+    "speaker_tower": {
+     "materials": [
+      "speaker_box",
+      "speaker_cone",
+      "metal_dark"
+     ],
+     "size": [
+      1.6,
+      1.02,
+      4.15
+     ],
+     "triangles": 896
+    },
+    "truss_beam": {
+     "materials": [
+      "truss_metal"
+     ],
+     "size": [
+      18.017,
+      0.772,
+      0.776
+     ],
+     "triangles": 840
+    }
+   }
+  }
+ }
+}

@@ -6,8 +6,13 @@ const KIT = preload("res://scripts/creative/creative_kit.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const STAGE_ART = preload("res://scripts/creative/rhythm_stage_art.gd")
 const LUMO = preload("res://scripts/characters/lumo/lumo_world_avatar.gd")
-const PERFORMER_HEIGHT := 4.6
-const PERFORMER_FLOOR := 0.48
+const CONCERT = preload("res://scripts/creative/rhythm_concert_art.gd")
+const PERFORMER_HEIGHT := 11.0
+const PERFORMER_FLOOR := 1.0
+## Lumo steht als Star hinter dem Ende der Notenbahn (verdeckt keine Noten).
+const PERFORMER_Z := -30.5
+const CAMERA_TARGET := Vector3(0, 2.0, -9)
+const CAMERA_OFFSET := Vector3(0, 6.5, 25)
 const COLORS = [Color("62dcff"), Color("b997ff"), Color("ffc985"), Color("77efbd")]
 var model = STATE.new()
 var kit = KIT.new()
@@ -59,6 +64,7 @@ var resume_countdown := 0.0
 var audio_latency := 0.0
 var use_audio_clock := false
 var tour_beacons: Array[MeshInstance3D] = []
+var concert: Node3D
 
 
 func _ready() -> void:
@@ -80,7 +86,10 @@ func _ready() -> void:
 		self, Vector3(0, 0.005, -11), Vector3(12.4, 0.06, 36), Color("1a0e32")
 	)
 	stage.material_override = BuildVoxelStyle.material("plain", Color("22143c"))
-	var speaker_specs: Array[Dictionary] = []
+	concert = CONCERT.new()
+	concert.name = "RhythmConcert"
+	add_child(concert)
+	concert.build(self, bool(SceneRouter.launch_options.get("reduceAnimations", false)))
 	var lane_floors: Array[Transform3D] = []
 	var lane_edges: Array = [[], [], [], []]
 	var box := BoxMesh.new()
@@ -102,8 +111,7 @@ func _ready() -> void:
 		pad.height = 0.16
 		pad.radial_segments = 24
 		lamps.append(kit.mesh(self, pad, Vector3(x, 0.2, 3), COLORS[lane], true))
-		speaker_specs.append({"at": Vector3(x, 0, -26.5), "color": COLORS[lane], "scale": 0.72})
-	BuildVoxelStyle.multimesh(self, "RhythmLanes", box, kit.material(Color("1c1438")), lane_floors)
+	BuildVoxelStyle.multimesh(self, "RhythmLanes", box, concert.lane_material(), lane_floors)
 	for lane in range(4):
 		var edges: Array[Transform3D] = []
 		edges.assign(lane_edges[lane])
@@ -111,24 +119,14 @@ func _ready() -> void:
 			self, "RhythmLaneEdge%d" % lane, box, kit.material(COLORS[lane], true), edges
 		)
 	# Schloss bleibt weg: die LED-Wand verdeckt es in der Startansicht vollständig.
-	_eq_wall()
+	# Equalizer und Lautsprecher sind jetzt Teil der Konzertbühne (RhythmConcertArt).
 	STAGE_ART.apply(self)
 	_performer()
 	_tour_landmarks()
-	for side in [-1.0, 1.0]:
-		speaker_specs.append(
-			{
-				"at": Vector3(side * 8.6, 0, -18),
-				"color": COLORS[0 if side < 0 else 1],
-				"scale": 1.15
-			}
-		)
-	_batch_speakers(speaker_specs)
-	_batch_columns()
 	camera = Camera3D.new()
 	add_child(camera)
-	camera.position = Vector3(0, 12, 16)
-	camera.look_at(Vector3(0, 0, -8))
+	camera.position = CAMERA_TARGET + CAMERA_OFFSET
+	camera.look_at(CAMERA_TARGET)
 	camera.fov = 56
 	camera.current = true
 	notes_root = Node3D.new()
@@ -296,6 +294,8 @@ func _show_start() -> void:
 	menu_box.add_child(play)
 	menu_box.add_child(KIT.button("‹ Zur Spielewelt", _leave))
 	_update_tour_landmarks()
+	if concert != null:
+		concert.set_theme(tour_stage if tour_mode else song_index)
 	call_deferred("_layout")
 
 
@@ -349,6 +349,8 @@ func start() -> void:
 	last_tour_result.clear()
 	goal_banner.text = tour.goal_text(round_stage, round_difficulty) if round_stage >= 0 else ""
 	_update_tour_landmarks()
+	if concert != null:
+		concert.set_theme(round_stage if round_stage >= 0 else song_index)
 	cheer_until = -100.0
 	# Neustart auch mitten im Lied: Lumo begrüßt das neue Lied erneut.
 	seen_running = false
@@ -508,6 +510,8 @@ func _sync_music_time(delta: float) -> void:
 func _process(delta: float) -> void:
 	_animate_performer()
 	_fade_bursts(delta)
+	if concert != null:
+		concert.tick(delta, model.time, 60.0 / float(model.song.get("bpm", 100)), running and not paused, model.held, model.combo)
 	if not running or paused:
 		return
 	if resume_countdown > 0:
@@ -659,8 +663,8 @@ func _layout() -> void:
 		label.offset_right = -(available.x - width) * 0.5
 	if is_instance_valid(camera) and camera.is_inside_tree():
 		var framing := maxf(1.0, 0.75 / maxf(0.25, available.aspect()))
-		camera.position = Vector3(0, 0, -8) + Vector3(0, 12, 24) * framing
-		camera.look_at(Vector3(0, 0, -8))
+		camera.position = CAMERA_TARGET + CAMERA_OFFSET * framing
+		camera.look_at(CAMERA_TARGET)
 	menu.size = Vector2(minf(580, available.x - 28), maxf(180, minf(590, available.y - 170)))
 	menu.position = (available - menu.size) * 0.5
 	for lane in range(lane_buttons.size()):
@@ -747,7 +751,7 @@ func _performer() -> void:
 	performer_fox = LUMO.new()
 	performer_fox.name = "Lumo"
 	add_child(performer_fox)
-	performer_fox.position = Vector3(0, PERFORMER_FLOOR, -21.8)
+	performer_fox.position = Vector3(0, PERFORMER_FLOOR, PERFORMER_Z)
 	performer_fox.rotation_degrees = Vector3(0, 180, 0)
 	performer_fox.setup(
 		PERFORMER_HEIGHT, bool(SceneRouter.launch_options.get("reduceAnimations", false))
@@ -798,6 +802,8 @@ func _animate_performer() -> void:
 func _burst_hit(lane: int) -> void:
 	if hit_burst == null:
 		return
+	if concert != null:
+		concert.hit(lane)
 	hit_burst.position = Vector3((float(lane) - 1.5) * 2.35, 1.15, 3.0)
 	hit_burst.scale = Vector3.ONE * 0.85
 	hit_burst.visible = true
@@ -806,6 +812,8 @@ func _burst_hit(lane: int) -> void:
 func _maybe_cheer() -> void:
 	if model.last_cheer <= 0:
 		return
+	if concert != null:
+		concert.cheer(model.last_cheer >= 20)
 	if cheer_burst != null:
 		cheer_burst.position = Vector3(0, 2.35, 2.2)
 		cheer_burst.scale = Vector3.ONE * (1.15 if model.last_cheer < 20 else 1.65)
@@ -841,84 +849,6 @@ func _set_play_hud_visible(playing: bool) -> void:
 		goal_banner.visible = false
 
 
-func _batch_speakers(specs: Array[Dictionary]) -> void:
-	var box := BoxMesh.new()
-	box.size = Vector3.ONE
-	# Unit dish: larger radius on +Y faces the audience after the 90° X tilt,
-	# matching the pre-batch MeshInstance rotation of the membranes.
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 1.0
-	cyl.bottom_radius = 0.62
-	cyl.height = 1.0
-	cyl.radial_segments = 20
-	var cap_mesh := CylinderMesh.new()
-	cap_mesh.top_radius = 1.0
-	cap_mesh.bottom_radius = 1.0
-	cap_mesh.height = 1.0
-	cap_mesh.radial_segments = 16
-	var cabinets: Array[Transform3D] = []
-	var tweeters: Array[Transform3D] = []
-	var caps: Array[Transform3D] = []
-	var woofers: Array = [[], [], [], []]
-	var tops: Array = [[], [], [], []]
-	for spec in specs:
-		var at: Vector3 = spec.at
-		var color: Color = spec.color
-		var scale_factor: float = float(spec.scale)
-		var lane: int = maxi(0, COLORS.find(color))
-		cabinets.append(
-			Transform3D(
-				Basis.from_scale(Vector3(2.1, 3.1, 1.45) * scale_factor),
-				at + Vector3(0, 1.55 * scale_factor, 0)
-			)
-		)
-		var face := Basis.from_euler(Vector3(deg_to_rad(90), 0, 0))
-		var woofer_basis := (
-			face * Basis.from_scale(Vector3(0.72 * scale_factor, 0.18, 0.72 * scale_factor))
-		)
-		woofers[lane].append(
-			Transform3D(woofer_basis, at + Vector3(0, 1.15 * scale_factor, 0.72 * scale_factor))
-		)
-		var cap_basis := (
-			face * Basis.from_scale(Vector3(0.22 * scale_factor, 0.07, 0.22 * scale_factor))
-		)
-		caps.append(
-			Transform3D(cap_basis, at + Vector3(0, 1.15 * scale_factor, 0.80 * scale_factor))
-		)
-		var tweeter_basis := (
-			face * Basis.from_scale(Vector3(0.32 * scale_factor, 0.14, 0.32 * scale_factor))
-		)
-		tweeters.append(
-			Transform3D(tweeter_basis, at + Vector3(0, 2.35 * scale_factor, 0.7 * scale_factor))
-		)
-		tops[lane].append(
-			Transform3D(
-				Basis.from_scale(Vector3(1.6, 0.16, 0.9) * scale_factor),
-				at + Vector3(0, 3.2 * scale_factor, 0)
-			)
-		)
-	BuildVoxelStyle.multimesh(
-		self, "RhythmCabinets", box, BuildVoxelStyle.material("plain", Color("1a142c")), cabinets
-	)
-	BuildVoxelStyle.multimesh(
-		self, "RhythmTweeters", cap_mesh, kit.material(Color("e6f8ff"), true), tweeters
-	)
-	BuildVoxelStyle.multimesh(
-		self, "RhythmCaps", cap_mesh, BuildVoxelStyle.material("plain", Color("141018")), caps
-	)
-	for lane in range(4):
-		var woofer_x: Array[Transform3D] = []
-		woofer_x.assign(woofers[lane])
-		BuildVoxelStyle.multimesh(
-			self, "RhythmWoofers%d" % lane, cyl, kit.material(COLORS[lane], true), woofer_x
-		)
-		var top_x: Array[Transform3D] = []
-		top_x.assign(tops[lane])
-		BuildVoxelStyle.multimesh(
-			self, "RhythmSpeakerTops%d" % lane, box, kit.material(COLORS[lane], true), top_x
-		)
-
-
 func _batch_columns() -> void:
 	var cyl := CylinderMesh.new()
 	cyl.top_radius = 1.0
@@ -951,16 +881,3 @@ func _batch_columns() -> void:
 		BuildVoxelStyle.multimesh(
 			self, "RhythmOrbs%d" % lane, sphere, kit.material(COLORS[lane], true), orb_x
 		)
-
-
-func _eq_wall() -> void:
-	var xforms: Array[Transform3D] = []
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 221409
-	for i in range(22):
-		var height: float = 0.7 + float((i * 7) % 11) * 0.28
-		var at := Vector3(-6.6 + float(i) * 0.62, height * 0.5, -32.4)
-		xforms.append(Transform3D(Basis.from_scale(Vector3(0.4, height, 0.26)), at))
-	var bar := BoxMesh.new()
-	bar.size = Vector3.ONE
-	BuildVoxelStyle.multimesh(self, "EqBars", bar, kit.material(Color("8a6cff"), true), xforms)
