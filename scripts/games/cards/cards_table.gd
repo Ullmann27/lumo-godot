@@ -1581,11 +1581,23 @@ func _show_round() -> void:
 	for player: int in entry.winners:
 		_react(player, "happy")
 	var title := "Runde %d geschafft!" % rules.round_number()
-	var text := "Du hast diese Runde gewonnen!" if won else "%s gewinnt diese Runde." % _name_of(int(entry.winners[0]))
+	var text := _winner_text(entry.winners)
 	hud.set_hint("")
 	hud.show_round({"title": title, "text": text,
 		"rows": _round_rows(entry.points, func(player: int) -> String: return _round_detail(entry, player)),
 		"next_text": "Nächste Runde"})
+
+
+## „Du hast gewonnen“, „Leo gewinnt“ oder bei Gleichstand alle Namen.
+func _winner_text(winners: Array) -> String:
+	var names: Array[String] = []
+	for player: int in winners:
+		names.append("du" if player == 0 else _name_of(player))
+	if names.size() == 1:
+		return "Du hast diese Runde gewonnen!" if winners[0] == 0 else "%s gewinnt diese Runde." % names[0]
+	var joined: String = ", ".join(names.slice(0, names.size() - 1)) + " und " + str(names.back())
+	joined = joined.substr(0, 1).to_upper() + joined.substr(1)
+	return "Gleichstand! %s gewinnen diese Runde." % joined
 
 
 func _finish_match() -> void:

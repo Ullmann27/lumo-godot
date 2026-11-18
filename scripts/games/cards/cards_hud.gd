@@ -574,6 +574,11 @@ func _fit_panel() -> void:
 	panel.size = Vector2(width, 0)
 	panel.size = Vector2(width, panel.get_combined_minimum_size().y)
 	panel.position = ((area - panel.size) * 0.5).round()
+	# Umbrechende Texte kennen ihre Höhe erst nach dem ersten Layout: einmal nachmessen.
+	if not panel.has_meta("measured"):
+		panel.set_meta("measured", true)
+		await get_tree().process_frame
+		_fit_panel()
 
 
 func close_overlay(restore: bool = true) -> void:
