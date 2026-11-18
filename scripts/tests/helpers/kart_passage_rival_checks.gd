@@ -369,3 +369,55 @@ static func chicane(test, entry: Dictionary, widest: float) -> void:
 				]
 			)
 		)
+
+
+## Curve passages (Kristall-Canyon, Candy, Galaxy, Desert): ten touch runs each on the inner
+## apex line and on the calm centre line at race pace, no reset, and the measured time
+## through the zone for both lines (the inner line may win time, the centre line is safe).
+static func curve_lines(test, entry: Dictionary) -> void:
+	var world = test.game.world
+	var pace: float = float(
+		test.game.CATALOG.entry(test.game.CATALOG.DIFFICULTIES, test.game.difficulty).speed
+	)
+	var cruise: float = test.game.POWERTRAIN.top_speed(test.game.kart_factors, pace)
+	var times: Dictionary = {}
+	for inner in [true, false]:
+		var clean: int = 0
+		var total: float = 0.0
+		for run in range(10):
+			test._place(float(entry.zone_start) - 40.0, 0.0, cruise * 0.8)
+			var resets: int = test.game.reset_count
+			var t: float = 0.0
+			var in_zone: float = 0.0
+			while test._local() < float(entry.zone_end) and t < 20.0:
+				var target: float = 0.0
+				if inner:
+					for apex in entry.apexes:
+						var away: float = absf(test._local() + 8.0 - float(apex[0]))
+						if away < 30.0:
+							var half: float = world.road_width_at(float(apex[0])) * 0.5
+							target = float(apex[1]) * (half - 1.6) * (1.0 - away / 30.0)
+				test._touch_steer(target, 0.10)
+				test._tick()
+				t += STEP
+				if test._local() >= float(entry.zone_start):
+					in_zone += STEP
+			if test.game.reset_count == resets and test._local() >= float(entry.zone_end):
+				clean += 1
+				total += in_zone
+		var tag: String = "inner apex line" if inner else "calm centre line"
+		test._check(clean == 10, "%s: %s 10 clean runs (%d)" % [entry.id, tag, clean])
+		times[inner] = total / maxf(1.0, float(clean))
+	test._note(
+		(
+			"%s: Zone %.0f–%.0f m, Innenlinie Ø %.2f s, Mittellinie Ø %.2f s (Unterschied %.2f s)"
+			% [
+				entry.id,
+				float(entry.zone_start),
+				float(entry.zone_end),
+				float(times[true]),
+				float(times[false]),
+				float(times[false]) - float(times[true])
+			]
+		)
+	)

@@ -94,6 +94,21 @@ const SPECS: Dictionary = {
 			"hit_text": "Lichtwand! Die Pfeile zeigen dir die freie Spur.",
 		},
 	],
+	"crystal_canyon":
+	[
+		{
+			"kind": "flow",
+			"id": "amethystkehre",
+			"name": "Amethyst-Doppelkurve",
+			"theme": "crystal",
+			"reserve": false,
+			"zone_start": 282.0,
+			"zone_end": 345.0,
+			"apexes": [[296.0, -1.0], [318.0, -1.0]],
+			"sign": "AMETHYST-KEHRE\nLangsam um den Kristall",
+			"approach_text": "Langsam um den großen Kristall – dahinter Vollgas!",
+		},
+	],
 	"jungle_temple":
 	[
 		{

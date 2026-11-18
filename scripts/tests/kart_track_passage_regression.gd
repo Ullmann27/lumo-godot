@@ -903,6 +903,8 @@ func _run() -> void:
 				"flow":
 					if entry.has("arches"):
 						RIVAL_CHECKS.chicane(self, entry, widest)
+					elif str(entry.get("theme", "")) in ["crystal", "candy", "galaxy", "desert"]:
+						RIVAL_CHECKS.curve_lines(self, entry)
 			await _start(str(track), "flott", "comet")
 		if not quick:
 			# Rival factors 0,86 / 0,96 / 1,00 with the full own pace 1,17 on every level.
