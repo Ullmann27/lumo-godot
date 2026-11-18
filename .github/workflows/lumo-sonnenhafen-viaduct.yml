@@ -86,7 +86,13 @@ jobs:
           if [ -f "$baseline/$keep_csv" ]; then
             cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
           fi
-          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          # Godot 4.6.3 can crash in the first import of the historical checkout on
+          # a busy runner (same guard as in the grounding workflow): import the scenes
+          # on one thread and repeat the idempotent import once; a second crash fails.
+          historical_import() {
+            (cd "$baseline" && timeout 240s godot --headless --single-threaded-scene --path . --editor --import --quit)
+          }
+          historical_import || historical_import
           mkdir -p "$original/exports/viaduct/before"
           (cd "$baseline" && LUMO_CAPTURE_DIR="$original/exports/viaduct/before" \
             timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' \

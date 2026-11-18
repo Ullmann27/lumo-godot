@@ -134,7 +134,9 @@ func _process(delta: float) -> void:
 func _poll_state() -> void:
 	if _closed:
 		return
-	if not is_instance_valid(_host) or not _host.has_method("getTableState"):
+	# Android registers the host calls in the JNI map, not in ClassDB: Object.has_method
+	# is always false there. HostBridge.supports_method also asks has_java_method.
+	if not HostBridge.supports_method(_host, &"getTableState"):
 		_lose_authority()
 		return
 	var raw: Variant = JSON.parse_string(str(_host.call("getTableState")))
@@ -311,7 +313,7 @@ func _allowed(action: String, extras: Dictionary) -> bool:
 func _send(action: String, extras: Dictionary = {}) -> bool:
 	if _closed or not _authority_ready or _pending > 0 or _sequence >= 1000000000 or _state.is_empty() or bool(_state.exit) or not is_instance_valid(_host) or not MobileRuntime.safe_area_is_ready():
 		return false
-	if not _allowed(action, extras) or not _host.has_method("submitTableAction"):
+	if not _allowed(action, extras) or not HostBridge.supports_method(_host, &"submitTableAction"):
 		return false
 	_sequence += 1
 	var request := {"token": _token, "roundId": _state.roundId, "revision": int(_state.revision), "sequence": _sequence, "action": action}
