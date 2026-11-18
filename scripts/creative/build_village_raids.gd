@@ -528,7 +528,10 @@ static func _ints(raw: Dictionary) -> Dictionary:
 	var result := {}
 	for key in raw:
 		var value: Variant = raw[key]
-		if value is float and value == floor(value):
+		if str(key) in ["need", "have"]:
+			# Strength values are fractions by nature; keep them as they were saved.
+			result[key] = float(value)
+		elif value is float and value == floor(value):
 			result[key] = int(value)
 		elif value is Dictionary:
 			result[key] = _ints(value)

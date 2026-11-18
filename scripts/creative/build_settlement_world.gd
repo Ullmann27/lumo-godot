@@ -2672,6 +2672,11 @@ func _defense_dialog() -> void:
 	else:
 		_lumo_says(body, "Gerade ist alles ruhig. Krummzahn mag volle Kornlager (ab %d Essen), Funkel glitzernde Münzen (ab %d)." % [RAIDS.ROBBER_FOOD, RAIDS.DRAGON_COINS])
 	_village_caption(body, "Wappen: %d · abgewehrt: %d · Wachen: %d von %d" % [int(raids.fame), int(raids.defended), int(raids.guards), raids.max_guards(model)], 17)
+	# The child's own guards come first: train villagers to protect the village.
+	_village_caption(body, "Deine Wachen", 18)
+	_raid_button(body, "Wache ausbilden: 1 Münze", _raid_action.bind("guard", "", dialog), raids.guards < raids.max_guards(model) and raids.expedition.is_empty())
+	if raids.guards >= raids.max_guards(model):
+		_village_caption(body, "  Mehr Bewohner im Dorf: dann kannst du mehr Wachen ausbilden.")
 	_village_caption(body, "Schutzbauten", 18)
 	for kind in PART_ORDER:
 		var stage := int(raids.parts[kind])
@@ -2686,7 +2691,6 @@ func _defense_dialog() -> void:
 		_raid_button(body, caption, _raid_action.bind("build", kind, dialog), error.is_empty())
 		if error.begins_with("Dafür brauchst"):
 			_village_caption(body, "  " + error)
-	_raid_button(body, "Wache ausbilden: 1 Münze", _raid_action.bind("guard", "", dialog), raids.guards < raids.max_guards(model) and raids.expedition.is_empty())
 	_village_caption(body, "Unternehmungen", 18)
 	if not raids.expedition.is_empty():
 		_village_caption(body, "Unterwegs: %s, zurück an Tag %d." % ["Kundschafter" if str(raids.expedition.kind) == "kundschafter" else "Wachen holen Vorräte", int(raids.expedition.return_day)])

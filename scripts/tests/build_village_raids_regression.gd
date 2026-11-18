@@ -283,7 +283,8 @@ func _rules_save() -> void:
 	raids.advance_day(model, neighbors, 3, true)
 	raids.train_guard(model)
 	var raw: Variant = JSON.parse_string(JSON.stringify(raids.snapshot(model)))
-	var other = STATE.restore(JSON.parse_string(JSON.stringify(model.snapshot())))
+	# A second village with the same buildings stands in for the loaded save file.
+	var other = _rich_model()
 	var back = RAIDS.restore(raw, other)
 	var left := JSON.stringify(back.snapshot(other))
 	var right := JSON.stringify(raids.snapshot(model))
@@ -409,6 +410,10 @@ func _scene() -> void:
 	await _tap_control(village, village.day_button)
 	await _frames(3)
 	_check(str(village.raids.pending.get("threat", "")) == "drache", "Münzschatz lockt Funkel in die Szene")
+	# For this part the village is unprotected, so Funkel wins and leaves damage.
+	for kind in village.raids.parts:
+		village.raids.parts[kind] = 0
+	village.raids.guards = 0
 	if is_instance_valid(village.village_window):
 		village.village_window.queue_free()
 	await _frames(2)
