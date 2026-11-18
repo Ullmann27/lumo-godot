@@ -18,6 +18,17 @@ const SFX_PRESETS: Dictionary = {
 	"ui_confirm": {"freq": 720.0, "dur": 0.10, "kind": "chirp_up"},
 	"ui_cancel": {"freq": 280.0, "dur": 0.18, "kind": "chirp_down"},
 	"ui_back": {"freq": 360.0, "dur": 0.10, "kind": "chirp_down"},
+	# Kartentisch
+	"card_deal": {"freq": 940.0, "dur": 0.035, "kind": "chirp_down"},
+	"card_play": {"freq": 610.0, "dur": 0.07, "kind": "chirp_down"},
+	"card_draw": {"freq": 480.0, "dur": 0.06, "kind": "chirp_up"},
+	"card_select": {"freq": 820.0, "dur": 0.05, "kind": "sine"},
+	"card_refuse": {"freq": 230.0, "dur": 0.14, "kind": "square"},
+	"card_pass": {"freq": 300.0, "dur": 0.16, "kind": "chirp_down"},
+	"trick_win": {"freq": 700.0, "dur": 0.22, "kind": "chirp_up"},
+	"quartet": {"freq": 780.0, "dur": 0.30, "kind": "chirp_up"},
+	"round_win": {"freq": 590.0, "dur": 0.45, "kind": "chirp_up"},
+	"turn_ping": {"freq": 990.0, "dur": 0.09, "kind": "sine"},
 }
 
 const SAMPLE_RATE: float = 22050.0
