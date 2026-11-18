@@ -83,7 +83,16 @@ func _draw() -> void:
 	var body: Font = UI.BODY
 	var y := art_rect.end.y + 6.0 * k
 	var width := inner.size.x
+	if art_h <= 0.0 and (selected or disabled):
+		# Ohne Bild steht der Name neben der Haken-/Schloss-Plakette, nicht darunter.
+		width -= 76.0 * k
 	var title_px := _fit(font, title, width, 24.0 * k, 13.0 * k)
+	if art_h <= 0.0:
+		# Flache Karte: Name (und erste Zeile) senkrecht mittig.
+		var block := font.get_height(title_px)
+		if not lines.is_empty() or not locked_text.is_empty():
+			block += UI.BODY.get_height(roundi(15.0 * k)) + 3.0 * k
+		y = inner.position.y + maxf(0.0, (inner.size.y - block) * 0.5)
 	y += font.get_ascent(title_px)
 	var title_x := (
 		inner.position.x
