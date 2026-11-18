@@ -218,10 +218,17 @@ func _run() -> void:
 		_inside(game.modal_column.get_child(0), game.modal_scroll.get_global_rect())
 		game.modal_scroll.scroll_vertical = game.modal_scroll.get_v_scroll_bar().max_value
 		await _settle()
-		_inside(
-			game.modal_column.get_child(game.modal_column.get_child_count() - 1),
-			game.modal_scroll.get_global_rect()
-		)
+		# The closing line is optional and hidden where the height is short;
+		# both action rows must always be there and end inside the panel.
+		var last_visible: Control = null
+		for entry in game.modal_column.get_children():
+			if entry is Control and entry.visible:
+				last_visible = entry
+		assert(last_visible != null, "Result panel shows no content")
+		for row_name in ["ResultMainActions", "ResultMoreActions"]:
+			var row: Control = game.modal_column.get_node_or_null(row_name)
+			assert(row != null and row.visible, row_name + " must stay visible at %s" % pixels)
+		_inside(last_visible, game.modal_scroll.get_global_rect())
 	var garage = load("res://scripts/games/kart_garage_menu.gd").new()
 	root.add_child(garage)
 	for pixels in [Vector2i(320, 720), Vector2i(600, 960), Vector2i(840, 720), Vector2i(1280, 800)]:

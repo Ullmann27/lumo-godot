@@ -172,8 +172,17 @@ static func draw_gradient_box(
 		for step in range(7):
 			var angle: float = PI + PI * 0.5 * (float(corner) + float(step) / 6.0)
 			var point: Vector2 = centres[corner] + Vector2.from_angle(angle) * r
+			# Where two arcs meet (pill shape) or the radius is zero, points
+			# coincide; duplicates make the triangulation fail.
+			if not points.is_empty() and point.distance_squared_to(points[points.size() - 1]) < 0.0004:
+				continue
 			points.append(point)
 			colors.append(top.lerp(bottom, clampf((point.y - rect.position.y) / rect.size.y, 0.0, 1.0)))
+	if points.size() > 3 and points[0].distance_squared_to(points[points.size() - 1]) < 0.0004:
+		points.remove_at(points.size() - 1)
+		colors.remove_at(colors.size() - 1)
+	if points.size() < 3:
+		return
 	canvas.draw_polygon(points, colors)
 	if outline.a > 0.0:
 		points.append(points[0])
