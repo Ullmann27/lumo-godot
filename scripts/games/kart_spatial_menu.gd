@@ -4,6 +4,7 @@ extends "res://scripts/games/kart_garage_menu.gd"
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
 const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
+const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 var service_station
 var home_promenade
 var track_pass
@@ -25,6 +26,7 @@ var _home_mode := ""
 var _home_environment: Environment
 var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
+var _studio_sky: Sky
 
 
 func _init() -> void:
@@ -76,9 +78,15 @@ func _ready() -> void:
 		learn_button.pressed.disconnect(connection.callable)
 	learn_button.pressed.connect(func(): exit_requested.emit("games"))
 	# Brighter local studio materials; the original meshes and driver stay intact.
-	garage_interior.materials.wall.albedo_color = Color("3a6696")
-	garage_interior.materials.floor.albedo_color = Color("4a6382")
-	garage_interior.materials.ivory.albedo_color = Color("e2e4dc")
+	# Konzeptbild-Farbwelt: warme Sandwände, heller Epoxid-Boden, heller Drehteller.
+	garage_interior.materials.wall.albedo_color = Color("cdb79c")
+	garage_interior.materials.floor.albedo_color = Color("566377")
+	garage_interior.materials.ivory.albedo_color = Color("f1ece2")
+	garage_interior.materials.recess.albedo_color = Color("2a2f45")
+	garage_interior.materials.podium.albedo_color = Color("d9dee6")
+	garage_interior.materials.podium.metallic = 0.2
+	garage_interior.materials.podium.roughness = 0.3
+	_studio_sky = SHOWROOM.studio_sky()
 	service_station = SERVICE_STATION.new()
 	garage_interior.root.add_child(service_station)
 	service_station.build(garage_interior.materials)
@@ -88,8 +96,9 @@ func _ready() -> void:
 	for child in preview.get_children():
 		if child is WorldEnvironment and child.environment != null:
 			_home_environment = child.environment
-			_studio_ambient = _home_environment.ambient_light_color
-			_studio_ambient_energy = _home_environment.ambient_light_energy
+			# Hellere, warme Grundhelligkeit im Studio: keine schwarzen Schattenseiten mehr.
+			_studio_ambient = Color("8a8496")
+			_studio_ambient_energy = 0.62
 	_spatial_ready = true
 	_refresh()
 
@@ -197,6 +206,7 @@ func _sync_home_stage() -> void:
 	if _home_environment != null:
 		_home_environment.ambient_light_color = Color("284286") if home_visible else _studio_ambient
 		_home_environment.ambient_light_energy = 0.36 if home_visible else _studio_ambient_energy
+		SHOWROOM.apply_reflections(_home_environment, _studio_sky, garage_interior.root.visible)
 
 
 func _advance_home_camera(delta: float) -> void:
@@ -531,6 +541,9 @@ func _stage_subject_points() -> Array[Vector3]:
 	if is_instance_valid(service_station):
 		points.append_array(service_station.subject_points())
 		points.append_array(service_station.workbench_points())
+	# Das LUMO-Schild gehört ins Bild, nie unter Reiter oder Kopfzeile.
+	if step == 2 and garage_interior.root.visible:
+		points.append_array(SHOWROOM.sign_points(garage_interior.root))
 	return points
 
 

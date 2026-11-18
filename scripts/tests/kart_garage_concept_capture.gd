@@ -45,5 +45,9 @@ func _run() -> void:
 			await _settle(24)
 			var path := "%s/garage_%s_%dx%d.png" % [out_dir, kart, size.x, size.y]
 			root.get_texture().get_image().save_png(path)
-			print("[GarageConcept] ", path, " draw_calls=", garage.preview_draw_calls())
+			var primitives: int = garage.preview_viewport.get_render_info(
+				Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME
+			)
+			print("[GarageConcept] ", path, " draw_calls=", garage.preview_draw_calls(), " primitives=", primitives,
+				" profile=", garage.graphics_profile)
 	quit(0)

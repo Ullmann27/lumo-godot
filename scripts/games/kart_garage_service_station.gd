@@ -154,8 +154,9 @@ func _fit_host() -> bool:
 		return false
 	var scale_factor := clampf(1.55 / span, 0.08, 3.0)
 	host.scale = Vector3.ONE * scale_factor
-	host.rotation.y = PI - 0.18
-	host.position = Vector3(-1.65, -0.31 - lowest * scale_factor, -0.10)
+	# Neben und etwas hinter dem Kart, Blick schräg zum Kart: verdeckt es nicht.
+	host.rotation.y = PI - 0.55
+	host.position = Vector3(-1.95, -0.31 - lowest * scale_factor, 0.85)
 	return true
 
 

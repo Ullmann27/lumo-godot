@@ -77,9 +77,9 @@ static func apply_paint(material: StandardMaterial3D, finish: String, flakes: bo
 			material.rim = 0.28
 			material.rim_tint = 0.65
 		_:
-			# Ohne Reflexionssonde (Kompatibilitäts-Renderer) wirkt hoher Metallanteil
-			# schwarz; satte Farbe kommt aus Albedo + Klarlack-Glanz.
-			material.metallic = 0.26
+			# Metallic-Lack: Spiegelungen nehmen die Lackfarbe an (Garage: Studio-Panorama,
+			# Strecke: Himmel). Unter 0.5 bleiben, sonst wirkt er ohne Spiegelquelle schwarz.
+			material.metallic = 0.45
 			material.roughness = 0.28
 			material.clearcoat = 0.85
 			material.clearcoat_roughness = 0.10
