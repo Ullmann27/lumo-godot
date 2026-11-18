@@ -237,7 +237,10 @@ static func overview(model, raids) -> Dictionary:
 	}
 
 
+## Vor dem Speichern abgleichen: wer `guards` direkt ändert (Regeln, Tests),
+## bekommt nie einen Stand, in dem Verbände und Gesamtzahl auseinanderlaufen.
 static func snapshot(raids) -> Array:
+	reconcile(raids)
 	return raids.units.duplicate(true)
 
 

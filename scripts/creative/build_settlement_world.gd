@@ -24,6 +24,10 @@ const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
 const NEIGHBORS_VIEW = preload("res://scripts/creative/build_village_neighbors_view.gd")
 const RAIDS = preload("res://scripts/creative/build_village_raids.gd")
 const RAIDS_VIEW = preload("res://scripts/creative/build_village_raids_view.gd")
+const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
+const GUARDS_VIEW = preload("res://scripts/creative/build_village_guards_view.gd")
+const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
+const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -118,6 +122,14 @@ var raids_view: Node3D
 var defense_button: Button
 var raid_alert: Button
 var raid_camera_return: Dictionary = {}
+## Wachen-Verbände auf der Karte und „Felder ziehen“ (große Städte).
+var guards_view: Node3D
+var guard_post := "mitte"
+var field_drag := false
+var field_button: Button
+var drag_from := -1
+var drag_to := -1
+var field_preview: MeshInstance3D
 
 
 func _ready() -> void:
@@ -674,6 +686,8 @@ func _rebuild() -> void:
 	if is_instance_valid(village_residents):
 		village_residents.sync(model.player())
 		village_residents.set_focus(explorer.position if walking else focus)
+	if is_instance_valid(guards_view):
+		guards_view.sync()
 	_refresh_labels()
 	_update_chapter_beacon()
 
@@ -862,7 +876,10 @@ func _refresh_labels() -> void:
 	var summary: Dictionary = model.status()
 	HUD.set_chip(resource_chips.wood, str(int(resources.wood)), "Holz")
 	HUD.set_chip(resource_chips.stone, str(int(resources.stone)), "Stein")
-	HUD.set_chip(resource_chips.food, str(int(resources.food)), "Essen")
+	HUD.set_chip(
+		resource_chips.food, str(int(resources.food)),
+		SUPPLY.reserve_text(SUPPLY.town_reserve(model, model._player)) if model.living_village else "Essen"
+	)
 	HUD.set_chip(resource_chips.coins, str(int(resources.coins)), "Münzen")
 	HUD.set_chip(resource_chips.population, str(int(town.population)), "Bewohner")
 	HUD.set_chip(resource_chips.plots, str(int(town.plots)), "Grundstücke")
@@ -1061,6 +1078,8 @@ func _next_day() -> void:
 		)
 		if int(own.food_shortfall) > 0:
 			feedback.text += " · Es fehlen %d Essen. Baue Bauernhöfe!" % int(own.food_shortfall)
+		elif model.living_village:
+			feedback.text += " · " + SUPPLY.reserve_text(SUPPLY.town_reserve(model, model._player))
 		if not neighbor_note.is_empty():
 			feedback.text += " · " + neighbor_note
 		if not str(report.get("winner", "")).is_empty():
@@ -1928,7 +1947,9 @@ func _village_gesture(event: InputEvent) -> void:
 			if touches.size() == 1:
 				gesture_start = event.position
 				gesture_moved = false
+				_field_drag_begin(event.position)
 			elif touches.size() == 2:
+				_field_drag_cancel()
 				gesture_moved = true
 				_reset_pinch()
 		else:
@@ -1937,7 +1958,9 @@ func _village_gesture(event: InputEvent) -> void:
 		touches[event.index] = event.position
 		if touches.size() == 1:
 			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
-			if gesture_moved:
+			if drag_from >= 0:
+				_field_drag_update(event.position)
+			elif gesture_moved:
 				var move := _pan_by(event.relative)
 				pan_velocity = pan_velocity.lerp(move / maxf(get_physics_process_delta_time(), 0.008), 0.35)
 				_camera_update()
@@ -1956,6 +1979,7 @@ func _village_gesture(event: InputEvent) -> void:
 				gesture_start = event.position
 				gesture_moved = false
 				pan_velocity = Vector3.ZERO
+				_field_drag_begin(event.position)
 			else:
 				_village_release(event)
 	elif event is InputEventMouseMotion:
@@ -1965,7 +1989,9 @@ func _village_gesture(event: InputEvent) -> void:
 			_camera_update()
 		elif touches.has(-1):
 			gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 10.0
-			if gesture_moved:
+			if drag_from >= 0:
+				_field_drag_update(event.position)
+			elif gesture_moved:
 				_pan_by(event.relative)
 				_camera_update()
 
@@ -2008,7 +2034,12 @@ func _village_release(event: InputEvent) -> bool:
 	var was_single := touches.size() == 1
 	touches.erase(index)
 	var canceled: bool = event is InputEventScreenTouch and event.canceled
-	if was_single and not gesture_moved and not canceled and not walking and not paused:
+	if drag_from >= 0:
+		if was_single and not canceled and not paused:
+			_field_drag_finish()
+		else:
+			_field_drag_cancel()
+	elif was_single and not gesture_moved and not canceled and not walking and not paused:
 		_pick_plot(event.position)
 	if touches.size() == 1:
 		gesture_start = touches.values()[0]
@@ -2194,6 +2225,11 @@ func _build_village_ui() -> void:
 	demolish_button = VHUD.button("Rückbauen", _from_more.bind(_demolish), 150, "rose", 15)
 	demolish_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	more_box.add_child(demolish_button)
+	# Versorgen: Felder in einem Zug anlegen (große Städte).
+	field_button = VHUD.button("Felder ziehen", _from_more.bind(_toggle_field_drag), 150, "teal", 15)
+	field_button.name = "VillageFieldDrag"
+	field_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	more_box.add_child(field_button)
 	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	more_box.add_child(expand_button)
@@ -2374,6 +2410,9 @@ func _start_village_systems() -> void:
 	add_child(raids_view)
 	raids_view.setup(model, raids, LumoQuality.tier())
 	raids_view.scene_finished.connect(_raid_scene_finished)
+	guards_view = GUARDS_VIEW.new()
+	add_child(guards_view)
+	guards_view.setup(model, raids)
 	_refresh_raid_alert()
 	_layout()
 
@@ -2710,6 +2749,7 @@ func _defense_dialog() -> void:
 	# The child's own guards come first: train villagers to protect the village.
 	_village_caption(body, "Deine Wachen", 18)
 	_raid_button(body, "Wache ausbilden: 1 Münze", _raid_action.bind("guard", "", dialog), raids.guards < raids.max_guards(model) and raids.expedition.is_empty())
+	_raid_button(body, "Wachen-Verbände: %d Wachen in %d Verbänden" % [int(raids.guards), raids.units.size()], _open_guard_units.bind(dialog))
 	if raids.guards >= raids.max_guards(model):
 		_village_caption(body, "  Mehr Bewohner im Dorf: dann kannst du mehr Wachen ausbilden.")
 	_village_caption(body, "Schutzbauten", 18)
@@ -2827,3 +2867,185 @@ func _open_defense_from(dialog: Window) -> void:
 	if is_instance_valid(dialog):
 		dialog.queue_free()
 	_reopen_defense.call_deferred()
+
+
+# ------------------------------------------------------- Felder ziehen
+# Ein Fingerzug legt im Rechteck zwischen Start- und Endplatz Höfe an.
+func _toggle_field_drag() -> void:
+	field_drag = not field_drag
+	if is_instance_valid(field_button):
+		field_button.text = "Felder ziehen: an" if field_drag else "Felder ziehen"
+	feedback.text = (
+		"Zieh mit einem Finger über die Wiese: Beim Loslassen entstehen dort Bauernhöfe. Zwei Finger bewegen die Karte."
+		if field_drag else "Felder ziehen ist aus. Ein Finger bewegt wieder die Karte."
+	)
+	_field_drag_cancel()
+
+
+## Bauplatz unter einem Bildschirmpunkt (Gelände-Strahl), -1 = keiner.
+func plot_at_screen(point: Vector2) -> int:
+	if not is_instance_valid(camera):
+		return -1
+	var origin := camera.project_ray_origin(point)
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(point) * 400.0, 1)
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if hit.is_empty():
+		return -1
+	var at: Vector3 = hit.position
+	var cell := Vector2i(roundi((at.x + REGION.TOWN_CENTER) / REGION.SPACING), roundi(at.z / REGION.SPACING))
+	var index := REGION.plot_index_at(cell)
+	return index if index >= 0 and index < int(model._player.plots) else -1
+
+
+func _field_drag_begin(point: Vector2) -> void:
+	if not field_drag or walking or not model.living_village:
+		return
+	drag_from = plot_at_screen(point)
+	drag_to = drag_from
+	_field_preview()
+
+
+func _field_drag_update(point: Vector2) -> void:
+	var index := plot_at_screen(point)
+	if index >= 0 and index != drag_to:
+		drag_to = index
+		_field_preview()
+
+
+func _field_drag_cancel() -> void:
+	drag_from = -1
+	drag_to = -1
+	if is_instance_valid(field_preview):
+		field_preview.visible = false
+
+
+func _field_preview() -> void:
+	if drag_from < 0:
+		return
+	if not is_instance_valid(field_preview):
+		field_preview = kit.box(self, Vector3.ZERO, Vector3.ONE, Color("f3d36b"))
+		field_preview.name = "FieldDragPreview"
+		field_preview.material_override = kit.material(Color(1.0, 0.86, 0.35, 0.45), true, true)
+		field_preview.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var box := FIELDS.rect(drag_from, drag_to)
+	var a := _plot_world(REGION.plot_index_at(box.position))
+	var b := _plot_world(REGION.plot_index_at(box.end - Vector2i.ONE))
+	field_preview.position = Vector3((a.x + b.x) * 0.5, maxf(a.y, b.y) + 0.25, (a.z + b.z) * 0.5)
+	field_preview.scale = Vector3(absf(b.x - a.x) + 4.8, 0.12, absf(b.z - a.z) + 4.8)
+	field_preview.visible = true
+	var plots := FIELDS.area(model, drag_from, drag_to)
+	var price := FIELDS.quote(model, "farm", plots)
+	feedback.text = "%d Bauernhöfe · %s" % [int(price.count), _cost_text(price.cost)]
+
+
+func _field_drag_finish() -> void:
+	var plots := FIELDS.area(model, drag_from, drag_to)
+	_field_drag_cancel()
+	if _transactions_blocked():
+		return
+	if plots.is_empty():
+		feedback.text = "Hier ist kein freier, ebener Bauplatz für ein Feld."
+		return
+	var built: Array[int] = model.try_build_many("farm", plots)
+	if built.is_empty():
+		feedback.text = model.last_error
+		return
+	feedback.text = "%d Bauernhöfe angelegt." % built.size()
+	if built.size() < plots.size():
+		feedback.text += " Für %d weitere fehlt noch etwas: %s" % [plots.size() - built.size(), model.last_error]
+	_rebuild()
+	_save()
+
+
+# ------------------------------------------------------- Wachen-Verbände
+func _open_guard_units(dialog: Window) -> void:
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	_reopen_guard_units.call_deferred()
+
+
+func _reopen_guard_units() -> void:
+	await get_tree().process_frame
+	if not is_instance_valid(village_window):
+		_guard_units_dialog()
+
+
+## Verbände mit Gesamtzahl, Standort und Versorgung; Ausbilden in 1/10/100.
+func _guard_units_dialog() -> void:
+	if raids == null:
+		return
+	var view: Dictionary = _village_dialog("Wachen-Verbände")
+	if view.is_empty():
+		return
+	var body: VBoxContainer = view.body
+	var dialog: Window = view.dialog
+	dialog.name = "GuardUnitsDialog"
+	var info: Dictionary = GUARDS.overview(model, raids)
+	_village_caption(body, "%d Wachen in %d Verbänden · noch %d Plätze" % [int(info.total), int(info.units), int(info.room)], 18)
+	_village_caption(body, "Wachen essen wie alle Bewohner: %d Portionen am Tag. %s" % [int(info.food_per_day), str(info.reserve_text)])
+	_village_caption(body, "Neue Wachen stellen sich hier auf:", 17)
+	var posts := HBoxContainer.new()
+	posts.add_theme_constant_override("separation", 6)
+	body.add_child(posts)
+	for post in GUARDS.POST_ORDER:
+		var chosen: bool = post == guard_post
+		var post_button := _button(("● " if chosen else "") + str(GUARDS.POSTS[post]), _guard_action.bind("post", post, 0, dialog), 96)
+		post_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		posts.add_child(post_button)
+	for count in GUARDS.STEPS:
+		var error := GUARDS.train_error(model, raids, int(count), guard_post)
+		_raid_button(body, "%d %s ausbilden: %d Münze%s" % [count, "Wache" if count == 1 else "Wachen", count, "" if count == 1 else "n"], _guard_action.bind("train", guard_post, int(count), dialog), error.is_empty())
+		if not error.is_empty() and int(count) > 1:
+			_village_caption(body, "  " + error)
+			break
+	_village_caption(body, "Deine Verbände", 18)
+	for unit in raids.units:
+		var id := int(unit.id)
+		_village_caption(body, "%s · %s · %d Wachen" % [str(unit.name), str(GUARDS.POSTS[str(unit.post)]), int(unit.size)], 16)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		body.add_child(row)
+		var next_post: String = GUARDS.POST_ORDER[(GUARDS.POST_ORDER.find(str(unit.post)) + 1) % GUARDS.POST_ORDER.size()]
+		for spec in [
+			["Nach %s" % str(GUARDS.POSTS[next_post]), "move", next_post, id],
+			["Teilen", "split", "", id],
+			["1 entlassen", "dismiss", "", id],
+		]:
+			var action_button := _button(str(spec[0]), _guard_action.bind(str(spec[1]), str(spec[2]), int(spec[3]), dialog), 120)
+			action_button.mouse_filter = Control.MOUSE_FILTER_PASS
+			action_button.disabled = str(spec[1]) == "split" and int(unit.size) < 2
+			row.add_child(action_button)
+	if raids.units.size() > 1:
+		_raid_button(body, "Alle Verbände je Standort zusammenlegen", _guard_action.bind("regroup", "", 0, dialog))
+
+
+func _guard_action(action: String, argument: String, number: int, dialog: Window) -> void:
+	if _transactions_blocked() or raids == null:
+		return
+	var error := ""
+	match action:
+		"post":
+			guard_post = argument
+		"train":
+			error = GUARDS.train(model, raids, number, argument)
+			if error.is_empty():
+				feedback.text = "%d neue Wachen am %s." % [number, str(GUARDS.POSTS[argument])]
+		"move":
+			error = GUARDS.move(raids, number, argument)
+		"split":
+			var unit := GUARDS.find(raids, number)
+			error = GUARDS.split(raids, number, int(unit.get("size", 0)) / 2)
+		"dismiss":
+			error = GUARDS.dismiss(raids, number, 1)
+		"regroup":
+			for post in GUARDS.POST_ORDER:
+				GUARDS.regroup(raids, post)
+	if not error.is_empty():
+		feedback.text = error
+	if is_instance_valid(raids_view):
+		raids_view.sync()
+	_rebuild()
+	_save()
+	if is_instance_valid(dialog):
+		dialog.queue_free()
+	_reopen_guard_units.call_deferred()
