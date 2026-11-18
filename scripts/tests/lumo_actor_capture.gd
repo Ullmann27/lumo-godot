@@ -675,7 +675,7 @@ func _clip_comfort() -> bool:
 		_sample("agree_nod", t)
 		_look(-0.22 * reach, 0.10 * sin(u * TAU * 2.0) * reach, 0.12 * reach)
 		var chest := _body_point("Chest")
-		_aim_arm(".R", chest + Vector3(-0.26, -0.28, 0.30), reach, 0.95, Vector3(-1.0, -0.5, -0.3))
+		_aim_arm(".R", chest + Vector3(-0.28, -0.12, 0.38), reach, 0.95, Vector3(-1.0, -0.8, -0.2))
 		_alive(u * TAU, 0.8)
 		_shape("Smile", 0.65)
 		# Freundlich zusammengekniffene Augen beim Nicken.
