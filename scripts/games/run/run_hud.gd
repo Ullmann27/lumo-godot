@@ -341,12 +341,22 @@ func _draw_top() -> void:
 	if not letter_chars.is_empty():
 		var x: float = star_pill.position.x + 4.0 * u
 		var y: float = star_pill.end.y + 4.0 * u
+		var step: float = 30.0 * u
 		if _two_rows:
-			x = star_pill.end.x + 10.0 * u
-			y = star_pill.position.y
+			x = star_pill.end.x + 8.0 * u
+			# Narrow phones: the letters share the first row with the task
+			# counter and shrink until all of them fit between both pills.
+			var counter: String = "%d/%d" % [solved, question_total]
+			var counter_left: float = (
+				top.size.x - 50.0 * u
+				- font.get_string_size(counter, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+			)
+			step = minf(step, (counter_left - 6.0 * u - x) / maxf(1.0, float(letter_chars.size())))
+			y = star_pill.position.y + (star_pill.size.y - step * 0.87) * 0.5
+		var side: float = step * 0.87
 		for index in range(letter_chars.size()):
 			var found: bool = (letter_mask & (1 << index)) != 0
-			var cell := Rect2(x + float(index) * 30.0 * u, y, 26.0 * u, 26.0 * u)
+			var cell := Rect2(x + float(index) * step, y, side, side)
 			var style := StyleBoxFlat.new()
 			style.bg_color = Color(0.25, 0.75, 0.95, 0.9) if found else Color(0.02, 0.09, 0.22, 0.7)
 			style.border_color = Color(0.6, 0.95, 1.0, 0.9)
@@ -354,8 +364,8 @@ func _draw_top() -> void:
 			style.set_corner_radius_all(roundi(6.0 * u))
 			top.draw_style_box(style, cell)
 			top.draw_string(
-				font, cell.position + Vector2(0, 19.0 * u), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
-				cell.size.x, roundi(17.0 * u), UI.WHITE if found else Color(1, 1, 1, 0.35)
+				font, cell.position + Vector2(0, side * 0.73), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
+				cell.size.x, roundi(side * 0.65), UI.WHITE if found else Color(1, 1, 1, 0.35)
 			)
 	# Learning stops solved.
 	var tasks: String = "%d/%d" % [solved, question_total]

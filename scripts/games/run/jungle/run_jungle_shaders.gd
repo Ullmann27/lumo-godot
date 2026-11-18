@@ -23,7 +23,7 @@ void fragment() {
 	ROUGHNESS = 0.75;
 	SPECULAR = 0.18;
 	// Light through the leaves: a little glow on the far side of the sun.
-	EMISSION = base * 0.07;
+	EMISSION = base * 0.16;
 }
 """
 
@@ -37,7 +37,8 @@ void fragment() {
 	ALBEDO = base;
 	ROUGHNESS = 0.9;
 	SPECULAR = 0.1;
-	EMISSION = base * glow;
+	// A small floor keeps shaded stone and wood readable in the deep jungle.
+	EMISSION = base * (glow + 0.10);
 }
 """
 

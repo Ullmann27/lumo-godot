@@ -257,6 +257,11 @@ func _add_card(card: Dictionary, rect: Rect2, tall: bool) -> void:
 	if tall and _short:
 		name_label.add_theme_font_size_override("font_size", roundi(21.0 * u))
 		description.add_theme_font_size_override("font_size", roundi(13.0 * u))
+		# Low landscape screens: the buttons must stay inside the card, so the
+		# text is shortened; a card with a saved run shows its two buttons instead.
+		description.max_lines_visible = 2
+		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		description.visible = not bool(card.resume)
 	for label in [name_label, kicker, description, best]:
 		label.horizontal_alignment = align
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -449,7 +454,9 @@ func _build_result() -> void:
 	var wide: bool = view.x > view.y * 1.15
 	var accent: Color = data.get("accent", UI.GOLD)
 	var short: bool = wide and view.y / u < 430.0
-	var column: VBoxContainer = _dialog(accent, 470.0 if wide else 520.0, "right" if wide else "bottom")
+	var column: VBoxContainer = _dialog(
+		accent, (560.0 if short else 470.0) if wide else 520.0, "right" if wide else "bottom"
+	)
 	column.add_theme_constant_override("separation", roundi((5.0 if short else 7.0) * u))
 	var title: Label = UI.label("Geschafft! · %s" % str(data.course), 22.0 if short else 25.0, u, UI.GOLD, true)
 	title.name = "Title"
@@ -482,11 +489,13 @@ func _build_result() -> void:
 		var notice: Label = UI.label(str(data.notice), 16.0, u, Color("ffb3a1"))
 		notice.name = "Notice"
 		column.add_child(notice)
+	# A low landscape screen has room for one row of four: short words keep
+	# every action visible without scrolling.
 	var buttons: Array[Button] = [
 		_button("Nochmal", "Again", func() -> void: again_pressed.emit(), true),
-		_button("Andere Strecke", "Courses", func() -> void: courses_pressed.emit()),
-		_button("Zur Spieleauswahl", "LeaveGames", func() -> void: leave_pressed.emit("games")),
-		_button("Zum Lernen", "LeaveLearn", func() -> void: leave_pressed.emit("learn")),
+		_button("Strecken" if short else "Andere Strecke", "Courses", func() -> void: courses_pressed.emit()),
+		_button("Spiele" if short else "Zur Spieleauswahl", "LeaveGames", func() -> void: leave_pressed.emit("games")),
+		_button("Lernen" if short else "Zum Lernen", "LeaveLearn", func() -> void: leave_pressed.emit("learn")),
 	]
 	for button in buttons:
 		button.custom_minimum_size = Vector2(60.0, 46.0 if short else 50.0) * u
@@ -497,6 +506,10 @@ func _build_result() -> void:
 	column.remove_child(buttons[0])
 	grid.add_child(buttons[0])
 	grid.move_child(buttons[0], 0)
+	if short:
+		grid.columns = 4
+		for button in buttons:
+			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
 func _draw_rating(canvas: Control, rating: int) -> void:

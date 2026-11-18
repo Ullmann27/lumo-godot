@@ -352,12 +352,13 @@ func _environment() -> void:
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	environment.sky = sky
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	environment.ambient_light_color = Color("b8d8a8")
-	environment.ambient_light_energy = 1.05
-	environment.ambient_light_sky_contribution = 0.45
+	# A fixed bright fill instead of sky light: under the closed canopy the sky
+	# contributes almost nothing and trunks and leaves in shadow turned black.
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color("d4ecc4")
+	environment.ambient_light_energy = 1.35
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.15
+	environment.tonemap_exposure = 1.25
 	environment.tonemap_white = 6.0
 	environment.fog_enabled = true
 	# Depth fog with a clear near range: the exponential fog of the compatibility
