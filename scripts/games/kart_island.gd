@@ -53,6 +53,8 @@ var passage_announced: Dictionary = {}
 var _passage_last_phase: Dictionary = {}
 var _passage_hit_cooldown: float = 0.0
 var _traffic_player_entry: int = -1
+## Karts (rivals + child) at the front of the last _rival_traffic list; static obstacles follow.
+var _traffic_kart_entries: int = -1
 var passage_creep: String = ""
 var passage_fall_respawn: float = -1.0
 ## The jump speed hint appears this many metres before the ramp starts.
@@ -2817,6 +2819,7 @@ func _rival_traffic(index: int, road: Dictionary) -> PackedVector3Array:
 	if player_gap.length_squared() < 10000.0 and absf(player_gap.dot(basis.y)) < 3.0:
 		_traffic_player_entry = traffic.size()
 		traffic.append(Vector3(player_gap.dot(-basis.z), float(road.lateral) + player_gap.dot(basis.x), maxf(0.0, speed)))
+	_traffic_kart_entries = traffic.size()
 	for obstacle in world.action_obstacles:
 		var gap: Vector3 = obstacle - origin
 		if gap.length_squared() < 10000.0 and absf(gap.dot(basis.y)) < 3.0:
@@ -2917,7 +2920,8 @@ func _drive_opponents(delta: float) -> void:
 		_update_rival_item_tactics(i, local_gap, delta)
 		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
 		var passage_rule: Dictionary = PASSAGES.rival_control(
-			world, float(sampled.distance), absf(rival.motion_speed), elapsed, traffic, _traffic_player_entry
+			world, float(sampled.distance), absf(rival.motion_speed), elapsed, traffic, _traffic_player_entry,
+			float(sampled.lateral), _traffic_kart_entries
 		)
 		if float(passage_rule.lane) < INF:
 			target_lane = float(passage_rule.lane)

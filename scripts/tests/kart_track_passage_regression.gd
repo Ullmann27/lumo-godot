@@ -12,6 +12,7 @@ const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const FLEET_EXTREMES = preload("res://scripts/tests/helpers/kart_passage_fleet.gd")
+const RIVAL_CHECKS = preload("res://scripts/tests/helpers/kart_passage_rival_checks.gd")
 const STEP: float = 1.0 / 60.0
 var game
 var failures: int = 0
@@ -277,6 +278,8 @@ func _bridge_checks(track: String, entry: Dictionary, widest: float) -> void:
 	)
 	await _ten_from_standstill(track, entry, "gemuetlich")
 	await _ten_from_standstill(track, entry, "flott")
+	for difficulty in ["gemuetlich", "flott", "pro"]:
+		await RIVAL_CHECKS.bridge_queue(self, track, entry, difficulty)
 	await _wait_zone(entry)
 	await _side_by_side(entry)
 	await _hit_then_reset(entry)
@@ -627,7 +630,10 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 	await _hit_then_reset(entry)
 	# Arriving while Kiri swings without braking: a friendly nudge, never a reset.
 	# Hold far back until Kiri will be over the centre lane in 1.5 s, then arrive at top speed.
-	var cruise: float = game.POWERTRAIN.top_speed(game.kart_factors, 1.0)
+	# The real race pace (catalog "speed", 1,17 on every level since 18.11.2026), not 1.0:
+	# with 1.0 the kart reached the plane 0.2 s early and slipped past Kiri's nose.
+	var pace: float = float(game.CATALOG.entry(game.CATALOG.DIFFICULTIES, game.difficulty).speed)
+	var cruise: float = game.POWERTRAIN.top_speed(game.kart_factors, pace)
 	var resets: int = game.reset_count
 	var falls_before: int = game.passage_falls
 	var hit_before: int = game.passage_hits
@@ -823,99 +829,6 @@ func _rival_waits(track: String, entry: Dictionary, difficulty: String = "flott"
 	hold_rivals_from = 99
 
 
-func _rival_field(track: String) -> void:
-	await _start(track, "flott", "comet", "race")
-	for i in range(game.opponents.size()):
-		game.opponent_distances[i] = -4.0 - float(i) * 3.0
-		game.opponents[i].position = game.world.position_at(
-			fposmod(game.opponent_distances[i], game.track_length), -2.8 + float(i) * 1.35
-		)
-		game.opponent_headings[i] = game._heading(0.0)
-	var target: float = game.track_length * 2.0
-	var stationary: Array[float] = []
-	var worst_stationary: Array[float] = []
-	var last: Array[float] = []
-	var waits: int = 0
-	var deck_speed: float = 0.0
-	var vine_hits: int = 0
-	var hits_seen: Array[bool] = [false, false, false, false, false]
-	for i in range(game.opponents.size()):
-		stationary.append(0.0)
-		worst_stationary.append(0.0)
-		last.append(game.opponent_distances[i])
-	var t: float = 0.0
-	var limit: float = target / 14.0 + 60.0
-	var all_done: bool = false
-	while t < limit and not all_done:
-		# The child waits safely aside at the start so the field races alone.
-		_place(30.0, -4.6, 0.0)
-		_tick()
-		t += STEP
-		all_done = true
-		for i in range(game.opponents.size()):
-			var d: float = game.opponent_distances[i]
-			if d < target:
-				all_done = false
-			var moved: float = d - last[i]
-			last[i] = d
-			stationary[i] = stationary[i] + STEP if moved < 0.02 else 0.0
-			worst_stationary[i] = maxf(worst_stationary[i], stationary[i])
-			if stationary[i] > 0.4 and stationary[i] < 0.4 + STEP * 1.5:
-				waits += 1
-			# The race itself judges walls and gaps from the sampled road position.
-			var local: float = float(
-				(
-					game
-					. world
-					. sample_road(game.opponents[i].position, fposmod(d, game.track_length))
-					. distance
-				)
-			)
-			var stunned: bool = game.opponent_stuns[i] > 0.7
-			if stunned and not hits_seen[i]:
-				vine_hits += 1
-			hits_seen[i] = stunned
-			if not PASSAGES.bridge_at(game.world, local).is_empty():
-				deck_speed = maxf(deck_speed, absf(game.opponents[i].motion_speed))
-	var slowest: float = INF
-	var longest_halt: float = 0.0
-	for i in range(game.opponents.size()):
-		slowest = minf(slowest, game.opponent_distances[i])
-		longest_halt = maxf(longest_halt, worst_stationary[i])
-	_check(
-		all_done,
-		(
-			"%s: all rivals finish two laps (slowest %.0f of %.0f m in %.0f s)"
-			% [track, slowest, target, t]
-		)
-	)
-	_check(
-		longest_halt < 9.0,
-		"%s: no rival stands still longer than a swing cycle (%.1f s)" % [track, longest_halt]
-	)
-	var has_bridge: bool = false
-	var has_swing: bool = false
-	for entry in PASSAGES.of(game.world):
-		has_bridge = has_bridge or str(entry.kind) == "bridge"
-		has_swing = has_swing or str(entry.kind) == "swing"
-	if has_bridge:
-		_check(
-			deck_speed <= PASSAGES.RIVAL_BRIDGE_SPEED * 1.05 + 0.5,
-			"%s: rivals brake for the deck (%.1f m/s)" % [track, deck_speed]
-		)
-	if has_swing:
-		_check(vine_hits == 0, "%s: no rival runs into Kiri (%d)" % [track, vine_hits])
-	_note(
-		(
-			(
-				"%s: KI-Feld 2 Runden in %.0f s, längster Halt %.1f s, Halte %d, max."
-				+ " Tempo auf dem Deck %.1f m/s, Kiri-Treffer %d"
-			)
-			% [track, t, longest_halt, waits, deck_speed, vine_hits]
-		)
-	)
-
-
 # ------------------------------------------------------------------ run
 
 
@@ -972,7 +885,9 @@ func _run() -> void:
 					await _swing_checks(str(track), entry)
 			await _start(str(track), "flott", "comet")
 		if not quick:
-			await _rival_field(str(track))
+			# Rival factors 0,86 / 0,96 / 1,00 with the full own pace 1,17 on every level.
+			for difficulty in ["gemuetlich", "flott", "pro"]:
+				await RIVAL_CHECKS.field(self, str(track), difficulty)
 	game.abandoned = true
 	# Long race simulations leave Ogg playbacks in their fade: stop them before the release check.
 	for player in game.find_children("*", "AudioStreamPlayer", true, false):

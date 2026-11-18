@@ -23,6 +23,12 @@ const RIVAL_DECK_MARGIN: float = 0.60
 const RIVAL_BRIDGE_SPEED: float = 20.0
 const RIVAL_BRAKE: float = 26.0
 const RIVAL_LINE_LEAD: float = 80.0
+## Bridge queue: a kart counts as "in front" within this lateral gap (kart 2,19 m + room).
+const QUEUE_LANE_M: float = 2.6
+## Faster than this the kart is really driving, not parked aside.
+const QUEUE_MOVING_SPEED: float = 1.5
+## Within this distance before the deck every moving kart funnels into the single line.
+const QUEUE_FUNNEL_M: float = 14.0
 ## First warning sign before a passage zone; the spoken/written hint follows the pace
 ## (at least ANNOUNCE_SECONDS before the zone, never later than 70 m).
 const SIGN_LEAD_M: float = 170.0
@@ -362,10 +368,19 @@ static func clear_time(entry: Dictionary, distance: float, speed: float, accel: 
 
 
 ## Leitlinie und Tempo-Obergrenze für einen Rivalen. lane = INF lässt die eigene Linie.
-## Traffic: Vector3(vorne m, quer m, Tempo) wie in kart_rival_racecraft; player_key ist der
+## Traffic: Vector3(vorne m, quer m, Tempo) wie in kart_rival_racecraft; player_entry ist der
 ## Index des Spielereintrags (Rivalen lassen dem Kind an der Engstelle den Vortritt).
+## lateral ist die eigene Querlage; kart_entries die Zahl der Kart-Einträge vorn in traffic
+## (danach folgen ruhende Streckenobjekte, die sich nie in die Brückenschlange einreihen).
 static func rival_control(
-	world, distance: float, speed: float, t: float, traffic: PackedVector3Array, player_entry: int
+	world,
+	distance: float,
+	speed: float,
+	t: float,
+	traffic: PackedVector3Array,
+	player_entry: int,
+	lateral: float = INF,
+	kart_entries: int = -1
 ) -> Dictionary:
 	var result := {"lane": INF, "speed": INF, "waiting": false, "smooth": false}
 	var d: float = fposmod(distance, float(world.length))
@@ -389,18 +404,24 @@ static func rival_control(
 					)
 				)
 			# Single file: whoever is already in front, or the child beside us, goes first.
-			if true:
-				for index in range(traffic.size()):
-					var other: Vector3 = traffic[index]
-					var first: float = -1.6 if index == player_entry else 0.3
-					if other.x > first and other.x < 18.0:
-						# Keep a full kart length plus margin to the kart in front (5 m nose to nose).
-						var follow: float = (
-							maxf(0.0, other.z) + sqrt(2.0 * 8.0 * maxf(0.0, other.x - 5.0))
-						)
-						if other.x < 5.0:
-							follow = maxf(0.0, other.z) * clampf((other.x - 3.6) / 1.4, 0.0, 1.0)
-						cap = minf(cap, follow)
+			# Only karts that are really in the queue count: in our own lane, or moving
+			# onto the deck line. A kart that stands aside on the wide plaza (a child
+			# waiting at the edge, a rival parked abreast) never stops the queue: before
+			# 18.11.2026 a stationary kart 4 m to the side held the whole field forever
+			# (Winter-Sprint, rival chain stuck 80 m before the deck).
+			var karts: int = traffic.size() if kart_entries < 0 else kart_entries
+			for index in range(mini(karts, traffic.size())):
+				var other: Vector3 = traffic[index]
+				var first: float = -1.6 if index == player_entry else 0.3
+				if other.x <= first or other.x >= 18.0:
+					continue
+				if not _in_queue(other, lateral, ahead):
+					continue
+				# Keep a full kart length plus margin to the kart in front (5 m nose to nose).
+				var follow: float = maxf(0.0, other.z) + sqrt(2.0 * 8.0 * maxf(0.0, other.x - 5.0))
+				if other.x < 5.0:
+					follow = maxf(0.0, other.z) * clampf((other.x - 3.6) / 1.4, 0.0, 1.0)
+				cap = minf(cap, follow)
 			result.speed = cap
 		elif str(entry.kind) == "gate":
 			var gate_line: float = float(entry.wait_line) - d
@@ -433,3 +454,17 @@ static func rival_control(
 			result.waiting = true
 			result.speed = sqrt(2.0 * RIVAL_BRAKE * maxf(0.0, to_line - 0.6))
 	return result
+
+
+## Steht dieses Kart (traffic-Eintrag) vor uns in der Brückenschlange?
+static func _in_queue(other: Vector3, lateral: float, ahead: float) -> bool:
+	if lateral == INF:
+		return true
+	# Same lane: physically in front of our nose.
+	if absf(other.y - lateral) < QUEUE_LANE_M:
+		return true
+	# Merging onto the deck line ahead of us while moving: let it in first.
+	if other.z > QUEUE_MOVING_SPEED and absf(other.y) < absf(lateral) + 0.4:
+		return true
+	# Close to the deck everybody funnels into one line, whatever the lateral.
+	return ahead < QUEUE_FUNNEL_M and other.z > QUEUE_MOVING_SPEED
