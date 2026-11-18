@@ -7,7 +7,6 @@ const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
 const TRACK_STAGE = preload("res://scripts/games/kart_track_stage.gd")
 const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 const PARTS_BAY = preload("res://scripts/games/kart_parts_bay.gd")
-const STUDIO_SKY_SETTLE_FRAMES := 3
 ## „Teile wechseln“ + „Werte“ beim gewählten Kart (Garage), siehe kart_parts_bay.gd.
 var parts_bay
 var service_station
@@ -33,11 +32,6 @@ var _home_environment: Environment
 var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
 var _studio_sky: Sky
-## Bilder, die die Garage schon sichtbar ist. Der Studio-Himmel (Spiegelung) entsteht erst
-## danach: Im Kompatibilitäts-Renderer (Handy) verliert Godot 4.6.3 die Radiance-Texturen eines
-## Himmels, der gleich beim Aufbau angelegt und kurz danach wieder freigegeben wird (zwei
-## GL-Texturen bleiben beim Beenden übrig, die CI meldet „leaked“).
-var _studio_visible_frames := 0
 
 
 func _ready() -> void:
@@ -97,6 +91,7 @@ func _ready() -> void:
 	garage_interior.materials.podium.albedo_color = Color("d9dee6")
 	garage_interior.materials.podium.metallic = 0.2
 	garage_interior.materials.podium.roughness = 0.3
+	_studio_sky = SHOWROOM.studio_sky()
 	_style_view_choice()
 	parts_bay = PARTS_BAY.new()
 	add_child(parts_bay)
@@ -232,12 +227,7 @@ func _sync_home_stage() -> void:
 	if _home_environment != null:
 		_home_environment.ambient_light_color = Color("284286") if home_visible else _studio_ambient
 		_home_environment.ambient_light_energy = 0.36 if home_visible else _studio_ambient_energy
-		var reflections: bool = (
-			garage_interior.root.visible and _studio_visible_frames >= STUDIO_SKY_SETTLE_FRAMES
-		)
-		if reflections and _studio_sky == null:
-			_studio_sky = SHOWROOM.studio_sky()
-		SHOWROOM.apply_reflections(_home_environment, _studio_sky, reflections)
+		SHOWROOM.apply_reflections(_home_environment, _studio_sky, garage_interior.root.visible)
 
 
 func _advance_home_camera(delta: float) -> void:
@@ -693,8 +683,6 @@ func _process(delta: float) -> void:
 			home_promenade.set_active(false, reduced_motion)
 		return
 	_sync_workshop_host()
-	if garage_interior.root.visible:
-		_studio_visible_frames = mini(_studio_visible_frames + 1, STUDIO_SKY_SETTLE_FRAMES)
 	_sync_home_stage()
 	service_station.advance(delta)
 	home_promenade.advance(delta)
