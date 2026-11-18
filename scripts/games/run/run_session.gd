@@ -8,6 +8,48 @@ const VERSION: int = 1
 const SECTION: String = "run"
 const RECORDS: String = "user://run_records.cfg"
 const MAX_ELAPSED_MS: int = 6 * 60 * 60 * 1000
+## First line of every file: a checksum over the rest. A damaged, truncated or
+## foreign file is recognised before the engine parser ever reads it.
+const SEAL: String = "; lumo-run sha256="
+
+
+static func _sha256_hex(bytes: PackedByteArray) -> String:
+	var hashing := HashingContext.new()
+	hashing.start(HashingContext.HASH_SHA256)
+	if not bytes.is_empty():
+		hashing.update(bytes)
+	return hashing.finish().hex_encode()
+
+
+## Writes [param config] behind its checksum line. False when the disk refuses.
+static func write_sealed(path: String, config: ConfigFile) -> bool:
+	var body: PackedByteArray = config.encode_to_text().to_utf8_buffer()
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_buffer((SEAL + _sha256_hex(body) + "\n").to_utf8_buffer())
+	file.store_buffer(body)
+	var failed: bool = file.get_error() != OK
+	file.close()
+	return not failed
+
+
+## Reads a file written by [method write_sealed]; null for anything else.
+static func read_sealed(path: String) -> ConfigFile:
+	if not FileAccess.file_exists(path):
+		return null
+	var bytes: PackedByteArray = FileAccess.get_file_as_bytes(path)
+	var seal: PackedByteArray = SEAL.to_utf8_buffer()
+	var line_end: int = bytes.find(10)
+	if line_end != seal.size() + 64 or bytes.slice(0, seal.size()) != seal:
+		return null
+	var body: PackedByteArray = bytes.slice(line_end + 1)
+	if bytes.slice(seal.size(), line_end).get_string_from_ascii() != _sha256_hex(body):
+		return null
+	var config := ConfigFile.new()
+	if config.parse(body.get_string_from_utf8()) != OK:
+		return null
+	return config
 
 
 static func path_for(child_scope: String, grade: int, subject: String, course_id: String) -> String:
@@ -26,7 +68,7 @@ static func save(path: String, identity: Dictionary, state: Dictionary) -> bool:
 		config.set_value(SECTION, str(key), identity[key])
 	for key in state:
 		config.set_value(SECTION, str(key), state[key])
-	if config.save(path + ".tmp") != OK:
+	if not write_sealed(path + ".tmp", config):
 		return false
 	return DirAccess.rename_absolute(path + ".tmp", path) == OK
 
@@ -41,8 +83,8 @@ static func erase(path: String) -> void:
 static func peek(path: String, identity: Dictionary) -> int:
 	if not FileAccess.file_exists(path):
 		return -1
-	var config := ConfigFile.new()
-	if config.load(path) != OK or config.get_value(SECTION, "version", 0) != VERSION:
+	var config: ConfigFile = read_sealed(path)
+	if config == null or config.get_value(SECTION, "version", 0) != VERSION:
 		return -1
 	for key in identity:
 		var stored: Variant = config.get_value(SECTION, str(key), null)
@@ -59,8 +101,8 @@ static func peek(path: String, identity: Dictionary) -> int:
 static func load_valid(path: String, identity: Dictionary, plan) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return {}
-	var config := ConfigFile.new()
-	if config.load(path) != OK or not config.has_section(SECTION):
+	var config: ConfigFile = read_sealed(path)
+	if config == null or not config.has_section(SECTION):
 		return {}
 	if typeof(config.get_value(SECTION, "version", 0)) != TYPE_INT:
 		return {}
@@ -178,8 +220,8 @@ static func _valid_question(question: Dictionary) -> bool:
 # ------------------------------------------------------------------ best results
 
 static func record(child_scope: String, course_id: String) -> Dictionary:
-	var config := ConfigFile.new()
-	if config.load(RECORDS) != OK:
+	var config: ConfigFile = read_sealed(RECORDS)
+	if config == null:
 		return {}
 	var entry: Variant = config.get_value(_record_section(child_scope), course_id, {})
 	if typeof(entry) != TYPE_DICTIONARY:
@@ -199,10 +241,11 @@ static func store_record(child_scope: String, course_id: String, rating: int, ti
 		var better: bool = rating > int(best.rating) or (rating == int(best.rating) and time_ms < int(best.time_ms))
 		if not better:
 			return
-	var config := ConfigFile.new()
-	config.load(RECORDS)
+	var config: ConfigFile = read_sealed(RECORDS)
+	if config == null:
+		config = ConfigFile.new()
 	config.set_value(_record_section(child_scope), course_id, {"rating": rating, "time_ms": time_ms})
-	config.save(RECORDS)
+	write_sealed(RECORDS, config)
 
 
 static func _record_section(child_scope: String) -> String:

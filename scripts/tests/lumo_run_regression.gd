@@ -189,10 +189,10 @@ func _clean() -> void:
 		var id: String = str(COURSES.course(index).id)
 		for subject in ["Deutsch", "Mathematik"]:
 			SESSION.erase(SESSION.path_for(scope, 2, subject, id))
-	var records := ConfigFile.new()
-	if records.load(SESSION.RECORDS) == OK and records.has_section(SESSION._record_section(scope)):
+	var records: ConfigFile = SESSION.read_sealed(SESSION.RECORDS)
+	if records != null and records.has_section(SESSION._record_section(scope)):
 		records.erase_section(SESSION._record_section(scope))
-		records.save(SESSION.RECORDS)
+		SESSION.write_sealed(SESSION.RECORDS, records)
 
 
 func _run() -> void:
@@ -781,11 +781,21 @@ func _test_corrupt_saves() -> void:
 	var other_grade: Dictionary = identity.duplicate(true)
 	other_grade["grade"] = 3
 	_check(SESSION.load_valid(path, other_grade, plan).is_empty(), "save of another grade is rejected")
-	var wrong_version := ConfigFile.new()
-	wrong_version.load(path)
+	var wrong_version: ConfigFile = SESSION.read_sealed(path)
+	_check(wrong_version != null, "an intact save passes its checksum")
 	wrong_version.set_value("run", "version", 99)
-	wrong_version.save(path)
+	SESSION.write_sealed(path, wrong_version)
 	_check(SESSION.load_valid(path, identity, plan).is_empty(), "save of another version is rejected")
+	# One changed byte behind an intact header: the checksum catches it.
+	wrong_version.set_value("run", "version", SESSION.VERSION)
+	SESSION.write_sealed(path, wrong_version)
+	_check(not SESSION.load_valid(path, identity, plan).is_empty(), "the restored save is accepted again")
+	var tampered: PackedByteArray = FileAccess.get_file_as_bytes(path)
+	tampered[tampered.size() - 2] = tampered[tampered.size() - 2] ^ 1
+	var tampered_file := FileAccess.open(path, FileAccess.WRITE)
+	tampered_file.store_buffer(tampered)
+	tampered_file.close()
+	_check(SESSION.load_valid(path, identity, plan).is_empty(), "a save with one flipped bit is rejected")
 	# Garbage on disk: the game starts fresh and removes the file.
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string("\u0000\u0001 this is { not a [save file\n\n===")
