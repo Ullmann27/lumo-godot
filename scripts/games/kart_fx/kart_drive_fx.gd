@@ -32,7 +32,10 @@ const DRIFT_COLORS: Array[Color] = [
 ]
 const SPARK_HOT := Color(1.0, 0.86, 0.45)
 const SPARK_WHITE := Color(1.0, 0.96, 0.82)
-const RAIL_OFFSET := 0.92
+## Rail face: the premium rail's lower beam (RAIL_LATERAL 6.05, 0.55 m high) seen
+## from a kart pressed against the collision wall (WALL_LATERAL 5.0).
+const RAIL_OFFSET := 0.93
+const RAIL_HEIGHT := 0.55
 const HARD_HIT := 4.0
 
 var race: Node
@@ -75,6 +78,8 @@ var _tilt_applied: bool = false
 var _tilt_base := Basis.IDENTITY
 var _tilt_basis := Basis.IDENTITY
 var _shake_phase: float = 0.0
+var _shaken_camera: Camera3D
+var _camera_offset := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -152,6 +157,29 @@ func reset() -> void:
 
 func _physics_process(_delta: float) -> void:
 	_restore_tilt()
+	_restore_camera()
+
+
+## The camera jolt is laid on after the race has placed its camera (render time)
+## and taken off again before the next race tick, so the chase camera's own
+## smoothing never sees it.
+func _process(_delta: float) -> void:
+	_restore_camera()
+	if not is_instance_valid(race) or bool(race.get("paused")):
+		return
+	var camera: Camera3D = race.get("camera")
+	var jolt := camera_shake()
+	if is_instance_valid(camera) and jolt != Vector3.ZERO:
+		_camera_offset = camera.basis * jolt
+		camera.position += _camera_offset
+		_shaken_camera = camera
+
+
+func _restore_camera() -> void:
+	if is_instance_valid(_shaken_camera):
+		_shaken_camera.position -= _camera_offset
+	_shaken_camera = null
+	_camera_offset = Vector3.ZERO
 
 
 # --- hooks from the race -----------------------------------------------------
@@ -267,9 +295,9 @@ func advance(delta: float) -> void:
 	if brake_marking:
 		squeal = maxf(squeal, clampf((speed - 4.0) / 18.0, 0.0, 1.0) * braking)
 		for index in range(tyres.size()):
-			_mark("brake:%d" % index, tyres[index].global_position, up, 0.24, braking * clampf(speed / 14.0, 0.4, 1.0))
+			_mark("brake:%d" % index, tyres[index].global_position, up, 0.3, braking * clampf(speed / 12.0, 0.5, 1.0))
 		if braking > 0.8 and speed > 8.0:
-			_tyre_smoke("brake_smoke", tyres, forward, up, step, 26.0 * clampf(speed / 20.0, 0.4, 1.2), style.smoke)
+			_tyre_smoke("brake_smoke", tyres, forward, up, step, 55.0 * clampf(speed / 20.0, 0.4, 1.2), style.smoke, 1.35)
 	else:
 		marks.lift("brake:0")
 		marks.lift("brake:1")
@@ -285,13 +313,13 @@ func advance(delta: float) -> void:
 				sparks.spawn(
 					at, forward * speed * _rng.randf_range(0.3, 0.62) - right * side * _rng.randf_range(0.8, 3.0)
 					+ up * _rng.randf_range(1.2, 3.8),
-					(0.06 + 0.02 * float(tier)) * _size(), 0.012, 0.035, _rng.randf_range(0.22, 0.42), 0.9,
-					color, Color(2.2, _rng.randf(), 0.0, 0.75)
+					(0.09 + 0.03 * float(tier)) * _size(), 0.02, 0.045, _rng.randf_range(0.25, 0.48), 0.9,
+					color, Color(2.2, _rng.randf(), 0.0, 0.3)
 				)
 			_count("drift_sparks", count)
-			_mark("drift:%d" % index, tyres[index].global_position, up, 0.22, 0.85)
+			_mark("drift:%d" % index, tyres[index].global_position, up, 0.28, 0.9)
 		var tint: Color = Color(style.smoke).lerp(color, 0.18 if tier > 0 else 0.0)
-		_tyre_smoke("drift_smoke", tyres, forward, up, step, 18.0 + 6.0 * float(tier), tint)
+		_tyre_smoke("drift_smoke", tyres, forward, up, step, 34.0 + 10.0 * float(tier), tint, 1.2)
 		squeal = maxf(squeal, 0.55 + 0.12 * float(tier))
 	else:
 		marks.lift("drift:0")
@@ -299,8 +327,8 @@ func advance(delta: float) -> void:
 	# Launch: gas from (almost) standstill digs in, throws dust and pebbles back.
 	if gas and grounded and speed < 13.0 and _accel > 1.5:
 		var dig := clampf(1.0 - speed / 13.0, 0.15, 1.0)
-		_tyre_smoke("launch_dust", tyres, forward, up, step, 46.0 * dig * float(style.dust_scale), style.smoke, 1.3)
-		var debris_rate := 34.0 * dig * float(style.debris_rate) * float(budget.rate)
+		_tyre_smoke("launch_dust", tyres, forward, up, step, 70.0 * dig * float(style.dust_scale), style.smoke, float(style.dust_scale))
+		var debris_rate := 60.0 * dig * float(style.debris_rate) * float(budget.rate)
 		for index in range(tyres.size()):
 			var count := _emit("launch_debris:%d" % index, debris_rate, step)
 			for _n in range(count):
@@ -372,9 +400,9 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 			along = -along
 		_scrape_time[id] = float(_scrape_time.get(id, 0.0)) + step
 		var duration: float = _scrape_time[id]
-		var at := kart.global_position + outward * RAIL_OFFSET + up * 0.32
+		var at := kart.global_position + outward * RAIL_OFFSET + up * RAIL_HEIGHT
 		var pace := clampf(speed / 25.0, 0.0, 1.0)
-		var rate := (70.0 + 520.0 * pace) * (0.55 + minf(duration, 1.2) * 0.6) * clampf(into / 2.5 + 0.45, 0.45, 1.7)
+		var rate := (200.0 + 1300.0 * pace) * (0.55 + minf(duration, 1.2) * 0.6) * clampf(into / 2.5 + 0.45, 0.45, 1.7)
 		rate *= float(budget.rate) * (1.0 if is_player else 0.6)
 		var count := _emit("rail:%d" % id, rate, step)
 		for _n in range(count):
@@ -382,14 +410,18 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 			sparks.spawn(
 				at + jitter,
 				along * speed * _rng.randf_range(0.12, 0.55) - outward * _rng.randf_range(0.6, 3.4)
-				+ up * _rng.randf_range(0.8, 4.6) + Vector3(_rng.randf_range(-0.8, 0.8), 0, _rng.randf_range(-0.8, 0.8)),
-				_rng.randf_range(0.055, 0.09) * _size(), 0.012, 0.03, _rng.randf_range(0.28, 0.62), 1.0,
-				SPARK_HOT.lerp(SPARK_WHITE, _rng.randf()), Color(2.0, _rng.randf(), 1.0, 0.9)
+				+ up * _rng.randf_range(1.2, 6.0) + Vector3(_rng.randf_range(-0.8, 0.8), 0, _rng.randf_range(-0.8, 0.8)),
+				_rng.randf_range(0.09, 0.16) * _size(), 0.02, 0.045, _rng.randf_range(0.35, 0.9), 1.0,
+				SPARK_HOT.lerp(SPARK_WHITE, _rng.randf()), Color(1.6, _rng.randf(), 1.0, 0.9)
 			)
 		_count("rail_sparks", count)
+		# The hot contact patch itself glows while metal grinds on metal.
+		if count > 0:
+			sparks.spawn(at - outward * 0.05, along * speed * 0.5, 0.75 * _size() * (0.7 + pace * 0.6), 0.3, 0.0, 0.07,
+				0.0, Color(1.0, 0.72, 0.36, 0.75), Color(1.0, _rng.randf(), 0.0, 0.4))
 		if speed > 3.0:
-			var streak := kart.global_position + outward * (RAIL_OFFSET + 0.06) + up * 0.3
-			if marks.stroke("rail:%d" % id, streak, outward, 0.14, Color(0.1, 0.1, 0.12, 0.8),
+			var streak := kart.global_position + outward * (RAIL_OFFSET - 0.02) + up * RAIL_HEIGHT
+			if marks.stroke("rail:%d" % id, streak, outward, 0.13, Color(0.08, 0.08, 0.1, 0.9),
 					float(budget.mark_life), 2):
 				_count("rail_marks", 1)
 		if is_player:
@@ -417,7 +449,7 @@ func _rail_hit(kart: Node3D, at: Vector3, outward: Vector3, up: Vector3, into: f
 	for _n in range(burst):
 		var dir := (-outward * _rng.randf_range(0.3, 1.0) + up * _rng.randf_range(0.2, 1.2)
 			+ Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)) * 0.8).normalized()
-		sparks.spawn(at, dir * _rng.randf_range(3.5, 10.0), _rng.randf_range(0.07, 0.11) * _size(), 0.015, 0.028,
+		sparks.spawn(at, dir * _rng.randf_range(3.5, 11.0), _rng.randf_range(0.1, 0.17) * _size(), 0.02, 0.04,
 			_rng.randf_range(0.3, 0.7), 1.0, SPARK_WHITE, Color(1.8, _rng.randf(), 1.0, 1.0))
 	# One soft glow at the impact point (small and world-anchored, never a screen flash).
 	sparks.spawn(at, Vector3.ZERO, (0.9 if reduced_motion else 1.6) * (0.8 + strength), 0.4, 0.0, 0.16, 0.0,
@@ -454,7 +486,7 @@ func _boost_effects(kart: Node3D, forward: Vector3, up: Vector3, right: Vector3,
 			sparks.spawn(
 				at, forward * (speed - _rng.randf_range(5.0, 10.0)) + up * _rng.randf_range(-0.3, 0.6)
 				+ right * _rng.randf_range(-0.5, 0.5),
-				_rng.randf_range(0.18, 0.28) * _size(), 0.04, 0.012, _rng.randf_range(0.1, 0.22), -0.15,
+				_rng.randf_range(0.24, 0.36) * _size(), 0.05, 0.014, _rng.randf_range(0.12, 0.26), -0.15,
 				Color("8fe8ff").lerp(Color("ffb347"), hot), Color(3.5, _rng.randf(), hot, 0.7)
 			)
 		_count("boost_jet", count)
@@ -566,7 +598,7 @@ func _tyre_smoke(tag: String, tyres: Array[Node3D], forward: Vector3, up: Vector
 				tyres[index].global_position + up * 0.12,
 				forward * speed * _rng.randf_range(0.05, 0.25) + up * _rng.randf_range(0.4, 1.3)
 				+ Vector3(_rng.randf_range(-0.7, 0.7), 0, _rng.randf_range(-0.7, 0.7)),
-				0.3 * _size(), _rng.randf_range(1.1, 1.8) * scale * _size(), 0.0, _rng.randf_range(0.8, 1.4), -0.04,
+				0.35 * _size(), _rng.randf_range(1.3, 2.2) * scale * _size(), 0.0, _rng.randf_range(0.9, 1.6), -0.04,
 				_tone(color, 0.05), Color(1.7, _rng.randf(), _rng.randf_range(-0.8, 0.8), 0.0)
 			)
 		_count(tag, count)
@@ -621,7 +653,8 @@ func _restore_tilt() -> void:
 
 
 ## Extra camera field of view (degrees) for this frame; 0 with reduced motion.
-func camera_fov_offset() -> float:
+## Added on top of the race's smoothed FOV (never smoothed from), like fx.camera_fov_kick().
+func camera_fov_kick() -> float:
 	return 0.0 if reduced_motion else fov_punch
 
 
@@ -731,6 +764,9 @@ func _rear_tyres(kart: Node3D) -> Array[Node3D]:
 		return kart.to_local(a.global_position).z > kart.to_local(b.global_position).z)
 	if result.size() > 2:
 		result.resize(2)
+	# Fixed left/right order, so each tyre keeps its own mark stream.
+	result.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+		return kart.to_local(a.global_position).x < kart.to_local(b.global_position).x)
 	return result
 
 

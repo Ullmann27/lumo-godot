@@ -3341,10 +3341,7 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 		# Drive-through push: brief FOV punch and a tiny shake (both off in reduced motion).
 		camera.fov += fx.camera_fov_kick()
 		camera.position += camera.basis * fx.camera_shake()
-	# Hook kart_fx: kurzer Kamerastoß an der Planke, FOV-Schub beim Turbo (ruhige Bewegung: aus).
-	if is_instance_valid(drive_fx) and not snap:
-		camera.fov += drive_fx.camera_fov_offset()
-		camera.position += camera.basis * drive_fx.camera_shake()
+		camera.fov += drive_fx.camera_fov_kick() if is_instance_valid(drive_fx) else 0.0  # Hook kart_fx: Turbo-FOV-Schub
 	if is_instance_valid(speed_fx):
 		speed_fx.set_motion(speed_ratio, boost_time > 0.0 and not paused, reduced_motion)
 

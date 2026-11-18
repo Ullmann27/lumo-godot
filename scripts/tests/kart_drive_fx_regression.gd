@@ -212,7 +212,7 @@ func _boost_and_reduced_motion() -> void:
 	game.boost_time = 2.0
 	_tick(20)
 	_check(not fx.visual_state().speed_lines, "reduced motion: no speed lines")
-	_check(fx.camera_fov_offset() == 0.0, "reduced motion: no FOV punch")
+	_check(fx.camera_fov_kick() == 0.0, "reduced motion: no FOV punch")
 	var road: Dictionary = game.world.sample_road(game.player.position, along)
 	game.lane = game._wall_lateral_at(along) + 0.4
 	_place(along, game.lane)
@@ -249,7 +249,15 @@ func _launch_and_landing() -> void:
 		game.speed = minf(12.0, game.speed + 0.25)
 		_tick(1, game.speed * STEP)
 	_check(int(fx.counts.get("launch_dust", 0)) > 0, "launch from standstill throws dust")
-	_check(int(fx.counts.get("launch_debris", 0)) > 0, "launch throws pebbles")
+	_check(int(fx.counts.get("launch_debris", 0)) == 0, "asphalt launch makes tyre smoke, no pebbles")
+	# On sand the same launch throws grains and pebbles.
+	_clean(0.0)
+	fx.style = STYLES.for_track("desert_drift")
+	for _i in range(40):
+		game.speed = minf(12.0, game.speed + 0.25)
+		_tick(1, game.speed * STEP)
+	_check(int(fx.counts.get("launch_debris", 0)) > 0, "sand launch throws pebbles")
+	fx.style = STYLES.for_track("sonnenhafen")
 	game.auto_gas = false
 	_clean(18.0)
 	_tick(3)

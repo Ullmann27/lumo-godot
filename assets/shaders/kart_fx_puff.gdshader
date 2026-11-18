@@ -11,6 +11,7 @@ uniform vec3 light_tint = vec3(1.0);
 
 varying vec4 v_color;
 varying vec4 v_data;
+varying float v_depth;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -34,6 +35,7 @@ void vertex() {
 	float k = age / life;
 	v_color = COLOR;
 	v_data = vec4(clamp(k, 0.0, 1.0), extra.w, extra.y, age);
+	v_depth = 10.0;
 	if (age < 0.0 || k >= 1.0) {
 		VERTEX = vec3(0.0);
 	} else {
@@ -45,6 +47,7 @@ void vertex() {
 		float grow = extra.w < 0.5 || extra.w > 2.5 && extra.w < 3.5 ? 1.0 - (1.0 - k) * (1.0 - k) : k;
 		float size = mix(sz.x, sz.y, grow);
 		vec3 center = (VIEW_MATRIX * vec4(p, 1.0)).xyz;
+		v_depth = -center.z;
 		float angle = extra.y * 6.2831853 + age * extra.z;
 		vec2 corner = VERTEX.xy;
 		if (extra.w > 3.5) {
@@ -66,10 +69,10 @@ void fragment() {
 	float alpha;
 	if (kind < 0.5) {
 		float n = value_noise(q * 2.3 + v_data.z * 17.0 + vec2(0.0, v_data.w * 0.6));
-		float soft = clamp(1.0 - r, 0.0, 1.0);
-		soft = soft * soft * (0.55 + 0.75 * n);
-		float fade = smoothstep(0.0, 0.08, k) * (1.0 - k) * (1.0 - k);
-		alpha = soft * fade;
+		// Billowy edge: the noise eats into the rim, the core stays dense.
+		float soft = smoothstep(1.0, 0.25, r + (n - 0.5) * 0.45);
+		float fade = smoothstep(0.0, 0.06, k) * (1.0 - k) * (1.0 - k * 0.5);
+		alpha = soft * fade * 1.35;
 		// Sunlit top, softer underside: volume without lighting cost.
 		colour *= 0.82 + 0.3 * (0.5 - q.y * 0.5) + 0.12 * n;
 	} else if (kind < 1.5) {
@@ -88,5 +91,6 @@ void fragment() {
 		colour *= 1.05;
 	}
 	ALBEDO = colour;
-	ALPHA = clamp(alpha * v_color.a, 0.0, 1.0);
+	// Clouds that drift right up to the lens thin out instead of covering the picture.
+	ALPHA = clamp(alpha * v_color.a * smoothstep(1.2, 4.0, v_depth), 0.0, 1.0);
 }

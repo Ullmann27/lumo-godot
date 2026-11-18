@@ -10,9 +10,9 @@ extends RefCounted
 const SURFACES = preload("res://scripts/games/kart_road_surfaces.gd")
 
 const ASPHALT := {
-	"name": "asphalt", "mark": Color(0.05, 0.05, 0.06, 0.62), "mark_kind": 0,
+	"name": "asphalt", "mark": Color(0.04, 0.04, 0.05, 0.82), "mark_kind": 0,
 	"smoke": Color(0.86, 0.87, 0.9, 0.55), "debris": Color(0.12, 0.12, 0.13, 1.0), "debris_kind": 1,
-	"debris_rate": 0.25, "trail": 0.0, "embers": false, "loop": "", "dust_scale": 1.0,
+	"debris_rate": 0.0, "trail": 0.0, "embers": false, "loop": "", "dust_scale": 0.8,
 }
 
 const STYLES := {
@@ -50,7 +50,7 @@ const STYLES := {
 	SURFACES.LAB_TILES: {
 		"name": "tiles", "mark": Color(0.18, 0.2, 0.24, 0.45), "mark_kind": 0,
 		"smoke": Color(0.9, 0.93, 0.97, 0.45), "debris": Color(0.3, 0.32, 0.36, 1.0), "debris_kind": 1,
-		"debris_rate": 0.15, "trail": 0.0, "embers": false, "loop": "", "dust_scale": 0.9,
+		"debris_rate": 0.0, "trail": 0.0, "embers": false, "loop": "", "dust_scale": 0.8,
 	},
 }
 
