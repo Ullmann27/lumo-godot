@@ -142,6 +142,8 @@ func _ready() -> void:
 	guide.scale = Vector3.ONE * 0.3
 	guide.visible = false
 	_ui()
+	# Erste Einführung je Kind (im Bau-Modus): scripts/games/guides/build_guide.gd
+	load("res://scripts/games/guides/build_guide.gd").attach(self)
 	if not load_world(false):
 		model.template("castle")
 		# Start with a usable scene and leave the first bridge task for the child.

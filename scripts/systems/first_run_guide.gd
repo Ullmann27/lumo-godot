@@ -303,6 +303,13 @@ func since_step(key: String, value: float) -> float:
 	return value - float(_events["@" + key])
 
 
+## True, sobald sich ein Wert (z. B. die Auswahl) seit Beginn des Schritts geändert hat.
+func changed(key: String, value: Variant) -> bool:
+	if not _events.has("@" + key):
+		_events["@" + key] = value
+	return value != _events["@" + key]
+
+
 ## True, sobald ok ohne Unterbrechung für seconds Sekunden gilt.
 func held(ok: bool, seconds: float) -> bool:
 	_hold = _hold + _delta if ok else 0.0
