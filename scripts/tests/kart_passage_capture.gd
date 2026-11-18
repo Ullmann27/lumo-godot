@@ -137,10 +137,18 @@ func _run() -> void:
 		quit(0)
 		return
 	var bridge: bool = str(entry.kind) == "bridge"
+	# Gates: the child takes the short inner line and waits there (the outer lane stays open).
+	var line: float = 0.0
+	if str(entry.kind) == "gate":
+		line = (float(entry.lat_min) + float(entry.lat_max)) * 0.5
+	# Gates: stop a few metres earlier so the gated band is visible above the kart.
 	var stop_at: float = (
-		(float(entry.deck_start) - 7.0) if bridge else (float(entry.wait_line) - 2.5)
+		(float(entry.deck_start) - 7.0)
+		if bridge
+		else (float(entry.wait_line) - (7.0 if str(entry.kind) == "gate" else 2.5))
 	)
-	var start: float = maxf(2.0, stop_at - 120.0)
+	# 90 m run-up: long enough for the readability frame, short of Sonnenhafen's kicker landing.
+	var start: float = maxf(2.0, stop_at - 90.0)
 	game.distance = start
 	game.previous_road_distance = start
 	game.checkpoint_index = int(start / (game.track_length / 8.0))
@@ -159,25 +167,25 @@ func _run() -> void:
 	await _shot("01_anfahrt_3s_davor")
 	# 2: braking on the level plaza.
 	while fposmod(game.previous_road_distance, game.track_length) < stop_at - 30.0:
-		_drive(STEP, 0.6, 0.0)
+		_drive(STEP, lerpf(0.6, line, 0.5), 0.0)
 	while game.speed > 0.3:
 		var left: float = stop_at - fposmod(game.previous_road_distance, game.track_length)
-		_drive(STEP, 0.0, 1.0 if left < game.speed * game.speed / 70.0 + 3.0 else 0.0)
+		_drive(STEP, line, 1.0 if left < game.speed * game.speed / 70.0 + 3.0 else 0.0)
 	await _shot("02_bremsen")
 	# 3: standing still, aligned (waiting for green at the swing).
-	_drive(0.6, 0.0, 1.0)
+	_drive(0.6, line, 1.0)
 	if not bridge:
 		var waited: float = 0.0
 		while waited < 12.0:
 			var state: Dictionary = PASSAGES.swing_state(entry, game.elapsed)
 			if str(state.phase) == "swing" and float(state.progress) >= 0.42:
 				break
-			_drive(STEP, 0.0, 1.0)
+			_drive(STEP, line, 1.0)
 			waited += STEP
 	await _shot("03_stillstand_ausgerichtet")
 	if not bridge:
 		while str(PASSAGES.swing_state(entry, game.elapsed).phase) == "swing":
-			_drive(STEP, 0.0, 1.0)
+			_drive(STEP, line, 1.0)
 		await _shot("04_gruen_anfahren")
 	else:
 		# 4: rolling slowly onto the deck: brake feathered (touch brake pulses).
@@ -186,7 +194,7 @@ func _run() -> void:
 			fposmod(game.previous_road_distance, game.track_length) < float(entry.deck_start) + 3.0
 			and t < 8.0
 		):
-			_drive(STEP, 0.0, 0.0)
+			_drive(STEP, line, 0.0)
 			t += STEP
 		await _shot("04_auf_die_bruecke")
 	var middle: float = (
@@ -194,16 +202,16 @@ func _run() -> void:
 	)
 	var t2: float = 0.0
 	while fposmod(game.previous_road_distance, game.track_length) < middle and t2 < 10.0:
-		_drive(STEP, 0.0, 0.0)
+		_drive(STEP, line, 0.0)
 		t2 += STEP
 	await _shot("05_mitten_hindurch")
 	var past: float = (
 		(float(entry.deck_end) if bridge else float(entry.plane) + float(entry.band)) + 4.0
 	)
 	while fposmod(game.previous_road_distance, game.track_length) < past:
-		_drive(STEP, 0.0, 0.0)
+		_drive(STEP, line, 0.0)
 	await _shot("06_geschafft")
-	_drive(1.6, 0.0, 0.0)
+	_drive(1.6, line * 0.5, 0.0)
 	await _shot("07_beschleunigen")
 	_drive(2.0, 0.0, 0.0)
 	await _shot("08_wieder_im_rennen")

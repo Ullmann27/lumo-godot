@@ -86,9 +86,9 @@ static func arrow_mesh(world, line: float, lanes: Array) -> ArrayMesh:
 		var d: float = line - 6.0 - float(i) * 6.0
 		var frame: Basis = world.frame(d)
 		for lane in lanes:
-			var tip: Vector3 = world.position_at(d + 1.1, float(lane)) + frame.y * 0.03
-			var l: Vector3 = world.position_at(d - 0.6, float(lane) - 0.9) + frame.y * 0.03
-			var r: Vector3 = world.position_at(d - 0.6, float(lane) + 0.9) + frame.y * 0.03
+			var tip: Vector3 = world.position_at(d + 1.1, float(lane)) + frame.y * 0.07
+			var l: Vector3 = world.position_at(d - 0.6, float(lane) - 0.9) + frame.y * 0.07
+			var r: Vector3 = world.position_at(d - 0.6, float(lane) + 0.9) + frame.y * 0.07
 			for corner in [l, tip, r]:
 				tool.set_normal(frame.y)
 				tool.add_vertex(corner)
