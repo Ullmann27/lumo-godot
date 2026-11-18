@@ -13,6 +13,7 @@ const VIEWS := [
 	["hoch", Vector2i(720, 1280), 1.75],
 	["quer", Vector2i(1280, 720), 1.75],
 	["fold", Vector2i(1768, 2208), 2.4],
+	["foldquer", Vector2i(2208, 1768), 2.4],
 ]
 const FAST := 60.0
 
@@ -89,15 +90,21 @@ func _run() -> void:
 	out = OS.get_environment("LUMO_CAPTURE_DIR")
 	if out.is_empty():
 		out = "res://exports/cards-table"
+	# --only=quer,fold beschränkt die Bilder auf diese Ansichten (für schnelle Durchgänge).
+	var only: PackedStringArray = []
 	for argument: String in OS.get_cmdline_user_args():
 		if argument.begins_with("--output="):
 			out = argument.trim_prefix("--output=")
+		elif argument.begins_with("--only="):
+			only = argument.trim_prefix("--only=").split(",")
 	DirAccess.make_dir_recursive_absolute(out)
 	Engine.max_fps = 0
 	var bridge := root.get_node("HostBridge")
 	var original: Dictionary = bridge._options.duplicate(true)
 	var save_path := SESSION.path_for(CHILD)
 	for view: Array in VIEWS:
+		if not only.is_empty() and not str(view[0]) in only:
+			continue
 		prefix = view[0]
 		root.size = view[1]
 		bridge._options = {"displayDensity": view[2], "childKey": CHILD, "soundEnabled": false}
@@ -108,7 +115,7 @@ func _run() -> void:
 		await DRIVER.settle(self, 8)
 		await create_timer(0.8).timeout
 		await _shot("01_auswahl")
-		if prefix == "fold":
+		if prefix.begins_with("fold"):
 			await _start("stich", 4, 3, 4242)
 			await _advance(func() -> bool: return table._can_act() and int(table.rules.s.r.trick_no) >= 1)
 			await _shot("10_stich_partie")

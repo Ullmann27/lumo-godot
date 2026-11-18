@@ -154,10 +154,49 @@ func _capture(name: String, hand: Array) -> void:
 	root.disable_3d = true
 
 
+## Spielkacheln: Titel einzeilig und ganz lesbar, Fächer und Text in der Kachel.
+func _tile_checks() -> void:
+	for id: String in ["stich", "leiter", "quartett"]:
+		var tile: Button = table.hud.find_button("Tile_" + id)
+		_check(tile != null, id + " tile is shown")
+		if tile == null:
+			continue
+		var box := _rect(tile).grow(0.5)
+		var title: Label = tile.get_node("Body/Text/Title")
+		_check(title.fits(), "%s title fits on one line (%s px font in %s px)" % [id, title.get_theme_font_size("font_size"), title.size.x])
+		_check(title.get_theme_font_size("font_size") >= int(15.0 * density), id + " title stays big enough to read")
+		for part: Control in [tile.get_node("Body/Fan"), title, tile.get_node("Body/Text/Status")]:
+			_check(box.encloses(_rect(part)), "%s %s stays inside its tile" % [id, part.name])
+
+
+## Namensschilder: ganzer Name lesbar, keine Überlappung, Tischmitte frei.
+func _plate_checks(stage: String) -> void:
+	var shown: Array[Button] = []
+	for plate: Button in table.hud.plates:
+		if plate.visible:
+			shown.append(plate)
+			for line: String in ["Row/Text/Name", "Row/Text/Info"]:
+				var label: Label = plate.get_node(line)
+				_check(not label.clip_text and label.size.x + 0.5 >= label.get_minimum_size().x,
+					"%s %s shows the whole text '%s'" % [stage, plate.name, label.text])
+	for a in range(shown.size()):
+		for b in range(a + 1, shown.size()):
+			_check(not _rect(shown[a]).intersects(_rect(shown[b])), "%s plates %s and %s do not overlap" % [stage, shown[a].name, shown[b].name])
+		if table.hud.trump_chip.visible:
+			_check(not _rect(shown[a]).intersects(_rect(table.hud.trump_chip)), stage + " plate does not cover the trump chip")
+	# Stich und Auslage liegen um die Tischmitte: kein Bedienelement darf sie verdecken.
+	for spot: Vector3 in [Vector3(0, 0.98, 0), Vector3(0.3, 0.98, 0.2), Vector3(-0.3, 0.98, 0.2), Vector3(0, 0.98, -0.3)]:
+		var point: Vector2 = table.camera.unproject_position(spot)
+		for control: Control in [table.hud.hint_panel, table.hud.me_plate, table.hud.action_button, table.hud.top_bar] + shown:
+			if control.is_visible_in_tree():
+				_check(not _rect(control).has_point(point), "%s %s leaves the table centre %s visible" % [stage, control.name, spot])
+
+
 func _exercise() -> void:
 	_check(table.inset_reads > 0, "the layout reads the platform safe-area boundary")
 	# Auswahl.
 	_all_targets("selection")
+	_tile_checks()
 	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.safe)), "the whole interface is inset")
 	await _tap("Tile_stich", "Sternenstich tile", true)
 	_check(table.hud.overlay_kind == "setup", "a real touch on the tile opens the settings")
@@ -181,6 +220,7 @@ func _exercise() -> void:
 		_check(safe_pixels.grow(0.51).encloses(_rect(plate)), "name plate %s is inside the safe area" % plate.name)
 	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.top_bar)), "the header clears the status bar")
 	var hand := _hand_checks("play")
+	_plate_checks("play")
 	if profile_name in CAPTURES:
 		await _capture(profile_name + "-playing", hand)
 	# Erste Berührung hebt die Karte, der Knopf „Legen“ erscheint im sicheren Bereich.
