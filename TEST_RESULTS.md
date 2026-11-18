@@ -1,5 +1,24 @@
 # TEST_RESULTS – ccr-54af69f2-4uged4 (Integration-2 auf Nullpunkt) – 17.11.2026
 
+## Nachtrag 18.11.2026, Teil 3 – Streckenwahl (#204), Items auf allen Strecken (#205), Zusammenführungen (alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, kein Mobile-Renderer)
+
+**Issue #204 – gewählte Strecke startete Sonnenhafen.** Reproduziert mit echten Bildschirm-Tipps (`kart_track_selection_regression`, vor der Reparatur 18 Fehler):
+- Ursache 1: Ein angetipptes Streckenbild im Hauptmenü wurde nur hervorgehoben, nicht an das Rennen übergeben; die Kachel „Rennen“ startete die Voreinstellung Sonnenhafen. Auch ohne Tippen war Vulkan hervorgehoben und Sonnenhafen wurde gestartet.
+- Ursache 2: Die große Strecken-Kachel öffnete die Rennwelten mit der Vorgabe „Sternen-Cup“; START begann den Cup auf Strecke 1, die Streckenliste war nicht sichtbar.
+- Nach der Reparatur (`932b33f`): 150 Prüfungen / 0 Fehler, 29 Rennstarts, 13 verschiedene geladene Strecken, 71 echte Touch-Eingaben. Wege: Streckenbild → „Rennen“ (Vulkan, Dschungelherz, Wüste, Sonnenhafen); angezeigtes Highlight → „Rennen“; Highlight-Kachel → Rennwelten → START; Leiste „Strecken“ → Streckenkarte → START für alle 13 Strecken (Liste wird gescrollt); Zeitfahren und Training; Rückkehr ins Menü und erneuter Start; nach einem Cup. Geprüft wird die tatsächlich gebaute Welt (`world.track_id`), nicht die Menüauswahl.
+- Bildbelege mit Renderer: 14 Bilder (Menü nach dem Tipp und laufendes Rennen), gesichtet.
+- Dazu grün: `kart_complete_flow`, `kart_regression`, `kart_modes`, `kart_race_bridge`, `kart_race_kinds` (125), `kart_neon_home` (40, an den neuen Vertrag angepasst), `kart_neon_readability` (1180), `kart_nextgen_garage` (93, erwartet jetzt 13 statt 12 Strecken); mit Renderer `kart_menu_flow`, `kart_start_hero`, `kart_reference_landing_fit`.
+- Diagnosezeilen im Log: `[Kart] track_selected: <id> mode=<modus>` und `[Kart] race_world_ready: <id> mode=<modus>` (mit Fehlerzeile, falls die gebaute Welt abweicht). Unbekannte Strecken starten nicht mehr stillschweigend Sonnenhafen.
+- **Nicht geprüft:** Android-Emulator und Fold. Der Fehler gilt erst nach Heinz' Gerätetest als abgenommen.
+
+**Issue #205 – Items und Fahr-Effekte auf allen 13 Strecken** (`kart_items_all_courses_regression`, 634 Prüfungen / 0 Fehler): je Strecke 6 Überraschungsboxen (innerhalb der Planken, auf Kart-Höhe, nicht an Rampe/Looping/Hindernis), 5–12 Könner-Ringe, 2 Turbo-Ringe; eine Box wird durch echtes Fahren eingesammelt (etwa 67 Physikschritte), das Item-Rad kommt zur Ruhe; Sternraketen: schärfen, Zielerfassung, Paar feuern, Rivale dreht sich, Schonzeit; Schild wehrt ab; ohne Schild genau ein Treffer und keine Trefferschleife in der Schonzeit; Rivale warnt und feuert; Drift-Funken und -Spuren; Belag je Strecke (Wald, Sand, Schnee, Lava, Sternenglas, Stein, Fliesen). Dschungelherz fuhr mit Asphalt-Effekten und nutzt jetzt den Waldboden. **Nicht geprüft:** Balance im echten Rennen über mehrere Runden, Gerät.
+
+**Zusammengeführt** (jeweils auf dem zusammengeführten Stand geprüft):
+- Abenteuerwelten (`5a3747d`): Schatzinsel, Konzertbühne, Puzzle-Atelier, Spielewelt. 14 Tests grün; ein Rückschritt der neuen Kamera (Meldungszeile verdeckte Lumo im Hochformat, `treasure_title_contrast_regression` 4 Fehler) wurde vor der Übernahme behoben (941 Prüfungen).
+- Kart-Kulisse und Fahr-Effekte Runde 2: siehe Merge-Commit darunter.
+
+Bekannt veraltet (prüfen das frühere Menü, laufen in keinem Workflow dieses Zweigs): `kart_home_experience_regression`, `kart_spatial_menu_regression` (greifen auf `_mode_buttons`/`_modes` zu, die es im Neon-Menü nicht gibt).
+
 ## Nachtrag 18.11.2026, Teil 2 (Stand `8ec2910`, alles in dieser Sitzung selbst ausgeführt; kein Gerät, keine FPS, kein Mobile-Renderer)
 
 Zusammengeführt und auf dem jeweils zusammengeführten Stand geprüft (headless, ohne `ERROR`-Zeilen):
