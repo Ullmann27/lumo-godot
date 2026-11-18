@@ -55,6 +55,9 @@ const FX_DIRECTOR = preload("res://scripts/games/kart_items/kart_fx_director.gd"
 const ITEM_BOX_SCENE = preload("res://scenes/games/props/kart_item_box.tscn")
 const ITEM_HUD = preload("res://scripts/games/kart_items/kart_item_hud.gd")
 const ROCKET_PODS = preload("res://scripts/games/kart_items/kart_rocket_pods.gd")
+const ROCKET_FLIGHT = preload("res://scripts/games/kart_items/kart_rocket_flight.gd")
+const FRAME_SMOOTHER = preload("res://scripts/games/kart_items/kart_frame_smoother.gd")
+const ITEM_STATUS_FX = preload("res://scripts/games/kart_items/kart_item_status_fx.gd")
 const SHIELD_DOME = preload("res://scripts/games/kart_items/kart_shield_dome.gd")
 const BOOST_RING_SCENE = preload("res://scenes/games/props/kart_boost_ring.tscn")
 const TRIGGER_GROUP := "lumo_kart_triggers"
@@ -175,6 +178,11 @@ var combo: int = 0
 var last_boost_source_at: float = -100.0
 var item_runtime: Node3D
 var fx: Node3D
+## Raketen-Inszenierung (Spur, Einschlag, Wirbel, Trefferbild) und bildweise Glättung.
+var rocket_flight: Node3D
+var frame_smoother: Node
+## Laufender Sternmagnet / Nordlicht-Lauf als Ring am Kart.
+var item_status_fx: Node3D
 var track_triggers: Array[Node3D] = []
 var trigger_cooldowns: Dictionary = {}
 var opponent_spin_times: Array[float] = []
@@ -2469,6 +2477,8 @@ func _rescue_from_gap() -> void:
 	air_time = 0.0
 	gap_falls += 1
 	reset_count += 1
+	# Schonzeit nach dem Rücksetzer: keine Treffer gleich nach dem Neustart.
+	player_grace_time = maxf(player_grace_time, float(_lock_rules().grace))
 	ghost_valid = false
 	message.text = (
 		"Zu kurz! Eine Wolke trägt dich rüber. Nächstes Mal mehr Gas!" if precision
@@ -3088,6 +3098,8 @@ func _use_item() -> void:
 			boost_time = maxf(boost_time, _boost_for(3.0))
 			camera_punch = maxf(camera_punch, 0.30)
 			message.text = "Rückenwind!"
+			# Vorher nur der allgemeine Item-Ton: jetzt Schub-Funken und Turbo-Klang.
+			_fx("boost_pad", player.global_position + Vector3.UP * 0.6)
 		"shield":
 			shield_time = 6.0
 			camera_punch = maxf(camera_punch, 0.0 if reduced_motion else 0.14)
@@ -5034,6 +5046,15 @@ func _build_gameplay_layer() -> void:
 	race_root.add_child(fx)
 	fx.setup(_flash_layer, graphics_profile, reduced_motion)
 	fx.sound_hook.connect(_on_fx_sound)
+	rocket_flight = ROCKET_FLIGHT.new()
+	race_root.add_child(rocket_flight)
+	rocket_flight.setup(self, graphics_profile, reduced_motion)
+	frame_smoother = FRAME_SMOOTHER.new()
+	frame_smoother.nodes_provider = _smoothed_nodes
+	frame_smoother.offset_provider = rocket_flight.offset_for
+	race_root.add_child(frame_smoother)
+	item_status_fx = ITEM_STATUS_FX.new()
+	player.add_child(item_status_fx)
 	opponent_spin_totals.clear()
 	for i in range(opponents.size()):
 		opponent_spin_totals.append(1.0)
@@ -5054,6 +5075,21 @@ func _build_gameplay_layer() -> void:
 		else:
 			track_triggers.append(node)
 	_build_item_experience()
+
+
+## Was der Bild-Glätter zwischen zwei Physiktakten weich zeigt: nur während des Rennens.
+func _smoothed_nodes() -> Array:
+	if menu_active or not racing or finished:
+		return []
+	if not is_instance_valid(player) or not is_instance_valid(camera):
+		return []
+	var nodes: Array = [camera, player]
+	nodes.append_array(opponents)
+	if is_instance_valid(item_runtime):
+		for entry in item_runtime.projectiles + item_runtime.traps:
+			if is_instance_valid(entry.node):
+				nodes.append(entry.node)
+	return nodes
 
 
 func _frame_at(progress: float, lateral: float) -> Transform3D:
@@ -5077,6 +5113,8 @@ func _reset_gameplay_layer() -> void:
 		opponent_aurora_times[i] = 0.0
 	if is_instance_valid(item_runtime):
 		item_runtime.clear()
+	if is_instance_valid(rocket_flight):
+		rocket_flight.clear()
 	_reset_item_experience()
 	gameplay_stats = {
 		"items_used": 0, "rival_items_used": 0, "player_hits_taken": 0, "player_hits_scored": 0,
@@ -5211,7 +5249,8 @@ func _use_catalog_item() -> void:
 	match behaviour:
 		"boost":
 			boost_time = maxf(boost_time, _boost_for(float(row.get("seconds", 1.6))))
-			message.text = "%s!" % row.name
+			var left: int = item_charges - 1
+			message.text = "%s! Noch %d×" % [row.name, left] if left > 0 else "%s!" % row.name
 			_award_boost("boost_pad", 0.0, "")
 		"homing_projectile":
 			var target: Dictionary = _neighbour(-1, true)
@@ -5228,6 +5267,7 @@ func _use_catalog_item() -> void:
 		"dropped_trap":
 			item_runtime.drop_trap(id, -1, distance, lane)
 			message.text = "Blubberblase liegt hinter dir – sie fängt auch Raketen!"
+			_fx("bubble_drop", _track_position(distance - 2.2, lane) + Vector3.UP * 0.8, 0.7)
 		"magnet":
 			magnet_time = float(row.get("seconds", 4.0))
 			message.text = "Sternmagnet: Sterne fliegen zu dir, Windschatten zieht stärker!"
@@ -5300,6 +5340,9 @@ func _update_gameplay_layer(delta: float) -> void:
 	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
 		for event in item_runtime.step(delta, _racers()):
 			_apply_item_event(event)
+	if is_instance_valid(rocket_flight):
+		rocket_flight.tick(delta)
+	_update_item_feedback(delta)
 	_update_slipstream(delta)
 	_update_track_triggers()
 	_update_aurora_contacts()
@@ -5308,6 +5351,25 @@ func _update_gameplay_layer(delta: float) -> void:
 	player_previous_position = player.global_position
 	for i in range(opponents.size()):
 		opponent_previous_positions[i] = opponents[i].global_position
+
+
+## Kleine Item-Rückmeldungen ohne Spielwirkung (Bande, Blase, Laufzeit-Ring, Ende).
+func _update_item_feedback(delta: float) -> void:
+	if is_instance_valid(item_runtime):
+		for cue in item_runtime.take_feedback():
+			var at: Vector3 = cue.get("position", Vector3.ZERO)
+			if at != Vector3.ZERO:
+				_fx("spark_bounce" if str(cue.kind) == "wall_bounce" else "bubble_pop", at, 0.6)
+	if is_instance_valid(item_status_fx):
+		item_status_fx.reduced_motion = reduced_motion
+		var magnet_before: bool = item_status_fx.magnet_ring.visible
+		var aurora_before: bool = item_status_fx.aurora_ring.visible
+		item_status_fx.advance(
+			delta, magnet_time, ITEM_CATALOG.number("star_magnet", "seconds", 4.0),
+			aurora_time, ITEM_CATALOG.number("aurora", "seconds", 4.5)
+		)
+		if (magnet_before and magnet_time <= 0.0) or (aurora_before and aurora_time <= 0.0):
+			_fx("item_end", player.global_position + Vector3.UP * 0.7, 0.5)
 
 
 func _spin_player(seconds: float) -> void:
@@ -5328,6 +5390,8 @@ func _apply_item_event(event: Dictionary) -> void:
 	var source: int = int(event.get("source", -99))
 	var at: Vector3 = event.get("position", Vector3.ZERO)
 	var rocket: bool = str(event.get("item", "")) == ROCKET_ID
+	if is_instance_valid(rocket_flight):
+		rocket_flight.on_item_event(event, rocket)
 	if str(event.type) == "intercepted":
 		_stat("intercepted")
 		_fx("blocked", at)
@@ -5365,18 +5429,27 @@ func _apply_item_event(event: Dictionary) -> void:
 	if target == -1:
 		_spin_player(float(event.spin))
 		player_grace_time = grace
-		_fx("rocket_hit" if rocket else "hit_spin", player.global_position + Vector3.UP * 0.8)
+		# Das Kind selbst: milder Hüpfer, die Kamera bleibt ruhig (halbe Effektstärke).
+		var hit_at: Vector3 = player.global_position + Vector3.UP * 0.8
+		_fx("rocket_hit" if rocket else "hit_spin", hit_at, 0.45 if rocket else 1.0)
+		if is_instance_valid(rocket_flight) and rocket:
+			rocket_flight.start_tumble(-1, float(event.spin) * 0.8, true)
 		message.text = "Huch, gedreht! Gleich geht's weiter."
 		if source >= 0 and source < opponents.size():
 			opponents[source].cheer_in_race(1.2)
 	elif target >= 0 and target < opponents.size():
 		_spin_rival(target, float(event.spin))
+		if is_instance_valid(rocket_flight):
+			rocket_flight.start_tumble(target, float(event.spin), rocket)
 		if target < opponent_grace_times.size():
 			opponent_grace_times[target] = grace
 		_fx("rocket_hit" if rocket else "hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
 		if source == -1:
 			_stat("player_hits_scored")
-			message.text = "Treffer! %s dreht sich im Kreis." % _rival_name(target)
+			var whirl: bool = rocket and not reduced_motion
+			message.text = (
+				"Treffer! %s wirbelt durch die Luft." if whirl else "Treffer! %s dreht sich im Kreis."
+			) % _rival_name(target)
 			_popup("TREFFER!", opponents[target].global_position + Vector3.UP * 2.4, Color("ff3b5c"))
 			# Lumo cheers briefly (real rigged Lumo: its own celebrate clip).
 			player.cheer_in_race(1.3)
@@ -5804,7 +5877,8 @@ func _fire_player_rockets() -> void:
 	if is_instance_valid(player_pods):
 		launches = player_pods.take_pair()
 	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
-		item_runtime.fire_pair(ROCKET_ID, -1, distance, lane, target, launches)
+		# Die Raketen erben das Kart-Tempo und sind schneller: man sieht sie wegfliegen.
+		item_runtime.fire_pair(ROCKET_ID, -1, distance, lane, target, launches, maxf(0.0, speed))
 	_fx("rocket_fire", player.global_position + Vector3.UP * 0.7)
 	_sound_effect("rocket_launch")
 	camera_punch = maxf(camera_punch, 0.0 if reduced_motion else 0.42)

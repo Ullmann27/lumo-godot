@@ -21,7 +21,7 @@ const TONE_EFFECTS := ["lock_beep", "roulette_tick", "missile_warning"]
 const FX_EFFECTS := ["rail_hit", "rail_hit_soft", "backfire", "land_thump", "confetti", "whoosh"]
 const FX_LOOPS := [
 	"engine_low", "engine_mid", "engine_high", "engine_off", "scrape", "squeal", "gravel", "snow",
-	"turbo", "wind",
+	"turbo", "wind", "rocket_fly",
 ]
 ## One-shot trims: the race already plays its own collision/boost cue on the same
 ## event, so these sit underneath it (worst-case sum stays below clipping).
@@ -35,6 +35,7 @@ const DUCK_DB := 3.0
 const LOOP_TRIM := {
 	"engine_low": -13.0, "engine_mid": -14.0, "engine_high": -16.0, "engine_off": -15.0,
 	"scrape": -9.0, "squeal": -15.0, "gravel": -12.0, "snow": -11.0, "turbo": -12.0, "wind": -15.0,
+	"rocket_fly": -13.0,
 }
 const MUSIC_DB := -17.0
 const EFFECT_DB := -9.0

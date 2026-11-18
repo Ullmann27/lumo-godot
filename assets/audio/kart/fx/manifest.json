@@ -142,6 +142,15 @@
       "bytes": 8530,
       "sha256": "3f900b514b00568744789f52e8ad42a3574f8835b0df0f8eeece51b2378ea014",
       "description": "Original synthesized whoosh"
+    },
+    {
+      "file": "rocket_fly.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11365,
+      "sha256": "325a614f0698d6737c28fe3ad3ef694e4902c89b3e6371c78e2a8cfaea6a8f1a",
+      "description": "Original synthesized rocket_fly",
+      "seam_delta": 0.06338
     }
   ]
 }
