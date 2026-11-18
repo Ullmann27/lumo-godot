@@ -14,11 +14,16 @@ const FEMININE := [false, false, false, false, false, true, false]
 const VALUE := [0, 1, 3, 3, 5, 9, 100]
 
 const PRAISE := [
-	"Gut gemacht!", "Toller Zug!", "Super, du denkst mit!", "Das war mutig!",
-	"Prima, weiter so!", "Klasse ausprobiert!",
+	"Gut gemacht!",
+	"Toller Zug!",
+	"Super, du denkst mit!",
+	"Das war mutig!",
+	"Prima, weiter so!",
+	"Klasse ausprobiert!",
 ]
 const COMFORT := [
-	"Kein Problem, Fehler gehören zum Lernen.", "Macht nichts – probier es nochmal.",
+	"Kein Problem, Fehler gehören zum Lernen.",
+	"Macht nichts – probier es nochmal.",
 	"Auch Profis übersehen mal etwas.",
 ]
 
@@ -98,7 +103,10 @@ static func danger(g: RefCounted) -> Dictionary:
 		return {}
 	var t: int = g.board[worst] & 7
 	var name := capitalize_first(owned(t, false))
-	return {"square": worst, "text": "%s ist bedroht – magst du %s retten?" % [name, "sie" if FEMININE[t] else "ihn"]}
+	return {
+		"square": worst,
+		"text": "%s ist bedroht – magst du %s retten?" % [name, "sie" if FEMININE[t] else "ihn"]
+	}
 
 
 ## Erklärt einen Zug in einem Satz. `g` ist die Stellung VOR dem Zug.
@@ -129,25 +137,44 @@ static func explain(g: RefCounted, m: int, mine: bool = true) -> String:
 	g.unmake_move()
 	var who := "Ich" if mine else "Du"
 	if mate:
-		return "Schachmatt! Der König kann nicht mehr fliehen." if mine else "Schachmatt! Du hast gewonnen!"
+		return (
+			"Schachmatt! Der König kann nicht mehr fliehen."
+			if mine
+			else "Schachmatt! Du hast gewonnen!"
+		)
 	if flags & RULES.F_PROMO:
-		return "%s Bauer ist ganz hinten angekommen und wird stärker!" % ("Mein" if mine else "Dein")
+		return (
+			"%s Bauer ist ganz hinten angekommen und wird stärker!" % ("Mein" if mine else "Dein")
+		)
 	if flags & RULES.F_CASTLE:
-		return "%s bringe meinen König hinter die Bauern in Sicherheit." % who if mine \
+		return (
+			"%s bringe meinen König hinter die Bauern in Sicherheit." % who
+			if mine
 			else "Du bringst deinen König in Sicherheit. Klug!"
+		)
 	if victim != 0:
 		var acc := owned_acc(victim, not mine)
 		if before_hanging.has(to):
-			return "%s %s %s – niemand hat ihn beschützt." % [who, "nehme" if mine else "nimmst", acc] \
-				if not FEMININE[victim] else "%s %s %s – niemand hat sie beschützt." % [who, "nehme" if mine else "nimmst", acc]
+			return (
+				"%s %s %s – niemand hat ihn beschützt." % [who, "nehme" if mine else "nimmst", acc]
+				if not FEMININE[victim]
+				else (
+					"%s %s %s – niemand hat sie beschützt."
+					% [who, "nehme" if mine else "nimmst", acc]
+				)
+			)
 		return "%s %s %s." % [who, "schlage" if mine else "schlägst", acc]
 	if check:
 		return "Schach! Der König muss sich jetzt retten."
 	if was_hanging and safe_now:
-		return "%s war in Gefahr. Darum ist %s weggelaufen." % [
-			capitalize_first(owned(t, mine)), "sie" if FEMININE[t] else "er"]
+		return (
+			"%s war in Gefahr. Darum ist %s weggelaufen."
+			% [capitalize_first(owned(t, mine)), "sie" if FEMININE[t] else "er"]
+		)
 	if targets.size() >= 2:
-		return "%s greift zwei Figuren auf einmal an – eine Gabel!" % capitalize_first(owned(t, mine))
+		return (
+			"%s greift zwei Figuren auf einmal an – eine Gabel!" % capitalize_first(owned(t, mine))
+		)
 	if targets.size() == 1:
 		return "Jetzt greift %s %s an." % [owned(t, mine), owned_acc(targets[0], not mine)]
 	var home_rank := 0 if us == RULES.WHITE else 7
@@ -159,8 +186,10 @@ static func explain(g: RefCounted, m: int, mine: bool = true) -> String:
 		return "%s Bauer läuft ein Feld weiter nach vorne." % ("Mein" if mine else "Dein")
 	if was_attacked and safe_now:
 		return "%s steht jetzt sicherer." % capitalize_first(owned(t, mine))
-	return "%s %s auf ein besseres Feld." % [
-		who, ("stelle " + owned_acc(t, true)) if mine else ("stellst " + owned_acc(t, false))]
+	return (
+		"%s %s auf ein besseres Feld."
+		% [who, ("stelle " + owned_acc(t, true)) if mine else ("stellst " + owned_acc(t, false))]
+	)
 
 
 ## Prüft einen Zug des Kindes, bevor er gilt. {} wenn alles gut ist, sonst
@@ -176,8 +205,11 @@ static func warning(g: RefCounted, m: int) -> Dictionary:
 		var mated: bool = g.in_check() and not g.has_legal_move()
 		g.unmake_move()
 		if mated:
-			result = {"square": g.king_sq[us], "kind": "mate",
-				"text": "Vorsicht, dann wäre dein König gefangen! Magst du nochmal schauen?"}
+			result = {
+				"square": g.king_sq[us],
+				"kind": "mate",
+				"text": "Vorsicht, dann wäre dein König gefangen! Magst du nochmal schauen?"
+			}
 			break
 	if result.is_empty():
 		var victim_cap: int = 0
@@ -196,8 +228,12 @@ static func warning(g: RefCounted, m: int) -> Dictionary:
 				worst = sq
 		if worst >= 0 and worst_value > victim_cap:
 			var t: int = g.board[worst] & 7
-			result = {"square": worst, "kind": "hang",
-				"text": "Schau, %s wäre dann in Gefahr. Magst du nochmal überlegen?" % owned(t, false)}
+			result = {
+				"square": worst,
+				"kind": "hang",
+				"text":
+				"Schau, %s wäre dann in Gefahr. Magst du nochmal überlegen?" % owned(t, false)
+			}
 	g.unmake_move()
 	return result
 
@@ -209,8 +245,7 @@ static func hint(g: RefCounted, seed_value: int = 1) -> Dictionary:
 	var m: int = r.move
 	if m < 0:
 		return {}
-	return {"move": m, "from": RULES.move_from(m), "to": RULES.move_to(m),
-		"text": hint_text(g, m)}
+	return {"move": m, "from": RULES.move_from(m), "to": RULES.move_to(m), "text": hint_text(g, m)}
 
 
 static func hint_text(g: RefCounted, m: int) -> String:
@@ -223,8 +258,10 @@ static func hint_text(g: RefCounted, m: int) -> String:
 	g.unmake_move()
 	if check:
 		return "Schau mal: %s kann Schach geben." % owned(t, false)
-	return "Wie wäre es mit dein%s %s? Das leuchtende Feld ist gut." % [
-		"er" if FEMININE[t] else "em", NAME_ACC[t] if t == RULES.PAWN else NAME[t]]
+	return (
+		"Wie wäre es mit dein%s %s? Das leuchtende Feld ist gut."
+		% ["er" if FEMININE[t] else "em", NAME_ACC[t] if t == RULES.PAWN else NAME[t]]
+	)
 
 
 static func praise(rng: RandomNumberGenerator) -> String:
@@ -239,8 +276,11 @@ static func comfort(rng: RandomNumberGenerator) -> String:
 static func ending_text(status: String, child_won: bool) -> String:
 	match status:
 		"checkmate":
-			return "Schachmatt! Du hast gewonnen – toll gespielt!" if child_won \
+			return (
+				"Schachmatt! Du hast gewonnen – toll gespielt!"
+				if child_won
 				else "Schachmatt. Das war spannend – noch eine Runde?"
+			)
 		"stalemate":
 			return "Patt! Keiner kann ziehen, also unentschieden."
 		"draw_repetition":

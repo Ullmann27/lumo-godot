@@ -44,8 +44,14 @@ const FILES := "abcdefgh"
 
 # Richtungen als (Linie, Reihe): 0..3 gerade (Turm), 4..7 schräg (Läufer).
 const DIRS := [
-	Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0),
-	Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(-1, -1),
+	Vector2i(0, 1),
+	Vector2i(0, -1),
+	Vector2i(1, 0),
+	Vector2i(-1, 0),
+	Vector2i(1, 1),
+	Vector2i(-1, 1),
+	Vector2i(1, -1),
+	Vector2i(-1, -1),
 ]
 
 static var _ready_tables := false
@@ -83,8 +89,14 @@ static func ensure_tables() -> void:
 	king_to.clear()
 	rays.clear()
 	var jumps := [
-		Vector2i(1, 2), Vector2i(2, 1), Vector2i(2, -1), Vector2i(1, -2),
-		Vector2i(-1, -2), Vector2i(-2, -1), Vector2i(-2, 1), Vector2i(-1, 2),
+		Vector2i(1, 2),
+		Vector2i(2, 1),
+		Vector2i(2, -1),
+		Vector2i(1, -2),
+		Vector2i(-1, -2),
+		Vector2i(-2, -1),
+		Vector2i(-2, 1),
+		Vector2i(-1, 2),
 	]
 	for sq in 64:
 		var f := sq & 7
@@ -312,10 +324,17 @@ func get_fen() -> String:
 			rights += "KQkq"[bit]
 	if rights.is_empty():
 		rights = "-"
-	return "%s %s %s %s %d %d" % [
-		out, "w" if side == WHITE else "b", rights, square_name(ep) if ep >= 0 else "-",
-		halfmove, fullmove,
-	]
+	return (
+		"%s %s %s %s %d %d"
+		% [
+			out,
+			"w" if side == WHITE else "b",
+			rights,
+			square_name(ep) if ep >= 0 else "-",
+			halfmove,
+			fullmove,
+		]
+	)
 
 
 func compute_hash() -> int:
@@ -521,20 +540,48 @@ func _castle_moves(sq: int, out: PackedInt32Array) -> void:
 		if sq != 4:
 			return
 		if castling & CASTLE_WK and b[5] == EMPTY and b[6] == EMPTY and b[7] == ROOK:
-			if not is_attacked(4, BLACK) and not is_attacked(5, BLACK) and not is_attacked(6, BLACK):
+			if (
+				not is_attacked(4, BLACK)
+				and not is_attacked(5, BLACK)
+				and not is_attacked(6, BLACK)
+			):
 				out.append(4 | (6 << 6) | (F_CASTLE << 15))
-		if castling & CASTLE_WQ and b[3] == EMPTY and b[2] == EMPTY and b[1] == EMPTY and b[0] == ROOK:
-			if not is_attacked(4, BLACK) and not is_attacked(3, BLACK) and not is_attacked(2, BLACK):
+		if (
+			castling & CASTLE_WQ
+			and b[3] == EMPTY
+			and b[2] == EMPTY
+			and b[1] == EMPTY
+			and b[0] == ROOK
+		):
+			if (
+				not is_attacked(4, BLACK)
+				and not is_attacked(3, BLACK)
+				and not is_attacked(2, BLACK)
+			):
 				out.append(4 | (2 << 6) | (F_CASTLE << 15))
 	else:
 		if sq != 60:
 			return
 		var rook := ROOK | BLACK_BIT
 		if castling & CASTLE_BK and b[61] == EMPTY and b[62] == EMPTY and b[63] == rook:
-			if not is_attacked(60, WHITE) and not is_attacked(61, WHITE) and not is_attacked(62, WHITE):
+			if (
+				not is_attacked(60, WHITE)
+				and not is_attacked(61, WHITE)
+				and not is_attacked(62, WHITE)
+			):
 				out.append(60 | (62 << 6) | (F_CASTLE << 15))
-		if castling & CASTLE_BQ and b[59] == EMPTY and b[58] == EMPTY and b[57] == EMPTY and b[56] == rook:
-			if not is_attacked(60, WHITE) and not is_attacked(59, WHITE) and not is_attacked(58, WHITE):
+		if (
+			castling & CASTLE_BQ
+			and b[59] == EMPTY
+			and b[58] == EMPTY
+			and b[57] == EMPTY
+			and b[56] == rook
+		):
+			if (
+				not is_attacked(60, WHITE)
+				and not is_attacked(59, WHITE)
+				and not is_attacked(58, WHITE)
+			):
 				out.append(60 | (58 << 6) | (F_CASTLE << 15))
 
 
@@ -581,7 +628,9 @@ func make_move(m: int) -> bool:
 	var captured := b[to]
 	var us := side
 	undo_stack.append(m)
-	undo_stack.append(captured | (castling << 4) | ((ep + 1) << 8) | ((ep_key + 1) << 16) | (halfmove << 20))
+	undo_stack.append(
+		captured | (castling << 4) | ((ep + 1) << 8) | ((ep_key + 1) << 16) | (halfmove << 20)
+	)
 	undo_stack.append(hash)
 	var h := hash
 	if ep_key >= 0:

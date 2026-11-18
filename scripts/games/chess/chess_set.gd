@@ -53,7 +53,9 @@ func _process(delta: float) -> void:
 	for prop: Node in _prop_root.get_children():
 		if prop.has_meta("star") and not reduced_motion:
 			(prop as Node3D).rotation.y += delta * 1.6
-			(prop as Node3D).position.y = TOP + 0.045 + 0.008 * sin(_glow_time * 3.0 + float(prop.get_meta("star")))
+			(prop as Node3D).position.y = (
+				TOP + 0.045 + 0.008 * sin(_glow_time * 3.0 + float(prop.get_meta("star")))
+			)
 
 
 # ---------------------------------------------------------------- Materialien
@@ -83,7 +85,9 @@ func wood_material(key: String) -> StandardMaterial3D:
 			material.rim_enabled = true
 			material.rim = 0.22 if key == "white" else 0.35
 			material.rim_tint = 0.6
-			material.albedo_color = Color(0.84, 0.8, 0.74) if key == "white" else Color(0.92, 0.86, 0.84)
+			material.albedo_color = (
+				Color(0.84, 0.8, 0.74) if key == "white" else Color(0.92, 0.86, 0.84)
+			)
 		"frame":
 			material.albedo_texture = _texture("frame_walnut")
 			material.uv1_triplanar = true
@@ -316,12 +320,16 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) 
 	var start := mover.position
 	var goal := square_center(to)
 	var arc := 0.05 + 0.025 * start.distance_to(goal) / SQUARE
-	_anim.tween_method(func(t: float) -> void:
-		if is_instance_valid(mover):
-			var p := start.lerp(goal, ease(t, -1.6))
-			p.y = TOP + sin(t * PI) * arc
-			mover.position = p
-	, 0.0, 1.0, duration)
+	_anim.tween_method(
+		func(t: float) -> void:
+			if is_instance_valid(mover):
+				var p := start.lerp(goal, ease(t, -1.6))
+				p.y = TOP + sin(t * PI) * arc
+				mover.position = p,
+		0.0,
+		1.0,
+		duration
+	)
 	if is_instance_valid(victim) and victim != mover:
 		var sink := create_tween()
 		sink.tween_interval(duration * 0.75)
@@ -338,9 +346,11 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) 
 			hop.tween_property(rook, "position", square_center(rook_to), duration)
 			pieces[rook_to] = rook
 	pieces[to] = mover
-	_anim.tween_callback(func() -> void:
-		show_board(board_after)
-		move_animated.emit())
+	_anim.tween_callback(
+		func() -> void:
+			show_board(board_after)
+			move_animated.emit()
+	)
 
 
 func is_animating() -> bool:
@@ -359,7 +369,9 @@ func lift(sq: int) -> void:
 
 func drag_to(local: Vector3) -> void:
 	if is_instance_valid(_lifted):
-		_lifted.position = Vector3(clampf(local.x, -0.42, 0.42), TOP + 0.035, clampf(local.z, -0.42, 0.42))
+		_lifted.position = Vector3(
+			clampf(local.x, -0.42, 0.42), TOP + 0.035, clampf(local.z, -0.42, 0.42)
+		)
 
 
 ## Legt eine angehobene Figur zurück auf ihr Feld.

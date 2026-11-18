@@ -84,10 +84,17 @@ func _run() -> void:
 	await _coach()
 	for line: String in table_lines:
 		print(line)
-	print("CHESS_AI_%s checks=%d failures=%d time=%.1fs" % [
-		"PASS" if failures.is_empty() else "FAIL", checks, failures.size(),
-		(Time.get_ticks_msec() - started) / 1000.0,
-	])
+	print(
+		(
+			"CHESS_AI_%s checks=%d failures=%d time=%.1fs"
+			% [
+				"PASS" if failures.is_empty() else "FAIL",
+				checks,
+				failures.size(),
+				(Time.get_ticks_msec() - started) / 1000.0,
+			]
+		)
+	)
 	quit(0 if failures.is_empty() else 1)
 
 
@@ -101,7 +108,10 @@ func _fens_valid() -> void:
 	for e: Array in TACTICS:
 		all.append(e[0])
 	for fen: String in all:
-		_check(RULES.new(fen).get_fen().split(" ")[0] == fen.split(" ")[0], "Teststellung lesbar: " + fen)
+		_check(
+			RULES.new(fen).get_fen().split(" ")[0] == fen.split(" ")[0],
+			"Teststellung lesbar: " + fen
+		)
 
 
 func _mate_in_one() -> void:
@@ -112,7 +122,10 @@ func _mate_in_one() -> void:
 			var r: Dictionary = await ai.think(g, level, {"random_off": true, "budget_ms": 2000})
 			var uci: String = g.to_uci(r.move) if r.move >= 0 else "-"
 			g.play(r.move)
-			_check(g.status() == "checkmate", "Matt in 1 Stufe %d: %s spielt %s" % [level, entry[0], uci])
+			_check(
+				g.status() == "checkmate",
+				"Matt in 1 Stufe %d: %s spielt %s" % [level, entry[0], uci]
+			)
 
 
 func _forced_mate_after(g: RefCounted, plies_left: int) -> bool:
@@ -144,9 +157,15 @@ func _mate_in_two() -> void:
 			var g: RefCounted = RULES.new(fen)
 			var ai := AI.new(5)
 			var r: Dictionary = await ai.think(g, level, {"budget_ms": 3000})
-			print("[ChessAI] Matt in 2 %s Stufe %s -> %s score=%d depth=%d %.0f ms" % [
-				fen, AI.level_name(level), g.to_uci(r.move), r.score, r.depth, r.ms])
-			_check(int(r.score) >= AI.MATE - 3, "%s sieht Matt in 2: %s" % [AI.level_name(level), fen])
+			print(
+				(
+					"[ChessAI] Matt in 2 %s Stufe %s -> %s score=%d depth=%d %.0f ms"
+					% [fen, AI.level_name(level), g.to_uci(r.move), r.score, r.depth, r.ms]
+				)
+			)
+			_check(
+				int(r.score) >= AI.MATE - 3, "%s sieht Matt in 2: %s" % [AI.level_name(level), fen]
+			)
 			g.make_move(r.move)
 			_check(_forced_mate_after(g, 1), "Zug erzwingt Matt in 2: " + fen)
 
@@ -179,13 +198,20 @@ func _mates_within(g: RefCounted, n: int) -> bool:
 func _mate_in_three() -> void:
 	for fen: String in MATE_IN_3:
 		var g: RefCounted = RULES.new(fen)
-		_check(not _mates_within(g, 2) and _mates_within(g, 3), "Teststellung ist genau Matt in 3: " + fen)
+		_check(
+			not _mates_within(g, 2) and _mates_within(g, 3),
+			"Teststellung ist genau Matt in 3: " + fen
+		)
 		var levels := [MASTER] if quick else [MASTER, MILITARY]
 		for level: int in levels:
 			var ai := AI.new(17)
 			var r: Dictionary = await ai.think(g, level)
-			print("[ChessAI] Matt in 3 %s Stufe %s -> %s score=%d depth=%d %.0f ms" % [
-				fen, AI.level_name(level), g.to_uci(r.move), r.score, r.depth, r.ms])
+			print(
+				(
+					"[ChessAI] Matt in 3 %s Stufe %s -> %s score=%d depth=%d %.0f ms"
+					% [fen, AI.level_name(level), g.to_uci(r.move), r.score, r.depth, r.ms]
+				)
+			)
 			g.make_move(r.move)
 			var still: bool = g.status() == "checkmate"
 			if not still:
@@ -199,7 +225,13 @@ func _mate_in_three() -> void:
 					if not still:
 						break
 			g.unmake_move()
-			_check(still, "%s spielt Matt in 3 richtig: %s (%s)" % [AI.level_name(level), fen, g.to_uci(r.move)])
+			_check(
+				still,
+				(
+					"%s spielt Matt in 3 richtig: %s (%s)"
+					% [AI.level_name(level), fen, g.to_uci(r.move)]
+				)
+			)
 
 
 ## Taktische Motive: hängende Figuren schlagen, Gabeln, Spieße.
@@ -213,13 +245,23 @@ func _tactics() -> void:
 			var ai := AI.new(23)
 			var r: Dictionary = await ai.think(g, level, {"random_off": true})
 			var uci: String = g.to_uci(r.move)
-			print("[ChessAI] Taktik %s Stufe %s -> %s (%.0f ms, Tiefe %d)" % [
-				entry[2], AI.level_name(level), uci, r.ms, r.depth])
-			_check(uci == str(entry[1]), "%s findet %s (%s statt %s)" % [AI.level_name(level), entry[2], uci, entry[1]])
+			print(
+				(
+					"[ChessAI] Taktik %s Stufe %s -> %s (%.0f ms, Tiefe %d)"
+					% [entry[2], AI.level_name(level), uci, r.ms, r.depth]
+				)
+			)
+			_check(
+				uci == str(entry[1]),
+				"%s findet %s (%s statt %s)" % [AI.level_name(level), entry[2], uci, entry[1]]
+			)
 
 
 func _book() -> void:
-	_check(BOOK.broken_lines().is_empty(), "Eröffnungsbuch: alle Linien legal " + str(BOOK.broken_lines()))
+	_check(
+		BOOK.broken_lines().is_empty(),
+		"Eröffnungsbuch: alle Linien legal " + str(BOOK.broken_lines())
+	)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 3
 	var g: RefCounted = RULES.new()
@@ -279,9 +321,16 @@ func _no_blunders() -> void:
 		for m: int in g.legal_moves():
 			best_possible = maxi(best_possible, _after_value(g, m))
 		var mine := _after_value(g, r.move)
-		print("[ChessAI] Meister %s: %s Material danach %d (bestes %d) Tiefe %d %.0f ms" % [
-			fen.split(" ")[0], g.to_san(r.move), mine, best_possible, r.depth, r.ms])
-		_check(mine >= best_possible - 100, "Meister hängt keine Figur ein: %s (%s)" % [fen, g.to_uci(r.move)])
+		print(
+			(
+				"[ChessAI] Meister %s: %s Material danach %d (bestes %d) Tiefe %d %.0f ms"
+				% [fen.split(" ")[0], g.to_san(r.move), mine, best_possible, r.depth, r.ms]
+			)
+		)
+		_check(
+			mine >= best_possible - 100,
+			"Meister hängt keine Figur ein: %s (%s)" % [fen, g.to_uci(r.move)]
+		)
 
 
 func _budget_and_frames() -> void:
@@ -294,10 +343,19 @@ func _budget_and_frames() -> void:
 	process_frame.disconnect(counter)
 	var samples: Array = Array(ai.slice_samples)
 	samples.sort()
-	var p95_ms: float = samples[int(samples.size() * 0.95)] / 1000.0 if not samples.is_empty() else 0.0
+	var p95_ms: float = (
+		samples[int(samples.size() * 0.95)] / 1000.0 if not samples.is_empty() else 0.0
+	)
 	var median_ms: float = samples[samples.size() / 2] / 1000.0 if not samples.is_empty() else 0.0
-	print("[ChessAI] Zeitscheiben: %.0f ms, %d Bilder, Scheibe Median %.1f ms / 95 %% %.1f ms / längste %.1f ms, Tiefe %d, %d Knoten" % [
-		r.ms, frame_count[0], median_ms, p95_ms, r.max_slice_ms, r.depth, r.nodes])
+	print(
+		(
+			(
+				"[ChessAI] Zeitscheiben: %.0f ms, %d Bilder, Scheibe Median %.1f ms"
+				+ " / 95 %% %.1f ms / längste %.1f ms, Tiefe %d, %d Knoten"
+			)
+			% [r.ms, frame_count[0], median_ms, p95_ms, r.max_slice_ms, r.depth, r.nodes]
+		)
+	)
 	_check(int(r.frames) >= 10, "Suche verteilt sich auf viele Bilder (%d)" % r.frames)
 	_check(frame_count[0] >= int(r.frames), "Bilder laufen während der Suche weiter")
 	# Wanduhr-Messung: Auf der geteilten Maschine verdrängt das System einzelne
@@ -305,7 +363,10 @@ func _budget_and_frames() -> void:
 	_check(p95_ms < 25.0, "95 %% der Scheiben kürzer als 25 ms (%.1f)" % p95_ms)
 	_check(median_ms < 15.0, "Scheiben im Median kurz (%.1f ms)" % median_ms)
 	var lv := MASTER if quick else MILITARY
-	_check(float(r.ms) <= AI.LEVELS[lv].budget + 250, "%s bleibt im Zeitbudget (%.0f ms)" % [AI.level_name(lv), r.ms])
+	_check(
+		float(r.ms) <= AI.LEVELS[lv].budget + 250,
+		"%s bleibt im Zeitbudget (%.0f ms)" % [AI.level_name(lv), r.ms]
+	)
 	_check(g.legal_moves().has(r.move), "%s liefert legalen Zug" % AI.level_name(lv))
 
 
@@ -324,12 +385,29 @@ func _levels_table() -> void:
 			total_nodes += int(r.nodes)
 			total_ms += float(r.ms)
 			_check(g.legal_moves().has(r.move), "Stufe %d liefert legalen Zug" % level)
-			_check(float(r.ms) <= AI.LEVELS[level].budget + 250, "Stufe %d im Budget (%.0f ms)" % [level, r.ms])
+			_check(
+				float(r.ms) <= AI.LEVELS[level].budget + 250,
+				"Stufe %d im Budget (%.0f ms)" % [level, r.ms]
+			)
 		depths.sort()
 		times.sort()
-		table_lines.append("[ChessAI] Stufe %s: Tiefe min %d / median %d / max %d, Zeit median %.0f ms / max %.0f ms, %.0f Knoten/s" % [
-			AI.level_name(level), depths[0], depths[depths.size() / 2], depths[-1],
-			times[times.size() / 2], times[-1], total_nodes / maxf(total_ms / 1000.0, 0.001)])
+		table_lines.append(
+			(
+				(
+					"[ChessAI] Stufe %s: Tiefe min %d / median %d / max %d,"
+					+ " Zeit median %.0f ms / max %.0f ms, %.0f Knoten/s"
+				)
+				% [
+					AI.level_name(level),
+					depths[0],
+					depths[depths.size() / 2],
+					depths[-1],
+					times[times.size() / 2],
+					times[-1],
+					total_nodes / maxf(total_ms / 1000.0, 0.001)
+				]
+			)
+		)
 
 
 func _match(white_level: int, black_level: int, budget: int, seed_value: int) -> String:
@@ -354,17 +432,29 @@ func _match_short() -> void:
 	var t0 := Time.get_ticks_msec()
 	var a := await _match(MASTER, AI.LEVEL_KIDS, 300, 100)
 	var b := await _match(AI.LEVEL_KIDS, MASTER, 300, 200)
-	print("[ChessAI] Meister gegen Lernspiel-Lumo: %s / %s (%.1f s)" % [a, b, (Time.get_ticks_msec() - t0) / 1000.0])
+	print(
+		(
+			"[ChessAI] Meister gegen Lernspiel-Lumo: %s / %s (%.1f s)"
+			% [a, b, (Time.get_ticks_msec() - t0) / 1000.0]
+		)
+	)
 	_check(a == "white", "Meister (Weiß) schlägt die Lernstufe: " + a)
 	_check(b == "black", "Meister (Schwarz) schlägt die Lernstufe: " + b)
 	t0 = Time.get_ticks_msec()
 	var c := await _match(1, 0, 300, 300)
 	var d := await _match(0, 1, 300, 400)
-	print("[ChessAI] Fortgeschritten gegen Anfänger: %s / %s (%.1f s)" % [c, d, (Time.get_ticks_msec() - t0) / 1000.0])
+	print(
+		(
+			"[ChessAI] Fortgeschritten gegen Anfänger: %s / %s (%.1f s)"
+			% [c, d, (Time.get_ticks_msec() - t0) / 1000.0]
+		)
+	)
 	var weak_points := (1.0 if c == "black" else 0.0) + (1.0 if d == "white" else 0.0)
 	var strong_points := (1.0 if c == "white" else 0.0) + (1.0 if d == "black" else 0.0)
 	_check(c != "illegal" and d != "illegal", "Partien ohne Fehler")
-	_check(strong_points > weak_points, "Fortgeschritten ist stärker als Anfänger (%s / %s)" % [c, d])
+	_check(
+		strong_points > weak_points, "Fortgeschritten ist stärker als Anfänger (%s / %s)" % [c, d]
+	)
 
 
 func _coach() -> void:
@@ -409,16 +499,22 @@ func _coach() -> void:
 	_check(warn.is_empty() or warn.kind == "hang", "Damenzug geprüft")
 	g = RULES.new("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2")
 	warn = COACH.warning(g, g.move_from_uci("d1g4"))
-	_check(not warn.is_empty() and warn.kind == "hang" and str(warn.text).contains("Dame"),
-		"Warnung: Dame auf g4 hängt (%s)" % str(warn.get("text", "")))
+	_check(
+		not warn.is_empty() and warn.kind == "hang" and str(warn.text).contains("Dame"),
+		"Warnung: Dame auf g4 hängt (%s)" % str(warn.get("text", ""))
+	)
 	g = RULES.new("rnbqkbnr/pppp1ppp/8/4p3/6P1/8/PPPPPP1P/RNBQKBNR w KQkq - 0 2")
 	warn = COACH.warning(g, g.move_from_uci("f2f3"))
 	_check(not warn.is_empty() and warn.kind == "mate", "Warnung vor Narrenmatt")
-	for part: String in str(warn.get("text", "")).replace("!", ".").replace("?", ".").split(".", false):
+	for part: String in str(warn.get("text", "")).replace("!", ".").replace("?", ".").split(
+		".", false
+	):
 		_check(COACH.word_count(part) <= 12, "Warnsatz kurz")
 	# Tipp liefert legalen Zug und Text.
 	g = RULES.new("4k3/8/8/3r4/8/8/3Q4/4K3 w - - 0 1")
 	var hint: Dictionary = await COACH.hint(g)
 	_check(not hint.is_empty() and g.legal_moves().has(int(hint.move)), "Tipp ist ein legaler Zug")
-	_check(int(hint.get("to", -1)) == RULES.square_from_name("d5"), "Tipp zeigt das Schlagen des Turms")
+	_check(
+		int(hint.get("to", -1)) == RULES.square_from_name("d5"), "Tipp zeigt das Schlagen des Turms"
+	)
 	print("[ChessAI] Tipp: " + str(hint.get("text", "")))

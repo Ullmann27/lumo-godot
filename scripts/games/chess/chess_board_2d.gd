@@ -111,7 +111,10 @@ func _draw() -> void:
 		draw_texture_rect(_top, r, false)
 	else:
 		for sq in 64:
-			draw_rect(square_rect(sq), Color("eed6ac") if (sq & 7) % 2 != (sq >> 3) % 2 else Color("70482c"))
+			draw_rect(
+				square_rect(sq),
+				Color("eed6ac") if (sq & 7) % 2 != (sq >> 3) % 2 else Color("70482c")
+			)
 	var c := cell()
 	var pulse := 0.65 + 0.3 * sin(_time * 4.2)
 	for sq: int in glow:
@@ -119,9 +122,20 @@ func _draw() -> void:
 		match str(glow[sq]):
 			"move":
 				draw_circle(rect.get_center(), c * 0.16, Color(0.25, 0.81, 0.47, 0.9))
-				draw_arc(rect.get_center(), c * 0.16, 0, TAU, 24, Color(0.08, 0.3, 0.15, 0.7), 2.0, true)
+				draw_arc(
+					rect.get_center(), c * 0.16, 0, TAU, 24, Color(0.08, 0.3, 0.15, 0.7), 2.0, true
+				)
 			"capture":
-				draw_arc(rect.get_center(), c * 0.44, 0, TAU, 40, Color(1.0, 0.55, 0.25, 0.95), c * 0.07, true)
+				draw_arc(
+					rect.get_center(),
+					c * 0.44,
+					0,
+					TAU,
+					40,
+					Color(1.0, 0.55, 0.25, 0.95),
+					c * 0.07,
+					true
+				)
 			"hint":
 				draw_rect(rect, Color(0.45, 0.95, 0.6, 0.5 * pulse))
 			"last":
@@ -151,11 +165,28 @@ func _draw() -> void:
 		var font_size := int(maxf(10.0, c * 0.2))
 		for i in 8:
 			var col := square_rect(i)
-			draw_string(_font, Vector2(col.get_center().x - font_size * 0.3, r.end.y + font_size * 0.15 + r.size.x * 0.012),
-				"abcdefgh"[i], HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color("f6dfad"))
+			draw_string(
+				_font,
+				Vector2(
+					col.get_center().x - font_size * 0.3,
+					r.end.y + font_size * 0.15 + r.size.x * 0.012
+				),
+				"abcdefgh"[i],
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				font_size,
+				Color("f6dfad")
+			)
 			var row := square_rect(i * 8)
-			draw_string(_font, Vector2(r.position.x - r.size.x * 0.032, row.get_center().y + font_size * 0.35),
-				str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color("f6dfad"))
+			draw_string(
+				_font,
+				Vector2(r.position.x - r.size.x * 0.032, row.get_center().y + font_size * 0.35),
+				str(i + 1),
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				font_size,
+				Color("f6dfad")
+			)
 
 
 func _draw_piece(piece: int, rect: Rect2) -> void:
@@ -163,7 +194,9 @@ func _draw_piece(piece: int, rect: Rect2) -> void:
 	if tex != null:
 		draw_texture_rect(tex, rect.grow(-rect.size.x * 0.02), false)
 	else:
-		draw_circle(rect.get_center(), rect.size.x * 0.35, Color.WHITE if piece >> 3 == 0 else Color.BLACK)
+		draw_circle(
+			rect.get_center(), rect.size.x * 0.35, Color.WHITE if piece >> 3 == 0 else Color.BLACK
+		)
 
 
 func _draw_star(centre: Vector2, radius: float) -> void:

@@ -1,7 +1,8 @@
 extends SceneTree
 ## Belegbilder vom Schachtisch (wie am Gerät: gl_compatibility).
 ## Aufruf: xvfb-run … godot --path . --rendering-method gl_compatibility
-##   --audio-driver Dummy --script res://scripts/tests/chess_visual_capture.gd -- <ordner> [maßstab] [auswahl]
+##   --audio-driver Dummy --script res://scripts/tests/chess_visual_capture.gd
+##   -- <ordner> [maßstab] [auswahl]
 ## Maßstab < 1 verkleinert alle Fenster (Zwischenprüfung). Auswahl: Kommaliste
 ## der Bildnamen-Anfänge (z. B. "01,05"); leer = alle.
 
@@ -13,8 +14,22 @@ const FOLD := Vector2i(1812, 2176)
 const FOLD_WIDE := Vector2i(2176, 1812)
 const SLIM := Vector2i(1080, 2340)
 ## Eine Partie „Für Große“ (Italienisch), Stellung nach 14 Halbzügen.
-const PRO_GAME := ["e2e4", "e7e5", "g1f3", "b8c6", "f1c4", "f8c5", "c2c3", "g8f6", "d2d3", "d7d6",
-	"e1g1", "e8g8", "f1e1", "a7a6"]
+const PRO_GAME := [
+	"e2e4",
+	"e7e5",
+	"g1f3",
+	"b8c6",
+	"f1c4",
+	"f8c5",
+	"c2c3",
+	"g8f6",
+	"d2d3",
+	"d7d6",
+	"e1g1",
+	"e8g8",
+	"f1e1",
+	"a7a6"
+]
 ## Probespiel: Kind hat die Dame zu früh gebracht, Lumo greift sie an.
 const TRIAL_GAME := ["e2e4", "e7e5", "d1h5", "b8c6", "f1c4", "g8f6"]
 
@@ -145,7 +160,10 @@ func _run() -> void:
 			var danger: Dictionary = table.COACH.danger(table.rules)
 			table._danger_sq = int(danger.get("square", -1))
 			table._refresh_glow()
-			table.say(table.COACH.explain(before, lumo_move, true) + " " + str(danger.get("text", "")), "Lumo")
+			table.say(
+				table.COACH.explain(before, lumo_move, true) + " " + str(danger.get("text", "")),
+				"Lumo"
+			)
 			await _shot("05_probespiel_hinweis" + tag)
 		if _wanted("06"):
 			for view: String in ["3d", "top"]:

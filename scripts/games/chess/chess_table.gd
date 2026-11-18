@@ -28,8 +28,10 @@ const BOARD_SCALE := 1.4
 const LEVEL_STARS := [1, 2, 3, 4]
 ## Kurzbeschreibung je Stufe (ehrlich: was Lumo auf dieser Stufe tut).
 const LEVEL_TEXT := [
-	"sieht Schlagzüge, macht noch Fehler", "rechnet drei Halbzüge voraus",
-	"rechnet bis 2 s, kennt Eröffnungen", "volle Bedenkzeit (bis 7 s), die schwerste Stufe",
+	"sieht Schlagzüge, macht noch Fehler",
+	"rechnet drei Halbzüge voraus",
+	"rechnet bis 2 s, kennt Eröffnungen",
+	"volle Bedenkzeit (bis 7 s), die schwerste Stufe",
 ]
 const LEVEL_ICONS := ["w_pawn", "w_knight", "w_queen", "w_king"]
 const GOLD := Color("ffd166")
@@ -73,6 +75,14 @@ var busy := false
 var thinking := false
 var last_explain := ""
 var overlay_kind := ""
+var ui: Control
+var bubble: PanelContainer
+var bubble_text: Label
+var bubble_title: Label
+var bar: GridContainer
+var overlay: PanelContainer
+var overlay_box: VBoxContainer
+var buttons: Dictionary = {}
 var _generation := 0
 var _press_square := -1
 var _press_point := Vector2.ZERO
@@ -84,21 +94,16 @@ var _density := 1.0
 var _board_rect := Rect2()
 var _closed := false
 
-var ui: Control
-var bubble: PanelContainer
-var bubble_text: Label
-var bubble_title: Label
-var bar: GridContainer
-var overlay: PanelContainer
-var overlay_box: VBoxContainer
-var buttons: Dictionary = {}
 var _theme: Theme
 
 
 func _ready() -> void:
 	var window := get_window()
-	_previous_window = {"scale": window.content_scale_size, "quit": get_tree().quit_on_go_back,
-		"orientation": DisplayServer.screen_get_orientation()}
+	_previous_window = {
+		"scale": window.content_scale_size,
+		"quit": get_tree().quit_on_go_back,
+		"orientation": DisplayServer.screen_get_orientation()
+	}
 	window.content_scale_size = Vector2i.ZERO
 	get_tree().quit_on_go_back = false
 	if OS.has_feature("mobile"):
@@ -250,7 +255,9 @@ func _make_theme() -> Theme:
 	theme.set_color("font_color", "Label", CREAM)
 	theme.set_constant("h_separation", "Button", int(10 * _density))
 	theme.set_constant("icon_max_width", "Button", int(46 * _density))
-	theme.set_stylebox("panel", "PanelContainer", _style(Color(0.07, 0.11, 0.22, 0.92), GOLD.darkened(0.25), 22))
+	theme.set_stylebox(
+		"panel", "PanelContainer", _style(Color(0.07, 0.11, 0.22, 0.92), GOLD.darkened(0.25), 22)
+	)
 	return theme
 
 
@@ -297,9 +304,15 @@ func _build_ui() -> void:
 	bar = GridContainer.new()
 	bar.name = "Bar"
 	ui.add_child(bar)
-	for spec: Array in [["Hint", "Tipp", _on_hint], ["Why", "Warum?", _on_why], ["Undo", "Zurück", _on_undo],
-			["Next", "Weiter", _on_next], ["Show", "Zeig es mir", _on_show_me], ["View", "Von oben", _on_view],
-			["Pause", "Pause", _on_pause]]:
+	for spec: Array in [
+		["Hint", "Tipp", _on_hint],
+		["Why", "Warum?", _on_why],
+		["Undo", "Zurück", _on_undo],
+		["Next", "Weiter", _on_next],
+		["Show", "Zeig es mir", _on_show_me],
+		["View", "Von oben", _on_view],
+		["Pause", "Pause", _on_pause]
+	]:
 		var button := _button(str(spec[1]), spec[2])
 		button.name = str(spec[0])
 		bar.add_child(button)
@@ -326,9 +339,11 @@ func _button(text: String, callback: Callable, icon_key: String = "") -> Button:
 	if not icon_key.is_empty():
 		button.icon = _icon(icon_key)
 		button.expand_icon = false
-	button.pressed.connect(func() -> void:
-		_sfx("ui_click")
-		callback.call())
+	button.pressed.connect(
+		func() -> void:
+			_sfx("ui_click")
+			callback.call()
+	)
 	return button
 
 
@@ -368,7 +383,11 @@ func _layout() -> void:
 	var shown := 0
 	for b: Node in bar.get_children():
 		shown += 1 if (b as Button).visible else 0
-	var bar_width := safe.size.x - 2 * gap if portrait else clampf(safe.size.x * 0.34, 240.0 * _density, 380.0 * _density)
+	var bar_width := (
+		safe.size.x - 2 * gap
+		if portrait
+		else clampf(safe.size.x * 0.34, 240.0 * _density, 380.0 * _density)
+	)
 	var per_row := clampi(int((bar_width + 6 * _density) / (124.0 * _density)), 1, maxi(shown, 1))
 	rows = int(ceil(float(maxi(shown, 1)) / per_row))
 	var bar_h := (56.0 * rows + 6.0 * (rows - 1)) * _density
@@ -391,12 +410,20 @@ func _layout() -> void:
 			# Im Spiel steht Lumos Sprechblase unten über den Knöpfen: oben bleibt
 			# Platz für Lumo, das Brett füllt die Breite.
 			bubble.position = Vector2(safe.position.x + gap, bar.position.y - bubble_h - gap)
-			board_area = Rect2(safe.position.x + gap, safe.position.y + gap,
-				safe.size.x - 2 * gap, safe.size.y - bubble_h - bar_h - 4 * gap)
+			board_area = Rect2(
+				safe.position.x + gap,
+				safe.position.y + gap,
+				safe.size.x - 2 * gap,
+				safe.size.y - bubble_h - bar_h - 4 * gap
+			)
 		else:
 			bubble.position = safe.position + Vector2(gap, gap)
-			board_area = Rect2(safe.position.x + gap, safe.position.y + bubble_h + 2 * gap,
-				safe.size.x - 2 * gap, safe.size.y - bubble_h - bar_h - 4 * gap)
+			board_area = Rect2(
+				safe.position.x + gap,
+				safe.position.y + bubble_h + 2 * gap,
+				safe.size.x - 2 * gap,
+				safe.size.y - bubble_h - bar_h - 4 * gap
+			)
 	else:
 		var side := clampf(safe.size.x * 0.34, 240.0 * _density, 380.0 * _density)
 		bubble.position = Vector2(safe.end.x - side - gap, safe.position.y + gap)
@@ -405,7 +432,12 @@ func _layout() -> void:
 		bubble.reset_size()
 		bar.position = Vector2(safe.end.x - side - gap, safe.end.y - bar_h - gap)
 		bar.size = Vector2(side, bar_h)
-		board_area = Rect2(safe.position.x + gap, safe.position.y + gap, safe.size.x - side - 3 * gap, safe.size.y - 2 * gap)
+		board_area = Rect2(
+			safe.position.x + gap,
+			safe.position.y + gap,
+			safe.size.x - side - 3 * gap,
+			safe.size.y - 2 * gap
+		)
 		_wrap_bar(side)
 	# Menüs (Start, Lernweg, Stufen) stehen unten bzw. rechts; darüber bzw.
 	# links bleibt der Tisch mit Lumo sichtbar. Spiel-Überlagerungen (Pause,
@@ -422,16 +454,25 @@ func _layout() -> void:
 	overlay.size = Vector2(ow, 0)
 	overlay.reset_size()
 	var scroll: ScrollContainer = overlay.get_node("Scroll")
-	scroll.custom_minimum_size = Vector2(ow - 24 * _density, minf(overlay_box.get_combined_minimum_size().y, oh - 24 * _density))
+	scroll.custom_minimum_size = Vector2(
+		ow - 24 * _density, minf(overlay_box.get_combined_minimum_size().y, oh - 24 * _density)
+	)
 	overlay.reset_size()
 	overlay.position = safe.position + (safe.size - overlay.size) * 0.5
 	if menu and portrait:
 		overlay.position.y = safe.end.y - overlay.size.y - gap
 		board_area.size.y = overlay.position.y - gap - board_area.position.y
 	elif menu:
-		overlay.position = Vector2(safe.end.x - overlay.size.x - gap, safe.position.y + (safe.size.y - overlay.size.y) * 0.5)
-		board_area = Rect2(safe.position.x + gap, safe.position.y + gap,
-			overlay.position.x - safe.position.x - 3 * gap, safe.size.y - 2 * gap)
+		overlay.position = Vector2(
+			safe.end.x - overlay.size.x - gap,
+			safe.position.y + (safe.size.y - overlay.size.y) * 0.5
+		)
+		board_area = Rect2(
+			safe.position.x + gap,
+			safe.position.y + gap,
+			overlay.position.x - safe.position.x - 3 * gap,
+			safe.size.y - 2 * gap
+		)
 		# Die Sprechblase steht im Querformat über dem Tisch, nicht über dem Menü.
 		bubble.position = Vector2(safe.position.x + gap, safe.position.y + gap)
 		bubble.custom_minimum_size = Vector2(minf(board_area.size.x, 560.0 * _density), 0)
@@ -506,8 +547,14 @@ func _frame_camera() -> void:
 
 ## Stellt die Kamera auf `distance` und zentriert die Punkte in `area`.
 ## Gibt zurück, ob alle Punkte hineinpassen.
-func _place_camera(target: Vector3, tilt: float, distance: float, area: Rect2, size: Vector2,
-		points: Array[Vector3]) -> bool:
+func _place_camera(
+	target: Vector3,
+	tilt: float,
+	distance: float,
+	area: Rect2,
+	size: Vector2,
+	points: Array[Vector3]
+) -> bool:
 	camera.position = target + Vector3(0, sin(tilt), cos(tilt)) * distance
 	camera.look_at(target)
 	var half_h := tan(deg_to_rad(camera.fov * 0.5)) * distance
@@ -572,12 +619,16 @@ func _overlay_label(text: String, size: int = 19, color: Color = CREAM) -> Label
 	return label
 
 
-func _overlay_button(id: String, text: String, callback: Callable, icon_key: String = "", big: bool = false) -> Button:
+func _overlay_button(
+	id: String, text: String, callback: Callable, icon_key: String = "", big: bool = false
+) -> Button:
 	var button := _button(text, callback, icon_key)
 	button.name = id
 	button.custom_minimum_size = Vector2(0, (84 if big else 60) * _density)
 	button.add_theme_font_size_override("font_size", int((22 if big else 19) * _density))
-	button.alignment = HORIZONTAL_ALIGNMENT_LEFT if not icon_key.is_empty() else HORIZONTAL_ALIGNMENT_CENTER
+	button.alignment = (
+		HORIZONTAL_ALIGNMENT_LEFT if not icon_key.is_empty() else HORIZONTAL_ALIGNMENT_CENTER
+	)
 	overlay_box.add_child(button)
 	buttons["o_" + id] = button
 	return button
@@ -636,7 +687,9 @@ func open_home() -> void:
 	_clear_overlay()
 	_overlay_label("Lumo Schach", 30, GOLD)
 	_overlay_button("Kids", "Schach lernen (für Kinder)", open_path, "w_pawn", true)
-	_overlay_button("Play", "Gegen Lumo spielen", func() -> void: open_levels("play"), "w_knight", true)
+	_overlay_button(
+		"Play", "Gegen Lumo spielen", func() -> void: open_levels("play"), "w_knight", true
+	)
 	_overlay_button("Pro", "Für Große", func() -> void: open_levels("pro"), "w_king", true)
 	_overlay_button("Rules", "Regeln ansehen", open_rules)
 	_overlay_button("Leave", "Zur Spielewelt", leave)
@@ -672,7 +725,9 @@ func open_path() -> void:
 			stars = "  ★"
 		var prefix := "Probespiel: " if kind == "trial" else ""
 		var caption := "%s%s%s" % [prefix, SCHOOL.title(kind, id), stars]
-		var button := _overlay_button("Path_%s" % id, caption, func() -> void: _open_entry(kind, id), SCHOOL.icon(kind, id))
+		var button := _overlay_button(
+			"Path_%s" % id, caption, func() -> void: _open_entry(kind, id), SCHOOL.icon(kind, id)
+		)
 		button.disabled = not open
 		if i == first_open:
 			button.add_theme_stylebox_override("normal", _style(Color("3d7a4a"), GOLD, 18, 4))
@@ -681,7 +736,9 @@ func open_path() -> void:
 	if first_open >= 0:
 		var target: Button = buttons.get("o_Path_%s" % str(SCHOOL.PATH[first_open][1]))
 		if target != null:
-			(overlay.get_node("Scroll") as ScrollContainer).ensure_control_visible.call_deferred(target)
+			(overlay.get_node("Scroll") as ScrollContainer).ensure_control_visible.call_deferred(
+				target
+			)
 
 
 func _open_entry(kind: String, id: String) -> void:
@@ -708,11 +765,15 @@ func open_levels(which: String) -> void:
 		say("Wie stark soll ich spielen?")
 	var slot := _slot()
 	if session.has_game(slot):
-		_overlay_button("Resume", "Weiterspielen", func() -> void: start_match(-1, true), "w_queen", true)
+		_overlay_button(
+			"Resume", "Weiterspielen", func() -> void: start_match(-1, true), "w_queen", true
+		)
 	for i in 4:
 		var lv := i
 		var caption := "%s\n%s" % [AI.level_name(i), LEVEL_TEXT[i]]
-		var button := _overlay_button("Level%d" % i, caption, func() -> void: start_match(lv, false), LEVEL_ICONS[i])
+		var button := _overlay_button(
+			"Level%d" % i, caption, func() -> void: start_match(lv, false), LEVEL_ICONS[i]
+		)
 		button.custom_minimum_size.y = 92 * _density
 		if i == 3:
 			button.add_theme_stylebox_override("normal", _style(Color("5a2430"), GOLD, 18, 4))
@@ -724,15 +785,16 @@ func open_rules() -> void:
 	_clear_overlay()
 	_overlay_label("So ziehen die Figuren", 24, GOLD)
 	for entry: Array in [
-			["w_king", "König: ein Schritt in jede Richtung. Wird er gefangen, ist das Spiel aus."],
-			["w_queen", "Dame: gerade und schräg, so weit sie will."],
-			["w_rook", "Turm: gerade vor, zurück und zur Seite."],
-			["w_bishop", "Läufer: schräg, bleibt immer auf seiner Farbe."],
-			["w_knight", "Springer: springt wie ein L, auch über Figuren."],
-			["w_pawn", "Bauer: ein Feld vor, am Anfang auch zwei. Schlägt schräg."],
-			["", "Schach: Der König wird angegriffen. Matt: Er kann nicht entkommen."],
-			["", "Patt: Wer am Zug ist, kann nicht ziehen und steht nicht im Schach. Unentschieden."],
-			["", "Rochade, Umwandlung und Schlagen im Vorbeigehen lernst du in der Schachschule."]]:
+		["w_king", "König: ein Schritt in jede Richtung. Wird er gefangen, ist das Spiel aus."],
+		["w_queen", "Dame: gerade und schräg, so weit sie will."],
+		["w_rook", "Turm: gerade vor, zurück und zur Seite."],
+		["w_bishop", "Läufer: schräg, bleibt immer auf seiner Farbe."],
+		["w_knight", "Springer: springt wie ein L, auch über Figuren."],
+		["w_pawn", "Bauer: ein Feld vor, am Anfang auch zwei. Schlägt schräg."],
+		["", "Schach: Der König wird angegriffen. Matt: Er kann nicht entkommen."],
+		["", "Patt: Wer am Zug ist, kann nicht ziehen und steht nicht im Schach. Unentschieden."],
+		["", "Rochade, Umwandlung und Schlagen im Vorbeigehen lernst du in der Schachschule."]
+	]:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", int(10 * _density))
 		if not str(entry[0]).is_empty():
@@ -750,11 +812,15 @@ func open_rules() -> void:
 		row.add_child(label)
 		overlay_box.add_child(row)
 	var back_to := screen
-	_overlay_button("RulesBack", "Verstanden", func() -> void:
-		if back_to in ["lesson", "trial", "match"]:
-			close_overlay()
-		else:
-			open_home())
+	_overlay_button(
+		"RulesBack",
+		"Verstanden",
+		func() -> void:
+			if back_to in ["lesson", "trial", "match"]:
+				close_overlay()
+			else:
+				open_home()
+	)
 	_show_overlay("rules")
 
 
@@ -768,26 +834,42 @@ func _on_pause() -> void:
 	_overlay_label("Pause", 26, GOLD)
 	_overlay_button("Resume", "Weiter", _resume)
 	_overlay_button("Rules", "Regeln", open_rules)
-	_overlay_button("Hints", "Felder leuchten: %s" % ("an" if hints else "aus"), func() -> void:
-		hints = not hints
-		session.set_pref("hints", hints)
-		(buttons["o_Hints"] as Button).text = "Felder leuchten: %s" % ("an" if hints else "aus")
-		_refresh_glow())
-	_overlay_button("Coords", "Feldnamen: %s" % ("an" if coords else "aus"), func() -> void:
-		coords = not coords
-		session.set_pref("coords", coords)
-		(buttons["o_Coords"] as Button).text = "Feldnamen: %s" % ("an" if coords else "aus")
-		_update_view())
+	_overlay_button(
+		"Hints",
+		"Felder leuchten: %s" % ("an" if hints else "aus"),
+		func() -> void:
+			hints = not hints
+			session.set_pref("hints", hints)
+			(buttons["o_Hints"] as Button).text = "Felder leuchten: %s" % ("an" if hints else "aus")
+			_refresh_glow()
+	)
+	_overlay_button(
+		"Coords",
+		"Feldnamen: %s" % ("an" if coords else "aus"),
+		func() -> void:
+			coords = not coords
+			session.set_pref("coords", coords)
+			(buttons["o_Coords"] as Button).text = "Feldnamen: %s" % ("an" if coords else "aus")
+			_update_view()
+	)
 	if screen == "match" and rules != null and not finished:
-		_overlay_button("Resign", "Aufgeben", func() -> void:
+		_overlay_button(
+			"Resign",
+			"Aufgeben",
+			func() -> void:
+				_resume()
+				resign()
+		)
+	_overlay_button(
+		"Menu",
+		"Hauptmenü",
+		func() -> void:
 			_resume()
-			resign())
-	_overlay_button("Menu", "Hauptmenü", func() -> void:
-		_resume()
-		if mode == "kids":
-			open_path()
-		else:
-			open_home())
+			if mode == "kids":
+				open_path()
+			else:
+				open_home()
+	)
 	_overlay_button("Leave", "Zur Spielewelt", leave)
 	_show_overlay("pause")
 
@@ -871,7 +953,11 @@ func _refresh_glow() -> void:
 			for m: int in moves:
 				if RULES.move_from(m) == selected:
 					var to := RULES.move_to(m)
-					glow[to] = "capture" if rules.board[to] != 0 or (RULES.move_flags(m) & RULES.F_EP) else "move"
+					glow[to] = (
+						"capture"
+						if rules.board[to] != 0 or (RULES.move_flags(m) & RULES.F_EP)
+						else "move"
+					)
 	elif screen == "trial" and show_moves:
 		# Probespiel: Lumo zeigt, welche Figuren ziehen können.
 		for m: int in moves:
@@ -908,7 +994,8 @@ func square_at_point(point: Vector2) -> int:
 	# Figur), wenn es höchstens 24 dp entfernt ist.
 	var wanted := {}
 	for m: int in _child_moves():
-		wanted[RULES.move_to(m) if selected >= 0 and RULES.move_from(m) == selected else RULES.move_from(m)] = true
+		var own := selected >= 0 and RULES.move_from(m) == selected
+		wanted[RULES.move_to(m) if own else RULES.move_from(m)] = true
 	if selected >= 0:
 		wanted[selected] = true
 	if wanted.is_empty() or wanted.has(sq):
@@ -946,12 +1033,19 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		point = event.position
 		moved = true
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT \
-			and event.device != InputEvent.DEVICE_ID_EMULATION:
+	elif (
+		event is InputEventMouseButton
+		and event.button_index == MOUSE_BUTTON_LEFT
+		and event.device != InputEvent.DEVICE_ID_EMULATION
+	):
 		point = event.position
 		pressed = event.pressed
 		released = not event.pressed
-	elif event is InputEventMouseMotion and event.device != InputEvent.DEVICE_ID_EMULATION and _press_square >= 0:
+	elif (
+		event is InputEventMouseMotion
+		and event.device != InputEvent.DEVICE_ID_EMULATION
+		and _press_square >= 0
+	):
 		point = event.position
 		moved = true
 	else:
@@ -1053,7 +1147,11 @@ func _try_move(from: int, to: int) -> void:
 		chess.drop_back()
 		_refresh_glow()
 		return
-	if options.size() > 1 and not (screen == "trial" and str(SCHOOL.trial(trial_id).goal) == "race") and screen != "lesson":
+	if (
+		options.size() > 1
+		and not (screen == "trial" and str(SCHOOL.trial(trial_id).goal) == "race")
+		and screen != "lesson"
+	):
 		_ask_promotion(options)
 		return
 	var choice := options[0]
@@ -1071,9 +1169,15 @@ func _ask_promotion(options: Array[int]) -> void:
 		for m: int in options:
 			if RULES.move_promo(m) == t:
 				var move := m
-				var b := _overlay_button("Promo%d" % t, COACH.piece_name(t), func() -> void:
-					close_overlay()
-					_child_move(move), "w_" + SET.NAMES[t], t == RULES.QUEEN)
+				var b := _overlay_button(
+					"Promo%d" % t,
+					COACH.piece_name(t),
+					func() -> void:
+						close_overlay()
+						_child_move(move),
+					"w_" + SET.NAMES[t],
+					t == RULES.QUEEN
+				)
 				if t == RULES.QUEEN:
 					b.add_theme_stylebox_override("normal", _style(Color("3d7a4a"), GOLD, 18, 4))
 	_show_overlay("promo")
@@ -1124,13 +1228,25 @@ func _enter_step() -> void:
 	board2d.set_props(star_list, walls)
 	_show_position()
 	var info := SCHOOL.lesson(lesson_id)
-	say(str(step.get("say", "")), "%s · %d/%d" % [info.get("title", ""), step_index + 1, (info.get("steps", []) as Array).size()])
+	say(
+		str(step.get("say", "")),
+		(
+			"%s · %d/%d"
+			% [info.get("title", ""), step_index + 1, (info.get("steps", []) as Array).size()]
+		)
+	)
 	var type := str(step.get("type", ""))
 	buttons.Next.visible = type == "show"
 	buttons.Show.visible = type in ["move", "tap", "collect"]
 	buttons.Undo.visible = type == "collect"
 	_layout()
-	_lumo_look_board(SCHOOL.squares(step.get("glow", ["d4"]))[0] if not (step.get("glow", []) as Array).is_empty() else -1)
+	_lumo_look_board(
+		(
+			SCHOOL.squares(step.get("glow", ["d4"]))[0]
+			if not (step.get("glow", []) as Array).is_empty()
+			else -1
+		)
+	)
 	if is_instance_valid(lumo):
 		lumo.react("point" if type == "show" else "nod")
 	if step.has("demo"):
@@ -1185,7 +1301,13 @@ func _lesson_tap(sq: int) -> void:
 func _lesson_wrong() -> void:
 	mistakes += 1
 	_sfx("answer_wrong")
-	say(["Fast! Probier es nochmal.", "Schau genau hin. Du schaffst das!", "Noch nicht ganz. Versuch es weiter!"][mistakes % 3])
+	say(
+		[
+			"Fast! Probier es nochmal.",
+			"Schau genau hin. Du schaffst das!",
+			"Noch nicht ganz. Versuch es weiter!"
+		][mistakes % 3]
+	)
 	if is_instance_valid(lumo):
 		lumo.react("think")
 		lumo.calm.call_deferred()
@@ -1237,7 +1359,12 @@ func _lesson_move(m: int) -> void:
 			collect_cap = mini(collect_cap, SCHOOL.collect_stars(collect_moves, par))
 			_next_after(1.2)
 		else:
-			say("Super! Noch %d Stern%s." % [stars_left.size(), "" if stars_left.size() == 1 else "e"])
+			say(
+				(
+					"Super! Noch %d Stern%s."
+					% [stars_left.size(), "" if stars_left.size() == 1 else "e"]
+				)
+			)
 		_refresh_glow()
 		return
 	if SCHOOL.move_ok(step, rules, m):
@@ -1294,12 +1421,21 @@ func _finish_lesson() -> void:
 	var gained := maxi(0, stars - best_before)
 	var payload := {}
 	if gained > 0:
-		payload = _settle("lesson:" + lesson_id, gained, "done", "chess-lesson-%s-%s" % [lesson_id, HostBridge.new_result_id()])
+		payload = _settle(
+			"lesson:" + lesson_id,
+			gained,
+			"done",
+			"chess-lesson-%s-%s" % [lesson_id, HostBridge.new_result_id()]
+		)
 	_sfx("celebrate")
 	if is_instance_valid(lumo):
 		lumo.react("happy")
-	_end_overlay("Geschafft: %s" % SCHOOL.title("lesson", lesson_id), "★".repeat(stars) + "☆".repeat(3 - stars),
-		"Neue Sterne: +%d" % gained if gained > 0 else "Toll geübt!", payload)
+	_end_overlay(
+		"Geschafft: %s" % SCHOOL.title("lesson", lesson_id),
+		"★".repeat(stars) + "☆".repeat(3 - stars),
+		"Neue Sterne: +%d" % gained if gained > 0 else "Toll geübt!",
+		payload
+	)
 
 
 # ================================================================ Probespiel / Partie
@@ -1364,8 +1500,14 @@ func start_match(chosen_level: int, resume: bool) -> void:
 	board2d.set_props([], [])
 	_show_game_buttons()
 	_show_position()
-	say("Du spielst Weiß und fängst an. Viel Spaß!" if mode != "pro" else "Weiß beginnt. Volle Regeln, keine Hilfen.",
-		"Lumo · %s" % AI.level_name(level))
+	say(
+		(
+			"Du spielst Weiß und fängst an. Viel Spaß!"
+			if mode != "pro"
+			else "Weiß beginnt. Volle Regeln, keine Hilfen."
+		),
+		"Lumo · %s" % AI.level_name(level)
+	)
 	_store()
 	if rules.side == 1:
 		_lumo_turn()
@@ -1410,15 +1552,23 @@ func _child_move(m: int) -> void:
 			_clear_overlay()
 			_overlay_label(str(warn.text), 20, GOLD)
 			var move := m
-			_overlay_button("Rethink", "Nochmal überlegen", func() -> void:
-				_pending_warn = -1
-				close_overlay()
-				if is_instance_valid(lumo):
-					lumo.calm()
-				_refresh_glow())
-			_overlay_button("Anyway", "Trotzdem ziehen", func() -> void:
-				close_overlay()
-				_commit_child_move(move))
+			_overlay_button(
+				"Rethink",
+				"Nochmal überlegen",
+				func() -> void:
+					_pending_warn = -1
+					close_overlay()
+					if is_instance_valid(lumo):
+						lumo.calm()
+					_refresh_glow()
+			)
+			_overlay_button(
+				"Anyway",
+				"Trotzdem ziehen",
+				func() -> void:
+					close_overlay()
+					_commit_child_move(move)
+			)
 			_show_overlay("warn")
 			return
 	_commit_child_move(m)
@@ -1562,18 +1712,34 @@ func _finish_game(outcome: String, status: String) -> void:
 		payload = _settle(variant, stars, outcome, result_id)
 	else:
 		session.book(result_id, variant, false)
-	var title := "Gewonnen!" if outcome == "win" else ("Unentschieden" if outcome == "draw" else "Lumo hat gewonnen")
+	var title := (
+		"Gewonnen!"
+		if outcome == "win"
+		else ("Unentschieden" if outcome == "draw" else "Lumo hat gewonnen")
+	)
 	var text := ""
 	if screen == "trial":
-		text = "Du hast das Ziel erreicht!" if outcome == "win" else (
-			"Nochmal? Diesmal klappt es bestimmt!" if outcome == "loss" else "Keiner kam durch. Nochmal?")
+		text = (
+			"Du hast das Ziel erreicht!"
+			if outcome == "win"
+			else (
+				"Nochmal? Diesmal klappt es bestimmt!"
+				if outcome == "loss"
+				else "Keiner kam durch. Nochmal?"
+			)
+		)
 	else:
 		text = COACH.ending_text(status, outcome == "win")
 	if is_instance_valid(lumo):
 		lumo.react("happy" if outcome != "win" else "nod")
 	_sfx("celebrate" if outcome == "win" else "turn_ping")
 	say(text)
-	_end_overlay(title, text, "+%d Stern%s" % [stars, "" if stars == 1 else "e"] if stars > 0 else "", payload)
+	_end_overlay(
+		title,
+		text,
+		"+%d Stern%s" % [stars, "" if stars == 1 else "e"] if stars > 0 else "",
+		payload
+	)
 
 
 ## Bucht ein Ergebnis genau einmal und meldet es der App.
@@ -1584,7 +1750,12 @@ func _settle(variant: String, stars: int, outcome: String, id: String) -> Dictio
 		"resultId": id,
 		"game": "chess",
 		"variant": variant,
-		"sessionId": str(HostBridge.launch_options().get("sessionId", SceneRouter.launch_options.get("sessionId", ""))),
+		"sessionId":
+		str(
+			HostBridge.launch_options().get(
+				"sessionId", SceneRouter.launch_options.get("sessionId", "")
+			)
+		),
 		"status": "completed",
 		"outcome": outcome,
 		"stars": stars,

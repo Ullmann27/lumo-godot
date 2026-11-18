@@ -49,10 +49,15 @@ func _game(white: int, black: int, opening: String, factor: float, seed_value: i
 		if not g.play(int(r.move)):
 			return [0.0 if g.side == 0 else 1.0, "illegal"]
 	var st: String = g.status()
-	var depth_text := "Ø Tiefe W %.1f / S %.1f" % [
-		float(depth_sum[0]) / maxi(depth_n[0], 1), float(depth_sum[1]) / maxi(depth_n[1], 1)]
+	var depth_text := (
+		"Ø Tiefe W %.1f / S %.1f"
+		% [float(depth_sum[0]) / maxi(depth_n[0], 1), float(depth_sum[1]) / maxi(depth_n[1], 1)]
+	)
 	if st == "checkmate":
-		return [1.0 if g.winner() == 0 else 0.0, "Matt nach %d Halbzügen, %s" % [g.played.size(), depth_text]]
+		return [
+			1.0 if g.winner() == 0 else 0.0,
+			"Matt nach %d Halbzügen, %s" % [g.played.size(), depth_text]
+		]
 	if st != "playing":
 		return [0.5, "%s nach %d Halbzügen, %s" % [st, g.played.size(), depth_text]]
 	var mat := _material(g)
@@ -81,18 +86,38 @@ func _run() -> void:
 			for strong_white: bool in [true, false]:
 				var w := strong if strong_white else weak
 				var b := weak if strong_white else strong
-				var res: Array = await _game(w, b, opening, factor, 1000 + i * 31 + (0 if strong_white else 5))
+				var res: Array = await _game(
+					w, b, opening, factor, 1000 + i * 31 + (0 if strong_white else 5)
+				)
 				var strong_points: float = res[0] if strong_white else 1.0 - float(res[0])
 				points += strong_points
 				games += 1
-				var text := "[ChessStrength] %s (%s) gegen %s (%s), Eröffnung %s: %s – %s" % [
-					AI.level_name(w), "W", AI.level_name(b), "S", opening,
-					"1-0" if res[0] == 1.0 else ("0-1" if res[0] == 0.0 else "½-½"), res[1]]
+				var text := (
+					"[ChessStrength] %s (%s) gegen %s (%s), Eröffnung %s: %s – %s"
+					% [
+						AI.level_name(w),
+						"W",
+						AI.level_name(b),
+						"S",
+						opening,
+						"1-0" if res[0] == 1.0 else ("0-1" if res[0] == 0.0 else "½-½"),
+						res[1]
+					]
+				)
 				print(text)
 				lines_out.append(text)
-		var summary := "[ChessStrength] %s gegen %s: %.1f / %d Punkte für %s (Zeitfaktor %.2f, %.0f s)" % [
-			AI.level_name(strong), AI.level_name(weak), points, games, AI.level_name(strong), factor,
-			(Time.get_ticks_msec() - t0) / 1000.0]
+		var summary := (
+			"[ChessStrength] %s gegen %s: %.1f / %d Punkte für %s (Zeitfaktor %.2f, %.0f s)"
+			% [
+				AI.level_name(strong),
+				AI.level_name(weak),
+				points,
+				games,
+				AI.level_name(strong),
+				factor,
+				(Time.get_ticks_msec() - t0) / 1000.0
+			]
+		)
 		print(summary)
 		lines_out.append(summary)
 		if points <= games * 0.5:

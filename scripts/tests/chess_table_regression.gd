@@ -5,7 +5,8 @@ extends SceneTree
 ## Probespiel), Fortschritt gespeichert und fortgesetzt, eine ganze Partie
 ## Anfänger gegen Zufall bis zum Ende, Zurücknehmen, Umwandlung, Belohnung genau
 ## einmal, „Für Große“ ohne Hilfen, Touch-Ziele ≥ 126 px.
-## Aufruf: godot --headless --path . --script res://scripts/tests/chess_table_regression.gd -- --scene=chess
+## Aufruf: godot --headless --path .
+##   --script res://scripts/tests/chess_table_regression.gd -- --scene=chess
 
 const TABLE := "res://scenes/games/chess_table.tscn"
 const BOOT := "res://scenes/app/boot.tscn"
@@ -80,7 +81,10 @@ func _touch_ok(button: Button, label: String) -> void:
 
 func _press(id: String) -> void:
 	var button: Button = table.find_button(id)
-	_check(button != null and button.is_visible_in_tree() and not button.disabled, "Knopf %s bedienbar" % id)
+	_check(
+		button != null and button.is_visible_in_tree() and not button.disabled,
+		"Knopf %s bedienbar" % id
+	)
 	if button == null:
 		return
 	_touch_ok(button, id)
@@ -139,9 +143,17 @@ func _run() -> void:
 	await _frames(3)
 	root.get_node("GameSoundscape").release_audio()
 	await create_timer(0.4).timeout
-	print("CHESS_TABLE_%s checks=%d failures=%d time=%.1fs" % [
-		"PASS" if failures.is_empty() else "FAIL", checks, failures.size(),
-		(Time.get_ticks_msec() - started) / 1000.0])
+	print(
+		(
+			"CHESS_TABLE_%s checks=%d failures=%d time=%.1fs"
+			% [
+				"PASS" if failures.is_empty() else "FAIL",
+				checks,
+				failures.size(),
+				(Time.get_ticks_msec() - started) / 1000.0
+			]
+		)
+	)
 	for f: String in failures:
 		print("  FEHLER: ", f)
 	quit(0 if failures.is_empty() else 1)
@@ -155,9 +167,12 @@ func _boot_route() -> void:
 	_check(router.SCENES.get("chess", "") == TABLE, "SceneRouter kennt chess")
 	var options: Dictionary = bridge.validated_options({"game": "chess"})
 	_check(options.scene == "chess", "HostBridge lässt chess durch")
-	_check(bridge.validated_options({"game": "chess_x"}).scene != "chess_x", "unbekannte Szene abgelehnt")
+	_check(
+		bridge.validated_options({"game": "chess_x"}).scene != "chess_x",
+		"unbekannte Szene abgelehnt"
+	)
 	var boot_src := FileAccess.get_file_as_string("res://scripts/app/app_boot.gd")
-	_check(boot_src.contains("\"chess\""), "app_boot nimmt chess an")
+	_check(boot_src.contains('"chess"'), "app_boot nimmt chess an")
 	# Echter Start wie in der App: Der Test läuft mit `-- --scene=chess`, app_boot
 	# liest das selbst aus den Startargumenten.
 	var via_args := "--scene=chess" in OS.get_cmdline_user_args()
@@ -193,7 +208,10 @@ func _home_and_levels() -> void:
 	_check(table.screen == "home", "Startbildschirm")
 	for id: String in ["o_Kids", "o_Play", "o_Pro"]:
 		_check(table.find_button(id) != null, "Weg %s vorhanden" % id)
-	_check(table.find_button("o_Kids").text.begins_with("Schach lernen"), "Kinderweg heißt Schach lernen")
+	_check(
+		table.find_button("o_Kids").text.begins_with("Schach lernen"),
+		"Kinderweg heißt Schach lernen"
+	)
 	_check(table.overlay_box.get_child(1) == table.find_button("o_Kids"), "Kinderweg steht oben")
 	await _visible_buttons_ok("Start")
 	for which: String in ["Play", "Pro"]:
@@ -204,8 +222,10 @@ func _home_and_levels() -> void:
 			_check(b != null and b.is_visible_in_tree(), "Stufe %d sichtbar (%s)" % [i, which])
 			if b != null:
 				names.append(b.text.get_slice("\n", 0))
-		_check(names == ["Anfänger", "Fortgeschritten", "Meister", "Militärschachspieler"],
-			"genau die vier Stufen (%s): %s" % [which, names])
+		_check(
+			names == ["Anfänger", "Fortgeschritten", "Meister", "Militärschachspieler"],
+			"genau die vier Stufen (%s): %s" % [which, names]
+		)
 		await _visible_buttons_ok("Stufen-" + which)
 		await _press("o_Back")
 
@@ -250,11 +270,16 @@ func _solve_lesson(id: String) -> void:
 			if table.finished or table.step_index != index:
 				break
 			await process_frame
-		_check(table.finished or table.step_index != index, "%s Schritt %d gelöst" % [id, index + 1])
+		_check(
+			table.finished or table.step_index != index, "%s Schritt %d gelöst" % [id, index + 1]
+		)
 		if not table.finished and table.step_index == index:
 			return
 	_check(table.finished and table.overlay_kind == "end", "Lektion %s beendet" % id)
-	_check(table.session.lesson_stars(id) == 3, "Lektion %s mit 3 Sternen (%d)" % [id, table.session.lesson_stars(id)])
+	_check(
+		table.session.lesson_stars(id) == 3,
+		"Lektion %s mit 3 Sternen (%d)" % [id, table.session.lesson_stars(id)]
+	)
 	_check(steps.size() > 0, "Lektion %s hat Schritte" % id)
 
 
@@ -270,7 +295,9 @@ func _solve_trial(id: String) -> bool:
 		if table.rules.side != 0:
 			continue
 		var race: bool = SCHOOL.trial(id).get("goal", "") == "race"
-		var r: Dictionary = await helper.think(table.rules, 2, {"budget_ms": 150, "slice_ms": 0, "race": race})
+		var r: Dictionary = await helper.think(
+			table.rules, 2, {"budget_ms": 150, "slice_ms": 0, "race": race}
+		)
 		var m: int = int(r.move)
 		if m < 0:
 			break
@@ -284,14 +311,24 @@ func _solve_trial(id: String) -> bool:
 
 func _learning_path() -> void:
 	var t0 := Time.get_ticks_msec()
-	_check(str(SCHOOL.PATH[1][1]) == "bauer" and str(SCHOOL.PATH[2][1]) == "t1",
-		"Lernweg beginnt mit Bauern und Bauernrennen")
+	_check(
+		str(SCHOOL.PATH[1][1]) == "bauer" and str(SCHOOL.PATH[2][1]) == "t1",
+		"Lernweg beginnt mit Bauern und Bauernrennen"
+	)
 	var order: Array[String] = []
 	for entry: Array in SCHOOL.PATH:
-		if entry[0] == "lesson" and entry[1] in ["bauer", "turm", "laeufer", "dame", "springer", "koenig", "schach", "matt"]:
+		if (
+			entry[0] == "lesson"
+			and (
+				entry[1]
+				in ["bauer", "turm", "laeufer", "dame", "springer", "koenig", "schach", "matt"]
+			)
+		):
 			order.append(entry[1])
-	_check(order == ["bauer", "turm", "laeufer", "dame", "springer", "koenig", "schach", "matt"],
-		"Figuren in der Reihenfolge Bauer, Turm, Läufer, Dame, Springer, König, Schach, Matt")
+	_check(
+		order == ["bauer", "turm", "laeufer", "dame", "springer", "koenig", "schach", "matt"],
+		"Figuren in der Reihenfolge Bauer, Turm, Läufer, Dame, Springer, König, Schach, Matt"
+	)
 	var t5 := SCHOOL.PATH.find(["trial", "t5"])
 	_check(t5 > SCHOOL.PATH.find(["lesson", "matt"]), "begleitetes Probespiel nach Schach und Matt")
 	await _press("o_Kids")
@@ -314,12 +351,23 @@ func _learning_path() -> void:
 			_check(ok, "Probespiel %s gewonnen" % id)
 		if failures.size() > 12:
 			return
-	print("[ChessTable] Lernweg komplett gelöst: %d Einträge, %.1f s" % [SCHOOL.PATH.size(), (Time.get_ticks_msec() - t0) / 1000.0])
+	print(
+		(
+			"[ChessTable] Lernweg komplett gelöst: %d Einträge, %.1f s"
+			% [SCHOOL.PATH.size(), (Time.get_ticks_msec() - t0) / 1000.0]
+		)
+	)
 	var lesson_rewards := 0
 	for p: Dictionary in rewards:
-		if str(p.get("variant", "")).begins_with("lesson:") or str(p.get("variant", "")).begins_with("trial:"):
+		if (
+			str(p.get("variant", "")).begins_with("lesson:")
+			or str(p.get("variant", "")).begins_with("trial:")
+		):
 			lesson_rewards += 1
-	_check(lesson_rewards == SCHOOL.PATH.size(), "je Lernschritt genau eine Belohnung (%d)" % lesson_rewards)
+	_check(
+		lesson_rewards == SCHOOL.PATH.size(),
+		"je Lernschritt genau eine Belohnung (%d)" % lesson_rewards
+	)
 
 
 # --- Fortsetzen -------------------------------------------------------------------
@@ -332,7 +380,10 @@ func _resume() -> void:
 	await _frames(2)
 	for entry: Array in SCHOOL.PATH:
 		var b: Button = table.find_button("o_Path_" + str(entry[1]))
-		_check(b != null and not b.disabled and b.text.contains("★"), "nach Neustart geschafft: %s" % entry[1])
+		_check(
+			b != null and not b.disabled and b.text.contains("★"),
+			"nach Neustart geschafft: %s" % entry[1]
+		)
 	# Teilweise gespielte Probepartie wird an derselben Stelle fortgesetzt.
 	table.hints = false
 	table.start_trial("t5")
@@ -375,8 +426,17 @@ func _match_vs_random() -> void:
 		child_moves += 1
 	await _wait_idle()
 	var status: String = table.rules.status()
-	print("[ChessTable] Partie Anfänger gegen Zufall: %s nach %d Halbzügen (%d Kinderzüge), %.1f s" % [
-		status, table.rules.played.size(), child_moves, (Time.get_ticks_msec() - t0) / 1000.0])
+	print(
+		(
+			"[ChessTable] Partie Anfänger gegen Zufall: %s nach %d Halbzügen (%d Kinderzüge), %.1f s"
+			% [
+				status,
+				table.rules.played.size(),
+				child_moves,
+				(Time.get_ticks_msec() - t0) / 1000.0
+			]
+		)
+	)
 	_check(table.finished and status != "playing", "Partie läuft bis zum Ende (%s)" % status)
 	_check(table.overlay_kind == "end", "Endbildschirm erscheint")
 	_check(not table.session.has_game("play"), "beendete Partie nicht mehr gespeichert")
@@ -395,7 +455,9 @@ func _undo_and_promotion() -> void:
 	await _wait_idle()
 	_check(table.rules.played.size() == 2, "Lumo hat geantwortet")
 	await _press("Undo")
-	_check(table.rules.played.size() == 0 and table.rules.side == 0, "Zurück nimmt beide Züge zurück")
+	_check(
+		table.rules.played.size() == 0 and table.rules.side == 0, "Zurück nimmt beide Züge zurück"
+	)
 	_check(table.rules.get_fen() == RULES.START_FEN, "Grundstellung wieder da")
 	# Umwandlung: Das Kind wählt die Figur (hier Springer mit Schach).
 	table.rules = RULES.new("4k3/2P5/8/8/8/8/8/4K3 w - - 0 1")
@@ -407,7 +469,10 @@ func _undo_and_promotion() -> void:
 	await _visible_buttons_ok("Umwandlung")
 	await _press("o_Promo2")
 	await _wait_idle()
-	_check(table.rules.played.size() >= 1 and table.rules.played[0] == "c7c8n", "Springer gewählt: " + str(table.rules.played))
+	_check(
+		table.rules.played.size() >= 1 and table.rules.played[0] == "c7c8n",
+		"Springer gewählt: " + str(table.rules.played)
+	)
 
 
 # --- Belohnung genau einmal -----------------------------------------------------------
@@ -427,11 +492,23 @@ func _reward_once() -> void:
 	_check(rewards.size() == before + 1, "genau eine Belohnung gemeldet")
 	if rewards.size() > before:
 		var p: Dictionary = rewards[-1]
-		_check(p.game == "chess" and p.variant == "play:anfaenger" and int(p.stars) == 1 and p.outcome == "win",
-			"Belohnung: %s" % p)
-		_check(str(p.resultId).begins_with("chess-play-0-"), "resultId eindeutig: " + str(p.resultId))
+		_check(
+			(
+				p.game == "chess"
+				and p.variant == "play:anfaenger"
+				and int(p.stars) == 1
+				and p.outcome == "win"
+			),
+			"Belohnung: %s" % p
+		)
+		_check(
+			str(p.resultId).begins_with("chess-play-0-"), "resultId eindeutig: " + str(p.resultId)
+		)
 		var again: Dictionary = table._settle(str(p.variant), 1, "win", str(p.resultId))
-		_check(again.is_empty() and rewards.size() == before + 1, "dieselbe resultId wird nicht doppelt gebucht")
+		_check(
+			again.is_empty() and rewards.size() == before + 1,
+			"dieselbe resultId wird nicht doppelt gebucht"
+		)
 
 
 # --- Für Große ------------------------------------------------------------------------
@@ -441,7 +518,10 @@ func _pro_mode() -> void:
 	await _new_table()
 	await _press("o_Pro")
 	await _press("o_Level3")
-	_check(table.screen == "match" and table.mode == "pro" and table.level == 3, "Militärschachspieler gestartet")
+	_check(
+		table.screen == "match" and table.mode == "pro" and table.level == 3,
+		"Militärschachspieler gestartet"
+	)
 	for id: String in ["Hint", "Why", "Undo"]:
 		_check(not (table.buttons[id] as Button).visible, "Für Große ohne %s" % id)
 	await _visible_buttons_ok("Partie-Pro")
@@ -453,10 +533,17 @@ func _pro_mode() -> void:
 	while not table.is_idle() and frames_during < 3000:
 		await process_frame
 		frames_during += 1
-	print("[ChessTable] Militärschachspieler-Antwort: %.1f s, %d Bilder während des Rechnens" % [
-		(Time.get_ticks_msec() - t0) / 1000.0, frames_during])
+	print(
+		(
+			"[ChessTable] Militärschachspieler-Antwort: %.1f s, %d Bilder während des Rechnens"
+			% [(Time.get_ticks_msec() - t0) / 1000.0, frames_during]
+		)
+	)
 	_check(table.rules.played.size() == 2, "Lumo hat geantwortet")
-	_check(table.bubble_text.text.begins_with("Ich ziehe "), "Antwort in Schachschrift: " + table.bubble_text.text)
+	_check(
+		table.bubble_text.text.begins_with("Ich ziehe "),
+		"Antwort in Schachschrift: " + table.bubble_text.text
+	)
 	_check(frames_during >= 5, "Bilder laufen während Lumo rechnet weiter")
 	var before := rewards.size()
 	await _press("Pause")
@@ -477,7 +564,9 @@ func _measure_squares(label: String) -> void:
 	var largest := 0.0
 	for sq in 64:
 		var c: Vector2 = table.square_point(sq)
-		var right: Vector2 = table.square_point(sq + 1) if (sq & 7) < 7 else table.square_point(sq - 1)
+		var right: Vector2 = (
+			table.square_point(sq + 1) if (sq & 7) < 7 else table.square_point(sq - 1)
+		)
 		var up: Vector2 = table.square_point(sq + 8) if sq < 56 else table.square_point(sq - 8)
 		var w := minf(c.distance_to(right), c.distance_to(up))
 		smallest = minf(smallest, w)
@@ -510,7 +599,10 @@ func _views_and_squares() -> void:
 			for id: String in ["View", "Pause", "Hint"]:
 				var b: Button = table.buttons[id]
 				var rect := b.get_global_rect()
-				_check(Rect2(Vector2.ZERO, Vector2(size)).encloses(rect), "%s: Knopf %s im Bild" % [label, id])
+				_check(
+					Rect2(Vector2.ZERO, Vector2(size)).encloses(rect),
+					"%s: Knopf %s im Bild" % [label, id]
+				)
 	root.size = FOLD
 	await _frames(3)
 	table._layout()

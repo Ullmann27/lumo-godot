@@ -55,10 +55,17 @@ func _run() -> void:
 	_san()
 	_take_back_and_hash()
 	_session()
-	print("CHESS_RULES_%s checks=%d failures=%d time=%.1fs" % [
-		"PASS" if failures.is_empty() else "FAIL", checks, failures.size(),
-		(Time.get_ticks_msec() - started) / 1000.0,
-	])
+	print(
+		(
+			"CHESS_RULES_%s checks=%d failures=%d time=%.1fs"
+			% [
+				"PASS" if failures.is_empty() else "FAIL",
+				checks,
+				failures.size(),
+				(Time.get_ticks_msec() - started) / 1000.0,
+			]
+		)
+	)
 	quit(0 if failures.is_empty() else 1)
 
 
@@ -70,9 +77,20 @@ func _perft_base() -> void:
 			var t0 := Time.get_ticks_usec()
 			var nodes: int = game.perft(d + 1)
 			var ms := (Time.get_ticks_usec() - t0) / 1000.0
-			print("[ChessRules] perft %s Tiefe %d = %d (Soll %d) %.0f ms" % [entry[0], d + 1, nodes, want[d], ms])
-			_check(nodes == int(want[d]), "perft %s Tiefe %d: %d statt %d" % [entry[0], d + 1, nodes, want[d]])
-			_check(game.get_fen() == RULES.new(entry[1]).get_fen(), "perft %s lässt Stellung unverändert" % entry[0])
+			print(
+				(
+					"[ChessRules] perft %s Tiefe %d = %d (Soll %d) %.0f ms"
+					% [entry[0], d + 1, nodes, want[d], ms]
+				)
+			)
+			_check(
+				nodes == int(want[d]),
+				"perft %s Tiefe %d: %d statt %d" % [entry[0], d + 1, nodes, want[d]]
+			)
+			_check(
+				game.get_fen() == RULES.new(entry[1]).get_fen(),
+				"perft %s lässt Stellung unverändert" % entry[0]
+			)
 
 
 func _perft_deep() -> void:
@@ -81,20 +99,36 @@ func _perft_deep() -> void:
 		var t0 := Time.get_ticks_msec()
 		var nodes: int = game.perft(entry[2])
 		var secs := (Time.get_ticks_msec() - t0) / 1000.0
-		print("[ChessRules] perft-tief %s Tiefe %d = %d (Soll %d) %.1f s" % [entry[0], entry[2], nodes, entry[3], secs])
+		print(
+			(
+				"[ChessRules] perft-tief %s Tiefe %d = %d (Soll %d) %.1f s"
+				% [entry[0], entry[2], nodes, entry[3], secs]
+			)
+		)
 		_check(nodes == int(entry[3]), "perft-tief %s: %d statt %d" % [entry[0], nodes, entry[3]])
 
 
 func _fen_roundtrip() -> void:
-	for fen: String in [RULES.START_FEN, KIWIPETE, POS3, POS4, POS5,
-			"rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3"]:
+	for fen: String in [
+		RULES.START_FEN,
+		KIWIPETE,
+		POS3,
+		POS4,
+		POS5,
+		"rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3"
+	]:
 		var game: RefCounted = RULES.new(fen)
 		_check(game.get_fen() == fen, "FEN hin und zurück: " + fen)
 		_check(game.hash == game.compute_hash(), "Schlüssel stimmt nach FEN")
 	var game: RefCounted = RULES.new()
-	for bad: String in ["", "8/8/8/8/8/8/8/8 w - - 0 1", "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP w KQkq - 0 1",
-			"knbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1", "P3k3/8/8/8/8/8/8/4K3 w - - 0 1",
-			"4k3/8/8/8/8/8/8/4K3 x - - 0 1"]:
+	for bad: String in [
+		"",
+		"8/8/8/8/8/8/8/8 w - - 0 1",
+		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP w KQkq - 0 1",
+		"knbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+		"P3k3/8/8/8/8/8/8/4K3 w - - 0 1",
+		"4k3/8/8/8/8/8/8/4K3 x - - 0 1"
+	]:
 		_check(not game.set_fen(bad), "kaputte FEN abgelehnt: " + bad)
 	_check(game.get_fen() == RULES.START_FEN, "kaputte FEN lässt Stand unverändert")
 
@@ -108,11 +142,16 @@ func _castling() -> void:
 	var game: RefCounted = RULES.new(base)
 	_check(_has(game, "e1g1") and _has(game, "e1c1"), "Weiß darf beidseitig rochieren")
 	_check(game.play_uci("e1g1"), "kurze Rochade spielbar")
-	_check(game.piece_at(6) == RULES.KING and game.piece_at(5) == RULES.ROOK and game.piece_at(7) == 0,
-		"kurze Rochade stellt König g1, Turm f1")
+	_check(
+		game.piece_at(6) == RULES.KING and game.piece_at(5) == RULES.ROOK and game.piece_at(7) == 0,
+		"kurze Rochade stellt König g1, Turm f1"
+	)
 	_check(game.get_fen().split(" ")[2] == "kq", "nach Rochade nur noch Schwarz rochadeberechtigt")
 	_check(game.play_uci("e8c8"), "lange Rochade Schwarz")
-	_check(game.piece_at(58) == (RULES.KING | 8) and game.piece_at(59) == (RULES.ROOK | 8), "lange Rochade stellt König c8, Turm d8")
+	_check(
+		game.piece_at(58) == (RULES.KING | 8) and game.piece_at(59) == (RULES.ROOK | 8),
+		"lange Rochade stellt König c8, Turm d8"
+	)
 	# Durch Schach, aus dem Schach, ins Schach, verstellt, Turm/König gezogen.
 	game = RULES.new("r3k2r/8/8/8/8/8/5r2/R3K2R w KQkq - 0 1")  # Turm f2 greift f1 an
 	_check(not _has(game, "e1g1"), "keine Rochade über angegriffenes Feld f1")
@@ -129,7 +168,9 @@ func _castling() -> void:
 	game.play_uci("a8a7")
 	game.play_uci("h2h1")
 	game.play_uci("a7a8")
-	_check(not _has(game, "e1g1") and _has(game, "e1c1"), "gezogener Turm verliert sein Rochaderecht")
+	_check(
+		not _has(game, "e1g1") and _has(game, "e1c1"), "gezogener Turm verliert sein Rochaderecht"
+	)
 	game.set_fen(base)
 	game.play_uci("a1a8")
 	_check(game.get_fen().split(" ")[2] == "Kk", "geschlagener Turm nimmt Rochaderecht mit")
@@ -147,10 +188,15 @@ func _en_passant() -> void:
 	_check(game.get_fen().split(" ")[3] == "e3", "Doppelschritt setzt en-passant-Feld")
 	_check(_has(game, "d4e3"), "en passant möglich")
 	game.play_uci("d4e3")
-	_check(game.piece_at(RULES.square_from_name("e4")) == 0, "en passant entfernt geschlagenen Bauern")
+	_check(
+		game.piece_at(RULES.square_from_name("e4")) == 0, "en passant entfernt geschlagenen Bauern"
+	)
 	_check(game.piece_at(RULES.square_from_name("e3")) == (RULES.PAWN | 8), "Schläger steht auf e3")
 	game.take_back()
-	_check(game.piece_at(RULES.square_from_name("e4")) == RULES.PAWN, "Zurücknehmen stellt Bauern wieder hin")
+	_check(
+		game.piece_at(RULES.square_from_name("e4")) == RULES.PAWN,
+		"Zurücknehmen stellt Bauern wieder hin"
+	)
 	# Nur sofort: nach einem anderen Zug verfällt das Recht.
 	game.play_uci("e8d8")
 	game.play_uci("e1d1")
@@ -173,7 +219,10 @@ func _promotion() -> void:
 	_check(game.play_uci("e7e8n"), "Kind wählt Springer")
 	_check(game.piece_at(60) == RULES.KNIGHT, "Springer steht auf e8")
 	game.take_back()
-	_check(game.piece_at(52) == RULES.PAWN and game.piece_at(60) == 0, "Zurücknehmen macht wieder einen Bauern")
+	_check(
+		game.piece_at(52) == RULES.PAWN and game.piece_at(60) == 0,
+		"Zurücknehmen macht wieder einen Bauern"
+	)
 
 
 func _mate_and_stalemate() -> void:
@@ -211,12 +260,20 @@ func _draws() -> void:
 	game.set_fen("6k1/R7/6K1/8/8/8/8/8 w - - 99 80")
 	game.play_uci("a7a8")
 	_check(game.status() == "checkmate", "Matt geht vor 50-Züge-Regel")
-	for fen: String in ["4k3/8/8/8/8/8/8/4K3 w - - 0 1", "4k3/8/8/8/8/8/8/4KN2 w - - 0 1",
-			"4k3/8/8/8/8/8/8/4KB2 w - - 0 1", "2b1k3/8/8/8/8/8/8/4KB2 w - - 0 1"]:
+	for fen: String in [
+		"4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+		"4k3/8/8/8/8/8/8/4KN2 w - - 0 1",
+		"4k3/8/8/8/8/8/8/4KB2 w - - 0 1",
+		"2b1k3/8/8/8/8/8/8/4KB2 w - - 0 1"
+	]:
 		game.set_fen(fen)
 		_check(game.status() == "draw_material", "unzureichendes Material: " + fen)
-	for fen: String in ["4k3/8/8/8/8/8/8/2B1KB2 w - - 0 1", "3bk3/8/8/8/8/8/8/4KB2 w - - 0 1",
-			"4k3/8/8/8/8/8/8/3NKN2 w - - 0 1", "4k3/8/8/8/8/8/4P3/4K3 w - - 0 1"]:
+	for fen: String in [
+		"4k3/8/8/8/8/8/8/2B1KB2 w - - 0 1",
+		"3bk3/8/8/8/8/8/8/4KB2 w - - 0 1",
+		"4k3/8/8/8/8/8/8/3NKN2 w - - 0 1",
+		"4k3/8/8/8/8/8/4P3/4K3 w - - 0 1"
+	]:
 		game.set_fen(fen)
 		_check(game.status() == "playing", "genug Material: " + fen)
 	# Wiederholung zählt en passant mit: gleiche Felder, aber andere Möglichkeiten.
@@ -278,8 +335,20 @@ func _session() -> void:
 	_check(restored != null and restored.get_fen() == game.get_fen(), "gleiche Stellung nach Laden")
 	_check(int(back.get("meta", {}).get("level", -1)) == 2, "Stufe bleibt")
 	_check(int(again.data.school.get("lesson_rook", 0)) == 3, "Schulfortschritt bleibt")
-	_check(restored.take_back() and restored.get_fen() == RULES.new("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2").get_fen(),
-		"Zurücknehmen nach Laden")
+	_check(
+		(
+			restored.take_back()
+			and (
+				restored.get_fen()
+				== (
+					RULES
+					. new("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2")
+					. get_fen()
+				)
+			)
+		),
+		"Zurücknehmen nach Laden"
+	)
 	# Alte Fassung ohne Schule und mit kaputter Partie: wird ergänzt bzw. verworfen.
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(JSON.stringify({"v": 1, "games": {"play": {"start": "kaputt", "moves": []}}}))

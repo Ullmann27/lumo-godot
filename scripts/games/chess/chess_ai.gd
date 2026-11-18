@@ -21,18 +21,60 @@ extends RefCounted
 const RULES = preload("res://scripts/games/chess/chess_rules.gd")
 const BOOK = preload("res://scripts/games/chess/chess_book.gd")
 
-const LEVEL_NAMES := ["Anfänger", "Fortgeschritten", "Meister", "Militärschachspieler", "Lumo (Lernspiel)"]
+const LEVEL_NAMES := [
+	"Anfänger", "Fortgeschritten", "Meister", "Militärschachspieler", "Lumo (Lernspiel)"
+]
 const LEVEL_IDS := ["anfaenger", "fortgeschritten", "meister", "militaerschachspieler", "lernspiel"]
 const LEVEL_KIDS := 4
 ## Je Stufe: höchste Tiefe, Zeitbudget (ms, Wanduhr), Zufallsrauschen in
 ## Hundertstel-Bauern, Anteil zufälliger Züge, Ruhesuche, Eröffnungsbuch,
 ## Suchfenster um den letzten Wert (Aspiration).
 const LEVELS := [
-	{"depth": 1, "budget": 400, "noise": 50, "random": 0.2, "quiesce": true, "book": false, "aspiration": false},
-	{"depth": 3, "budget": 1000, "noise": 15, "random": 0.0, "quiesce": true, "book": false, "aspiration": false},
-	{"depth": 20, "budget": 2000, "noise": 0, "random": 0.0, "quiesce": true, "book": true, "aspiration": false},
-	{"depth": 40, "budget": 7000, "noise": 0, "random": 0.0, "quiesce": true, "book": true, "aspiration": true},
-	{"depth": 1, "budget": 250, "noise": 0, "random": 0.75, "quiesce": false, "book": false, "aspiration": false},
+	{
+		"depth": 1,
+		"budget": 400,
+		"noise": 50,
+		"random": 0.2,
+		"quiesce": true,
+		"book": false,
+		"aspiration": false
+	},
+	{
+		"depth": 3,
+		"budget": 1000,
+		"noise": 15,
+		"random": 0.0,
+		"quiesce": true,
+		"book": false,
+		"aspiration": false
+	},
+	{
+		"depth": 20,
+		"budget": 2000,
+		"noise": 0,
+		"random": 0.0,
+		"quiesce": true,
+		"book": true,
+		"aspiration": false
+	},
+	{
+		"depth": 40,
+		"budget": 7000,
+		"noise": 0,
+		"random": 0.0,
+		"quiesce": true,
+		"book": true,
+		"aspiration": true
+	},
+	{
+		"depth": 1,
+		"budget": 250,
+		"noise": 0,
+		"random": 0.75,
+		"quiesce": false,
+		"book": false,
+		"aspiration": false
+	},
 ]
 const ASPIRATION := 40
 
@@ -69,11 +111,11 @@ var frames := 0
 var max_slice_usec := 0
 ## Dauer jeder Rechenscheibe (µs) der letzten Suche, für Messungen.
 var slice_samples := PackedInt32Array()
-var _slice_started := 0
 var root_bonus := PackedInt32Array()
 var rng := RandomNumberGenerator.new()
 ## Bauernrennen der Lernspiele: Wer zuerst umwandelt, hat gewonnen.
 var race := false
+var _slice_started := 0
 
 
 static func ensure_tables() -> void:
@@ -115,7 +157,11 @@ static func ensure_tables() -> void:
 						m += 8
 					e = int(-center * 5.0)
 				4:
-					m = (14 if r == 6 else 0) + (6 if f in [3, 4] else 0) + (-4 if f in [0, 7] else 0)
+					m = (
+						(14 if r == 6 else 0)
+						+ (6 if f in [3, 4] else 0)
+						+ (-4 if f in [0, 7] else 0)
+					)
 					e = 6 if r == 6 else 0
 				5:
 					m = int(-center * 3.0) + (-6 if r == 0 else 0)
@@ -161,9 +207,16 @@ func evaluate(g: RefCounted, alpha: int = -INF, beta: int = INF) -> int:
 	var mg := 0
 	var eg := 0
 	var phase := 0
-	var pawn_min := [PackedInt32Array([9, 9, 9, 9, 9, 9, 9, 9]), PackedInt32Array([9, 9, 9, 9, 9, 9, 9, 9])]
-	var pawn_max := [PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1]), PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1])]
-	var pawn_count := [PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0]), PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0])]
+	var pawn_min := [
+		PackedInt32Array([9, 9, 9, 9, 9, 9, 9, 9]), PackedInt32Array([9, 9, 9, 9, 9, 9, 9, 9])
+	]
+	var pawn_max := [
+		PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1]),
+		PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1])
+	]
+	var pawn_count := [
+		PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0]), PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0])
+	]
 	var pawns: Array[int] = []
 	var pieces: Array[int] = []
 	var bishops := [0, 0]
@@ -348,15 +401,25 @@ func _tick() -> void:
 
 ## Lumo denkt nach. Ergebnis: {move, score, depth, nodes, ms, frames,
 ## max_slice_ms, level, book}. `options` kann "budget_ms", "slice_ms" (0 = ohne
-## Pause), "depth" überschreiben, "race" wertet Umwandeln als Sieg (Bauernrennen); "random_off" schaltet die Zufallszüge der
+## Pause), "depth" überschreiben, "race" wertet Umwandeln als Sieg
+## (Bauernrennen); "random_off" schaltet die Zufallszüge der
 ## leichten Stufen ab (nur für Messungen).
 func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	var cfg: Dictionary = level_config(level)
 	var started := Time.get_ticks_usec()
 	var work: RefCounted = g.duplicate_state()
 	var legal: PackedInt32Array = work.legal_moves()
-	var result := {"move": -1, "score": 0, "depth": 0, "nodes": 0, "ms": 0.0, "frames": 0,
-		"max_slice_ms": 0.0, "level": level, "book": false}
+	var result := {
+		"move": -1,
+		"score": 0,
+		"depth": 0,
+		"nodes": 0,
+		"ms": 0.0,
+		"frames": 0,
+		"max_slice_ms": 0.0,
+		"level": level,
+		"book": false
+	}
 	if legal.is_empty():
 		return result
 	# Eröffnungswissen: kleine eigene Tabelle bekannter Hauptzüge.
@@ -392,7 +455,9 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	var noise := int(cfg.noise)
 	root_bonus.resize(64 * 64)
 	for m: int in legal:
-		root_bonus[(m & 63) * 64 + ((m >> 6) & 63)] = rng.randi_range(-noise, noise) if noise > 0 else 0
+		root_bonus[(m & 63) * 64 + ((m >> 6) & 63)] = (
+			rng.randi_range(-noise, noise) if noise > 0 else 0
+		)
 	var best := legal[0]
 	var best_score := -INF
 	var reached := 0
@@ -437,8 +502,14 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 	return result
 
 
-func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool,
-		alpha0: int = -INF, beta0: int = INF) -> Array:
+func _root(
+	depth: int,
+	legal: PackedInt32Array,
+	noise: int,
+	quiesce: bool,
+	alpha0: int = -INF,
+	beta0: int = INF
+) -> Array:
 	var g := rules
 	var ordered := _order(legal, _tt_move(g.hash), 0)
 	if root_bonus.size() != 64 * 64:
@@ -545,8 +616,14 @@ func _search(depth: int, alpha: int, beta: int, ply: int, quiesce: bool, allow_n
 		else:
 			# Späte ruhige Züge erst etwas flacher prüfen (Late Move Reduction).
 			var reduce := 0
-			if depth >= 3 and legal > 3 and not in_check and (m >> 15) == 0 \
-					and m != killers[ply * 2] and not g.in_check():
+			if (
+				depth >= 3
+				and legal > 3
+				and not in_check
+				and (m >> 15) == 0
+				and m != killers[ply * 2]
+				and not g.in_check()
+			):
 				reduce = 1 if legal < 10 else 2
 			score = -(await _search(depth - 1 - reduce, -alpha - 1, -alpha, ply + 1, quiesce, true))
 			if reduce > 0 and score > alpha and not stopped:
