@@ -45,6 +45,20 @@ var _buckets: Dictionary = {}
 var _materials: Dictionary = {}
 var _deck_materials: Dictionary = {}
 var _pollen: CPUParticles3D
+## Where the path comes back near itself, scenery of one part must not cover
+## another: path samples in a coarse grid, and the stretches where this matters.
+var _grid: Dictionary = {}
+var _grid_s := PackedFloat32Array()
+var _grid_points := PackedVector3Array()
+var _grid_half := PackedFloat32Array()
+var _crowded := PackedByteArray()
+const GRID_CELL: float = 12.0
+const GRID_STEP: float = 3.0
+## Kinds that may stand on the ground near another part of the path.
+const SOLID_KINDS: Array[String] = [
+	"tree0", "tree1", "tree2", "giant", "palm0", "rock0", "pillar1", "bush", "leaf0", "leaf1", "fern0", "fern1",
+	"grass0", "flower0", "statue", "block", "post", "torch", "flame", "bulb", "crystal0", "canopy", "liana0", "liana1",
+]
 
 
 func build(world, layout, lightweight: bool) -> void:
@@ -54,6 +68,7 @@ func build(world, layout, lightweight: bool) -> void:
 	_rng.seed = 20261118
 	_make_materials()
 	_make_kinds()
+	_index_path()
 	_environment()
 	_decks()
 	_terrain()
@@ -172,6 +187,10 @@ func _put(kind: String, at_s: float, transform: Transform3D, colour: Color = Col
 	kind = ALIAS.get(kind, kind)
 	if not _kinds.has(kind):
 		return
+	if at_s >= 0.0 and _is_crowded(at_s) and SOLID_KINDS.has(kind):
+		var margin: float = 1.6 if kind in ["tree0", "tree1", "tree2", "giant", "palm0"] else 0.5
+		if _path_in_the_way(transform.origin, at_s, margin):
+			return
 	var key: String = "%s|%d" % [kind, floori(at_s / CHUNK) if _kinds[kind].range > 0.0 else 0]
 	if not _buckets.has(key):
 		_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": []}
@@ -237,6 +256,87 @@ func _main_samples(step: float) -> PackedFloat32Array:
 	return list
 
 
+# ------------------------------------------------------------------ where the path meets itself
+
+func _cell(point: Vector3) -> Vector2i:
+	return Vector2i(floori(point.x / GRID_CELL), floori(point.z / GRID_CELL))
+
+
+func _index_path() -> void:
+	var at: float = 0.0
+	while at < path.length:
+		var point: Vector3 = path.position_at(at, 0.0)
+		var key: Vector2i = _cell(point)
+		if not _grid.has(key):
+			_grid[key] = PackedInt32Array()
+		_grid[key].append(_grid_s.size())
+		_grid_s.append(at)
+		_grid_points.append(point)
+		_grid_half.append(path.half_width_at(at) if not path.in_gap(at) else path.half_width_at(at) + 0.5)
+		at += GRID_STEP
+	# A stretch is crowded when a part at least 40 m further along passes within 60 m.
+	_crowded.resize(_grid_s.size())
+	_crowded.fill(0)
+	for index in range(_grid_s.size()):
+		var centre: Vector2i = _cell(_grid_points[index])
+		for dx in range(-5, 6):
+			for dz in range(-5, 6):
+				var key := Vector2i(centre.x + dx, centre.y + dz)
+				if not _grid.has(key):
+					continue
+				for other in _grid[key]:
+					if absf(_grid_s[other] - _grid_s[index]) < 40.0:
+						continue
+					var flat := Vector2(_grid_points[other].x - _grid_points[index].x, _grid_points[other].z - _grid_points[index].z)
+					if flat.length() < 60.0:
+						_crowded[index] = 1
+						break
+
+
+func _is_crowded(at: float) -> bool:
+	var index: int = clampi(roundi(at / GRID_STEP), 0, _crowded.size() - 1)
+	return _crowded[index] != 0
+
+
+## True when `point` (something standing near the path at `own`) would stand on,
+## or hang over, another part of the path.
+func _path_in_the_way(point: Vector3, own: float, margin: float) -> bool:
+	var centre: Vector2i = _cell(point)
+	for dx in range(-1, 2):
+		for dz in range(-1, 2):
+			var key := Vector2i(centre.x + dx, centre.y + dz)
+			if not _grid.has(key):
+				continue
+			for other in _grid[key]:
+				if absf(_grid_s[other] - own) < 25.0:
+					continue
+				var sample: Vector3 = _grid_points[other]
+				var flat: float = Vector2(sample.x - point.x, sample.z - point.z).length()
+				if flat < _grid_half[other] + margin and point.y > sample.y - 14.0 and point.y < sample.y + 4.5:
+					return true
+	return false
+
+
+## Terrain height at `point`, lowered where it would cover another part of the path.
+func _below_other_path(point: Vector3, own: float) -> float:
+	var height: float = point.y
+	var centre: Vector2i = _cell(point)
+	for dx in range(-1, 2):
+		for dz in range(-1, 2):
+			var key := Vector2i(centre.x + dx, centre.y + dz)
+			if not _grid.has(key):
+				continue
+			for other in _grid[key]:
+				if absf(_grid_s[other] - own) < 25.0 or path.ceiling_at(_grid_s[other]) < 100.0:
+					continue
+				var sample: Vector3 = _grid_points[other]
+				var flat: float = Vector2(sample.x - point.x, sample.z - point.z).length()
+				var reach: float = _grid_half[other] + 6.0
+				if flat < reach and height > sample.y - 0.7 and height < sample.y + 40.0:
+					height = minf(height, sample.y - 0.7 - maxf(0.0, flat - _grid_half[other]) * 0.6)
+	return height
+
+
 # ------------------------------------------------------------------ sky, sun and fog
 
 func _environment() -> void:
@@ -253,22 +353,29 @@ func _environment() -> void:
 	environment.background_mode = Environment.BG_SKY
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	environment.ambient_light_energy = 0.55
-	environment.ambient_light_sky_contribution = 0.6
+	environment.ambient_light_color = Color("b8d8a8")
+	environment.ambient_light_energy = 1.05
+	environment.ambient_light_sky_contribution = 0.45
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.05
+	environment.tonemap_exposure = 1.15
 	environment.tonemap_white = 6.0
 	environment.fog_enabled = true
+	# Depth fog with a clear near range: the exponential fog of the compatibility
+	# renderer washed out even the path right in front of the camera.
+	environment.fog_mode = Environment.FOG_MODE_DEPTH
 	environment.fog_light_color = Color("a9d0d6")
-	environment.fog_density = 0.0028
-	environment.fog_sky_affect = 0.2
+	environment.fog_density = 0.85
+	environment.fog_depth_begin = 45.0
+	environment.fog_depth_end = 320.0
+	environment.fog_depth_curve = 1.6
+	environment.fog_sky_affect = 0.15
 	environment.glow_enabled = not low
 	environment.glow_intensity = 0.7
 	environment.glow_bloom = 0.12
 	environment.glow_hdr_threshold = 0.95
 	environment.adjustment_enabled = true
-	environment.adjustment_saturation = 1.22
-	environment.adjustment_contrast = 1.1
+	environment.adjustment_saturation = 1.06
+	environment.adjustment_contrast = 1.05
 	var holder := WorldEnvironment.new()
 	holder.name = "JungleSky"
 	holder.environment = environment
@@ -336,11 +443,11 @@ func _deck(from: float, to: float, kind: String, half: float) -> void:
 			var c: int = a + width
 			var d: int = c + 1
 			st.add_index(a)
-			st.add_index(b)
 			st.add_index(c)
 			st.add_index(b)
+			st.add_index(b)
+			st.add_index(c)
 			st.add_index(d)
-			st.add_index(c)
 	st.generate_normals()
 	var mesh: ArrayMesh = st.commit()
 	_skirts(mesh, from, to, half, raised, edge.darkened(0.35))
@@ -420,6 +527,8 @@ func _terrain_strip(samples: PackedFloat32Array, start: int, stop: int, side: fl
 			var lateral: float = side * (half + offset)
 			var point: Vector3 = path.position_at(at, lateral)
 			point.y = origin.y + _terrain_height(at, offset)
+			if _is_crowded(at):
+				point.y = _below_other_path(point, at)
 			var green: Color = Color("5c8f3a").lerp(Color("2f6b33"), clampf(offset / 20.0, 0.0, 1.0))
 			if offset < 1.0 and _floor(at) > -1.5:
 				green = Color("7a6a46").lerp(green, offset)
@@ -434,7 +543,7 @@ func _terrain_strip(samples: PackedFloat32Array, start: int, stop: int, side: fl
 			var b: int = a + 1
 			var c: int = a + width
 			var d: int = c + 1
-			if side > 0.0:
+			if side < 0.0:
 				st.add_index(a)
 				st.add_index(b)
 				st.add_index(c)
@@ -476,7 +585,7 @@ func _cave() -> void:
 			_put(crystal, at, _xf(at, side * (half + 0.9), _rng.randf_range(0.0, 2.5), Vector3.ONE * _rng.randf_range(0.6, 1.3), _rng.randf() * TAU), Color.WHITE)
 			if _rng.randf() < 0.3:
 				_put(crystal, at, _xf(at, side * _rng.randf_range(0.5, half), roof.z - 0.3, Vector3(1, -1, 1) * _rng.randf_range(0.5, 0.9), _rng.randf() * TAU))
-			at += _rng.randf_range(4.0, 7.0) * (1.5 if low else 1.0)
+			at += _rng.randf_range(2.5, 4.5) * (1.5 if low else 1.0)
 
 
 func _cave_piece(from: float, to: float, height: float) -> void:
@@ -522,7 +631,7 @@ func _cave_piece(from: float, to: float, height: float) -> void:
 	if not _materials.has("cave"):
 		_materials["cave"] = SHADERS.material(
 			SHADERS.SOLID.replace("render_mode specular_schlick_ggx;", "render_mode specular_schlick_ggx, cull_disabled;"),
-			{"brightness": 0.9}
+			{"brightness": 1.5}
 		)
 	node.material_override = _materials["cave"]
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if not low else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -663,7 +772,7 @@ func _overhead() -> void:
 		if kind != "cave":
 			var half: float = path.half_width_at(at)
 			for side in [-1.0, 1.0]:
-				if _rng.randf() < 0.7:
+				if _rng.randf() < (0.22 if _floor(at) < -1.5 else 0.45):
 					var lat: float = side * _rng.randf_range(half * 0.4, half + 6.0)
 					_put("canopy", at, _xf(at, lat, _rng.randf_range(8.5, 12.5), Vector3(1.0, 0.8, 1.0) * _rng.randf_range(1.0, 1.8), _rng.randf() * TAU))
 				if _rng.randf() < 0.55:
@@ -738,7 +847,7 @@ func _structures() -> void:
 		var middle: float = (from + to) * 0.5
 		var kind: String = _surface_of(from - 1.0)
 		if kind in ["dirt", "cave", "roots"]:
-			_water_plane(from - 2.0, to + 2.0, path.half_width_at(middle) + 6.0, -2.2)
+			_water_plane(from - 1.0, to + 1.0, path.half_width_at(middle) + 2.5, -1.9)
 		elif kind in ["canopy", "plank", "stone", "rail"]:
 			# A misty drop: haze below the hole tells that it is deep.
 			var mist := MeshInstance3D.new()
@@ -894,7 +1003,8 @@ func _fauna() -> void:
 				shaft.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				shaft.visibility_range_end = 120.0
 				var tilt := Basis(Vector3.UP, _rng.randf() * TAU) * Basis(Vector3.RIGHT, -0.45)
-				shaft.transform = Transform3D(tilt, _point(at, _rng.randf_range(-half - 4.0, half + 4.0), -1.5))
+				var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
+				shaft.transform = Transform3D(tilt, _point(at, side * _rng.randf_range(half + 1.5, half + 6.0), -1.5))
 				add_child(shaft)
 		if _floor(at) < -8.0 and _rng.randf() < 0.3:
 			var haze := MeshInstance3D.new()

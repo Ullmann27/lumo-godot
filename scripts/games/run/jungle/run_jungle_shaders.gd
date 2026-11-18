@@ -20,8 +20,8 @@ void vertex() {
 void fragment() {
 	vec3 base = pow(COLOR.rgb, vec3(2.2)) * brightness;
 	ALBEDO = base * (0.82 + 0.3 * lift);
-	ROUGHNESS = 0.72;
-	SPECULAR = 0.35;
+	ROUGHNESS = 0.75;
+	SPECULAR = 0.18;
 	// Light through the leaves: a little glow on the far side of the sun.
 	EMISSION = base * 0.07;
 }
@@ -35,7 +35,8 @@ uniform float glow = 0.0;
 void fragment() {
 	vec3 base = pow(COLOR.rgb, vec3(2.2)) * brightness;
 	ALBEDO = base;
-	ROUGHNESS = 0.82;
+	ROUGHNESS = 0.9;
+	SPECULAR = 0.1;
 	EMISSION = base * glow;
 }
 """
@@ -58,6 +59,11 @@ void vertex() {
 	world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 void fragment() {
+	// Ground always faces up, whatever order its triangles were built in.
+	vec3 world_normal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
+	if (world_normal.y < -0.05) {
+		NORMAL = -NORMAL;
+	}
 	vec3 base = pow(COLOR.rgb, vec3(2.2)) * tint;
 	float n = noise(world.xz * 1.7) * 0.6 + noise(world.xz * 0.31) * 0.4;
 	float shade = 0.78 + 0.36 * n;
@@ -77,7 +83,9 @@ void fragment() {
 		base = mix(vec3(0.07, 0.16, 0.05), base * stone, joint);
 	}
 	ALBEDO = base * shade;
-	ROUGHNESS = pattern == 2 ? 0.7 : 0.9;
+	ROUGHNESS = pattern == 2 ? 0.8 : 1.0;
+	// No sky sheen on earth and wood: at the low camera angle it washed them out.
+	SPECULAR = pattern == 2 ? 0.12 : 0.04;
 }
 """
 
@@ -104,7 +112,7 @@ void fragment() {
 const SHAFT: String = """
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_draw_never, blend_add, shadows_disabled;
-uniform vec4 colour : source_color = vec4(1.0, 0.86, 0.55, 0.3);
+uniform vec4 colour : source_color = vec4(1.0, 0.86, 0.55, 0.2);
 void vertex() {
 	// Turn round the card's own up axis to face the camera (a beam of light).
 	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(

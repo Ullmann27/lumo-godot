@@ -257,8 +257,8 @@ func _build_ride(index: int, ride: Dictionary) -> void:
 			for k in range(steps + 1):
 				var u: float = float(k) / float(steps)
 				points.append(from.lerp(to, u) + Vector3.DOWN * float(ride.sag) * 4.0 * u * (1.0 - u))
-				radii.append(0.035)
-				colours.append(Color("d9c08a"))
+				radii.append(0.022)
+				colours.append(Color("6b5132"))
 			MESHES.tube(kit, points, radii, 4, colours)
 			for end in [from, to]:
 				MESHES.tube(kit, [end + Vector3.DOWN * 6.0, end + Vector3.UP * 0.4], [0.18, 0.15], 6, [Color("6b4a31"), Color("6b4a31")])
