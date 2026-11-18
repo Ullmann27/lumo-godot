@@ -3785,6 +3785,8 @@ func _append_preferences() -> void:
 	# Hook kart-garage: Linkshänder-Schalter; Spiegelung macht RACE_HUD.apply_handedness.
 	var hand := _button(RACE_HUD.handedness_text(left_handed), func(): pass)
 	hand.name = "HandednessToggle"
+	# Langer Text: auf schmalen Handys umbrechen statt das Pausenfenster zu verbreitern.
+	hand.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hand.pressed.connect(
 		func():
 			left_handed = not left_handed
