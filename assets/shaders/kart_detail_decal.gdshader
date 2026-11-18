@@ -3,7 +3,7 @@ shader_type spatial;
 // COLOR.rgb = Tönung, COLOR.a = Deckkraft. UV2.x = 1 kennzeichnet Pfützen:
 // die bekommen Spiegelglanz als Fake (Himmelsfarbe über Fresnel, keine
 // Bildschirm- oder Tiefentextur -> Mobile/gl_compatibility-tauglich).
-render_mode blend_mix, depth_draw_never, cull_back, diffuse_burley, specular_schlick_ggx;
+render_mode blend_mix, depth_draw_never, cull_disabled, diffuse_burley, specular_schlick_ggx;
 
 uniform sampler2D atlas : source_color, filter_linear_mipmap, repeat_disable;
 uniform vec3 sky_tint : source_color = vec3(0.62, 0.78, 0.95);

@@ -23,7 +23,8 @@ const CHUNK_M: Dictionary = {"low": 100000.0, "medium": 170.0, "high": 130.0}
 const DENSITY: Dictionary = {"low": 0.0, "medium": 0.62, "high": 1.0}
 ## Sicherheitsrand zwischen Fahrbahnkante und stehendem Kleinteil.
 const CLEARANCE_M: float = 1.4
-const DECAL_LIFT_M: float = 0.035
+const DECAL_LIFT_M: float = 0.05
+const PROP_SCALE: float = 1.25
 
 var world
 var track_id: String
@@ -82,6 +83,7 @@ func _run(target: Node3D, wanted_track: String, wanted_profile: String) -> void:
 		_edge_drifts()
 		_facades()
 		_roadside()
+		_railside()
 		_life()
 		_lights()
 	_commit()
@@ -150,11 +152,12 @@ func _ground(at: Vector3, road_y: float) -> float:
 	match str(theme.get("ground", "terrain")):
 		"terrain":
 			var h: float = float(world._ground_height(at.x, at.z))
-			if h < road_y - 1.7 or h > road_y + 0.9 or h < -1.5:
+			# Gelände muss die Fahrbahn begleiten (keine Brücken, kein Wasser).
+			if h < road_y - 2.6 or h > road_y + 1.2 or h < float(theme.get("min_ground", -3.0)):
 				return NAN
 			return h
 		"road":
-			return road_y - 0.12
+			return road_y - 0.06
 		"plane":
 			return float(theme.get("plane_y", -2.0))
 	return NAN
@@ -190,7 +193,47 @@ func _site(d: float, side: float, lateral: float, footprint: float, check_block:
 		if other.distance_squared_to(at) < pow(footprint + 0.9, 2.0):
 			return {}
 	_occupied.append(at)
-	return {"at": at, "d": d, "side": side, "lateral": lat, "basis": _facing_road(d, side), "road_y": road_y}
+	var site := {"at": at, "d": d, "side": side, "lateral": lat, "basis": _facing_road(d, side), "road_y": road_y}
+	if str(theme.get("ground", "terrain")) == "road" and road_y - float(theme.get("plane_y", -2.0)) > 0.8:
+		_pad(site, footprint)
+	return site
+
+
+## Auskragende Plattform ("Balkon") an der Fahrbahnkante für Strecken ohne
+## Gelände daneben: so steht jedes Kleinteil sichtbar auf etwas.
+func _pad(site: Dictionary, footprint: float) -> void:
+	var d: float = site.d
+	var side: float = site.side
+	var half: float = _half_width(d)
+	var inner: float = half + 0.7
+	var outer: float = float(site.lateral) + footprint + 0.7
+	var depth: float = footprint * 2.0 + 1.6
+	var basis: Basis = site.basis
+	var colour: Color = theme.get("pad_color", Color("c3c8cc"))
+	var top: float = float(site.at.y)
+	var mid_lat: float = (inner + outer) * 0.5
+	var centre: Vector3 = world.position_at(d, side * mid_lat)
+	centre.y = top - 0.14
+	var along: Vector3 = basis.x
+	var across: Vector3 = -basis.z
+	_slab(centre, along * depth, across * (outer - inner), 0.28, colour, d)
+	# Kantenleiste und Geländer außen.
+	var edge: Vector3 = centre + across * (outer - inner) * 0.5
+	var trim: Color = theme.get("pad_trim", Color("f6c636"))
+	_beam_box(edge - along * depth * 0.5 + Vector3.UP * 0.16, edge + along * depth * 0.5 + Vector3.UP * 0.16, 0.06, trim, d, "props")
+	_beam_box(edge - along * depth * 0.5 + Vector3.UP * 1.0, edge + along * depth * 0.5 + Vector3.UP * 1.0, 0.05, Color("9aa3ab"), d, "props")
+	for k in [-0.5, 0.5]:
+		var post: Vector3 = edge + along * depth * k * 0.96
+		_beam_box(post, post + Vector3.UP * 1.0, 0.05, Color("9aa3ab"), d, "props")
+	# Schräge Stütze zum Fahrbahnfundament.
+	var foot: Vector3 = world.position_at(d, side * (half + 0.6)) - Vector3.UP * 1.6
+	_beam_box(edge - Vector3.UP * 0.25, foot, 0.16, colour.darkened(0.25), d, "props")
+
+
+func _slab(centre: Vector3, along: Vector3, across: Vector3, thickness: float, colour: Color, d: float) -> void:
+	var basis := Basis(along, Vector3.UP * thickness, across)
+	var lin: Color = colour.srgb_to_linear()
+	_batch(d, "props").add_arrays(KIT.box_arrays(), Transform3D(basis, centre), Color(lin.r, lin.g, lin.b, 1.0))
 
 
 func _put(kind: String, xform: Transform3D, d: float, category: String, tint: Color = Color.WHITE, record: bool = true) -> void:
@@ -211,8 +254,9 @@ func _put(kind: String, xform: Transform3D, d: float, category: String, tint: Co
 
 
 func _place(kind: String, site: Dictionary, category: String, offset: Vector3 = Vector3.ZERO, yaw: float = 0.0, scale: float = 1.0, tint: Color = Color.WHITE) -> void:
-	var basis: Basis = (site.basis as Basis).rotated(Vector3.UP, yaw).scaled(Vector3.ONE * scale)
-	var origin: Vector3 = site.at + (site.basis as Basis) * offset
+	# Die Lumo-Welt ist leicht überzeichnet: Kleinteile 1,25-fach, damit sie bei Tempo wirken.
+	var basis: Basis = (site.basis as Basis).rotated(Vector3.UP, yaw).scaled(Vector3.ONE * scale * PROP_SCALE)
+	var origin: Vector3 = site.at + (site.basis as Basis) * offset * PROP_SCALE
 	_put(kind, Transform3D(basis, origin), site.d, category, tint)
 
 
@@ -229,6 +273,9 @@ func _road_decal(tile: String, d: float, lateral: float, along: float, across: f
 	var a: Vector3 = fwd * along * 0.5
 	var b: Vector3 = right * across * 0.5
 	var corners: Array = [centre - a - b, centre - a + b, centre + a + b, centre + a - b]
+	var road_tint: Color = theme.get("road_tint", Color.WHITE)
+	if tile in ["patch", "tar", "crack", "rubber"]:
+		color = Color(color.r * road_tint.r, color.g * road_tint.g, color.b * road_tint.b, color.a)
 	_batch(d, "decal").add_quad(corners, up, KIT.wear_rect(tile), color, Vector2(1.0 if wet else 0.0, 0.0))
 	stats.wear += 1
 
@@ -245,8 +292,8 @@ func _low_wear() -> void:
 	for i in range(3):
 		_road_decal("rubber", 6.0 + i * 9.0, 0.0, 9.0, _half_width(0.0) * 1.6, Color(1, 1, 1, 0.75))
 	_road_decal("skid", -6.0, 1.4, 9.0, 3.2, Color(1, 1, 1, 0.8))
-	for i in range(8):
-		var d: float = _length() * (0.08 + i * 0.115)
+	for i in range(10):
+		var d: float = _length() * (0.06 + i * 0.094)
 		if _blocked(d, 4.0):
 			continue
 		_road_decal(["patch", "tar", "oil"][i % 3], d, rng.randf_range(-2.5, 2.5), 2.4, 1.6, Color(1, 1, 1, 0.8), rng.randf_range(-0.3, 0.3))
@@ -332,6 +379,7 @@ func _facades() -> void:
 	var done: int = 0
 	var tiles_top: Array = theme.get("facade_top", ["streak", "crack", "grime", "plaster"])
 	var tiles_bottom: Array = theme.get("facade_bottom", ["moss", "grime"])
+	var skips: Dictionary = {"boxes": 0, "size": 0, "tilt": 0, "distance": 0, "dark": 0}
 	for child in world.get_children():
 		if done >= limit:
 			break
@@ -347,19 +395,25 @@ func _facades() -> void:
 				break
 			var xform: Transform3D = (child as Node3D).transform * mm.get_instance_transform(i)
 			var size := Vector3(xform.basis.x.length(), xform.basis.y.length(), xform.basis.z.length())
+			skips.boxes += 1
 			if size.y < 2.2 or size.y > 40.0 or maxf(size.x, size.z) < 2.0:
+				skips.size += 1
 				continue
-			if absf(xform.basis.y.normalized().dot(Vector3.UP)) < 0.97:
+			if absf(xform.basis.y.normalized().dot(Vector3.UP)) < 0.9:
+				skips.tilt += 1
 				continue
 			var nearest: Dictionary = world.sample_road(xform.origin)
 			var distance: float = Vector2(xform.origin.x - nearest.position.x, xform.origin.z - nearest.position.z).length()
 			if distance < float(nearest.width) * 0.5 + 1.5 or distance > 55.0:
+				skips.distance += 1
 				continue
 			var tint: Color = mm.get_instance_color(i) if mm.use_colors else Color.WHITE
 			if tint.get_luminance() < 0.12:
+				skips.dark += 1
 				continue
 			_facade_face(xform, size, nearest, tiles_top, tiles_bottom)
 			done += 1
+	stats["facade_skips"] = skips
 
 
 func _facade_face(xform: Transform3D, size: Vector3, nearest: Dictionary, tiles_top: Array, tiles_bottom: Array) -> void:
@@ -412,17 +466,8 @@ func _wall_quad(batch: KIT.Batch, centre: Vector3, along: Vector3, w: float, h: 
 
 func _stage() -> void:
 	var half: float = _half_width(0.0)
-	# Startampel an einem Galgen rechts, über der Fahrbahnkante (nicht über der Mitte).
-	var d_light: float = fposmod(-4.0, _length())
-	var right_site: Dictionary = _site(d_light, 1.0, half + 2.2, 0.4, false)
-	if not right_site.is_empty():
-		var at: Vector3 = right_site.at
-		var toward_driver: Vector3 = -(world.forward(d_light) as Vector3).slide(Vector3.UP).normalized()
-		var face_driver := Basis(Vector3.UP.cross(toward_driver).normalized(), Vector3.UP, toward_driver)
-		_put("lamp_post_small", Transform3D(Basis.IDENTITY.scaled(Vector3(1.6, 2.4, 1.6)), at), d_light, "stage")
-		var head: Vector3 = world.position_at(d_light, half - 0.6) + Vector3.UP * 6.4
-		_put("start_lights", Transform3D(face_driver, head), d_light, "stage", Color.WHITE, false)
-		_beam_box(at + Vector3.UP * 6.6, head + Vector3.UP * 0.4, 0.14, Color("1d1e22"), d_light, "props")
+	# Die Startampel stellt der Startbogen jeder Strecke bereits; hier kommen
+	# die Kleinigkeiten drumherum dazu.
 	# Streckenname auf Bannern beidseitig der Startgeraden + Werbebanden.
 	var cell: int = KIT.track_banner_cell(track_id)
 	for side in [-1.0, 1.0]:
@@ -437,9 +482,11 @@ func _stage() -> void:
 	var stands: int = 1 if profile == "low" else 2
 	for s in range(stands):
 		var side: float = -1.0 if s == 0 else 1.0
-		var site: Dictionary = _site(-22.0 + s * 34.0, side, half + 8.5, 3.3, false)
-		if site.is_empty():
-			site = _site(-40.0 + s * 34.0, side, half + 9.5, 3.3, false)
+		var site: Dictionary = {}
+		for candidate in [-22.0, -40.0, 18.0, -60.0, 40.0, -80.0]:
+			for lateral in [half + 5.5, half + 9.5]:
+				if site.is_empty():
+					site = _site(candidate + s * 30.0, side, lateral, 4.2, false)
 		if site.is_empty():
 			continue
 		_place("grandstand", site, "stage")
@@ -607,12 +654,43 @@ func _container_wear(site: Dictionary) -> void:
 		_wall_quad(batch, centre, basis.x, 1.8, 1.8, normal, "rust" if k == 0 else "streak", Color(1, 1, 1, 0.9))
 
 
+## Direkt hinter der Leitplanke, wo die Rennkamera wirklich hinschaut:
+## Reifenstapel an Kurvenaußenseiten, Fahnen und Wimpel auf den Geraden.
+func _railside() -> void:
+	var density: float = float(DENSITY[profile])
+	var kinds: Array = theme.get("railside", ["tire_stack", "flag_pole"])
+	var d: float = 50.0
+	var flag_gap: float = lerpf(90.0, 45.0, density)
+	var last_flag: float = -999.0
+	while d < _length() - 30.0:
+		d += lerpf(16.0, 8.0, density)
+		var turn: float = _corner_strength(d)
+		if absf(turn) > 0.16:
+			var outside: float = -signf(turn)
+			var site: Dictionary = _site(d, outside, _half_width(d) + 1.4, 0.55)
+			if site.is_empty():
+				continue
+			var kind: String = kinds[0]
+			_place(kind, site, "props", Vector3.ZERO, rng.randf_range(-0.5, 0.5))
+			if kind == "tire_stack":
+				_place(kind, site, "props", Vector3(1.0, 0, 0.0), rng.randf_range(-0.5, 0.5))
+				if rng.randf() < 0.5:
+					_place(kind, site, "props", Vector3(0.5, 1.0, 0.0), rng.randf_range(-0.5, 0.5), 0.95)
+		elif d - last_flag > flag_gap:
+			var side: float = -1.0 if int(d / flag_gap) % 2 == 0 else 1.0
+			var site: Dictionary = _site(d, side, _half_width(d) + 1.6, 0.4)
+			if site.is_empty():
+				continue
+			last_flag = d
+			_place(kinds[1] if kinds.size() > 1 else "flag_pole", site, "props", Vector3.ZERO, side * 0.4)
+
+
 # ---------------------------------------------------------------- Leben
 
 func _life() -> void:
 	var fans: Array[String] = ["fan_a", "fan_b", "fan_c", "fan_d"]
 	# Publikumsgruppen an markanten Stellen (Kurven-Scheitel).
-	var groups: int = 3 if profile == "medium" else 6
+	var groups: int = 6 if profile == "medium" else 12
 	var found: int = 0
 	var d: float = 120.0
 	while d < _length() - 80.0 and found < groups:
@@ -627,7 +705,7 @@ func _life() -> void:
 		_place("barrier", anchor, "props", Vector3(0, 0, 0.9))
 		for i in range(5 if profile == "high" else 4):
 			_place(fans[(i + found) % 4], anchor, "life", Vector3(-1.8 + i * 0.9, 0, -0.4 - (i % 2) * 0.6), rng.randf_range(-0.3, 0.3), rng.randf_range(0.85, 1.05))
-		d += 110.0
+		d += 60.0 if profile == "high" else 110.0
 	# Streckenposten mit Flagge.
 	var marshals: int = 2 if profile == "medium" else 4
 	for m in range(marshals):
@@ -640,11 +718,11 @@ func _life() -> void:
 	# Schwärme (Möwen, Schmetterlinge, Drohnen) und ein Luftschiff/Bahn im Hintergrund.
 	var flock_kind: String = str(theme.get("flock", ""))
 	if flock_kind != "":
-		var flocks: int = 2 if profile == "medium" else 4
+		var flocks: int = 3 if profile == "medium" else 6
 		for f in range(flocks):
 			var fd: float = _length() * (0.12 + 0.24 * f)
 			var side: float = -1.0 if f % 2 == 0 else 1.0
-			var centre: Vector3 = world.position_at(fd, side * (_half_width(fd) + 14.0)) + Vector3.UP * float(theme.get("flock_height", 9.0))
+			var centre: Vector3 = world.position_at(fd, side * (_half_width(fd) + 9.0)) + Vector3.UP * float(theme.get("flock_height", 9.0))
 			_flock(flock_kind, centre, float(theme.get("flock_scale", 1.0)), theme.get("flock_tint", Color.WHITE), f)
 	if bool(theme.get("airship", true)):
 		_airship()

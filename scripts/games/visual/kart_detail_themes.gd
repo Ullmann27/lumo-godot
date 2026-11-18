@@ -26,7 +26,7 @@ const JUNGLE: Array = [["fern", 0.0, 0.0, 0.8], ["mushroom_cluster", 1.4, 0.6, 0
 
 const THEMES: Dictionary = {
 	"sonnenhafen": {
-		"ground": "terrain",
+		"ground": "terrain", "min_ground": -1.5,
 		"road_wear": ["patch", "manhole", "puddle", "oil", "tar", "crack", "patch", "manhole"],
 		"edge": "sand", "edge_tint": Color(1, 1, 1, 0.85),
 		"clusters": [HARBOUR_QUAY, HARBOUR_BOXES, STREET, CORNER, TIRES, HAY, PIT],
@@ -63,6 +63,8 @@ const THEMES: Dictionary = {
 		"brands": ["pixelpost", "funkelfunk", "raketenroller", "mondmilch", "nova_nudeln"],
 		"flock": "drone", "flock_height": 12.0, "flock_scale": 2.0,
 		"lantern": "neon_arrow", "airship_color": Color("ff3b8a"),
+		"road_tint": Color(0.6, 0.7, 1.6), "pad_color": Color("2b2f46"), "pad_trim": Color("ff3b8a"), "plane_y": -1.2,
+		"railside": ["pylon", "neon_arrow"],
 		"string_colors": [Color("ff3b8a"), Color("6fd3ff"), Color("b06cff")],
 		"sky_tint": Color(0.55, 0.45, 0.95),
 	},

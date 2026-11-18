@@ -103,8 +103,8 @@ def tile_oil(seed):
     n = fbm(TILE, seed, 6)
     r = np.hypot(u - 0.5, (v - 0.5) * 1.15) + (n - 0.5) * 0.22
     alpha = np.clip((0.36 - r) / 0.08, 0, 1)
-    sheen = 0.5 + 0.5 * np.sin(r * 70.0 + n * 9.0)
-    rgb = np.stack([0.07 + 0.10 * sheen, 0.06 + 0.06 * (1 - sheen), 0.10 + 0.12 * sheen], -1)
+    sheen = 0.5 + 0.5 * np.sin(r * 40.0 + n * 14.0)
+    rgb = np.stack([0.07 + 0.05 * sheen, 0.07 + 0.04 * (1 - sheen), 0.08 + 0.07 * sheen], -1)
     drops = (fbm(TILE, seed + 5, 3, 12) > 0.72) * (r < 0.48)
     alpha = np.maximum(alpha * 0.85, drops * 0.6)
     return rgba(rgb, alpha)
@@ -120,7 +120,7 @@ def tile_patch(seed):
     grain = 0.75 + 0.35 * n + (RNG.random((TILE, TILE)) - 0.5) * 0.12
     rgb = tint((44, 46, 50), grain)
     rgb[rim] = np.array([0.05, 0.05, 0.055])
-    alpha = inside * 0.9 + rim * 0.95
+    alpha = inside * 0.55 + rim * 0.9
     return rgba(rgb, np.clip(alpha, 0, 1))
 
 
@@ -297,8 +297,8 @@ def wear_atlas() -> Image.Image:
     builders = {
         "skid": tile_skid, "oil": tile_oil, "patch": tile_patch, "manhole": tile_manhole,
         "puddle": tile_puddle, "leaves": tile_leaves,
-        "sand": lambda s: tile_drift(s, (226, 196, 140), 0.10),
-        "snow": lambda s: tile_drift(s, (246, 250, 255), 0.04),
+        "sand": lambda s: tile_drift(s, (214, 188, 140), 0.035),
+        "snow": lambda s: tile_drift(s, (246, 250, 255), 0.02),
         "crack": tile_crack, "streak": tile_streak, "moss": tile_moss, "grime": tile_grime,
         "rust": tile_rust, "plaster": tile_plaster, "rubber": tile_rubber, "tar": tile_tar,
     }
