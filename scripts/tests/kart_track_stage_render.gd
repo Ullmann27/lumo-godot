@@ -5,7 +5,7 @@ extends SceneTree
 ##   xvfb-run -a godot --path . --rendering-method gl_compatibility --audio-driver Dummy \
 ##     --fixed-fps 30 --script res://scripts/tests/kart_track_stage_render.gd -- \
 ##     [--tracks=a,b] [--clips=winter_sprint,jungle_emerald_3600]
-##     [--frames=<dir>] [--candidates=<dir>]
+##     [--frames=<dir>] [--candidates=<dir>] [--maps-only]
 ##
 ## Ergebnis je Strecke: assets/kart/track_stage/<id>.webp (1920×1080, Standbild = erstes
 ## Clipbild), cards/<id>.webp (512×288) und für --clips clips/<id>.ogv (Theora, stumm,
@@ -27,7 +27,7 @@ const SHOTS := {
 	"volcano_night": {"f": 0.412, "side": 1.0},
 	"winter_sprint": {"f": 0.794, "side": 1.0},
 	"galaxy_ringway": {"f": 0.325, "side": 1.0},
-	"desert_drift": {"f": 0.306, "side": -1.0},
+	"desert_drift": {"f": 0.062, "side": 1.0},
 	"learning_lab": {"f": 0.800, "side": 1.0},
 	# Wasserfall und Sonnentempel liegen von der Fahrbahn aus hinter Bäumen; die
 	# offene Waldkurve bei Abschnitt 5 liest sich am besten (am Probebild gewählt).
@@ -47,6 +47,7 @@ func _run() -> void:
 	var clips: Array[String] = []
 	var frames_dir := ""
 	var candidates := ""
+	var maps_only := false
 	for argument in OS.get_cmdline_user_args():
 		var text := str(argument)
 		if text.begins_with("--tracks="):
@@ -55,6 +56,8 @@ func _run() -> void:
 			clips.assign(text.trim_prefix("--clips=").split(",", false))
 		elif text.begins_with("--frames="):
 			frames_dir = text.trim_prefix("--frames=")
+		elif text == "--maps-only":
+			maps_only = true
 		elif text.begins_with("--candidates="):
 			candidates = text.trim_prefix("--candidates=")
 	if tracks.is_empty():
@@ -72,7 +75,7 @@ func _run() -> void:
 		var started := Time.get_ticks_msec()
 		var world = WORLD.new()
 		root.add_child(world)
-		world.build(false, id, false)
+		world.build(maps_only, id, maps_only)
 		for _frame in range(6):
 			await process_frame
 		var camera := Camera3D.new()
@@ -82,6 +85,10 @@ func _run() -> void:
 		world.add_child(camera)
 		camera.current = true
 		maps[id] = _map_points(world)
+		if maps_only:
+			root.remove_child(world)
+			world.free()
+			continue
 		if not candidates.is_empty():
 			await _candidates(world, camera, id, candidates)
 		else:
@@ -105,6 +112,7 @@ func _run() -> void:
 		world.queue_free()
 		for _frame in range(3):
 			await process_frame
+	_write_maps(maps)
 	print(
 		(
 			"[TrackStageRender] %s: %d Strecken, %d Fehler"
@@ -169,7 +177,8 @@ func _pose(world, camera: Camera3D, shot: Dictionary, t: float) -> void:
 	var eye: Vector3 = world.position_at(eye_d, lateral) + Vector3.UP * height
 	var look_d := eye_d + float(shot.get("ahead", 30.0)) + 8.0 * ease_t
 	var look: Vector3 = (
-		world.position_at(look_d, float(shot.get("look_lat", -side * width * 0.2))) + Vector3.UP * float(shot.get("lh", 1.3))
+		world.position_at(look_d, float(shot.get("look_lat", -side * width * 0.2)))
+		+ Vector3.UP * float(shot.get("lh", 1.3))
 	)
 	camera.fov = float(shot.get("fov", 56.0))
 	camera.look_at_from_position(eye, look, Vector3.UP)
@@ -314,11 +323,15 @@ func _write_maps(maps: Dictionary) -> void:
 		var pairs: Array[String] = []
 		for point in maps[id]:
 			pairs.append("[%s, %s]" % [point[0], point[1]])
-		lines.append('\t"%s": [' % id)
-		for start in range(0, pairs.size(), 6):
-			lines.append("\t\t%s," % ", ".join(pairs.slice(start, start + 6)))
+		# Gleiche Form wie gdformat, damit ein Neuerzeugen nur echte Änderungen zeigt.
+		lines.append('\t"%s":' % id)
+		lines.append("\t[")
+		for pair in pairs:
+			lines.append("\t\t%s," % pair)
 		lines.append("\t],")
 	lines.append("}")
-	var file := FileAccess.open(ProjectSettings.globalize_path("res://scripts/games/kart_track_maps.gd"), FileAccess.WRITE)
+	var file := FileAccess.open(
+		ProjectSettings.globalize_path("res://scripts/games/kart_track_maps.gd"), FileAccess.WRITE
+	)
 	file.store_string("\n".join(lines) + "\n")
 	file.close()
