@@ -85,6 +85,17 @@ func _run() -> void:
 		is_equal_approx(rival_cruise, own_top * 0.86),
 		"Rivalen rechnen mit 86 % des eigenen Endtempos (gleiches Kart)"
 	)
+	# Eigentempo ist auf allen Stufen gleich (volles Tempo), Rivalen werden je Stufe stärker.
+	var previous_rival: float = 0.0
+	for level in ["gemuetlich", "flott", "pro"]:
+		var level_rules: Dictionary = catalog.entry(catalog.DIFFICULTIES, level)
+		var level_own: float = powertrain.top_speed(racecraft.factors(kart_id), float(level_rules.speed))
+		_check(is_equal_approx(level_own, own_top), "eigenes Endtempo auf %s gleich wie auf Entdecken" % level)
+		var level_rival: float = racecraft.cruise_speed(kart_id, level_rules)
+		_check(level_rival > previous_rival, "Rivalen-Endtempo steigt mit der Stufe (%s)" % level)
+		_check(level_rival <= level_own + 0.0001, "Rivalen fahren auf %s nicht schneller als das Kind" % level)
+		previous_rival = level_rival
+	_check(is_equal_approx(float(rules.speed), 1.17), "Entdecken fährt volles Tempo (1,17 wie bisher Extrem)")
 	_check(_stored(CHILD_A) == "gemuetlich", "gefahrene Stufe ist für das Kind gespeichert")
 	await _close(game)
 

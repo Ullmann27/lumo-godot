@@ -222,6 +222,9 @@ var finished: bool = false
 var paused: bool = false
 var abandoned: bool = false
 var rng := RandomNumberGenerator.new()
+## Fester Zufalls-Seed nur für Tests und Messungen; -1 (Standard) lässt das Spiel wie bisher zufällig.
+## Wird bei jedem Rennstart neu gesetzt, damit Vorher/Nachher-Läufe gleich beginnen.
+var race_seed: int = -1
 var player: LumoRaceKart
 var camera: Camera3D
 var speed_fx: Node3D
@@ -972,6 +975,9 @@ func _begin_race() -> void:
 	opponent_lanes = [-3.2, -1.65, -0.1, 1.45, 3.0]
 	result_id = HostBridge.new_result_id()
 	result_payload = {}
+	if race_seed >= 0:
+		rng.seed = race_seed
+		seed(race_seed)
 	_build_world()
 	if is_instance_valid(kart_audio):
 		kart_audio.set_paused(false)
@@ -2795,11 +2801,17 @@ func _drive_opponents(delta: float) -> void:
 			target_speed *= 1.32
 		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
+		# Die Rampenplanung beschleunigt vom zuletzt GEPLANTEN Tempo aus, nicht vom
+		# gefahrenen: Gummiband/Nordlicht wirken unten genau einmal je Takt. Vorher
+		# wurden sie vor einer Rampe Takt für Takt aufmultipliziert (Sonnenhafen:
+		# 45 -> 273 m/s, Rivale flog rund 1.000 m weit).
 		target_speed = RIVAL_RAMP_PLAN.target_speed(
 			world, float(sampled.distance), rival.kart_style, float(rules.speed),
-			absf(rival.motion_speed), target_speed, opponent_boost_times[i] > 0.0, delta
+			float(rival.get_meta(&"racecraft_planned_speed", absf(rival.motion_speed))),
+			target_speed, opponent_boost_times[i] > 0.0, delta
 		)
 		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
+		rival.set_meta(&"racecraft_planned_speed", target_speed)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:

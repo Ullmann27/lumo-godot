@@ -237,7 +237,7 @@ func multipliers(kart_id: String) -> Dictionary:
 
 static func performance_for(factors: Dictionary) -> Dictionary:
 	return {
-		"top_kmh": POWERTRAIN.top_speed(factors) * 3.6,
+		"top_kmh": POWERTRAIN.top_speed(factors, POWERTRAIN.race_pace()) * 3.6,
 		"zero_to_54_s": 15.0 / POWERTRAIN.acceleration(factors, false),
 		"brake_m": POWERTRAIN.stopping_distance(factors),
 	}

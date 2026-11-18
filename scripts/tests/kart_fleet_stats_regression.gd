@@ -273,7 +273,9 @@ func _check_physics() -> void:
 		speeds[kart] = await _run_top_speed(kart)
 	assert(float(speeds.turbo.speed) > float(speeds.comet.speed) + 1.2, "Aurora GT wird schneller (%.1f gegen %.1f)" % [speeds.turbo.speed, speeds.comet.speed])
 	assert(float(speeds.glider.speed) < float(speeds.comet.speed) - 0.2, "Glider ist langsamer")
-	assert(absf(float(speeds.comet.speed) - 41.0) < 0.6, "Comet fährt echtes doppeltes Tempo:41m/s (%.2f)" % float(speeds.comet.speed))
+	# Alle Stufen fahren das volle Renntempo: 41 m/s Grundtempo x Stufenfaktor 1,17 = 48 m/s.
+	var race_top: float = 41.0 * float(CATALOG.entry(CATALOG.DIFFICULTIES, "flott").speed)
+	assert(absf(float(speeds.comet.speed) - race_top) < 0.7, "Comet fährt volles Renntempo: %.1f m/s (%.2f)" % [race_top, float(speeds.comet.speed)])
 	# Fourfold acceleration reaches the unchanged54km/h target sooner; two
 	# physical ticks still separate the actual fleet acceleration characteristics.
 	assert(float(speeds.blitz.t15) < float(speeds.comet.t15) - STEP, "Blitz erreicht Tempo früher (%.2f gegen %.2f s)" % [speeds.blitz.t15, speeds.comet.t15])
