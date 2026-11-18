@@ -113,6 +113,9 @@ func build(
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
 		if not geometry_only:
+			# Without its own sky and sun the course fell back to the project's
+			# sunset default and drowned in orange haze.
+			_lighting()
 			var environment_script: Script = load("res://scripts/games/kart_jungle_environment.gd")
 			assert(environment_script != null, "Dschungelherz environment is part of the track package")
 			var jungle_environment: Node3D = environment_script.new()
@@ -639,6 +642,11 @@ func _lighting() -> void:
 	environment.fog_light_color=definition.fog
 	environment.fog_density=0.00065 if track_id=="sonnenhafen" else (0.0010 if track_id!="zauberwald" else 0.003)
 	environment.fog_aerial_perspective=0.26 if track_id=="sonnenhafen" else 0.22
+	if track_id==JUNGLE.ID:
+		# Bright rainforest noon: green bounce light, thin warm haze for depth.
+		environment.ambient_light_color=Color("cfe8c4")
+		environment.ambient_light_energy=0.36
+		environment.fog_density=0.0016
 	# Additive desktop polish with a strict Mobile/GL fallback; no new environment node.
 	set_meta("aaa_visual_profile", AAA_ENV.configure(environment, low_detail))
 	var world_environment := WorldEnvironment.new()
@@ -648,6 +656,9 @@ func _lighting() -> void:
 	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
 	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.90 if low_detail else 1.00) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
+	if track_id==JUNGLE.ID:
+		sun.rotation_degrees=Vector3(-52,-28,0)
+		sun.light_energy=1.05
 	sun.shadow_enabled=not low_detail
 	sun.directional_shadow_max_distance=85.0
 	sun.directional_shadow_mode=DirectionalLight3D.SHADOW_ORTHOGONAL
