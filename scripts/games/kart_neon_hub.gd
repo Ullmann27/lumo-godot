@@ -59,7 +59,10 @@ var _overlay_flat: StyleBoxFlat
 var _skin_scale := -1.0
 var _highlight_pick: Button
 var _track_buttons: Dictionary = {}
-var _featured_track := "volcano_night"
+var _featured_track := ""
+## Strecke, die das nächste Rennen fährt. Das Highlight zeigt immer genau diese
+## Strecke; der Besitzer setzt sie vor dem Einhängen aus der echten Auswahl.
+var selected_track := ""
 var _dots: Control
 var _mode_tiles: Dictionary = {}
 var _feature_tiles: Dictionary = {}
@@ -212,7 +215,7 @@ func _build_highlight() -> void:
 		var path := "res://" + str(entry[2])
 		if ResourceLoader.exists(path, "Texture2D"):
 			thumb.art = load(path)
-		thumb.pressed.connect(func(): _feature_track(id))
+		thumb.pressed.connect(func(): _choose_track(id))
 		_track_buttons[id] = thumb
 		_highlight.add_child(thumb)
 	_dots = Control.new()
@@ -220,7 +223,8 @@ func _build_highlight() -> void:
 	_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_dots.draw.connect(_draw_dots)
 	_highlight.add_child(_dots)
-	_feature_track("volcano_night")
+	# Hervorgehoben ist, was "Rennen" wirklich startet – nie eine bloße Werbestrecke.
+	_feature_track(selected_track if _available_track(selected_track) else str(CATALOG.TRACKS[0].id))
 
 
 func _draw_dots() -> void:
@@ -247,7 +251,8 @@ func _feature_track(id: String) -> void:
 	if not _available_track(id):
 		return
 	_featured_track = id
-	_highlight_pick.title = TRACK_NAMES.get(id, id)
+	selected_track = id
+	_highlight_pick.title = TRACK_NAMES.get(id, str(CATALOG.entry(CATALOG.TRACKS, id).get("name", id)))
 	_highlight_pick.tooltip_text = "%s fahren – Strecke wählen" % _highlight_pick.title
 	if _track_buttons.has(id):
 		_highlight_pick.art = _track_buttons[id].art
@@ -260,10 +265,27 @@ func _feature_track(id: String) -> void:
 		call_deferred("_layout")
 
 
+## Ein angetipptes Streckenbild ist ab sofort die Strecke des nächsten Rennens
+## (vorher wurde es nur hervorgehoben und "Rennen" startete weiter die alte Wahl).
+func _choose_track(id: String) -> void:
+	if not _available_track(id):
+		return
+	_feature_track(id)
+	mode_selected.emit(id)
+
+
 func _track_select(id: String) -> void:
 	if _available_track(id):
+		_feature_track(id)
 		mode_selected.emit(id)
 		mode_selected.emit("world")
+
+
+## Der Besitzer meldet eine geänderte Rennart (Strecke gewählt: Cup → Einzelrennen).
+func set_current_mode(mode: String) -> void:
+	current_mode = mode
+	if is_instance_valid(_race_kinds):
+		_refresh_race_kinds()
 
 
 func _build_modes() -> void:
