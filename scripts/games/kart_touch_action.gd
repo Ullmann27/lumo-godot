@@ -185,14 +185,14 @@ func _apply_label_size() -> void:
 	var side: float = minf(size.x, size.y)
 	if skin == "kart3d":
 		# The caption sits on the lower glass of the rendered face, under the symbol.
-		label.position = Vector2(0, side * 0.715)
-		label.size = Vector2(size.x, side * 0.17)
+		label.position = Vector2(0, side * 0.735)
+		label.size = Vector2(size.x, side * 0.15)
 		var ratio_3d: float = 0.118 if label.text.length() > 5 else 0.142
 		var font_size: int = maxi(10, roundi(side * ratio_3d))
 		label.add_theme_font_size_override("font_size", font_size)
 		label.add_theme_constant_override("outline_size", maxi(2, roundi(font_size * 0.22)))
 		# A tiny caption is noise: under ~62 px the symbol alone carries the meaning.
-		label.visible = side >= 62.0
+		label.visible = _side_dp(side) >= 60.0
 		badge.position = Vector2(side * 0.765, -side * 0.035)
 		badge.size = Vector2.ONE * side * 0.26
 		badge.add_theme_font_size_override("font_size", maxi(10, roundi(side * 0.17)))
@@ -206,6 +206,18 @@ func _apply_label_size() -> void:
 	badge.position = Vector2(side * 0.74, side * 0.02)
 	badge.size = Vector2.ONE * side * 0.25
 	badge.add_theme_font_size_override("font_size", maxi(10, roundi(side * 0.18)))
+
+
+## Button side in device-independent points (the canvas may be stretched).
+func _side_dp(side: float) -> float:
+	if not is_inside_tree():
+		return side
+	var screen_scale: float = get_viewport().get_screen_transform().get_scale().x * get_global_transform().get_scale().x
+	var density: float = 1.0
+	var runtime: Node = get_tree().root.get_node_or_null("MobileRuntime")
+	if runtime != null and runtime.has_method("get_ui_density"):
+		density = maxf(0.5, float(runtime.get_ui_density()))
+	return side * screen_scale / density
 
 
 func _animate_press(value: float) -> void:
@@ -354,7 +366,7 @@ func _draw_kart3d(side: float) -> void:
 	# Body = 392/512 of the image. The image is 1.12 x the hit square, so the solid
 	# body is 0.86 x the touch target and the glow halo reaches just past it.
 	var depth: float = clampf(press_depth, 0.0, 1.2)
-	var squash: float = 1.0 - 0.045 * depth
+	var squash: float = 1.0 - 0.07 * depth
 	var extent: float = side * 1.12 * squash
 	var face_radius: float = side * 0.43
 	if not disabled:
@@ -369,8 +381,16 @@ func _draw_kart3d(side: float) -> void:
 				var grow: float = 1.0 + 0.07 * float(k + 1)
 				draw_circle(centre, face_radius * grow, Color(lead, 0.10 * glow * (1.0 - k * 0.2)))
 	if texture != null:
-		draw_texture_rect(texture, Rect2(centre - Vector2.ONE * extent * 0.5 + Vector2(0, side * 0.012 * depth), Vector2.ONE * extent), false)
-	var ring_radius: float = side * 0.535
+		draw_texture_rect(texture, Rect2(centre - Vector2.ONE * extent * 0.5 + Vector2(0, side * 0.02 * depth), Vector2.ONE * extent), false)
+	if depth > 0.01 and not disabled:
+		# Pressed: the glass lights up from inside.
+		var face := StyleBoxFlat.new()
+		face.bg_color = Color(lead.lightened(0.6), 0.16 * minf(depth, 1.0))
+		face.set_corner_radius_all(roundi(side * 0.12 * squash))
+		face.anti_aliasing = true
+		var half: float = side * 0.40 * squash
+		draw_style_box(face, Rect2(centre + Vector2(-half, -half + side * 0.02 * depth), Vector2.ONE * half * 2.0))
+	var ring_radius: float = side * 0.5
 	var ring_width: float = maxf(3.0, side * 0.05)
 	var start: float = PI * 0.75
 	var sweep: float = PI * 1.5
@@ -378,8 +398,8 @@ func _draw_kart3d(side: float) -> void:
 		match icon_id:
 			"gas":
 				# Load ring: how fast Lumo is going, from bottom-left round to bottom-right.
-				draw_arc(centre, ring_radius, start, start + sweep, 48, Color(0.02, 0.06, 0.12, 0.55), ring_width, true)
 				if meter > 0.01:
+					draw_arc(centre, ring_radius, start, start + sweep, 48, Color(0.02, 0.06, 0.12, 0.45), ring_width, true)
 					draw_arc(centre, ring_radius, start, start + sweep * meter, 48, lead.lightened(0.25), ring_width * 0.72, true)
 			"drift":
 				if tier >= -1 and (held or meter > 0.01):
@@ -397,10 +417,6 @@ func _draw_kart3d(side: float) -> void:
 				if meter > 0.01:
 					# Turbo running: the remaining time drains clockwise.
 					draw_arc(centre, ring_radius, -PI * 0.5, -PI * 0.5 + TAU * meter, 56, Color("ffe066"), ring_width * 0.72, true)
-				for index in range(mini(stock, 3)):
-					var pip := Vector2(centre.x + (float(index) - (mini(stock, 3) - 1) * 0.5) * side * 0.11, centre.y + side * 0.5)
-					draw_circle(pip, side * 0.034, Color("2a1400"))
-					draw_circle(pip, side * 0.025, Color("ffd54a"))
 	if flash > 0.0 and not reduced_motion:
 		var t: float = 1.0 - flash
 		draw_arc(centre, side * (0.44 + 0.16 * t), 0, TAU, 56, Color(lead.lightened(0.45), flash * 0.85), maxf(2.0, side * 0.04 * flash), true)

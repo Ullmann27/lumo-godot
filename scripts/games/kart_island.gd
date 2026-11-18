@@ -1391,19 +1391,20 @@ func _apply_responsive_layout() -> void:
 		var gap: float = 4.0
 		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
 		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
-		var pad_height: float = clampf(display_size.y * 0.24, 176.0, 240.0)
+		var pad_height: float = clampf(display_size.y * 0.29, 176.0, 290.0)
 		joystick.custom_minimum_size = Vector2.ONE * stick_size * ui_scale
 		pedal_pad.custom_minimum_size = Vector2(pad_width, pad_height) * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(gap * ui_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		controls_gap.custom_minimum_size = Vector2(gap * ui_scale, 1.0)
-		var diameter: float = maxf(48.0, minf(68.0, minf(pad_width * 0.28, pad_height * 0.26)))
+		# Thumb cluster on the right: big enough for a child's thumb, clear of the road middle.
+		var diameter: float = maxf(48.0, minf(84.0, minf(pad_width * 0.29, pad_height * 0.28)))
 		var compact_positions: Dictionary = {
-			"DriftAction": Vector2(pad_width * 0.28, pad_height * 0.2),
-			"BoostAction": Vector2(pad_width * 0.72, pad_height * 0.2),
-			"ItemAction": Vector2(pad_width * 0.28, pad_height * 0.5),
-			"BrakePedal": Vector2(pad_width * 0.72, pad_height * 0.5),
-			"GasPedal": Vector2(pad_width * 0.5, pad_height * 0.82)
+			"DriftAction": Vector2(pad_width * 0.46, pad_height * 0.2),
+			"BoostAction": Vector2(pad_width * 0.84, pad_height * 0.2),
+			"ItemAction": Vector2(pad_width * 0.46, pad_height * 0.5),
+			"BrakePedal": Vector2(pad_width * 0.84, pad_height * 0.5),
+			"GasPedal": Vector2(pad_width * 0.65, pad_height * 0.82)
 		}
 		for child in pedal_pad.get_children():
 			if not child is Control:

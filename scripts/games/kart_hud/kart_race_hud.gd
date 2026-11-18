@@ -42,6 +42,7 @@ static func dress(game: Node) -> void:
 	var message: Label = game.message
 	if message.get_node_or_null("MessagePlate") == null:
 		message.add_child(MESSAGE_PLATE.new())
+	message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	message.add_theme_font_override("font", preload("res://assets/fonts/Nunito-Black.ttf"))
 	message.add_theme_color_override("font_color", Color("fbfdff"))
 	message.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0))
