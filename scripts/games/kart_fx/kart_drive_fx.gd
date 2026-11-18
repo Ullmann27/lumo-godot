@@ -804,10 +804,11 @@ func _kart_flames(kart: Node3D, forward: Vector3, up: Vector3, boosting: bool, a
 	middle /= float(exhausts.size())
 	if boosting:
 		var mach := clampf(1.0 - age / 0.55, 0.0, 1.0)
-		var length := (1.05 + 0.18 * sin(_clock * 4.0 + seed)) * scale
+		var length := (1.5 + 0.2 * sin(_clock * 4.0 + seed)) * scale
 		for index in range(exhausts.size()):
-			flames.flame(exhausts[index].global_position, -forward, up, length, 0.34 * scale, 1.0, mach,
-				Color("ff8a2a"), seed + float(index))
+			# Tilted slightly up so the chase camera sees the flame's length, not its end.
+			flames.flame(exhausts[index].global_position, -forward + up * 0.18, up, length, 0.3 * scale, 1.0, mach,
+				Color("ff7a1c"), seed + float(index))
 		var drop := maxf(0.0, (middle - kart.global_position).dot(up) - 0.03)
 		flames.ground_glow(middle - forward * 0.9 * scale - up * drop, -forward, up, 1.1 * scale, 1.0, Color(1.0, 0.55, 0.22))
 		flames.light_at(middle - forward * 0.6, 1.6 * scale, Color(1.0, 0.62, 0.3))

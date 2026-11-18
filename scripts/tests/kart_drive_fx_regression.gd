@@ -81,7 +81,10 @@ func _place(distance: float, lane: float = 0.0) -> void:
 	game.distance = distance
 	game.previous_road_distance = distance
 	game.lane = lane
-	game.player.transform = game.world.reset_transform(distance, lane)
+	# reset_transform clamps the lateral to +-3.5 m; rail tests need the real wall position.
+	var placed: Transform3D = game.world.reset_transform(distance, 0.0)
+	placed.origin += placed.basis.x.normalized() * lane
+	game.player.transform = placed
 	game.player.position.y += 0.035
 	game.player_heading = game._heading(distance)
 

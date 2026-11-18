@@ -54,12 +54,13 @@ void fragment() {
 		float angle = atan(v_local.y, v_local.x);
 		float n = value_noise(vec2(t * 5.0 - fx_time * 9.0 + v_data.w * 3.0, angle * 1.6));
 		float body = 1.0 - smoothstep(0.45, 1.0, t + (n - 0.5) * 0.45);
-		float core = smoothstep(0.55, 0.0, t + (1.0 - edge) * 0.5);
-		colour = mix(v_color.rgb, vec3(0.8, 0.93, 1.0) * 1.6, core);
-		colour = mix(colour, v_color.rgb * vec3(1.0, 0.55, 0.35), smoothstep(0.5, 1.0, t));
+		// Small blue-white core at the nozzle, orange body, deep red licking tips.
+		float core = smoothstep(0.32, 0.0, t + (1.0 - edge) * 0.6);
+		colour = mix(v_color.rgb, vec3(0.75, 0.9, 1.0) * 1.3, core);
+		colour = mix(colour, v_color.rgb * vec3(1.0, 0.45, 0.25), smoothstep(0.35, 0.9, t));
 		float diamonds = v_data.y * pow(max(0.0, sin(t * 34.0 - 1.2)), 10.0) * (1.0 - t);
 		colour += vec3(1.0, 0.95, 0.85) * diamonds * 1.5;
-		alpha = (edge * body * (0.55 + 0.45 * n) + diamonds) * intensity;
+		alpha = (edge * body * (0.45 + 0.4 * n) + diamonds) * intensity * 0.8;
 	} else if (kind < 1.5) {
 		vec2 p = vec2(v_local.x * 2.0, (v_local.z - 0.35) * 1.6);
 		float glow = clamp(1.0 - length(p), 0.0, 1.0);
