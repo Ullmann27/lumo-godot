@@ -14,6 +14,8 @@ const VIEWS := [
 	["quer", Vector2i(1280, 720), 1.75],
 	["fold", Vector2i(1768, 2208), 2.4],
 	["foldquer", Vector2i(2208, 1768), 2.4],
+	["hochlang", Vector2i(720, 1600), 1.75],
+	["querlang", Vector2i(1600, 720), 1.75],
 ]
 const FAST := 60.0
 

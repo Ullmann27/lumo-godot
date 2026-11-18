@@ -48,6 +48,8 @@ BASE = {
 def mat(name: str) -> bpy.types.Material:
     if name in _MATS:
         return _MATS[name]
+    if "-" in name:
+        BASE[name] = name.split("-", 1)[1]
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     p = m.node_tree.nodes.get("Principled BSDF")
@@ -97,7 +99,8 @@ def new_object(name: str, bm: bmesh.types.BMesh, material: str, colour: str | No
     bm.free()
     for poly in me.polygons:
         poly.use_smooth = smooth
-    me.materials.append(mat(material))
+    # Farbvarianten werden eigene Materialien „basis-rrggbb“ (Godot färbt danach ein).
+    me.materials.append(mat(f"{material}-{colour}") if colour else mat(material))
     ob = bpy.data.objects.new(name, me)
     bpy.context.collection.objects.link(ob)
     return ob

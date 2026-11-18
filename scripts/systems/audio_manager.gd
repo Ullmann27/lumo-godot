@@ -20,6 +20,7 @@ const SFX_PRESETS: Dictionary = {
 	"ui_back": {"freq": 360.0, "dur": 0.10, "kind": "chirp_down"},
 	# Kartentisch
 	"card_deal": {"freq": 940.0, "dur": 0.035, "kind": "chirp_down"},
+	"disc_clack": {"freq": 1650.0, "dur": 0.03, "kind": "square"},
 	"card_play": {"freq": 610.0, "dur": 0.07, "kind": "chirp_down"},
 	"card_draw": {"freq": 480.0, "dur": 0.06, "kind": "chirp_up"},
 	"card_select": {"freq": 820.0, "dur": 0.05, "kind": "sine"},

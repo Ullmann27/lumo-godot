@@ -119,7 +119,7 @@ func _setup_lumo() -> bool:
 			if bone >= 0:
 				_legs[bone] = skeleton.get_bone_pose_rotation(bone)
 	actor.behavior_finished.connect(_lumo_finished)
-	_seat_anchor = Vector3(0, ROOM.STOOL_HEIGHT + 0.14, 0.04)
+	_seat_anchor = Vector3(0, ROOM.STOOL_HEIGHT + 0.14 + ROOM.LUMO_LIFT, 0.04)
 	_build_bubble(1.98)
 	advance(0.0)
 	return _pelvis >= 0 and _legs.size() == 10
