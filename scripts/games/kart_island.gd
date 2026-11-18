@@ -5394,7 +5394,10 @@ func _apply_item_event(event: Dictionary) -> void:
 		_fx("rocket_hit" if rocket else "hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
 		if source == -1:
 			_stat("player_hits_scored")
-			message.text = "Treffer! %s dreht sich im Kreis." % _rival_name(target)
+			var whirl: bool = rocket and not reduced_motion
+			message.text = (
+				"Treffer! %s wirbelt durch die Luft." if whirl else "Treffer! %s dreht sich im Kreis."
+			) % _rival_name(target)
 			_popup("TREFFER!", opponents[target].global_position + Vector3.UP * 2.4, Color("ff3b5c"))
 			# Lumo cheers briefly (real rigged Lumo: its own celebrate clip).
 			player.cheer_in_race(1.3)

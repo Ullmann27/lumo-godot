@@ -327,7 +327,9 @@ func on_item_event(event: Dictionary, rocket: bool) -> void:
 	var at: Vector3 = event.get("position", Vector3.ZERO)
 	if not rocket or kind not in ["hit", "blocked", "intercepted"]:
 		return
-	impact(at, 1.0 if kind == "hit" else 0.6)
+	# Am eigenen Kart (Kind getroffen) bleibt der Einschlag klein: kein Bild voller Blitz.
+	var mild: bool = int(event.get("target", -99)) == -1
+	impact(at, (0.4 if mild else 1.0) if kind == "hit" else 0.6)
 
 
 ## Startet den Wirbel eines getroffenen Fahrers (key -1 = Kind). total = Drehzeit (s).
