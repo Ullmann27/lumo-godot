@@ -66,6 +66,34 @@ const SPECS: Dictionary = {
 			"Zwei Wurzelbögen: links, dann rechts durch – oder außen bei den Pilzen.",
 		},
 	],
+	"holo_city":
+	[
+		{
+			"kind": "gate",
+			"id": "lichtweiche",
+			"name": "Aurora-Lichtweiche",
+			"theme": "city",
+			"object": "light",
+			"alternate": true,
+			"cue": "switch_chime",
+			"effect": "bump",
+			"wait_start": 180.0,
+			"wait_line": 214.0,
+			"plane": 222.0,
+			"respawn": 188.0,
+			"lat_min": 0.6,
+			"lat_max": 5.0,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 0.0,
+			"sign": "LICHTWEICHE\nPfeilen folgen",
+			"approach_text": "Die Lichtweiche wechselt die Spur – folge den Pfeilen!",
+			"warn_text": "Pling-pling! Die Weiche wechselt – nimm die grüne Spur.",
+			"hit_text": "Lichtwand! Die Pfeile zeigen dir die freie Spur.",
+		},
+	],
 	"volcano_night":
 	[
 		{
