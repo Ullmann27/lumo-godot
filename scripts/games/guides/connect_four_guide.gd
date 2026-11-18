@@ -51,9 +51,10 @@ static func _active(game: Node) -> bool:
 
 
 static func _piece(game: Node, row: int, column: int) -> int:
-	if row < 0 or row >= ROWS or column < 0 or column >= COLUMNS:
+	var board: Array = game._state.get("board", [])
+	if row < 0 or row >= ROWS or column < 0 or column >= COLUMNS or board.size() != ROWS * COLUMNS:
 		return -1
-	return int(game._state.board[row * COLUMNS + column])
+	return int(board[row * COLUMNS + column])
 
 
 static func _count(game: Node, piece: int) -> float:

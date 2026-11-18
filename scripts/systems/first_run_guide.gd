@@ -191,6 +191,8 @@ func _process(delta: float) -> void:
 				_skip_unavailable()
 				if state == "running":
 					_begin_step()
+					# Der neue Schritt ist ab sofort zu sehen und zählt Handlungen.
+					_step_live = true
 		"outro":
 			_left -= delta
 			if _left <= 0.0:
@@ -223,6 +225,9 @@ func _begin_step(fresh: bool = true) -> void:
 		shown_steps.append(str(step.id))
 	if not replaying:
 		save_status(child_key, game_id, "running", index)
+	if fresh and active_check.is_valid() and bool(active_check.call()):
+		# Legt die Ausgangswerte (Zähler, Auswahl) gleich zu Schrittbeginn fest.
+		step.done.call(self)
 	_play_voice(str(step.id))
 
 
