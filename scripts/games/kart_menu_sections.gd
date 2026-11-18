@@ -5,7 +5,17 @@ extends RefCounted
 ## (kart_island.gd hilft nur auf „Entdecken“ am Fahrbahnrand nach).
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const CARD = preload("res://scripts/games/kart_showcase_card.gd")
+const KIT = preload("res://scripts/games/kart_ui3d.gd")
 const DRIVER_ART := "res://assets/kart/menu/drivers/%s.webp"
+## Rennarten (Reiter „Rennen“): Reihenfolge wie bisher, Symbol und Farbe wie im Hauptmenü.
+const MODE_ORDER: Array[String] = ["race", "time_trial", "arena", "cup", "training"]
+const MODE_LOOK := {
+	"race": ["icon_flag", Color("ffa91f"), "Dein schneller Start"],
+	"time_trial": ["icon_stopwatch", Color("21ccff"), "Du gegen deinen Geist"],
+	"arena": ["icon_star_crystal", Color("b760ed"), "90 Sekunden Abenteuer"],
+	"cup": ["icon_trophy", Color("8a5cff"), "Alle Welten · ein Pokal"],
+	"training": ["icon_route", Color("37e0a0"), "Entdecken ohne Druck"],
+}
 ## Stufe, auf der das Rennen am Fahrbahnrand sanft mitlenkt (siehe kart_island.gd, _drive_player).
 const ASSIST_LEVEL := "gemuetlich"
 const LEVEL_COLORS := {
@@ -48,6 +58,9 @@ static func level_facts(entry: Dictionary) -> PackedStringArray:
 ## Kinder der Auswahl (wie die bisherigen Zeilen); `layout` stellt sie neben- oder untereinander.
 ## `select` wird mit (Schlüssel, ID) aufgerufen wie bei den übrigen Auswahlkarten.
 static func build(menu: Control, step: int, select: Callable) -> void:
+	if step == 0:
+		_build_modes(menu, select)
+		return
 	if step not in [1, 4]:
 		return
 	var choices: BoxContainer = menu.choices
@@ -84,6 +97,33 @@ static func build(menu: Control, step: int, select: Callable) -> void:
 		choices.add_child(card)
 
 
+## Rennarten als Bildkarten in einem Raster (wie bisher das erste Kind der Auswahl).
+static func _build_modes(menu: Control, select: Callable) -> void:
+	var choices: BoxContainer = menu.choices
+	for child in choices.get_children():
+		choices.remove_child(child)
+		child.queue_free()
+	var grid := GridContainer.new()
+	grid.name = "ModeCards"
+	grid.columns = 3
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choices.add_child(grid)
+	for id in MODE_ORDER:
+		var item: Dictionary = CATALOG.entry(CATALOG.MODES, id)
+		var look: Array = MODE_LOOK[id]
+		var card = CARD.new()
+		card.name = "ModeCard_" + id
+		card.title = str(item.name)
+		card.art = KIT.texture(str(look[0]))
+		card.accent = look[1]
+		card.lines = PackedStringArray([str(look[2])])
+		card.selected = str(menu.setup.mode) == id
+		card.art_share = 0.5
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.pressed.connect(func(): select.call("mode", id))
+		grid.add_child(card)
+
+
 static func cards(menu: Control) -> Array:
 	var result: Array = []
 	for child in menu.choices.get_children():
@@ -95,6 +135,10 @@ static func cards(menu: Control) -> Array:
 ## Nebeneinander, wenn jede Karte mindestens 150 dp breit wird, sonst untereinander.
 ## Muss nach der Streckenwahl-Anordnung laufen (die setzt die Auswahl auf senkrecht zurück).
 static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_view: bool) -> void:
+	var grid := menu.choices.get_node_or_null("ModeCards") as GridContainer
+	if grid != null and not grid.is_queued_for_deletion():
+		_layout_modes(grid, area_dp, scale_factor)
+		return
 	var shown := cards(menu)
 	if shown.is_empty():
 		return
@@ -111,3 +155,19 @@ static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_v
 		card.apply_size(scale_factor)
 		if not side_by_side and card.chevrons == 0:
 			card.art_share = 0.6
+
+
+## Fünf Rennarten: drei bzw. zwei Spalten; alle passen ohne Blättern, solange 64 dp reichen.
+static func _layout_modes(grid: GridContainer, area_dp: Vector2, scale_factor: float) -> void:
+	var count := grid.get_child_count()
+	var columns := 3 if area_dp.x >= 420.0 else (2 if area_dp.x >= 260.0 else 1)
+	grid.columns = columns
+	var gap := 8.0
+	grid.add_theme_constant_override("h_separation", roundi(gap * scale_factor))
+	grid.add_theme_constant_override("v_separation", roundi(gap * scale_factor))
+	var rows := ceili(float(count) / columns)
+	var height := clampf((area_dp.y - gap * (rows - 1)) / rows, 64.0, 170.0)
+	for card in grid.get_children():
+		card.custom_minimum_size = Vector2(0, floorf(height * scale_factor))
+		card.art_share = 0.5 if height >= 110.0 else 0.0
+		card.apply_size(scale_factor)

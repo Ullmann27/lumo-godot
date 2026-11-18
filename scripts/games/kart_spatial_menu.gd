@@ -437,12 +437,12 @@ func _apply_responsive_layout() -> void:
 	var choices_rect: Rect2
 	if portrait:
 		var drawer_height := clampf(available.y * 0.30, 160.0, 286.0)
-		if step in [1, 4]:
-			# Große Fahrer- und Stufenkarten statt schmaler Zeilen.
+		if step in [0, 1, 4]:
+			# Große Rennarten-, Fahrer- und Stufenkarten statt schmaler Zeilen.
 			drawer_height = clampf(available.y * 0.36, 210.0, 330.0)
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
-		var drawer_width := clampf(available.x * (0.40 if step in [1, 4] else 0.31), 208, 420 if step in [1, 4] else 360)
+		var drawer_width := clampf(available.x * (0.40 if step in [0, 1, 4] else 0.31), 208, 420 if step in [0, 1, 4] else 360)
 		choices_rect = Rect2(margin, top, drawer_width, maxf(72, footer_y - top - 12))
 	var stage_mode: bool = track_stage.wanted()
 	if stage_mode:
@@ -480,7 +480,7 @@ func _apply_responsive_layout() -> void:
 		track_stage.layout_cards(choices_rect, scale_factor)
 	else:
 		track_stage.release_drawer()
-	if step in [1, 4]:
+	if step in [0, 1, 4]:
 		var title_dp := 0.0 if short_view else 40.0
 		var inset := 8.0 if short_view else 20.0
 		SECTIONS.layout(self, choices_rect.size - Vector2(inset + 4.0, inset + title_dp), scale_factor, short_view)
