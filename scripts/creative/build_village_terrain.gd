@@ -11,6 +11,29 @@ static var _step := 2.0
 static var _width := 0
 static var _depth := 0
 static var _blocked := {false: {}, true: {}}
+## Warum ein Feld des Kindes gesperrt ist: "water", "mountain", "slope",
+## "foreign" (fremdes Stadtgebiet), "reserved" (Höhle, Lager, Hain), "outside".
+static var _reason := {}
+## Bebaubare Felder am anderen Flussufer: erst über die Lieferbrücke erreichbar.
+static var _far_bank := {}
+## Gesperrte Felder je Nachbarstadt (eigene Gebiete, eigene Raster).
+static var _site_blocked := {}
+const REASONS := ["water", "mountain", "slope", "foreign", "reserved", "outside"]
+const NEIGHBOR_IDS := ["leo", "ella", "flitz"]
+## Eigene Stadtgebiete der Nachbarn am Ostufer (Mitte, 19 × 19 Bauplätze).
+## Gleiche Werte wie NEIGHBOR_SITES in tools/lumo_village_art/make_terrain.py.
+const NEIGHBOR_SITES := {"leo": Vector2(190.0, -5.0), "ella": Vector2(165.0, -125.0), "flitz": Vector2(170.0, 120.0)}
+const NEIGHBOR_RING := 9
+const NEIGHBOR_HALF := 9.5 * 5.3
+
+
+## Welche Nachbarstadt besitzt diesen Ort? "" = niemand.
+static func territory_at(x: float, z: float) -> String:
+	for id in NEIGHBOR_SITES:
+		var site: Vector2 = NEIGHBOR_SITES[id]
+		if absf(x - site.x) <= NEIGHBOR_HALF + 2.65 and absf(z - site.y) <= NEIGHBOR_HALF + 2.65:
+			return str(id)
+	return ""
 
 
 static func ensure() -> bool:
@@ -39,6 +62,16 @@ static func ensure() -> bool:
 		for index in data.get_meta(key, PackedInt32Array()):
 			lookup[int(index)] = true
 		_blocked[opponent] = lookup
+	for key in REASONS:
+		for index in data.get_meta("reason_" + key, PackedInt32Array()):
+			_reason[int(index)] = key
+	for index in data.get_meta("reason_far_bank", PackedInt32Array()):
+		_far_bank[int(index)] = true
+	for id in NEIGHBOR_IDS:
+		var lookup: Dictionary = {}
+		for index in data.get_meta("blocked_site_" + id, PackedInt32Array()):
+			lookup[int(index)] = true
+		_site_blocked[id] = lookup
 	return true
 
 
@@ -116,6 +149,41 @@ static func plot_blocked(index: int, opponent := false) -> bool:
 	if not ensure():
 		return false
 	return _blocked[opponent].has(index)
+
+
+## Grund der Sperre eines Felds des Kindes ("" = bebaubar).
+static func plot_reason(index: int) -> String:
+	if not ensure():
+		return ""
+	if _blocked[false].has(index):
+		return str(_reason.get(index, "slope"))
+	return ""
+
+
+## Liegt das (bebaubare) Feld am anderen Flussufer?
+static func plot_far_bank(index: int) -> bool:
+	return ensure() and _far_bank.has(index)
+
+
+static func far_bank_count() -> int:
+	return _far_bank.size() if ensure() else 0
+
+
+## Gesperrte Bauplätze einer Nachbarstadt in ihrem eigenen Gebiet.
+static func site_blocked(id: String, index: int) -> bool:
+	if not ensure():
+		return false
+	return (_site_blocked.get(id, {}) as Dictionary).has(index)
+
+
+static func reason_count(key: String) -> int:
+	if not ensure():
+		return 0
+	var total := 0
+	for index in _reason:
+		if _reason[index] == key:
+			total += 1
+	return total
 
 
 static func blocked_count(opponent := false) -> int:

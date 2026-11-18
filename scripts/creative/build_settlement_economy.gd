@@ -16,9 +16,21 @@ const REGIONS := [
 	"Hügelstadt",
 	"Blütenpark",
 	"Sternental",
-	"Lumo-Land"
+	"Lumo-Land",
+	# Seit 11/2026: die Stadt wächst bis 65 × 65 Bauplätze (Versorgungsrechnung
+	# für 4.000 Menschen, build_village_supply.gd). Alte IDs bleiben gleich.
+	"Uferwiesen",
+	"Mühlbachtal",
+	"Hasenhügel",
+	"Lindenhof",
+	"Seeblick",
+	"Sonnenfelder",
+	"Fernweide",
+	"Großes Tal"
 ]
-const PLOTS := [9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089]
+const PLOTS := [
+	9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089, 1369, 1681, 2025, 2401, 2809, 3249, 3721, 4225
+]
 const PROJECTS := {
 	"playground":
 	{
@@ -283,7 +295,8 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 		gross += model._working(town, "market")
 	var paid := credit_income(town, gross)
 	output.coins = int(paid.net_income)
-	var needs := int(town.population)
+	# Bewohner (auch Soldaten) essen 1; Pferde der Reiter 1 zusätzlich.
+	var needs := int(town.population) + int(town.get("troop_upkeep", 0))
 	town.food_shortfall = maxi(0, needs - int(town.resources.food))
 	town.resources.food = maxi(0, int(town.resources.food) - needs)
 	synchronize_pantry(town)
@@ -330,6 +343,9 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictionary:
 	var arrivals := 0
 	var births := 0
+	# Einmal je Tag zählen, nicht je Familie (Großstadt: 1.000 Häuser).
+	var water := water_capacity(model, town)
+	var has_school: bool = model._count(town, "school") > 0
 	for family: Dictionary in town.households:
 		if not satisfied:
 			continue
@@ -341,7 +357,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 		# Shortages pause growth; residents are never killed or taken away.
 		if (
 			int(town.resources.food) < int(town.population) + 2
-			or int(town.population) >= water_capacity(model, town)
+			or int(town.population) >= water
 			or int(town.population) >= MAX_POPULATION
 		):
 			continue
@@ -351,7 +367,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 			arrivals += 1
 		elif (
 			int(family.adults) == 2
-			and model._count(town, "school") > 0
+			and has_school
 			and int(family.children) < 2
 			and int(family.supplied_days) >= 8 + int(family.children) * 6
 		):

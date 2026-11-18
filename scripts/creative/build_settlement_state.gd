@@ -69,6 +69,9 @@ var _rival: Dictionary
 ## housing, but produces nothing until repaired. Owned by the village-meta layer
 ## (build_village_raids.gd); empty for every classic game and old save.
 var damaged_plots: Dictionary = {}
+## Eigene Bauplatzregel eines KI-Nachbarn (sein Gebiet, sein Raster). Leer =
+## Gelände des Kindes. Wird nicht gespeichert; der Besitzer setzt sie neu.
+var plot_rule: Callable = Callable()
 var _undo: Array[Dictionary] = []
 var _redo: Array[Dictionary] = []
 
@@ -123,6 +126,29 @@ func try_build(kind: String, plot: int) -> bool:
 	return true
 
 
+## Mehrere gleiche Gebäude in einem Zug (z. B. Felder zusammenziehen). Baut der
+## Reihe nach, bis Rohstoffe oder Plätze fehlen; ein einziger Rückgängig-Schritt.
+## Gibt die Liste der bebauten Grundstücke zurück.
+func try_build_many(kind: String, plots: Array) -> Array[int]:
+	last_error = ""
+	var built: Array[int] = []
+	if not _can_act():
+		return built
+	var before := _player.duplicate(true)
+	var reason := ""
+	for plot in plots:
+		if _buy(_player, kind, int(plot)):
+			built.append(int(plot))
+		elif reason.is_empty():
+			reason = last_error
+	if built.is_empty():
+		last_error = reason if not reason.is_empty() else "Hier ist kein freier Platz."
+		return built
+	_remember(before)
+	last_error = reason
+	return built
+
+
 func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 	if not BUILDINGS.has(kind) or (not living_village and kind not in CLASSIC_KINDS):
 		last_error = "Wähle ein vorhandenes Gebäude."
@@ -131,7 +157,7 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 		last_error = "Dieses Grundstück ist noch nicht erschlossen."
 		return false
 	if not plot_buildable(plot, is_same(town, _rival)):
-		last_error = "Hier ist Fels, Hang oder Ufer. Bauen geht nur auf flacher Wiese."
+		last_error = blocked_text(plot, is_same(town, _rival))
 		return false
 	if int(town.next_id) >= 10000:
 		last_error = "Dieses Projekt hat seine Baugeschichte gefüllt. Öffne ein weiteres Projekt."
@@ -446,7 +472,34 @@ func _free_plot(town: Dictionary) -> int:
 ## Bestehende Gebäude auf solchen Feldern bleiben beim Laden erhalten; nur neue
 ## Bauten werden abgelehnt. Die klassische Siedlung bleibt komplett flach.
 func plot_buildable(plot: int, opponent := false) -> bool:
-	return not living_village or not TERRAIN.plot_blocked(plot, opponent)
+	if not living_village:
+		return true
+	if plot_rule.is_valid():
+		return bool(plot_rule.call(plot))
+	if TERRAIN.plot_blocked(plot, opponent):
+		return false
+	# Das andere Flussufer erschließt erst die Lieferbrücke (Gemeinschaftsprojekt).
+	return opponent or not TERRAIN.plot_far_bank(plot) or bool(
+		_player.get("city_projects", {}).get("bridge", false)
+	)
+
+
+## Kindgerechte Begründung, warum hier nicht gebaut werden kann.
+func blocked_text(plot: int, opponent := false) -> String:
+	if not opponent and not plot_rule.is_valid():
+		match TERRAIN.plot_reason(plot):
+			"water":
+				return "Hier ist Wasser oder nasses Ufer. Gebaut wird auf trockener Wiese."
+			"mountain":
+				return "Hier beginnt das Gebirge. Gebaut wird auf flacher Wiese."
+			"foreign":
+				return "Das ist das Stadtgebiet eines Nachbarn. Dort baut er selbst."
+			"reserved":
+				return "Dieser Ort bleibt frei: Hier wohnt jemand oder wächst der Hain."
+			"":
+				if TERRAIN.plot_far_bank(plot):
+					return "Das andere Flussufer erreichst du mit der Lieferbrücke aus der Stadtkasse."
+	return "Hier ist Fels, Hang oder Ufer. Bauen geht nur auf flacher Wiese."
 
 
 func _affords(town: Dictionary, cost: Dictionary) -> bool:
@@ -688,18 +741,18 @@ static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 	if not town.get("resources") is Dictionary or not town.get("buildings") is Array:
 		return false
 	if (
-		not _whole(town.get("region"), 0, 11 if is_living else 2)
+		not _whole(town.get("region"), 0, REGIONS.size() - 1 if is_living else 2)
 		or not _whole(town.get("population"), 2, VILLAGE.MAX_POPULATION if is_living else 50)
 	):
 		return false
 	if (
-		not _whole(town.get("plots"), 9, 1089 if is_living else 25)
+		not _whole(town.get("plots"), 9, int(PLOTS[-1]) if is_living else 25)
 		or int(town.plots) != PLOTS[int(town.region)]
 	):
 		return false
 	if (
 		not _whole(town.get("next_id"), 1, 10000)
-		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION if is_living else 50)
+		or not _whole(town.get("food_shortfall", 0), 0, VILLAGE.MAX_POPULATION * 2 if is_living else 50)
 	):
 		return false
 	for resource in RESOURCES:
