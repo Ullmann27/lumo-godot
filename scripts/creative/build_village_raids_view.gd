@@ -133,6 +133,28 @@ func sync() -> void:
 		_key = key
 		_build_ring()
 	_sync_damage()
+	_sync_sender()
+
+
+## Absender auf der Karte: über der Nachbarstadt, dem Lager oder der Höhle
+## steht ein Warnschild mit Anlass, solange eine Herausforderung angekündigt ist.
+func _sync_sender() -> void:
+	var sign := get_node_or_null("SenderSign") as Label3D
+	if raids.pending.is_empty():
+		if sign != null:
+			sign.queue_free()
+		return
+	if sign == null:
+		sign = _label("", 64, Color("ffd25a"))
+		sign.name = "SenderSign"
+		add_child(sign)
+	var threat := str(raids.pending.threat)
+	var from := _origin(threat, str(raids.pending.get("by", "")))
+	sign.position = Vector3(from.x, maxf(from.y, ground(from.x, from.z).y) + 9.0, from.z)
+	sign.text = "⚠ %s\n%s" % [raids.threat_title(raids.pending), str(raids.pending.get("reason", ""))]
+	sign.width = 900.0
+	sign.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	set_meta("sender", str(raids.pending.get("by", threat)))
 
 
 func _ring_points(half: float) -> Array:

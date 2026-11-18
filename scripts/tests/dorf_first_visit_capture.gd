@@ -84,10 +84,17 @@ func _run() -> void:
 	current_scene = village
 	await _frames(12)
 	var guide: Node = village.tutorial.guide
+	# Der Software-Renderer ist langsam: Flug für die zwei Luftbilder anhalten.
+	guide.set_process(false)
+	guide.flight_time = 0.0
+	guide._process(0.0)
+	await _frames(20)
 	await _shot("luftblick_tal")
-	while guide.flying and guide.flight_time < 2.6:
-		await process_frame
+	guide.flight_time = guide.FLIGHT_SECONDS * 0.55
+	guide._process(0.0)
+	await _frames(20)
 	await _shot("luftblick_anflug")
+	guide.set_process(true)
 	while guide.flying:
 		await process_frame
 	await _frames(30)

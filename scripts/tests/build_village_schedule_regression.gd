@@ -332,6 +332,8 @@ func _scene() -> void:
 	var joined := " ".join(texts)
 	_check(joined.contains("Krummzahn") or joined.contains("Funkel"), "Schutz-Plan zeigt, wer kommt")
 	_check(joined.contains("Bilde") or joined.contains("Baue") or joined.contains("reicht"), "Schutz-Plan zeigt die einfache Handlung")
+	var sign: Label3D = village.raids_view.get_node_or_null("SenderSign")
+	_check(sign != null and sign.text.contains(village.raids.threat_title(village.raids.pending)), "Warnschild über dem Absender auf der Karte")
 	var arrive := int(village.raids.pending.arrive_day)
 	var day_now := int(model.day)
 	village._save()
