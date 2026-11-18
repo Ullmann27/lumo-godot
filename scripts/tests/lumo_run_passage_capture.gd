@@ -86,7 +86,9 @@ func _run() -> void:
 		if not only.is_empty() and only != tag:
 			continue
 		root.size = size
-		root.get_node("SceneRouter").launch_options = {"grade": 2, "subject": "Mathematik", "childKey": "passage-" + tag}
+		root.get_node("SceneRouter").launch_options = {
+			"grade": 2, "subject": "Mathematik", "childKey": "passage-" + tag
+		}
 		game = load("res://scenes/games/lumo_run.tscn").instantiate()
 		root.add_child(game)
 		current_scene = game
@@ -102,7 +104,14 @@ func _run() -> void:
 			for line in ["lower", "upper"]:
 				bot = BOT.new(3)
 				bot.routes[str(passage.name)] = line
-				var label: String = "p%d_%s_%s" % [number, str(passage.name).to_lower().replace("-", "_").replace("ü", "ue"), "sicher" if line == "lower" else "mutig"]
+				var label: String = (
+					"p%d_%s_%s"
+					% [
+						number,
+						str(passage.name).to_lower().replace("-", "_").replace("ü", "ue"),
+						"sicher" if line == "lower" else "mutig"
+					]
+				)
 				_place(float(passage.announce) - 30.0, TUNING.PATH_CRUISE)
 				if line == "upper":
 					game.player.flow = 1.0
@@ -113,12 +122,30 @@ func _run() -> void:
 					await _capture(label + "_1_ansage")
 				await _until(func() -> bool: return player.s > float(passage.s0) - 9.0)
 				await _capture(label + "_2_anlauf")
-				var middle: float = float(passage.s0) + (float(passage.safe_gap) if line == "lower" else float(passage.brave_gap)) * 0.45
+				var middle: float = (
+					float(passage.s0)
+					+ (
+						(float(passage.safe_gap) if line == "lower" else float(passage.brave_gap))
+						* 0.45
+					)
+				)
 				if float(passage.plank) > 0.0:
-					middle = float(passage.s1) - (float(passage.safe_gap) if line == "lower" else float(passage.brave_gap)) * 0.6
+					middle = (
+						float(passage.s1)
+						- (
+							(
+								float(passage.safe_gap)
+								if line == "lower"
+								else float(passage.brave_gap)
+							)
+							* 0.6
+						)
+					)
 				await _until(func() -> bool: return player.s > middle)
 				await _capture(label + "_3_sprung")
-				await _until(func() -> bool: return player.s > float(passage.s1) + 4.0 and player.grounded)
+				await _until(
+					func() -> bool: return player.s > float(passage.s1) + 4.0 and player.grounded
+				)
 				await _capture(label + "_4_drueben")
 		game.abandoned = true
 		root.remove_child(game)

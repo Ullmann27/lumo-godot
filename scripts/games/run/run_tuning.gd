@@ -120,8 +120,10 @@ const PATH_DENSE_SPACING: float = 20.0
 ## Faster pick-up on the path, and kinder jump windows than on the roads
 ## (in path time; on screen they are PATH_TIME_SCALE times shorter).
 const PATH_ACCELERATION: float = 9.0
-const PATH_COYOTE_SECONDS: float = 0.2
-const PATH_JUMP_BUFFER_SECONDS: float = 0.28
+## (Raised with the 1.4 time scale so the windows on screen stay as kind:
+## 0.157 s and 0.214 s.)
+const PATH_COYOTE_SECONDS: float = 0.22
+const PATH_JUMP_BUFFER_SECONDS: float = 0.3
 ## Speed pads on the long safe stretches of the path. The path is dense, so a
 ## pad's push is short: Lumo is back at his own pace before the next thing to
 ## jump or dodge (PATH_PAD_CLEAR metres are free).

@@ -18,11 +18,26 @@ static func obstacles(plan, gaps: Array) -> Array:
 	for hurdle in plan.hurdles:
 		items.append([float(hurdle.s) - 0.4, float(hurdle.s) + 0.4, "log"])
 	for blocker in plan.blockers:
-		items.append([float(blocker.s) - float(blocker.radius), float(blocker.s) + float(blocker.radius), "rock"])
+		items.append(
+			[
+				float(blocker.s) - float(blocker.radius),
+				float(blocker.s) + float(blocker.radius),
+				"rock"
+			]
+		)
 	for enemy in plan.enemies:
 		var span: float = absf(float(enemy.get("span", 0.0)))
-		items.append([float(enemy.s) - span - float(enemy.radius), float(enemy.s) + float(enemy.radius), str(enemy.kind)])
-	items = items.filter(func(item) -> bool: return float(item[0]) > float(plan.intro_end) and float(item[1]) < float(plan.finish_s))
+		items.append(
+			[
+				float(enemy.s) - span - float(enemy.radius),
+				float(enemy.s) + float(enemy.radius),
+				str(enemy.kind)
+			]
+		)
+	items = items.filter(
+		func(item) -> bool:
+			return float(item[0]) > float(plan.intro_end) and float(item[1]) < float(plan.finish_s)
+	)
 	items.sort_custom(func(a, b) -> bool: return float(a[0]) < float(b[0]))
 	return items
 
@@ -56,6 +71,9 @@ static func summary(ups: Array, speed: float) -> Dictionary:
 		if float(up[1]) / speed <= times[0] + 0.0001:
 			lowest = up
 	return {
-		"min": times[0], "p10": times[int(times.size() * 0.1)], "median": times[times.size() / 2],
-		"count": times.size(), "where": lowest,
+		"min": times[0],
+		"p10": times[int(times.size() * 0.1)],
+		"median": times[times.size() / 2],
+		"count": times.size(),
+		"where": lowest,
 	}
