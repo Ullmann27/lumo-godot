@@ -33,14 +33,17 @@ func _build_site(entry: Dictionary) -> void:
 	var center: Vector3 = NEIGHBORS.plot_world(str(entry.id), 4)
 	var sign := Label3D.new()
 	sign.text = "%s · %s" % [str(entry.town).to_upper(), str(entry.name)]
-	sign.position = center + Vector3(0, 9.0, -9.0)
-	sign.font_size = 56
-	sign.pixel_size = 0.016
-	sign.outline_size = 10
-	sign.modulate = Color(str(entry.color)).lightened(0.35)
-	sign.outline_modulate = Color("264b49")
+	# Gut lesbar aus der Übersicht: groß, hell, dunkler Rand, nie verdeckt.
+	sign.position = center + Vector3(0, 12.0, -9.0)
+	sign.font_size = 72
+	sign.pixel_size = 0.026
+	sign.outline_size = 20
+	sign.modulate = Color(str(entry.color)).lightened(0.6)
+	sign.outline_modulate = Color("142629")
 	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	sign.visibility_range_end = 260.0
+	sign.no_depth_test = true
+	sign.render_priority = 2
+	sign.visibility_range_end = 320.0
 	holder.add_child(sign)
 	if ART.exists("watchtower"):
 		var banner := ART.instance("watchtower")
