@@ -121,6 +121,7 @@ var _observe_clock: float = 0.0
 var _seen: Dictionary = {}
 var _route_entry: Dictionary = {}
 var _was_silent: bool = false
+var _auto_off: Dictionary = {}
 
 
 func _ready() -> void:
@@ -166,6 +167,15 @@ func enter_route(route_id: String) -> void:
 		_layer_until.clear()
 		_manual_duck = false
 	_apply_route()
+
+
+## Automatische Ereigniserkennung für eine Route abschalten, sobald das Spiel
+## selbst stinger()/play_sfx() aufruft (sonst klingt es doppelt).
+func set_auto_events(route_id: String, on: bool) -> void:
+	if on:
+		_auto_off.erase(route_id)
+	else:
+		_auto_off[route_id] = true
 
 
 func is_own_audio_route(route_id: String = route) -> bool:
@@ -551,7 +561,7 @@ func _scene_paused() -> bool:
 ## Erkennt typische Spielereignisse aus dem öffentlichen Zustand der Szenen.
 ## Fehlt eine Eigenschaft (Spiel umgebaut), passiert einfach nichts.
 func _observe_scene() -> void:
-	if not auto_events or is_own_audio_route():
+	if not auto_events or is_own_audio_route() or _auto_off.has(route):
 		return
 	var scene := _scene()
 	if scene == null:
