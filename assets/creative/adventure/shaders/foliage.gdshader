@@ -1,6 +1,7 @@
 // Blattkarten, Palmwedel, Farne, Gräser: Alpha-Schnitt, Wind, Durchleuchtung.
 // Mobile/gl_compatibility: keine Screen-/Depth-Texturen.
 shader_type spatial;
+#include "res://assets/creative/adventure/shaders/occlusion.gdshaderinc"
 render_mode cull_disabled, depth_draw_opaque;
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_disable;
@@ -28,6 +29,7 @@ void vertex() {
 }
 
 void fragment() {
+	lumo_occlusion(VERTEX, VIEW_MATRIX, FRAGCOORD.xy);
 	vec4 c = texture(albedo_tex, UV);
 	ALBEDO = c.rgb * tint.rgb * v_ao;
 	ALPHA = c.a;

@@ -1,5 +1,6 @@
 // Fels/Ruine: Grundtextur + Moos auf nach oben zeigenden Flächen + Bodenschmutz.
 shader_type spatial;
+#include "res://assets/creative/adventure/shaders/occlusion.gdshaderinc"
 
 uniform sampler2D base_albedo : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D base_normal : hint_normal, filter_linear_mipmap, repeat_enable;
@@ -19,6 +20,7 @@ void vertex() {
 }
 
 void fragment() {
+	lumo_occlusion(VERTEX, VIEW_MATRIX, FRAGCOORD.xy);
 	vec2 uv = UV * uv_scale;
 	vec3 base = texture(base_albedo, uv).rgb * base_tint.rgb;
 	vec3 moss = texture(moss_albedo, uv * 1.4).rgb;
