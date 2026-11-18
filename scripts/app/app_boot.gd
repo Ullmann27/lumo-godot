@@ -33,6 +33,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"connect_four": "VIER GEWINNT",
 	"memory": "LUMO MEMORY",
 	"quiz": "LUMO QUIZSHOW",
+	"chess": "LUMO SCHACH",
 }
 signal load_state_changed(state: String)
 ## Test harnesses may attach the actual boot scene without starting navigation.
@@ -82,7 +83,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "home", "games"
+		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "chess", "home", "games"
 	] else "games"
 	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
 	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.
