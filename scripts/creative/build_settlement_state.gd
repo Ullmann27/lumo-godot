@@ -65,6 +65,10 @@ var winner := ""
 var last_error := ""
 var _player: Dictionary
 var _rival: Dictionary
+## Plots whose building is damaged after a raid: it stays, counts for goals and
+## housing, but produces nothing until repaired. Owned by the village-meta layer
+## (build_village_raids.gd); empty for every classic game and old save.
+var damaged_plots: Dictionary = {}
 var _undo: Array[Dictionary] = []
 var _redo: Array[Dictionary] = []
 
@@ -809,4 +813,49 @@ func order_delivery(id: String) -> bool:
 	VILLAGE.order(self, _player, id, day)
 	VILLAGE.update_campaign(self, _player)
 	_remember(before)
+	return true
+
+
+
+## Working (not damaged) buildings of a kind; used by daily production only.
+func _working(town: Dictionary, kind: String) -> int:
+	if damaged_plots.is_empty() or not is_same(town, _player):
+		return _count(town, kind)
+	var total := 0
+	for building: Dictionary in town.buildings:
+		if str(building.kind) == kind and not damaged_plots.has(int(building.plot)):
+			total += 1
+	return total
+
+
+## Exchange with a neighbour village or an event (gift, help, raid loss, find).
+## Same pantry and tax rules as trading; never creates negative stock. Clears
+## undo because the other side of the exchange cannot be undone with it.
+func exchange(give: Dictionary, receive: Dictionary) -> bool:
+	last_error = ""
+	if not living_village or not _can_act():
+		last_error = "Das geht gerade nicht."
+		return false
+	for part: Dictionary in [give, receive]:
+		for resource: String in part:
+			if resource not in RESOURCES or int(part[resource]) < 0:
+				last_error = "Diesen Tausch gibt es nicht."
+				return false
+	if not _affords(_player, give):
+		last_error = "Dafür reicht dein Vorrat nicht."
+		return false
+	for resource: String in receive:
+		if int(_player.resources[resource]) + int(receive[resource]) > MAX_RESOURCE:
+			last_error = "Dein Lager ist voll."
+			return false
+	_pay(_player, give)
+	for resource: String in receive:
+		if resource == "coins":
+			VILLAGE.credit_income(_player, int(receive[resource]))
+		else:
+			_player.resources[resource] = int(_player.resources[resource]) + int(receive[resource])
+	VILLAGE.synchronize_pantry(_player)
+	VILLAGE.update_campaign(self, _player)
+	_undo.clear()
+	_redo.clear()
 	return true

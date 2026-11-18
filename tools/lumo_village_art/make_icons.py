@@ -179,7 +179,11 @@ def panel(fill_top, fill_bottom, border, size=96, radius=26, border_w=3, inner=N
     img.paste(grad, (0, 0), mask)
     d = ImageDraw.Draw(img)
     if inner:
-        d.rounded_rectangle([S * 4, S * 3, size * S - S * 4, size * S // 2], radius=(radius - 4) * S, fill=inner)
+        # Blend the soft top highlight over the fill (never replace its alpha).
+        glow = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ImageDraw.Draw(glow).rounded_rectangle([S * 4, S * 3, size * S - S * 4, size * S // 2], radius=(radius - 4) * S, fill=inner)
+        img.alpha_composite(glow)
+        d = ImageDraw.Draw(img)
     d.rounded_rectangle([S, S, size * S - S, size * S - S], radius=radius * S, outline=border, width=border_w * S)
     return img.resize((size, size), Image.LANCZOS)
 
