@@ -131,6 +131,12 @@ func ground_offset_at(at: float) -> float:
 	return _ground[_index(at)]
 
 
+## How far Lumo falls into a hole here before he is caught: shallow streams
+## catch him at the water, deep holes after a few metres.
+func fall_depth_at(at: float) -> float:
+	return clampf(-ground_offset_at(at) - 0.4, 1.8, 4.0)
+
+
 func wall_lateral_at(at: float) -> float:
 	return half_width_at(at) - 0.35
 

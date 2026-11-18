@@ -534,8 +534,9 @@ func _resolve_path(player, events: Array[Dictionary]) -> bool:
 			events.append({"type": "cart_on" if wanted else "cart_off"})
 	if _resolve_chase(player, step, events):
 		return true
-	if player.h < -TUNING.FALL_DEPTH:
-		_rescue(player, events, "fall", true)
+	var depth: float = world.fall_depth_at(player.s) if world.has_method("fall_depth_at") else TUNING.FALL_DEPTH
+	if player.h < -depth:
+		_rescue(player, events, "splash" if depth < 3.0 else "fall", true)
 		return true
 	return false
 

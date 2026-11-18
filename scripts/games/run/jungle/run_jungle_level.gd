@@ -47,6 +47,7 @@ var length: float = 0.0
 var s: float = 0.0
 var _half: float = 2.2
 var _ground: float = 0.0
+var _surface: String = "dirt"
 
 
 static func make() -> RefCounted:
@@ -68,13 +69,17 @@ func _leg(length_m: float, turn: float, rise: float, half: float, surface: Strin
 	surfaces.append({"s0": from, "s1": from + length_m, "kind": surface, "half": half, "ground": ground})
 	s += length_m
 	_half = half
-	_ground = ground
+	if surface != "gap":
+		_ground = ground
+		_surface = surface
 	return from
 
 
 ## A hole in the path: falling in means a short trip back to the last rescue point.
 func _hole(length_m: float, rise: float = 0.0, turn: float = 0.0) -> float:
-	var from: float = _leg(length_m, turn, rise, _half, "gap", minf(_ground, -9.0))
+	# Holes in the forest floor are shallow streams; up in the trees it is a long way down.
+	var floor_depth: float = -2.6 if _ground > -1.0 and _surface in ["dirt", "roots", "cave"] else minf(_ground, -9.0)
+	var from: float = _leg(length_m, turn, rise, _half, "gap", floor_depth)
 	gaps.append(Vector2(from, from + length_m))
 	return from
 
