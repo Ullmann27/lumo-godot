@@ -562,6 +562,8 @@ static func _instance_plants(world, root: Node3D, material: ShaderMaterial,
 				var multimesh := MultiMesh.new()
 				multimesh.transform_format = MultiMesh.TRANSFORM_3D
 				multimesh.use_custom_data = true
+				# gl_compatibility multipliziert COLOR sonst mit 0
+				multimesh.use_colors = true
 				multimesh.mesh = lod_mesh
 				multimesh.instance_count = group.t.size()
 				for i in range(group.t.size()):
@@ -569,6 +571,7 @@ static func _instance_plants(world, root: Node3D, material: ShaderMaterial,
 					t.origin -= center
 					multimesh.set_instance_transform(i, t)
 					multimesh.set_instance_custom_data(i, group.c[i])
+					multimesh.set_instance_color(i, Color.WHITE)
 				var node := MultiMeshInstance3D.new()
 				node.name = "Flora_%s_%d_%d_lod%d" % [species, key.x, key.y, lod]
 				node.multimesh = multimesh
@@ -701,6 +704,8 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 			var multimesh := MultiMesh.new()
 			multimesh.transform_format = MultiMesh.TRANSFORM_3D
 			multimesh.use_custom_data = true
+			# gl_compatibility multipliziert COLOR sonst mit 0
+			multimesh.use_colors = true
 			multimesh.mesh = meshes[int(entry[0])]
 			multimesh.instance_count = ids.size()
 			for j in range(ids.size()):
@@ -708,6 +713,7 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 				t.origin -= center
 				multimesh.set_instance_transform(j, t)
 				multimesh.set_instance_custom_data(j, customs[ids[j]])
+				multimesh.set_instance_color(j, Color.WHITE)
 			var node := MultiMeshInstance3D.new()
 			node.name = "Lamps_%s_%d_%d_lod%d" % [kind, key.x, key.y, int(entry[0])]
 			node.multimesh = multimesh
@@ -766,6 +772,8 @@ static func _light_pools(root: Node3D, pools: Array[Transform3D], customs: Array
 		var multimesh := MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_custom_data = true
+		# gl_compatibility multipliziert COLOR sonst mit 0
+		multimesh.use_colors = true
 		multimesh.mesh = quad
 		multimesh.instance_count = ids.size()
 		for j in range(ids.size()):
@@ -773,6 +781,7 @@ static func _light_pools(root: Node3D, pools: Array[Transform3D], customs: Array
 			t.origin -= center
 			multimesh.set_instance_transform(j, t)
 			multimesh.set_instance_custom_data(j, customs[ids[j]])
+			multimesh.set_instance_color(j, Color.WHITE)
 		var node := MultiMeshInstance3D.new()
 		node.name = "LightPools_%d_%d" % [key.x, key.y]
 		node.multimesh = multimesh
@@ -818,6 +827,8 @@ static func _reflectors(world, root: Node3D, budget: Dictionary) -> int:
 		var multimesh := MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_custom_data = true
+		# gl_compatibility multipliziert COLOR sonst mit 0
+		multimesh.use_colors = true
 		multimesh.mesh = quad
 		multimesh.instance_count = items.size()
 		var center: Vector3 = items[0][0].origin
@@ -826,6 +837,7 @@ static func _reflectors(world, root: Node3D, budget: Dictionary) -> int:
 			t.origin -= center
 			multimesh.set_instance_transform(j, t)
 			multimesh.set_instance_custom_data(j, items[j][1])
+			multimesh.set_instance_color(j, Color.WHITE)
 		var node := MultiMeshInstance3D.new()
 		node.name = "Reflectors_%d_%d" % [key.x, key.y]
 		node.multimesh = multimesh
@@ -855,6 +867,8 @@ static func _particles(world, root: Node3D, look: Dictionary, budget: Dictionary
 		var multimesh := MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_custom_data = true
+		# gl_compatibility multipliziert COLOR sonst mit 0
+		multimesh.use_colors = true
 		multimesh.mesh = quad
 		multimesh.instance_count = count
 		var rng := RandomNumberGenerator.new()
@@ -864,6 +878,7 @@ static func _particles(world, root: Node3D, look: Dictionary, budget: Dictionary
 			multimesh.set_instance_custom_data(
 				i, Color(rng.randf(), rng.randf(), rng.randf(), rng.randf())
 			)
+			multimesh.set_instance_color(i, Color.WHITE)
 		var material := ShaderMaterial.new()
 		material.shader = PARTICLE_ADD_SHADER if bool(spec.add) else PARTICLE_MIX_SHADER
 		material.set_shader_parameter("atlas", texture("foliage_albedo"))

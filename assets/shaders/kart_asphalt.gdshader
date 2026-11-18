@@ -169,15 +169,15 @@ void fragment() {
 	float final_metallic = metallic * (1.0 - surface_matte * float(surface_style == 0));
 	if (road_detail > 0.0) {
 		float footprint = max(fwidth(UV.x), fwidth(UV.y));
-		float near_fade = 1.0 - smoothstep(0.03, 0.16, footprint);
+		float near_fade = 1.0 - smoothstep(0.02, 0.07, footprint);
 		// Feinstruktur: Hoehenfeld aus zwei Rauschlagen, Normalen aus Differenzen.
-		vec2 p = UV * vec2(9.0, 9.0);
+		vec2 p = UV * vec2(4.5, 4.5);
 		float e = 0.06;
-		float h0 = value_noise(p) * 0.6 + value_noise(p * 3.7) * 0.4;
-		float hx = value_noise(p + vec2(e, 0.0)) * 0.6 + value_noise((p + vec2(e, 0.0)) * 3.7) * 0.4;
-		float hy = value_noise(p + vec2(0.0, e)) * 0.6 + value_noise((p + vec2(0.0, e)) * 3.7) * 0.4;
+		float h0 = value_noise(p) * 0.6 + value_noise(p * 2.3) * 0.4;
+		float hx = value_noise(p + vec2(e, 0.0)) * 0.6 + value_noise((p + vec2(e, 0.0)) * 2.3) * 0.4;
+		float hy = value_noise(p + vec2(0.0, e)) * 0.6 + value_noise((p + vec2(0.0, e)) * 2.3) * 0.4;
 		float relief = (surface_style == 0 ? 1.0 : 0.7) * road_detail * near_fade;
-		vec3 bump = normalize(vec3((h0 - hx) * 3.2 * relief, (h0 - hy) * 3.2 * relief, 1.0));
+		vec3 bump = normalize(vec3((h0 - hx) * 2.2 * relief, (h0 - hy) * 2.2 * relief, 1.0));
 		// Risse mit dunklem Bitumen-Verguss (nur Asphalt und Steinplatten)
 		float crack_field = abs(value_noise(UV * vec2(0.55, 0.35) + vec2(11.0, 3.0)) - 0.5);
 		float crack = (1.0 - smoothstep(0.004, 0.016 + footprint * 0.6, crack_field))

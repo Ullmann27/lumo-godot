@@ -78,6 +78,11 @@ void fragment() {
 	float rough = 0.85;
 	float trans = 0.0;
 	if (v_mode < 0.5) {
+		// Godot dreht bei cull_disabled die Normale der Rueckseite um; fuer
+		// Blattbuendel soll beidseitig dieselbe (kugelige) Normale gelten.
+		if (!FRONT_FACING) {
+			NORMAL = -NORMAL;
+		}
 		vec4 leaf = texture(foliage_albedo, UV);
 		alpha = leaf.a;
 		// Farbvariation je Instanz (INSTANCE_CUSTOM.rgb) und je Buendel (Phase)

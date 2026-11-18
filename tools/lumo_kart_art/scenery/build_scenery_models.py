@@ -250,7 +250,7 @@ def broadleaf(lod, seed, cells=("laub", "laub_hell"), strip="eiche", height=9.0,
     crown_r = crown
     n_br = (branches, max(4, branches - 2), 3)[lod]
     clusters_per = (5, 3, 2)[lod]
-    card_size = (1.75, 2.45, 3.6)[lod] * (crown / 4.2)
+    card_size = (1.95, 2.6, 3.8)[lod] * (crown / 4.2)
     for k in range(n_br):
         a = k / n_br * math.tau + rng.uniform(-.3, .3)
         start_t = rng.uniform(0.55, 0.95) if not umbrella else rng.uniform(0.85, 1.0)
@@ -280,7 +280,7 @@ def broadleaf(lod, seed, cells=("laub", "laub_hell"), strip="eiche", height=9.0,
             cluster(b, p, (twig_dir + radial.normalized() * 0.6).normalized(), card_size, cells, rng, center,
                     crown_r, 0.9, 0.35, count=(3, 2, 2)[lod], subdiv=(2, 1, 1)[lod])
     # Kronenfuellung: Buendel auf einer Ellipsoidschale (keine leeren Loecher)
-    fill = (16, 8, 4)[lod]
+    fill = (30, 12, 6)[lod]
     for k in range(fill):
         u = rng.uniform(0, math.tau)
         v = rng.uniform(-0.3, 1.0)
@@ -384,14 +384,14 @@ def bush(lod, seed, cells=("busch", "laub"), radius=1.3):
     rng = random.Random(seed)
     b = Builder()
     center = Vector((0, 0, radius * 0.55))
-    n = (14, 7, 4)[lod]
+    n = (22, 9, 4)[lod]
     for k in range(n):
         u = rng.uniform(0, math.tau)
         v = rng.uniform(0.0, 1.0)
         d = Vector((math.cos(u) * (1 - v * 0.6), math.sin(u) * (1 - v * 0.6), v * 0.9 + 0.2)).normalized()
         p = Vector((d.x * radius * 0.3, d.y * radius * 0.3, 0.05))
         cluster(b, p, d, radius * (1.15 if lod else 0.95), cells, rng, center, radius, 0.7, 0.3,
-                count=(2, 2, 1)[lod], subdiv=1)
+                count=(3, 2, 1)[lod], subdiv=1)
     return b
 
 
@@ -497,11 +497,12 @@ def box(b, center, size, swatch, mat=0, glow=None):
         b.quad(*ids, mat=mat)
 
 
-def glow_quad(b, center, u, v, kind, intensity, phase=0.0):
+def glow_quad(b, center, u, v, kind, intensity, phase=0.0, drift=False):
+    """drift=True: schwebt im Shader (Gluehwuermchen, Funken; COLOR.a = 0.5)."""
     ids = []
     for a, c, uv in ((-1, -1, (0, 1)), (1, -1, (1, 1)), (1, 1, (1, 0)), (-1, 1, (0, 0))):
         p = Vector(center) + u * a + v * c
-        ids.append(b.vert(p, u.cross(v).normalized(), uv, (0, 0), (intensity, kind, phase, 1)))
+        ids.append(b.vert(p, u.cross(v).normalized(), uv, (0, 0), (intensity, kind, phase, 0.5 if drift else 1.0)))
     b.quad(*ids, mat=1)
 
 
@@ -578,43 +579,54 @@ def lamp_forest(lod):
     rng = random.Random(5)
     for k in range((10, 5, 0)[lod]):
         p = head + Vector((rng.uniform(-1.4, 1.4), rng.uniform(-1.4, 1.4), rng.uniform(-2.2, 0.8)))
-        glow_quad(b, p, Vector((0.07, 0, 0)), Vector((0, 0, 0.07)), 1.0, 1.6, rng.random())
+        glow_quad(b, p, Vector((0.07, 0, 0)), Vector((0, 0, 0.07)), 1.0, 1.6, rng.random(), drift=True)
     return b
 
 
 def lamp_neon(lod):
-    """Schlanke Neon-Stele mit Leuchtstreifen und Bodenring (Holo City / Labor / Galaxie)."""
+    """Neon-Stele: dunkler Pfeiler mit breiten Leuchtpaneelen zur Fahrbahn und in
+    Fahrtrichtung, Leuchtringen und Lichtbalken oben (Holo City, Labor, Galaxie)."""
     b = Builder()
-    box(b, Vector((0, 0, 0.1)), (0.7, 0.7, 0.2), "schwarz")
-    box(b, Vector((0, 0, 3.1)), (0.34, 0.34, 6.0), "dunkel")
-    box(b, Vector((0, 0, 6.15)), (0.5, 0.5, 0.12), "chrom")
-    for dx in (-1, 1):
-        box(b, Vector((dx * 0.175, 0, 3.1)), (0.03, 0.12, 5.6), "chrom", mat=1, glow=(2.4, 0.0, 0, 1))
-    box(b, Vector((-0.175, 0, 5.2)), (0.04, 0.3, 0.5), "chrom", mat=1, glow=(2.8, 0.0, 0, 1))
+    box(b, Vector((0, 0, 0.1)), (0.8, 0.8, 0.2), "schwarz")
+    box(b, Vector((0, 0, 3.1)), (0.36, 0.36, 6.0), "dunkel")
+    box(b, Vector((0, 0, 6.15)), (0.55, 0.55, 0.12), "chrom")
+    # Paneele: zur Strasse (-X) und nach vorn/hinten (+-Y), leicht vorstehend
+    box(b, Vector((-0.19, 0, 3.3)), (0.03, 0.22, 5.2), "chrom", mat=1, glow=(1.0, 0.0, 0, 1))
+    for dy in (-1, 1):
+        box(b, Vector((0, dy * 0.19, 3.3)), (0.22, 0.03, 5.2), "chrom", mat=1, glow=(0.85, 0.0, 0, 1))
+    # Querbalken mit Lichtleiste ueber dem Fahrbahnrand
+    box(b, Vector((-0.75, 0, 5.9)), (1.5, 0.16, 0.12), "dunkel")
+    box(b, Vector((-0.85, 0, 5.82)), (1.2, 0.1, 0.04), "chrom", mat=1, glow=(1.0, 0.0, 0, 1))
     if lod < 2:
-        for z in (1.5, 2.6, 3.7, 4.8):
-            box(b, Vector((0, 0, z)), (0.36, 0.36, 0.04), "chrom", mat=1, glow=(1.8, 0.0, 0, 1))
-    halo(b, Vector((-0.2, 0, 5.2)), 1.1, 0.7)
-    light_cone(b, Vector((-0.2, 0, 5.4)), 0.0, 2.2, 0.28, (10, 8, 6)[lod])
+        for z in (0.8, 1.9, 3.0, 4.1, 5.2):
+            box(b, Vector((0, 0, z)), (0.42, 0.42, 0.05), "chrom", mat=1, glow=(0.9, 0.0, 0, 1))
+    halo(b, Vector((-0.3, 0, 3.3)), 1.6, 0.55)
+    halo(b, Vector((-0.9, 0, 5.75)), 1.2, 0.7)
+    light_cone(b, Vector((-1.0, 0, 5.75)), 0.0, 2.6, 0.35, (10, 8, 6)[lod])
     return b
 
 
 def lamp_torch(lod):
-    """Steinsaeule mit Feuerschale (Tempel, Vulkan, Wueste)."""
+    """Steinsaeule mit Feuerschale und lodernder Flamme (Tempel, Vulkan, Wueste)."""
     b = Builder()
     s = (8, 6, 5)[lod]
-    box(b, Vector((0, 0, 0.15)), (0.8, 0.8, 0.3), "stein")
-    solid(b, [Vector((0, 0, 0.3)), Vector((0, 0, 2.3))], [0.22, 0.18], s, "stein")
-    solid(b, [Vector((0, 0, 2.3)), Vector((0, 0, 2.5)), Vector((0, 0, 2.72))], [0.18, 0.36, 0.46], s, "bronze")
+    box(b, Vector((0, 0, 0.15)), (0.9, 0.9, 0.3), "stein")
+    solid(b, [Vector((0, 0, 0.3)), Vector((0, 0, 1.2)), Vector((0, 0, 2.3))], [0.26, 0.22, 0.19], s, "stein")
+    solid(b, [Vector((0, 0, 2.3)), Vector((0, 0, 2.5)), Vector((0, 0, 2.75))], [0.2, 0.42, 0.55], s, "bronze")
     rng = random.Random(3)
-    for k in range((4, 3, 2)[lod]):
-        a = k * math.pi / 4
-        u = Vector((math.cos(a) * 0.32, math.sin(a) * 0.32, 0))
-        glow_quad(b, Vector((0, 0, 3.12)), u, Vector((0, 0, 0.5)), 1.0, 2.4, rng.random())
-    halo(b, Vector((0, 0, 3.0)), 1.3, 0.8)
-    for k in range((8, 4, 0)[lod]):
-        p = Vector((rng.uniform(-.3, .3), rng.uniform(-.3, .3), 3.3 + rng.uniform(0, 1.3)))
-        glow_quad(b, p, Vector((0.04, 0, 0)), Vector((0, 0, 0.04)), 1.0, 2.0, rng.random())
+    for k in range((6, 4, 3)[lod]):
+        a = k * math.pi / (6, 4, 3)[lod]
+        u = Vector((math.cos(a) * 0.45, math.sin(a) * 0.45, 0))
+        glow_quad(b, Vector((0, 0, 3.25)), u, Vector((0, 0, 0.7)), 1.0, 1.0, rng.random())
+    # innerer heller Kern
+    for k in range(2):
+        a = k * math.pi / 2 + 0.4
+        u = Vector((math.cos(a) * 0.25, math.sin(a) * 0.25, 0))
+        glow_quad(b, Vector((0, 0, 3.05)), u, Vector((0, 0, 0.38)), 0.0, 1.0, rng.random())
+    halo(b, Vector((0, 0, 3.2)), 2.0, 0.9)
+    for k in range((10, 5, 0)[lod]):
+        p = Vector((rng.uniform(-.35, .35), rng.uniform(-.35, .35), 3.6 + rng.uniform(0, 1.6)))
+        glow_quad(b, p, Vector((0.05, 0, 0)), Vector((0, 0, 0.05)), 1.0, 1.0, rng.random(), drift=True)
     return b
 
 

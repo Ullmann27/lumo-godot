@@ -172,7 +172,7 @@ def broadleaf_cell(base_hex, leaf_len=(30, 42), count=46, autumn=False):
 def conifer_cell(snow=False):
     c = Cell()
     bark = rgb("5d3f2c")
-    needle = rgb("2f5a3a")
+    needle = rgb("3f7448")
     stem = twig(c, (128, 254), (128, 6), 5, bark, bend=6)
     for side_i in range(9):
         t = 0.1 + side_i * 0.095

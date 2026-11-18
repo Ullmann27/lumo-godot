@@ -53,7 +53,7 @@ void sky() {
 	vec3 sun_dir = -LIGHT0_DIRECTION;
 	float sun_dot = LIGHT0_ENABLED ? max(dot(dir, normalize(sun_dir)), 0.0) : 0.0;
 	vec3 sun_col = LIGHT0_ENABLED ? LIGHT0_COLOR : vec3(1.0);
-	col += sun_col * pow(sun_dot, 6.0) * 0.18 + sun_col * pow(sun_dot, 60.0) * 0.35;
+	col += sun_col * pow(sun_dot, 8.0) * 0.08 + sun_col * pow(sun_dot, 80.0) * 0.3;
 	if (h > 0.0) {
 		// Wolken auf einer flachen Schicht ueber der Strecke
 		vec2 uv = dir.xz / (h + 0.12) * 1.3;

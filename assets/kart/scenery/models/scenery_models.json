@@ -1,21 +1,21 @@
 {
  "busch": {
-  "bytes": 15224,
-  "lod0": 56,
-  "lod1": 28,
+  "bytes": 25864,
+  "lod0": 132,
+  "lod1": 36,
   "lod2": 8
  },
  "busch_bluehend": {
-  "bytes": 15708,
-  "lod0": 56,
-  "lod1": 28,
+  "bytes": 26636,
+  "lod0": 132,
+  "lod1": 36,
   "lod2": 8
  },
  "dschungelbaum": {
-  "bytes": 265548,
-  "lod0": 2296,
-  "lod1": 352,
-  "lod2": 60
+  "bytes": 303468,
+  "lod0": 2632,
+  "lod1": 368,
+  "lod2": 68
  },
  "farnflur": {
   "bytes": 11596,
@@ -36,22 +36,22 @@
   "lod2": 20
  },
  "laubbaum": {
-  "bytes": 241684,
-  "lod0": 2092,
-  "lod1": 312,
-  "lod2": 60
+  "bytes": 278788,
+  "lod0": 2428,
+  "lod1": 328,
+  "lod2": 68
  },
  "laubbaum_b": {
-  "bytes": 216852,
-  "lod0": 1888,
-  "lod1": 272,
-  "lod2": 60
+  "bytes": 253384,
+  "lod0": 2224,
+  "lod1": 288,
+  "lod2": 68
  },
  "leuchte_fackel": {
-  "bytes": 27948,
-  "lod0": 122,
-  "lod1": 92,
-  "lod2": 72
+  "bytes": 34436,
+  "lod0": 150,
+  "lod1": 112,
+  "lod2": 88
  },
  "leuchte_hafen": {
   "bytes": 75956,
@@ -66,10 +66,10 @@
   "lod2": 88
  },
  "leuchte_neon": {
-  "bytes": 43692,
-  "lod0": 146,
-  "lod1": 142,
-  "lod2": 90
+  "bytes": 54908,
+  "lod0": 188,
+  "lod1": 184,
+  "lod2": 120
  },
  "leuchte_wald": {
   "bytes": 45612,
@@ -114,10 +114,10 @@
   "lod2": 53
  },
  "zauberbaum": {
-  "bytes": 287724,
-  "lod0": 2500,
-  "lod1": 392,
-  "lod2": 60
+  "bytes": 325316,
+  "lod0": 2836,
+  "lod1": 408,
+  "lod2": 68
  },
  "zauberflur": {
   "bytes": 11464,
