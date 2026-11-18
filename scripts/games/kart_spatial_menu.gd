@@ -4,8 +4,10 @@ extends "res://scripts/games/kart_garage_menu.gd"
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
 const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
+const TRACK_STAGE = preload("res://scripts/games/kart_track_stage.gd")
 var service_station
 var home_promenade
+var track_stage
 var track_pass
 var _pinch = STAGE_PINCH.new()
 var _camera_zoom := 1.0
@@ -50,6 +52,10 @@ func _ready() -> void:
 	_selection_surface.add_theme_stylebox_override("panel", surface)
 	add_child(_selection_surface)
 	move_child(_selection_surface, setup_left.get_index())
+	track_stage = TRACK_STAGE.new()
+	track_stage.attach(self)
+	add_child(track_stage)
+	move_child(track_stage, premium_hero_shell.get_index() + 1)
 	workshop_button.reparent(setup_left, false)
 	workshop_button.text = "Lack, Teile & Effekte"
 	kart_bars.reparent(setup_left, false)
@@ -134,7 +140,15 @@ func _refresh() -> void:
 	subtitle.hide()
 	title_label.text = ["Rennen", "Dein Fahrer", "Deine Garage", "Rennwelten", "Tempo & Gegner"][step]
 	_update_track_goals()
+	track_stage.sync()
 	_apply_responsive_layout.call_deferred()
+
+
+func _refresh_preview() -> void:
+	# Die Streckenwahl zeigt Bilder: beim Blättern nicht jedes Mal die ganze Welt bauen.
+	if track_stage != null and track_stage.defers_world():
+		return
+	super._refresh_preview()
 
 
 func _update_track_goals() -> void:
@@ -326,6 +340,9 @@ func _apply_responsive_layout() -> void:
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
 		choices_rect = Rect2(margin, top, clampf(available.x * 0.31, 208, 360), maxf(72, footer_y - top - 12))
+	var stage_mode: bool = track_stage.wanted()
+	if stage_mode:
+		choices_rect = track_stage.layout(available, top, footer_y, margin, portrait, scale_factor)
 	_stage_rect(_selection_surface, choices_rect, scale_factor)
 	_stage_rect(setup_left, choices_rect.grow(-4.0 if short_view else -10.0), scale_factor)
 	setup_left.custom_minimum_size = Vector2.ZERO
@@ -353,6 +370,12 @@ func _apply_responsive_layout() -> void:
 					# actionable information and remain visible on every form factor.
 					if step == 3 and setup.mode == "race" and track_pass != null:
 						card.caption_label.show()
+	if stage_mode:
+		title_label.hide()
+		_stage_rect(setup_left, choices_rect, scale_factor)
+		track_stage.layout_cards(choices_rect, scale_factor)
+	else:
+		track_stage.release_drawer()
 	_stage_rect(footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
 	footer_spacer.hide()
 	footer.columns = (3 if has_saved_race else 2) + (1 if workshop_in_footer else 0)
@@ -377,7 +400,7 @@ func _apply_responsive_layout() -> void:
 	for control in _stage_controls:
 		control.visible = not _landing_active
 	_stage_header.visible = not _landing_active and not ultra_short
-	_selection_surface.visible = not _landing_active
+	_selection_surface.visible = not _landing_active and not stage_mode
 	call_deferred("_fit_welcome_camera")
 
 
@@ -486,6 +509,11 @@ func _visible_stage_region() -> Rect2:
 	if _landing_active:
 		return _landing_stage_region
 	var stage := preview_container.get_global_rect()
+	if track_stage.active and stage.has_area():
+		# Rundkurs-Übersicht der Streckenwahl: genau im Rahmen des Bühnenbilds.
+		var frame: Rect2 = track_stage.picture_rect().grow(-8.0 * _preview_dp_scale())
+		if frame.has_area():
+			return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
 	var inset := 8.0 * _preview_dp_scale()
 	var clear := stage.grow(-inset)
 	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
