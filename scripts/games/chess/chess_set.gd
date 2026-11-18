@@ -393,13 +393,14 @@ func set_glow(squares: Dictionary) -> void:
 		match kind:
 			"move":
 				var dot := CylinderMesh.new()
-				dot.top_radius = 0.016
-				dot.bottom_radius = 0.016
+				dot.top_radius = 0.023
+				dot.bottom_radius = 0.023
 				dot.height = 0.001
-				dot.radial_segments = 24
+				dot.radial_segments = 32
 				mesh.mesh = dot
-				color = Color("ffe9a8")
-				alpha = 0.85
+				# Kräftiges Grün: auf hellem Ahorn und dunklem Nussholz gut sichtbar.
+				color = Color("3fcf78")
+				alpha = 0.92
 			"capture":
 				var ring := TorusMesh.new()
 				ring.inner_radius = 0.036
@@ -427,8 +428,8 @@ func set_glow(squares: Dictionary) -> void:
 						color = Color("ffd45a")
 						alpha = 0.2
 					"danger":
-						color = Color("ff5a5a")
-						alpha = 0.55
+						color = Color("ff3b3b")
+						alpha = 0.72
 						mesh.set_meta("pulse", true)
 					"show":
 						color = Color("6fd3ff")
@@ -438,6 +439,8 @@ func set_glow(squares: Dictionary) -> void:
 						alpha = 0.5
 		material.albedo_color = Color(color, alpha)
 		mesh.set_meta("alpha", alpha)
+		mesh.set_meta("square", sq)
+		mesh.set_meta("kind", kind)
 		mesh.material_override = material
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh.position = square_center(sq) + Vector3(0, 0.0012, 0)
@@ -448,8 +451,7 @@ func set_glow(squares: Dictionary) -> void:
 func glow_squares() -> Dictionary:
 	var out := {}
 	for glow: MeshInstance3D in _glows:
-		var parts := glow.name.split("_")
-		out[int(parts[2])] = parts[1]
+		out[int(glow.get_meta("square"))] = str(glow.get_meta("kind"))
 	return out
 
 

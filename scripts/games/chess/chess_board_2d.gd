@@ -118,8 +118,8 @@ func _draw() -> void:
 		var rect := square_rect(sq)
 		match str(glow[sq]):
 			"move":
-				draw_circle(rect.get_center(), c * 0.16, Color(1.0, 0.93, 0.6, 0.85))
-				draw_arc(rect.get_center(), c * 0.16, 0, TAU, 24, Color(0.35, 0.2, 0.05, 0.6), 2.0, true)
+				draw_circle(rect.get_center(), c * 0.16, Color(0.25, 0.81, 0.47, 0.9))
+				draw_arc(rect.get_center(), c * 0.16, 0, TAU, 24, Color(0.08, 0.3, 0.15, 0.7), 2.0, true)
 			"capture":
 				draw_arc(rect.get_center(), c * 0.44, 0, TAU, 40, Color(1.0, 0.55, 0.25, 0.95), c * 0.07, true)
 			"hint":

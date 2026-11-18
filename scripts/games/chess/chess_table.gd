@@ -407,15 +407,17 @@ func _layout() -> void:
 		bar.size = Vector2(side, bar_h)
 		board_area = Rect2(safe.position.x + gap, safe.position.y + gap, safe.size.x - side - 3 * gap, safe.size.y - 2 * gap)
 		_wrap_bar(side)
-	board_area.size = board_area.size.max(Vector2(8, 8))
-	_board_rect = board_area
-	top_backdrop.visible = board2d.visible
-	var square := minf(board_area.size.x, board_area.size.y)
-	board2d.position = board_area.position + (board_area.size - Vector2(square, square)) * 0.5
-	board2d.size = Vector2(square, square)
-	# Überlagerung: mittig, nie über die Safe-Area hinaus.
+	# Menüs (Start, Lernweg, Stufen) stehen unten bzw. rechts; darüber bzw.
+	# links bleibt der Tisch mit Lumo sichtbar. Spiel-Überlagerungen (Pause,
+	# Warnung, Umwandlung, Ende) stehen mittig.
+	var menu := overlay.visible and screen in ["home", "path", "levels"] and overlay_kind != "rules"
 	var ow := minf(safe.size.x - 2 * gap, 560.0 * _density)
 	var oh := minf(safe.size.y - 2 * gap, 760.0 * _density)
+	if menu:
+		if portrait:
+			oh = minf(oh, safe.size.y * 0.64)
+		else:
+			ow = minf(ow, safe.size.x * 0.48)
 	overlay.custom_minimum_size = Vector2(ow, 0)
 	overlay.size = Vector2(ow, 0)
 	overlay.reset_size()
@@ -423,6 +425,27 @@ func _layout() -> void:
 	scroll.custom_minimum_size = Vector2(ow - 24 * _density, minf(overlay_box.get_combined_minimum_size().y, oh - 24 * _density))
 	overlay.reset_size()
 	overlay.position = safe.position + (safe.size - overlay.size) * 0.5
+	if menu and portrait:
+		overlay.position.y = safe.end.y - overlay.size.y - gap
+		board_area.size.y = overlay.position.y - gap - board_area.position.y
+	elif menu:
+		overlay.position = Vector2(safe.end.x - overlay.size.x - gap, safe.position.y + (safe.size.y - overlay.size.y) * 0.5)
+		board_area = Rect2(safe.position.x + gap, safe.position.y + gap,
+			overlay.position.x - safe.position.x - 3 * gap, safe.size.y - 2 * gap)
+		# Die Sprechblase steht im Querformat über dem Tisch, nicht über dem Menü.
+		bubble.position = Vector2(safe.position.x + gap, safe.position.y + gap)
+		bubble.custom_minimum_size = Vector2(minf(board_area.size.x, 560.0 * _density), 0)
+		bubble.size = Vector2(bubble.custom_minimum_size.x, 0)
+		bubble.reset_size()
+		if bubble.visible:
+			board_area.position.y += bubble.size.y + gap
+			board_area.size.y -= bubble.size.y + gap
+	board_area.size = board_area.size.max(Vector2(8, 8))
+	_board_rect = board_area
+	top_backdrop.visible = board2d.visible
+	var square := minf(board_area.size.x, board_area.size.y)
+	board2d.position = board_area.position + (board_area.size - Vector2(square, square)) * 0.5
+	board2d.size = Vector2(square, square)
 	_frame_camera()
 
 
@@ -459,7 +482,7 @@ func _frame_camera() -> void:
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.v_offset = 0.0
 	camera.h_offset = 0.0
-	var tilt := deg_to_rad(48.0 if in_game else 30.0)
+	var tilt := deg_to_rad(48.0 if in_game else 36.0)
 	var target := Vector3(0, ROOM.TABLE_Y, -0.2)
 	var corners: Array[Vector3] = []
 	for x: float in [-0.53, 0.53]:
@@ -868,7 +891,7 @@ func _refresh_glow() -> void:
 			for t: int in SCHOOL.squares(step.get("targets", [])):
 				if rules.board[t] == 0:
 					glow[t] = "hint"
-	if _danger_sq >= 0 and selected < 0 and not glow.has(_danger_sq):
+	if _danger_sq >= 0 and selected < 0 and str(glow.get(_danger_sq, "can")) in ["can", "last"]:
 		glow[_danger_sq] = "danger"
 	if _pending_warn >= 0:
 		glow[_pending_warn] = "danger"
