@@ -499,6 +499,8 @@ func _session() -> void:
 			game + " result names the match")
 		_check(int(payload.get("stars", 0)) == SESSION.stars_for(place, 2, 2) and int(payload.stars) >= 1 and int(payload.place) == place,
 			game + " result carries stars for the place")
+		_check(int(payload.get("xp", -1)) == int(payload.stars) * 10 and str(payload.get("status")) == "completed",
+			game + " result carries the experience points the app requires")
 		_check(reopened.settle(resumed, "session-1").is_empty(), game + " result is booked only once")
 		_check(not reopened.has_match(game), game + " finished match is no longer offered")
 		# Absturz vor dem Aufräumen: die beendete Partie liegt noch einmal in der Datei.

@@ -205,6 +205,8 @@ func settle(rules: RefCounted, session_id: String = "") -> Dictionary:
 		"sessionId": session_id,
 		"status": "completed",
 		"stars": stars,
+		# Die App verbucht nur Ergebnisse mit Erfahrungspunkten: zehn je Stern.
+		"xp": stars * 10,
 		"place": place,
 		"players": rules.players(),
 		"difficulty": int(rules.s.difficulty),
