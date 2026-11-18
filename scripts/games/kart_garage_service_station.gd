@@ -90,19 +90,42 @@ func build(materials: Dictionary) -> void:
 		materials.recess,
 		true
 	)
+	# Einzeln erkennbare Werkzeuge: Schraubenschlüssel (Chromstiel + Maulring), Schrauben-
+	# dreher mit bunten Griffen, Hammer und Zange. Je Material ein Stapel (MultiMesh).
 	var metal_parts: Array[Transform3D] = []
-	var handles: Array[Transform3D] = []
+	var grips := {"red": [] as Array[Transform3D], "yellow": [] as Array[Transform3D], "blue": [] as Array[Transform3D]}
+	var colours := ["red", "yellow", "blue"]
+	for tool in range(4):
+		var x := -4.62 + tool * 0.13
+		var length := 0.24 + tool * 0.05
+		metal_parts.append(INTERIOR._box_transform(Vector3(0.028, length, 0.025), Vector3(x, 1.98 - length * 0.5, 3.79)))
+		var ring := MeshInstance3D.new()
+		ring.name = "WrenchHead"
+		var torus := TorusMesh.new()
+		torus.inner_radius = 0.022
+		torus.outer_radius = 0.042
+		torus.rings = 12
+		torus.ring_segments = 6
+		ring.mesh = torus
+		ring.rotation.x = PI * 0.5
+		ring.position = Vector3(x, 2.0, 3.79)
+		ring.material_override = materials.steel
+		add_child(ring)
 	for tool in range(5):
-		var x := -4.55 + tool * 0.30
-		metal_parts.append(
-			INTERIOR._box_transform(Vector3(0.028, 0.35, 0.035), Vector3(x, 1.92, 3.77))
-		)
-		metal_parts.append(
-			INTERIOR._box_transform(Vector3(0.16, 0.055, 0.05), Vector3(x, 2.10, 3.77))
-		)
-		handles.append(INTERIOR._box_transform(Vector3(0.070, 0.16, 0.065), Vector3(x, 1.70, 3.76)))
+		var x := -4.0 + tool * 0.14
+		metal_parts.append(INTERIOR._box_transform(Vector3(0.014, 0.2, 0.014), Vector3(x, 2.02, 3.79)))
+		grips[colours[tool % 3]].append(INTERIOR._box_transform(Vector3(0.05, 0.14, 0.05), Vector3(x, 1.85, 3.785)))
+	# Hammer und Zange unten auf dem Brett.
+	grips.red.append(INTERIOR._box_transform(Vector3(0.2, 0.07, 0.06), Vector3(-4.45, 1.58, 3.785)))
+	metal_parts.append(INTERIOR._box_transform(Vector3(0.03, 0.3, 0.03), Vector3(-4.45, 1.42, 3.79)))
+	for side in [-1.0, 1.0]:
+		var jaw := Transform3D(Basis(Vector3.BACK, side * 0.18).scaled(Vector3(0.025, 0.28, 0.025)), Vector3(-3.58 + side * 0.03, 1.5, 3.79))
+		metal_parts.append(jaw)
+		grips.blue.append(Transform3D(Basis(Vector3.BACK, side * 0.18).scaled(Vector3(0.04, 0.14, 0.04)), Vector3(-3.58 + side * 0.055, 1.38, 3.785)))
 	INTERIOR._batch_boxes(self, "ToolSteel", metal_parts, materials.steel, false)
-	INTERIOR._batch_boxes(self, "ToolGrips", handles, materials.orange, false)
+	var grip_materials := {"red": INTERIOR._mat(Color("e8423a"), 0.1, 0.4), "yellow": INTERIOR._mat(Color("ffc532"), 0.1, 0.4), "blue": INTERIOR._mat(Color("2f7bff"), 0.1, 0.4)}
+	for key in grips:
+		INTERIOR._batch_boxes(self, "ToolGrips_" + key, grips[key], grip_materials[key], false)
 	# Original model is instantiated only once and survives all kart replacements.
 	host = ACTOR.new()
 	host.name = "OriginalWorkshopLumo"

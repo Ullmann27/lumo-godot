@@ -68,7 +68,7 @@ static func apply_paint(material: StandardMaterial3D, finish: String, flakes: bo
 			material.roughness = 0.66
 			material.metallic_specular = 0.35
 		"pearl":
-			material.metallic = 0.22
+			material.metallic = 0.12
 			material.roughness = 0.24
 			material.clearcoat = 1.0
 			material.clearcoat_roughness = 0.06
@@ -77,18 +77,22 @@ static func apply_paint(material: StandardMaterial3D, finish: String, flakes: bo
 			material.rim = 0.28
 			material.rim_tint = 0.65
 		_:
-			material.metallic = 0.58
-			material.roughness = 0.30
+			# Ohne Reflexionssonde (Kompatibilitäts-Renderer) wirkt hoher Metallanteil
+			# schwarz; satte Farbe kommt aus Albedo + Klarlack-Glanz.
+			material.metallic = 0.26
+			material.roughness = 0.28
 			material.clearcoat = 0.85
 			material.clearcoat_roughness = 0.10
+	# Flakes als feine Normal-Map unter dem Klarlack (kein Detail-Albedo: das würde den
+	# Lack aufhellen). Lackfarbe bleibt unverändert, nur das Glitzern im Licht kommt dazu.
+	material.normal_enabled = false
 	if flakes and finish != "matte":
 		var flake := load(FLAKE_PATH) as Texture2D
 		if flake != null:
-			material.detail_enabled = true
-			material.detail_blend_mode = BaseMaterial3D.BLEND_MODE_MIX
-			material.detail_uv_layer = BaseMaterial3D.DETAIL_UV_1
-			material.detail_normal = flake
-			material.uv1_scale = Vector3(26.0, 26.0, 1.0) if finish == "metallic" else Vector3(40.0, 40.0, 1.0)
+			material.normal_enabled = true
+			material.normal_texture = flake
+			material.normal_scale = 0.07 if finish == "metallic" else 0.05
+			material.uv1_scale = Vector3(48.0, 48.0, 1.0) if finish == "metallic" else Vector3(64.0, 64.0, 1.0)
 
 
 ## Nummern und Aufkleber an die Marker hängen. Gibt die erzeugten Knoten zurück (für LOD).

@@ -11,6 +11,7 @@ const STEEL := Color("6d7c90")
 const GOLD := Color("ffc14a")
 const CYAN := Color("3ae0ff")
 const AMBER := Color("ff9a3c")
+const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 
 
 static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "high") -> Dictionary:
@@ -193,7 +194,9 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 		"back": _action_button(root, "back", "Zurück", Vector3(-2.15, 0.52, -1.05), Color("c4d5df")),
 	}
 	root.set_meta("garage_material_families", materials.size())
-	return {"root": root, "sign": sign, "sign_board": sign_board, "turntable": turntable,
+	# Farbiger Konzeptbild-Raum (Neon, Holz, Werkzeugkiste, Hebebühne, Boden-Details, Licht).
+	var showroom: Dictionary = SHOWROOM.build(root, materials, profile)
+	return {"showroom": showroom, "root": root, "sign": sign, "sign_board": sign_board, "turntable": turntable,
 		"hero": hero, "buttons": buttons, "rich": rich, "materials": materials}
 
 

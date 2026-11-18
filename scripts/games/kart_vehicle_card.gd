@@ -97,6 +97,27 @@ func _ready() -> void:
 	apply_size(1.0, false)
 
 
+## Farbiger Auftritt je Kart: Lackfarbe als weicher Lichthof hinter dem Vorschaubild und
+## eine Akzent-Leiste unten – die Liste wirkt wie eine Reihe glänzender Showroom-Plätze.
+func _draw() -> void:
+	if not is_instance_valid(thumb):
+		return
+	var look: Dictionary = item.get("look", {})
+	var paint: Color = look.get("paint", Color("2f7bff"))
+	var accent: Color = look.get("accent", Color("ffc23a"))
+	var strength: float = 0.25 if locked else 1.0
+	var centre: Vector2 = thumb.position + margin.position + thumb.size * 0.5
+	var radius: float = maxf(thumb.size.x, size.y) * 0.62
+	for k in range(6):
+		var t: float = 1.0 - k / 6.0
+		draw_circle(centre + Vector2(0, size.y * 0.08), radius * t, Color(paint.lightened(0.25), 0.07 * strength))
+	# Bodenspiegel: heller Streifen unter dem Kart.
+	draw_rect(Rect2(centre + Vector2(-radius * 0.7, size.y * 0.28), Vector2(radius * 1.4, maxf(2.0, size.y * 0.035))), Color(1, 1, 1, 0.10 * strength))
+	var bar := Rect2(Vector2(size.y * 0.25, size.y - maxf(3.0, size.y * 0.045) - 2.0), Vector2(size.x - size.y * 0.5, maxf(3.0, size.y * 0.045)))
+	draw_rect(bar, Color(accent, 0.85 * strength))
+	draw_rect(Rect2(bar.position, Vector2(bar.size.x * 0.35, bar.size.y)), Color(paint.lightened(0.35), 0.95 * strength))
+
+
 func apply_size(scale_factor: float, compact: bool) -> void:
 	if not is_instance_valid(title_label):
 		return
@@ -113,3 +134,4 @@ func apply_size(scale_factor: float, compact: bool) -> void:
 	bars.row_height = (7.0 if compact else 10.0) * scale_factor
 	bars.visible = not compact or not locked
 	role_label.visible = not compact
+	queue_redraw()

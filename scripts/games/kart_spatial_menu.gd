@@ -76,8 +76,8 @@ func _ready() -> void:
 		learn_button.pressed.disconnect(connection.callable)
 	learn_button.pressed.connect(func(): exit_requested.emit("games"))
 	# Brighter local studio materials; the original meshes and driver stay intact.
-	garage_interior.materials.wall.albedo_color = Color("37536e")
-	garage_interior.materials.floor.albedo_color = Color("415c76")
+	garage_interior.materials.wall.albedo_color = Color("3a6696")
+	garage_interior.materials.floor.albedo_color = Color("4a6382")
 	garage_interior.materials.ivory.albedo_color = Color("e2e4dc")
 	service_station = SERVICE_STATION.new()
 	garage_interior.root.add_child(service_station)
