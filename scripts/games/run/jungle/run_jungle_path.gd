@@ -15,6 +15,8 @@ var length: float = 0.0
 var low_detail: bool = false
 var level
 var scenery
+## Empty with the full jungle; otherwise the build step that failed (plain look).
+var art_fallback: String = ""
 ## Interface parts of the kart worlds that this path does not have.
 var action: Dictionary = {}
 var adventure_tunnel: Dictionary = {}
@@ -29,6 +31,14 @@ var _gaps: Array[Vector2] = []
 
 
 func build(lightweight: bool, _track: String = "") -> void:
+	begin_build(lightweight)
+	while not build_step():
+		pass
+
+
+## The path itself (everything Lumo runs on) is ready after this; the look is
+## added by build_step(), one piece per call.
+func begin_build(lightweight: bool) -> void:
 	low_detail = lightweight
 	level = LEVEL.make()
 	length = float(level.length)
@@ -36,10 +46,37 @@ func build(lightweight: bool, _track: String = "") -> void:
 	_sample()
 	_gaps = level.gaps.duplicate()
 	_gaps.append(Vector2(float(level.bonus.s1), 0.0))
+	art_fallback = ""
+	_new_scenery(false)
+
+
+## Builds the next piece of the scenery; true once the world is complete. When
+## a piece of the full jungle fails (a shader that does not compile on this
+## graphics chip, a model that cannot be read ...), the jungle is replaced by
+## the plain look and the run starts anyway.
+func build_step() -> bool:
+	if scenery.finished():
+		return true
+	if scenery.step():
+		return scenery.finished()
+	if scenery.simple:
+		# Even the plain look failed: the path stays without decks, sky from the project.
+		push_warning("[JungleArt] plain look failed at %s" % scenery.failed_step)
+		return true
+	art_fallback = scenery.failed_step
+	print("[JungleArt] fallback to plain look: step %s failed" % art_fallback)
+	push_warning("[JungleArt] fallback to plain look: step %s failed" % art_fallback)
+	remove_child(scenery)
+	scenery.queue_free()
+	_new_scenery(true)
+	return false
+
+
+func _new_scenery(plain: bool) -> void:
 	scenery = SCENERY.new()
 	scenery.name = "JungleScenery"
 	add_child(scenery)
-	scenery.build(self, level, lightweight)
+	scenery.begin(self, level, low_detail, plain)
 
 
 ## The kart worlds light themselves here; the scenery has already done it.

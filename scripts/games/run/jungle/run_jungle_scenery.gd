@@ -56,9 +56,25 @@ const MOODS: Array[Dictionary] = [
 	{"sun": Color("ffb877"), "energy": 1.85, "ambient": Color("ecd9bc"), "fog": Color("e8c9a0"), "top": Color("3b6fc8"), "horizon": Color("ffc488"), "shaft": Color(1.0, 0.75, 0.42, 0.26)},
 ]
 
+## The order in which the scenery is built (see step()).
+const STEPS: Array[String] = [
+	"_check_shaders", "_make_materials", "_make_kinds", "_index_path", "_environment", "_decks", "_terrain", "_cave",
+	"_bonus_hall", "_vegetation", "_structures", "_decor", "_fauna", "_background", "_flush", "_ambient_particles",
+	"_first_mood",
+]
+const SIMPLE_STEPS: Array[String] = ["_plain_materials", "_environment", "_decks", "_first_mood"]
+## Tests: name of a step that fails on purpose ("any" = the first one).
+static var force_failure: String = ""
+
 var path
 var level
 var low: bool = false
+## Plain look (fallback): standard materials, no plants or props.
+var simple: bool = false
+var step_index: int = 0
+var failed_step: String = ""
+## Milliseconds each build step took (container measurements in the tests).
+var step_ms: Dictionary = {}
 ## 0 = low, 1 = medium, 2 = high (from the saved quality profile).
 var tier: int = 1
 var placed: int = 0
@@ -92,28 +108,89 @@ const SOLID_KINDS: Array[String] = [
 const TREE_KINDS: Array[String] = ["tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1"]
 
 
-func build(world, layout, lightweight: bool) -> void:
+func build(world, layout, lightweight: bool, plain: bool = false) -> void:
+	begin(world, layout, lightweight, plain)
+	while not finished():
+		step()
+
+
+## Starts a build that step() then carries out piece by piece (one piece per
+## call, so the game can spread the work over several frames).
+func begin(world, layout, lightweight: bool, plain: bool = false) -> void:
 	path = world
 	level = layout
 	low = lightweight
+	simple = plain
 	tier = 0 if low else (2 if _profile() == "high" else 1)
 	_rng.seed = 20261118
-	_make_materials()
-	_make_kinds()
-	_index_path()
-	_environment()
-	_decks()
-	_terrain()
-	_cave()
-	_bonus_hall()
-	_vegetation()
-	_structures()
-	_decor()
-	_fauna()
-	_background()
-	_flush()
-	_ambient_particles()
+	step_index = 0
+	failed_step = ""
+
+
+func steps() -> Array[String]:
+	return SIMPLE_STEPS if simple else STEPS
+
+
+func finished() -> bool:
+	return step_index >= steps().size() or not failed_step.is_empty()
+
+
+## Builds the next piece. False when it failed: then the build is over and
+## failed_step names the piece (the caller falls back to the plain look).
+## Every piece returns true as its last line, so a piece that stopped half-way
+## on an error (an aborted call returns null) is noticed here.
+func step() -> bool:
+	if finished():
+		return failed_step.is_empty()
+	var name: String = steps()[step_index]
+	var done: bool = false
+	var started: int = Time.get_ticks_msec()
+	if force_failure.is_empty() or simple or (force_failure != name and force_failure != "any"):
+		done = call(name) == true
+	step_ms[name] = Time.get_ticks_msec() - started
+	if not done:
+		failed_step = name
+		return false
+	step_index += 1
+	return true
+
+
+## The jungle shaders must have compiled (on a picky graphics driver a shader
+## that does not compile draws nothing or garbage): each one reports its uniforms.
+func _check_shaders() -> bool:
+	var broken: Array[String] = []
+	var sources: Dictionary = {
+		"FOLIAGE": SHADERS.FOLIAGE, "SOLID": SHADERS.SOLID, "GROUND": SHADERS.GROUND, "GLOW": SHADERS.GLOW,
+		"WATER": SHADERS.WATER, "LEAF": "", "SURFACE": "",
+	}
+	for key in sources:
+		var shader: Shader = ART.shader(key.to_lower()) if str(sources[key]).is_empty() else null
+		if shader == null:
+			shader = Shader.new()
+			shader.code = sources[key]
+		if shader.get_shader_uniform_list().is_empty():
+			broken.append(key)
+	if not broken.is_empty():
+		push_warning("[JungleArt] shaders did not compile: " + ", ".join(broken))
+		return false
+	return true
+
+
+func _first_mood() -> bool:
 	_apply_mood(0.0)
+	return true
+
+
+## The plain look: path decks in vertex colours with standard materials and the
+## sky - used when the full jungle could not be built on this device.
+func _plain_materials() -> bool:
+	for pattern in range(4):
+		var made := StandardMaterial3D.new()
+		made.vertex_color_use_as_albedo = true
+		made.vertex_color_is_srgb = true
+		made.roughness = 0.9
+		_deck_materials[pattern] = made
+	return true
 
 
 func _profile() -> String:
@@ -153,12 +230,13 @@ func _apply_mood(at: float) -> void:
 	_environment_res.fog_light_color = Color(a.fog).lerp(b.fog, t)
 	_sky_material.sky_top_color = Color(a.top).lerp(b.top, t)
 	_sky_material.sky_horizon_color = Color(a.horizon).lerp(b.horizon, t)
-	_materials["shaft"].set_shader_parameter("colour", Color(a.shaft).lerp(b.shaft, t))
+	if _materials.has("shaft"):
+		_materials["shaft"].set_shader_parameter("colour", Color(a.shaft).lerp(b.shaft, t))
 
 
 # ------------------------------------------------------------------ materials and kinds
 
-func _make_materials() -> void:
+func _make_materials() -> bool:
 	_materials["foliage"] = SHADERS.material(SHADERS.FOLIAGE, {"brightness": 1.25})
 	_materials["trunk"] = SHADERS.material(SHADERS.FOLIAGE, {"sway": 0.6, "brightness": 1.15})
 	_materials["solid"] = SHADERS.material(SHADERS.SOLID)
@@ -194,6 +272,7 @@ func _make_materials() -> void:
 	cave["detail_tex"] = ART.texture("stone_albedo.jpg")
 	cave["detail_nrm"] = ART.texture("stone_normal.jpg")
 	_materials["cave_ground"] = SHADERS.material(SHADERS.GROUND, cave)
+	return true
 
 
 func _kind(name: String, mesh: Mesh, material: String, range_end: float = 140.0, shadow: bool = false) -> void:
@@ -220,7 +299,7 @@ func _art(name: String, model: String, range_end: float, shadow: bool, fallback:
 	}
 
 
-func _make_kinds() -> void:
+func _make_kinds() -> bool:
 	var plants: float = PLANT_RANGE[tier]
 	var shadows: bool = tier > 0
 	var trees: Array[String] = ["tree_broad", "tree_slender", "tree_fig"]
@@ -287,6 +366,7 @@ func _make_kinds() -> void:
 	MESHES.blob(mountain, Vector3.ZERO, Vector3(1.0, 1.0, 1.0), Color("3f6f5a"), crown_rng, 0.18, 6, 12, 0.0, true)
 	_kind("mountain", mountain.mesh(), "solid", 0.0)
 	_art("cliff", "cliff", 220.0, shadows, mountain.mesh(), "solid", {"moss": 0.45})
+	return true
 
 
 ## What the scenery is built from: every kind and whether it comes from a Blender model.
@@ -331,7 +411,7 @@ func _put(kind: String, at_s: float, transform: Transform3D, colour: Color = Col
 	placed += 1
 
 
-func _flush() -> void:
+func _flush() -> bool:
 	for key in _buckets:
 		var bucket: Dictionary = _buckets[key]
 		var kind: Dictionary = _kinds[bucket.kind]
@@ -357,6 +437,7 @@ func _flush() -> void:
 		_batch(str(key) + "_far", bucket, kind.lod, kind, 0.0, float(kind.range), bool(kind.shadow) and tier == 2)
 	_buckets.clear()
 	_far_buckets.clear()
+	return true
 
 
 func _far_parts(kind: String, bucket: Dictionary) -> void:
@@ -431,7 +512,7 @@ func _cell(point: Vector3) -> Vector2i:
 	return Vector2i(floori(point.x / GRID_CELL), floori(point.z / GRID_CELL))
 
 
-func _index_path() -> void:
+func _index_path() -> bool:
 	var at: float = 0.0
 	while at < path.length:
 		var point: Vector3 = path.position_at(at, 0.0)
@@ -460,6 +541,7 @@ func _index_path() -> void:
 					if flat.length() < 60.0:
 						_crowded[index] = 1
 						break
+	return true
 
 
 func _is_crowded(at: float) -> bool:
@@ -508,7 +590,7 @@ func _below_other_path(point: Vector3, own: float) -> float:
 
 # ------------------------------------------------------------------ sky, sun and fog
 
-func _environment() -> void:
+func _environment() -> bool:
 	var sky_material := ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color("2f7fd8")
 	sky_material.sky_horizon_color = Color("ffe2b0")
@@ -567,12 +649,13 @@ func _environment() -> void:
 	sun.shadow_normal_bias = 1.4
 	add_child(sun)
 	_sun = sun
+	return true
 
 
 # ------------------------------------------------------------------ path decks
 
 ## The walkable surfaces as ribbons (one mesh per surface stretch, cut at 60 m).
-func _decks() -> void:
+func _decks() -> bool:
 	for surface in level.surfaces:
 		var kind: String = str(surface.kind)
 		if kind == "gap" or not DECK.has(kind):
@@ -583,6 +666,7 @@ func _decks() -> void:
 			var until: float = minf(to, from + 60.0)
 			_deck(from, until, kind, float(surface.half))
 			from = until
+	return true
 
 
 func _deck(from: float, to: float, kind: String, half: float) -> void:
@@ -687,7 +771,7 @@ func _terrain_height(at: float, offset: float) -> float:
 	return base + rise + wobble * clampf((offset - 2.0) / 8.0, 0.0, 1.0)
 
 
-func _terrain() -> void:
+func _terrain() -> bool:
 	var step: float = 3.0 if low else 2.0
 	var samples: PackedFloat32Array = _main_samples(step)
 	var stretch: int = int(120.0 / step)
@@ -697,6 +781,7 @@ func _terrain() -> void:
 		for side in [-1.0, 1.0]:
 			_terrain_strip(samples, start, stop, side)
 		start = stop
+	return true
 
 
 func _terrain_strip(samples: PackedFloat32Array, start: int, stop: int, side: float) -> void:
@@ -753,7 +838,7 @@ func _terrain_strip(samples: PackedFloat32Array, start: int, stop: int, side: fl
 
 # ------------------------------------------------------------------ the cave
 
-func _cave() -> void:
+func _cave() -> bool:
 	for roof in level.ceilings:
 		var from: float = roof.x
 		while from < roof.y - 0.01:
@@ -785,6 +870,7 @@ func _cave() -> void:
 				light.position = _point(glow_at, side * (path.half_width_at(glow_at) + 0.5), 1.6)
 				add_child(light)
 				glow_at += 22.0 if tier == 1 else 14.0
+	return true
 
 
 func _cave_piece(from: float, to: float, height: float) -> void:
@@ -837,7 +923,7 @@ func _cave_piece(from: float, to: float, height: float) -> void:
 
 # ------------------------------------------------------------------ the bonus hall
 
-func _bonus_hall() -> void:
+func _bonus_hall() -> bool:
 	var from: float = float(level.bonus.s0)
 	var to: float = float(level.bonus.s1)
 	_cave_piece(from - 2.0, to + 2.0, 7.5)
@@ -857,11 +943,12 @@ func _bonus_hall() -> void:
 		light.omni_range = 26.0
 		light.position = path.position_at(lerpf(from + 10.0, to - 10.0, float(k) / 2.0), 0.0) + Vector3.UP * 5.5
 		add_child(light)
+	return true
 
 
 # ------------------------------------------------------------------ the jungle
 
-func _vegetation() -> void:
+func _vegetation() -> bool:
 	var density: float = DENSITY[tier]
 	var at: float = 0.0
 	while at < path.length:
@@ -918,6 +1005,7 @@ func _vegetation() -> void:
 		at += 1.15
 	_trees()
 	_overhead()
+	return true
 
 
 ## A little colour variation per tree: fresher, darker, more olive.
@@ -1002,7 +1090,7 @@ func _overhead() -> void:
 
 # ------------------------------------------------------------------ built things along the path
 
-func _structures() -> void:
+func _structures() -> bool:
 	for surface in level.surfaces:
 		var kind: String = str(surface.kind)
 		var from: float = float(surface.s0)
@@ -1086,6 +1174,7 @@ func _structures() -> void:
 			mist.material_override = _materials["mist"]
 			mist.transform = Transform3D(path.frame(middle) * Basis(Vector3.UP, PI * 0.5), _point(middle, 0.0, -5.0))
 			add_child(mist)
+	return true
 
 
 func _railing(from: float, to: float, half: float, ropes: bool) -> void:
@@ -1133,7 +1222,7 @@ func _water_plane(from: float, to: float, half: float, depth: float) -> void:
 
 # ------------------------------------------------------------------ landmarks from the level
 
-func _decor() -> void:
+func _decor() -> bool:
 	# A small lantern marks every rescue point.
 	for point in level.respawns:
 		var at: float = float(point.s)
@@ -1182,6 +1271,7 @@ func _decor() -> void:
 				_put("plankbox", at, _xf(at, lat, 1.4, Vector3(1.1, 0.6, 0.1), -0.3))
 			"cart_stop":
 				_put("plankbox", at, _xf(at - 25.0, 1.6, 0.5, Vector3(0.9, 1.0, 1.4)))
+	return true
 
 
 ## Sparks rising from a torch flame (animated on the GPU by the fauna shader).
@@ -1218,7 +1308,7 @@ func _waterfall(at: float, lat: float, height: float, width: float, curtain: boo
 
 # ------------------------------------------------------------------ animals, light and mist
 
-func _fauna() -> void:
+func _fauna() -> bool:
 	var at: float = 5.0
 	var count: float = 0.5 if low else 1.0
 	while at < path.length:
@@ -1260,11 +1350,12 @@ func _fauna() -> void:
 		var spot: float = path.length * (float(index) + 0.5) / 14.0
 		var colour: Color = [Color("ff4b3a"), Color("2fb7ff"), Color("ffd23a"), Color("37d67a")][index % 4]
 		_put("bird", spot, _xf(spot, _rng.randf_range(-12.0, 12.0), _rng.randf_range(16.0, 24.0), Vector3.ONE * 1.8), colour, Color(_rng.randf(), _rng.randf_range(0.4, 0.9), 0.12, 1.0 / 4.0))
+	return true
 
 
-func _ambient_particles() -> void:
+func _ambient_particles() -> bool:
 	if low:
-		return
+		return true
 	_pollen = CPUParticles3D.new()
 	_pollen.name = "Pollen"
 	_pollen.amount = 24 if tier == 1 else 56
@@ -1289,11 +1380,12 @@ func _ambient_particles() -> void:
 	quad.material = material
 	_pollen.mesh = quad
 	add_child(_pollen)
+	return true
 
 
 # ------------------------------------------------------------------ the far distance
 
-func _background() -> void:
+func _background() -> bool:
 	var low_corner := Vector3(INF, INF, INF)
 	var high_corner := Vector3(-INF, -INF, -INF)
 	for at in _main_samples(20.0):
@@ -1339,3 +1431,4 @@ func _background() -> void:
 	floor_node.position = Vector3(centre.x, low_corner.y - 22.0, centre.z)
 	floor_node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(floor_node)
+	return true

@@ -49,6 +49,9 @@ const SECTION_SAYINGS: Array[String] = [
 	"", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt!"
 ]
 
+## Longest piece of building work per frame while loading, in milliseconds.
+const PREPARE_SLICE_MS: int = 40
+
 var phase: Phase = Phase.MENU
 var paused: bool = false
 var question_open: bool = false
@@ -95,6 +98,9 @@ var _slowmo_left: float = 0.0
 var load_ms: int = 0
 var _previous_auto_accept_quit: bool = true
 var _previous_quit_on_go_back: bool = true
+## Adventure path built ahead over several frames while the loading card shows.
+var _prepared_world = null
+var _prepared_ms: int = 0
 
 
 func _ready() -> void:
@@ -210,11 +216,34 @@ func _on_course_chosen(index: int, with_save: bool) -> void:
 	phase = Phase.LOADING
 	var course: Dictionary = COURSES.course(index)
 	menus.open("loading", {"name": course.name, "accent": course.accent})
-	# Let the loading card be drawn before the world is built in one go.
+	# Let the loading card be drawn before the world is built.
 	await get_tree().process_frame
 	await get_tree().process_frame
+	if bool(course.get("path", false)) and is_inside_tree() and phase == Phase.LOADING:
+		await _prepare_path_world()
 	if is_inside_tree() and phase == Phase.LOADING:
 		start_course(index, with_save)
+
+
+## Builds the adventure path piece by piece over several frames, so the start
+## never blocks the phone for long; start_course() then takes it over.
+func _prepare_path_world() -> void:
+	var started: int = Time.get_ticks_msec()
+	var made = PATH_WORLD.new()
+	made.name = "RunWorld"
+	made.visible = false
+	add_child(made)
+	made.begin_build(lightweight)
+	var slice: int = Time.get_ticks_msec()
+	while not made.build_step():
+		if Time.get_ticks_msec() - slice >= PREPARE_SLICE_MS:
+			await get_tree().process_frame
+			if not is_inside_tree() or phase != Phase.LOADING:
+				made.queue_free()
+				return
+			slice = Time.get_ticks_msec()
+	_prepared_world = made
+	_prepared_ms = Time.get_ticks_msec() - started
 
 
 ## Builds the course and puts Lumo on the start line (or at the saved checkpoint).
@@ -226,10 +255,18 @@ func start_course(index: int, with_save: bool) -> void:
 	course_index = clampi(index, 0, COURSES.count() - 1)
 	var course: Dictionary = COURSES.course(course_index)
 	var load_started: int = Time.get_ticks_msec()
-	world = PATH_WORLD.new() if bool(course.get("path", false)) else WORLD.new()
-	world.name = "RunWorld"
-	add_child(world)
-	world.build(lightweight, str(course.track))
+	if is_instance_valid(_prepared_world) and bool(course.get("path", false)):
+		world = _prepared_world
+		world.visible = true
+		load_started -= _prepared_ms
+	else:
+		if is_instance_valid(_prepared_world):
+			_prepared_world.queue_free()
+		world = PATH_WORLD.new() if bool(course.get("path", false)) else WORLD.new()
+		world.name = "RunWorld"
+		add_child(world)
+		world.build(lightweight, str(course.track))
+	_prepared_world = null
 	if world.find_children("*", "WorldEnvironment", true, false).is_empty():
 		# Dschungelherz brings no sky or sun of its own; give it the daylight that
 		# its track definition describes instead of the project's default dusk.
