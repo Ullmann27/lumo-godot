@@ -56,6 +56,8 @@ var portrait: TextureRect
 var text_label: Label
 var dots_label: Label
 var skip_button: Button
+var row: HBoxContainer
+var column: VBoxContainer
 var replay_button: Button
 var voice: AudioStreamPlayer
 var _events: Dictionary = {}
@@ -372,7 +374,7 @@ func _build() -> void:
 	bubble.name = "GuideBubble"
 	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(bubble)
-	var row := HBoxContainer.new()
+	row = HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bubble.add_child(row)
 	portrait = TextureRect.new()
@@ -382,13 +384,16 @@ func _build() -> void:
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(portrait)
-	var column := VBoxContainer.new()
+	column = VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(column)
 	dots_label = Label.new()
 	dots_label.name = "StepDots"
+	# Schmale Handys: die Kopfzeile kürzt sich, statt die Sprechblase zu verbreitern.
+	dots_label.clip_text = true
+	dots_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	dots_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dots_label.add_theme_font_override("font", HEADING_FONT)
 	dots_label.add_theme_color_override("font_color", GOLD)
@@ -403,6 +408,7 @@ func _build() -> void:
 	skip_button = _make_button("GuideSkip", "Überspringen ▸▸")
 	skip_button.tooltip_text = "Einführung überspringen"
 	skip_button.pressed.connect(skip)
+	skip_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(skip_button)
 	replay_button = _make_button("GuideReplay", "")
 	replay_button.tooltip_text = "Lumo, zeig es mir nochmal"
@@ -497,6 +503,14 @@ func _layout_bubble(view: Vector2, u: float, touch: float) -> void:
 	bubble.add_theme_stylebox_override("panel", style)
 	var width: float = minf(view.x - 32.0 * u, maxf(640.0 * u, view.x * 0.5))
 	width = minf(width, view.x - 24.0)
+	# Schmale Handys: „Überspringen“ rutscht unter den Text, damit der Text Platz hat.
+	var narrow: bool = width < 560.0 * u
+	var home: Node = column if narrow else row
+	if skip_button.get_parent() != home:
+		skip_button.get_parent().remove_child(skip_button)
+		home.add_child(skip_button)
+	skip_button.size_flags_horizontal = Control.SIZE_SHRINK_END if narrow else Control.SIZE_FILL
+	text_label.add_theme_font_size_override("font_size", roundi((22.0 if narrow else 25.0) * u))
 	bubble.custom_minimum_size = Vector2(width, 0.0)
 	bubble.size = Vector2(width, 0.0)
 	bubble.reset_size()

@@ -50,8 +50,11 @@ func _close() -> void:
 
 
 func _next_step(guide) -> void:
-	while guide.state == "praise":
+	var waited := 0
+	while guide.state == "praise" and waited < 600:
+		waited += 1
 		await process_frame
+	kit.check(guide.state != "praise", "Lumos Lob endet (aktiv=%s)" % guide.root.visible)
 
 
 ## Tippt die nächste offene Tipp-/Sternnote genau im Takt auf ihrer Spurtaste.
