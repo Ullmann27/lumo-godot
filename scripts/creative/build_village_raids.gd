@@ -15,6 +15,7 @@ extends RefCounted
 ## Zeit läuft nur mit „Nächster Tag“ des Kindes – nie, wenn die App zu ist.
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const NEIGHBORS = preload("res://scripts/creative/build_village_neighbors.gd")
+const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const VERSION := 1
 ## Keine Angriffe in den ersten Tagen und nicht vor Kapitel 3 (Index 2).
 const FIRST_DAY := 8
@@ -68,6 +69,8 @@ const DRAGON_NEST := Vector2(-196.0, -86.0)
 var world_seed := 20261118
 var parts: Dictionary = {"wall": 0, "tower": 0, "gate": 0, "ditch": 0, "trap": 0}
 var guards := 0
+## Wachen-Verbände (build_village_guards.gd): Summe der Größen == guards.
+var units: Array = []
 var fame := 0
 var next_check := FIRST_DAY
 ## Angekündigter Angriff oder leer: {threat, by, reason, announce_day, arrive_day, level, ally, source}
@@ -142,6 +145,7 @@ func train_guard(model) -> String:
 	if not model.exchange({"coins": 1}, {}):
 		return "Eine Wache braucht 1 Münze für Helm und Schild."
 	guards += 1
+	GUARDS.reconcile(self)
 	return ""
 
 
@@ -473,7 +477,7 @@ func snapshot(model = null) -> Dictionary:
 	return {"version": VERSION, "seed": world_seed, "damaged": snapshot_damage(model) if model != null else [], "parts": parts.duplicate(), "guards": guards, "fame": fame,
 		"next_check": next_check, "pending": pending.duplicate(true), "last": last_result.duplicate(true),
 		"stash": stash.duplicate(), "expedition": expedition.duplicate(), "defended": defended, "lost": lost,
-		"faced": faced.duplicate(), "log": chronicle.slice(-24)}
+		"faced": faced.duplicate(), "log": chronicle.slice(-24), "units": GUARDS.snapshot(self)}
 
 
 ## Damaged plots live in the village model (production) but are saved here.
@@ -495,6 +499,7 @@ static func restore(raw: Variant, model = null):
 	for kind in result.parts:
 		result.parts[kind] = clampi(int(raw.get("parts", {}).get(kind, 0)), 0, int(PARTS[kind].max))
 	result.guards = clampi(int(raw.get("guards", 0)), 0, 9999)
+	GUARDS.restore(result, raw.get("units", []))
 	result.fame = clampi(int(raw.get("fame", 0)), 0, 9999)
 	result.next_check = int(raw.get("next_check", FIRST_DAY))
 	result.defended = maxi(0, int(raw.get("defended", 0)))

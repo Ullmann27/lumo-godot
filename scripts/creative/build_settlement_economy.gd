@@ -342,6 +342,9 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictionary:
 	var arrivals := 0
 	var births := 0
+	# Einmal je Tag zählen, nicht je Familie (Großstadt: 1.000 Häuser).
+	var water := water_capacity(model, town)
+	var has_school: bool = model._count(town, "school") > 0
 	for family: Dictionary in town.households:
 		if not satisfied:
 			continue
@@ -353,7 +356,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 		# Shortages pause growth; residents are never killed or taken away.
 		if (
 			int(town.resources.food) < int(town.population) + 2
-			or int(town.population) >= water_capacity(model, town)
+			or int(town.population) >= water
 			or int(town.population) >= MAX_POPULATION
 		):
 			continue
@@ -363,7 +366,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 			arrivals += 1
 		elif (
 			int(family.adults) == 2
-			and model._count(town, "school") > 0
+			and has_school
 			and int(family.children) < 2
 			and int(family.supplied_days) >= 8 + int(family.children) * 6
 		):

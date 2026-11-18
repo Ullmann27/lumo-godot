@@ -276,6 +276,14 @@ func advance_one(id: String) -> Dictionary:
 			wishes.append("farm")
 		if model._capacity(town) <= int(town.population) + 1:
 			wishes.append("house")
+		# Was die gleichen Erschließungsregeln verlangen: Münzen vom Markt,
+		# ab dem dritten Gebiet ein Brunnen und ein Wegeplatz.
+		if model._count(town, "market") == 0 and int(town.region) >= 1:
+			wishes.append("market")
+		if int(town.region) >= 2 and model._count(town, "well") == 0:
+			wishes.append("well")
+		if int(town.region) >= 2 and model._count(town, "road") == 0:
+			wishes.append("road")
 		wishes.append(str(order[posmod(town.buildings.size(), order.size())]))
 		wishes.append_array(["farm", "lumber", "house", "quarry"])
 		for kind in wishes:
@@ -290,7 +298,7 @@ func advance_one(id: String) -> Dictionary:
 		for resource in ["wood", "stone"]:
 			if int(town.resources[resource]) < 4 and int(town.resources.food) > 14:
 				model.try_trade(resource, 5, false)
-	if model.expand():
+	if int(town.plots) < MAX_SITES and model.expand():
 		_note("%s erschließt neues Land." % str(entry.town))
 	var report: Dictionary = model.next_day()
 	if not built.is_empty():
