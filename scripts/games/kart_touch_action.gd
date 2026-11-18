@@ -1,5 +1,11 @@
 extends Control
 ## Independent right-thumb action, including simultaneous multi-touch.
+##
+## Two looks: the classic flat artwork (skin "") for older games, and the Blender-rendered
+## glass buttons of Lumo Kart (skin "kart3d", tools/art/render_kart_controls.py) with live
+## feedback: press spring + light ring, gas load ring, brake glow, drift tier ring, turbo
+## stock and ready glow, calm item pulse. Nothing flashes faster than 1 Hz; with
+## reduced_motion every cue is steady.
 
 const ICONS: Dictionary = {
 	"gas": preload("res://assets/kart/controls/gas.svg"),
@@ -8,7 +14,11 @@ const ICONS: Dictionary = {
 	"brake": preload("res://assets/kart/controls/brake.svg"),
 	"item": preload("res://assets/kart/controls/item.svg"),
 }
-var icon_id: String = "boost"
+var icon_id: String = "boost":
+	set(value):
+		icon_id = value
+		_sync_caption()
+		queue_redraw()
 const ART: Dictionary = {
 	"drift": [preload("res://assets/kart/controls/reference/drift_normal.png"), preload("res://assets/kart/controls/reference/drift_pressed.png"), preload("res://assets/kart/controls/reference/drift_disabled.png")],
 	"gas": [preload("res://assets/kart/controls/reference/gas_normal.png"), preload("res://assets/kart/controls/reference/gas_pressed.png"), preload("res://assets/kart/controls/reference/gas_disabled.png")],
@@ -16,6 +26,22 @@ const ART: Dictionary = {
 	"boost": [preload("res://assets/kart/controls/reference/speed_normal.png"), preload("res://assets/kart/controls/reference/speed_pressed.png"), preload("res://assets/kart/controls/reference/speed_disabled.png")],
 	"item": [preload("res://assets/kart/controls/reference/item_normal.png"), preload("res://assets/kart/controls/reference/item_pressed.png"), preload("res://assets/kart/controls/reference/item_disabled.png")],
 }
+const RENDERED_DIR := "res://assets/kart/controls/rendered/"
+## Every state image of the rendered buttons (see tools/art/render_kart_controls.py).
+const RENDERED_STATES: Dictionary = {
+	"gas": ["normal", "pressed", "disabled"],
+	"brake": ["normal", "pressed", "disabled"],
+	"drift": ["normal", "pressed", "disabled"],
+	"boost": ["normal", "pressed", "disabled", "ready"],
+	"item": ["normal", "pressed", "disabled", "ready", "armed", "armed_pressed", "shield"],
+}
+## Lead colour per rendered button (rings, glow, light ring).
+const LEAD: Dictionary = {
+	"gas": Color("1ff5c0"), "brake": Color("ff5a2a"), "drift": Color("2f8bff"),
+	"boost": Color("ffb71a"), "item": Color("a161ff"),
+}
+## Drift charge ring: blue -> orange -> purple (the same tiers as the drift sparks).
+const DRIFT_COLOURS: Array[Color] = [Color("3aa8ff"), Color("ff9a1f"), Color("c45cff")]
 const LABEL_FONT = preload("res://assets/fonts/Nunito-Black.ttf")
 ## Was im Item-Knopf liegt, zeigt ein kleines Abzeichen (Schild, Impuls oder Wind).
 const ITEM_BADGES: Dictionary = {
@@ -23,6 +49,40 @@ const ITEM_BADGES: Dictionary = {
 	"pulse": preload("res://assets/kart/hud/icon_pulse.png"),
 	"boost": preload("res://assets/kart/hud/icon_wind.png"),
 }
+static var _rendered_cache: Dictionary = {}
+
+## "" = classic artwork, "kart3d" = rendered glass buttons with live rings.
+var skin: String = "":
+	set(value):
+		skin = value
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS if value == "kart3d" else CanvasItem.TEXTURE_FILTER_PARENT_NODE
+		set_process(value == "kart3d")
+		_sync_caption()
+		queue_redraw()
+## Live value of the button, 0..1: gas = speed share, drift = charge share of the top tier,
+## boost = active turbo time left. Fed every frame by the race HUD.
+var meter: float = 0.0:
+	set(value):
+		value = clampf(value, 0.0, 1.0)
+		if absf(value - meter) < 0.004:
+			return
+		meter = value
+		queue_redraw()
+## Drift tier -1..2 (blue, orange, purple), set together with meter.
+var tier: int = -1:
+	set(value):
+		if tier == value:
+			return
+		tier = value
+		queue_redraw()
+## Turbo stock (boost button) - shown as pips under the badge.
+var stock: int = 0:
+	set(value):
+		if stock == value:
+			return
+		stock = value
+		queue_redraw()
+var reduced_motion: bool = false
 var item_kind: String = "":
 	set(value):
 		if item_kind == value:
@@ -35,6 +95,11 @@ var press_depth: float = 0.0:
 		queue_redraw()
 var press_tween: Tween
 var badge: Label
+## Expanding light ring after a press, 1 -> 0.
+var flash: float = 0.0
+## Smoothed hold glow (brake glows while held), 0..1.
+var hold_glow: float = 0.0
+var _clock: float = 0.0
 
 signal pressed
 signal button_down
@@ -75,8 +140,17 @@ func _ready() -> void:
 	badge.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(badge)
+	set_process(skin == "kart3d")
 	_sync_caption()
 	_apply_label_size()
+
+
+static func rendered_texture(id: String, state: String) -> Texture2D:
+	var key: String = id + "_" + state
+	if not _rendered_cache.has(key):
+		var path: String = RENDERED_DIR + key + ".webp"
+		_rendered_cache[key] = load(path) if ResourceLoader.exists(path) else null
+	return _rendered_cache[key]
 
 
 func _sync_caption() -> void:
@@ -87,10 +161,15 @@ func _sync_caption() -> void:
 	# Keep the action name readable on a bright track even when no item is
 	# available. The muted panel and artwork already communicate disabled state.
 	label.add_theme_color_override("font_color", Color("dce8f8") if disabled else Color("f6fcff"))
+	if skin == "kart3d":
+		label.add_theme_color_override("font_outline_color", Color(0.02, 0.05, 0.12, 0.85))
 	tooltip_text = {"gas": "Gas halten", "brake": "Bremsen / rückwärts fahren",
 		"drift": "Drift halten", "boost": "Raketen-Boost", "item": "Item einsetzen"}.get(icon_id, text)
 	badge.text = parts[1].replace("◆", "").strip_edges() if parts.size() > 1 and icon_id == "boost" else ""
 	badge.visible = not badge.text.is_empty()
+	if skin == "kart3d":
+		badge.add_theme_font_override("font", LABEL_FONT)
+		badge.add_theme_color_override("font_color", Color("fff6d6"))
 	_apply_label_size()
 
 
@@ -104,6 +183,21 @@ func _apply_label_size() -> void:
 	if not is_instance_valid(label):
 		return
 	var side: float = minf(size.x, size.y)
+	if skin == "kart3d":
+		# The caption sits on the lower glass of the rendered face, under the symbol.
+		label.position = Vector2(0, side * 0.715)
+		label.size = Vector2(size.x, side * 0.17)
+		var ratio_3d: float = 0.118 if label.text.length() > 5 else 0.142
+		var font_size: int = maxi(10, roundi(side * ratio_3d))
+		label.add_theme_font_size_override("font_size", font_size)
+		label.add_theme_constant_override("outline_size", maxi(2, roundi(font_size * 0.22)))
+		# A tiny caption is noise: under ~62 px the symbol alone carries the meaning.
+		label.visible = side >= 62.0
+		badge.position = Vector2(side * 0.765, -side * 0.035)
+		badge.size = Vector2.ONE * side * 0.26
+		badge.add_theme_font_size_override("font_size", maxi(10, roundi(side * 0.17)))
+		return
+	label.visible = true
 	label.position = Vector2(0, side * 0.69)
 	label.size = Vector2(size.x, side * 0.21)
 	# The label and artwork grow with the actual button, also on dense Fold screens.
@@ -118,6 +212,11 @@ func _animate_press(value: float) -> void:
 	if is_instance_valid(press_tween):
 		press_tween.kill()
 	press_tween = create_tween()
+	if skin == "kart3d" and value > 0.5 and not reduced_motion:
+		# Short spring: dip a little deeper, then settle at the pressed depth.
+		press_tween.tween_property(self, "press_depth", 1.18, 0.06).set_trans(Tween.TRANS_QUAD)
+		press_tween.tween_property(self, "press_depth", 1.0, 0.09).set_trans(Tween.TRANS_SINE)
+		return
 	press_tween.tween_property(self, "press_depth", value, 0.09).set_trans(Tween.TRANS_QUAD)
 
 
@@ -151,6 +250,7 @@ func _press() -> void:
 	if held or disabled:
 		return
 	held = true
+	flash = 1.0
 	_animate_press(1.0)
 	button_down.emit()
 	pressed.emit()
@@ -167,6 +267,74 @@ func _release() -> void:
 	queue_redraw()
 
 
+func _process(delta: float) -> void:
+	if skin != "kart3d":
+		return
+	_clock += delta
+	var changed: bool = false
+	if flash > 0.0:
+		flash = maxf(0.0, flash - delta / 0.38)
+		changed = true
+	var glow_goal: float = 1.0 if held and not disabled else 0.0
+	if not is_equal_approx(hold_glow, glow_goal):
+		hold_glow = move_toward(hold_glow, glow_goal, delta / (0.12 if glow_goal > hold_glow else 0.3))
+		changed = true
+	# Calm breathing for a ready item / turbo (0.6 Hz) and the drift ring; nothing else animates.
+	if not reduced_motion and not disabled and (_ready_glow() or (icon_id == "drift" and tier >= 0)):
+		changed = true
+	if changed:
+		queue_redraw()
+
+
+## Item phase as published by the item slot overlay (kart_item_hud.gd, mode "slot").
+func item_phase() -> String:
+	var overlay: Node = get_node_or_null("ItemSlotOverlay")
+	if overlay == null:
+		return ""
+	var state: Variant = overlay.get("state")
+	if not state is Dictionary:
+		return ""
+	if float(state.get("shield_left", 0.0)) > 0.0:
+		return "shield"
+	if float(state.get("roulette", 0.0)) > 0.0:
+		return "roulette"
+	return str(state.get("phase", ""))
+
+
+func _ready_glow() -> bool:
+	if disabled:
+		return false
+	if icon_id == "boost":
+		return stock > 0
+	if icon_id == "item":
+		return not item_kind.is_empty() and item_phase() != "roulette"
+	return false
+
+
+## Which rendered image is shown right now (also read by the regression test).
+func visual_state() -> String:
+	# An active shield shows on the item button even though the slot is empty again.
+	if icon_id == "item" and item_phase() == "shield":
+		return "shield"
+	if disabled:
+		return "disabled"
+	if icon_id == "item":
+		var phase: String = item_phase()
+		if phase == "armed":
+			return "armed_pressed" if held else "armed"
+	if held:
+		return "pressed"
+	if _ready_glow():
+		return "ready"
+	return "normal"
+
+
+func _breath() -> float:
+	if reduced_motion:
+		return 1.0
+	return 0.5 + 0.5 * sin(_clock * TAU * 0.6)
+
+
 func _draw_panel(rectangle: Rect2, fill: Color, border: Color, width: float) -> void:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
@@ -176,8 +344,86 @@ func _draw_panel(rectangle: Rect2, fill: Color, border: Color, width: float) -> 
 	draw_style_box(style, rectangle)
 
 
+func _draw_kart3d(side: float) -> void:
+	var centre: Vector2 = size * 0.5
+	var lead: Color = LEAD.get(icon_id, accent)
+	var state: String = visual_state()
+	var texture: Texture2D = rendered_texture(icon_id, state)
+	if texture == null:
+		texture = rendered_texture(icon_id, "pressed" if held else ("disabled" if disabled else "normal"))
+	# Body = 392/512 of the image. The image is 1.12 x the hit square, so the solid
+	# body is 0.86 x the touch target and the glow halo reaches just past it.
+	var depth: float = clampf(press_depth, 0.0, 1.2)
+	var squash: float = 1.0 - 0.045 * depth
+	var extent: float = side * 1.12 * squash
+	var face_radius: float = side * 0.43
+	if not disabled:
+		# Brake: a warm glow grows behind the button while it is held.
+		var glow: float = hold_glow * (1.0 if icon_id == "brake" else 0.45)
+		if icon_id == "gas":
+			glow = maxf(glow, meter * 0.55)
+		if _ready_glow():
+			glow = maxf(glow, 0.22 + 0.22 * _breath())
+		if glow > 0.01:
+			for k in range(4):
+				var grow: float = 1.0 + 0.07 * float(k + 1)
+				draw_circle(centre, face_radius * grow, Color(lead, 0.10 * glow * (1.0 - k * 0.2)))
+	if texture != null:
+		draw_texture_rect(texture, Rect2(centre - Vector2.ONE * extent * 0.5 + Vector2(0, side * 0.012 * depth), Vector2.ONE * extent), false)
+	var ring_radius: float = side * 0.535
+	var ring_width: float = maxf(3.0, side * 0.05)
+	var start: float = PI * 0.75
+	var sweep: float = PI * 1.5
+	if not disabled:
+		match icon_id:
+			"gas":
+				# Load ring: how fast Lumo is going, from bottom-left round to bottom-right.
+				draw_arc(centre, ring_radius, start, start + sweep, 48, Color(0.02, 0.06, 0.12, 0.55), ring_width, true)
+				if meter > 0.01:
+					draw_arc(centre, ring_radius, start, start + sweep * meter, 48, lead.lightened(0.25), ring_width * 0.72, true)
+			"drift":
+				if tier >= -1 and (held or meter > 0.01):
+					var colour: Color = DRIFT_COLOURS[clampi(tier, 0, 2)] if tier >= 0 else Color("9fd8ff")
+					draw_arc(centre, ring_radius, start, start + sweep, 48, Color(0.02, 0.06, 0.12, 0.55), ring_width, true)
+					draw_arc(centre, ring_radius, start, start + sweep * meter, 48, colour, ring_width * 0.72, true)
+					# Tier ticks: where blue, orange and purple begin.
+					for index in range(3):
+						var at: float = start + sweep * [0.296, 0.667, 1.0][index]
+						var tick: Vector2 = centre + Vector2.from_angle(at) * ring_radius
+						draw_circle(tick, ring_width * 0.62, DRIFT_COLOURS[index] if tier >= index else Color(0.2, 0.28, 0.4, 0.9))
+					if tier >= 0 and not reduced_motion:
+						draw_arc(centre, ring_radius + ring_width * 0.9, 0, TAU, 56, Color(colour, 0.25 + 0.25 * _breath()), ring_width * 0.45, true)
+			"boost":
+				if meter > 0.01:
+					# Turbo running: the remaining time drains clockwise.
+					draw_arc(centre, ring_radius, -PI * 0.5, -PI * 0.5 + TAU * meter, 56, Color("ffe066"), ring_width * 0.72, true)
+				for index in range(mini(stock, 3)):
+					var pip := Vector2(centre.x + (float(index) - (mini(stock, 3) - 1) * 0.5) * side * 0.11, centre.y + side * 0.5)
+					draw_circle(pip, side * 0.034, Color("2a1400"))
+					draw_circle(pip, side * 0.025, Color("ffd54a"))
+	if flash > 0.0 and not reduced_motion:
+		var t: float = 1.0 - flash
+		draw_arc(centre, side * (0.44 + 0.16 * t), 0, TAU, 56, Color(lead.lightened(0.45), flash * 0.85), maxf(2.0, side * 0.04 * flash), true)
+	elif held and reduced_motion:
+		draw_arc(centre, side * 0.5, 0, TAU, 56, Color(lead.lightened(0.45), 0.7), maxf(2.0, side * 0.025), true)
+	if is_instance_valid(badge) and badge.visible:
+		var at := Vector2(side * 0.895, side * 0.095)
+		draw_circle(at, side * 0.13, Color("2a1400") if not disabled else Color("1a2434"))
+		draw_circle(at, side * 0.112, Color("ffb71a") if not disabled else Color("5a6a80"))
+		draw_circle(at, side * 0.088, Color("5c2c00") if not disabled else Color("2a3446"))
+	if ITEM_BADGES.has(item_kind) and get_node_or_null("ItemSlotOverlay") == null:
+		var middle := Vector2(side * 0.84, side * 0.17)
+		var radius: float = side * 0.17
+		draw_circle(middle, radius, Color("1a0b40"))
+		draw_arc(middle, radius, 0, TAU, 40, lead.lightened(0.3), side * 0.018, true)
+		draw_texture_rect(ITEM_BADGES[item_kind], Rect2(middle - Vector2.ONE * radius * 0.95, Vector2.ONE * radius * 1.9), false)
+
+
 func _draw() -> void:
 	var side: float = minf(size.x, size.y)
+	if skin == "kart3d" and RENDERED_STATES.has(icon_id):
+		_draw_kart3d(side)
+		return
 	if ART.has(icon_id):
 		var state: int = 2 if disabled else (1 if held else 0)
 		var texture: Texture2D = ART[icon_id][state]
