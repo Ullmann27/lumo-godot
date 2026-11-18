@@ -5,7 +5,9 @@ const MUSIC = preload("res://scripts/creative/rhythm_audio.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const STAGE_ART = preload("res://scripts/creative/rhythm_stage_art.gd")
-const FOX = preload("res://scripts/games/kart_vehicle.gd")
+const LUMO = preload("res://scripts/characters/lumo/lumo_world_avatar.gd")
+const PERFORMER_HEIGHT := 4.6
+const PERFORMER_FLOOR := 0.48
 const COLORS = [Color("62dcff"), Color("b997ff"), Color("ffc985"), Color("77efbd")]
 var model = STATE.new()
 var kit = KIT.new()
@@ -35,6 +37,9 @@ var performer_fox: Node3D
 var hit_burst: MeshInstance3D
 var cheer_burst: MeshInstance3D
 var cheer_until: float = -100.0
+var seen_hits := 0
+var seen_misses := 0
+var seen_running := false
 var tour = TOUR.new()
 var tour_mode := false
 var tour_stage := 0
@@ -345,6 +350,8 @@ func start() -> void:
 	goal_banner.text = tour.goal_text(round_stage, round_difficulty) if round_stage >= 0 else ""
 	_update_tour_landmarks()
 	cheer_until = -100.0
+	# Neustart auch mitten im Lied: Lumo begrüßt das neue Lied erneut.
+	seen_running = false
 	for burst in [hit_burst, cheer_burst]:
 		if burst != null:
 			burst.visible = false
@@ -543,6 +550,8 @@ func _finish() -> void:
 	finished = true
 	audio.stop()
 	var earned := model.stars()
+	if performer_fox != null:
+		performer_fox.gesture("celebrate" if earned > 0 else "greeting_wave")
 	_reload_progress()
 	var old: int = int(progress_config.get_value(str(model.song.id), "best", 0))
 	var points: int = model.total_score()
@@ -734,12 +743,15 @@ func _update_tour_landmarks() -> void:
 
 
 func _performer() -> void:
-	performer_fox = FOX.new()
+	# Der echte, geriggte Lumo steht auf der Bühne und schaut zum Kind.
+	performer_fox = LUMO.new()
+	performer_fox.name = "Lumo"
 	add_child(performer_fox)
-	performer_fox.configure_companion("fox")
-	performer_fox.position = Vector3(0, 0.48, -21.8)
-	performer_fox.scale = Vector3.ONE * 2.05
+	performer_fox.position = Vector3(0, PERFORMER_FLOOR, -21.8)
 	performer_fox.rotation_degrees = Vector3(0, 180, 0)
+	performer_fox.setup(
+		PERFORMER_HEIGHT, bool(SceneRouter.launch_options.get("reduceAnimations", false))
+	)
 	hit_burst = kit.mesh(self, kit.SHAPES.star(), Vector3(0, 1.15, 3), Color("ffe1a2"), true)
 	hit_burst.scale = Vector3.ZERO
 	hit_burst.visible = false
@@ -757,7 +769,30 @@ func _animate_performer() -> void:
 		mood = "cheer"
 	elif running and model.combo >= 5:
 		mood = "walk"
-	performer_fox.set_companion_pose(t, mood)
+	if not performer_fox.is_real():
+		performer_fox.stand_in_pose(t, mood)
+		return
+	# Lumo reagiert auf echte Ereignisse des Lieds mit seinen eigenen Clips:
+	# Start = Winken, Treffer = Nicken im Takt, Fehler = aufmunterndes Winken,
+	# Serie/Jubel = celebrate. Laufende Gesten werden nicht abgehackt.
+	if running and not seen_running:
+		seen_hits = model.hits
+		seen_misses = model.misses
+		performer_fox.gesture("greeting_wave")
+	seen_running = running
+	if not running:
+		return
+	var busy: String = performer_fox.current_behavior()
+	if model.misses > seen_misses:
+		seen_misses = model.misses
+		if busy in ["idle", "agree_nod"]:
+			performer_fox.gesture("greeting_wave")
+	if model.hits > seen_hits:
+		seen_hits = model.hits
+		if mood == "cheer" and busy != "celebrate":
+			performer_fox.gesture("celebrate")
+		elif busy == "idle":
+			performer_fox.gesture("agree_nod")
 
 
 func _burst_hit(lane: int) -> void:
