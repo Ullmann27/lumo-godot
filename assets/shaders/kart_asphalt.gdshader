@@ -16,6 +16,12 @@ uniform int surface_style = 0;
 uniform vec4 detail_tint : source_color = vec4(0.5, 0.5, 0.5, 1.0);
 // 1 keeps the surface colour readable instead of mirroring the sky.
 uniform float surface_matte : hint_range(0.0, 1.0) = 0.0;
+// Kulissen-Paket: plastische Feinstruktur (Normalen), Risse/Fugen, Gullys,
+// Reifenabrieb auf der Ideallinie und Pfuetzen mit Himmelsspiegelung.
+// 0 auf LOW (kostet dort nichts ausser einer Verzweigung).
+uniform float road_detail : hint_range(0.0, 1.0) = 0.0;
+uniform float wetness : hint_range(0.0, 1.0) = 0.0;
+uniform float gully_spacing = 24.0;
 
 float hash21(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -159,9 +165,60 @@ void fragment() {
 		specular = 0.45;
 		emission += themed_emission;
 	}
+	float final_roughness = mix(roughness, max(roughness, 0.82), surface_matte * float(surface_style == 0));
+	float final_metallic = metallic * (1.0 - surface_matte * float(surface_style == 0));
+	if (road_detail > 0.0) {
+		float footprint = max(fwidth(UV.x), fwidth(UV.y));
+		float near_fade = 1.0 - smoothstep(0.02, 0.07, footprint);
+		// Feinstruktur: Hoehenfeld aus zwei Rauschlagen, Normalen aus Differenzen.
+		vec2 p = UV * vec2(4.5, 4.5);
+		float e = 0.06;
+		float h0 = value_noise(p) * 0.6 + value_noise(p * 2.3) * 0.4;
+		float hx = value_noise(p + vec2(e, 0.0)) * 0.6 + value_noise((p + vec2(e, 0.0)) * 2.3) * 0.4;
+		float hy = value_noise(p + vec2(0.0, e)) * 0.6 + value_noise((p + vec2(0.0, e)) * 2.3) * 0.4;
+		float relief = (surface_style == 0 ? 1.0 : 0.7) * road_detail * near_fade;
+		vec3 bump = normalize(vec3((h0 - hx) * 2.2 * relief, (h0 - hy) * 2.2 * relief, 1.0));
+		// Risse mit dunklem Bitumen-Verguss (nur Asphalt und Steinplatten)
+		float crack_field = abs(value_noise(UV * vec2(0.55, 0.35) + vec2(11.0, 3.0)) - 0.5);
+		float crack = (1.0 - smoothstep(0.004, 0.016 + footprint * 0.6, crack_field))
+			* smoothstep(0.45, 0.62, value_noise(UV * 0.09 + 2.0)) * float(surface_style == 0 || surface_style == 2);
+		base = mix(base, base * 0.45, crack * 0.8 * road_detail);
+		final_roughness = mix(final_roughness, 0.35, crack * 0.6 * road_detail);
+		// Reifenabrieb: dunkle Laengsstreifen auf der Ideallinie (beide Spuren)
+		float streak = value_noise(vec2(UV.x * 7.0, UV.y * 0.04)) * value_noise(vec2(UV.x * 2.3 + 5.0, UV.y * 0.11));
+		float line = exp(-pow((abs(UV.x + sin(UV.y * 0.013) * 1.2) - 1.4) * 0.9, 2.0));
+		float rubber_line = line * smoothstep(0.15, 0.55, streak) * road_detail;
+		base *= 1.0 - rubber_line * (surface_style == 0 ? 0.22 : 0.10);
+		final_roughness = mix(final_roughness, final_roughness * 0.82, rubber_line);
+		// Gullys mit Gitterrost am Fahrbahnrand (nur Asphalt)
+		float along = mod(UV.y, gully_spacing);
+		float lateral = abs(UV.x) - 4.55;
+		float in_gully = step(0.0, lateral) * step(lateral, 0.42) * step(along, 0.75) * float(surface_style == 0);
+		if (in_gully > 0.5) {
+			float slot = step(0.45, fract(along * 10.0));
+			float frame_edge = step(0.06, min(along, 0.75 - along)) * step(0.05, min(lateral, 0.42 - lateral));
+			base = mix(vec3(0.08, 0.085, 0.09), vec3(0.015), slot * frame_edge);
+			final_metallic = 0.55;
+			final_roughness = 0.42;
+			bump = vec3(0.0, 0.0, 1.0);
+		}
+		// Pfuetzen: spiegeln den Himmel, nicht auf der befahrenen Linie
+		float puddle_noise = value_noise(UV * vec2(0.22, 0.12) + vec2(4.7, 1.3)) * 0.75 + value_noise(UV * 0.9) * 0.25;
+		float puddle = smoothstep(0.66, 0.70, puddle_noise + wetness * 0.12) * wetness * (1.0 - line * 0.55);
+		float damp = smoothstep(0.52, 0.66, puddle_noise + wetness * 0.12) * wetness;
+		base = mix(base, base * 0.62, damp * 0.6);
+		base = mix(base, base * 0.38, puddle);
+		final_roughness = mix(final_roughness, final_roughness * 0.55, damp);
+		final_roughness = mix(final_roughness, 0.04, puddle);
+		final_metallic = mix(final_metallic, 0.0, puddle);
+		bump = normalize(mix(bump, vec3(0.0, 0.0, 1.0), puddle));
+		NORMAL_MAP = bump * 0.5 + 0.5;
+		NORMAL_MAP_DEPTH = 1.0;
+		specular = mix(specular, 0.7, puddle);
+	}
 	ALBEDO = base;
-	ROUGHNESS = mix(roughness, max(roughness, 0.82), surface_matte * float(surface_style == 0));
-	METALLIC = metallic * (1.0 - surface_matte * float(surface_style == 0));
+	ROUGHNESS = final_roughness;
+	METALLIC = final_metallic;
 	SPECULAR = specular;
 	EMISSION = emission;
 }

@@ -10,12 +10,12 @@ extends Node3D
 
 const MESHES = preload("res://scripts/games/run/jungle/run_jungle_meshes.gd")
 const SHADERS = preload("res://scripts/games/run/jungle/run_jungle_shaders.gd")
-const CHUNK: float = 160.0
+const ART = preload("res://scripts/games/run/jungle/run_jungle_art.gd")
+const CHUNK: float = 80.0
 ## Variants that share one mesh (and so one draw call per stretch).
 const ALIAS: Dictionary = {
 	"fern2": "fern0", "fern3": "fern1", "leaf2": "leaf0", "leaf3": "leaf1", "tree3": "tree0", "tree4": "tree1",
-	"tree5": "tree2", "grass1": "grass0", "rock1": "rock0", "crystal1": "crystal0", "liana2": "liana1",
-	"palm1": "palm0", "pillar0": "pillar1", "flower1": "flower0", "flower2": "flower0", "flower3": "flower0",
+	"tree5": "tree2", "grass1": "grass0", "liana2": "liana2", "flower1": "flower0", "flower2": "flower0", "flower3": "flower0",
 	"flower4": "flower0",
 }
 const LEAF_GREENS: Array[Color] = [
@@ -30,21 +30,50 @@ const DECK: Dictionary = {
 	"bridge": [1, Color("deb070"), Color("b8884f")],
 	"canopy": [1, Color("d0a064"), Color("86b24a")],
 	"stone": [2, Color("e0c89c"), Color("b2c080")],
-	"cave": [0, Color("8a877c"), Color("5f8576")],
+	"cave": [3, Color("8a877c"), Color("5f8576")],
 	"rail": [0, Color("857a6c"), Color("6c6458")],
 	"gold": [2, Color("f0c862"), Color("d9a63a")],
 }
+## Per quality tier (low, medium, high): how far the detailed tree meshes reach,
+## how far plants are drawn, how dense the jungle grows, how far the sun casts shadows.
+const TREE_DETAIL: Array[float] = [0.0, 30.0, 62.0]
+const PLANT_RANGE: Array[float] = [48.0, 66.0, 90.0]
+const DENSITY: Array[float] = [0.55, 1.0, 1.35]
+const SHADOW_RANGE: Array[float] = [0.0, 32.0, 60.0]
+## The light of each part of the path (blended along the way in follow()).
+const MOODS: Array[Dictionary] = [
+	# Lichtung: golden morning light.
+	{"sun": Color("ffd391"), "energy": 1.8, "ambient": Color("e0eab8"), "fog": Color("cfe0b8"), "top": Color("3f8be0"), "horizon": Color("ffe0a8"), "shaft": Color(1.0, 0.85, 0.5, 0.24)},
+	# Wurzelpfad: green and warm under the roof of leaves.
+	{"sun": Color("ffe0a8"), "energy": 1.65, "ambient": Color("cfe8b8"), "fog": Color("b5d6b0"), "top": Color("3a86d8"), "horizon": Color("f2e6b0"), "shaft": Color(1.0, 0.9, 0.6, 0.22)},
+	# Kronenwege: airy and bright high up.
+	{"sun": Color("fff1d6"), "energy": 2.0, "ambient": Color("dcefff"), "fog": Color("cfe6f2"), "top": Color("2e86ea"), "horizon": Color("e8f4ff"), "shaft": Color(1.0, 0.95, 0.8, 0.18)},
+	# Tempelruinen: warm stone and torchlight.
+	{"sun": Color("ffc27a"), "energy": 1.75, "ambient": Color("f0dcb4"), "fog": Color("e6cfa0"), "top": Color("4a7fd0"), "horizon": Color("ffcf90"), "shaft": Color(1.0, 0.78, 0.45, 0.26)},
+	# Wasserfallhöhle: blue-turquoise and glowing crystals.
+	{"sun": Color("bfe8ff"), "energy": 1.4, "ambient": Color("b8e4e6"), "fog": Color("8fcfd6"), "top": Color("2f76c8"), "horizon": Color("bfeef0"), "shaft": Color(0.6, 0.95, 1.0, 0.2)},
+	# Lorenfahrt: late adventurous sun.
+	{"sun": Color("ffb877"), "energy": 1.85, "ambient": Color("ecd9bc"), "fog": Color("e8c9a0"), "top": Color("3b6fc8"), "horizon": Color("ffc488"), "shaft": Color(1.0, 0.75, 0.42, 0.26)},
+]
 
 var path
 var level
 var low: bool = false
+## 0 = low, 1 = medium, 2 = high (from the saved quality profile).
+var tier: int = 1
 var placed: int = 0
 var _rng := RandomNumberGenerator.new()
 var _kinds: Dictionary = {}
 var _buckets: Dictionary = {}
+var _far_buckets: Dictionary = {}
+const FAR_CHUNK: float = 128.0
 var _materials: Dictionary = {}
 var _deck_materials: Dictionary = {}
 var _pollen: CPUParticles3D
+var _sun: DirectionalLight3D
+var _environment_res: Environment
+var _sky_material: ProceduralSkyMaterial
+var _mood_index: float = -1.0
 ## Where the path comes back near itself, scenery of one part must not cover
 ## another: path samples in a coarse grid, and the stretches where this matters.
 var _grid: Dictionary = {}
@@ -56,15 +85,18 @@ const GRID_CELL: float = 12.0
 const GRID_STEP: float = 3.0
 ## Kinds that may stand on the ground near another part of the path.
 const SOLID_KINDS: Array[String] = [
-	"tree0", "tree1", "tree2", "giant", "palm0", "rock0", "pillar1", "bush", "leaf0", "leaf1", "fern0", "fern1",
-	"grass0", "flower0", "statue", "block", "post", "torch", "flame", "bulb", "crystal0", "canopy", "liana0", "liana1",
+	"tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1", "rock0", "rock1", "pillar0", "pillar1", "bush", "leaf0", "leaf1",
+	"fern0", "fern1", "grass0", "flower0", "statue", "block", "post", "torch", "flame", "bulb", "crystal0", "crystal1",
+	"canopy", "liana0", "liana1", "liana2", "wall", "lantern", "crate", "barrelprop", "cover",
 ]
+const TREE_KINDS: Array[String] = ["tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1"]
 
 
 func build(world, layout, lightweight: bool) -> void:
 	path = world
 	level = layout
 	low = lightweight
+	tier = 0 if low else (2 if _profile() == "high" else 1)
 	_rng.seed = 20261118
 	_make_materials()
 	_make_kinds()
@@ -81,11 +113,47 @@ func build(world, layout, lightweight: bool) -> void:
 	_background()
 	_flush()
 	_ambient_particles()
+	_apply_mood(0.0)
 
 
-func follow(camera_position: Vector3, _player_s: float, _delta: float) -> void:
+func _profile() -> String:
+	var store: Node = get_node_or_null("/root/SettingsStore")
+	return str(store.call("get_profile")) if store != null and store.has_method("get_profile") else "medium"
+
+
+func follow(camera_position: Vector3, player_s: float, _delta: float, focus: Vector3 = Vector3.INF) -> void:
+	if focus.is_finite():
+		ART.set_focus(focus + Vector3.UP * 0.9)
 	if is_instance_valid(_pollen):
 		_pollen.global_position = camera_position + Vector3(0, 1.0, 0)
+	_apply_mood(player_s)
+
+
+## Blends sun, sky, fog and ambient light between the moods of the sections.
+func _apply_mood(at: float) -> void:
+	if level == null or level.sections.is_empty() or _sun == null:
+		return
+	var position: float = 0.0
+	for section in level.sections:
+		if at >= float(section.s0):
+			var span: float = maxf(1.0, float(section.s1) - float(section.s0))
+			var into: float = at - float(section.s0)
+			var blend: float = smoothstep(span - 20.0, span + 10.0, into) if into > span - 20.0 else 0.0
+			position = float(section.index) + blend
+	position = clampf(position, 0.0, float(MOODS.size() - 1))
+	if absf(position - _mood_index) < 0.002:
+		return
+	_mood_index = position
+	var a: Dictionary = MOODS[floori(position)]
+	var b: Dictionary = MOODS[mini(floori(position) + 1, MOODS.size() - 1)]
+	var t: float = position - float(floori(position))
+	_sun.light_color = Color(a.sun).lerp(b.sun, t)
+	_sun.light_energy = lerpf(float(a.energy), float(b.energy), t)
+	_environment_res.ambient_light_color = Color(a.ambient).lerp(b.ambient, t)
+	_environment_res.fog_light_color = Color(a.fog).lerp(b.fog, t)
+	_sky_material.sky_top_color = Color(a.top).lerp(b.top, t)
+	_sky_material.sky_horizon_color = Color(a.horizon).lerp(b.horizon, t)
+	_materials["shaft"].set_shader_parameter("colour", Color(a.shaft).lerp(b.shaft, t))
 
 
 # ------------------------------------------------------------------ materials and kinds
@@ -99,101 +167,164 @@ func _make_materials() -> void:
 	_materials["fauna"] = SHADERS.material(SHADERS.FAUNA)
 	_materials["shaft"] = SHADERS.material(SHADERS.SHAFT)
 	_materials["mist"] = SHADERS.material(SHADERS.MIST)
-	_materials["water"] = SHADERS.material(SHADERS.WATER, {"flow": 0.35, "stretch": 0.4})
-	_materials["fall"] = SHADERS.material(SHADERS.WATER, {"flow": 1.2, "stretch": 1.6})
+	_materials["water"] = SHADERS.material(SHADERS.WATER, {"flow": 0.35, "stretch": 0.4, "lit": 1.0})
+	_materials["fall"] = SHADERS.material(SHADERS.WATER, {"flow": 1.2, "stretch": 1.6, "lit": 0.0})
+	var maps: Dictionary = {
+		"ground_tex": ART.texture("ground_albedo.jpg"), "ground_nrm": ART.texture("ground_normal.jpg"),
+		"moss_tex": ART.texture("moss_albedo.jpg"), "moss_nrm": ART.texture("moss_normal.jpg"),
+		"flecks": 0.32 if tier == 0 else 0.16,
+	}
+	var details: Dictionary = {0: "ground", 1: "wood", 2: "sandstone", 3: "stone"}
 	for kind in DECK:
 		var entry: Array = DECK[kind]
-		if not _deck_materials.has(int(entry[0])):
-			_deck_materials[int(entry[0])] = SHADERS.material(SHADERS.GROUND, {"pattern": int(entry[0])})
-	_materials["terrain"] = SHADERS.material(SHADERS.GROUND, {"pattern": 0})
+		var pattern: int = int(entry[0])
+		if not _deck_materials.has(pattern):
+			var params: Dictionary = maps.duplicate()
+			params["pattern"] = pattern
+			params["detail_tex"] = ART.texture(str(details[pattern]) + "_albedo.jpg")
+			params["detail_nrm"] = ART.texture(str(details[pattern]) + "_normal.jpg")
+			_deck_materials[pattern] = SHADERS.material(SHADERS.GROUND, params)
+	var terrain: Dictionary = maps.duplicate()
+	terrain["pattern"] = 0
+	terrain["detail_tex"] = maps.ground_tex
+	terrain["detail_nrm"] = maps.ground_nrm
+	_materials["terrain"] = SHADERS.material(SHADERS.GROUND, terrain)
+	var cave: Dictionary = maps.duplicate()
+	cave["pattern"] = 3
+	cave["detail_tex"] = ART.texture("stone_albedo.jpg")
+	cave["detail_nrm"] = ART.texture("stone_normal.jpg")
+	_materials["cave_ground"] = SHADERS.material(SHADERS.GROUND, cave)
 
 
 func _kind(name: String, mesh: Mesh, material: String, range_end: float = 140.0, shadow: bool = false) -> void:
-	_kinds[name] = {"mesh": mesh, "material": material, "range": range_end, "shadow": shadow}
+	_kinds[name] = {"mesh": mesh, "material": material, "range": range_end, "shadow": shadow, "source": "code", "chunk": CHUNK}
+
+
+## A kind drawn with a Blender model; `lod_model` takes over beyond the tier's
+## detail distance. Falls back to `fallback` (code mesh) only if the GLB is missing.
+func _art(name: String, model: String, range_end: float, shadow: bool, fallback: Mesh, fallback_material: String,
+		options: Dictionary = {}, lod_model: String = "", chunk: float = CHUNK, neutral: bool = false) -> void:
+	var near: Dictionary = options.duplicate()
+	var far: Dictionary = options.duplicate()
+	if not lod_model.is_empty() and tier > 0:
+		near["lod_window"] = Vector2(-1.0, TREE_DETAIL[tier])
+		far["lod_window"] = Vector2(TREE_DETAIL[tier], 1000000.0)
+	var mesh: Mesh = ART.mesh(model, near)
+	if mesh == null:
+		_kind(name, fallback, fallback_material, range_end, shadow)
+		return
+	var lod: Mesh = ART.mesh(lod_model, far) if not lod_model.is_empty() else null
+	_kinds[name] = {
+		"mesh": mesh, "material": "", "range": range_end, "shadow": shadow, "source": "glb:" + model, "lod": lod,
+		"chunk": chunk, "neutral": neutral, "proxy": ART.mesh(lod_model, options) if not lod_model.is_empty() else null,
+	}
 
 
 func _make_kinds() -> void:
-	var trees: int = 3
-	for index in range(trees):
-		var bark: Color = [Color("6b4a31"), Color("5a3d28"), Color("7a5a3c")][index % 3]
-		_kind("tree%d" % index, MESHES.tree(100 + index, 18.0, 4 + index % 3, bark, LEAF_GREENS[index % LEAF_GREENS.size()]), "trunk", 190.0, not low)
-	_kind("giant", MESHES.tree(77, 30.0, 6, Color("5e4330"), Color("2c8a47")), "trunk", 260.0, not low)
-	for index in range(4):
-		_kind("fern%d" % index, MESHES.fern(200 + index, 6 + index, 1.3 + 0.2 * index, LEAF_GREENS[(index + 2) % LEAF_GREENS.size()]), "foliage", 70.0)
-		_kind("leaf%d" % index, MESHES.broadleaf(300 + index, 4 + index, 1.2 + 0.25 * index, LEAF_GREENS[(index + 1) % LEAF_GREENS.size()]), "foliage", 90.0)
+	var plants: float = PLANT_RANGE[tier]
+	var shadows: bool = tier > 0
+	var trees: Array[String] = ["tree_broad", "tree_slender", "tree_fig"]
+	for index in range(3):
+		_art("tree%d" % index, trees[index], 190.0 if tier > 0 else 150.0, shadows, MESHES.tree(100 + index, 18.0, 4 + index % 3, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, trees[index] + "_lod", 40.0)
+	# Trees away from the path only ever show their light version (no detailed batch).
+	for index in range(3):
+		_art("tree%d_far" % index, trees[index] + "_lod", 190.0 if tier > 0 else 150.0, tier == 2, MESHES.tree(100 + index, 18.0, 4, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, "", 128.0)
+	_art("giant", "tree_kapok", 260.0, shadows, MESHES.tree(77, 30.0, 6, Color("5e4330"), Color("2c8a47")), "trunk", {}, "tree_kapok_lod", 48.0)
+	_art("palm0", "palm_a", 220.0, shadows, MESHES.palm(500, 11.0), "trunk", {}, "palm_a_lod", 48.0)
+	_art("palm1", "palm_b", 220.0, shadows, MESHES.palm(501, 14.0), "trunk", {}, "palm_b_lod", 48.0)
 	for index in range(2):
-		_kind("grass%d" % index, MESHES.grass(400 + index, 10, 0.7, Color("6fb43f") if index == 0 else Color("4f9a3c")), "foliage", 60.0)
-		_kind("palm%d" % index, MESHES.palm(500 + index, 11.0 + 3.0 * index), "trunk", 220.0, not low)
-		_kind("rock%d" % index, MESHES.rock(600 + index, Vector3(1.4, 0.9, 1.2), Color("7f8574") if index == 0 else Color("8e836c")), "solid", 160.0, not low)
-		_kind("pillar%d" % index, MESHES.pillar(700 + index, 4.5 + 2.0 * index, index == 0), "solid", 200.0, not low)
-		_kind("crystal%d" % index, MESHES.crystal(800 + index, Color("62e6ff") if index == 0 else Color("b48cff")), "glow", 120.0)
-	_kind("flower0", MESHES.flower(900, Color("ffffff")), "foliage", 60.0)
+		_art("fern%d" % index, ["fern_a", "fern_b"][index], plants, tier == 2, MESHES.fern(200 + index, 7, 1.4, LEAF_GREENS[index]), "foliage", {}, "", 64.0)
+		_art("leaf%d" % index, ["bigleaf_a", "bigleaf_b"][index], plants + 20.0, tier == 2, MESHES.broadleaf(300 + index, 5, 1.3, LEAF_GREENS[index]), "foliage", {}, "", 64.0)
+	_art("cover", "groundcover", plants, false, MESHES.grass(402, 8, 0.4, Color("4f9a3c")), "foliage", {}, "", 64.0)
+	_art("grass0", "grass", plants * 0.8, false, MESHES.grass(400, 10, 0.7, Color("6fb43f")), "foliage", {}, "", 64.0)
+	_art("rock0", "rock_a", 160.0, tier == 2, MESHES.rock(600, Vector3(1.4, 0.9, 1.2)), "solid")
+	_art("rock1", "rock_b", 160.0, tier == 2, MESHES.rock(601, Vector3(1.4, 0.9, 1.2)), "solid")
+	_art("pillar0", "pillar_broken", 200.0, shadows, MESHES.pillar(700, 4.5, true), "solid")
+	_art("pillar1", "pillar", 200.0, shadows, MESHES.pillar(701, 6.5, false), "solid")
+	_art("crystal0", "crystal_a", 120.0, false, MESHES.crystal(800, Color("62e6ff")), "glow")
+	_art("crystal1", "crystal_b", 120.0, false, MESHES.crystal(801, Color("b48cff")), "glow")
+	_art("flower0", "flower", plants * 0.8, false, MESHES.flower(900, Color("ffffff")), "foliage", {}, "", 64.0)
 	var bulb := MESHES.Kit.new()
 	MESHES.blob(bulb, Vector3.ZERO, Vector3.ONE * 0.2, Color("ffe08a"), RandomNumberGenerator.new(), 0.0, 3, 6)
 	_kind("bulb", bulb.mesh(), "glow", 140.0)
 	for index in range(3):
-		_kind("liana%d" % index, MESHES.liana(1000 + index, 5.0 + 2.0 * float(index)), "foliage", 120.0)
-	var crown := MESHES.Kit.new()
-	var crown_rng := RandomNumberGenerator.new()
-	crown_rng.seed = 1100
-	for lobe in range(5):
-		var at := Vector3(crown_rng.randf_range(-1.6, 1.6), crown_rng.randf_range(-0.4, 0.4), crown_rng.randf_range(-1.6, 1.6))
-		MESHES.blob(crown, at, Vector3(1.8, 0.9, 1.8), LEAF_GREENS[lobe % LEAF_GREENS.size()], crown_rng, 0.25, 4, 9, 0.4)
-	_kind("canopy", crown.mesh(), "foliage", 130.0)
-	var bush := MESHES.Kit.new()
-	MESHES.blob(bush, Vector3(0, 0.5, 0), Vector3(1.1, 0.8, 1.1), Color("2f8f3e"), crown_rng, 0.25, 4, 8, 0.3)
-	MESHES.blob(bush, Vector3(0.7, 0.4, 0.3), Vector3(0.7, 0.6, 0.7), Color("3a9e48"), crown_rng, 0.25, 3, 7, 0.3)
-	_kind("bush", bush.mesh(), "foliage", 120.0)
-	_kind("statue", MESHES.statue(1200), "solid", 220.0, not low)
-	_kind("arch", MESHES.arch(5.6, 4.8), "solid", 260.0, not low)
-	_kind("torch", MESHES.torch(), "solid", 120.0)
+		_art("liana%d" % index, ["liana_a", "liana_b", "liana_c"][index], 120.0, false, MESHES.liana(1000 + index, 5.0 + 2.0 * float(index)), "foliage")
+	_art("canopy", "canopy", 130.0, shadows, MESHES.liana(1100, 1.0), "foliage")
+	_art("bush", "bush", 120.0, tier == 2, MESHES.grass(1101, 6, 0.6, Color("2f8f3e")), "foliage", {}, "", 64.0)
+	_art("statue", "statue", 220.0, shadows, MESHES.statue(1200), "solid")
+	_art("arch", "arch", 260.0, shadows, MESHES.arch(5.6, 4.8), "solid")
+	_art("wall", "wall", 200.0, shadows, MESHES.box(Vector3(2.0, 1.2, 0.4), Color("bfa77f")), "solid")
+	_art("stairs", "stairs", 200.0, shadows, MESHES.box(Vector3(1.5, 0.75, 1.0), Color("bfa77f")), "solid")
+	_art("torch", "torch", 120.0, false, MESHES.torch(), "solid")
+	_art("lantern", "lantern", 120.0, false, MESHES.torch(), "solid")
+	_art("crate", "crate", 120.0, shadows, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("a77b4a")), "solid")
+	_art("barrelprop", "barrel", 120.0, shadows, MESHES.barrel(), "solid")
 	_kind("flame", MESHES.flame(), "flame", 160.0)
-	_kind("block", MESHES.box(Vector3(0.5, 0.5, 0.5), Color("bfa77f")), "solid", 160.0)
-	_kind("templeblock", MESHES.box(Vector3(0.5, 0.5, 0.5), Color("c2a878")), "solid", 0.0)
-	_kind("plankbox", MESHES.box(Vector3(0.5, 0.5, 0.5), Color("a77b4a")), "solid", 130.0)
-	_kind("rope", MESHES.box(Vector3(0.5, 0.5, 0.5), Color("d9c08a")), "solid", 90.0)
-	_kind("iron", MESHES.box(Vector3(0.5, 0.5, 0.5), Color("8d96a3")), "solid", 120.0)
+	_art("block", "block", 160.0, false, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("bfa77f")), "solid", {"world": true, "world_scale": 0.45}, "", CHUNK, true)
+	_art("templeblock", "block", 0.0, false, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("c2a878")), "solid", {"world": true, "world_scale": 0.12}, "", CHUNK, true)
+	_art("plankbox", "plank", 130.0, false, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("a77b4a")), "solid", {"world": true, "world_scale": 0.9}, "", CHUNK, true)
+	_art("rope", "rope", 90.0, false, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("d9c08a")), "solid", {}, "", CHUNK, true)
+	_art("iron", "rail", 120.0, false, MESHES.box(Vector3(0.5, 0.5, 0.5), Color("8d96a3")), "solid", {"world": true, "world_scale": 1.0}, "", CHUNK, true)
 	var post := CylinderMesh.new()
 	post.top_radius = 0.5
 	post.bottom_radius = 0.5
 	post.height = 1.0
-	post.radial_segments = 6 if low else 8
-	post.rings = 1
-	_kind("post", post, "solid", 150.0)
+	_art("post", "post", 150.0, false, post, "solid", {"world": true, "world_scale": 0.8}, "", CHUNK, true)
 	_kind("butterfly", MESHES.butterfly(), "fauna", 70.0)
 	_kind("bird", MESHES.bird(), "fauna", 260.0)
 	_kind("leafcard", MESHES.leaf_card(), "fauna", 60.0)
+	var crown_rng := RandomNumberGenerator.new()
+	crown_rng.seed = 1100
 	var dot := MESHES.Kit.new()
 	MESHES.blob(dot, Vector3.ZERO, Vector3.ONE * 0.06, Color(1, 1, 1), crown_rng, 0.0, 2, 4)
 	_kind("firefly", dot.mesh(), "fauna", 70.0)
+	_kind("spark", dot.mesh(), "fauna", 60.0)
 	var gold := MESHES.Kit.new()
 	for coin in range(9):
 		MESHES.blob(gold, Vector3(crown_rng.randf_range(-0.8, 0.8), 0.1 + crown_rng.randf() * 0.5, crown_rng.randf_range(-0.8, 0.8)), Vector3(0.5, 0.25, 0.5), Color("ffd24a"), crown_rng, 0.1, 3, 7)
-	_kind("treasure", gold.mesh(), "glow", 120.0)
+	_art("treasure", "treasure", 120.0, false, gold.mesh(), "glow")
 	var mountain := MESHES.Kit.new()
 	MESHES.blob(mountain, Vector3.ZERO, Vector3(1.0, 1.0, 1.0), Color("3f6f5a"), crown_rng, 0.18, 6, 12, 0.0, true)
 	_kind("mountain", mountain.mesh(), "solid", 0.0)
-	var cliff := MESHES.Kit.new()
-	MESHES.blob(cliff, Vector3.ZERO, Vector3(1.0, 1.0, 1.0), Color("6c6a5c"), crown_rng, 0.28, 6, 10, 0.0, true)
-	_kind("cliff", cliff.mesh(), "solid", 220.0)
+	_art("cliff", "cliff", 220.0, shadows, mountain.mesh(), "solid", {"moss": 0.45})
+
+
+## What the scenery is built from: every kind and whether it comes from a Blender model.
+func art_report() -> Dictionary:
+	var from_glb: Array[String] = []
+	var from_code: Array[String] = []
+	for name in _kinds:
+		if str(_kinds[name].source).begins_with("glb:"):
+			from_glb.append(name)
+		else:
+			from_code.append(name)
+	return {"glb": from_glb, "code": from_code, "missing": ART.missing.duplicate()}
 
 
 ## Queues one instance. `at_s` decides the batch, so instances near each other share it.
 func _put(kind: String, at_s: float, transform: Transform3D, colour: Color = Color.WHITE, custom: Color = Color(0, 0, 0, 0)) -> void:
-	if kind.begins_with("flower") and colour == Color.WHITE:
-		colour = BLOSSOMS[int(kind.substr(6)) % BLOSSOMS.size()]
+	if kind.begins_with("flower"):
+		if custom.a <= 0.0:
+			custom = BLOSSOMS[int(kind.substr(6)) % BLOSSOMS.size()]
+			custom.a = 1.0
+		colour = Color.WHITE
 	if kind.begins_with("crystal1"):
 		colour = Color("c9a8ff")
 	kind = ALIAS.get(kind, kind)
 	if not _kinds.has(kind):
 		return
+	if bool(_kinds[kind].get("neutral", false)):
+		# Textured wood and stone keep their own colour; the old flat tints only shade a little.
+		colour = Color.WHITE.lerp(colour, 0.18)
 	if at_s >= 0.0 and _is_crowded(at_s) and SOLID_KINDS.has(kind):
-		var margin: float = 1.6 if kind in ["tree0", "tree1", "tree2", "giant", "palm0"] else 0.5
+		var margin: float = 1.6 if kind in TREE_KINDS else 0.5
 		if _path_in_the_way(transform.origin, at_s, margin):
 			return
-	var key: String = "%s|%d" % [kind, floori(at_s / CHUNK) if _kinds[kind].range > 0.0 else 0]
+	var chunk: float = float(_kinds[kind].chunk)
+	var key: String = "%s|%d" % [kind, floori(at_s / chunk) if _kinds[kind].range > 0.0 else 0]
 	if not _buckets.has(key):
-		_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": []}
+		_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": [], "ats": []}
+	_buckets[key].ats.append(at_s)
 	_buckets[key].xforms.append(transform)
 	_buckets[key].colours.append(colour)
 	_buckets[key].custom.append(custom)
@@ -204,27 +335,65 @@ func _flush() -> void:
 	for key in _buckets:
 		var bucket: Dictionary = _buckets[key]
 		var kind: Dictionary = _kinds[bucket.kind]
-		var instances := MultiMesh.new()
-		instances.transform_format = MultiMesh.TRANSFORM_3D
-		instances.use_colors = true
-		instances.use_custom_data = true
-		instances.mesh = kind.mesh
-		instances.instance_count = bucket.xforms.size()
-		for index in range(instances.instance_count):
-			instances.set_instance_transform(index, bucket.xforms[index])
-			instances.set_instance_color(index, bucket.colours[index])
-			instances.set_instance_custom_data(index, bucket.custom[index])
-		var node := MultiMeshInstance3D.new()
-		node.name = "Jungle_" + str(key).replace("|", "_")
-		node.multimesh = instances
-		node.material_override = _materials[kind.material]
-		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if kind.shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		if float(kind.range) > 0.0:
-			node.visibility_range_end = float(kind.range) * (0.75 if low else 1.0)
-			node.visibility_range_end_margin = 10.0
-			node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
-		add_child(node)
+		var lod: Mesh = kind.get("lod")
+		var range_end: float = float(kind.range) * (0.75 if low else 1.0)
+		if lod == null:
+			_batch(str(key), bucket, kind.mesh, kind, 0.0, range_end, bool(kind.shadow))
+		elif tier == 0:
+			_batch(str(key), bucket, lod, kind, 0.0, range_end, false)
+		else:
+			var detail: float = TREE_DETAIL[tier]
+			_far_parts(str(bucket.kind), bucket)
+			# HIGH: the detailed crowns cast the shadows. MEDIUM: a light stand-in casts them.
+			var reach: float = detail + float(kind.chunk) * 0.75
+			_batch(str(key), bucket, kind.mesh, kind, 0.0, reach, bool(kind.shadow) and tier == 2)
+			if bool(kind.shadow) and tier == 1:
+				var proxy: MultiMeshInstance3D = _batch(str(key) + "_shadow", bucket, kind.proxy, kind, 0.0, SHADOW_RANGE[1] + float(kind.chunk) * 0.6, true)
+				proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	# The light far versions of near trees go in long batches: few draw calls.
+	for key in _far_buckets:
+		var bucket: Dictionary = _far_buckets[key]
+		var kind: Dictionary = _kinds[bucket.kind]
+		_batch(str(key) + "_far", bucket, kind.lod, kind, 0.0, float(kind.range), bool(kind.shadow) and tier == 2)
 	_buckets.clear()
+	_far_buckets.clear()
+
+
+func _far_parts(kind: String, bucket: Dictionary) -> void:
+	var key: String = "%s|%d" % [kind, floori(float(bucket.ats[0]) / FAR_CHUNK)]
+	if not _far_buckets.has(key):
+		_far_buckets[key] = {"kind": kind, "xforms": [], "colours": [], "custom": [], "ats": []}
+	for field in ["xforms", "colours", "custom", "ats"]:
+		_far_buckets[key][field].append_array(bucket[field])
+
+
+func _batch(key: String, bucket: Dictionary, mesh: Mesh, kind: Dictionary, range_begin: float, range_end: float, shadow: bool) -> MultiMeshInstance3D:
+	var instances := MultiMesh.new()
+	instances.transform_format = MultiMesh.TRANSFORM_3D
+	instances.use_colors = true
+	instances.use_custom_data = true
+	instances.mesh = mesh
+	instances.instance_count = bucket.xforms.size()
+	for index in range(instances.instance_count):
+		instances.set_instance_transform(index, bucket.xforms[index])
+		instances.set_instance_color(index, bucket.colours[index])
+		instances.set_instance_custom_data(index, bucket.custom[index])
+	var node := MultiMeshInstance3D.new()
+	node.name = "Jungle_" + key.replace("|", "_")
+	node.multimesh = instances
+	if not str(kind.material).is_empty():
+		node.material_override = _materials[kind.material]
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadow else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if range_end > 0.0:
+		node.visibility_range_begin = range_begin
+		node.visibility_range_end = range_end
+		node.visibility_range_begin_margin = 4.0 if range_begin > 0.0 else 0.0
+		node.visibility_range_end_margin = 10.0 if range_begin <= 0.0 or range_end > 100.0 else 4.0
+		node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+	if str(kind.source).begins_with("glb:"):
+		node.set_meta("jungle_glb", ART.path_of(str(kind.source).substr(4)))
+	add_child(node)
+	return node
 
 
 # ------------------------------------------------------------------ helpers in road space
@@ -347,9 +516,11 @@ func _environment() -> void:
 	sky_material.ground_bottom_color = Color("1d3b2c")
 	sky_material.ground_horizon_color = Color("9fc7a0")
 	sky_material.sun_angle_max = 18.0
+	_sky_material = sky_material
 	var sky := Sky.new()
 	sky.sky_material = sky_material
 	var environment := Environment.new()
+	_environment_res = environment
 	environment.background_mode = Environment.BG_SKY
 	environment.sky = sky
 	# A fixed bright fill instead of sky light: under the closed canopy the sky
@@ -386,11 +557,16 @@ func _environment() -> void:
 	sun.light_color = Color("ffd9a0")
 	sun.light_energy = 1.7
 	sun.rotation = Vector3(deg_to_rad(-42.0), deg_to_rad(35.0), 0.0)
-	sun.shadow_enabled = not low
-	sun.directional_shadow_max_distance = 40.0
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
-	sun.shadow_blur = 1.5
+	# Shadows of the sun through the canopy: none on LOW, near on MEDIUM, far and split on HIGH.
+	sun.shadow_enabled = tier > 0
+	sun.directional_shadow_max_distance = SHADOW_RANGE[tier] if tier > 0 else 40.0
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS if tier == 2 else DirectionalLight3D.SHADOW_ORTHOGONAL
+	sun.directional_shadow_fade_start = 0.75
+	sun.shadow_blur = 1.2
+	sun.shadow_bias = 0.06
+	sun.shadow_normal_bias = 1.4
 	add_child(sun)
+	_sun = sun
 
 
 # ------------------------------------------------------------------ path decks
@@ -450,8 +626,15 @@ func _deck(from: float, to: float, kind: String, half: float) -> void:
 			st.add_index(c)
 			st.add_index(d)
 	st.generate_normals()
-	var mesh: ArrayMesh = st.commit()
-	_skirts(mesh, from, to, half, raised, edge.darkened(0.35))
+	var top: ArrayMesh = st.commit()
+	var skirt := ArrayMesh.new()
+	_skirts(skirt, from, to, half, raised, edge.darkened(0.35))
+	# One surface for deck and side skirts: one draw call per deck piece.
+	var merged := SurfaceTool.new()
+	merged.create_from(top, 0)
+	merged.deindex()
+	merged.append_from(skirt, 0, Transform3D.IDENTITY)
+	var mesh: ArrayMesh = merged.commit()
 	var node := MeshInstance3D.new()
 	node.name = "Deck_%s_%d" % [kind, int(from)]
 	node.mesh = mesh
@@ -507,7 +690,7 @@ func _terrain_height(at: float, offset: float) -> float:
 func _terrain() -> void:
 	var step: float = 3.0 if low else 2.0
 	var samples: PackedFloat32Array = _main_samples(step)
-	var stretch: int = int(60.0 / step)
+	var stretch: int = int(120.0 / step)
 	var start: int = 0
 	while start < samples.size() - 1:
 		var stop: int = mini(samples.size() - 1, start + stretch)
@@ -587,6 +770,21 @@ func _cave() -> void:
 			if _rng.randf() < 0.3:
 				_put(crystal, at, _xf(at, side * _rng.randf_range(0.5, half), roof.z - 0.3, Vector3(1, -1, 1) * _rng.randf_range(0.5, 0.9), _rng.randf() * TAU))
 			at += _rng.randf_range(2.5, 4.5) * (1.5 if low else 1.0)
+		# The crystals light the cave walls blue-turquoise (MEDIUM and HIGH).
+		if tier > 0:
+			var glow_at: float = roof.x + 6.0
+			while glow_at < roof.y - 3.0:
+				var light := OmniLight3D.new()
+				light.light_color = Color("5fe6ff") if int(glow_at) % 2 == 0 else Color("9f8cff")
+				light.light_energy = 1.3
+				light.omni_range = 8.0
+				light.distance_fade_enabled = true
+				light.distance_fade_begin = 45.0
+				light.distance_fade_length = 15.0
+				var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
+				light.position = _point(glow_at, side * (path.half_width_at(glow_at) + 0.5), 1.6)
+				add_child(light)
+				glow_at += 22.0 if tier == 1 else 14.0
 
 
 func _cave_piece(from: float, to: float, height: float) -> void:
@@ -630,10 +828,7 @@ func _cave_piece(from: float, to: float, height: float) -> void:
 	node.name = "Cave_%d" % int(from)
 	node.mesh = st.commit()
 	if not _materials.has("cave"):
-		_materials["cave"] = SHADERS.material(
-			SHADERS.SOLID.replace("render_mode specular_schlick_ggx;", "render_mode specular_schlick_ggx, cull_disabled;"),
-			{"brightness": 1.5}
-		)
+		_materials["cave"] = ART.surface_material("stone", {"double": true, "world_scale": 0.3, "moss": 0.22, "tint": Color(0.72, 0.86, 0.95), "floor": 0.1})
 	node.material_override = _materials["cave"]
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if not low else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	node.visibility_range_end = 200.0
@@ -667,7 +862,7 @@ func _bonus_hall() -> void:
 # ------------------------------------------------------------------ the jungle
 
 func _vegetation() -> void:
-	var density: float = 0.55 if low else 1.0
+	var density: float = DENSITY[tier]
 	var at: float = 0.0
 	while at < path.length:
 		var kind: String = _surface_of(at)
@@ -700,6 +895,15 @@ func _vegetation() -> void:
 			if not raised and _rng.randf() < 0.22 * density:
 				var offset: float = _rng.randf_range(0.4, 2.4)
 				_put("flower%d" % (_rng.randi() % 5), at, _xf(at, side * (half + offset), _terrain_lift(at, offset), Vector3.ONE * _rng.randf_range(0.8, 1.3), _rng.randf() * TAU))
+			# Low leafy cover hides the bare forest floor between the plants.
+			if not raised and _rng.randf() < 0.9 * density:
+				var spot: float = _rng.randf_range(1.2, 10.0)
+				_put("cover", at, _xf(at, side * (half + spot), _terrain_lift(at, spot) - 0.05, Vector3.ONE * _rng.randf_range(1.0, 2.0), _rng.randf() * TAU))
+			# HIGH: a second band of big plants further out.
+			if tier == 2 and not raised and _rng.randf() < 0.5:
+				var spot: float = _rng.randf_range(7.0, 15.0)
+				var big: String = ("leaf%d" % (_rng.randi() % 2)) if _rng.randf() < 0.5 else "fern1"
+				_put(big, at, _xf(at, side * (half + spot), _terrain_lift(at, spot), Vector3.ONE * _rng.randf_range(1.6, 2.6), _rng.randf() * TAU))
 			# Middle band: big leaves, bushes and rocks.
 			if _rng.randf() < 0.45 * density:
 				var offset: float = _rng.randf_range(2.5, 8.0)
@@ -714,6 +918,12 @@ func _vegetation() -> void:
 		at += 1.15
 	_trees()
 	_overhead()
+
+
+## A little colour variation per tree: fresher, darker, more olive.
+func _tree_tint() -> Color:
+	var v: float = _rng.randf_range(0.86, 1.06)
+	return Color(v * _rng.randf_range(0.92, 1.04), v, v * _rng.randf_range(0.86, 1.0))
 
 
 func _terrain_lift(at: float, offset: float) -> float:
@@ -750,11 +960,15 @@ func _trees() -> void:
 			if kind in ["stone", "dirt"] and _rng.randf() < 0.18:
 				_put("palm%d" % (_rng.randi() % 2), at, _xf(at, side * (half + offset), floor_h, Vector3.ONE * scale, _rng.randf() * TAU))
 			else:
-				_put("tree%d" % (_rng.randi() % trees), at, _xf(at, side * (half + offset), floor_h - 0.3, Vector3.ONE * scale * (1.4 if ground < -1.5 else 1.0), _rng.randf() * TAU))
+				_put("tree%d" % (_rng.randi() % trees), at, _xf(at, side * (half + offset), floor_h - 0.3, Vector3.ONE * scale * (1.4 if ground < -1.5 else 1.0), _rng.randf() * TAU), _tree_tint())
+			# A wall of forest on the slopes: far trees only ever show their light version.
+			if tier > 0 and kind != "cave" and _rng.randf() < 0.55 * DENSITY[tier]:
+				var wall: float = _rng.randf_range(24.0, 44.0)
+				_put("tree%d_far" % (_rng.randi() % trees), at, _xf(at, side * (half + wall), _terrain_height(at, wall) - 0.6, Vector3.ONE * _rng.randf_range(1.1, 1.8), _rng.randf() * TAU), _tree_tint())
 			if _rng.randf() < 0.6:
 				var far: float = _rng.randf_range(13.0, 34.0)
-				_put("tree%d" % (_rng.randi() % trees), at, _xf(at, side * (half + far), _terrain_height(at, far) - 0.5, Vector3.ONE * _rng.randf_range(1.0, 1.7), _rng.randf() * TAU))
-		at += _rng.randf_range(3.6, 5.6) * (1.5 if low else 1.0)
+				_put("tree%d_far" % (_rng.randi() % trees), at, _xf(at, side * (half + far), _terrain_height(at, far) - 0.5, Vector3.ONE * _rng.randf_range(1.0, 1.7), _rng.randf() * TAU), _tree_tint())
+		at += _rng.randf_range(3.6, 5.6) * [1.5, 1.0, 0.82][tier]
 	# Giant trunks carry the treetop walks.
 	at = 0.0
 	while at < path.length:
@@ -783,7 +997,7 @@ func _overhead() -> void:
 			if _rng.randf() < 0.18:
 				# One liana right over the path, well above Lumo's head.
 				_put("liana0", at, _xf(at, _rng.randf_range(-1.0, 1.0), 10.0, Vector3.ONE, _rng.randf() * TAU))
-		at += _rng.randf_range(4.0, 6.5) * (1.5 if low else 1.0)
+		at += _rng.randf_range(4.0, 6.5) * [1.5, 1.0, 0.8][tier]
 
 
 # ------------------------------------------------------------------ built things along the path
@@ -823,6 +1037,11 @@ func _structures() -> void:
 							_put("block", at, _xf(at, side * (half + 0.55), 0.25, Vector3(0.7, _rng.randf_range(0.5, 1.0), 1.1), _rng.randf_range(-0.1, 0.1)), Color.WHITE.darkened(_rng.randf() * 0.15))
 						if _rng.randf() < 0.18:
 							_put("pillar%d" % (_rng.randi() % 2), at, _xf(at, side * (half + _rng.randf_range(1.6, 3.5)), 0.0, Vector3.ONE, _rng.randf() * TAU))
+						# Ruined walls and stairs of the old temple beside the way.
+						if _rng.randf() < 0.1 * DENSITY[tier]:
+							_put("wall", at, _xf(at, side * (half + _rng.randf_range(3.0, 5.5)), -0.1, Vector3.ONE * _rng.randf_range(0.8, 1.1), PI * 0.5 + _rng.randf_range(-0.15, 0.15)))
+						elif tier > 0 and _rng.randf() < 0.04:
+							_put("stairs", at, _xf(at, side * (half + _rng.randf_range(5.5, 8.0)), -0.05, Vector3.ONE, -PI * 0.5 * side))
 					at += 2.4
 			"rail":
 				var at: float = from
@@ -834,6 +1053,17 @@ func _structures() -> void:
 					for side in [-0.55, 0.55]:
 						_put("iron", at, Transform3D(path.frame(at + 0.6).scaled_local(Vector3(0.1, 0.12, 1.25)), _point(at + 0.6, side, 0.17)))
 					at += 1.2
+				at = from + 5.0
+				while at < to:
+					# Crates and barrels of the old mine beside the rails.
+					if _rng.randf() < 0.35:
+						var side: float = -1.0 if _rng.randf() < 0.5 else 1.0
+						var spot: float = half + _rng.randf_range(1.2, 2.6)
+						if _rng.randf() < 0.6:
+							_put("crate", at, _xf(at, side * spot, 0.0, Vector3.ONE * _rng.randf_range(0.8, 1.1), _rng.randf() * TAU))
+						else:
+							_put("barrelprop", at, _xf(at, side * spot, 0.6, Vector3.ONE * 0.8, _rng.randf() * TAU))
+					at += _rng.randf_range(6.0, 11.0)
 				at = from + 3.0
 				while at < to:
 					if _rng.randf() < 0.5:
@@ -911,8 +1141,7 @@ func _decor() -> void:
 			continue
 		var side: float = path.half_width_at(at) + 0.5
 		var lat: float = side if float(point.lat) <= 0.0 else -side
-		_put("torch", at, _xf(at, lat, 0.0, Vector3.ONE * 0.55))
-		_put("bulb", at, _xf(at, lat, 1.18, Vector3.ONE))
+		_put("lantern", at, _xf(at, lat, 0.0, Vector3.ONE * 1.15, PI if lat > 0.0 else 0.0))
 	for item in level.decor:
 		var at: float = float(item.s)
 		var lat: float = float(item.lat)
@@ -920,6 +1149,7 @@ func _decor() -> void:
 			"torch":
 				_put("torch", at, _xf(at, lat, 0.0, Vector3.ONE))
 				_put("flame", at, _xf(at, lat, 2.05, Vector3.ONE))
+				_embers(at, lat, 2.1)
 				if not low:
 					var light := OmniLight3D.new()
 					light.light_color = Color("ffb35c")
@@ -939,6 +1169,7 @@ func _decor() -> void:
 					for side in [-1.0, 1.0]:
 						_put("torch", at, _xf(at, side * (width * 0.5 + 0.8), 0.0, Vector3.ONE))
 						_put("flame", at, _xf(at, side * (width * 0.5 + 0.8), 2.05, Vector3.ONE))
+						_embers(at, side * (width * 0.5 + 0.8), 2.1)
 			"waterfall":
 				_waterfall(at, lat, float(item.get("height", 8.0)), float(item.get("width", 6.0)), bool(item.get("curtain", false)))
 			"finish_temple":
@@ -951,6 +1182,14 @@ func _decor() -> void:
 				_put("plankbox", at, _xf(at, lat, 1.4, Vector3(1.1, 0.6, 0.1), -0.3))
 			"cart_stop":
 				_put("plankbox", at, _xf(at - 25.0, 1.6, 0.5, Vector3(0.9, 1.0, 1.4)))
+
+
+## Sparks rising from a torch flame (animated on the GPU by the fauna shader).
+func _embers(at: float, lat: float, h: float) -> void:
+	if tier == 0:
+		return
+	for k in range(4 * tier):
+		_put("spark", at, _xf(at, lat, h, Vector3.ONE * 0.5), Color(1.0, 0.55, 0.15), Color(_rng.randf(), 0.0, _rng.randf_range(0.12, 0.2), 1.0))
 
 
 func _waterfall(at: float, lat: float, height: float, width: float, curtain: bool) -> void:
@@ -1028,7 +1267,7 @@ func _ambient_particles() -> void:
 		return
 	_pollen = CPUParticles3D.new()
 	_pollen.name = "Pollen"
-	_pollen.amount = 24
+	_pollen.amount = 24 if tier == 1 else 56
 	_pollen.lifetime = 6.0
 	_pollen.preprocess = 6.0
 	_pollen.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX

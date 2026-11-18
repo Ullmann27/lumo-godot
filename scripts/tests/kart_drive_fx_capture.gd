@@ -43,6 +43,10 @@ func _run() -> void:
 		for tier in [1, 2, 3]:
 			await _drift(tier)
 		await _landing()
+		await _rivals()
+		await _end()
+		await _start("sonnenhafen")
+		await _photo_finish()
 		await _end()
 	for entry in [["desert_drift", "sand"], ["winter_sprint", "snow"], ["zauberwald", "forest"], ["volcano_night", "lava"]]:
 		if not only.is_empty() and only != entry[0]:
@@ -92,7 +96,10 @@ func _place(distance: float, lane: float = 0.0) -> void:
 	game.distance = distance
 	game.previous_road_distance = distance
 	game.lane = lane
-	game.player.transform = game.world.reset_transform(distance, lane)
+	# reset_transform clamps the lateral to +-3.5 m; rail tests need the real wall position.
+	var placed: Transform3D = game.world.reset_transform(distance, 0.0)
+	placed.origin += placed.basis.x.normalized() * lane
+	game.player.transform = placed
 	game.player.position.y += 0.035
 	game.player_heading = game._heading(distance)
 
@@ -204,6 +211,58 @@ func _landing() -> void:
 	await _shot("06_landing")
 
 
+func _rivals() -> void:
+	_clean(21.0)
+	along = game.track_length * 0.5
+	await _drive(6)
+	var shown: Array = [game.opponents[0], game.opponents[1]]
+	for rival in shown:
+		rival.visible = true
+	for i in range(40):
+		along += game.speed * STEP
+		_place(along, -1.5)
+		var ahead: Transform3D = game.world.reset_transform(along + 7.0, 1.8)
+		shown[0].global_transform = game.race_root.global_transform * ahead.rotated_local(Vector3.UP, 0.3)
+		shown[0].set_motion(21.0, 0.8, false, true)
+		shown[0].set_drift_spark_tier(1)
+		var beside: Transform3D = game.world.reset_transform(along + 12.0, -2.5)
+		shown[1].global_transform = game.race_root.global_transform * beside
+		shown[1].set_motion(24.0, 0.0, true, false)
+		game._update_vehicles(STEP)
+		game._update_camera(STEP)
+		await _frame()
+	await _shot("08_rivals")
+	for rival in shown:
+		rival.set_motion(0.0, 0.0, false, false)
+		rival.visible = false
+
+
+func _photo_finish() -> void:
+	_clean(20.0)
+	for rival in game.opponents:
+		rival.visible = false
+	along = game.track_length - 30.0
+	await _drive(20)
+	var rival = game.opponents[0]
+	rival.visible = true
+	game.elapsed = 61.5
+	game.checkpoint_index = game.TOTAL_LAPS * 8
+	game.distance = game.track_length * game.TOTAL_LAPS + 0.3
+	for i in range(game.opponent_distances.size()):
+		game.opponent_distances[i] = game.distance - 80.0
+	game.opponent_distances[0] = game.distance - 2.5
+	rival.global_transform = game.race_root.global_transform * game.world.reset_transform(along - 2.5, 2.2)
+	rival.set_motion(20.0, 0.0, true, false)
+	game._update_vehicles(STEP)
+	game._finish()
+	for _i in range(8):
+		game._update_finish_cine(STEP * Engine.time_scale)
+		await process_frame
+	report["photo_finish"] = {"active": fx.photo_finish.active, "gap": fx.photo_finish.last_gap,
+		"time_scale": Engine.time_scale}
+	await _shot("09_photo_finish", false)
+
+
 func _surface(label: String) -> void:
 	_clean(22.0)
 	along = game.track_length * 0.14
@@ -276,14 +335,16 @@ func _render_info() -> Dictionary:
 	}
 
 
-func _shot(label: String) -> void:
+func _shot(label: String, freeze: bool = true) -> void:
 	# Freeze: the race pause stops the effect clock, so both formats show one moment.
-	game.paused = true
-	game._update_vehicles(STEP)
+	game.paused = freeze
+	if freeze:
+		game._update_vehicles(STEP)
 	report[label] = fx.visual_state()
 	for size in SIZES:
 		root.size = size
-		game._update_camera(1.0, true)
+		if freeze:
+			game._update_camera(1.0, true)
 		game._update_hud()
 		for _i in range(6):
 			await process_frame

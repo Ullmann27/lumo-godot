@@ -10,7 +10,9 @@ extends Node3D
 ## (rail_contact(), landed()). Nothing fires without its event: no idle loops of
 ## effects, no fake bursts. Paused races emit nothing and freeze what is in flight.
 ## Reduced motion: no camera jolt, no FOV punch, no speed lines, calmer spring.
-## Draw calls: at most four (sparks, soft particles, marks, speed lines).
+## Draw calls: at most five (sparks, soft particles, marks, speed lines, flames);
+## HIGH adds two short-lived lights (turbo glow, rail-hit flash).
+## Rivals near the player get the same effects on a strict per-profile budget.
 
 const PARTICLES = preload("res://scripts/games/kart_fx/kart_fx_particles.gd")
 const MARKS = preload("res://scripts/games/kart_fx/kart_fx_marks.gd")
@@ -20,12 +22,18 @@ const SPARK_SHADER = preload("res://assets/shaders/kart_fx_spark.gdshader")
 const PUFF_SHADER = preload("res://assets/shaders/kart_fx_puff.gdshader")
 const MARK_SHADER = preload("res://assets/shaders/kart_fx_decal.gdshader")
 const LINES_SHADER = preload("res://assets/shaders/kart_fx_speedlines.gdshader")
+const FLAME_SHADER = preload("res://assets/shaders/kart_fx_flame.gdshader")
+const FLAMES = preload("res://scripts/games/kart_fx/kart_fx_flames.gd")
+const PHOTO_FINISH = preload("res://scripts/games/kart_fx/kart_fx_photo_finish.gd")
 
 ## Quality budgets. HIGH asks a lot of the newest phones; LOW stays readable.
 const BUDGETS := {
-	"high": {"sparks": 2400, "puffs": 1200, "marks": 1800, "mark_life": 7.5, "rate": 1.0, "size": 1.15},
-	"medium": {"sparks": 1200, "puffs": 600, "marks": 900, "mark_life": 5.0, "rate": 0.6, "size": 1.0},
-	"low": {"sparks": 420, "puffs": 220, "marks": 300, "mark_life": 3.0, "rate": 0.3, "size": 0.95},
+	"high": {"sparks": 2400, "puffs": 1400, "marks": 2200, "mark_life": 7.5, "rate": 1.0, "size": 1.15,
+		"rivals": 4, "rival_rate": 0.35, "lights": true},
+	"medium": {"sparks": 1200, "puffs": 700, "marks": 1100, "mark_life": 5.0, "rate": 0.6, "size": 1.0,
+		"rivals": 2, "rival_rate": 0.25, "lights": false},
+	"low": {"sparks": 420, "puffs": 240, "marks": 320, "mark_life": 3.0, "rate": 0.3, "size": 0.95,
+		"rivals": 0, "rival_rate": 0.0, "lights": false},
 }
 const DRIFT_COLORS: Array[Color] = [
 	Color(0.86, 0.93, 1.0), Color("4fb8ff"), Color("ff9a3c"), Color("c77dff")
@@ -36,7 +44,8 @@ const SPARK_WHITE := Color(1.0, 0.96, 0.82)
 ## from a kart pressed against the collision wall (WALL_LATERAL 5.0).
 const RAIL_OFFSET := 0.93
 const RAIL_HEIGHT := 0.55
-const KART_SIDE := 0.78
+## Outer tyre edge of the production karts (measured 1.0 m; kart_rail_gap_probe).
+const KART_SIDE := 0.98
 const HARD_HIT := 4.0
 
 var race: Node
@@ -48,6 +57,13 @@ var sparks: MultiMeshInstance3D
 var puffs: MultiMeshInstance3D
 var marks: MultiMeshInstance3D
 var speed_lines: MeshInstance3D
+var flames: MultiMeshInstance3D
+var photo_finish: Node
+var flash_light: OmniLight3D
+var flash: float = 0.0
+var boost_age: float = 0.0
+var afterglow: float = 0.0
+var light_tint := Color.WHITE
 var counts: Dictionary = {}
 var sounds: Dictionary = {}
 var pitch: float = 0.0
@@ -81,6 +97,10 @@ var _tilt_basis := Basis.IDENTITY
 var _shake_phase: float = 0.0
 var _shaken_camera: Camera3D
 var _camera_offset := Vector3.ZERO
+var _zoomed_camera: Camera3D
+var _zoom_offset: float = 0.0
+var _racing_speed: float = 0.0
+var _rival_afterglow: Dictionary = {}
 
 
 func _ready() -> void:
@@ -91,6 +111,7 @@ func _ready() -> void:
 	sparks = PARTICLES.new()
 	add_child(sparks)
 	sparks.setup("KartFxSparks", SPARK_SHADER, 64)
+	sparks.spark_layout = true
 	puffs = PARTICLES.new()
 	add_child(puffs)
 	puffs.setup("KartFxSoft", PUFF_SHADER, 64)
@@ -110,6 +131,19 @@ func _ready() -> void:
 	speed_lines.material_override = lines_material
 	speed_lines.visible = false
 	add_child(speed_lines)
+	flames = FLAMES.new()
+	add_child(flames)
+	flames.setup(FLAME_SHADER)
+	flash_light = OmniLight3D.new()
+	flash_light.name = "KartFxImpactLight"
+	flash_light.top_level = true
+	flash_light.omni_range = 5.0
+	flash_light.light_color = Color(1.0, 0.78, 0.45)
+	flash_light.shadow_enabled = false
+	flash_light.visible = false
+	add_child(flash_light)
+	photo_finish = PHOTO_FINISH.new()
+	add_child(photo_finish)
 	_apply_profile("medium")
 
 
@@ -117,7 +151,22 @@ func bind_race(owner: Node) -> void:
 	race = owner
 	style = STYLES.for_track(str(race.track_id))
 	_apply_profile(str(race.graphics_profile))
+	_read_light_tint()
 	reset()
+
+
+## Smoke and dust take on the scene's sunlight (warm desert, cold night lava).
+func _read_light_tint() -> void:
+	light_tint = Color.WHITE
+	var root: Node = race.get("world") if is_instance_valid(race.get("world")) else race
+	var suns := root.find_children("*", "DirectionalLight3D", true, false)
+	if suns.is_empty():
+		suns = race.find_children("*", "DirectionalLight3D", true, false)
+	if not suns.is_empty():
+		var sun: DirectionalLight3D = suns[0]
+		var lit: Color = sun.light_color * clampf(sun.light_energy, 0.45, 1.15)
+		light_tint = Color(1, 1, 1).lerp(lit, 0.45)
+	puffs.set_parameter("light_tint", Vector3(light_tint.r, light_tint.g, light_tint.b))
 
 
 func _apply_profile(next: String) -> void:
@@ -130,6 +179,7 @@ func _apply_profile(next: String) -> void:
 	sparks.resize(int(budget.sparks))
 	puffs.resize(int(budget.puffs))
 	marks.resize(int(budget.marks))
+	flames.light_enabled = bool(budget.lights)
 
 
 func reset() -> void:
@@ -151,6 +201,12 @@ func reset() -> void:
 	line_intensity = 0.0
 	scrape_level = 0.0
 	speed_lines.visible = false
+	flames.clear()
+	flash = 0.0
+	flash_light.visible = false
+	boost_age = 0.0
+	afterglow = 0.0
+	_rival_afterglow.clear()
 	_previous_place = 0
 	_previous_boost = false
 	_silence()
@@ -159,6 +215,7 @@ func reset() -> void:
 func _physics_process(_delta: float) -> void:
 	_restore_tilt()
 	_restore_camera()
+	_restore_zoom()
 
 
 ## The camera jolt is laid on after the race has placed its camera (render time)
@@ -166,7 +223,17 @@ func _physics_process(_delta: float) -> void:
 ## smoothing never sees it.
 func _process(_delta: float) -> void:
 	_restore_camera()
-	if not is_instance_valid(race) or bool(race.get("paused")):
+	_restore_zoom()
+	if not is_instance_valid(race):
+		return
+	photo_finish.watch(race, _racing_speed)
+	var camera_node: Camera3D = race.get("camera")
+	var zoom: float = photo_finish.zoom()
+	if zoom != 0.0 and is_instance_valid(camera_node):
+		_zoom_offset = zoom
+		camera_node.fov += zoom
+		_zoomed_camera = camera_node
+	if bool(race.get("paused")):
 		return
 	var camera: Camera3D = race.get("camera")
 	var jolt := camera_shake()
@@ -174,6 +241,19 @@ func _process(_delta: float) -> void:
 		_camera_offset = camera.basis * jolt
 		camera.position += _camera_offset
 		_shaken_camera = camera
+
+
+func _restore_zoom() -> void:
+	if is_instance_valid(_zoomed_camera):
+		_zoomed_camera.fov -= _zoom_offset
+	_zoomed_camera = null
+	_zoom_offset = 0.0
+
+
+func _exit_tree() -> void:
+	photo_finish.stop()
+	_restore_zoom()
+	_restore_camera()
 
 
 func _restore_camera() -> void:
@@ -269,16 +349,20 @@ func advance(delta: float) -> void:
 	sparks.advance(step, focus)
 	puffs.advance(step, focus)
 	marks.advance(step, focus)
+	flames.begin(step, focus)
+	_update_flash(step)
 	var active: bool = bool(race.racing) and not bool(race.finished) and not bool(race.menu_active)
 	if not active:
 		_contacts.clear()
 		marks.lift_all()
+		flames.finish()
 		_settle(step, kart)
 		_update_engine(step, false)
 		_silence(true)
 		_update_lines(step, false)
 		return
 	var speed: float = absf(float(race.speed))
+	_racing_speed = speed
 	var ratio := clampf(speed / 25.0, 0.0, 1.0)
 	var grounded: bool = not bool(race.airborne)
 	var gas: bool = race._gas_active()
@@ -315,8 +399,11 @@ func advance(delta: float) -> void:
 		squeal = maxf(squeal, clampf((speed - 4.0) / 18.0, 0.0, 1.0) * braking)
 		for index in range(tyres.size()):
 			_mark("brake:%d" % index, tyres[index].global_position, up, 0.3, braking * clampf(speed / 12.0, 0.5, 1.0))
-		if braking > 0.8 and speed > 8.0:
-			_tyre_smoke("brake_smoke", tyres, forward, up, step, 55.0 * clampf(speed / 20.0, 0.4, 1.2), style.smoke, 1.35)
+		if braking > 0.6 and speed > 6.0:
+			# Billowing smoke: amount and size grow with speed, little at walking pace.
+			var heat := clampf((speed - 6.0) / 18.0, 0.0, 1.0)
+			_tyre_smoke("brake_smoke", tyres, forward, up, step, (30.0 + 120.0 * heat) * braking,
+				Color(0.88, 0.88, 0.9, 0.55 + 0.25 * heat), 1.1 + 0.9 * heat)
 	else:
 		marks.lift("brake:0")
 		marks.lift("brake:1")
@@ -382,8 +469,15 @@ func advance(delta: float) -> void:
 	_previous_gas = gas
 	# Boost: exhaust jets, heat wisps, swirling air, speed lines, FOV punch.
 	if boosting:
+		boost_age = 0.0 if not _previous_boost else boost_age + step
 		_boost_effects(kart, forward, up, right, speed, step, not _previous_boost)
+		afterglow = 1.0
+	else:
+		afterglow = move_toward(afterglow, 0.0, step / 1.6)
+	_kart_flames(kart, forward, up, boosting, boost_age, afterglow, 1.0, 0.0)
 	_previous_boost = boosting
+	_rivals(forward, step)
+	flames.finish()
 	_surface_trail(tyres, forward, up, speed, step, grounded and not drifting and not brake_marking)
 	_slipstream(kart, forward, up, speed, step)
 	_lead_confetti(kart, up)
@@ -443,7 +537,8 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 				along * speed * _rng.randf_range(0.12, 0.55) - outward * _rng.randf_range(0.6, 3.4)
 				+ up * _rng.randf_range(1.2, 6.0) + Vector3(_rng.randf_range(-0.8, 0.8), 0, _rng.randf_range(-0.8, 0.8)),
 				_rng.randf_range(0.09, 0.16) * _size(), 0.02, 0.045, _rng.randf_range(0.35, 0.9), 1.0,
-				SPARK_HOT.lerp(SPARK_WHITE, _rng.randf()), Color(1.6, _rng.randf(), 1.0, 0.9)
+				SPARK_HOT.lerp(SPARK_WHITE, _rng.randf()), Color(1.6, _rng.randf(), 1.0, 0.9),
+				kart.global_position.y + 0.02
 			)
 		_count("rail_sparks", count)
 		# The hot contact patch itself glows while metal grinds on metal.
@@ -452,8 +547,9 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 				0.0, Color(1.0, 0.72, 0.36, 0.75), Color(1.0, _rng.randf(), 0.0, 0.4))
 		if speed > 3.0 and on_rail:
 			var streak := kart.global_position + outward * (offset - 0.02) + up * RAIL_HEIGHT
-			if marks.stroke("rail:%d" % id, streak, outward, 0.13, Color(0.08, 0.08, 0.1, 0.9),
-					float(budget.mark_life), 2):
+			# Glows hot where metal met metal, then cools to a dark scratch.
+			if marks.stroke("rail:%d" % id, streak, outward, 0.14, Color(0.09, 0.09, 0.11, 0.9),
+					float(budget.mark_life), 3):
 				_count("rail_marks", 1)
 		elif speed > 3.0:
 			# Wall short of the rail: the outer tyres scrub a dark mark on the curb line.
@@ -482,16 +578,36 @@ func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
 
 func _rail_hit(kart: Node3D, at: Vector3, outward: Vector3, up: Vector3, into: float, is_player: bool) -> void:
 	var strength := clampf((into - HARD_HIT) / 10.0, 0.0, 1.0)
-	var burst := int((26.0 + 90.0 * strength) * maxf(0.4, float(budget.rate)) * (1.0 if is_player else 0.6))
+	var burst := int((60.0 + 160.0 * strength) * maxf(0.4, float(budget.rate)) * (1.0 if is_player else 0.6))
+	var travel: Vector3 = (outward.cross(up)).normalized()
+	var kart_speed: float = absf(float(kart.get("motion_speed"))) if kart.get("motion_speed") != null else 15.0
+	if travel.dot(-kart.global_basis.z) < 0.0:
+		travel = -travel
+	var ground := kart.global_position.y + 0.02
 	for _n in range(burst):
-		var dir := (-outward * _rng.randf_range(0.3, 1.0) + up * _rng.randf_range(0.2, 1.2)
-			+ Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)) * 0.8).normalized()
-		sparks.spawn(at, dir * _rng.randf_range(3.5, 11.0), _rng.randf_range(0.1, 0.17) * _size(), 0.02, 0.04,
-			_rng.randf_range(0.3, 0.7), 1.0, SPARK_WHITE, Color(1.8, _rng.randf(), 1.0, 1.0))
+		# A fan thrown forward along the rail (the kart's momentum) and off the wall.
+		var dir := (travel * _rng.randf_range(0.6, 1.6) - outward * _rng.randf_range(0.1, 0.9)
+			+ up * _rng.randf_range(0.2, 1.3) + Vector3(_rng.randf_range(-1, 1), 0, _rng.randf_range(-1, 1)) * 0.5).normalized()
+		sparks.spawn(at, dir * _rng.randf_range(4.0, 12.0) + travel * kart_speed * 0.35,
+			_rng.randf_range(0.1, 0.19) * _size(), 0.02, 0.045,
+			_rng.randf_range(0.4, 0.95), 1.0, SPARK_WHITE, Color(1.4, _rng.randf(), 1.0, 1.0), ground)
+	# Paint flakes in the kart's own colour flutter down (nobody is hurt, the kart just scuffs).
+	var paint: Color = kart.get("vehicle_color") if kart.get("vehicle_color") != null else Color("357cba")
+	var flakes := int((10.0 + 18.0 * strength) * maxf(0.4, float(budget.rate)))
+	for _n in range(flakes):
+		puffs.spawn(at - outward * 0.15, travel * _rng.randf_range(1.0, 4.0) - outward * _rng.randf_range(0.5, 2.0)
+			+ up * _rng.randf_range(1.5, 3.5), _rng.randf_range(0.05, 0.09) * _size(), 0.05, 0.0,
+			_rng.randf_range(0.8, 1.3), 0.45, _tone(paint, 0.1), Color(1.2, _rng.randf(), _rng.randf_range(6.0, 12.0), 4.0))
+	_count("paint_flakes", flakes)
+	if not reduced_motion:
+		flash = maxf(flash, 0.6 + strength * 0.6)
+		flash_light.global_position = at - outward * 0.3 + up * 0.3
+		_update_flash(0.0)
 	# One soft glow at the impact point (small and world-anchored, never a screen flash).
 	sparks.spawn(at, Vector3.ZERO, (0.9 if reduced_motion else 1.6) * (0.8 + strength), 0.4, 0.0, 0.16, 0.0,
 		Color(1.0, 0.8, 0.45, 0.55 if reduced_motion else 0.9), Color(1.0, 0.0, 0.0, 0.5))
 	_count("rail_burst", burst)
+	_count("rail_flash", 1 if not reduced_motion else 0)
 	# The driver flinches briefly (the real Lumo / 3D rivals use their hit lean).
 	if "driver_hit_pending" in kart:
 		kart.driver_hit_pending = true
@@ -504,6 +620,9 @@ func _rail_hit(kart: Node3D, at: Vector3, outward: Vector3, up: Vector3, into: f
 		else:
 			_roll_velocity += signf(outward.dot(race.player.global_basis.x)) * 0.4
 		_sound("rail_hit", 0.92 + _rng.randf() * 0.16, 0.7 + strength * 0.3)
+		var audio = race.get("kart_audio")
+		if is_instance_valid(audio) and audio.has_method("duck"):
+			audio.duck(0.3)
 	else:
 		if race.player.global_position.distance_to(kart.global_position) < 18.0:
 			_sound("rail_hit_soft", 0.95 + _rng.randf() * 0.15, 0.45)
@@ -514,7 +633,7 @@ func _boost_effects(kart: Node3D, forward: Vector3, up: Vector3, right: Vector3,
 	for flame in kart.flames:
 		if is_instance_valid(flame) and exhausts.size() < 2:
 			exhausts.append(flame)
-	var rate := 110.0 * float(budget.rate)
+	var rate := 45.0 * float(budget.rate)
 	for index in range(exhausts.size()):
 		var at: Vector3 = exhausts[index].global_position + forward * 0.02
 		var count := _emit("jet:%d" % index, rate, step)
@@ -554,7 +673,10 @@ func _surface_trail(tyres: Array[Node3D], forward: Vector3, up: Vector3, speed: 
 	var trail: float = float(style.trail)
 	if cruising and trail > 0.0 and speed > 9.0:
 		var amount := clampf((speed - 9.0) / 16.0, 0.2, 1.0) * trail
-		_tyre_smoke("surface_trail", tyres, forward, up, step, 40.0 * amount, style.smoke, float(style.dust_scale) * 1.25)
+		# A real plume: dense near the tyres, lingering and rising behind the kart.
+		var slip := 1.0 + clampf(absf(float(race.steering)), 0.0, 1.0) * 0.6
+		_tyre_smoke("surface_trail", tyres, forward, up, step, 70.0 * amount * slip, style.smoke,
+			float(style.dust_scale) * 1.6, 1.6)
 		if str(style.name) == "snow":
 			# Powder snow glitters in the light.
 			for index in range(tyres.size()):
@@ -636,7 +758,7 @@ func _backfire(kart: Node3D, forward: Vector3) -> void:
 	_sound("backfire", 0.9 + _rng.randf() * 0.25, 0.6)
 
 
-func _tyre_smoke(tag: String, tyres: Array[Node3D], forward: Vector3, up: Vector3, step: float, rate: float, color: Color, scale: float = 1.0) -> void:
+func _tyre_smoke(tag: String, tyres: Array[Node3D], forward: Vector3, up: Vector3, step: float, rate: float, color: Color, scale: float = 1.0, life_scale: float = 1.0) -> void:
 	var speed: float = absf(float(race.speed))
 	for index in range(tyres.size()):
 		var count := _emit("%s:%d" % [tag, index], rate * float(budget.rate), step)
@@ -645,7 +767,7 @@ func _tyre_smoke(tag: String, tyres: Array[Node3D], forward: Vector3, up: Vector
 				tyres[index].global_position + up * 0.12,
 				forward * speed * _rng.randf_range(0.05, 0.25) + up * _rng.randf_range(0.4, 1.3)
 				+ Vector3(_rng.randf_range(-0.7, 0.7), 0, _rng.randf_range(-0.7, 0.7)),
-				0.35 * _size(), _rng.randf_range(1.3, 2.2) * scale * _size(), 0.0, _rng.randf_range(0.9, 1.6), -0.04,
+				0.35 * _size(), _rng.randf_range(1.3, 2.2) * scale * _size(), 0.0, _rng.randf_range(0.9, 1.6) * life_scale, -0.04,
 				_tone(color, 0.05), Color(1.7, _rng.randf(), _rng.randf_range(-0.8, 0.8), 0.0)
 			)
 		_count(tag, count)
@@ -656,6 +778,117 @@ func _mark(stream: String, at: Vector3, up: Vector3, width: float, strength: flo
 	color.a *= clampf(strength, 0.0, 1.0)
 	if marks.stroke(stream, at + up * 0.025, up, width, color, float(budget.mark_life), int(style.mark_kind)):
 		_count(stream.get_slice(":", 0) + "_marks", 1)
+
+
+# --- flames, light, rivals ---------------------------------------------------
+
+
+func _update_flash(step: float) -> void:
+	flash = maxf(0.0, flash - step * 7.0)
+	var on: bool = bool(budget.lights) and flash > 0.02 and not reduced_motion
+	flash_light.visible = on
+	flash_light.light_energy = flash * 3.0 if on else 0.0
+
+
+## Turbo flame bodies, Mach rings at ignition, road glow and the pipes' afterglow.
+func _kart_flames(kart: Node3D, forward: Vector3, up: Vector3, boosting: bool, age: float, glow: float, scale: float, seed: float) -> void:
+	var exhausts: Array[Node3D] = []
+	for flame_anchor in kart.flames:
+		if is_instance_valid(flame_anchor) and exhausts.size() < 2:
+			exhausts.append(flame_anchor)
+	if exhausts.is_empty():
+		return
+	var middle := Vector3.ZERO
+	for anchor in exhausts:
+		middle += anchor.global_position
+	middle /= float(exhausts.size())
+	if boosting:
+		var mach := clampf(1.0 - age / 0.55, 0.0, 1.0)
+		var length := (1.5 + 0.2 * sin(_clock * 4.0 + seed)) * scale
+		for index in range(exhausts.size()):
+			# Tilted slightly up so the chase camera sees the flame's length, not its end.
+			flames.flame(exhausts[index].global_position, -forward + up * 0.18, up, length, 0.3 * scale, 1.0, mach,
+				Color("ff7a1c"), seed + float(index))
+		var drop := maxf(0.0, (middle - kart.global_position).dot(up) - 0.03)
+		flames.ground_glow(middle - forward * 0.9 * scale - up * drop, -forward, up, 1.1 * scale, 1.0, Color(1.0, 0.55, 0.22))
+		flames.light_at(middle - forward * 0.6, 1.6 * scale, Color(1.0, 0.62, 0.3))
+		_count("flame", 1)
+	elif glow > 0.01:
+		for anchor in exhausts:
+			flames.afterglow(anchor.global_position, -forward, up, 0.12 * scale, glow * 0.8,
+				Color(1.0, 0.36, 0.1).lerp(Color(0.5, 0.08, 0.02), 1.0 - glow))
+		_count("afterglow", 1)
+
+
+## Rivals near the player: drift sparks and marks, dust on loose ground, brake
+## marks and turbo flames, on a strict budget (nearest few, reduced rates).
+func _rivals(_forward: Vector3, step: float) -> void:
+	var allowed: int = int(budget.rivals)
+	var opponents = race.get("opponents")
+	if allowed <= 0 or opponents == null:
+		return
+	var near: Array = []
+	for rival in opponents:
+		if is_instance_valid(rival) and rival.visible:
+			var gap: float = rival.global_position.distance_to(race.player.global_position)
+			if gap < 40.0:
+				near.append([gap, rival])
+	near.sort_custom(func(a: Array, b: Array) -> bool: return float(a[0]) < float(b[0]))
+	var share: float = float(budget.rival_rate)
+	for entry in near.slice(0, allowed):
+		var rival: Node3D = entry[1]
+		var id := rival.get_instance_id()
+		var speed: float = absf(float(rival.motion_speed))
+		var forward := -rival.global_basis.z.normalized()
+		var up := rival.global_basis.y.normalized()
+		var right := forward.cross(up).normalized()
+		var tyres := _rear_tyres(rival)
+		var drifting: bool = bool(rival.motion_drift) and absf(float(rival.motion_steer)) > 0.2 and speed > 1.0
+		if drifting:
+			var tier := clampi(int(rival.drift_spark_tier) + 1, 1, 3)
+			var color: Color = DRIFT_COLORS[tier]
+			for index in range(tyres.size()):
+				var count := _emit("rdrift:%d:%d" % [id, index], (40.0 + 60.0 * float(tier)) * share, step)
+				for _n in range(count):
+					sparks.spawn(tyres[index].global_position + up * 0.05,
+						forward * speed * _rng.randf_range(0.3, 0.6)
+						- right * signf(float(rival.motion_steer)) * _rng.randf_range(0.8, 2.6)
+						+ up * _rng.randf_range(1.2, 3.4), 0.09 * _size(), 0.02, 0.045, _rng.randf_range(0.22, 0.4),
+						0.9, color, Color(2.2, _rng.randf(), 0.0, 0.3), rival.global_position.y + 0.02)
+				_count("rival_drift_sparks", count)
+				if marks.stroke("rdrift:%d:%d" % [id, index], tyres[index].global_position + up * 0.025, up, 0.26,
+						style.mark, float(budget.mark_life) * 0.7, int(style.mark_kind)):
+					_count("rival_marks", 1)
+		else:
+			marks.lift("rdrift:%d:0" % id)
+			marks.lift("rdrift:%d:1" % id)
+		var braking: float = float(rival.get("motion_brake")) if rival.get("motion_brake") != null else 0.0
+		if braking > 0.35 and speed > 4.0:
+			for index in range(tyres.size()):
+				var color: Color = style.mark
+				color.a *= braking
+				if marks.stroke("rbrake:%d:%d" % [id, index], tyres[index].global_position + up * 0.025, up, 0.28,
+						color, float(budget.mark_life) * 0.7, int(style.mark_kind)):
+					_count("rival_marks", 1)
+		else:
+			marks.lift("rbrake:%d:0" % id)
+			marks.lift("rbrake:%d:1" % id)
+		var trail: float = float(style.trail)
+		if trail > 0.0 and speed > 9.0:
+			var amount := clampf((speed - 9.0) / 16.0, 0.2, 1.0) * trail
+			for index in range(tyres.size()):
+				var count := _emit("rdust:%d:%d" % [id, index], 70.0 * amount * share, step)
+				for _n in range(count):
+					puffs.spawn(tyres[index].global_position + up * 0.12,
+						forward * speed * _rng.randf_range(0.05, 0.25) + up * _rng.randf_range(0.4, 1.3),
+						0.35 * _size(), _rng.randf_range(1.3, 2.2) * float(style.dust_scale) * 1.4 * _size(), 0.0,
+						_rng.randf_range(1.2, 2.2), -0.04, _tone(style.smoke, 0.05), Color(1.7, _rng.randf(), 0.4, 0.0))
+				_count("rival_dust", count)
+		var boosting: bool = bool(rival.motion_boost) and speed > 0.5
+		var glow: float = float(_rival_afterglow.get(id, 0.0))
+		glow = 1.0 if boosting else move_toward(glow, 0.0, step / 1.6)
+		_rival_afterglow[id] = glow
+		_kart_flames(rival, forward, up, boosting, 1.0, glow, 0.85, float(id % 7))
 
 
 # --- body, camera, sound -----------------------------------------------------
@@ -885,5 +1118,11 @@ func visual_state() -> Dictionary:
 		"rpm": rpm,
 		"counts": counts.duplicate(),
 		"sounds": sounds.duplicate(),
-		"draw_batches": int(sparks.visible) + int(puffs.visible) + int(marks.visible) + int(speed_lines.visible),
+		"draw_batches": (
+			int(sparks.visible) + int(puffs.visible) + int(marks.visible) + int(speed_lines.visible)
+			+ int(flames.visible)
+		),
+		"flames": flames.used,
+		"lights": int(flames.light.visible) + int(flash_light.visible),
+		"photo_finish": photo_finish.active,
 	}

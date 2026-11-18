@@ -466,15 +466,14 @@ func _mesh(kind: String) -> Mesh:
 	var mesh: Mesh
 	match kind:
 		"puff":
-			var quad := QuadMesh.new()
-			quad.size = Vector2(0.55, 0.55)
+			var quad: ArrayMesh = preload("res://scripts/systems/particle_quad.gd").make(Vector2(0.55, 0.55))
 			var material := StandardMaterial3D.new()
 			material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 			material.vertex_color_use_as_albedo = true
 			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 			material.albedo_texture = _soft_dot()
-			quad.material = material
+			quad.surface_set_material(0, material)
 			mesh = quad
 		"ball":
 			var ball := SphereMesh.new()

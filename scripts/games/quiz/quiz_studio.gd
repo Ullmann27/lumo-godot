@@ -3,6 +3,7 @@ extends Node3D
 ## question bank, correct answers, jokers, persistence, profile and wallet.
 ## No QA oracle, saved round or reward API is read or written by this scene.
 const LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+const KIT = preload("res://scripts/games/table_room/table_room_kit.gd")
 const LAYOUT_OBSERVATION := "user://quiz_layout_v1.json"
 const SUBJECTS := ["alle", "Deutsch", "Mathe", "Sachunterricht"]
 const JOKERS := ["fiftyFifty", "audience", "callLumo"]
@@ -17,6 +18,12 @@ const GOLD := Color("ffc75d")
 const CYAN := Color("6cd9e7")
 
 var _host: Object
+var _studio_time := 0.0
+var _sweepers: Array[SpotLight3D] = []
+var _audience: MultiMeshInstance3D
+var _audience_base: Array[Transform3D] = []
+var _buzzer_material: StandardMaterial3D
+var _led_material: StandardMaterial3D
 var _token := ""
 var _state: Dictionary = {}
 var _authority_ready := false
@@ -116,6 +123,7 @@ func _notification(what: int) -> void:
 
 
 func _process(delta: float) -> void:
+	_animate_studio(delta)
 	_poll += delta
 	if _poll >= 0.08:
 		_poll = 0.0
@@ -391,6 +399,7 @@ func _build_studio() -> void:
 		var light := _mesh(light_mesh, Vector3(-cos(angle) * 2.2, 1.65 + sin(angle) * 2.2, -0.28), _dim_material)
 		light.name = "AcknowledgedQuestion%02d" % (i + 1)
 		_lights.append(light)
+	_build_studio_details()
 	fox = LUMO.new()
 	fox.name = "OriginalLumo"
 	fox.scale = Vector3.ONE * 1.55
@@ -402,6 +411,160 @@ func _build_studio() -> void:
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	camera.current = true
 	add_child(camera)
+
+
+## Studio-Kulisse: LED-Rückwand, Publikum auf Tribünen, Buzzer-Pult und zwei
+## langsam schwenkende Scheinwerfer mit sichtbarem Lichtkegel.
+func _build_studio_details() -> void:
+	var tier := KIT.tier()
+	var wall := BoxMesh.new()
+	wall.size = Vector3(16, 6.5, 0.2)
+	_mesh(wall, Vector3(0, 2.8, -3.2), _material(Color("0f1d33"))).name = "StudioWall"
+	# LED-Raster auf der Rückwand: viele Kacheln, ein Draw-Call.
+	_led_material = _material(Color("2f7fd6"), 1.2)
+	var tiles := MultiMesh.new()
+	tiles.transform_format = MultiMesh.TRANSFORM_3D
+	tiles.use_colors = true
+	var tile := BoxMesh.new()
+	tile.size = Vector3(0.34, 0.34, 0.04)
+	tiles.mesh = tile
+	var columns := 30
+	var rows := 12
+	tiles.instance_count = columns * rows
+	for row in range(rows):
+		for column in range(columns):
+			var index := row * columns + column
+			var at := Vector3((column - columns * 0.5 + 0.5) * 0.4, 0.6 + row * 0.4, -3.08)
+			tiles.set_instance_transform(index, Transform3D(Basis.IDENTITY, at))
+			var wave := 0.5 + 0.5 * sin(column * 0.45 + row * 0.7)
+			tiles.set_instance_color(index, Color(0.25 + 0.4 * wave, 0.35 + 0.3 * wave, 1.0).lerp(Color(1.0, 0.75, 0.3), float(row) / rows * 0.4))
+	var led := MultiMeshInstance3D.new()
+	led.name = "LedWall"
+	led.multimesh = tiles
+	_led_material.vertex_color_use_as_albedo = true
+	led.material_override = _led_material
+	led.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(led)
+	# Buzzer-Pult rechts neben Lumo.
+	var base := CylinderMesh.new()
+	base.top_radius = 0.32
+	base.bottom_radius = 0.4
+	base.height = 0.95
+	base.radial_segments = 24
+	var pult := _mesh(base, Vector3(2.35, 0.47, 0.4), _material(Color("26405e")))
+	pult.name = "BuzzerDesk"
+	var trim := TorusMesh.new()
+	trim.inner_radius = 0.3
+	trim.outer_radius = 0.35
+	_mesh(trim, Vector3(2.35, 0.95, 0.4), _material(GOLD, 0.4))
+	var dome := SphereMesh.new()
+	dome.radius = 0.22
+	dome.height = 0.22
+	dome.is_hemisphere = true
+	dome.radial_segments = 20
+	dome.rings = 6
+	_buzzer_material = _material(Color("ff3b4f"), 0.6)
+	_buzzer_material.roughness = 0.2
+	_mesh(dome, Vector3(2.35, 0.97, 0.4), _buzzer_material).name = "Buzzer"
+	# Publikum auf zwei Tribünen links und rechts: Köpfe und Schultern als MultiMesh.
+	if tier != "low":
+		var people := MultiMesh.new()
+		people.transform_format = MultiMesh.TRANSFORM_3D
+		people.use_colors = true
+		var head := SphereMesh.new()
+		head.radius = 0.5
+		head.height = 1.0
+		head.radial_segments = 10
+		head.rings = 5
+		people.mesh = head
+		var count := 0
+		var spots: Array = []
+		for side: float in [-1.0, 1.0]:
+			for row in range(3):
+				for seat in range(7):
+					spots.append([side, row, seat])
+		people.instance_count = spots.size()
+		var colours := [Color("ff9a3d"), Color("6cd9e7"), Color("c0abff"), Color("8fd16a"), Color("ffc75d"), Color("f39154")]
+		for spot: Array in spots:
+			var side: float = spot[0]
+			var row: int = spot[1]
+			var seat: int = spot[2]
+			var at := Vector3(side * (4.2 + seat * 0.55 + row * 0.25), 0.55 + row * 0.55, -1.2 - row * 0.6 + seat * 0.05)
+			var transform := Transform3D(Basis.from_scale(Vector3(0.42, 0.5, 0.42)), at)
+			people.set_instance_transform(count, transform)
+			people.set_instance_color(count, colours[(seat * 3 + row * 5) % colours.size()].darkened(0.25))
+			_audience_base.append(transform)
+			count += 1
+		_audience = MultiMeshInstance3D.new()
+		_audience.name = "Audience"
+		_audience.multimesh = people
+		var skin := _material(Color.WHITE)
+		skin.vertex_color_use_as_albedo = true
+		skin.rim_enabled = true
+		skin.rim = 0.5
+		_audience.material_override = skin
+		add_child(_audience)
+		var bench := BoxMesh.new()
+		bench.size = Vector3(4.6, 0.12, 0.5)
+		for side: float in [-1.0, 1.0]:
+			for row in range(3):
+				_mesh(bench, Vector3(side * (5.85 + row * 0.25), 0.25 + row * 0.55, -1.2 - row * 0.6), _material(Color("2a3f63")))
+	# Zwei Scheinwerfer schwenken langsam über die Bühne.
+	for side: float in [-1.0, 1.0]:
+		var spot := SpotLight3D.new()
+		spot.name = "Sweeper"
+		spot.position = Vector3(side * 3.6, 5.2, 2.2)
+		spot.light_color = Color("ffe6b0") if side < 0 else Color("a8e8ff")
+		spot.light_energy = 2.2
+		spot.spot_range = 10.0
+		spot.spot_angle = 16.0
+		spot.shadow_enabled = false
+		add_child(spot)
+		spot.look_at(Vector3(0, 0.8, 0))
+		_sweepers.append(spot)
+		if tier != "low":
+			var cone := CylinderMesh.new()
+			cone.top_radius = 0.05
+			cone.bottom_radius = 1.2
+			cone.height = 5.5
+			cone.cap_top = false
+			cone.cap_bottom = false
+			cone.radial_segments = 20
+			var beam := MeshInstance3D.new()
+			beam.mesh = cone
+			var glow := StandardMaterial3D.new()
+			glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			glow.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			glow.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+			glow.cull_mode = BaseMaterial3D.CULL_DISABLED
+			glow.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+			glow.albedo_color = Color(spot.light_color, 0.07)
+			beam.material_override = glow
+			beam.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			# Kegelspitze am Scheinwerfer, Achse entlang −Z des Lichts.
+			beam.rotation.x = -PI * 0.5
+			beam.position = Vector3(0, 0, -2.75)
+			spot.add_child(beam)
+
+
+func _animate_studio(delta: float) -> void:
+	var calm := bool(_state.get("reduceMotion", false)) or bool(_state.get("paused", false))
+	if not calm:
+		_studio_time += delta
+	for index in range(_sweepers.size()):
+		var target := Vector3(sin(_studio_time * 0.45 + index * 2.1) * 2.2, 0.6, cos(_studio_time * 0.3 + index) * 0.6)
+		_sweepers[index].look_at(target)
+	if _buzzer_material != null:
+		_buzzer_material.emission_energy_multiplier = 0.5 + 0.35 * (0.5 + 0.5 * sin(_studio_time * 3.0))
+	if _led_material != null:
+		_led_material.emission_energy_multiplier = 1.0 + 0.25 * sin(_studio_time * 0.8)
+	if is_instance_valid(_audience) and not calm:
+		# Das Publikum wippt leise mit – je ein paar Leute pro Bild.
+		var people := _audience.multimesh
+		for index in range(_audience_base.size()):
+			var base: Transform3D = _audience_base[index]
+			var bob := 0.03 * maxf(0.0, sin(_studio_time * 2.4 + index * 1.3))
+			people.set_instance_transform(index, base.translated(Vector3(0, bob, 0)))
 
 
 func _sync_studio() -> void:

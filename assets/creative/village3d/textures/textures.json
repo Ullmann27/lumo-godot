@@ -1,0 +1,127 @@
+{
+ "tiles": [
+  "plaster",
+  "planks",
+  "beam",
+  "roof_clay",
+  "roof_slate",
+  "thatch",
+  "stone_wall",
+  "cobble",
+  "window",
+  "door",
+  "cloth",
+  "field",
+  "metal",
+  "bark",
+  "leaves",
+  "plain"
+ ],
+ "grid": 4,
+ "files": {
+  "cloud_noise.png": {
+   "size": [
+    256,
+    256
+   ],
+   "bytes": 66625,
+   "sha256": "e2408ebba138f94c8c1f49401063a535bc70ad627b5ac3923b0c5af60c8fb93f"
+  },
+  "leaf_cards.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 226883,
+   "sha256": "3d02506f86129713dda7d8f881663022bd5d124591ea0a7bf4f8a30aa323fa29"
+  },
+  "terrain_dirt_albedo.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 135647,
+   "sha256": "5c61f1932f7cc8b378e000d4a1d8bc549c02823c610ea1fdd52d10cb01a81617"
+  },
+  "terrain_dirt_normal.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 148754,
+   "sha256": "911bc448b9ac447b8b0dc14507e90ec6ff393d5d29379bef1fc07d01d088eefd"
+  },
+  "terrain_grass_albedo.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 294522,
+   "sha256": "31e5f6b973af2b69508b96c80b96918f19ad0c4d5946f56379ac0e826cdfa206"
+  },
+  "terrain_grass_normal.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 476460,
+   "sha256": "06c527c9aa686ed5caec62ddb0fb81c9376c1338ede9dab3a66295dc1ce34e7d"
+  },
+  "terrain_rock_albedo.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 166540,
+   "sha256": "c3d46f11c60cf9d182a46a7f95af6ba8434f4a6d0fb82317b1b94659b15e9fe5"
+  },
+  "terrain_rock_normal.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 253782,
+   "sha256": "e0fefb6b9636b17e8033b785cd8c8e8c2a49018beba81242b215bba304b4c5e6"
+  },
+  "terrain_sand_albedo.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 362752,
+   "sha256": "fc55965d1eb789002052c585bd727f68b95a49de90a5325f11509d12d2181f4e"
+  },
+  "terrain_sand_normal.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 509530,
+   "sha256": "a09fa0b0e52371d9633f5533e20f594a19e03ca5f1176d785f838c2a17ebc3b8"
+  },
+  "village_atlas_albedo.png": {
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 963671,
+   "sha256": "f3e57728549c76848bda4898b9fe27bf68842a1bc2ae6a164f563c980e06e541"
+  },
+  "village_atlas_normal.png": {
+   "size": [
+    1024,
+    1024
+   ],
+   "bytes": 1021627,
+   "sha256": "968595c44c613b40e1f593105ce8d85049e8fb2ba731af781bd3635c99a5f5fd"
+  },
+  "water_normal.png": {
+   "size": [
+    512,
+    512
+   ],
+   "bytes": 148636,
+   "sha256": "840396d681091f0a2c7e24ffdc379273f196f9d71d635ef6b2761bea1c073e51"
+  }
+ }
+}

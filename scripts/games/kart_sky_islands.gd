@@ -441,11 +441,10 @@ static func _island_dressing(
 			if roll < 0.32 and not world.low_detail:
 				world._tree(at, rng.randf_range(0.7, 1.15), rng)
 			elif roll < 0.62:
-				world._prop(
-					"crown",
-					at + Vector3.UP * 0.4,
-					Vector3(1.4, 0.9, 1.2) * rng.randf_range(0.8, 1.4),
-					MOSS.lightened(0.15)
+				# Kulissen-Paket: strukturierter Busch statt Kronen-Klumpen (gleicher Zufallszug).
+				world.plant_scenery(
+					"busch_bluehend" if roll < 0.45 else "busch", at - Vector3.UP * 0.1,
+					rng.randf_range(0.8, 1.4) * 0.85, roll * 40.0, Color(0.5, 0.53, 0.47), roll
 				)
 				for flower in range(3):
 					var bloom: Vector3 = (

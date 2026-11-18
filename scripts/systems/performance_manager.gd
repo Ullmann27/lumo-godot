@@ -21,6 +21,10 @@ const _PROFILE_NAMES: Dictionary = {
 
 var current_profile: Profile = Profile.MEDIUM
 var platform: String = ""
+## ULTRA: zusaetzliche Stufe ueber HIGH fuer sehr starke Geraete, nur manuell
+## waehlbar (set_ultra). Das Profil-Enum bleibt HIGH, damit alle anderen Welten
+## und LumoQuality unveraendert bleiben; nur Kart-Kulisse liest is_ultra().
+var ultra_enabled: bool = false
 
 
 func _ready() -> void:
@@ -65,6 +69,19 @@ func set_profile(profile: Profile, persist: bool = true) -> void:
 		var store: Node = get_node_or_null("/root/SettingsStore")
 		if store != null and store.has_method("set_profile"):
 			store.call("set_profile", name)
+
+
+## Schaltet die ULTRA-Kulisse (volle Dichte, 8 Lichter, weite Sicht) an/aus.
+## Wirkt nur zusammen mit HIGH; set_ultra(true) hebt das Profil daher auf HIGH.
+func set_ultra(enabled: bool) -> void:
+	ultra_enabled = enabled
+	if enabled and current_profile != Profile.HIGH:
+		set_profile(Profile.HIGH, false)
+	print("[Perf] ultra_scenery:%s" % ("on" if is_ultra() else "off"))
+
+
+func is_ultra() -> bool:
+	return ultra_enabled and current_profile == Profile.HIGH
 
 
 func get_profile_name() -> String:

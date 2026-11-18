@@ -291,7 +291,8 @@ func _run() -> void:
 		)
 		await _tap(menu.step_buttons[3])
 		_check(
-			menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable"
+			menu.choices.get_child_count() == preload("res://scripts/games/kart_catalog.gd").TRACKS.size(),
+			"all production tracks of the catalogue remain selectable"
 		)
 		var first_world = menu.choices.get_child(0)
 		_check(
