@@ -295,6 +295,10 @@ const PARTICLES: Dictionary = {
 
 static var _meshes: Dictionary = {}
 static var _textures: Dictionary = {}
+## One sky per preset for the whole process. A sky that is created for every
+## world and freed before a frame was drawn leaves its two radiance textures
+## behind in the compatibility renderer ("Texture ... leaked" at exit).
+static var _skies: Dictionary = {}
 
 
 ## Aktives Kulissenprofil: low | medium | high | ultra.
@@ -966,15 +970,18 @@ static func _sky(world, look: Dictionary) -> void:
 			return
 		if not (environment.sky.sky_material is ProceduralSkyMaterial):
 			return
-		var sky_material := ShaderMaterial.new()
-		sky_material.shader = SKY_SHADER
-		for key in preset:
-			sky_material.set_shader_parameter(key, preset[key])
-		var sky := Sky.new()
-		sky.sky_material = sky_material
-		sky.process_mode = Sky.PROCESS_MODE_QUALITY
-		sky.radiance_size = Sky.RADIANCE_SIZE_128
-		environment.sky = sky
+		var preset_name := str(look.get("sky", ""))
+		if not _skies.has(preset_name):
+			var sky_material := ShaderMaterial.new()
+			sky_material.shader = SKY_SHADER
+			for key in preset:
+				sky_material.set_shader_parameter(key, preset[key])
+			var sky := Sky.new()
+			sky.sky_material = sky_material
+			sky.process_mode = Sky.PROCESS_MODE_QUALITY
+			sky.radiance_size = Sky.RADIANCE_SIZE_128
+			_skies[preset_name] = sky
+		environment.sky = _skies[preset_name]
 		# Der Tiefennebel faerbte den ganzen Himmel fast weiss; nur noch ein Hauch.
 		environment.fog_sky_affect = 0.12
 		world.set_meta("scenery_sky", look.get("sky", ""))
