@@ -233,8 +233,12 @@ func _match_master_vs_chick() -> void:
 	_check(b == "black", "Meister (Schwarz) schlägt Küken: " + b)
 	t0 = Time.get_ticks_msec()
 	var c := await _match(2, 1, 300, 300)
-	print("[ChessAI] Schlaufuchs gegen Fuchs: %s (%.1f s)" % [c, (Time.get_ticks_msec() - t0) / 1000.0])
-	_check(c != "black" and c != "illegal", "Schlaufuchs verliert nicht gegen Fuchs: " + c)
+	var d := await _match(1, 2, 300, 400)
+	print("[ChessAI] Schlaufuchs gegen Fuchs: %s / %s (%.1f s)" % [c, d, (Time.get_ticks_msec() - t0) / 1000.0])
+	var fox_points := (1.0 if c == "black" else 0.0) + (1.0 if d == "white" else 0.0)
+	var clever_points := (1.0 if c == "white" else 0.0) + (1.0 if d == "black" else 0.0)
+	_check(c != "illegal" and d != "illegal", "Partien Schlaufuchs/Fuchs ohne Fehler")
+	_check(clever_points > fox_points, "Schlaufuchs ist stärker als Fuchs (%s / %s)" % [c, d])
 
 
 func _coach() -> void:
@@ -277,7 +281,7 @@ func _coach() -> void:
 	_check(warn.is_empty(), "Springer f3 ist gedeckt")
 	warn = COACH.warning(g, g.move_from_uci("d1h5"))
 	_check(warn.is_empty() or warn.kind == "hang", "Damenzug geprüft")
-	g = RULES.new("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
+	g = RULES.new("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2")
 	warn = COACH.warning(g, g.move_from_uci("d1g4"))
 	_check(not warn.is_empty() and warn.kind == "hang" and str(warn.text).contains("Dame"),
 		"Warnung: Dame auf g4 hängt (%s)" % str(warn.get("text", "")))

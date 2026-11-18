@@ -4,7 +4,8 @@ extends RefCounted
 ## Bekannte Verfahren (eigene Umsetzung): Negamax mit Alpha-Beta und
 ## Hauptvarianten-Suche, iterative Vertiefung, Transpositionstabelle über den
 ## Zobrist-Schlüssel, Zugsortierung (Tabellenzug, MVV-LVA, Killerzüge,
-## History), Ruhesuche über Schlagzüge, Nullzug-Kürzung, Schachverlängerung.
+## History), Ruhesuche über Schlagzüge, Nullzug-Kürzung, Schachverlängerung,
+## Late Move Reduction, faule Bewertung.
 ## Bewertung: Material, Feldtabellen (Mittel- und Endspiel, gleitend),
 ## Königssicherheit, Bauernstruktur, Beweglichkeit, Läuferpaar.
 ##
@@ -37,6 +38,7 @@ const TT_LOWER := 1
 const TT_UPPER := 2
 const TT_LIMIT := 250000
 const MAX_PLY := 64
+const LAZY_MARGIN := 180
 
 static var pst_mg: Array = []  # [typ] -> PackedInt32Array(64) aus Sicht von Weiß
 static var pst_eg: Array = []
@@ -53,7 +55,7 @@ var slice_deadline := 0
 var frames := 0
 var max_slice_usec := 0
 var _slice_started := 0
-var root_best := -1
+var root_bonus := PackedInt32Array()
 var rng := RandomNumberGenerator.new()
 
 
@@ -126,7 +128,10 @@ static func level_name(level: int) -> String:
 
 
 ## Bewertung aus Sicht der Seite am Zug, in Hundertstel-Bauern.
-func evaluate(g: RefCounted) -> int:
+## Mit Fenster (`alpha`, `beta`) wird faul bewertet: Liegt der schnelle Teil
+## (Material, Felder, Bauern, König) weit außerhalb, entfällt die teure
+## Beweglichkeit.
+func evaluate(g: RefCounted, alpha: int = -INF, beta: int = INF) -> int:
 	var b: PackedInt32Array = g.board
 	var mg := 0
 	var eg := 0
@@ -135,9 +140,8 @@ func evaluate(g: RefCounted) -> int:
 	var pawn_max := [PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1]), PackedInt32Array([-1, -1, -1, -1, -1, -1, -1, -1])]
 	var pawn_count := [PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0]), PackedInt32Array([0, 0, 0, 0, 0, 0, 0, 0])]
 	var pawns: Array[int] = []
+	var pieces: Array[int] = []
 	var bishops := [0, 0]
-	var rays: Array = RULES.rays
-	var knight_to: Array = RULES.knight_to
 	for sq in 64:
 		var p := b[sq]
 		if p == 0:
@@ -151,47 +155,19 @@ func evaluate(g: RefCounted) -> int:
 		mg += sign * (VALUE[t] + mgp[rel])
 		eg += sign * (VALUE[t] + egp[rel])
 		phase += PHASE_W[t]
-		match t:
-			1:
-				var f := sq & 7
-				var r := sq >> 3
-				pawn_count[c][f] += 1
-				if r < pawn_min[c][f]:
-					pawn_min[c][f] = r
-				if r > pawn_max[c][f]:
-					pawn_max[c][f] = r
-				pawns.append(sq)
-			2:
-				var cnt := 0
-				for to: int in knight_to[sq]:
-					var q := b[to]
-					if q == 0 or (q >> 3) != c:
-						cnt += 1
-				mg += sign * (cnt - 4) * 4
-				eg += sign * (cnt - 4) * 4
-			3, 4, 5:
-				bishops[c] += 1 if t == 3 else 0
-				var cnt := 0
-				var d0 := 4 if t == 3 else 0
-				var d1 := 4 if t == 4 else 8
-				for di in range(d0, d1):
-					for to: int in rays[di * 64 + sq]:
-						var q := b[to]
-						if q == 0:
-							cnt += 1
-							continue
-						if (q >> 3) != c:
-							cnt += 1
-						break
-				if t == 3:
-					mg += sign * (cnt - 6) * 4
-					eg += sign * (cnt - 6) * 4
-				elif t == 4:
-					mg += sign * (cnt - 6) * 2
-					eg += sign * (cnt - 6) * 4
-				else:
-					mg += sign * (cnt - 12)
-					eg += sign * (cnt - 12) * 2
+		if t == 1:
+			var f := sq & 7
+			var r := sq >> 3
+			pawn_count[c][f] += 1
+			if r < pawn_min[c][f]:
+				pawn_min[c][f] = r
+			if r > pawn_max[c][f]:
+				pawn_max[c][f] = r
+			pawns.append(sq)
+		elif t != 6:
+			pieces.append(sq)
+			if t == 3:
+				bishops[c] += 1
 	# Bauernstruktur: Doppel-, Einzel- und Freibauern.
 	for sq: int in pawns:
 		var c := b[sq] >> 3
@@ -251,9 +227,53 @@ func evaluate(g: RefCounted) -> int:
 			safety -= 20
 		mg += sign * safety
 	phase = mini(phase, 24)
-	var score := (mg * phase + eg * (24 - phase)) / 24
-	score += 10 if g.side == 0 else -10
-	return score if g.side == 0 else -score
+	var fast := (mg * phase + eg * (24 - phase)) / 24
+	fast += 10 if g.side == 0 else -10
+	if g.side != 0:
+		fast = -fast
+	if fast - LAZY_MARGIN >= beta or fast + LAZY_MARGIN <= alpha:
+		return fast
+	# Beweglichkeit: erreichbare Felder je Figur.
+	var rays: Array = RULES.rays
+	var knight_to: Array = RULES.knight_to
+	var mob_mg := 0
+	var mob_eg := 0
+	for sq: int in pieces:
+		var p := b[sq]
+		var t := p & 7
+		var c := p >> 3
+		var sign := 1 if c == 0 else -1
+		var cnt := 0
+		if t == 2:
+			for to: int in knight_to[sq]:
+				var q := b[to]
+				if q == 0 or (q >> 3) != c:
+					cnt += 1
+			mob_mg += sign * (cnt - 4) * 4
+			mob_eg += sign * (cnt - 4) * 4
+			continue
+		var d0 := 4 if t == 3 else 0
+		var d1 := 4 if t == 4 else 8
+		for di in range(d0, d1):
+			for to: int in rays[di * 64 + sq]:
+				var q := b[to]
+				if q == 0:
+					cnt += 1
+					continue
+				if (q >> 3) != c:
+					cnt += 1
+				break
+		if t == 3:
+			mob_mg += sign * (cnt - 6) * 4
+			mob_eg += sign * (cnt - 6) * 4
+		elif t == 4:
+			mob_mg += sign * (cnt - 6) * 2
+			mob_eg += sign * (cnt - 6) * 4
+		else:
+			mob_mg += sign * (cnt - 12)
+			mob_eg += sign * (cnt - 12) * 2
+	var mob := (mob_mg * phase + mob_eg * (24 - phase)) / 24
+	return fast + (mob if g.side == 0 else -mob)
 
 
 # --- Suche ------------------------------------------------------------------
@@ -331,6 +351,9 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 		result.ms = (Time.get_ticks_usec() - started) / 1000.0
 		return result
 	var noise := int(cfg.noise)
+	root_bonus.resize(64 * 64)
+	for m: int in legal:
+		root_bonus[(m & 63) * 64 + ((m >> 6) & 63)] = rng.randi_range(-noise, noise) if noise > 0 else 0
 	var best := legal[0]
 	var best_score := -INF
 	var reached := 0
@@ -349,7 +372,7 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 			break
 		# Reicht die Zeit für die nächste Tiefe nicht mehr, gleich aufhören.
 		var spent := Time.get_ticks_usec() - started
-		if spent * 3 > budget * 1000:
+		if spent * 2 > budget * 1000:
 			break
 	result.move = best
 	result.score = best_score
@@ -364,26 +387,31 @@ func think(g: RefCounted, level: int, options: Dictionary = {}) -> Dictionary:
 func _root(depth: int, legal: PackedInt32Array, noise: int, quiesce: bool) -> Array:
 	var g := rules
 	var ordered := _order(legal, _tt_move(g.hash), 0)
+	if root_bonus.size() != 64 * 64:
+		root_bonus.resize(64 * 64)
 	var alpha := -INF
-	var beta := INF
 	var best := -1
 	var best_score := -INF
 	var first := true
 	for m: int in ordered:
+		# Das Rauschen der leichten Stufen ist ein fester Zuschlag je Zug. Das
+		# Suchfenster wird um ihn verschoben, damit nur echte Werte (keine
+		# Schranken) mit Rauschen verglichen werden.
+		var bonus := root_bonus[(m & 63) * 64 + ((m >> 6) & 63)] if noise > 0 else 0
+		var a := alpha - bonus
 		g.make_move(m)
-		var score := 0
+		var raw := 0
 		if first:
-			score = -(await _search(depth - 1, -beta, -alpha, 1, quiesce, true))
+			raw = -(await _search(depth - 1, -INF, -a, 1, quiesce, true))
 		else:
-			score = -(await _search(depth - 1, -alpha - 1, -alpha, 1, quiesce, true))
-			if score > alpha and not stopped:
-				score = -(await _search(depth - 1, -beta, -alpha, 1, quiesce, true))
+			raw = -(await _search(depth - 1, -a - 1, -a, 1, quiesce, true))
+			if raw > a and not stopped:
+				raw = -(await _search(depth - 1, -INF, -a, 1, quiesce, true))
 		g.unmake_move()
 		if stopped:
 			break
-		if noise > 0 and absi(score) < MATE_BOUND:
-			score += rng.randi_range(-noise, noise)
 		first = false
+		var score := raw + bonus if absi(raw) < MATE_BOUND else raw
 		if score > best_score:
 			best_score = score
 			best = m
@@ -453,7 +481,14 @@ func _search(depth: int, alpha: int, beta: int, ply: int, quiesce: bool, allow_n
 		if legal == 1:
 			score = -(await _search(depth - 1, -beta, -alpha, ply + 1, quiesce, true))
 		else:
-			score = -(await _search(depth - 1, -alpha - 1, -alpha, ply + 1, quiesce, true))
+			# Späte ruhige Züge erst etwas flacher prüfen (Late Move Reduction).
+			var reduce := 0
+			if depth >= 3 and legal > 3 and not in_check and (m >> 15) == 0 \
+					and m != killers[ply * 2] and not g.in_check():
+				reduce = 1 if legal < 10 else 2
+			score = -(await _search(depth - 1 - reduce, -alpha - 1, -alpha, ply + 1, quiesce, true))
+			if reduce > 0 and score > alpha and not stopped:
+				score = -(await _search(depth - 1, -alpha - 1, -alpha, ply + 1, quiesce, true))
 			if score > alpha and score < beta and not stopped:
 				score = -(await _search(depth - 1, -beta, -alpha, ply + 1, quiesce, true))
 		g.unmake_move()
@@ -491,7 +526,7 @@ func _quiesce(alpha: int, beta: int, ply: int) -> int:
 	if stopped:
 		return 0
 	var g := rules
-	var stand := evaluate(g)
+	var stand := evaluate(g, alpha, beta)
 	if stand >= beta:
 		return stand
 	if stand > alpha:
