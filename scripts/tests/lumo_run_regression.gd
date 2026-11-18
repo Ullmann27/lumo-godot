@@ -9,6 +9,8 @@ extends SceneTree
 ##   godot --headless --script scripts/tests/lumo_run_regression.gd
 
 const BOT = preload("res://scripts/tests/helpers/lumo_run_bot.gd")
+const JUNGLE_BOT = preload("res://scripts/tests/helpers/lumo_jungle_bot.gd")
+const JUNGLE_SEEDS: int = 30
 const COURSES = preload("res://scripts/games/run/run_courses.gd")
 const PLAN = preload("res://scripts/games/run/run_course_plan.gd")
 const SESSION = preload("res://scripts/games/run/run_session.gd")
@@ -200,6 +202,16 @@ func _run() -> void:
 	bridge = root.get_node("HostBridge")
 	router = root.get_node("SceneRouter")
 	_clean()
+	# LUMO_RUN_FOCUS=adventure runs only the Dschungelherz adventure checks.
+	var focus: String = OS.get_environment("LUMO_RUN_FOCUS")
+	if focus == "adventure" or focus == "saves":
+		if focus == "adventure":
+			await _test_adventure_path()
+		await _test_adventure_saves()
+		if focus == "adventure":
+			await _test_adventure_bots()
+		_finish_run()
+		return
 	_test_registration()
 	await _test_start_screen_and_controls()
 	await _test_obstacles_and_gaps()
@@ -207,7 +219,14 @@ func _run() -> void:
 	await _test_corrupt_saves()
 	await _test_host_contract()
 	await _test_all_courses()
+	await _test_adventure_path()
+	await _test_adventure_saves()
+	await _test_adventure_bots()
 	await _test_layouts_and_calm_mode()
+	_finish_run()
+
+
+func _finish_run() -> void:
 	bridge._host = null
 	bridge._options = {}
 	bridge._return_pending = false
@@ -910,7 +929,8 @@ func _test_all_courses() -> void:
 		var id: String = str(COURSES.course(index).id)
 		# The simple scripted player.
 		var game = await _open(index)
-		var bot = BOT.new()
+		var bot = JUNGLE_BOT.new(2) if bool(COURSES.course(index).get("path", false)) else BOT.new()
+		var adventure: bool = bool(COURSES.course(index).get("path", false))
 		var lost: Array[int] = [0]
 		var samples: Array[int] = [0]
 		var low: Array[int] = [0]
@@ -924,11 +944,11 @@ func _test_all_courses() -> void:
 		var steps: int = _complete(game, bot, sampler)
 		var seconds: float = float(steps) * STEP
 		_check(game.phase == game.Phase.FINISHED, "%s: scripted player finishes the course" % id)
-		_check(seconds < game.plan.length / 9.0, "%s: finished in a sane time (%.0f s for %.0f m)" % [id, seconds, game.plan.length])
+		_check(seconds < game.plan.length / (4.5 if adventure else 9.0), "%s: finished in a sane time (%.0f s for %.0f m)" % [id, seconds, game.plan.length])
 		_check(game.track.checkpoint == game.plan.checkpoints.size() - 1, "%s: every checkpoint was passed" % id)
 		_check(game.solved_count() == 3, "%s: three learning stops on the way" % id)
 		_check(float(game.track.kept) / float(game.plan.star_total) > 0.6, "%s: following the star trails collects most stars (%d of %d)" % [id, game.track.kept, game.plan.star_total])
-		_check(game.track.stumbles <= 12, "%s: the course is fair for a simple player (%d stumbles)" % [id, game.track.stumbles])
+		_check(game.track.stumbles <= (6 if adventure else 12), "%s: the course is fair for a simple player (%d stumbles)" % [id, game.track.stumbles])
 		_check(samples[0] > 100 and lost[0] == 0, "%s: the camera never loses Lumo (%d samples)" % [id, samples[0]])
 		_check(low[0] == 0, "%s: the camera never dips into the road" % id)
 		_check(rewards.size() == before + 1 and rewards[rewards.size() - 1].course == id, "%s: one reward for the finished run" % id)
@@ -939,7 +959,7 @@ func _test_all_courses() -> void:
 		steps = _complete(game, null)
 		seconds = float(steps) * STEP
 		_check(game.phase == game.Phase.FINISHED, "%s: even without any input the finish is reached" % id)
-		_check(seconds < game.plan.length / 6.0, "%s: no-input run needs %.0f s" % [id, seconds])
+		_check(seconds < game.plan.length / (2.5 if adventure else 6.0), "%s: no-input run needs %.0f s" % [id, seconds])
 		_check(int(game.result_payload.rating) < 3, "%s: three stars need real play" % id)
 		print("[LumoRun] %s no input: %.0f s, %d/%d stars, %d stumbles, rating %d" % [id, seconds, game.track.kept, game.plan.star_total, game.track.stumbles, int(game.result_payload.rating)])
 		await _free_game(game)
@@ -1013,3 +1033,402 @@ func _test_layouts_and_calm_mode() -> void:
 	_check(calm.track.kept > 20 and calm.phase == calm.Phase.RUNNING, "the game plays normally with reduced motion and without sound")
 	await _free_game(calm)
 	audio._muted = was_muted
+
+
+# ------------------------------------------------------------------ Dschungelherz adventure path
+
+func _jungle_index() -> int:
+	return COURSES.index_of("dschungelherz")
+
+
+## Puts Lumo on the adventure path for a focused check (rescue point and checkpoints follow).
+func _place_on_path(game, s: float, lat: float = 0.0, speed: float = TUNING.PATH_CRUISE) -> void:
+	_teleport(game, s, lat, speed)
+	game.track.rescue = game.plan.respawn_index(s)
+	game.track.chase_active = false
+
+
+func _test_adventure_path() -> void:
+	var game = await _open(_jungle_index())
+	var plan = game.plan
+	var track = game.track
+	var player = game.player
+	var world = game.world
+	_check(plan.adventure and str(world.track_id) == "dschungelherz_pfad", "Dschungelherz runs on its own adventure path, not the kart road")
+	_check(world.length > 1400.0 and plan.sections.size() == 6, "six parts: introduction and five sections (%.0f m)" % world.length)
+	var names: Array = plan.sections.map(func(section: Dictionary) -> String: return str(section.name))
+	_check(names.has("Wurzelpfad") and names.has("Kronenwege") and names.has("Tempelruinen") and names.has("Wasserfallhöhle") and names.has("Lorenfahrt"), "sections have their own character: %s" % str(names))
+	var widths: Array[float] = []
+	var heights: Array[float] = []
+	var at: float = 0.0
+	while at < world.length:
+		widths.append(world.half_width_at(at))
+		heights.append(world.position_at(at).y)
+		at += 5.0
+	_check(widths.min() <= 1.4 and widths.max() < 5.0, "the path is narrow (half width %.1f..%.1f m)" % [widths.min(), widths.max()])
+	_check(heights.max() - heights.min() > 8.0, "the path climbs and falls (%.1f m height difference)" % (heights.max() - heights.min()))
+	var surfaces: Dictionary = {}
+	for surface in world.level.surfaces:
+		surfaces[str(surface.kind)] = true
+	for kind in ["dirt", "plank", "bridge", "canopy", "stone", "cave", "rail"]:
+		_check(surfaces.has(kind), "the path has %s stretches" % kind)
+	_check(world.level.gaps.size() >= 15, "many holes to jump over (%d)" % world.level.gaps.size())
+	_check(plan.branches.size() >= 2, "at least two branches (%d)" % plan.branches.size())
+	_check(plan.letters.size() == 4 and "".join(plan.letters.map(func(l: Dictionary) -> String: return str(l.char))) == "LUMO", "four crystal letters L-U-M-O")
+	_check(not plan.bonus.is_empty() and float(plan.bonus.s1) < 0.0, "a hidden treasure hall away from the path")
+	_check(not plan.chase.is_empty() and not plan.cart.is_empty(), "a chase and a mine cart ride")
+	_check(plan.checkpoints.size() >= 9 and plan.question_checkpoints().size() == 3, "checkpoints with three puzzle gates")
+	_check(plan.respawns.size() >= 30, "close rescue points (%d)" % plan.respawns.size())
+	var kinds: Dictionary = {}
+	for ride in plan.rides:
+		kinds[str(ride.kind)] = int(kinds.get(str(ride.kind), 0)) + 1
+	_check(int(kinds.get("barrel", 0)) >= 4 and int(kinds.get("vine", 0)) >= 3 and int(kinds.get("zip", 0)) >= 1, "barrels, vines and a zip line: %s" % str(kinds))
+	var enemy_kinds: Dictionary = {}
+	for enemy in plan.enemies:
+		enemy_kinds[str(enemy.kind)] = true
+	_check(enemy_kinds.has("crab") and enemy_kinds.has("beetle") and enemy_kinds.has("coconut"), "crabs, beetles and rolling coconuts")
+	var moving: int = 0
+	var crumbling: int = 0
+	for platform in plan.platforms:
+		moving += 1 if not str(platform.axis).is_empty() else 0
+		crumbling += 1 if bool(platform.crumble) else 0
+	_check(moving >= 3 and crumbling >= 3, "moving (%d) and crumbling (%d) platforms" % [moving, crumbling])
+	_check(world.find_child("JungleScenery", false, false) != null and world.scenery.placed > 4000, "dense jungle scenery (%d instances)" % world.scenery.placed)
+	_check(game.load_ms > 0 and game.load_ms < 6000, "the level is built in %d ms" % game.load_ms)
+	# Feel on the path: slower cruise, stopping, one dash in the air.
+	_check(is_equal_approx(player.cruise, TUNING.PATH_CRUISE) and player.air_dash, "the path has its own running feel")
+	_place_on_path(game, 30.0)
+	_steps(game, 60)
+	game.touch_steer = Vector2(0.0, 1.0)
+	_steps(game, 60)
+	_check(player.speed < 0.2, "pulling the stick back stops Lumo on the path")
+	game.touch_steer = Vector2.ZERO
+	_steps(game, 60)
+	_check(player.speed > 5.0, "letting go runs on")
+	player.press_jump()
+	_steps(game, 3)
+	player.release_jump()
+	_check(not player.grounded and player.press_dash(), "FLITZEN works once in the air")
+	_check(player.vy >= TUNING.AIR_DASH_LIFT - 0.5 and not player.press_dash(), "the air dash gives a lift, only once per jump")
+	_until(game, func() -> bool: return player.grounded, null, 200)
+	_check(player.air_dash_ready, "landing restores the air dash")
+	# Introduction: Lumo waits at the first stream until SPRINGEN, then the skip.
+	var wait: Dictionary = plan.waits[0]
+	_place_on_path(game, plan.start_s)
+	track.waits_done.clear()
+	_until(game, func() -> bool: return player.speed < 0.3 and player.s > float(wait.s) - 2.0, null, 600)
+	_check(player.s <= float(wait.s) + 0.3 and player.speed < 0.3, "Lumo waits at the first stream in the introduction")
+	_check(game._coach_icon() == "jump", "the wordless coach shows the jump")
+	player.press_jump()
+	_steps(game, 2)
+	player.release_jump()
+	_until(game, func() -> bool: return player.grounded and player.s > float(wait.s) + 3.0, null, 200)
+	_check(player.s > float(wait.s) + 3.0 and track.rescues == 0, "one press takes Lumo across the stream")
+	track.waits_done.clear()
+	_place_on_path(game, plan.start_s)
+	_until(game, func() -> bool: return track.waits_done.has(0), null, 60 * 8)
+	_check(track.waits_done.has(0), "without input Lumo shows the jump himself after a while")
+	_place_on_path(game, plan.start_s + 1.0)
+	game.hud.set_skip_visible(true)
+	game.skip_intro()
+	_check(absf(player.s - plan.intro_end) < 0.1 and not game.hud.skip_visible, "the introduction can be skipped")
+	# Jump buffer and coyote time on the path.
+	_place_on_path(game, 30.0)
+	player.invulnerable = 5.0
+	_steps(game, 30)
+	player.press_jump()
+	player.release_jump()
+	_until(game, func() -> bool: return not player.grounded, null, 10)
+	_until(game, func() -> bool: return player.vy < 0.0 and player.h < 0.4, null, 200)
+	player.press_jump()
+	var buffered: bool = false
+	for _i in range(12):
+		_steps(game, 1)
+		buffered = buffered or (player.vy > 5.0 and player.h < 1.0)
+	player.release_jump()
+	_check(buffered, "a jump pressed just before landing is buffered on the path")
+	var hole: Vector2 = world.level.gaps[3]
+	_place_on_path(game, hole.x - 6.0)
+	_until(game, func() -> bool: return player.s > hole.x + 0.15, null, 200)
+	_steps(game, 2)
+	_check(not player.grounded, "Lumo leaves the edge of a hole")
+	player.press_jump()
+	_steps(game, 1)
+	player.release_jump()
+	_check(player.jumping and player.vy > 5.0, "coyote time: a jump just after the edge still works")
+	# Falling into a hole: back to the rescue point, no stars lost, help after two falls.
+	_until(game, func() -> bool: return player.grounded, null, 300)
+	var gap: Vector2 = world.level.gaps[5]
+	_place_on_path(game, gap.x - 5.0)
+	var rescue_before: int = track.rescues
+	var kept: int = track.kept
+	_until(game, func() -> bool: return track.rescues > rescue_before, null, 600)
+	_check(track.rescues == rescue_before + 1 and track.kept >= kept, "a fall sets Lumo back without taking stars")
+	_check(player.s < gap.x and player.grounded and game.phase == game.Phase.RUNNING, "after a fall Lumo stands before the hole")
+	_until(game, func() -> bool: return track.rescues > rescue_before + 1, null, 600)
+	_until(game, func() -> bool: return track.rescues > rescue_before + 2, null, 600)
+	_check(player.s > gap.y, "third fall at the same hole: Lumo is carried across")
+	# Barrel: climbs in, waits, shoots to the next platform.
+	var barrel: int = -1
+	for index in range(plan.rides.size()):
+		if str(plan.rides[index].kind) == "barrel" and float(plan.rides[index].s) > plan.intro_end:
+			barrel = index
+			break
+	var ride: Dictionary = plan.rides[barrel]
+	_place_on_path(game, float(ride.s) - 6.0, float(ride.lat))
+	_until(game, func() -> bool: return player.is_riding(), null, 200)
+	_check(player.is_riding() and str(player.ride.kind) == "barrel" and not player.ride_fired, "running into a barrel climbs in")
+	_steps(game, 20)
+	player.press_jump()
+	player.release_jump()
+	_steps(game, 2)
+	_check(player.ride_fired, "SPRINGEN fires the barrel")
+	_until(game, func() -> bool: return not player.is_riding(), null, 400)
+	_until(game, func() -> bool: return player.grounded or player.is_riding(), null, 400)
+	_check(player.s > float(ride.ts) - 3.0 and track.rescues == rescue_before + 3, "the barrel shot lands Lumo safely (s=%.1f)" % player.s)
+	# Vine and zip line.
+	for kind in ["vine", "zip"]:
+		var index: int = -1
+		for candidate in range(plan.rides.size()):
+			if str(plan.rides[candidate].kind) == kind:
+				index = candidate
+				break
+		var line: Dictionary = plan.rides[index]
+		var before: int = track.rescues
+		_place_on_path(game, float(line.s) - 5.0, float(line.lat))
+		if kind == "zip":
+			player.h = float(line.h) - 1.3
+			_check(track.ground_at(player.s, player.lat, player.h + 0.1) >= player.h - 0.05, "the zip line starts from a high perch")
+		_until(game, func() -> bool: return player.is_riding(), null, 200)
+		_check(player.is_riding() and str(player.ride.kind) == kind, "Lumo grabs the %s" % kind)
+		_until(game, func() -> bool: return not player.is_riding(), null, 600)
+		_until(game, func() -> bool: return player.grounded, null, 400)
+		_check(track.rescues == before and player.s > float(line.s) + 6.0, "the %s carries Lumo across (s=%.1f)" % [kind, player.s])
+	# Moving and crumbling platforms.
+	for index in range(plan.platforms.size()):
+		var platform: Dictionary = plan.platforms[index]
+		if str(platform.axis) == "lat":
+			track.clock = 0.0
+			var a: Vector3 = track.platform_offset(platform, 0.0)
+			var b: Vector3 = track.platform_offset(platform, PI / (2.0 * float(platform.rate)))
+			_check(absf(b.y - a.y) > 1.5, "a drifting platform moves across the path")
+			var mid: float = (float(platform.s0) + float(platform.s1)) * 0.5
+			track.clock = PI / (2.0 * float(platform.rate))
+			_check(track.ground_at(mid, float(platform.lat) + b.y, 0.2) == float(platform.top), "the drifting platform carries where it is")
+			_check(is_inf(track.ground_at(mid, float(platform.lat) - b.y, 0.2)), "where it is not, there is only the hole")
+			break
+	var crumble: int = -1
+	for index in range(plan.platforms.size()):
+		if bool(plan.platforms[index].crumble) and float(plan.platforms[index].top) == 0.0:
+			crumble = index
+			break
+	track.crumbled.clear()
+	track.clock = 100.0
+	track.crumbled[crumble] = 100.0
+	_check(track.platform_solid(crumble), "a crumbling plank holds for a moment")
+	track.clock = 100.8
+	_check(not track.platform_solid(crumble), "then it falls")
+	track.clock = 104.0
+	_check(track.platform_solid(crumble), "and comes back a little later")
+	track.crumbled.clear()
+	# Enemies: stomp from above, touch from the side, the third touch makes it leave.
+	var crab: int = -1
+	for index in range(plan.enemies.size()):
+		if str(plan.enemies[index].kind) == "crab" and float(plan.enemies[index].s) > plan.intro_end:
+			crab = index
+			break
+	var enemy: Dictionary = plan.enemies[crab]
+	game.run_clock = 0.0
+	var where: Vector2 = track.enemy_position(enemy, game.run_clock)
+	_place_on_path(game, where.x - 0.2, where.y, 2.0)
+	player.h = 0.7
+	player.vy = -3.0
+	player.grounded = false
+	var stomps: int = track.stomps
+	_steps(game, 1)
+	_check(track.stomps == stomps + 1 and track.defeated.has(crab) and player.vy > 8.0, "jumping onto a crab bounces it away and Lumo up")
+	track.defeated.clear()
+	_until(game, func() -> bool: return player.grounded, null, 200)
+	var hits: int = track.rescues
+	for attempt in range(3):
+		game.run_clock = 0.0
+		where = track.enemy_position(enemy, 0.0)
+		_place_on_path(game, where.x - 0.3, where.y, 0.5)
+		_steps(game, 1)
+		_check(player.tumble_time > 0.0 or track.defeated.has(crab), "touching a crab makes Lumo tumble (%d)" % attempt)
+		_until(game, func() -> bool: return player.tumble_time <= 0.0 and not player.tumbled, null, 120)
+	_check(track.rescues == hits + 3 and track.kept >= 0, "after the tumble Lumo is back at the rescue point")
+	_check(track.defeated.has(crab), "after the third touch the crab scuttles off: nobody gets stuck")
+	# Letters count once.
+	var letter: Dictionary = plan.letters[0]
+	track.letters = 0
+	_place_on_path(game, float(letter.s) - 1.0, float(letter.lat))
+	player.h = float(letter.h) - TUNING.BODY_CENTRE
+	player.grounded = false
+	_steps(game, 1)
+	_check(track.letters & 1 and track.letter_count() == 1, "a crystal letter is collected")
+	_place_on_path(game, float(letter.s) - 1.0, float(letter.lat))
+	player.h = float(letter.h) - TUNING.BODY_CENTRE
+	_steps(game, 1)
+	_check(track.letter_count() == 1, "a letter counts only once")
+	# The treasure hall: in through the hidden barrel, out at the return point.
+	var warp: Dictionary = {}
+	for candidate in plan.rides:
+		if str(candidate.kind) == "warp" and bool(candidate.bonus):
+			warp = candidate
+	_place_on_path(game, float(warp.s) - 4.0, float(warp.lat))
+	_until(game, func() -> bool: return player.s < 0.0, null, 300)
+	_check(player.s < 0.0 and track.bonus_found, "the hidden barrel shoots Lumo into the treasure hall")
+	var hall_stars: int = track.kept
+	_until(game, func() -> bool: return player.s > 0.0, JUNGLE_BOT.new(2), 60 * 40)
+	_check(track.kept > hall_stars + 20, "the hall is full of stars (%d)" % (track.kept - hall_stars))
+	_until(game, func() -> bool: return player.grounded, null, 200)
+	_check(absf(player.s - float(plan.bonus.return_s)) < 3.0 and not world.in_gap(player.s) and track.rescues == hits + 3, "the way out lands safely on the path")
+	# The chase: the stone ball catches a standing Lumo, three catches and it gets stuck.
+	var chase: Dictionary = plan.chase
+	var caught: int = track.chase_catches
+	for attempt in range(3):
+		_place_on_path(game, float(chase.s0) - 1.0)
+		_steps(game, 20)
+		_check(track.chase_active, "the stone ball starts rolling (%d)" % attempt)
+		game.touch_steer = Vector2(0.0, 1.0)
+		_until(game, func() -> bool: return track.chase_catches > caught + attempt, null, 60 * 15)
+		game.touch_steer = Vector2.ZERO
+	_check(track.chase_catches == caught + 3 and track.chase_done and player.s < float(chase.s0), "standing still: caught, set back, after three times the ball gets stuck")
+	track.chase_done = false
+	track.chase_catches = 0
+	_place_on_path(game, float(chase.s0) - 1.0)
+	_until(game, func() -> bool: return track.chase_done, JUNGLE_BOT.new(3), 60 * 30)
+	_check(track.chase_done and track.chase_catches == 0, "running and jumping escapes the stone ball")
+	# The mine cart.
+	_place_on_path(game, float(plan.cart.s0) - 3.0)
+	_until(game, func() -> bool: return player.in_cart, null, 120)
+	_check(player.in_cart and game.actor.cart.visible, "Lumo climbs into the mine cart")
+	_steps(game, 60)
+	_check(absf(player.speed - TUNING.CART_SPEED) < 1.0 and absf(player.lat - float(plan.cart.lat)) < 0.1, "the cart runs fast on its rails")
+	var cart_rescues: int = track.rescues
+	_until(game, func() -> bool: return track.rescues > cart_rescues, null, 60 * 10)
+	_check(player.in_cart, "after a fall in the ride Lumo is back in his cart")
+	_until(game, func() -> bool: return not player.in_cart and player.s > float(plan.cart.s1), JUNGLE_BOT.new(4), 60 * 60)
+	_check(not player.in_cart, "the ride ends at the temple")
+	await _free_game(game)
+
+
+## Save and resume in the middle of every section, with letters and the hall.
+func _test_adventure_saves() -> void:
+	var index: int = _jungle_index()
+	var game = await _open(index)
+	var plan = game.plan
+	var sections_with_save: Dictionary = {}
+	for checkpoint in plan.checkpoints:
+		sections_with_save[game.world.section_at(float(checkpoint.s))] = true
+	_check(sections_with_save.size() >= 5, "every section has a checkpoint (%s)" % str(sections_with_save.keys()))
+	await _free_game(game)
+	for cp in range(plan.checkpoints.size()):
+		game = await _open(index)
+		var target: Dictionary = game.plan.checkpoints[cp]
+		_place_on_path(game, float(target.s) - 8.0)
+		game.track.checkpoint = cp - 1
+		game.track.letters = 0b0001 if float(plan.letters[0].s) < float(target.s) else 0
+		game.track.bonus_found = float(plan.bonus.entry_s) < float(target.s)
+		_until(game, func() -> bool: return game.track.checkpoint >= cp, null, 400)
+		var saved_letters: int = game.track.letters
+		var saved_kept: int = game.track.kept
+		var id: String = game.result_id
+		if game.question_open:
+			game.answer(str(game.active_question.answer))
+		var check_identity: Dictionary = game._identity(index)
+		check_identity["signature"] = game.plan.signature
+		var stored: Dictionary = SESSION.load_valid(game.session_path, check_identity, game.plan)
+		_check(not stored.is_empty(), "checkpoint %d is saved (reached %d, snapshot %s)" % [cp, game.track.checkpoint, str(game.snapshot).substr(0, 300)])
+		await _free_game(game, true)
+		game = await _open(index, true)
+		_check(game.track.checkpoint == cp and absf(game.player.s - game.track.checkpoint_s(cp)) < 0.01, "resume at checkpoint %d (got %d at %.1f) in %s" % [cp, game.track.checkpoint, game.player.s, str(game.plan.sections[game.world.section_at(float(target.s))].name)])
+		_check(game.track.letters == saved_letters and game.track.kept >= saved_kept and game.result_id == id, "checkpoint %d keeps letters, stars and the result id" % cp)
+		_check(game.player.in_cart == (float(target.s) > float(plan.cart.s0) and float(target.s) < float(plan.cart.s1)), "checkpoint %d resumes in or out of the cart correctly" % cp)
+		await _free_game(game)
+	# A save that claims letters from beyond its checkpoint is refused.
+	game = await _open(index)
+	var adventure_plan = game.plan
+	var path: String = game.session_path
+	var identity: Dictionary = game._identity(index)
+	identity["signature"] = game.plan.signature
+	_place_on_path(game, float(plan.checkpoints[0].s) - 5.0)
+	_until(game, func() -> bool: return game.track.checkpoint >= 0, null, 300)
+	var state: Dictionary = game.snapshot.duplicate(true)
+	state["result_id"] = game.result_id
+	state["pending_question"] = {}
+	state["recent_questions"] = []
+	await _free_game(game)
+	for label in ["letters from beyond", "letters out of range", "letters of wrong type", "bonus of wrong type"]:
+		var broken: Dictionary = state.duplicate(true)
+		match label:
+			"letters from beyond":
+				broken["letters"] = 0b1000
+			"letters out of range":
+				broken["letters"] = 99
+			"letters of wrong type":
+				broken["letters"] = "LUMO"
+			_:
+				broken["bonus"] = 1
+		SESSION.save(path, identity, broken)
+		_check(SESSION.load_valid(path, identity, adventure_plan).is_empty(), "adventure save is rejected: " + label)
+	SESSION.save(path, identity, state)
+	_check(not SESSION.load_valid(path, identity, adventure_plan).is_empty(), "the real adventure save is accepted")
+	SESSION.erase(path)
+
+
+## The scripted player through the whole level with 30 seeds: every way is
+## reachable, no dead end, nobody falls through the geometry, one reward each.
+func _test_adventure_bots() -> void:
+	var index: int = _jungle_index()
+	var rewards: Array[Dictionary] = []
+	var counter: Callable = func(payload: Dictionary) -> void: rewards.append(payload)
+	bridge.reward_reported.connect(counter)
+	var routes: Dictionary = {}
+	var letters_seen: int = 0
+	var bonus_runs: int = 0
+	var finished: int = 0
+	var through: int = 0
+	var worst_time: float = 0.0
+	var times: Array[float] = []
+	for seed in range(1, JUNGLE_SEEDS + 1):
+		var game = await _open(index)
+		var bot = JUNGLE_BOT.new(seed)
+		var steps: int = 0
+		var before: int = rewards.size()
+		while game.phase != game.Phase.FINISHED and steps < 60 * 600:
+			if game.question_open:
+				game.answer(str(game.active_question.answer))
+			else:
+				bot.drive(game, STEP)
+			game.advance(STEP)
+			steps += 1
+			var p = game.player
+			if p.grounded and p.h < -0.7 and not p.is_riding():
+				through += 1
+			if not game.world.in_gap(p.s) and not p.is_riding() and p.tumble_time <= 0.0 and p.h < -1.0:
+				through += 1
+		var seconds: float = float(steps) * STEP
+		times.append(seconds)
+		worst_time = maxf(worst_time, seconds)
+		if game.phase == game.Phase.FINISHED and rewards.size() == before + 1:
+			finished += 1
+		for key in bot.routes:
+			routes["%s:%s" % [key, bot.routes[key]]] = true
+		letters_seen |= game.track.letters
+		bonus_runs += 1 if game.track.bonus_found else 0
+		print("[LumoRun] jungle seed %d: %.0f s, %d/%d stars, letters %d, hall %s, rescues %d, routes %s" % [seed, seconds, game.track.kept, game.plan.star_total, game.track.letter_count(), str(game.track.bonus_found), game.track.rescues, str(bot.routes)])
+		await _free_game(game)
+	bridge.reward_reported.disconnect(counter)
+	_check(finished == JUNGLE_SEEDS, "%d of %d scripted runs reach the finish with exactly one reward" % [finished, JUNGLE_SEEDS])
+	_check(through == 0, "nobody falls through the geometry (%d samples)" % through)
+	for branch in ["Wurzelkrone", "Seilrutsche", "Tempelsims", "Kristallsims"]:
+		_check(routes.has(branch + ":upper") and routes.has(branch + ":lower"), "both ways of %s were played" % branch)
+	_check(letters_seen == 0b1111, "every crystal letter is reachable (mask %d)" % letters_seen)
+	_check(bonus_runs >= 10, "the treasure hall is found and left again (%d runs)" % bonus_runs)
+	var total: float = 0.0
+	for value in times:
+		total += value
+	_check(total / float(times.size()) > 150.0, "a run lasts minutes, not seconds (average %.0f s)" % (total / float(times.size())))
+	print("[LumoRun] jungle bots: %d/%d finished, average %.0f s, longest %.0f s" % [finished, JUNGLE_SEEDS, total / float(times.size()), worst_time])
