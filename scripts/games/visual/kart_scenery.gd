@@ -241,8 +241,8 @@ const PARTICLES: Dictionary = {
 	},
 	"gluehwuermchen":
 	{
-		"add": true, "count": 90, "sprite": [11, 1], "size": 0.13, "box": Vector3(50, 6, 50),
-		"velocity": Vector3(0.05, 0.08, 0.05), "sway": 0.8, "tumble": 0.0, "color": Color(1.0, 0.95, 0.5, 1.0)
+		"add": true, "count": 90, "sprite": [11, 1], "size": 0.07, "box": Vector3(50, 5, 50), "lift": -1.2,
+		"velocity": Vector3(0.05, 0.08, 0.05), "sway": 0.8, "tumble": 0.0, "color": Color(0.75, 1.0, 0.35, 0.8)
 	},
 	"pollen":
 	{
@@ -281,7 +281,7 @@ const PARTICLES: Dictionary = {
 	},
 	"sand":
 	{
-		"add": false, "count": 200, "sprite": [12, 2], "size": 0.07, "box": Vector3(50, 5, 50),
+		"add": false, "count": 200, "sprite": [12, 2], "size": 0.07, "box": Vector3(50, 5, 50), "lift": -1.2,
 		"velocity": Vector3(2.6, 0.05, 0.6), "sway": 0.5, "tumble": 0.0, "color": Color(0.95, 0.82, 0.6, 0.55)
 	},
 	"kristall":
@@ -623,6 +623,7 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 	var count: int = floori(world.length / spacing)
 	var transforms: Array[Transform3D] = []
 	var customs: Array[Color] = []
+	var pools: Array[Transform3D] = []
 	var heads := PackedVector3Array()
 	var head_colors: Array[Color] = []
 	var head_local: Vector3 = {
@@ -647,6 +648,11 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 		var lamp_basis := Basis(right, Vector3.UP, right.cross(Vector3.UP))
 		var lamp := Transform3D(lamp_basis, at - Vector3.UP * 0.02)
 		transforms.append(lamp)
+		# Lichtfleck liegt auf der Fahrbahn (Strassenrahmen inkl. Querneigung).
+		var pool_at: Vector3 = world.position_at(d, side * (lateral - 3.7)) + basis.y * 0.035
+		if kind == "leuchte_kette":
+			pool_at = world.position_at(d + 7.0, side * (lateral - 3.2)) + basis.y * 0.035
+		pools.append(Transform3D(basis, pool_at))
 		var color: Color = colors[i % colors.size()]
 		customs.append(Color(color.r * 0.5, color.g * 0.5, color.b * 0.5, 1.0))
 		heads.append(lamp * head_local)
@@ -713,6 +719,7 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 			node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			node.set_meta("scenery_lamp", kind)
 			root.add_child(node)
+	_light_pools(root, pools, customs, glow, cell_size, night, world.low_detail)
 	var light_count: int = int(budget.lights)
 	if night < 0.3:
 		light_count = mini(light_count, 1) if light_count > 0 else 0
@@ -723,6 +730,57 @@ static func _lamps(world, root: Node3D, look: Dictionary, budget: Dictionary) ->
 		root.add_child(pool)
 	world.set_meta("scenery_lamp_heads", heads)
 	return transforms.size()
+
+
+## Flaches Lichtfleck-Quad (additiv, Art .75) als ArrayMesh mit Ecken-Kodierung.
+static func _pool_mesh(radius: float, power: float) -> ArrayMesh:
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([
+		Vector3(-radius, 0, -radius), Vector3(radius, 0, -radius),
+		Vector3(radius, 0, radius), Vector3(-radius, 0, radius)])
+	arrays[Mesh.ARRAY_NORMAL] = PackedVector3Array([Vector3.UP, Vector3.UP, Vector3.UP, Vector3.UP])
+	arrays[Mesh.ARRAY_TEX_UV] = PackedVector2Array([Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
+	var c := Color(power, 0.75, 0.0, 1.0)
+	arrays[Mesh.ARRAY_COLOR] = PackedColorArray([c, c, c, c])
+	arrays[Mesh.ARRAY_INDEX] = PackedInt32Array([0, 1, 2, 0, 2, 3])
+	var result := ArrayMesh.new()
+	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return result
+
+
+static func _light_pools(root: Node3D, pools: Array[Transform3D], customs: Array[Color],
+		glow: ShaderMaterial, cell_size: float, night: float, low_detail: bool) -> void:
+	if pools.is_empty() or night < 0.05:
+		return
+	var quad: ArrayMesh = _pool_mesh(3.6, 1.0)
+	var cells: Dictionary = {}
+	for i in range(pools.size()):
+		var key := Vector2i(floori(pools[i].origin.x / cell_size), floori(pools[i].origin.z / cell_size))
+		if not cells.has(key):
+			cells[key] = []
+		cells[key].append(i)
+	for key in cells:
+		var ids: Array = cells[key]
+		var center: Vector3 = pools[ids[0]].origin
+		var multimesh := MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_custom_data = true
+		multimesh.mesh = quad
+		multimesh.instance_count = ids.size()
+		for j in range(ids.size()):
+			var t: Transform3D = pools[ids[j]]
+			t.origin -= center
+			multimesh.set_instance_transform(j, t)
+			multimesh.set_instance_custom_data(j, customs[ids[j]])
+		var node := MultiMeshInstance3D.new()
+		node.name = "LightPools_%d_%d" % [key.x, key.y]
+		node.multimesh = multimesh
+		node.position = center
+		node.material_override = glow
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		node.visibility_range_end = 90.0 if low_detail else 150.0
+		root.add_child(node)
 
 
 # ------------------------------------------------------------------ Reflektoren
@@ -817,6 +875,7 @@ static func _particles(world, root: Node3D, look: Dictionary, budget: Dictionary
 		material.set_shader_parameter("tumble", float(spec.tumble))
 		material.set_shader_parameter("particle_size", float(spec.size))
 		material.set_shader_parameter("tint", spec.color)
+		material.set_shader_parameter("lift", float(spec.get("lift", spec.box.y * 0.18)))
 		var node := MultiMeshInstance3D.new()
 		node.name = "AmbientParticles_" + str(kind)
 		node.multimesh = multimesh

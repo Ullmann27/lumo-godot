@@ -15,6 +15,7 @@ Kodierung fuer den Shader assets/shaders/kart_scenery_foliage.gdshader:
   COLOR.b  Umgebungsverdeckung (0 innen dunkel .. 1 aussen)
   UV2.y    0 Blattkarte (UV = Atlas), 1 Rinde (UV kachelnd, UV2.x = Streifen), 2 Fels (triplanar)
 Leuchten: Oberflaeche "lamp_body" (UV in lamp_albedo-Farbfelder) und "lamp_glow"
+  (Lichtflecken auf der Fahrbahn setzt kart_scenery.gd entlang des Strassenrahmens.)
   (additiv; COLOR.r Helligkeit, COLOR.g Art: 0 Leuchtkoerper, .25 Hof, .5 Lichtkegel,
   .75 Lichtfleck am Boden, 1 Flamme/Gluehwuermchen; COLOR.b Phase).
 Koordinaten: Blender Z oben, Export mit +Y oben (Godot). Meter.
@@ -551,7 +552,6 @@ def lamp_harbor(lod):
     box(b, head + Vector((0, 0, 0.04)), (0.3, 0.3, 0.42), "chrom", mat=1, glow=(2.2, 0.0, 0, 1))
     halo(b, head + Vector((0, 0, 0.04)), 0.95, 0.9)
     light_cone(b, head + Vector((0, 0, -0.2)), 0.0, 2.6, 0.55, (14, 10, 6)[lod])
-    pool(b, Vector((head.x - 0.6, 0, 0.04)), 3.2, 0.85)
     return b
 
 
@@ -575,7 +575,6 @@ def lamp_forest(lod):
             pass
     halo(b, head, 0.9, 0.85)
     light_cone(b, head + Vector((0, 0, -0.2)), 0.0, 1.9, 0.4, (12, 8, 6)[lod])
-    pool(b, Vector((head.x - 0.4, 0, 0.04)), 2.6, 0.75)
     rng = random.Random(5)
     for k in range((10, 5, 0)[lod]):
         p = head + Vector((rng.uniform(-1.4, 1.4), rng.uniform(-1.4, 1.4), rng.uniform(-2.2, 0.8)))
@@ -596,7 +595,6 @@ def lamp_neon(lod):
         for z in (1.5, 2.6, 3.7, 4.8):
             box(b, Vector((0, 0, z)), (0.36, 0.36, 0.04), "chrom", mat=1, glow=(1.8, 0.0, 0, 1))
     halo(b, Vector((-0.2, 0, 5.2)), 1.1, 0.7)
-    pool(b, Vector((-0.9, 0, 0.04)), 2.8, 0.9)
     light_cone(b, Vector((-0.2, 0, 5.4)), 0.0, 2.2, 0.28, (10, 8, 6)[lod])
     return b
 
@@ -614,7 +612,6 @@ def lamp_torch(lod):
         u = Vector((math.cos(a) * 0.32, math.sin(a) * 0.32, 0))
         glow_quad(b, Vector((0, 0, 3.12)), u, Vector((0, 0, 0.5)), 1.0, 2.4, rng.random())
     halo(b, Vector((0, 0, 3.0)), 1.3, 0.8)
-    pool(b, Vector((0, 0, 0.04)), 3.4, 0.8)
     for k in range((8, 4, 0)[lod]):
         p = Vector((rng.uniform(-.3, .3), rng.uniform(-.3, .3), 3.3 + rng.uniform(0, 1.3)))
         glow_quad(b, p, Vector((0.04, 0, 0)), Vector((0, 0, 0.04)), 1.0, 2.0, rng.random())
@@ -641,7 +638,6 @@ def lamp_string(lod):
         box(b, p, (0.11, 0.11, 0.15), "chrom", mat=1, glow=(2.6, 0.0, (i % 4) / 4 + 0.01, 1))
         if lod < 2:
             halo(b, p, 0.32, 0.8)
-    pool(b, Vector((-0.6, -span * 0.5, 0.04)), 4.0, 0.45)
     return b
 
 

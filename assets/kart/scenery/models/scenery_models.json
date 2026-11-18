@@ -48,34 +48,34 @@
   "lod2": 60
  },
  "leuchte_fackel": {
-  "bytes": 28560,
-  "lod0": 124,
-  "lod1": 94,
-  "lod2": 74
+  "bytes": 27948,
+  "lod0": 122,
+  "lod1": 92,
+  "lod2": 72
  },
  "leuchte_hafen": {
-  "bytes": 76560,
-  "lod0": 432,
-  "lod1": 328,
-  "lod2": 232
+  "bytes": 75956,
+  "lod0": 430,
+  "lod1": 326,
+  "lod2": 230
  },
  "leuchte_kette": {
-  "bytes": 60436,
-  "lod0": 316,
-  "lod1": 200,
-  "lod2": 90
+  "bytes": 59820,
+  "lod0": 314,
+  "lod1": 198,
+  "lod2": 88
  },
  "leuchte_neon": {
-  "bytes": 44304,
-  "lod0": 148,
-  "lod1": 144,
-  "lod2": 92
+  "bytes": 43692,
+  "lod0": 146,
+  "lod1": 142,
+  "lod2": 90
  },
  "leuchte_wald": {
-  "bytes": 46232,
-  "lod0": 282,
-  "lod1": 212,
-  "lod2": 136
+  "bytes": 45612,
+  "lod0": 280,
+  "lod1": 210,
+  "lod2": 134
  },
  "nadelbaum": {
   "bytes": 171400,

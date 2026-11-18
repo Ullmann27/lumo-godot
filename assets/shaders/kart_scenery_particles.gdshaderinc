@@ -9,6 +9,7 @@ uniform vec3 velocity = vec3(0.5, -0.3, 0.2);
 uniform float sway = 0.8;
 uniform float tumble = 0.0;
 uniform float particle_size = 0.12;
+uniform float lift = 2.0;
 uniform vec4 tint : source_color = vec4(1.0);
 
 varying vec2 v_uv;
@@ -22,7 +23,7 @@ void vertex() {
 	float ph = rnd.a * 6.2831;
 	p += vec3(sin(TIME * 0.9 + ph), sin(TIME * 1.3 + ph * 2.0) * 0.5, cos(TIME * 0.7 + ph)) * sway;
 	vec3 rel = mod(p - cam + box_size * 0.5, box_size) - box_size * 0.5;
-	vec3 world = cam + rel + vec3(0.0, box_size.y * 0.18, 0.0);
+	vec3 world = cam + rel + vec3(0.0, lift, 0.0);
 	float dist = length(rel);
 	float edge = max(max(abs(rel.x) / box_size.x, abs(rel.z) / box_size.z), abs(rel.y) / box_size.y) * 2.0;
 	v_fade = smoothstep(1.0, 0.75, edge) * smoothstep(0.8, 2.5, dist);
