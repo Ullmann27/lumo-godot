@@ -15,6 +15,8 @@ const BODY_OF: Dictionary = {
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
 const LOD_HYSTERESIS := 2.0
+## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
+const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
 static var _scenes: Dictionary = {}
 
 var variant := ""
@@ -36,6 +38,18 @@ var _braking := -1.0
 var _near_distance := 16.0
 var _far_distance := 36.0
 var _preview_detail := false
+var design := ""
+var _finish := "metallic"
+var _profile := "high"
+## Eigene Lack-Kopien dieses Karts (je Karosserie-Teil), damit Flakes nach Profil schalten.
+var _paints: Array[StandardMaterial3D] = []
+## Nummern und Aufkleber: nur in der nahen LOD sichtbar.
+var _dressing: Array[Node3D] = []
+## Schaustück-Teile (Glas, Anlauffarben, Staubfilm) aus aurora_<v>_showcase.glb: nur in
+## Garage, Werkstatt und auf dem Podest, nie im Rennen. Wird erst bei Bedarf geladen.
+var _showcase_meshes: Array[MeshInstance3D] = []
+var _showcase_loaded := false
+const DUST_PATH := "res://assets/kart/production/details/kart_dust_film.png"
 
 
 ## The sculpted in-code karts remain the fallback for a body that cannot be
@@ -66,6 +80,8 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	if not supports(id) or asset_root != null:
 		return false
 	variant = body_of(id)
+	design = id
+	_finish = FINISH.finish_of(id)
 	name = "ProductionKart"
 	set_process(false)
 	for level in range(3):
@@ -128,8 +144,12 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 			return false
 		wheel_rest_grips.append(grip.position)
 		boost_positions.append(boost.position)
+	var dressed_look: Dictionary = stock.duplicate()
+	dressed_look.merge(look, true)
+	_dressing = FINISH.dress(asset_root, design, dressed_look)
 	set_lod(0)
 	set_braking(0.0)
+	_refresh_finish()
 	return true
 
 
@@ -152,9 +172,13 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 			mesh.set_surface_override_material(surface, _materials[key])
 			continue
 		var finish: StandardMaterial3D
-		if material_name.ends_with("_paint") and custom_paint:
+		if material_name.ends_with("_paint"):
+			# Jede Lackschicht ist eine eigene Kopie: Lackart je Design, ohne Stock-Material
+			# anderer Karts zu verändern.
 			finish = original.duplicate() as StandardMaterial3D
-			finish.albedo_color = look.get("paint", original.albedo_color)
+			if custom_paint:
+				finish.albedo_color = look.get("paint", original.albedo_color)
+			_paints.append(finish)
 		elif material_name == "CeramicPearl" and custom_paint:
 			finish = original.duplicate() as StandardMaterial3D
 			finish.albedo_color = look.get("trim", original.albedo_color)
@@ -206,6 +230,8 @@ func set_braking(amount: float) -> void:
 
 
 func set_graphics_quality(profile: String) -> void:
+	_profile = profile
+	_refresh_finish()
 	match profile:
 		"light", "low":
 			_near_distance = 7.0
@@ -220,8 +246,69 @@ func set_graphics_quality(profile: String) -> void:
 
 func set_preview_detail(enabled: bool) -> void:
 	_preview_detail = enabled
+	_refresh_finish()
+	if enabled and not _showcase_loaded:
+		_load_showcase()
 	if enabled:
 		set_lod(0)
+	_sync_showcase()
+
+
+func _load_showcase() -> void:
+	_showcase_loaded = true
+	if asset_root == null:
+		return
+	var path := MODEL_DIRECTORY + "aurora_" + variant + "_showcase.glb"
+	if not ResourceLoader.exists(path):
+		return
+	var packed := _scene(path)
+	if packed == null:
+		return
+	var source := packed.instantiate() as Node3D
+	for player in source.find_children("*", "AnimationPlayer", true, false):
+		player.free()
+	for item in source.find_children("*", "MeshInstance3D", true, false):
+		var mesh := item as MeshInstance3D
+		var target := asset_root.get_node_or_null(source.get_path_to(mesh.get_parent()))
+		if not target is Node3D:
+			continue
+		mesh.owner = null
+		mesh.get_parent().remove_child(mesh)
+		mesh.name = str(mesh.name) + "_Showcase"
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		target.add_child(mesh)
+		for surface in range(mesh.mesh.get_surface_count()):
+			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+			if original != null and original.resource_name == "RoadDustFilm":
+				var dust := original.duplicate() as StandardMaterial3D
+				dust.albedo_color = Color(1, 1, 1, 1)
+				dust.albedo_texture = load(DUST_PATH)
+				dust.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				dust.roughness = 0.95
+				dust.metallic = 0.0
+				mesh.set_surface_override_material(surface, dust)
+		_showcase_meshes.append(mesh)
+	source.free()
+
+
+func _sync_showcase() -> void:
+	for mesh in _showcase_meshes:
+		mesh.visible = _preview_detail and lod_level == 0
+
+
+func showcase_mesh_count() -> int:
+	return _showcase_meshes.size()
+
+
+## Klarlack-Flakes (Detail-Normal-Map) nur in HIGH oder als Schaustück in Garage/Werkstatt.
+func _refresh_finish() -> void:
+	var flakes: bool = _preview_detail or _profile == "high"
+	for paint in _paints:
+		FINISH.apply_paint(paint, _finish, flakes)
+
+
+func dressing_nodes() -> Array[Node3D]:
+	return _dressing
 
 
 func update_distance(distance_squared: float) -> void:
@@ -247,6 +334,9 @@ func set_lod(level: int) -> void:
 	for index in range(_lod_meshes.size()):
 		for mesh in _lod_meshes[index]:
 			mesh.visible = index == lod_level
+	for node in _dressing:
+		node.visible = lod_level == 0
+	_sync_showcase()
 
 
 func visible_surface_count() -> int:

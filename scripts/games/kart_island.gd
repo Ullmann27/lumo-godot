@@ -277,6 +277,8 @@ var muted: bool = false
 var host_sound_enabled: bool = true
 var host_reduce_motion: bool = false
 var preferred_reduced_motion: bool = false
+## Hook kart-garage: Linkshänder-Steuerung (Lenk-Stick rechts, Knöpfe links), siehe kart_race_hud.gd.
+var left_handed: bool = false
 var reduced_motion: bool = false
 var lightweight: bool = false
 var difficulty: String = "gemuetlich"
@@ -3729,6 +3731,17 @@ func _append_preferences() -> void:
 	motion.name = "MotionToggle"
 	motion.disabled = host_reduce_motion
 	modal_column.add_child(motion)
+	# Hook kart-garage: Linkshänder-Schalter; Spiegelung macht RACE_HUD.apply_handedness.
+	var hand := _button(RACE_HUD.handedness_text(left_handed), func(): pass)
+	hand.name = "HandednessToggle"
+	hand.pressed.connect(
+		func():
+			left_handed = not left_handed
+			hand.text = RACE_HUD.handedness_text(left_handed)
+			_save_preferences()
+			_apply_responsive_layout()
+	)
+	modal_column.add_child(hand)
 	var sound := _button("Ton: aus (App)" if not host_sound_enabled else ("Ton: aus" if muted else "Ton: an"), func(): pass)
 	sound.pressed.connect(
 		func():
@@ -4411,6 +4424,7 @@ func _load_preferences() -> void:
 	var config := ConfigFile.new()
 	config.load(PREFERENCES)
 	preferred_reduced_motion = bool(config.get_value("race", "reduced_motion", false))
+	left_handed = bool(config.get_value("race", "left_handed", false))  # Hook kart-garage
 	var host_options: Dictionary = SceneRouter.launch_options.duplicate(true)
 	host_options.merge(HostBridge.launch_options(), true)
 	host_sound_enabled = bool(host_options.get("soundEnabled", true))
@@ -4435,6 +4449,7 @@ func _load_preferences() -> void:
 func _save_preferences() -> void:
 	var config := ConfigFile.new()
 	config.set_value("race", "reduced_motion", preferred_reduced_motion)
+	config.set_value("race", "left_handed", left_handed)  # Hook kart-garage
 	config.set_value("race", "lightweight", lightweight)
 	config.set_value("race", "graphics_profile", graphics_profile)
 	config.set_value("race", "muted", muted)
@@ -5930,6 +5945,9 @@ func _update_item_hud(delta: float) -> void:
 		"roulette": item_roulette_time / ROULETTE_SECONDS if item_roulette_time > 0.0 else 0.0,
 		"has_target": has_target, "target": lock_target, "target_world": target_world,
 		"target_name": _rival_name(lock_target) if has_target else "", "lock": lock_progress,
+		# Hook kart-garage: echte Entfernung zum Ziel und Reichweite für den Entfernungsbalken.
+		"target_distance": player.global_position.distance_to(opponents[lock_target].global_position) if has_target and is_instance_valid(player) else -1.0,
+		"lock_range": float(_lock_rules().range),
 		"rearm": lock_rearm_time,
 		"popups": item_popups,
 		"warning": player_warning, "incoming": is_instance_valid(item_runtime) and item_runtime.incoming_for(-1, distance) < INF,

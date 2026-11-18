@@ -51,7 +51,8 @@ def main():
                 actual=np.array(report['node_positions_m']['Grip_'+label])
                 if np.linalg.norm(actual-np.array([side*.16,.70,-.04]))>1e-5:
                     errors.append('Incorrect driver grip '+label)
-            budget=(50000,25000,17000)[level]
+            # Renn-LOD0: höchstens +25 % gegenüber dem Stand vor den Nahdetails (48 450 -> 60 500).
+            budget=(60500,25000,17000)[level]
             if report['triangles_unique_meshes']>budget:
                 errors.append('Triangle budget exceeded')
             source_report='mesh_report.json' if level==0 else 'lod'+str(level)+'_report.json'
