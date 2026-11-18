@@ -5,6 +5,9 @@ const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
 const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
 const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
+const PARTS_BAY = preload("res://scripts/games/kart_parts_bay.gd")
+## „Teile wechseln“ + „Werte“ beim gewählten Kart (Garage), siehe kart_parts_bay.gd.
+var parts_bay
 var service_station
 var home_promenade
 var track_pass
@@ -88,6 +91,9 @@ func _ready() -> void:
 	garage_interior.materials.podium.roughness = 0.3
 	_studio_sky = SHOWROOM.studio_sky()
 	_style_view_choice()
+	parts_bay = PARTS_BAY.new()
+	add_child(parts_bay)
+	parts_bay.setup(self)
 	service_station = SERVICE_STATION.new()
 	garage_interior.root.add_child(service_station)
 	service_station.build(garage_interior.materials)
@@ -145,6 +151,8 @@ func _refresh() -> void:
 	_sync_home_stage()
 	workshop_button.visible = step == 2
 	kart_bars.hide()
+	if parts_bay != null:
+		parts_bay._sync()
 	subtitle.hide()
 	title_label.text = ["Rennen", "Dein Fahrer", "Deine Garage", "Rennwelten", "Tempo & Gegner"][step]
 	_update_track_goals()
@@ -443,6 +451,13 @@ func _apply_responsive_layout() -> void:
 	view_choice.offset_top = top * scale_factor
 	view_choice.offset_bottom = (top + 48) * scale_factor
 	view_choice.visible = not _landing_active and step in [1, 2]
+	if parts_bay != null:
+		# Knöpfe in der freien Bühne über der Kartauswahl, Konfigurator über der Auswahl-Fläche.
+		var stage_px := _visible_stage_region()
+		var full := preview_container.get_global_rect()
+		var stage_rect := Rect2(full.position + stage_px.position * full.size, stage_px.size * full.size)
+		parts_bay.relayout(scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size),
+			Rect2(_selection_surface.position, _selection_surface.size))
 	for control in _stage_controls:
 		control.visible = not _landing_active
 	_stage_header.visible = not _landing_active and not ultra_short
@@ -488,6 +503,9 @@ func _fit_welcome_camera() -> void:
 	if inspection_view != 0 and step != 3:
 		preview_camera.h_offset = 0.0
 		preview_camera.v_offset = 0.0
+		return
+	# Teile-Konfigurator offen: die Kamera steht am Rad bzw. am Heck, keine Gesamtansicht.
+	if parts_bay != null and parts_bay.is_open() and step == 2:
 		return
 	# Fit the actual chassis, seated rig and light rings to the unoccluded
 	# part of the live stage. Portrait width cannot reuse a landscape frustum.
@@ -582,6 +600,9 @@ func _visible_stage_region() -> Rect2:
 		clear.end.x = stage.end.x - inset
 		if view_choice.is_visible_in_tree():
 			clear.end.x = view_choice.global_position.x - inset
+	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
+	if step == 2 and parts_bay != null and not _landing_active:
+		clear.end.y -= 62.0 * _preview_dp_scale()
 	if not clear.has_area():
 		return Rect2(0.36, 0.19, 0.61, 0.60)
 	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
@@ -655,3 +676,9 @@ func _process(delta: float) -> void:
 		preview_pivot.rotation.y = preview_angle + (0.0 if reduced_motion else sin(preview_idle_time * 0.35) * 0.07)
 	for button in garage_buttons.values():
 		button.body.hide()
+
+
+func handle_back() -> bool:
+	if parts_bay != null and parts_bay.handle_back():
+		return true
+	return super.handle_back()

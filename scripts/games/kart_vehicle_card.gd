@@ -69,6 +69,8 @@ func _ready() -> void:
 	bars = BARS.new()
 	bars.show_labels = true
 	bars.compact_labels = true
+	# Höchstens zwei sofort verständliche Vergleichswerte; alle fünf zeigt „Werte“.
+	bars.only_keys = ["speed", "handling"] as Array[String]
 	bars.show_numbers = false
 	bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(bars)
@@ -132,7 +134,7 @@ func apply_size(scale_factor: float, compact: bool) -> void:
 	role_label.add_theme_font_size_override("font_size", roundi((10 if compact else 12) * scale_factor))
 	lock_label.add_theme_font_size_override("font_size", roundi((11 if compact else 13) * scale_factor))
 	badge.add_theme_font_size_override("font_size", roundi(11 * scale_factor))
-	bars.row_height = (9.5 if compact else 10.0) * scale_factor
+	bars.row_height = (15.0 if compact else 16.0) * scale_factor
 	bars.visible = not compact or not locked
-	role_label.visible = not compact
+	role_label.visible = true
 	queue_redraw()

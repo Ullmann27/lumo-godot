@@ -13,6 +13,8 @@ var show_labels: bool = true
 ## Kompakte Karte: kurzes Wort mit farbigem Symbolpunkt vor jedem Balken, Balken in der
 ## Farbe ihres Wertes (statt fünf gleicher Türkis-Striche ohne Beschriftung).
 var compact_labels: bool = false
+## Nur diese Werte zeigen (leer = alle fünf). Kartkarten: „Tempo“ und „Lenkung“.
+var only_keys: Array[String] = []
 const SHORT_NAMES: Dictionary = {
 	"speed": "Tempo", "accel": "Antritt", "brake": "Bremse", "handling": "Lenkung", "turbo": "Turbo",
 }
@@ -56,8 +58,12 @@ func set_values(new_base: Dictionary, new_bonus: Dictionary = {}, instant: bool 
 	queue_redraw()
 
 
+func _keys() -> Array[String]:
+	return only_keys if not only_keys.is_empty() else FLEET.STATS
+
+
 func _update_minimum() -> void:
-	custom_minimum_size.y = row_height * FLEET.STATS.size()
+	custom_minimum_size.y = row_height * _keys().size()
 
 
 func _process(delta: float) -> void:
@@ -82,7 +88,8 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var rows: int = FLEET.STATS.size()
+	var keys: Array[String] = _keys()
+	var rows: int = keys.size()
 	var row: float = size.y / float(rows) if size.y > 0.0 else row_height
 	var compact: bool = compact_labels and show_labels
 	var label_width: float = (minf(size.x * 0.40, 168.0 * font_scale) if show_labels else 0.0)
@@ -97,7 +104,7 @@ func _draw() -> void:
 		bar_height = clampf(row * 0.52, 4.0, 12.0)
 		font_size = clampi(roundi(row * 1.05), 9, 16)
 	for index in range(rows):
-		var key: String = FLEET.STATS[index]
+		var key: String = keys[index]
 		var top: float = float(index) * row
 		var middle: float = top + row * 0.5
 		var value_base: float = float(_shown_base.get(key, base.get(key, 0.0)))

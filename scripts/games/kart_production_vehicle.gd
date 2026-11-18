@@ -50,6 +50,13 @@ var _dressing: Array[Node3D] = []
 var _showcase_meshes: Array[MeshInstance3D] = []
 var _showcase_loaded := false
 const DUST_PATH := "res://assets/kart/production/details/kart_dust_film.png"
+## Austauschbare Anbauteile (Radaufsätze, Auspuffblenden), siehe kart_tuning.gd und
+## tools/lumo_kart_art/karts/build_parts.py. Wurzel jedes Teils = sein Montagepunkt.
+const PARTS_PATH := "res://assets/kart/production/parts/kart_parts.glb"
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
+## Montierte Teile je Steckplatz ("wheel_cover"/"exhaust" -> id); Tests lesen das.
+var mounted_parts: Dictionary = {}
+var _part_nodes: Array[Node3D] = []
 
 
 ## The sculpted in-code karts remain the fallback for a body that cannot be
@@ -345,3 +352,72 @@ func visible_surface_count() -> int:
 	for mesh in _lod_meshes[lod_level]:
 		count += mesh.mesh.get_surface_count()
 	return count
+
+
+## Anbauteile nach dem Look setzen (Serie = nichts angebaut). Mehrfach aufrufbar: Vorschau
+## in der Garage wechselt sofort, ohne das Kart neu zu bauen.
+func apply_parts(look: Dictionary) -> void:
+	for node in _part_nodes:
+		if is_instance_valid(node):
+			_dressing.erase(node)
+			node.get_parent().remove_child(node)
+			node.free()
+	_part_nodes.clear()
+	mounted_parts = {}
+	if asset_root == null:
+		return
+	var packed: PackedScene = _scene(PARTS_PATH) if ResourceLoader.exists(PARTS_PATH) else null
+	var paint: Color = _paints[0].albedo_color if not _paints.is_empty() else Color("e8eef6")
+	for slot in TUNING.PART_SLOTS:
+		var entry: Dictionary = TUNING.option(slot, str(look.get(slot, "serie")))
+		mounted_parts[slot] = str(entry.get("id", "serie"))
+		var node_name: String = str(entry.get("node", ""))
+		if node_name.is_empty() or packed == null:
+			continue
+		if slot == "wheel_cover":
+			for rotor in wheel_rotors:
+				var cover := _part_instance(packed, node_name, paint)
+				if cover == null:
+					continue
+				rotor.add_child(cover)
+				# Aufsätze schauen nach +X (rechte Seite); links um die Hochachse gedreht.
+				if rotor.get_parent().position.x < 0.0:
+					cover.basis = Basis(Vector3.UP, PI)
+				_part_nodes.append(cover)
+		else:
+			for side in ["L", "R"]:
+				var marker := asset_root.find_child("Boost_" + side, true, false) as Node3D
+				var tip := _part_instance(packed, node_name, paint)
+				if marker == null or tip == null:
+					if tip != null:
+						tip.free()
+					continue
+				marker.add_child(tip)
+				_part_nodes.append(tip)
+	for node in _part_nodes:
+		node.visible = lod_level == 0
+		_dressing.append(node)
+
+
+func _part_instance(packed: PackedScene, node_name: String, paint: Color) -> Node3D:
+	var source := packed.instantiate()
+	var found := source.find_child(node_name, true, false) as Node3D
+	if found == null:
+		source.free()
+		return null
+	found.owner = null
+	for child in found.find_children("*", "", true, false):
+		child.owner = null
+	found.get_parent().remove_child(found)
+	source.free()
+	found.transform = Transform3D.IDENTITY
+	found.name = "Part_" + node_name
+	for mesh in found.find_children("*", "MeshInstance3D", true, false):
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		for surface in range(mesh.mesh.get_surface_count()):
+			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+			if original != null and original.resource_name == "PartPaint":
+				var tinted := original.duplicate() as StandardMaterial3D
+				tinted.albedo_color = paint
+				mesh.set_surface_override_material(surface, tinted)
+	return found

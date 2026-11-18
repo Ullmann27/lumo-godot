@@ -719,6 +719,8 @@ func _build_production_vehicle() -> bool:
 		candidate.free()
 		return false
 	production_vehicle = candidate
+	# Anbauteile aus der Werkstatt (Radaufsätze, Auspuffblenden) gelten für jede Karosserie.
+	production_vehicle.apply_parts(look)
 	# Garage, tests and tools read which fleet design and which body this is.
 	production_vehicle.set_meta("fleet_design", kart_style)
 	production_vehicle.set_meta("fleet_body", body)
