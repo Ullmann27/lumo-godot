@@ -42,6 +42,37 @@ var last_speed: float = 0.0
 var was_grounded: bool = true
 var has_sample: bool = false
 var body_space
+## Optional look of the gait, set by action games (see set_style). The defaults
+## reproduce the calm authored walk of the exploring worlds unchanged.
+## limb_gain scales how far legs and arms swing, bounce_gain the hip bob,
+## run_floor is the least sprint share while moving, response the pose follow rate.
+const LIMBS: Array[String] = [
+	"Thigh.L", "Thigh.R", "Shin.L", "Shin.R", "Foot.L", "Foot.R",
+	"UpperArm.L", "UpperArm.R", "Forearm.L", "Forearm.R",
+]
+var limb_gain: float = 1.0
+var bounce_gain: float = 1.0
+var run_floor: float = 0.0
+var response: float = 22.0
+
+
+func set_style(style: Dictionary) -> void:
+	limb_gain = clampf(float(style.get("limb_gain", limb_gain)), 0.5, 1.8)
+	bounce_gain = clampf(float(style.get("bounce_gain", bounce_gain)), 0.5, 3.0)
+	run_floor = clampf(float(style.get("run_floor", run_floor)), 0.0, 1.0)
+	response = clampf(float(style.get("response", response)), 10.0, 90.0)
+
+
+static func _scaled(rotation: Quaternion, gain: float) -> Quaternion:
+	if is_equal_approx(gain, 1.0):
+		return rotation
+	var q := rotation.normalized()
+	if q.w < 0.0:
+		q = -q
+	var angle := q.get_angle()
+	if angle < 0.0001:
+		return rotation
+	return Quaternion(q.get_axis().normalized(), angle * gain)
 
 
 func bind(source: Skeleton3D) -> bool:
@@ -76,12 +107,14 @@ func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
 	var moving: bool = grounded and speed > 0.06
 	var running: float = clampf((speed - 2.0) / 3.5, 0.0, 1.0)
 	if moving:
+		running = maxf(running, run_floor)
+	if moving:
 		# Blender's foot trajectories and this phase use the same stride length.
 		# Character scaling is included; a small teacher takes shorter steps.
 		phase = fposmod(phase + delta * TAU * speed / maxf(0.05, body_space.stride_metres(running)), TAU)
 	var effort: float = clampf(speed / 0.65, 0.0, 1.0)
 	var braking: float = clampf((last_speed - speed) / delta / 32.0, 0.0, 1.0) if grounded else 0.0
-	var blend: float = 1.0 - exp(-22.0 * delta)
+	var blend: float = 1.0 - exp(-response * delta)
 	var cycle: float = phase / TAU
 	var land_phase: float = 1.0 - landing_left / 0.20
 	var air_phase: float = (
@@ -105,6 +138,8 @@ func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
 					body_space.clip_rotation("sprint", bone, cycle), running
 				), effort
 			)
+			if bone in LIMBS:
+				body_delta = _scaled(body_delta, limb_gain)
 		if grounded and landing_left > 0.0:
 			body_delta = body_delta.slerp(body_space.clip_rotation("land", bone, land_phase), landing_strength)
 		elif braking > 0.02:
@@ -119,6 +154,7 @@ func advance(velocity: Vector3, grounded: bool, delta: float) -> void:
 		pelvis = body_space.clip_pelvis(state, air_phase)
 	elif moving:
 		pelvis = body_space.clip_pelvis("walk", cycle).lerp(body_space.clip_pelvis("sprint", cycle), running) * effort
+		pelvis.y *= bounce_gain
 	if grounded and landing_left > 0.0:
 		pelvis = pelvis.lerp(body_space.clip_pelvis("land", land_phase), landing_strength)
 	elif braking > 0.02:

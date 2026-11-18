@@ -14,6 +14,9 @@ const BODY_CENTRE: float = 0.9
 ## Leg cadence relative to true ground contact: the stride follows the ground
 ## speed linearly, geared down so the legs stay readable at 13 m/s and more.
 const CADENCE_GEAR: float = 0.5
+## A runner's gait instead of the calm exploring walk: always the sprint clip,
+## wider stride, higher knees, stronger arm swing and hip bob, pose follows quickly.
+const RUN_STYLE := {"limb_gain": 1.35, "bounce_gain": 2.2, "run_floor": 1.0, "response": 55.0}
 
 var rig
 var pivot: Node3D
@@ -43,6 +46,7 @@ func setup(calm: bool) -> void:
 		rig = candidate
 		uses_original = true
 		rig.set_reduced_motion(calm)
+		rig.set_platform_style(RUN_STYLE)
 	else:
 		pivot.remove_child(candidate)
 		candidate.queue_free()
