@@ -458,6 +458,13 @@ func _pro_mode() -> void:
 	_check(table.rules.played.size() == 2, "Lumo hat geantwortet")
 	_check(table.bubble_text.text.begins_with("Ich ziehe "), "Antwort in Schachschrift: " + table.bubble_text.text)
 	_check(frames_during >= 5, "Bilder laufen während Lumo rechnet weiter")
+	var before := rewards.size()
+	await _press("Pause")
+	await _visible_buttons_ok("Pause")
+	await _press("o_Resign")
+	_check(table.finished and table.overlay_kind == "end", "Aufgeben beendet die Partie")
+	_check(rewards.size() == before, "Aufgeben bringt keine Sterne")
+	_check(not table.session.has_game("pro"), "aufgegebene Partie nicht mehr gespeichert")
 
 
 # --- Ansichten und Feldgrößen ----------------------------------------------------------

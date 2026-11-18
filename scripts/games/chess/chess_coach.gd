@@ -249,4 +249,6 @@ static func ending_text(status: String, child_won: bool) -> String:
 			return "Lange nichts passiert – das ist unentschieden."
 		"draw_material":
 			return "Keiner kann mehr Matt setzen – unentschieden."
+		"resign":
+			return "Aufgegeben. Danke für die Partie – Revanche?"
 	return ""

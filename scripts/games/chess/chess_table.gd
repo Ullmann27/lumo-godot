@@ -745,6 +745,10 @@ func _on_pause() -> void:
 		session.set_pref("coords", coords)
 		(buttons["o_Coords"] as Button).text = "Feldnamen: %s" % ("an" if coords else "aus")
 		_update_view())
+	if screen == "match" and rules != null and not finished:
+		_overlay_button("Resign", "Aufgeben", func() -> void:
+			_resume()
+			resign())
 	_overlay_button("Menu", "Hauptmenü", func() -> void:
 		_resume()
 		if mode == "kids":
@@ -1466,6 +1470,19 @@ func _lumo_turn() -> void:
 	_refresh_glow()
 	_store()
 	_check_end()
+
+
+## Partie aufgeben (nur „Gegen Lumo“ und „Für Große“): zählt als verloren.
+func resign() -> void:
+	if screen != "match" or rules == null or finished:
+		return
+	_generation += 1
+	if ai != null:
+		ai.stopped = true
+	finished = true
+	busy = false
+	thinking = false
+	_finish_game("loss", "resign")
 
 
 ## Prüft das Spielende; gibt true zurück, wenn die Partie vorbei ist.
