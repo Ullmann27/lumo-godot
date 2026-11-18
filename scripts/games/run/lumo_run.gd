@@ -253,6 +253,7 @@ func start_course(index: int, with_save: bool) -> void:
 	actor.name = "Lumo"
 	add_child(actor)
 	actor.setup(reduced_motion)
+	actor.pace_scale = TUNING.PATH_TIME_SCALE if plan.adventure else 1.0
 	camera = CAMERA.new()
 	camera.name = "ChaseCamera"
 	camera.reduced_motion = reduced_motion
@@ -348,6 +349,18 @@ func advance(delta: float) -> void:
 
 func _step(delta: float) -> void:
 	elapsed += delta
+	# The adventure path plays PATH_TIME_SCALE times faster than it was laid out
+	# (see run_tuning.gd), in steps that are no longer than before.
+	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else 1.0
+	var parts: int = maxi(1, ceili(pace - 0.001))
+	for _part in range(parts):
+		_simulate(delta * pace / float(parts))
+		if phase != Phase.RUNNING or paused or question_open:
+			break
+
+
+## One step of the run in course time.
+func _simulate(delta: float) -> void:
 	run_clock += delta
 	var steer := Vector2(
 		Input.get_axis("ui_left", "ui_right") + touch_steer.x,

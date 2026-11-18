@@ -172,7 +172,8 @@ func _simulate(game, steer: float, jump_at: float, hold: float, dash_at: float, 
 	for field in [
 		"s", "previous_s", "lat", "lat_v", "h", "vy", "speed", "grounded", "jumping", "coyote", "ground_rate",
 		"dash_time", "dash_cooldown", "boost_time", "stumble_time", "invulnerable", "cruise", "lateral_speed",
-		"slow_factor", "air_dash", "air_dash_ready", "in_cart", "cart_lat",
+		"slow_factor", "air_dash", "air_dash_ready", "in_cart", "cart_lat", "flow", "flow_bonus", "acceleration",
+		"coyote_window", "buffer_window",
 	]:
 		copy.set(field, source.get(field))
 	copy.jump_held = false

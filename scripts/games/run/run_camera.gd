@@ -30,12 +30,16 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	var portrait: bool = view.y > view.x * 1.15
 	var pace: float = clampf((player.speed - TUNING.CRUISE) / (TUNING.BOOST_BONUS + TUNING.DASH_BONUS), -0.6, 1.0)
+	var path: bool = world.has_method("ceiling_at")
+	if path:
+		# On the path Lumo's own pace is the measure: the sprint and a speed pad
+		# pull the camera back and open the view (was tied to the road pace).
+		pace = clampf((player.speed - float(player.cruise)) / TUNING.PATH_PACE_RANGE, -0.6, 1.0)
 	if reduced_motion:
 		pace = 0.0
 	# High enough to see the star line on the road over Lumo's ears.
 	var back: float = (6.6 if portrait else 5.6) + pace * 1.1
 	var height: float = (4.4 if portrait else 3.7) + pace * 0.2
-	var path: bool = world.has_method("ceiling_at")
 	var ahead: float = 16.0 if portrait else 13.0
 	var swing: float = 0.0
 	if path:
@@ -123,5 +127,5 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 	if eye.distance_squared_to(_look) > 0.01:
 		look_at_from_position(eye, _look, Vector3.UP)
 	var base_fov: float = 80.0 if portrait else 64.0
-	var target_fov: float = base_fov + maxf(0.0, pace) * 10.0
+	var target_fov: float = base_fov + maxf(0.0, pace) * (TUNING.PATH_FOV_KICK if path else 10.0)
 	fov = target_fov if snap else lerpf(fov, target_fov, 1.0 - exp(-5.0 * delta))

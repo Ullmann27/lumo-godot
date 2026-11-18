@@ -36,7 +36,7 @@ const DECK: Dictionary = {
 }
 ## Per quality tier (low, medium, high): how far the detailed tree meshes reach,
 ## how far plants are drawn, how dense the jungle grows, how far the sun casts shadows.
-const TREE_DETAIL: Array[float] = [0.0, 30.0, 62.0]
+const TREE_DETAIL: Array[float] = [0.0, 28.0, 62.0]
 const PLANT_RANGE: Array[float] = [48.0, 66.0, 90.0]
 const DENSITY: Array[float] = [0.55, 1.0, 1.35]
 const SHADOW_RANGE: Array[float] = [0.0, 32.0, 60.0]
@@ -225,7 +225,7 @@ func _make_kinds() -> void:
 	var shadows: bool = tier > 0
 	var trees: Array[String] = ["tree_broad", "tree_slender", "tree_fig"]
 	for index in range(3):
-		_art("tree%d" % index, trees[index], 190.0 if tier > 0 else 150.0, shadows, MESHES.tree(100 + index, 18.0, 4 + index % 3, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, trees[index] + "_lod", 40.0)
+		_art("tree%d" % index, trees[index], 190.0 if tier > 0 else 150.0, shadows, MESHES.tree(100 + index, 18.0, 4 + index % 3, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, trees[index] + "_lod", 28.0)
 	# Trees away from the path only ever show their light version (no detailed batch).
 	for index in range(3):
 		_art("tree%d_far" % index, trees[index] + "_lod", 190.0 if tier > 0 else 150.0, tier == 2, MESHES.tree(100 + index, 18.0, 4, Color("6b4a31"), LEAF_GREENS[index]), "trunk", {}, "", 128.0)
@@ -345,7 +345,7 @@ func _flush() -> void:
 			var detail: float = TREE_DETAIL[tier]
 			_far_parts(str(bucket.kind), bucket)
 			# HIGH: the detailed crowns cast the shadows. MEDIUM: a light stand-in casts them.
-			var reach: float = detail + float(kind.chunk) * 0.75
+			var reach: float = detail + float(kind.chunk) * 0.6
 			_batch(str(key), bucket, kind.mesh, kind, 0.0, reach, bool(kind.shadow) and tier == 2)
 			if bool(kind.shadow) and tier == 1:
 				var proxy: MultiMeshInstance3D = _batch(str(key) + "_shadow", bucket, kind.proxy, kind, 0.0, SHADOW_RANGE[1] + float(kind.chunk) * 0.6, true)
