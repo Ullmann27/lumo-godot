@@ -308,15 +308,15 @@ func _run() -> void:
 	city._toggle_walk()
 	# Verbände im Dialog: öffnen, zusammenlegen.
 	city._guard_units_dialog()
-	await _frames(2)
-	_check(is_instance_valid(city.village_window) and city.village_window.name == "GuardUnitsDialog", "Verbände-Dialog geöffnet")
-	if is_instance_valid(city.village_window):
-		await _capture("07_verbaende_dialog")
-		city._guard_action("regroup", "", 0, city.village_window)
+	await _frames(3)
+	_check(city.troop_board.visible and city.troop_board.name == "TroopBoard", "Verbände-Tafel geöffnet")
+	_check(city.dock_section() == "schuetzen", "Tafel gehört zum Bereich „Schützen“")
+	if city.troop_board.visible:
+		await _capture("07_verbaende_tafel")
+		city.troop_board_action("regroup", "", 0)
 		await _frames(4)
 	_check(int(city.raids.guards) == 1000 and city.raids.units.size() <= 5, "Zusammengelegt: 1.000 Wachen in höchstens 5 Verbänden")
-	if is_instance_valid(city.village_window):
-		city.village_window.queue_free()
+	city.troop_board.close()
 	await _frames(3)
 	# Tageswechsel in der Szene (Stadt, Nachbarn, Angriffsplan, Speichern).
 	started = Time.get_ticks_usec()

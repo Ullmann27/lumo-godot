@@ -30,6 +30,7 @@ const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
 const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
 const DOCK = preload("res://scripts/creative/build_village_dock.gd")
 const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
+const TROOP_BOARD = preload("res://scripts/creative/build_village_troop_board.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -138,6 +139,7 @@ var schedule
 var area_tabs: Dictionary = {}
 var dock_tools: Array[Control] = []
 var troop_row: HBoxContainer
+var troop_board: PanelContainer
 
 
 func _ready() -> void:
@@ -1566,7 +1568,7 @@ func _hud_rect(control: Control) -> Rect2:
 
 
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel]:
+	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel, troop_board]:
 		if not is_instance_valid(control) or not control.is_visible_in_tree():
 			continue
 		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
@@ -1629,6 +1631,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _pick_plot(point: Vector2) -> void:
+	# Banner oder Formation eines Verbands angetippt: Tafel für dieses Tor.
+	if model.living_village and is_instance_valid(guards_view) and dock != null and dock.is_open("schuetzen"):
+		var post: String = guards_view.post_at_screen(camera, point)
+		if not post.is_empty():
+			guard_post = post
+			open_troop_board()
+			return
 	var origin := camera.project_ray_origin(point)
 	var query := PhysicsRayQueryParameters3D.create(
 		origin, origin + camera.project_ray_normal(point) * 180, 1
@@ -2250,6 +2259,10 @@ func _build_village_ui() -> void:
 	troop_row.add_theme_constant_override("separation", 8)
 	_dock_tool(troop_row, "schuetzen")
 	actions.add_child(troop_row)
+	var board_button := VHUD.button("Truppen & Verbände", _from_more.bind(open_troop_board), 190, "rose", 15)
+	board_button.name = "VillageTroopBoard"
+	board_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	troop_row.add_child(board_button)
 	var guard_quick := VHUD.button("Wache ausbilden", _quick_guard, 150, "cream", 15)
 	guard_quick.name = "VillageTroop_wache"
 	guard_quick.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -2268,7 +2281,8 @@ func _build_village_ui() -> void:
 	field_button = VHUD.button("Felder ziehen", _from_more.bind(_toggle_field_drag), 150, "teal", 15)
 	field_button.name = "VillageFieldDrag"
 	field_button.mouse_filter = Control.MOUSE_FILTER_PASS
-	more_box.add_child(field_button)
+	_dock_tool(field_button, "versorgen", true)
+	actions.add_child(field_button)
 	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	more_box.add_child(expand_button)
@@ -2305,6 +2319,10 @@ func _build_village_ui() -> void:
 		card.set_meta("dock_section", DOCK.section_of_kind(kind))
 		card.set_meta("dock_card", kind)
 	_build_area_tabs(dock_box)
+	troop_board = TROOP_BOARD.new()
+	troop_board.setup(self)
+	troop_board.hide()
+	safe_ui.add_child(troop_board)
 	pause_panel = PanelContainer.new()
 	pause_panel.add_theme_stylebox_override("panel", _panel())
 	pause_panel.custom_minimum_size = Vector2(300, 0)
@@ -2431,6 +2449,8 @@ func _layout_village_hud(size: Vector2) -> void:
 		)
 	if is_instance_valid(evening_button):
 		evening_button.text = "☀" if time_of_day > 0.6 else "☾"
+	if is_instance_valid(troop_board) and troop_board.visible:
+		troop_board.fit(Rect2(Vector2(gap, top_end + gap), Vector2(size.x - gap * 2.0, maxf(200.0, dock_top - top_end - gap * 2.0))))
 
 
 func _toggle_more() -> void:
@@ -2984,6 +3004,8 @@ func _defense_dialog() -> void:
 		_village_caption(body, "%s kommt in %d Tag%s." % [raids.threat_title(pending), days, "" if days == 1 else "en"], 19)
 		_lumo_says(body, "%s %s" % [str(pending.reason), str(forecast.advice)])
 		_village_caption(body, GUARDS.advice(str(pending.threat)))
+		if not str(forecast.get("army", "")).is_empty():
+			_village_caption(body, str(forecast.army), 17)
 		# Wer kommt, warum – und die EINE einfache Handlung, die jetzt hilft.
 		var help := "%s %s" % [SCHEDULE.stage_change(int(pending.level)), SCHEDULE.simple_help(raids, model)]
 		_village_caption(body, help.strip_edges(), 17)
@@ -3225,80 +3247,37 @@ func _field_drag_finish() -> void:
 func _open_guard_units(dialog: Window) -> void:
 	if is_instance_valid(dialog):
 		dialog.queue_free()
-	_reopen_guard_units.call_deferred()
+	open_troop_board()
 
 
-func _reopen_guard_units() -> void:
-	await get_tree().process_frame
-	if not is_instance_valid(village_window):
-		_guard_units_dialog()
-
-
-## Verbände mit Gesamtzahl, Standort und Versorgung; Ausbilden in 1/10/100.
+## Früherer Verbände-Dialog: öffnet jetzt die große Tafel im Bereich „Schützen“.
 func _guard_units_dialog() -> void:
-	if raids == null:
+	open_troop_board()
+
+
+func open_troop_board() -> void:
+	if raids == null or not is_instance_valid(troop_board) or _transactions_blocked():
 		return
-	var view: Dictionary = _village_dialog("Wachen-Verbände")
-	if view.is_empty():
+	if dock != null and dock.is_open("schuetzen"):
+		select_dock_section("schuetzen")
+	if is_instance_valid(more_panel):
+		more_panel.hide()
+	troop_board.show()
+	troop_board.refresh()
+	_layout()
+
+
+func troop_board_closed() -> void:
+	_layout()
+
+
+## Handlung aus der Tafel (Ausbilden, Verlegen, Teilen, Entlassen, Standort).
+func troop_board_action(action: String, argument: String, number: int) -> void:
+	if action.begins_with("train_"):
+		guard_kind = action.trim_prefix("train_")
+		_guard_action("train", guard_post, number, null)
 		return
-	var body: VBoxContainer = view.body
-	var dialog: Window = view.dialog
-	dialog.name = "GuardUnitsDialog"
-	var info: Dictionary = GUARDS.overview(model, raids)
-	_village_caption(body, "%d Soldaten in %d Verbänden · noch %d Plätze" % [int(info.total), int(info.units), int(info.room)], 18)
-	_village_caption(body, "Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag. %s" % [int(info.food_per_day), str(info.reserve_text)])
-	if not raids.pending.is_empty():
-		_lumo_says(body, GUARDS.advice(str(raids.pending.threat)))
-	_village_caption(body, "Welche Truppe?", 17)
-	var kinds := HFlowContainer.new()
-	kinds.add_theme_constant_override("h_separation", 6)
-	kinds.add_theme_constant_override("v_separation", 6)
-	body.add_child(kinds)
-	for kind in GUARDS.TROOPS.KINDS:
-		var picked: bool = kind == guard_kind
-		var kind_button := _button(("● " if picked else "") + "%s %d" % [GUARDS.TROOPS.title(kind), int(info.kinds[kind])], _guard_action.bind("kind", kind, 0, dialog), 120)
-		kind_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		kinds.add_child(kind_button)
-	_village_caption(body, str(GUARDS.TROOPS.TYPES[guard_kind].why))
-	var site := GUARDS.TROOPS.site_needed(guard_kind)
-	if not site.is_empty() and not GUARDS.has_site(raids, guard_kind):
-		var spec: Dictionary = GUARDS.TROOPS.SITES[site]
-		_raid_button(body, "%s bauen: %s" % [str(spec.title), _cost_text(spec.cost)], _guard_action.bind("site", site, 0, dialog), model._affords(model._player, spec.cost))
-	_village_caption(body, "Neue Soldaten stellen sich hier auf:", 17)
-	var posts := HFlowContainer.new()
-	posts.add_theme_constant_override("h_separation", 6)
-	posts.add_theme_constant_override("v_separation", 6)
-	body.add_child(posts)
-	for post in GUARDS.POST_ORDER:
-		var chosen: bool = post == guard_post
-		var post_button := _button(("● " if chosen else "") + str(GUARDS.POSTS[post]), _guard_action.bind("post", post, 0, dialog), 96)
-		post_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		posts.add_child(post_button)
-	for count in GUARDS.STEPS:
-		var error := GUARDS.train_error(model, raids, int(count), guard_post, guard_kind)
-		_raid_button(body, "%d %s ausbilden: %s" % [count, GUARDS.TROOPS.title(guard_kind, int(count)), _cost_text(GUARDS.TROOPS.cost(guard_kind, int(count)))], _guard_action.bind("train", guard_post, int(count), dialog), error.is_empty())
-		if not error.is_empty() and int(count) > 1:
-			_village_caption(body, "  " + error)
-			break
-	_village_caption(body, "Deine Verbände", 18)
-	for unit in raids.units:
-		var id := int(unit.id)
-		_village_caption(body, "%s · %d %s · %s" % [str(unit.name), int(unit.size), GUARDS.TROOPS.title(str(unit.type), int(unit.size)), str(GUARDS.POSTS[str(unit.post)])], 16)
-		var row := HFlowContainer.new()
-		row.add_theme_constant_override("h_separation", 6)
-		body.add_child(row)
-		var next_post: String = GUARDS.POST_ORDER[(GUARDS.POST_ORDER.find(str(unit.post)) + 1) % GUARDS.POST_ORDER.size()]
-		for spec in [
-			["Nach %s" % str(GUARDS.POSTS[next_post]), "move", next_post, id],
-			["Teilen", "split", "", id],
-			["1 entlassen", "dismiss", "", id],
-		]:
-			var action_button := _button(str(spec[0]), _guard_action.bind(str(spec[1]), str(spec[2]), int(spec[3]), dialog), 120)
-			action_button.mouse_filter = Control.MOUSE_FILTER_PASS
-			action_button.disabled = str(spec[1]) == "split" and int(unit.size) < 2
-			row.add_child(action_button)
-	if raids.units.size() > 1:
-		_raid_button(body, "Alle Verbände je Standort zusammenlegen", _guard_action.bind("regroup", "", 0, dialog))
+	_guard_action(action, argument, number, null)
 
 
 func _guard_action(action: String, argument: String, number: int, dialog: Window) -> void:
@@ -3336,4 +3315,5 @@ func _guard_action(action: String, argument: String, number: int, dialog: Window
 	_save()
 	if is_instance_valid(dialog):
 		dialog.queue_free()
-	_reopen_guard_units.call_deferred()
+	if is_instance_valid(troop_board) and troop_board.visible:
+		troop_board.refresh()
