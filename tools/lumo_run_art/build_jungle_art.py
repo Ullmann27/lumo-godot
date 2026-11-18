@@ -300,12 +300,12 @@ def _fig_extra(geo, rng, spine, radii, tips, lod):
             points.append(centre + v3(math.cos(angle) * r, 0, math.sin(angle) * r) + UP * (-0.1 if k == 0 else 0))
             rr.append(0.13 * (1.0 - 0.5 * t) + 0.02)
         G.tube(geo, points, rr, 4 if lod else 6, "bark", uv_len=1.5, colours=[ao_colour(0.7)] * len(points))
-    hanging = 3 if lod else 8
+    hanging = 2 if lod else 4
     for h in range(hanging):
         top = rng.choice(tips[:-1]) if len(tips) > 1 else tips[0]
         anchor = top.lerp(v3(0, top.y, 0), rng.uniform(0.2, 0.6))
-        points = [anchor + v3(math.sin(k * 0.9 + h) * 0.08, -anchor.y * k / 6 - 0.2 * (k == 6), 0) for k in range(7)]
-        G.tube(geo, points, [0.04] * 7, 3 if lod else 4, "bark", uv_len=1.5, sway=[0.1 + 0.1 * k for k in range(7)],
+        points = [anchor + v3(math.sin(k * 1.3 + h) * 0.25, -anchor.y * k / 6 - 0.2 * (k == 6), math.cos(k * 0.9 + h) * 0.2) for k in range(7)]
+        G.tube(geo, points, [0.05, 0.04, 0.035, 0.035, 0.04, 0.05, 0.07], 3 if lod else 4, "bark", uv_len=1.5, sway=[0.1 + 0.1 * k for k in range(7)],
                phase=0.3 + h * 0.1, colours=[ao_colour(0.75)] * 7)
 
 
@@ -401,6 +401,21 @@ def bush(seed: int) -> Geo:
     tips.append(v3(0, 0.9, 0))
     crown_from_branches(geo, rng, tips, crown_centre=v3(0, 0.45, 0), crown_radius=1.0, lod=False, per_tip=6, lod_per_tip=3,
                         card=0.9, cell="twig", cluster_r=0.6, cells=["twig", "small"], droop=0.3)
+    return geo
+
+
+def groundcover(seed: int) -> Geo:
+    """A low carpet of leafy sprigs that hides the bare forest floor."""
+    rng = random.Random(seed)
+    geo = Geo()
+    for index in range(12):
+        angle = math.tau * index / 12 + rng.uniform(-0.3, 0.3)
+        base = v3(math.cos(angle), 0, math.sin(angle)) * rng.uniform(0.0, 0.6)
+        direction = v3(math.cos(angle), rng.uniform(0.15, 0.5), math.sin(angle))
+        length = rng.uniform(0.6, 0.95)
+        G.leaf_card(geo, base + UP * 0.02, direction, v3(-math.sin(angle), 0.3, math.cos(angle)), length, length * 0.7,
+                    rng.choice(["small", "twig", "fern"]), "leaves", bend=0.2, fold=0.12, segments=1, columns=3,
+                    centre=v3(0, -0.5, 0), spherical=0.5, sway=(0.0, 0.5), phase=rng.random(), ao=(0.55, 0.95))
     return geo
 
 
@@ -520,7 +535,7 @@ def temple_block(geo, centre, half, rng, *, chip=0.012, radius=0.06, colour=None
 def glyph(geo, centre, normal_axis: str, size: float, rng):
     """A carved round sun glyph: a lathe disc ring standing out of a face."""
     axis = {"z": Matrix.Rotation(math.pi / 2, 3, "X"), "x": Matrix.Rotation(-math.pi / 2, 3, "Z")}[normal_axis]
-    profile = [(0.0, 0.03), (size * 0.25, 0.035), (size * 0.32, 0.0), (size * 0.62, 0.0), (size * 0.7, 0.04), (size * 0.85, 0.04), (size * 0.9, 0.0)]
+    profile = [(0.0, 0.03), (size * 0.25, 0.035), (size * 0.32, 0.0), (size * 0.62, 0.0), (size * 0.7, 0.04), (size * 0.85, 0.04), (size * 0.9, 0.0)][::-1]
     G.lathe(geo, profile, 16, "sandstone", centre=centre, axis=axis, smooth_angle=40)
 
 
@@ -611,7 +626,7 @@ def statue() -> Geo:
         G.blob(geo, v3(side * 1.12, 2.3, -0.05), v3(0.28, 0.38, 0.18), "sandstone", subdiv=2, rough=0.04, seed=8 + side, uv_scale=0.45)
         # Eyes: carved rings with a round pupil stone.
         eye_rot = Matrix.Rotation(math.pi / 2, 3, "X")
-        G.lathe(geo, [(0.0, 0.06), (0.12, 0.06), (0.2, 0.0), (0.26, -0.02), (0.3, 0.04), (0.34, -0.06)], 14, "sandstone",
+        G.lathe(geo, [(0.0, 0.06), (0.12, 0.06), (0.2, 0.0), (0.26, -0.02), (0.3, 0.04), (0.34, -0.06)][::-1], 14, "sandstone",
                 centre=v3(side * 0.42, 2.38, 0.83), axis=eye_rot, smooth_angle=45)
         G.blob(geo, v3(side * 0.42, 2.38, 0.92), v3(0.11, 0.11, 0.06), "moss", subdiv=2, rough=0.0, seed=9)
     # Smile: a bent tube.
@@ -719,8 +734,8 @@ def barrel() -> Geo:
         G.lathe(geo, [(r - 0.005, at - 0.06), (r + 0.02, at - 0.05), (r + 0.02, at + 0.05), (r - 0.005, at + 0.06)], 36, "iron",
                 axis=axis, uv_len=0.5, smooth_angle=60)
     # Back lid (planks) and the dark open mouth with a rim.
-    G.lathe(geo, [(0.0, 0.73), (0.6, 0.73), (0.64, 0.76)], 18, "wood", axis=axis, smooth_angle=20)
-    G.lathe(geo, [(0.64, -0.76), (0.6, -0.72), (0.52, -0.6), (0.0, -0.55)], 18, "paint_dark", axis=axis, smooth_angle=50)
+    G.lathe(geo, [(0.0, -0.73), (0.6, -0.73), (0.64, -0.76)], 18, "wood", axis=axis, smooth_angle=20)
+    G.lathe(geo, [(0.64, 0.76), (0.6, 0.72), (0.52, 0.6), (0.0, 0.55)], 18, "paint_dark", axis=axis, smooth_angle=50)
     return geo
 
 
@@ -792,7 +807,7 @@ def gate() -> Geo:
         for col in (-1, 1):
             G.bevel_box(geo, v3(col * 0.95, 0.85 + row * 1.35, 0.26), v3(0.8, 0.55, 0.05), "sandstone", radius=0.04,
                         uv_scale=0.45, uv_offset=(rng.random(), rng.random()))
-    G.lathe(geo, [(0.0, 0.08), (0.3, 0.08), (0.38, 0.0), (0.5, 0.0), (0.56, 0.1), (0.62, 0.1), (0.66, 0.0)], 20, "paint_gold",
+    G.lathe(geo, [(0.0, 0.08), (0.3, 0.08), (0.38, 0.0), (0.5, 0.0), (0.56, 0.1), (0.62, 0.1), (0.66, 0.0)][::-1], 20, "paint_gold",
             centre=v3(0, 2.3, 0.3), axis=Matrix.Rotation(math.pi / 2, 3, "X"), smooth_angle=40)
     for x in (-1.9, 1.9):
         G.bevel_box(geo, v3(x, 2.2, 0.28), v3(0.08, 2.15, 0.04), "iron", radius=0.02, uv_scale=1.0)
@@ -855,7 +870,7 @@ def log() -> Geo:
     radii = [0.32 + 0.03 * math.sin(k * 1.7) for k in range(9)]
     G.tube(geo, points, radii, 12, "bark", uv_around=2.0, uv_len=2.0, bump=0.08, seed=5)
     for end, sign in ((points[0], -1), (points[-1], 1)):
-        axis = Matrix.Rotation(-sign * math.pi / 2, 3, "Z")
+        axis = Matrix.Rotation(sign * math.pi / 2, 3, "Z")
         r = radii[0 if sign < 0 else -1]
         G.lathe(geo, [(0.0, 0.0), (r * 0.98, -0.01), (r + 0.01, -0.03)], 12, "wood", centre=end, axis=axis, smooth_angle=30)
     for k in range(3):
@@ -950,6 +965,7 @@ def catalogue():
         "bigleaf_b": lambda: bigleaf(302, 5, 0.75, 1.0, 0.75, 0.45),
         "bush": lambda: bush(1100),
         "grass": lambda: grass(401, 16, 0.7),
+        "groundcover": lambda: groundcover(402),
         "flower": lambda: flower(900),
         "liana_a": lambda: liana(1000, 5.0),
         "liana_b": lambda: liana(1001, 7.0),

@@ -8,6 +8,7 @@ extends SceneTree
 ##
 ## LUMO_RUN_SIZE=1600x720 limits it to one window size; LUMO_SEED picks the
 ## player's ways (default 4: upper ways, niches and the treasure hall).
+## LUMO_PROFILE=low|medium|high picks the quality profile (not saved).
 
 const BOT = preload("res://scripts/tests/helpers/lumo_jungle_bot.gd")
 const COURSES = preload("res://scripts/games/run/run_courses.gd")
@@ -100,6 +101,12 @@ func _run() -> void:
 		return
 	var only: String = OS.get_environment("LUMO_RUN_SIZE")
 	var seed: int = int(OS.get_environment("LUMO_SEED")) if not OS.get_environment("LUMO_SEED").is_empty() else 4
+	var profile: String = OS.get_environment("LUMO_PROFILE")
+	if profile in ["low", "medium", "high"]:
+		root.get_node("SettingsStore")._profile = profile
+		var manager: Node = root.get_node("PerformanceManager")
+		manager.current_profile = ["low", "medium", "high"].find(profile)
+		print("[JungleCapture] profile " + profile)
 	var bridge: Node = root.get_node("HostBridge")
 	bridge._options["displayDensity"] = 2.0
 	var index: int = COURSES.index_of("dschungelherz")

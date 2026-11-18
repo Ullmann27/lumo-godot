@@ -1095,6 +1095,7 @@ func _test_adventure_path() -> void:
 	_check(moving >= 3 and crumbling >= 3, "moving (%d) and crumbling (%d) platforms" % [moving, crumbling])
 	_check(world.find_child("JungleScenery", false, false) != null and world.scenery.placed > 4000, "dense jungle scenery (%d instances)" % world.scenery.placed)
 	_check(game.load_ms > 0 and game.load_ms < 6000, "the level is built in %d ms" % game.load_ms)
+	_check_jungle_art(game)
 	# Feel on the path: slower cruise, stopping, one dash in the air.
 	_check(is_equal_approx(player.cruise, TUNING.PATH_CRUISE) and player.air_dash, "the path has its own running feel")
 	_place_on_path(game, 30.0)
@@ -1315,6 +1316,51 @@ func _test_adventure_path() -> void:
 
 
 ## Save and resume in the middle of every section, with letters and the hall.
+## The jungle is built from the Blender models (assets/games/run/jungle/models):
+## every scenery batch and gameplay piece shows its GLB, no stand-in shapes.
+func _check_jungle_art(game) -> void:
+	var scenery = game.world.scenery
+	var art: Dictionary = scenery.art_report()
+	_check(art.missing.is_empty(), "every jungle model loads (missing: %s)" % str(art.missing))
+	_check(art.glb.size() >= 40, "the jungle scenery is made of Blender models (%d kinds)" % art.glb.size())
+	var effects: Array[String] = ["bulb", "flame", "butterfly", "bird", "leafcard", "firefly", "spark", "treasure", "mountain"]
+	var stray: Array = art.code.filter(func(kind: String) -> bool: return not effects.has(kind))
+	_check(stray.is_empty(), "only light and animal effects are drawn from code shapes (also: %s)" % str(stray))
+	var batches: int = 0
+	var wrong: Array[String] = []
+	var leaf_crowns: bool = false
+	for child in scenery.get_children():
+		if not child is MultiMeshInstance3D or not child.has_meta("jungle_glb"):
+			continue
+		batches += 1
+		var mesh: Mesh = child.multimesh.mesh
+		if mesh == null or not mesh.has_meta("jungle_glb") or not ResourceLoader.exists(str(child.get_meta("jungle_glb"))):
+			wrong.append(str(child.name))
+			continue
+		if str(mesh.resource_name).begins_with("tree_"):
+			for surface in range(mesh.get_surface_count()):
+				var material: ShaderMaterial = mesh.surface_get_material(surface) as ShaderMaterial
+				if material != null and str(material.resource_name) == "leaves" and material.get_shader_parameter("albedo_tex") != null:
+					leaf_crowns = true
+	_check(batches > 100 and wrong.is_empty(), "every scenery batch draws its GLB (%d batches, wrong: %s)" % [batches, str(wrong)])
+	_check(leaf_crowns, "tree crowns are textured leaf cards, not green lumps")
+	var props = game.props.jungle
+	var pieces: Array = []
+	for index in props._enemies:
+		pieces.append(props._enemies[index])
+	for index in props._mushrooms:
+		pieces.append(props._mushrooms[index])
+	for index in props._gates:
+		pieces.append(props._gates[index])
+	var boulder: Node = props._boulder.get_child(0) if props._boulder != null and props._boulder.get_child_count() > 0 else props._boulder
+	pieces.append(boulder)
+	var stand_ins: Array[String] = []
+	for piece in pieces:
+		if not piece is MeshInstance3D or piece.mesh == null or not piece.mesh.has_meta("jungle_glb"):
+			stand_ins.append(str(piece.name) if piece != null else "null")
+	_check(pieces.size() > 20 and stand_ins.is_empty(), "enemies, mushrooms, puzzle gates and the stone ball are Blender models (%d, stand-ins: %s)" % [pieces.size(), str(stand_ins)])
+
+
 func _test_adventure_saves() -> void:
 	var index: int = _jungle_index()
 	var game = await _open(index)
