@@ -26,7 +26,8 @@ const SFX_SAMPLES: Dictionary = {
 	"treasure_found": 1, "puzzle_snap": 3, "dig": 3, "applause": 2, "crowd_ooh": 1,
 	"lumo_jingle": 1, "whoosh": 2,
 }
-const SFX_ALIASES: Dictionary = {"back": "ui_back"}
+## "disc_clack" (Vier-gewinnt-Stein) nutzt den aufgenommenen Stein-Klang statt des Ersatztons.
+const SFX_ALIASES: Dictionary = {"back": "ui_back", "disc_clack": "piece_drop"}
 # Sehr haeufige Toene variieren staerker, seltene Fanfaren kaum.
 const PITCH_SPREAD: Dictionary = {
 	"ui_click": 1.06, "card_deal": 1.07, "card_play": 1.05, "card_select": 1.04,
