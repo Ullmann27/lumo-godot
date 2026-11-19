@@ -77,9 +77,18 @@ func _run() -> void:
 	# 1) Weltwahl: nur spielbare Welten als Karten, Zurück zum Kart-Menü vorhanden.
 	var game: Node = await _open({"childKey": "parcours_kind_a"})
 	var cards: Node = game.hud.choice.find_child("WorldCards", true, false)
-	_check(cards != null and cards.get_child_count() == worlds.playable_ids().size(), "Weltwahl zeigt genau die spielbaren Welten")
-	_check(game.hud.choice.find_child("BackToKartMenu", true, false) != null, "Weltwahl hat Zurück zum Kart-Menü")
-	_check(game.hud.choice.find_child("ResumeSaved", true, false) == null, "Kein Weiterfahren ohne Spielstand")
+	_check(
+		cards != null and cards.get_child_count() == worlds.playable_ids().size(),
+		"Weltwahl zeigt genau die spielbaren Welten"
+	)
+	_check(
+		game.hud.choice.find_child("BackToKartMenu", true, false) != null,
+		"Weltwahl hat Zurück zum Kart-Menü"
+	)
+	_check(
+		game.hud.choice.find_child("ResumeSaved", true, false) == null,
+		"Kein Weiterfahren ohne Spielstand"
+	)
 	for world_id in worlds.playable_ids():
 		# 2) Welt starten über die echte Karte.
 		var card: Button = cards.get_node("World_" + world_id)
@@ -99,21 +108,33 @@ func _run() -> void:
 			game._physics_process(STEP)
 		_check(is_equal_approx(game.run.elapsed, before), "%s: Pause hält die Zeit an" % world_id)
 		game.handle_back()
-		_check(not game.paused and not game.hud.modal.visible, "%s: Zurück in der Pause fährt weiter" % world_id)
+		_check(
+			not game.paused and not game.hud.modal.visible,
+			"%s: Zurück in der Pause fährt weiter" % world_id
+		)
 		# 4) Speichern und fortsetzen am Checkpoint.
 		game.run.checkpoint = 1
 		game.run.reached[1] = true
 		game.run.stars_taken[0] = true
 		game.pause_game()
 		var saved: Dictionary = game.progress.load_session()
-		_check(int(saved.get("checkpoint", -1)) == 1 and (saved.stars as Array).has(0), "%s: Spielstand gespeichert" % world_id)
+		_check(
+			int(saved.get("checkpoint", -1)) == 1 and (saved.stars as Array).has(0),
+			"%s: Spielstand gespeichert" % world_id
+		)
 		game.leave_to_choice()
 		await process_frame
-		_check(game.hud.choice.find_child("ResumeSaved", true, false) != null, "%s: Weltwahl bietet Weiterfahren" % world_id)
+		_check(
+			game.hud.choice.find_child("ResumeSaved", true, false) != null,
+			"%s: Weltwahl bietet Weiterfahren" % world_id
+		)
 		var saved_id: String = str(saved.result_id)
 		game.continue_saved()
 		await process_frame
-		_check(game.run.checkpoint == 1 and game.run.stars_taken.has(0), "%s: Fortsetzen am Checkpoint mit Sternen" % world_id)
+		_check(
+			game.run.checkpoint == 1 and game.run.stars_taken.has(0),
+			"%s: Fortsetzen am Checkpoint mit Sternen" % world_id
+		)
 		_check(game.result_id == saved_id, "%s: Fortsetzen behält die Ergebnis-ID" % world_id)
 		# 5) Neu starten und bis ins Ziel fahren.
 		game.restart_world()
@@ -122,14 +143,45 @@ func _run() -> void:
 		var booked_before: int = game.rewards_booked
 		var outcome: Dictionary = await _drive_to_finish(game, world_id)
 		_check(game.finished, "%s: Szene fährt bis ins Ziel" % world_id)
-		_check((outcome.rewards as Array).size() == 1, "%s: Ergebnis genau einmal an den Host (%d)" % [world_id, (outcome.rewards as Array).size()])
-		_check(game.rewards_booked == booked_before + 1, "%s: Belohnung genau einmal gebucht" % world_id)
-		_check(root.get_node("ProgressStore").total_stars() == stars_before + 3, "%s: 3 Sterne gutgeschrieben" % world_id)
+		_check(
+			(outcome.rewards as Array).size() == 1,
+			(
+				"%s: Ergebnis genau einmal an den Host (%d)"
+				% [world_id, (outcome.rewards as Array).size()]
+			)
+		)
+		_check(
+			game.rewards_booked == booked_before + 1,
+			"%s: Belohnung genau einmal gebucht" % world_id
+		)
+		_check(
+			root.get_node("ProgressStore").total_stars() == stars_before + 3,
+			"%s: 3 Sterne gutgeschrieben" % world_id
+		)
 		var payload: Dictionary = game.result_payload
-		_check(str(payload.game) == "kart" and str(payload.mode) == "parcours" and int(payload.solved) == 0, "%s: Ergebnisvertrag" % world_id)
-		_check(game.hud.modal.visible and game.hud.modal_column.find_child("Again", true, false) != null, "%s: Ergebnisfenster" % world_id)
-		_check(game.progress.load_session().is_empty(), "%s: Spielstand nach dem Ziel gelöscht" % world_id)
-		_check(int(game.progress.world(world_id).completed) == 1, "%s: Fortschritt für Kind A" % world_id)
+		_check(
+			(
+				str(payload.game) == "kart"
+				and str(payload.mode) == "parcours"
+				and int(payload.solved) == 0
+			),
+			"%s: Ergebnisvertrag" % world_id
+		)
+		_check(
+			(
+				game.hud.modal.visible
+				and game.hud.modal_column.find_child("Again", true, false) != null
+			),
+			"%s: Ergebnisfenster" % world_id
+		)
+		_check(
+			game.progress.load_session().is_empty(),
+			"%s: Spielstand nach dem Ziel gelöscht" % world_id
+		)
+		_check(
+			int(game.progress.world(world_id).completed) == 1,
+			"%s: Fortschritt für Kind A" % world_id
+		)
 		game.show_world_choice()
 		await process_frame
 		cards = game.hud.choice.find_child("WorldCards", true, false)
@@ -138,8 +190,14 @@ func _run() -> void:
 	# 6) Anderes Kind: eigener Fortschritt, kein fremder Spielstand.
 	var other: Node = await _open({"childKey": "parcours_kind_b"})
 	for world_id in worlds.playable_ids():
-		_check(int(other.progress.world(world_id).completed) == 0, "%s: Kind B hat eigenen Fortschritt" % world_id)
-	_check(other.hud.choice.find_child("ResumeSaved", true, false) == null, "Kind B sieht keinen fremden Spielstand")
+		_check(
+			int(other.progress.world(world_id).completed) == 0,
+			"%s: Kind B hat eigenen Fortschritt" % world_id
+		)
+	_check(
+		other.hud.choice.find_child("ResumeSaved", true, false) == null,
+		"Kind B sieht keinen fremden Spielstand"
+	)
 	other.queue_free()
 	await process_frame
 	if root.has_node("GameSoundscape"):

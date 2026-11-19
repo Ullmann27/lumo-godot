@@ -15,7 +15,10 @@ func _init(child: String = "standalone") -> void:
 
 
 static func path_for(child: String) -> String:
-	return "user://kart_parcours_%s.cfg" % (child if not child.is_empty() else "standalone").sha256_text()
+	return (
+		"user://kart_parcours_%s.cfg"
+		% (child if not child.is_empty() else "standalone").sha256_text()
+	)
 
 
 static func session_path_for(child: String) -> String:
@@ -28,9 +31,9 @@ func session_path() -> String:
 
 
 func world(world_id: String) -> Dictionary:
-	return worlds.get(world_id, {
-		"completed": 0, "best_time": 0.0, "best_stars": 0, "secrets": [], "explored": 0
-	})
+	return worlds.get(
+		world_id, {"completed": 0, "best_time": 0.0, "best_stars": 0, "secrets": [], "explored": 0}
+	)
 
 
 ## Ergebnis eines Laufs übernehmen. Jede Ergebnis-ID zählt genau einmal.

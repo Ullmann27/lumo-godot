@@ -164,6 +164,10 @@ func start_world(id: String, style: String, resume: Dictionary = {}) -> void:
 	run.setup(course, play_style)
 	run.drive.factors = _ensure_workshop().multipliers(selected_kart)
 	run.drive.difficulty = difficulty
+	if play_style == "erkunden":
+		# Entspannt erkunden: ohne Uhr, etwas ruhigeres Tempo und immer mit Lenkhilfe.
+		run.drive.difficulty = "gemuetlich"
+		run.drive.pace *= 0.9
 	result_id = HostBridge.new_result_id()
 	if not resume.is_empty():
 		run.restore(resume)
@@ -198,8 +202,11 @@ func start_world(id: String, style: String, resume: Dictionary = {}) -> void:
 	playing = true
 	kart_audio.play_track(str(course.theme.get("music", "bergwelt")))
 	hud.say(
-		"%s! %s" % [course.title, "Fahr los, wenn das Licht grün wird."]
-		if resume.is_empty() else "Weiter geht's am letzten Checkpoint."
+		(
+			"%s! %s" % [course.title, "Fahr los, wenn das Licht grün wird."]
+			if resume.is_empty()
+			else "Weiter geht's am letzten Checkpoint."
+		)
 	)
 	_save_session()
 	print("[Parcours] start: world=%s style=%s kart=%s" % [world_id, play_style, selected_kart])
@@ -316,14 +323,21 @@ func _update_visuals(delta: float) -> void:
 	hud.update_hud(run, play_style)
 	var moving: bool = playing and not paused and not finished and countdown <= 0.0
 	var ratio: float = clampf(absf(run.drive.speed) / 22.0, 0.0, 1.0)
-	kart_audio.set_loop("engine_mid", (0.25 + ratio * 0.6) if moving and not run.on_foot else 0.0, 0.8 + ratio * 0.6)
+	kart_audio.set_loop(
+		"engine_mid", (0.25 + ratio * 0.6) if moving and not run.on_foot else 0.0, 0.8 + ratio * 0.6
+	)
 
 
 func _place_visuals(delta: float) -> void:
 	var drive = run.drive
 	kart.transform = Transform3D(drive.basis, drive.position)
 	var enabled: bool = playing and not paused and not finished and not run.on_foot
-	kart.set_motion(drive.speed if enabled else 0.0, steer.x, drive.boost_time > 0.0 and enabled, drive.drifting and enabled)
+	kart.set_motion(
+		drive.speed if enabled else 0.0,
+		steer.x,
+		drive.boost_time > 0.0 and enabled,
+		drive.drifting and enabled
+	)
 	kart.set_braking(brake_held if enabled else 0.0)
 	kart.set_driver_runtime_state(drive.airborne, drive.bump_time > 0.0, paused)
 	if is_instance_valid(kart.driver):
@@ -331,7 +345,9 @@ func _place_visuals(delta: float) -> void:
 	lumo.visible = run.on_foot
 	if run.on_foot:
 		var w = run.walker
-		var ground_y: float = float(w.hit.get("height", w.position.y)) if not w.hit.is_empty() else w.position.y - 3.0
+		var ground_y: float = (
+			float(w.hit.get("height", w.position.y)) if not w.hit.is_empty() else w.position.y - 3.0
+		)
 		var feet := Transform3D(Basis(Vector3.UP, w.heading), w.position)
 		var ground := Transform3D(Basis.IDENTITY, Vector3(w.position.x, ground_y, w.position.z))
 		lumo.apply(feet, ground, w, maxf(delta, 0.0001), paused)
@@ -360,13 +376,22 @@ func _update_camera(delta: float, snap: bool) -> void:
 		camera_yaw = lerp_angle(camera_yaw, heading, 1.0 if snap else minf(1.0, delta * 5.0))
 	var ahead := Vector3(-sin(camera_yaw), 0.0, -cos(camera_yaw))
 	var desired: Vector3 = follow - ahead * distance + Vector3.UP * height
-	var target: Vector3 = follow + ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + 1.5) + Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
-	camera.position = desired if snap else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+	var target: Vector3 = (
+		follow
+		+ ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + 1.5)
+		+ Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
+	)
+	camera.position = (
+		desired
+		if snap
+		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+	)
 	if camera.position.distance_to(target) > 0.1:
 		camera.look_at(target)
 
 
 # --- Bedienung (vom HUD aufgerufen) ---------------------------------------------------
+
 
 func press_drift() -> void:
 	if run != null and not run.on_foot:
@@ -487,12 +512,22 @@ func _finish() -> void:
 	kart_audio.effect("finish")
 	var earned: int = 3
 	result_payload = {
-		"game": "kart", "mode": "parcours", "world": world_id, "style": play_style,
+		"game": "kart",
+		"mode": "parcours",
+		"world": world_id,
+		"style": play_style,
 		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
-		"resultId": result_id, "status": "completed", "stars": earned, "solved": 0,
-		"elapsedSeconds": snappedf(run.elapsed, 0.001), "starTokens": run.stars_taken.size(),
-		"starTotal": course.stars.size(), "secrets": _found_secret_ids(),
-		"checkpoints": run.reached.size(), "resets": run.resets, "kart": selected_kart,
+		"resultId": result_id,
+		"status": "completed",
+		"stars": earned,
+		"solved": 0,
+		"elapsedSeconds": snappedf(run.elapsed, 0.001),
+		"starTokens": run.stars_taken.size(),
+		"starTotal": course.stars.size(),
+		"secrets": _found_secret_ids(),
+		"checkpoints": run.reached.size(),
+		"resets": run.resets,
+		"kart": selected_kart,
 		"driver": selected_driver
 	}
 	_book_reward()
@@ -500,10 +535,18 @@ func _finish() -> void:
 	progress.clear_session()
 	if is_instance_valid(kart):
 		kart.celebrate(1)
-	hud.show_result(result_payload, progress.world(world_id), last_result, reward_accepted or not HostBridge.is_embedded())
-	print("[Parcours] completed: world=%s style=%s seconds=%.1f stars=%d/%d" % [
-		world_id, play_style, run.elapsed, run.stars_taken.size(), course.stars.size()
-	])
+	hud.show_result(
+		result_payload,
+		progress.world(world_id),
+		last_result,
+		reward_accepted or not HostBridge.is_embedded()
+	)
+	print(
+		(
+			"[Parcours] completed: world=%s style=%s seconds=%.1f stars=%d/%d"
+			% [world_id, play_style, run.elapsed, run.stars_taken.size(), course.stars.size()]
+		)
+	)
 
 
 ## Belohnung genau einmal je Ergebnis-ID: Sterne gutschreiben und an den Host melden.
@@ -520,7 +563,12 @@ func _book_reward() -> void:
 func retry_reward() -> void:
 	if finished and not result_payload.is_empty():
 		reward_accepted = HostBridge.reward(result_payload)
-		hud.show_result(result_payload, progress.world(world_id), last_result, reward_accepted or not HostBridge.is_embedded())
+		hud.show_result(
+			result_payload,
+			progress.world(world_id),
+			last_result,
+			reward_accepted or not HostBridge.is_embedded()
+		)
 
 
 func _found_secret_ids() -> Array[String]:
@@ -542,9 +590,13 @@ func _save_session() -> void:
 func return_to_app(destination: String) -> void:
 	_save_session()
 	if HostBridge.is_embedded():
-		var payload: Dictionary = result_payload.duplicate(true) if finished else {
-			"game": "kart", "status": "paused", "resultId": result_id, "stars": 0, "solved": 0
-		}
+		var payload: Dictionary = (
+			result_payload.duplicate(true)
+			if finished
+			else {
+				"game": "kart", "status": "paused", "resultId": result_id, "stars": 0, "solved": 0
+			}
+		)
 		if finished:
 			HostBridge.reward(result_payload)
 		HostBridge.return_to_app(destination, payload)

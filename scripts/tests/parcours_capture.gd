@@ -21,15 +21,28 @@ func _shot(label: String) -> void:
 	await process_frame
 	await process_frame
 	var image: Image = root.get_viewport().get_texture().get_image()
-	var info := "%s: %d Dreiecke, %d Draw-Calls, %d Objekte" % [
-		label,
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
-		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME)
-	]
+	var info := (
+		"%s: %d Dreiecke, %d Draw-Calls, %d Objekte"
+		% [
+			label,
+			RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME
+			),
+			RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME
+			),
+			RenderingServer.get_rendering_info(
+				RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME
+			)
+		]
+	)
 	var width: int = 1000
 	if image.get_width() > width:
-		image.resize(width, roundi(image.get_height() * float(width) / image.get_width()), Image.INTERPOLATE_LANCZOS)
+		image.resize(
+			width,
+			roundi(image.get_height() * float(width) / image.get_width()),
+			Image.INTERPOLATE_LANCZOS
+		)
 	var path: String = out_dir.path_join("%s_%02d_%s.png" % [world_id, shots.size(), label])
 	image.save_png(path)
 	shots.append(path)
@@ -44,7 +57,9 @@ func _run() -> void:
 			out_dir = arg.trim_prefix("--out=")
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var router = root.get_node("SceneRouter")
-	router.launch_options = {"childKey": "parcours_capture", "parcoursWorld": world_id, "soundEnabled": false}
+	router.launch_options = {
+		"childKey": "parcours_capture", "parcoursWorld": world_id, "soundEnabled": false
+	}
 	game = load("res://scenes/games/kart_parcours.tscn").instantiate()
 	root.add_child(game)
 	for i in range(4):
@@ -58,6 +73,24 @@ func _run() -> void:
 		if i % 10 == 0:
 			await process_frame
 	await _shot("start")
+	# Messung nur der Welt (ohne Kart/Lumo), gleiche Kamera.
+	game.kart.visible = false
+	await process_frame
+	await process_frame
+	print(
+		(
+			"[ParcoursCapture] nur Welt: %d Dreiecke, %d Draw-Calls"
+			% [
+				RenderingServer.get_rendering_info(
+					RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME
+				),
+				RenderingServer.get_rendering_info(
+					RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME
+				)
+			]
+		)
+	)
+	game.kart.visible = true
 	var pending: Array[Dictionary] = []
 	var foot_shots: int = 0
 	var finish_near: bool = false
@@ -87,12 +120,21 @@ func _run() -> void:
 			e["_seen"] = true
 			match str(e.kind):
 				"skill":
-					pending.append({"label": "stelle_%s" % str(run.course.skills[run.last_skill].id), "at": frames + 70})
+					pending.append(
+						{
+							"label": "stelle_%s" % str(run.course.skills[run.last_skill].id),
+							"at": frames + 70
+						}
+					)
 				"leave":
 					pending.append({"label": "zu_fuss", "at": frames + 100})
 				"lever":
 					pending.append({"label": "hebel", "at": frames + 50})
-		if not finish_near and run.drive.position.distance_to(run.course.finish.pos) < 26.0 and not run.on_foot:
+		if (
+			not finish_near
+			and run.drive.position.distance_to(run.course.finish.pos) < 26.0
+			and not run.on_foot
+		):
 			finish_near = true
 			pending.append({"label": "ziel", "at": frames + 1})
 		frames += 1
@@ -105,7 +147,12 @@ func _run() -> void:
 	for i in range(30):
 		await process_frame
 	await _shot("ergebnis")
-	print("[ParcoursCapture] fertig: %d Bilder, Ziel=%s, %.1f s" % [shots.size(), game.finished, game.run.elapsed])
+	print(
+		(
+			"[ParcoursCapture] fertig: %d Bilder, Ziel=%s, %.1f s"
+			% [shots.size(), game.finished, game.run.elapsed]
+		)
+	)
 	print("[ParcoursCapture] Szene: ", game.builder.stats)
 	var done: bool = game.finished
 	game.queue_free()

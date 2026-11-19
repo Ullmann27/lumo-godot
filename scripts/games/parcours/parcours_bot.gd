@@ -11,7 +11,6 @@ var foot_target: int = 0
 var _history: Array[Dictionary] = []
 var _noise_value: float = 0.0
 var _noise_timer: float = 0.0
-var max_route_distance: float = 0.0
 var _turn_sign: float = 0.0
 
 
@@ -45,7 +44,9 @@ func drive_input(run, delta: float) -> Dictionary:
 		var next_point: Vector3 = route[target + 1].pos
 		var to_here: Vector3 = here - pos
 		var segment: Vector3 = next_point - here
-		var passed: bool = to_here.dot(segment) < 0.0 and to_here.length() < 14.0 and absf(to_here.y) < 3.0
+		var passed: bool = (
+			to_here.dot(segment) < 0.0 and to_here.length() < 14.0 and absf(to_here.y) < 3.0
+		)
 		if Vector2(to_here.x, to_here.z).length() < 4.5 and absf(to_here.y) < 3.5 or passed:
 			target += 1
 		else:
@@ -110,7 +111,8 @@ func _follow(run, point: Dictionary, returning: bool) -> Dictionary:
 		var press: bool = bool(point.get("press", false)) and not returning
 		return {"move": Vector2.ZERO, "jump": false, "lever": press}
 	var jump: bool = (
-		bool(point.get("jump", false)) and flat < float(point.get("jump_at", 3.4))
+		bool(point.get("jump", false))
+		and flat < float(point.get("jump_at", 3.4))
 		and run.walker.grounded
 	)
 	return {"move": Vector2(to.x, to.z).normalized(), "jump": jump, "lever": false}

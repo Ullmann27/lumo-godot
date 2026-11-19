@@ -23,7 +23,9 @@ func _check(condition: bool, text: String) -> void:
 
 ## Bildschirmrechteck eines Controls in echten Fensterpixeln.
 func _screen_rect(control: Control) -> Rect2:
-	var xform: Transform2D = control.get_viewport().get_final_transform() * control.get_global_transform_with_canvas()
+	var xform: Transform2D = (
+		control.get_viewport().get_final_transform() * control.get_global_transform_with_canvas()
+	)
 	return xform * Rect2(Vector2.ZERO, control.size)
 
 
@@ -32,7 +34,9 @@ func _targets(node: Node, out: Array) -> void:
 		if child is Control and (child as Control).is_visible_in_tree():
 			var c := child as Control
 			var tappable: bool = (
-				c is Button or c.has_signal("hold_changed") or c.has_signal("axis_changed")
+				c is Button
+				or c.has_signal("hold_changed")
+				or c.has_signal("axis_changed")
 				or (c.has_signal("button_down") and c.has_signal("pressed"))
 			)
 			if tappable and c.mouse_filter != Control.MOUSE_FILTER_IGNORE:
@@ -49,15 +53,23 @@ func _audit(label: String, root_control: Control, window: Vector2) -> void:
 	var rects: Array[Rect2] = []
 	for control in targets:
 		var rect: Rect2 = _screen_rect(control)
-		var scroll_parent: bool = control.get_parent() != null and control.find_parent("ChoiceScroll") != null
+		var scroll_parent: bool = (
+			control.get_parent() != null and control.find_parent("ChoiceScroll") != null
+		)
 		if not scroll_parent:
 			_check(screen.encloses(rect), "%s: %s liegt im Bild %s" % [label, control.name, rect])
 		_check(
 			minf(rect.size.x, rect.size.y) >= MIN_PX - 0.5,
-			"%s: %s ist %.0f px groß (mindestens 48 dp)" % [label, control.name, minf(rect.size.x, rect.size.y)]
+			(
+				"%s: %s ist %.0f px groß (mindestens 48 dp)"
+				% [label, control.name, minf(rect.size.x, rect.size.y)]
+			)
 		)
 		for other in rects:
-			_check(not rect.grow(-1.0).intersects(other.grow(-1.0)), "%s: %s überdeckt kein anderes Ziel" % [label, control.name])
+			_check(
+				not rect.grow(-1.0).intersects(other.grow(-1.0)),
+				"%s: %s überdeckt kein anderes Ziel" % [label, control.name]
+			)
 		rects.append(rect)
 
 
@@ -95,7 +107,10 @@ func _run() -> void:
 			for i in range(4):
 				game.step_game(1.0 / 60.0, 0.0, 0.0, false, Vector2.ZERO)
 				await process_frame
-			_check(game.hud.jump_button.visible and game.hud.context_button.visible, label + ": zu Fuß SPRINGEN und HEBEL sichtbar")
+			_check(
+				game.hud.jump_button.visible and game.hud.context_button.visible,
+				label + ": zu Fuß SPRINGEN und HEBEL sichtbar"
+			)
 			_check(not game.hud.gas_button.visible, label + ": zu Fuß kein GAS")
 			_audit(label + " Zu Fuß", game.hud.root, window)
 		game.pause_game()

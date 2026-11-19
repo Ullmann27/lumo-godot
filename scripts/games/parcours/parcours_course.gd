@@ -391,7 +391,9 @@ func blocker_active(index: int, state: Dictionary) -> bool:
 
 ## Ein Hubtor (Gleitbewegung nach oben) ist offen, wenn es hoch genug steht.
 func timed_gate_open(index: int, t: float) -> bool:
-	var lift: Vector3 = blocker_transform(index, t).origin - (blockers[index].base as Transform3D).origin
+	var lift: Vector3 = (
+		blocker_transform(index, t).origin - (blockers[index].base as Transform3D).origin
+	)
 	return lift.y > float(blockers[index].get("open_above", 1.9))
 
 

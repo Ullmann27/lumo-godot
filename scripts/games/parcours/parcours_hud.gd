@@ -61,7 +61,9 @@ func min_touch() -> float:
 	return MIN_TOUCH_PX / maxf(scale_factor, 0.01)
 
 
-func _button(text: String, callback: Callable, accent: Color = UI.CYAN, gold: bool = false) -> Button:
+func _button(
+	text: String, callback: Callable, accent: Color = UI.CYAN, gold: bool = false
+) -> Button:
 	var button := Button.new()
 	button.text = text
 	UI.premium_button(button, accent, gold)
@@ -154,7 +156,7 @@ func _build_play() -> void:
 	context_button = RUN_BUTTON.new()
 	context_button.name = "ContextAction"
 	context_button.configure("action", "AUSSTEIGEN", "Aussteigen, Hebel umlegen oder einsteigen")
-	context_button.hold_changed.connect(func(on: bool): if on: game.context_action())
+	context_button.hold_changed.connect(_on_context_hold)
 	play.add_child(context_button)
 	jump_button = RUN_BUTTON.new()
 	jump_button.name = "JumpAction"
@@ -162,6 +164,11 @@ func _build_play() -> void:
 	jump_button.hold_changed.connect(func(on: bool): game.jump_pressed(on))
 	play.add_child(jump_button)
 	play.visible = false
+
+
+func _on_context_hold(on: bool) -> void:
+	if on:
+		game.context_action()
 
 
 func _action(text: String, icon: String, accent: Color) -> Control:
@@ -202,6 +209,7 @@ func _clear(container: Node) -> void:
 
 
 # --- Weltwahl -----------------------------------------------------------------------
+
 
 func show_choice(entries: Array, progress, style: String, has_session: bool) -> void:
 	_choice_style = style
@@ -245,7 +253,11 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 	var title := _label("LUMO Abenteuer-Parcours", 52, UI.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(title)
-	var sub := _label("Fahr mit deinem Kart durch Geschicklichkeitswelten. Manchmal steigt Lumo aus!", 26, UI.MUTED)
+	var sub := _label(
+		"Fahr mit deinem Kart durch Geschicklichkeitswelten. Manchmal steigt Lumo aus!",
+		26,
+		UI.MUTED
+	)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(sub)
 	var styles := HBoxContainer.new()
@@ -254,7 +266,12 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 	column.add_child(styles)
 	for spec in [["zeitlauf", "⏱  Zeitlauf"], ["erkunden", "✿  Entspannt erkunden"]]:
 		var id: String = spec[0]
-		var button := _button(("✓ " if id == _choice_style else "") + str(spec[1]), func(): _pick_style(id, entries, progress, has_session), UI.CYAN, id == _choice_style)
+		var button := _button(
+			("✓ " if id == _choice_style else "") + str(spec[1]),
+			func(): _pick_style(id, entries, progress, has_session),
+			UI.CYAN,
+			id == _choice_style
+		)
 		button.name = "Style_" + id
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		styles.add_child(button)
@@ -273,10 +290,21 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 		card.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var lines: PackedStringArray = ["Welt %s · %s" % [entry.letter, entry.name], str(entry.description)]
+		var lines: PackedStringArray = [
+			"Welt %s · %s" % [entry.letter, entry.name], str(entry.description)
+		]
 		if int(stats.completed) > 0:
-			var best: String = "Bestzeit %s" % format_time(float(stats.best_time)) if float(stats.best_time) > 0.0 else "Geschafft"
-			lines.append("%s · ★ %d · Geheimwege %d" % [best, int(stats.best_stars), (stats.secrets as Array).size()])
+			var best: String = (
+				"Bestzeit %s" % format_time(float(stats.best_time))
+				if float(stats.best_time) > 0.0
+				else "Geschafft"
+			)
+			lines.append(
+				(
+					"%s · ★ %d · Geheimwege %d"
+					% [best, int(stats.best_stars), (stats.secrets as Array).size()]
+				)
+			)
 		else:
 			lines.append("Noch nicht geschafft – los geht's!")
 		card.text = "\n".join(lines)
@@ -305,7 +333,8 @@ func _pick_style(id: String, entries: Array, progress, has_session: bool) -> voi
 
 # --- Fahren -------------------------------------------------------------------------
 
-func show_play(course, style: String) -> void:
+
+func show_play(_course, style: String) -> void:
 	_style = style
 	if is_instance_valid(choice):
 		choice.queue_free()
@@ -366,6 +395,7 @@ static func format_time(seconds: float) -> String:
 
 # --- Pause und Ergebnis -------------------------------------------------------------
 
+
 func _open_modal(title: String) -> void:
 	_clear(modal_column)
 	var heading := _label(title, 44, UI.GOLD)
@@ -385,7 +415,9 @@ func _modal_button(text: String, callback: Callable, name_id: String, gold: bool
 
 func show_pause() -> void:
 	_open_modal("Pause")
-	modal_column.add_child(_label("Deine Sterne und dein Checkpoint bleiben gespeichert.", 26, UI.MUTED))
+	modal_column.add_child(
+		_label("Deine Sterne und dein Checkpoint bleiben gespeichert.", 26, UI.MUTED)
+	)
 	_modal_button("▶  Weiterfahren", func(): game.resume_game(), "Resume", true)
 	_modal_button("↻  Neu starten", func(): game.restart_world(), "Restart")
 	_modal_button("‹  Andere Welt wählen", func(): game.leave_to_choice(), "ToChoice")
@@ -411,7 +443,9 @@ func show_result(payload: Dictionary, stats: Dictionary, answer: Dictionary, sav
 	body.name = "ResultLines"
 	modal_column.add_child(body)
 	if not saved:
-		modal_column.add_child(_label("Speichern fehlgeschlagen. Bitte erneut versuchen.", 26, Color("ffb648")))
+		modal_column.add_child(
+			_label("Speichern fehlgeschlagen. Bitte erneut versuchen.", 26, Color("ffb648"))
+		)
 		_modal_button("Erneut speichern", func(): game.retry_reward(), "RetrySave", true)
 	_modal_button("↻  Noch einmal", func(): game.restart_world(), "Again", saved)
 	_modal_button("‹  Andere Welt wählen", func(): game.show_world_choice(), "ToChoice")
@@ -431,6 +465,7 @@ func close_overlay() -> bool:
 
 
 # --- Anordnung ----------------------------------------------------------------------
+
 
 func layout() -> void:
 	if not is_instance_valid(root):
@@ -487,7 +522,9 @@ func layout() -> void:
 		for child in modal_column.get_children():
 			if child is Button:
 				(child as Button).custom_minimum_size = Vector2(0, maxf(touch, 84.0))
-				(child as Button).add_theme_font_size_override("font_size", roundi(clampf(touch * 0.32, 24, 44)))
+				(child as Button).add_theme_font_size_override(
+					"font_size", roundi(clampf(touch * 0.32, 24, 44))
+				)
 	if is_instance_valid(choice):
 		var scroll := choice.get_node_or_null("ChoiceScroll") as ScrollContainer
 		if scroll != null:
@@ -499,8 +536,12 @@ func layout() -> void:
 			cards.columns = clampi(floori(scroll.size.x / 520.0), 1, 3)
 			for card in cards.get_children():
 				(card as Button).custom_minimum_size = Vector2(0, maxf(touch * 1.6, 200.0))
-				(card as Button).add_theme_font_size_override("font_size", roundi(clampf(short_side * 0.032, 22, 40)))
+				(card as Button).add_theme_font_size_override(
+					"font_size", roundi(clampf(short_side * 0.032, 22, 40))
+				)
 			for row_name in ["Styles", "ChoiceNav"]:
 				for button in column.get_node(row_name).get_children():
 					(button as Button).custom_minimum_size = Vector2(0, maxf(touch, 84.0))
-					(button as Button).add_theme_font_size_override("font_size", roundi(clampf(touch * 0.3, 22, 42)))
+					(button as Button).add_theme_font_size_override(
+						"font_size", roundi(clampf(touch * 0.3, 22, 42))
+					)

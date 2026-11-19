@@ -216,7 +216,9 @@ func use_lever() -> bool:
 		state[sid + "_step"] = 0
 		for i in range(station_levers(s).size()):
 			state["%s_lever_%d" % [sid, i]] = false
-		events.append({"kind": "lever_wrong", "text": str(s.get("hint", "Probier einen anderen Hebel."))})
+		events.append(
+			{"kind": "lever_wrong", "text": str(s.get("hint", "Probier einen anderen Hebel."))}
+		)
 		return true
 	state["%s_lever_%d" % [sid, lever]] = true
 	step += 1

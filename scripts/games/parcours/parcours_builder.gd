@@ -8,17 +8,26 @@ const MESHES = preload("res://scripts/games/parcours/parcours_meshes.gd")
 const SURFACE_SHADER = preload("res://assets/shaders/parcours_surface.gdshader")
 const GLASS_SHADER = preload("res://assets/shaders/parcours_glass.gdshader")
 const KIT = preload("res://scripts/games/parcours/parcours_kit.gd")
+const SCENERY = preload("res://scripts/games/parcours/parcours_scenery.gd")
 
 ## Oberflächenstil je Plattenstil: [Shaderstil, Grundfarbe-Schlüssel, Linienfarbe, Leuchtfarbe]
 const STYLE_TABLE := {
-	"deck": [0, "deck_top", "deck_line", "edge"], "ramp": [0, "deck_top", "deck_line", "edge"],
-	"bridge": [1, "bridge", "bridge_line", "edge"], "float": [2, "float", "float_line", "float_glow"],
-	"lift": [5, "deck_top", "metal", "edge"], "wait": [5, "deck_top", "deck_line", "accent"],
-	"disc": [0, "disc", "deck_line", "edge"], "boostband": [6, "deck_top", "deck_line", "boost"],
-	"secret": [1, "secret", "bridge_line", "secret_glow"], "ice": [3, "ice", "ice_line", "ice_glow"],
-	"glass": [3, "glass", "ice_line", "ice_glow"], "stone": [4, "stone", "stone_line", "edge"],
-	"moss": [7, "moss", "stone_line", "edge"], "wood": [1, "bridge", "bridge_line", "edge"],
-	"stairs": [4, "stone", "stone_line", "edge"], "sun_disc": [4, "stone", "stone_line", "edge"]
+	"deck": [0, "deck_top", "deck_line", "edge"],
+	"ramp": [0, "deck_top", "deck_line", "edge"],
+	"bridge": [1, "bridge", "bridge_line", "edge"],
+	"float": [2, "float", "float_line", "float_glow"],
+	"lift": [5, "deck_top", "metal", "edge"],
+	"wait": [5, "deck_top", "deck_line", "accent"],
+	"disc": [0, "disc", "deck_line", "edge"],
+	"boostband": [6, "deck_top", "deck_line", "boost"],
+	"secret": [1, "secret", "bridge_line", "secret_glow"],
+	"ice": [3, "ice", "ice_line", "ice_glow"],
+	"glass": [3, "glass", "ice_line", "ice_glow"],
+	"stone": [4, "stone", "stone_line", "edge"],
+	"moss": [7, "moss", "stone_line", "edge"],
+	"wood": [1, "bridge", "bridge_line", "edge"],
+	"stairs": [4, "stone", "stone_line", "edge"],
+	"sun_disc": [4, "stone", "stone_line", "edge"]
 }
 
 var course
@@ -48,7 +57,7 @@ func build(target_course, light: bool, calm: bool) -> void:
 	_stars()
 	_gates()
 	_signs()
-	KIT.scenery(self, course, lightweight)
+	SCENERY.scenery(self, course, lightweight)
 	_count()
 
 
@@ -185,13 +194,22 @@ func _course_geometry() -> void:
 		var target = MESHES.new() if moving else static_mesh
 		target.xform = Transform3D.IDENTITY if moving else (slab.base as Transform3D)
 		support_mesh.xform = slab.base as Transform3D
-		var thickness: float = float(slab.get("thickness", 0.45 if style_id in ["bridge", "secret", "wood"] else 0.7))
+		var thickness: float = float(
+			slab.get("thickness", 0.45 if style_id in ["bridge", "secret", "wood"] else 0.7)
+		)
 		var solid_to: float = INF
 		if bool(slab.get("solid", false)):
 			solid_to = minf(0.0, float(slab.rise)) - 0.05
 		var narrow: bool = float(slab.width) < 6.0
 		var body_key: String = "glass_body" if style_id == "glass" else "body"
-		target.slab(slab, "surface:" + style_id, thickness, narrow and style_id != "secret", solid_to, body_key)
+		target.slab(
+			slab,
+			"surface:" + style_id,
+			thickness,
+			narrow and style_id != "secret",
+			solid_to,
+			body_key
+		)
 		if style_id in ["disc", "sun_disc"]:
 			KIT.disc_teeth(target, slab)
 		if style_id == "lift":
@@ -205,11 +223,14 @@ func _course_geometry() -> void:
 			moving_slabs.append({"node": node, "slab": index})
 			if style_id == "float":
 				KIT.float_jets(node, slab, color("float_glow"))
-		elif not bool(slab.get("no_supports", false)) and float(course.theme.get("support_depth", 0.0)) > 0.0:
+		elif (
+			not bool(slab.get("no_supports", false))
+			and float(course.theme.get("support_depth", 0.0)) > 0.0
+		):
 			var copy: Dictionary = slab.duplicate()
 			support_mesh.supports(copy, float(course.theme.support_depth), 26.0)
 		if style_id == "lift":
-			KIT.lift_tower(self, course, slab, materials)
+			KIT.lift_tower(self, slab, materials)
 	var world_mesh := MeshInstance3D.new()
 	world_mesh.name = "StaticCourse"
 	world_mesh.mesh = static_mesh.commit(materials)
@@ -297,7 +318,13 @@ func _signs() -> void:
 				puzzle_lever.position = entry.pos as Vector3
 				puzzle_lever.rotation.y = float(entry.get("heading", 0.0))
 				add_child(puzzle_lever)
-				animated.append({"kind": "lever", "node": puzzle_lever, "mechanism": "%s_lever_%d" % [station.id, i]})
+				animated.append(
+					{
+						"kind": "lever",
+						"node": puzzle_lever,
+						"mechanism": "%s_lever_%d" % [station.id, i]
+					}
+				)
 			continue
 		var lever: Node3D = KIT.lever(color("accent"))
 		lever.name = "Lever_" + str(station.id)
@@ -319,14 +346,20 @@ func advance(t: float, state: Dictionary, run) -> void:
 		KIT.set_gate_open(node, not closed)
 	if run != null:
 		for index in run.stars_taken:
-			star_multimesh.set_instance_transform(int(index), Transform3D(Basis().scaled(Vector3.ZERO), Vector3.ZERO))
+			star_multimesh.set_instance_transform(
+				int(index), Transform3D(Basis().scaled(Vector3.ZERO), Vector3.ZERO)
+			)
 		for i in range(course.stars.size()):
 			if run.stars_taken.has(i):
 				continue
 			var spin: float = 0.0 if reduced_motion else t * 1.8 + i * 0.4
 			var bob: float = 0.0 if reduced_motion else sin(t * 2.2 + i) * 0.12
 			star_multimesh.set_instance_transform(
-				i, Transform3D(Basis(Vector3.UP, spin).scaled(Vector3.ONE * 1.5), (course.stars[i].pos as Vector3) + Vector3.UP * bob)
+				i,
+				Transform3D(
+					Basis(Vector3.UP, spin).scaled(Vector3.ONE * 1.5),
+					(course.stars[i].pos as Vector3) + Vector3.UP * bob
+				)
 			)
 		for index in range(checkpoint_nodes.size()):
 			KIT.set_checkpoint_lit(checkpoint_nodes[index], run.reached.has(index))
@@ -334,7 +367,9 @@ func advance(t: float, state: Dictionary, run) -> void:
 		match str(entry.kind):
 			"spin":
 				if not reduced_motion:
-					(entry.node as Node3D).rotate_object_local(entry.axis as Vector3, float(entry.speed) / 60.0)
+					(entry.node as Node3D).rotate_object_local(
+						entry.axis as Vector3, float(entry.speed) / 60.0
+					)
 			"lever":
 				KIT.set_lever(entry.node, bool(state.get(str(entry.mechanism), false)))
 			"plate":
@@ -362,4 +397,9 @@ func _count() -> void:
 		var mm: MultiMesh = (node as MultiMeshInstance3D).multimesh
 		surfaces += mm.mesh.get_surface_count()
 		multimesh_instances += mm.instance_count
-	stats = {"mesh_nodes": nodes.size(), "surfaces": surfaces, "triangles": triangles, "instances": multimesh_instances}
+	stats = {
+		"mesh_nodes": nodes.size(),
+		"surfaces": surfaces,
+		"triangles": triangles,
+		"instances": multimesh_instances
+	}

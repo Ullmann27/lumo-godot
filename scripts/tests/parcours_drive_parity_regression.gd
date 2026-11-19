@@ -44,7 +44,15 @@ func _run() -> void:
 	game.set_physics_process(false)
 	game.lightweight = true
 	await process_frame
-	game._start_selected_race({"mode": "arena", "driver": "fox", "kart": "comet", "track": "sonnenhafen", "difficulty": "flott"})
+	game._start_selected_race(
+		{
+			"mode": "arena",
+			"driver": "fox",
+			"kart": "comet",
+			"track": "sonnenhafen",
+			"difficulty": "flott"
+		}
+	)
 	game._end_preview()
 	game.countdown = 0
 	game.racing = true
@@ -93,11 +101,21 @@ func _run() -> void:
 		drive.planar_step(STEP, float(input.axis), float(input.brake), 1.0, false, 0.68)
 		drive.boost_time = maxf(0.0, drive.boost_time - STEP)
 		worst_speed = maxf(worst_speed, absf(game.speed - drive.speed))
-		worst_heading = maxf(worst_heading, absf(angle_difference(game.player_heading, drive.heading)))
+		worst_heading = maxf(
+			worst_heading, absf(angle_difference(game.player_heading, drive.heading))
+		)
 	_check(worst_speed < 0.01, "Tempo gleich (größte Abweichung %.4f m/s)" % worst_speed)
 	_check(worst_heading < 0.001, "Richtung gleich (größte Abweichung %.5f rad)" % worst_heading)
-	_check(drive.drift_tier_count == game.drift_tier_count, "Driftstufen gleich %s / %s" % [drive.drift_tier_count, game.drift_tier_count])
-	print("[ParcoursParity] max Δv=%.5f m/s, max Δh=%.6f rad, v_end=%.2f/%.2f" % [worst_speed, worst_heading, game.speed, drive.speed])
+	_check(
+		drive.drift_tier_count == game.drift_tier_count,
+		"Driftstufen gleich %s / %s" % [drive.drift_tier_count, game.drift_tier_count]
+	)
+	print(
+		(
+			"[ParcoursParity] max Δv=%.5f m/s, max Δh=%.6f rad, v_end=%.2f/%.2f"
+			% [worst_speed, worst_heading, game.speed, drive.speed]
+		)
+	)
 	game.abandoned = true
 	game.queue_free()
 	await process_frame

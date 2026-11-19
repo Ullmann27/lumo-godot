@@ -29,7 +29,8 @@ const ENTRIES: Array[Dictionary] = [
 		"letter": "C",
 		"tag": "LIANENTORE · STEINWALZEN · SÄULENSPRUNG",
 		"color": Color("9dcb6b"),
-		"description": "Wurzelwege, die Lianenhalle, rollende Steinwalzen und eine alte Steinbrücke."
+		"description":
+		"Wurzelwege, die Lianenhalle, rollende Steinwalzen und eine alte Steinbrücke."
 	},
 ]
 

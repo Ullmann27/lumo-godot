@@ -18,27 +18,56 @@ static func build():
 	course.pace = 0.4
 	course.target_seconds = Vector2(120, 240)
 	course.theme = {
-		"sky_top": Color("2a64c8"), "sky_horizon": Color("f6c99a"), "ground": Color("c9d8f2"),
-		"sun": Color("ffe6c4"), "sun_energy": 1.25, "sun_rotation": Vector3(-34, 40, 0),
-		"ambient": Color("a8c2ee"), "ambient_energy": 0.5, "fog": Color("dfe8fb"),
-		"fog_density": 0.0016, "exposure": 0.95, "deck": Color("27497c"),
-		"deck_top": Color("8fa7cf"), "deck_line": Color("3a5788"), "edge": Color("ffc23a"),
-		"trim": Color("ffb43a"), "rail": Color("ffcf5c"), "rail_post": Color("4e6286"),
-		"bridge": Color("c08a55"), "bridge_line": Color("6a4426"), "float": Color("6fbff2"),
-		"float_line": Color("2f6ea8"), "float_glow": Color("8fe8ff"), "disc": Color("a8b8d6"),
-		"secret": Color("d8a24a"), "secret_glow": Color("ffd166"), "boost": Color("3ef2ff"),
-		"accent": Color("ff7a3d"), "metal": Color("5a6e91"), "support": Color("3b5480"),
-		"gear": Color("d8a84a"), "cloud": Color("f2f5ff"), "rock": Color("9c8574"),
-		"grass": Color("7cc46a"), "tree": Color("3f9a5a"), "support_depth": 26.0,
+		"sky_top": Color("2a64c8"),
+		"sky_horizon": Color("f6c99a"),
+		"ground": Color("c9d8f2"),
+		"sun": Color("ffe6c4"),
+		"sun_energy": 1.25,
+		"sun_rotation": Vector3(-34, 40, 0),
+		"ambient": Color("a8c2ee"),
+		"ambient_energy": 0.5,
+		"fog": Color("dfe8fb"),
+		"fog_density": 0.0016,
+		"exposure": 0.95,
+		"deck": Color("27497c"),
+		"deck_top": Color("8fa7cf"),
+		"deck_line": Color("3a5788"),
+		"edge": Color("ffc23a"),
+		"trim": Color("ffb43a"),
+		"rail": Color("ffcf5c"),
+		"rail_post": Color("4e6286"),
+		"bridge": Color("c08a55"),
+		"bridge_line": Color("6a4426"),
+		"float": Color("6fbff2"),
+		"float_line": Color("2f6ea8"),
+		"float_glow": Color("8fe8ff"),
+		"disc": Color("a8b8d6"),
+		"secret": Color("d8a24a"),
+		"secret_glow": Color("ffd166"),
+		"boost": Color("3ef2ff"),
+		"accent": Color("ff7a3d"),
+		"metal": Color("5a6e91"),
+		"support": Color("3b5480"),
+		"gear": Color("d8a84a"),
+		"cloud": Color("f2f5ff"),
+		"rock": Color("9c8574"),
+		"grass": Color("7cc46a"),
+		"tree": Color("3f9a5a"),
+		"support_depth": 26.0,
 		"music": "bergwelt"
 	}
 	var pen = PEN.new(course, Vector3(0.0, BASE_Y, 0.0), 0.0, 12.0)
 	course.start = {"pos": pen.pos + Vector3.FORWARD * 6.0, "heading": 0.0}
 	pen.checkpoint("start", 8.0)
-	course.scenery.append({
-		"kind": "hangar", "pos": pen.pos + pen.right() * 26.0 + pen.forward() * 14.0 + Vector3.DOWN * 0.7,
-		"size": 18.0, "yaw": PI * 0.5, "anchored": true
-	})
+	course.scenery.append(
+		{
+			"kind": "hangar",
+			"pos": pen.pos + pen.right() * 26.0 + pen.forward() * 14.0 + Vector3.DOWN * 0.7,
+			"size": 18.0,
+			"yaw": PI * 0.5,
+			"anchored": true
+		}
+	)
 	# Startplatz der Werkstatt.
 	pen.star_line(3, 34.0, -2.5)
 	pen.straight(34.0)
@@ -206,7 +235,9 @@ static func build():
 	pen.star_line(3, 64.0, 3.0)
 	pen.straight(64.0)
 	pen.checkpoint("werkbank")
-	PEN.secret_ramp(course, wide_start, wide_heading, -6.0, 3.0, "zahnradsteg", "Geheimer Zahnradsteg")
+	PEN.secret_ramp(
+		course, wide_start, wide_heading, -6.0, 3.0, "zahnradsteg", "Geheimer Zahnradsteg"
+	)
 	# Fußabschnitt: Die Werkbank-Brücke ist eingefahren. Lumo steigt aus, hüpft über
 	# schwebende Trittsteine zum Hebel und fährt die Brücke aus.
 	pen.width = 12.0
@@ -217,10 +248,15 @@ static func build():
 	# Zahnrad-Spirale: anderthalb Runden abwärts um den großen Zahnradturm.
 	pen.checkpoint("spirale")
 	pen.star_line(4, 60.0, 0.0)
-	course.scenery.append({
-		"kind": "tower", "pos": pen.pos + pen.right() * 19.0 + Vector3.DOWN * 14.0, "size": 7.0,
-		"height": 32.0, "anchored": true
-	})
+	course.scenery.append(
+		{
+			"kind": "tower",
+			"pos": pen.pos + pen.right() * 19.0 + Vector3.DOWN * 14.0,
+			"size": 7.0,
+			"height": 32.0,
+			"anchored": true
+		}
+	)
 	pen.style = "ramp"
 	pen.turn(19.0, -270.0, -6.0, true, true, {"width": 10.0})
 	pen.checkpoint("spirale_mitte")
@@ -242,47 +278,86 @@ static func _workbench_station(course, pen) -> void:
 	var heading: float = pen.heading
 	var ahead: Vector3 = pen.forward()
 	var side: Vector3 = pen.right()
-	pen.straight(14.0, 0.0, true, false, {"style": "wait", "hold_unless": "bridge_a", "hold_from": 0.4})
+	pen.straight(
+		14.0, 0.0, true, false, {"style": "wait", "hold_unless": "bridge_a", "hold_from": 0.4}
+	)
 	var kart_pos: Vector3 = wait_start + ahead * 8.0
 	# Lücke mit Tor; die Brücke parkt links daneben, bis der Hebel sie ausfährt.
-	course.blockers.append({
-		"shape": "box", "base": Transform3D(Basis(Vector3.UP, heading), pen.pos),
-		"size": Vector3(12.0, 2.2, 0.6), "closed_unless": "bridge_a", "style": "gate"
-	})
+	course.blockers.append(
+		{
+			"shape": "box",
+			"base": Transform3D(Basis(Vector3.UP, heading), pen.pos),
+			"size": Vector3(12.0, 2.2, 0.6),
+			"closed_unless": "bridge_a",
+			"style": "gate"
+		}
+	)
 	pen.style = "bridge"
-	pen.straight(16.0, 0.0, true, true, {
-		"motion": {"type": "extend", "mechanism": "bridge_a", "retract": -side * 15.0, "seconds": 1.8}
-	})
+	pen.straight(
+		16.0,
+		0.0,
+		true,
+		true,
+		{
+			"motion":
+			{"type": "extend", "mechanism": "bridge_a", "retract": -side * 15.0, "seconds": 1.8}
+		}
+	)
 	course.mechanisms["bridge_a"] = false
 	# Trittsteine rechts neben dem Wartefeld, dann die Hebelinsel.
 	var stones: Array[float] = [9.0, 12.9, 16.8]
 	for k in range(stones.size()):
 		var centre: Vector3 = kart_pos + side * stones[k]
-		course.slabs.append({
-			"kind": "box", "base": Transform3D(Basis(Vector3.UP, heading), centre - ahead * 1.2),
-			"length": 2.4, "width": 2.4, "rise": 0.0, "rail_left": false, "rail_right": false,
-			"style": "float", "level": 3, "foot_only": true
-		})
+		course.slabs.append(
+			{
+				"kind": "box",
+				"base": Transform3D(Basis(Vector3.UP, heading), centre - ahead * 1.2),
+				"length": 2.4,
+				"width": 2.4,
+				"rise": 0.0,
+				"rail_left": false,
+				"rail_right": false,
+				"style": "float",
+				"level": 3,
+				"foot_only": true
+			}
+		)
 	var island: Vector3 = kart_pos + side * 21.5
-	course.slabs.append({
-		"kind": "box", "base": Transform3D(Basis(Vector3.UP, heading), island - ahead * 2.0),
-		"length": 4.0, "width": 4.0, "rise": 0.0, "rail_left": false, "rail_right": false,
-		"style": "deck", "level": 3, "foot_only": true
-	})
+	course.slabs.append(
+		{
+			"kind": "box",
+			"base": Transform3D(Basis(Vector3.UP, heading), island - ahead * 2.0),
+			"length": 4.0,
+			"width": 4.0,
+			"rise": 0.0,
+			"rail_left": false,
+			"rail_right": false,
+			"style": "deck",
+			"level": 3,
+			"foot_only": true
+		}
+	)
 	var route: Array = [{"pos": kart_pos + side * 5.2}]
 	for k in range(stones.size()):
 		route.append({"pos": kart_pos + side * stones[k], "jump": true})
 	route.append({"pos": kart_pos + side * 20.5, "jump": true})
-	course.stations.append({
-		"id": "werkbank", "kart_pos": kart_pos, "radius": 7.0,
-		"foot_start": kart_pos + side * 2.6, "foot_heading": heading - PI * 0.5,
-		"lever": island, "lever_heading": heading - PI * 0.5, "mechanism": "bridge_a",
-		"intro": "Hier geht es nur zu Fuß weiter. Tipp auf AUSSTEIGEN!",
-		"foot_intro": "Spring über die Trittsteine zum Hebel!",
-		"done_text": "Die Brücke fährt aus! Zurück zum Kart und EINSTEIGEN.",
-		"foot_retry": "Plumps – die Lumo-Wolke trägt dich zurück. Spring etwas früher!",
-		"foot_route": route
-	})
+	course.stations.append(
+		{
+			"id": "werkbank",
+			"kart_pos": kart_pos,
+			"radius": 7.0,
+			"foot_start": kart_pos + side * 2.6,
+			"foot_heading": heading - PI * 0.5,
+			"lever": island,
+			"lever_heading": heading - PI * 0.5,
+			"mechanism": "bridge_a",
+			"intro": "Hier geht es nur zu Fuß weiter. Tipp auf AUSSTEIGEN!",
+			"foot_intro": "Spring über die Trittsteine zum Hebel!",
+			"done_text": "Die Brücke fährt aus! Zurück zum Kart und EINSTEIGEN.",
+			"foot_retry": "Plumps – die Lumo-Wolke trägt dich zurück. Spring etwas früher!",
+			"foot_route": route
+		}
+	)
 
 
 static func _scenery(course) -> void:

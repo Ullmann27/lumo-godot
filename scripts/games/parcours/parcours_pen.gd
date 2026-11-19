@@ -115,7 +115,11 @@ func turn(
 
 ## Auf einen Punkt zudrehen (Bogen mit `radius`) und bis `stop_short` davor fahren.
 func aim_at(
-	target: Vector3, radius: float, stop_short: float, rise: float = 0.0, rails: bool = true,
+	target: Vector3,
+	radius: float,
+	stop_short: float,
+	rise: float = 0.0,
+	rails: bool = true,
 	extra: Dictionary = {}
 ) -> void:
 	for attempt in range(2):
@@ -135,21 +139,37 @@ func spin_disc(radius: float, speed: float, posts: int = 0, extra: Dictionary = 
 	var centre: Vector3 = pos + forward() * radius
 	var spin := {"type": "spin", "pivot": Vector3(centre.x, 0.0, centre.z), "speed": speed}
 	var slab := {
-		"kind": "arc", "base": Transform3D(Basis.IDENTITY, Vector3(centre.x, 0.0, centre.z)),
-		"radius": radius * 0.5, "width": radius, "a0": 0.0, "a1": TAU, "y0": centre.y,
-		"y1": centre.y, "rail_left": false, "rail_right": false, "style": "disc",
-		"level": level, "no_assist": true, "cap": 12.0, "motion": spin
+		"kind": "arc",
+		"base": Transform3D(Basis.IDENTITY, Vector3(centre.x, 0.0, centre.z)),
+		"radius": radius * 0.5,
+		"width": radius,
+		"a0": 0.0,
+		"a1": TAU,
+		"y0": centre.y,
+		"y1": centre.y,
+		"rail_left": false,
+		"rail_right": false,
+		"style": "disc",
+		"level": level,
+		"no_assist": true,
+		"cap": 12.0,
+		"motion": spin
 	}
 	slab.merge(extra, true)
 	course.slabs.append(slab)
 	for k in range(posts):
 		var a: float = TAU * k / posts + 0.6
-		course.blockers.append({
-			"shape": "cylinder",
-			"base": Transform3D(Basis.IDENTITY, centre + Vector3(cos(a), 0.0, sin(a)) * radius * 0.6),
-			"size": Vector3(0.7, 2.6, 0.7), "motion": spin, "style": "gear_post",
-			"color": Color(course.theme.get("post", Color("ffb13b")))
-		})
+		course.blockers.append(
+			{
+				"shape": "cylinder",
+				"base":
+				Transform3D(Basis.IDENTITY, centre + Vector3(cos(a), 0.0, sin(a)) * radius * 0.6),
+				"size": Vector3(0.7, 2.6, 0.7),
+				"motion": spin,
+				"style": "gear_post",
+				"color": Color(course.theme.get("post", Color("ffb13b")))
+			}
+		)
 	course.route.append({"pos": centre + Vector3.UP * 0.3, "cap": 10.0})
 	pos += forward() * radius * 2.0
 	travelled += radius * 2.0
@@ -228,8 +248,14 @@ func end_route() -> void:
 ## Geheimer Steg über einem breiten Deck: Rampe hinauf, schmaler Steg mit Geheimsternen,
 ## Rampe hinunter. Wer herunterfällt, landet weich auf dem Deck darunter (kein Sturz).
 static func secret_ramp(
-	course, start: Vector3, facing: float, lateral: float, height: float, secret_id: String,
-	secret_name: String, style_id: String = "secret"
+	course,
+	start: Vector3,
+	facing: float,
+	lateral: float,
+	height: float,
+	secret_id: String,
+	secret_name: String,
+	style_id: String = "secret"
 ) -> void:
 	var pen = new(course, start, facing, 3.6)
 	var keep: int = course.route.size()
@@ -237,9 +263,9 @@ static func secret_ramp(
 	pen.straight(6.0, 0.0, false, false, {"style": "none"})
 	pen.style = style_id
 	var first: int = pen.straight(14.0, height, false, false, {"solid": true, "secret_path": true})
-	course.secrets.append({
-		"id": secret_id, "name": secret_name, "pos": pen.pos + Vector3.UP * 0.6, "radius": 3.5
-	})
+	course.secrets.append(
+		{"id": secret_id, "name": secret_name, "pos": pen.pos + Vector3.UP * 0.6, "radius": 3.5}
+	)
 	pen.star_line(4, 26.0, 0.0, true)
 	pen.straight(26.0, 0.0, false, false, {"secret_path": true})
 	var last: int = pen.straight(14.0, -height, false, false, {"solid": true, "secret_path": true})

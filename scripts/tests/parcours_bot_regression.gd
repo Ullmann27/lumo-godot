@@ -8,6 +8,10 @@ const STEP: float = 1.0 / 60.0
 var failures: int = 0
 var checks: int = 0
 var trace: bool = false
+var worlds_script: GDScript
+var run_script: GDScript
+var bot_script: GDScript
+var meshes_script: GDScript
 
 
 func _initialize() -> void:
@@ -27,13 +31,13 @@ func _factors() -> Dictionary:
 
 
 func _drive_world(world_id: String, seed_value: int, reaction: float, level: String) -> Dictionary:
-	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	var worlds = worlds_script
 	var course = worlds.build(world_id)
-	var run = load("res://scripts/games/parcours/parcours_run.gd").new()
+	var run = run_script.new()
 	run.setup(course, "zeitlauf")
 	run.drive.factors = _factors()
 	run.drive.difficulty = level
-	var bot = load("res://scripts/games/parcours/parcours_bot.gd").new(seed_value, reaction, 0.14)
+	var bot = bot_script.new(seed_value, reaction, 0.14)
 	var cp_times: Array[float] = [0.0]
 	var longest_gap: float = 0.0
 	var steps: int = 0
@@ -80,7 +84,15 @@ func _drive_world(world_id: String, seed_value: int, reaction: float, level: Str
 					% [
 						run.elapsed,
 						run.drive.position.snapped(Vector3.ONE * 0.1),
-						str(bot.target) + " " + str((run.course.route[bot.target].pos as Vector3).snapped(Vector3.ONE)) + " h=" + str(snappedf(run.drive.heading, 0.01)),
+						(
+							str(bot.target)
+							+ " "
+							+ str(
+								(run.course.route[bot.target].pos as Vector3).snapped(Vector3.ONE)
+							)
+							+ " h="
+							+ str(snappedf(run.drive.heading, 0.01))
+						),
 						run.checkpoint,
 						run.drive.speed,
 						run.drive.airborne,
@@ -99,7 +111,8 @@ func _drive_world(world_id: String, seed_value: int, reaction: float, level: Str
 		"seconds": run.elapsed,
 		"falls": run.falls,
 		"resets": run.resets,
-		"longest_gap": longest_gap, "longest_at": longest_at,
+		"longest_gap": longest_gap,
+		"longest_at": longest_at,
 		"stars": run.stars_taken.size(),
 		"star_total": course.stars.size(),
 		"left": left_kart,
@@ -114,9 +127,9 @@ func _drive_world(world_id: String, seed_value: int, reaction: float, level: Str
 
 
 func _fall_test(world_id: String) -> void:
-	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	var worlds = worlds_script
 	var course = worlds.build(world_id)
-	var run = load("res://scripts/games/parcours/parcours_run.gd").new()
+	var run = run_script.new()
 	run.setup(course, "erkunden")
 	run.drive.factors = _factors()
 	run.drive.difficulty = "flott"
@@ -125,8 +138,11 @@ func _fall_test(world_id: String) -> void:
 	for i in range(course.slabs.size()):
 		var slab: Dictionary = course.slabs[i]
 		if (
-			str(slab.kind) == "box" and not bool(slab.rail_left) and not bool(slab.rail_right)
-			and (slab.get("motion", {}) as Dictionary).is_empty() and not bool(slab.get("foot_only", false))
+			str(slab.kind) == "box"
+			and not bool(slab.rail_left)
+			and not bool(slab.rail_right)
+			and (slab.get("motion", {}) as Dictionary).is_empty()
+			and not bool(slab.get("foot_only", false))
 			and str(slab.get("style", "")) not in ["none", "secret"]
 		):
 			slab_index = i
@@ -139,7 +155,9 @@ func _fall_test(world_id: String) -> void:
 			cp_index = i
 	var cp: Dictionary = course.checkpoints[cp_index]
 	run.checkpoint = cp_index
-	var middle: Vector3 = (open_slab.base as Transform3D) * Vector3(0, 0, -float(open_slab.length) * 0.5)
+	var middle: Vector3 = (
+		(open_slab.base as Transform3D) * Vector3(0, 0, -float(open_slab.length) * 0.5)
+	)
 	var along: float = (open_slab.base as Transform3D).basis.get_euler().y
 	run.drive.place(middle + Vector3.UP * 0.05, along + PI * 0.5)
 	var star_before: int = 0
@@ -172,13 +190,13 @@ func _fall_test(world_id: String) -> void:
 
 ## Geheimweg: über die Rampe auf den Steg, Geheimsterne und Fundstelle einsammeln.
 func _secret_test(world_id: String) -> void:
-	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	var worlds = worlds_script
 	var course = worlds.build(world_id)
 	_check(course.secret_routes.size() >= 1, "%s: Fahrlinie über den Geheimweg" % world_id)
 	if course.secret_routes.is_empty():
 		return
 	var route: Array = course.secret_routes[0]
-	var run = load("res://scripts/games/parcours/parcours_run.gd").new()
+	var run = run_script.new()
 	run.setup(course, "erkunden")
 	run.drive.factors = _factors()
 	run.drive.difficulty = "gemuetlich"
@@ -187,20 +205,28 @@ func _secret_test(world_id: String) -> void:
 	var to: Vector3 = second - first
 	run.drive.place(first + to.normalized() * 0.5 - Vector3.UP * 0.3, atan2(-to.x, -to.z))
 	course.route = route
-	var bot = load("res://scripts/games/parcours/parcours_bot.gd").new(9, 0.3, 0.08)
+	var bot = bot_script.new(9, 0.3, 0.08)
 	var top: float = -INF
 	for i in range(60 * 12):
 		var input: Dictionary = bot.drive_input(run, STEP)
 		run.step(STEP, float(input.axis), float(input.brake), true, true)
 		top = maxf(top, run.drive.position.y - first.y)
 	if trace:
-		print("[trace] secret %s top=%.1f end=%s route=%s" % [world_id, top, run.drive.position, route])
+		print(
+			(
+				"[trace] secret %s top=%.1f end=%s route=%s"
+				% [world_id, top, run.drive.position, route]
+			)
+		)
 	_check(run.secrets_found.size() >= 1, "%s: Geheimweg gefunden" % world_id)
-	_check(run.secret_star_count() >= 3, "%s: Geheimsterne gesammelt (%d)" % [world_id, run.secret_star_count()])
+	_check(
+		run.secret_star_count() >= 3,
+		"%s: Geheimsterne gesammelt (%d)" % [world_id, run.secret_star_count()]
+	)
 
 
 func _phase_test(world_id: String) -> void:
-	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	var worlds = worlds_script
 	var a = worlds.build(world_id)
 	var b = worlds.build(world_id)
 	var same: bool = true
@@ -230,19 +256,25 @@ func _phase_test(world_id: String) -> void:
 		var si: Dictionary = a.slabs[i]
 		if _exempt(si):
 			continue
-		var total: float = float(load("res://scripts/games/parcours/parcours_meshes.gd").frame_at(si, 1.0).along)
+		var total: float = float(meshes_script.frame_at(si, 1.0).along)
 		var steps: int = maxi(2, floori(total / 3.0))
 		for k in range(1, steps):
-			var f: Dictionary = load("res://scripts/games/parcours/parcours_meshes.gd").frame_at(si, float(k) / steps)
+			var f: Dictionary = meshes_script.frame_at(si, float(k) / steps)
 			var p: Vector3 = a.slab_transform(i, 0.0, a.mechanisms) * (f.centre as Vector3)
 			for j in range(a.slabs.size()):
 				if absi(i - j) <= 1 or j == i or _exempt(a.slabs[j]):
 					continue
-				var hit: Dictionary = a._slab_ground(j, p + Vector3.UP * 3.4, 0.0, a.mechanisms, 0.0)
+				var hit: Dictionary = a._slab_ground(
+					j, p + Vector3.UP * 3.4, 0.0, a.mechanisms, 0.0
+				)
 				if not hit.is_empty() and absf(float(hit.height) - p.y) < 3.4:
-					clashes.append("%d(%s)/%d(%s)" % [i, si.get("style", ""), j, a.slabs[j].get("style", "")])
+					clashes.append(
+						"%d(%s)/%d(%s)" % [i, si.get("style", ""), j, a.slabs[j].get("style", "")]
+					)
 					break
-	_check(clashes.is_empty(), "%s: keine kreuzenden Fahrbahnen %s" % [world_id, clashes.slice(0, 6)])
+	_check(
+		clashes.is_empty(), "%s: keine kreuzenden Fahrbahnen %s" % [world_id, clashes.slice(0, 6)]
+	)
 	var ids: Dictionary = {}
 	for c in a.checkpoints:
 		ids[str(c.id)] = true
@@ -256,14 +288,20 @@ func _phase_test(world_id: String) -> void:
 
 func _exempt(slab: Dictionary) -> bool:
 	return (
-		bool(slab.get("foot_only", false)) or str(slab.get("style", "")) in ["secret", "none"]
+		bool(slab.get("foot_only", false))
+		or str(slab.get("style", "")) in ["secret", "none"]
 		or bool(slab.get("secret_path", false))
-		or bool(slab.get("solid", false)) or not (slab.get("motion", {}) as Dictionary).is_empty()
+		or bool(slab.get("solid", false))
+		or not (slab.get("motion", {}) as Dictionary).is_empty()
 	)
 
 
 func _run() -> void:
-	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	worlds_script = load("res://scripts/games/parcours/parcours_worlds.gd")
+	run_script = load("res://scripts/games/parcours/parcours_run.gd")
+	bot_script = load("res://scripts/games/parcours/parcours_bot.gd")
+	meshes_script = load("res://scripts/games/parcours/parcours_meshes.gd")
+	var worlds = worlds_script
 	var only: String = ""
 	for arg in OS.get_cmdline_user_args():
 		if arg == "--trace":
@@ -284,26 +322,29 @@ func _run() -> void:
 				"%s seed=%d reaction=%.2f %s" % [world_id, spec[0], spec[1], spec[2]]
 			)
 			_check(r.finished, label + ": Start bis Ziel")
-			_check(r.longest_gap <= 16.0, label + ": Checkpoint-Abstand %.1f s vor %s" % [r.longest_gap, r.longest_at])
+			_check(
+				r.longest_gap <= 16.0,
+				label + ": Checkpoint-Abstand %.1f s vor %s" % [r.longest_gap, r.longest_at]
+			)
 			_check(r.left == r.stations and r.entered == r.stations, label + ": Aus-/Einsteigen")
 			_check(r.levers == r.stations, label + ": Aufgaben zu Fuß gelöst")
-			(
-				summary
-				. append(
+			summary.append(
+				(
 					(
-						"%s: %.1f s, Stürze %d, Sterne %d/%d, längster CP-Abstand %.1f s, Geländer %d, Stöße %d, Sprünge %d"
-						% [
-							label,
-							r.seconds,
-							r.falls,
-							r.stars,
-							r.star_total,
-							r.longest_gap,
-							r.rails,
-							r.bumps,
-							r.jumps
-						]
+						"%s: %.1f s, Stürze %d, Sterne %d/%d, längster CP-Abstand %.1f s, "
+						+ "Geländer %d, Stöße %d, Sprünge %d"
 					)
+					% [
+						label,
+						r.seconds,
+						r.falls,
+						r.stars,
+						r.star_total,
+						r.longest_gap,
+						r.rails,
+						r.bumps,
+						r.jumps
+					]
 				)
 			)
 	for line in summary:

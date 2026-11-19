@@ -623,8 +623,10 @@ func _skin_race_kinds() -> void:
 ## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung, ab sechs
 ## Rennarten (mit dem Abenteuer-Parcours) zwei Spalten.
 func set_race_kind_layout(landscape: bool, short: bool) -> void:
-	_race_kinds.columns = 3 if landscape else (2 if _race_kind_buttons.size() > 5 else 1)
-	_race_kinds_compact = landscape and short
+	var many: bool = _race_kind_buttons.size() > 5
+	_race_kinds.columns = 3 if landscape else (2 if many else 1)
+	# Hochformat mit sechs Rennarten: zwei Spalten nur mit Namen (Beschreibung als Tooltip).
+	_race_kinds_compact = (landscape and short) or (not landscape and many)
 	_refresh_race_kinds()
 
 
