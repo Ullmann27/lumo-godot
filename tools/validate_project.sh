@@ -34,6 +34,11 @@ godot_log_ok /tmp/lumo-env-apply-tests.log '\[LumoEnvironmentApply\] PASS' || ex
 timeout 180s "$GODOT" --headless --script scripts/tests/lumo_environment_creative_presets_regression.gd 2>&1 | tee /tmp/lumo-creative-presets-tests.log
 godot_log_ok /tmp/lumo-creative-presets-tests.log '\[CreativePresets\] PASS' || exit 1
 
+timeout 120s "$GODOT" --headless --audio-driver Dummy --script scripts/tests/lumo_dream_ambience_regression.gd 2>&1 | tee /tmp/lumo-dream-ambience-tests.log
+godot_log_ok /tmp/lumo-dream-ambience-tests.log '^\[DreamAmbience\] [1-9][0-9]* checks, 0 failures$' || exit 1
+timeout 180s "$GODOT" --headless --audio-driver Dummy --script scripts/tests/dream_garden_props_regression.gd 2>&1 | tee /tmp/lumo-dream-garden-tests.log
+godot_log_ok /tmp/lumo-dream-garden-tests.log '^\[DreamGarden\] checks=[1-9][0-9]* failures=0$' || exit 1
+
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_race_bridge_regression.gd 2>&1 | tee /tmp/lumo-kart-race-bridge-tests.log
 godot_log_ok /tmp/lumo-kart-race-bridge-tests.log '\[KartRaceBridge\] PASS' || exit 1
 
