@@ -388,19 +388,19 @@ static func rival_control(
 						+ 2.0 * RIVAL_BRAKE * maxf(0.0, ahead - 8.0)
 					)
 				)
-			# Single file: whoever is already in front, or the child beside us, goes first.
-			if true:
-				for index in range(traffic.size()):
-					var other: Vector3 = traffic[index]
-					var first: float = -1.6 if index == player_entry else 0.3
-					if other.x > first and other.x < 18.0:
-						# Keep a full kart length plus margin to the kart in front (5 m nose to nose).
-						var follow: float = (
-							maxf(0.0, other.z) + sqrt(2.0 * 8.0 * maxf(0.0, other.x - 5.0))
-						)
-						if other.x < 5.0:
-							follow = maxf(0.0, other.z) * clampf((other.x - 3.6) / 1.4, 0.0, 1.0)
-						cap = minf(cap, follow)
+			# Yield to traffic lining up for the deck. A parked kart on the
+			# outer apron must not stop the whole field from entering the bridge.
+			var merge_half_width: float = float(entry.deck_width) * 0.5 + WIDEST_KART_M * 0.5
+			for index in range(traffic.size()):
+				var other: Vector3 = traffic[index]
+				var first: float = -1.6 if index == player_entry else 0.3
+				if absf(other.y) > merge_half_width or other.x <= first or other.x >= 18.0:
+					continue
+				# Keep a full kart length plus margin to the kart in front (5 m nose to nose).
+				var follow: float = maxf(0.0, other.z) + sqrt(2.0 * 8.0 * maxf(0.0, other.x - 5.0))
+				if other.x < 5.0:
+					follow = maxf(0.0, other.z) * clampf((other.x - 3.6) / 1.4, 0.0, 1.0)
+				cap = minf(cap, follow)
 			result.speed = cap
 		elif str(entry.kind) == "gate":
 			var gate_line: float = float(entry.wait_line) - d

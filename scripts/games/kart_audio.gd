@@ -141,7 +141,7 @@ func play_track(track_id: Variant) -> void:
 		track = "holo_city"
 	_track_id = track
 	if track == JUNGLE_ID:
-		_play_music(JUNGLE_ID + "/main")
+		_play_music(_jungle_music("main"))
 		return
 	if not TRACKS.has(track):
 		track = "sonnenhafen"
@@ -195,11 +195,21 @@ func update_course_state(delta: float, distance: float, length: float, final_lap
 		var metres := fposmod(distance, maxf(length, 1.0))
 		var calm: bool = (metres >= 1200.0 and metres < 1500.0) or (metres >= 2100.0 and metres < 2400.0)
 		var variation := "calm" if calm else "final" if final_lap else "main"
-		if _current != JUNGLE_ID + "/" + variation:
-			_play_music(JUNGLE_ID + "/" + variation, true)
+		var track := _jungle_music(variation)
+		if _current != track:
+			_play_music(track, true)
 	if is_instance_valid(_ambience):
 		_ambience.set_audio_state(_blocked() or finished, effects_volume)
 		_ambience.advance(delta, listener)
+
+
+func _jungle_music(variation: String) -> String:
+	var key := JUNGLE_ID + "/" + variation
+	if _load_stream(key, true) != null:
+		return key
+	if variation != "main" and _load_stream(JUNGLE_ID + "/main", true) != null:
+		return JUNGLE_ID + "/main"
+	return "zauberwald"
 
 
 func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
@@ -223,6 +233,8 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 	elif fx_cue:
 		key = "fx/" + kind
 	var stream := _load_stream(key, false)
+	if stream == null and key.begins_with(JUNGLE_ID + "/"):
+		stream = _load_stream(kind, false)
 	if stream == null:
 		return
 	_last_effect[kind] = now
@@ -352,6 +364,7 @@ func _load_stream(key: String, loop: bool) -> AudioStreamOggVorbis:
 		return _streams[key] as AudioStreamOggVorbis
 	var path := MUSIC_PATH % key
 	if not ResourceLoader.exists(path):
+		_streams[key] = null
 		push_warning("[KartAudio] Missing original audio: %s" % key)
 		return null
 	var stream := load(path) as AudioStreamOggVorbis

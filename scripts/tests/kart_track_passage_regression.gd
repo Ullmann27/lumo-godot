@@ -626,26 +626,28 @@ func _swing_checks(track: String, entry: Dictionary) -> void:
 	await _side_by_side(entry)
 	await _hit_then_reset(entry)
 	# Arriving while Kiri swings without braking: a friendly nudge, never a reset.
-	# Hold far back until Kiri will be over the centre lane in 1.5 s, then arrive at top speed.
+	# Start at the approach speed on the final straight. A short run-up avoids a
+	# preceding curve affecting the time at which the kart reaches the swing.
 	var cruise: float = game.POWERTRAIN.top_speed(game.kart_factors, 1.0)
 	var resets: int = game.reset_count
 	var falls_before: int = game.passage_falls
 	var hit_before: int = game.passage_hits
 	var into_lane: float = 0.0
 	var guard2: float = 0.0
-	var lead: float = 1.5
+	var lead: float = 0.22
 	while guard2 < 20.0:
 		_place(float(entry.wait_line) - 150.0, 0.0, 0.0)
 		_tick()
 		guard2 += STEP
 		var state: Dictionary = PASSAGES.swing_state(entry, game.elapsed)
-		var until_centre: float = float(state.until_swing) + PASSAGES._blocking_seconds(entry) * 0.5
-		if str(state.phase) != "swing" and absf(until_centre - lead) < STEP:
+		var until_centre: float = (0.5 - float(state.progress)) * PASSAGES._blocking_seconds(entry)
+		if str(state.phase) == "swing" and absf(until_centre - lead) < STEP:
 			if str(entry.kind) == "gate":
 				var future: Dictionary = PASSAGES.swing_state(entry, game.elapsed + lead)
 				var band: Vector2 = PASSAGES.gate_band(entry, future)
 				into_lane = (band.x + band.y) * 0.5
 			break
+	_check(guard2 < 20.0, "%s: reached the sampled swing phase" % entry.id)
 	_place(float(entry.plane) - cruise * lead, into_lane, cruise)
 	var t2: float = 0.0
 	while _local() < float(entry.plane) + 8.0 and t2 < 6.0 and game.passage_falls == falls_before:

@@ -191,7 +191,9 @@ func _check_kicker_and_dive() -> void:
 		game._physics_process(STEP)
 		if game.action_in_dive:
 			top = maxf(top, game.speed)
-	assert(top <= POWERTRAIN.top_speed({}) * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
+	var rules: Dictionary = game.CATALOG.entry(game.CATALOG.DIFFICULTIES, game.difficulty)
+	var dry_top: float = POWERTRAIN.top_speed(game.kart_factors, float(rules.speed))
+	assert(top > 16.0 and top <= dry_top * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f/%.1f m/s)" % [top, dry_top])
 	_place(float(dive.end) + 8.0, 0.0, 16.0)
 	game._physics_process(STEP)
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")

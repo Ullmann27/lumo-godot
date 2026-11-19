@@ -262,7 +262,16 @@ func _check_stunt_jump() -> void:
 		float(jump.start) > float(game.world.loop_layout.start) + LOOP.ADVANCE,
 		"Ramp after the loop exit"
 	)
-	_place(float(jump.start) - 14.0, 0.0, 20.0)
+	# Use the speed shown by the precision hint for this safe-landing run.
+	# The separate precision runs below measure an undershoot and an overshoot.
+	var landing_speed: float = PRECISION.speed_for_distance(
+		(float(jump.landing_min) + float(jump.landing_max)) * 0.5, jump
+	)
+	var rules: Dictionary = game.CATALOG.entry(game.CATALOG.DIFFICULTIES, game.difficulty)
+	var top_speed: float = POWERTRAIN.top_speed(game.kart_factors, float(rules.speed))
+	game.gas_held = true
+	game.brake = clampf((1.0 - landing_speed / top_speed) / 0.94, 0.0, 1.0)
+	_place(float(jump.start) - 14.0, 0.0, landing_speed)
 	var jumps_before: int = game.action_kicker_jumps
 	var landings_before: int = game.landing_count
 	var resets_before: int = game.reset_count
@@ -300,6 +309,7 @@ func _check_stunt_jump() -> void:
 	assert(absf(float(road_after.lateral)) < 4.5, "Landed on the road")
 	var arc_stars: int = _stunt_stars() - stars_before
 	assert(fposmod(flight_end, game.track_length) < tunnel - 5.0, "Landing before the tunnel mouth")
+	assert(game.last_precision_landing == PRECISION.LANDING_ZONE, "Hint speed lands in the marked zone")
 	completed_checks += 1
 	print(
 		(
