@@ -683,8 +683,10 @@ func _visible_stage_region() -> Rect2:
 	else:
 		clear.position.x = _selection_surface.get_global_rect().end.x + inset
 		clear.end.x = stage.end.x - inset
+		# „Rundum ansehen“ belegt oben rechts nur einen Streifen. Früher schnitt er die ganze
+		# rechte Bühnenseite ab: Kamera weit weg, hinter der Studiowand, Knöpfe über der Auswahl.
 		if view_choice.is_visible_in_tree():
-			clear.end.x = view_choice.global_position.x - inset
+			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
 	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
 	if step == 2 and parts_bay != null and not _landing_active:
 		clear.end.y -= 62.0 * _preview_dp_scale()
