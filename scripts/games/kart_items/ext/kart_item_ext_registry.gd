@@ -12,6 +12,7 @@ const BEHAVIOURS: Dictionary = {
 	"lightning_strike": "thunder_star",
 	"frost_capsule": "frost_crystal",
 	"fire_meteor": "fire_meteor",
+	"fortress": "star_fortress",
 }
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
 const SOUNDS: Array[String] = [
@@ -24,6 +25,8 @@ const SOUNDS: Array[String] = [
 	"meteor_launch",
 	"meteor_hit",
 	"ember_hiss",
+	"fortress_up",
+	"fortress_end",
 ]
 const ICON_DIR := "res://assets/kart/hud/items/"
 

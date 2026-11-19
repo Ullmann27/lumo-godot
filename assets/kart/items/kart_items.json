@@ -261,6 +261,30 @@
         "ember_hiss"
       ],
       "note": "Glühende Kugel nach vorn; Treffer = kurz 62 % Tempo + Rußwolke, sonst Glutfeld 3,5 s auf sicherer Fahrbahn."
+    },
+    {
+      "id": "star_fortress",
+      "name": "Sternenfestung",
+      "short": "FESTUNG",
+      "glyph": "⛨",
+      "color": "#ffcf4a",
+      "behaviour": "fortress",
+      "seconds": 12.0,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "fortress_up",
+        "fortress_end"
+      ],
+      "note": "12 s Doppelkuppel (gold außen, cyan innen) mit Restzeit-Ring. Obergrenze 12 s, frischt auf statt zu stapeln."
     }
   ]
 }

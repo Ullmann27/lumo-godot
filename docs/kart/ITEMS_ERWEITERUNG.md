@@ -99,3 +99,15 @@ Sperre: Ziel nur, wenn `safe_at()` gilt; wird es im Flug unsicher, verpufft der 
 | +0–3,5 s | Glutfeld | nur auf sicherer Fahrbahn und mit Platz zur Planke: Glutscheibe Ø 2,8 m glüht orange → rot → aus, Brandfleck verblasst, Glutfunken steigen; Durchfahrt einmal je Fahrer 0,7 s 82 % Tempo |
 
 KI weicht anfliegenden Meteoren (≤ 22 m dahinter) und Glutfeldern (≤ 26 m davor) über `lane_bias()` aus.
+
+### Sternenfestung (`fortress`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,45 s | Aufbau | goldene Außenkuppel wächst vom Boden, Sternfunken; innen hebt sich die cyanfarbene Schildkuppel (gleiche Schilduhr) |
+| 0,45–10 s | Schutz | Doppelkuppel; Boden-Ring läuft ab (gold → cyan), 12 Sekundenmarken erlöschen; HUD-Ring auf 12 s; Treffer → Welle an beiden Kuppeln |
+| 10–12 s | Ende naht | Ring und Kuppel atmen langsam (0,8 Hz, kein Blinken) |
+| 12–12,6 s | Abbau | Kuppel sinkt, Funkenregen, Ton |
+
+Regeln: Obergrenze 12 s (erneutes Einsammeln frischt auf, addiert nicht); die Festung hält die
+Schilduhr mindestens auf ihrer Restzeit, ein Sternenschild währenddessen verlängert/verkürzt nicht.
