@@ -81,6 +81,10 @@ static func _part_button(game: Node) -> Variant:
 static func _tool(game: Node, caption: String) -> Variant:
 	for button in game.tool_actions.get_children():
 		if button is Button and button.text == caption and button.is_visible_in_tree():
+			# Auf schmalen Leisten liegt der Knopf außerhalb: Leiste dorthin schieben.
+			var scroll := button.get_parent().get_parent() as ScrollContainer
+			if scroll != null and not scroll.get_global_rect().encloses(button.get_global_rect()):
+				scroll.ensure_control_visible(button)
 			return button
 	return null
 

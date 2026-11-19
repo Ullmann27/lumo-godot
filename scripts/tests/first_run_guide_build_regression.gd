@@ -115,6 +115,7 @@ func _run() -> void:
 	kit.check(guide.completed.has("look"), "Umsehen erfüllt Schritt 3")
 	await _next_step(guide)
 	kit.check(guide.current_step_id() == "undo", "Schritt 4: Rückgängig")
+	await kit.frames(3)
 	var undo: Control = (
 		game
 		. tool_actions
