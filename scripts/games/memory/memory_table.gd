@@ -122,6 +122,8 @@ func _ready() -> void:
 	_token = str(HostBridge.launch_options().get("tableToken", ""))
 	_build_room()
 	_build_ui()
+	# Erste Einführung je Kind (nur wenn das Kind am Zug ist): scripts/games/guides/memory_guide.gd
+	load("res://scripts/games/guides/memory_guide.gd").attach(self)
 	window.size_changed.connect(_layout)
 	MobileRuntime.safe_area_changed.connect(_layout)
 	_layout()

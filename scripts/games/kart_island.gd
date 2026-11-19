@@ -414,6 +414,8 @@ func _ready() -> void:
 	elif DisplayServer.get_name() != "headless" and not OS.has_feature("web"):
 		get_window().size = Vector2i(1280, 720)
 	_build_ui()
+	# Erste Einführung je Kind (zeigt sich erst im Rennen): scripts/games/guides/kart_guide.gd
+	load("res://scripts/games/guides/kart_guide.gd").attach(self)
 	_build_engine_sound()
 	saved_session_available = (
 		session_config.load(SESSION) == OK

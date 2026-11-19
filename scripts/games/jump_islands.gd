@@ -97,6 +97,8 @@ func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	_build_world()
 	_build_ui()
+	# Erste Einführung je Kind (beim Spielen): scripts/games/guides/jump_guide.gd
+	load("res://scripts/games/guides/jump_guide.gd").attach(self)
 	message.text = "%s · Halten = höher springen" % EXPEDITIONS.COURSES[course_index].name
 	if _restore_session():
 		_pause()

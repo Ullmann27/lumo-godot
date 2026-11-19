@@ -144,6 +144,8 @@ func _ready() -> void:
 	_make_alive_picture()
 	_make_snap_burst()
 	_ui()
+	# Erste Einführung je Kind (sobald ein Puzzle offen ist): scripts/games/guides/puzzle_guide.gd
+	load("res://scripts/games/guides/puzzle_guide.gd").attach(self)
 	get_viewport().size_changed.connect(_resize_ui)
 	RUNTIME.watch_safe_area(self, _resize_ui)
 	_resize_ui()
