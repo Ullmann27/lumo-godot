@@ -125,6 +125,9 @@ func disconnect_seat(seat: int, now: float, last_heard: float = -1.0) -> void:
 	var s: Dictionary = seats[seat]
 	if s.kind != "human" or not s.on:
 		return
+	if phase == "done":
+		s.on = false  # nach dem Ergebnis ist Gehen kein Spielereignis mehr
+		return
 	s.on = false
 	s.away_since = now
 	s.lag_floor = race_time(last_heard if last_heard >= 0.0 else now) - float(config.max_lag)

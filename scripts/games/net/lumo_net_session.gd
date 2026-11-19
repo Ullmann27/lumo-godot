@@ -49,6 +49,9 @@ var ledger: RefCounted = LEDGER.new()
 var pose_provider: Callable
 ## Gast: wie lange nach einem Abbruch neu verbunden wird (danach übernimmt die KI).
 var grace: float = 20.0
+## false: der Aufrufer ruft poll(delta) selbst (Tests mit festen Schritten). Hinweis: Godot
+## schaltet _process beim Eintritt in den Baum wieder ein, set_process(false) reicht nicht.
+var auto_poll: bool = true
 var last_event: int = 0
 var reconnects: int = 0
 var transport: RefCounted
@@ -245,7 +248,8 @@ func close(text: String = "Verbindung beendet.") -> void:
 
 
 func _process(delta: float) -> void:
-	poll(delta)
+	if auto_poll:
+		poll(delta)
 
 
 func poll(delta: float) -> void:
@@ -288,8 +292,7 @@ func _authority_step(delta: float) -> void:
 	_snap_clock = 0.0
 	var list: Array = []
 	if not _own_pose.is_empty():
-		_own_pose[1] = race_time()
-		list.append(_own_pose)
+		list.append(_own_pose)  # Zeitstempel bleibt der der Position (nicht der Sendezeit)
 	for seat in range(seats.size()):
 		if seat == my_seat:
 			continue
@@ -315,7 +318,6 @@ func _guest_step(delta: float) -> void:
 		_snap_clock += delta
 		if _snap_clock >= 1.0 / SNAP_HZ:
 			_snap_clock = 0.0
-			_own_pose[1] = race_time()
 			_send({"t": "pose", "s": _own_pose}, false)
 
 

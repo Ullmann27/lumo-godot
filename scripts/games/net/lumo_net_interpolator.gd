@@ -17,7 +17,7 @@ const MAX_EXTRAPOLATE: float = 0.25
 const MAX_SAMPLES: int = 48
 ## Springt die Rohposition (Datenlücke, Wiedereinrasten), gleitet die Anzeige mit höchstens
 ## CATCH_UP_FACTOR × Tempo zusätzlich hinterher statt zu springen; ab SNAP_M wird gesetzt.
-const CATCH_UP_FACTOR: float = 1.2
+const CATCH_UP_FACTOR: float = 1.0
 const SNAP_M: float = 60.0
 
 ## [{k, p: Vector3, yaw, v}] aufsteigend nach k.
@@ -26,6 +26,9 @@ var samples: Array = []
 var offset: float = INF
 var target_offset: float = INF
 var relocks: int = 0
+## Zähler für Messungen: Bilder ohne neue Daten (vorausgeschätzt) und Aufhol-Gleitvorgänge.
+var extrapolated_frames: int = 0
+var glides: int = 0
 var _arrivals: Array = []  # [[lokale Zeit, beobachteter Versatz]]
 var _last_local: float = -INF
 var _last_shown := Vector3.INF
@@ -64,7 +67,8 @@ func push(k: float, local: float, position: Vector3, yaw: float, speed: float) -
 	for entry in _arrivals:
 		spread.append(float(entry[1]) - low)
 	spread.sort()
-	var jitter: float = spread[int(spread.size() * 0.9)] if not spread.is_empty() else 0.0
+	# Puffer = größtes Zittern der letzten Sekunden: lieber etwas später, dafür ohne Lücken.
+	var jitter: float = spread[-1] if not spread.is_empty() else 0.0
 	target_offset = low + clampf(jitter + 0.05, MIN_BUFFER, MAX_BUFFER)
 	if offset == INF:
 		offset = target_offset
@@ -85,10 +89,13 @@ func sample(local: float) -> Dictionary:
 			_error = Vector3.ZERO
 			relocks += 1
 		elif gap.length() > expected:
+			glides += 1
 			_error += gap  # weiter von der letzten Anzeige aus gleiten
 	_error = _error.move_toward(Vector3.ZERO, (CATCH_UP_FACTOR * speed + 2.0) * dt)
 	pose.p = raw_p + _error
 	pose["smoothing"] = _error.length()
+	if bool(pose.extrapolated):
+		extrapolated_frames += 1
 	_last_shown = pose.p
 	return pose
 

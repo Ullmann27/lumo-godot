@@ -230,13 +230,13 @@ func _test_room_full() -> void:
 	var make := func() -> RefCounted: return TRANSPORT.MemoryTransport.new(hub)
 	var host: Node = SESSION.new()
 	root.add_child(host)
-	host.set_process(false)
+	host.auto_poll = false
 	host.host_room({"ps": "Kluger Luchs 4"}, {}, 9000, make)
 	var guests: Array = []
 	for i in range(4):
 		var guest: Node = SESSION.new()
 		root.add_child(guest)
-		guest.set_process(false)
+		guest.auto_poll = false
 		guest.join_room("mem", {"ps": "Froher Otter %d" % (i + 1)}, 9000, make)
 		guests.append(guest)
 	for i in range(60):
@@ -257,7 +257,10 @@ func _test_room_full() -> void:
 		names.append(str(seat.ps))
 	_check(seated == 3, "drei Gäste sitzen (%d)" % seated)
 	_check(refused == 1, "fünfter Spieler: Raum voll (%d abgewiesen)" % refused)
-	_check(names.has("Froher Otter 1") and names.has("Kluger Luchs 4"), "Pseudonyme in der Liste")
+	var otters: int = 0
+	for name in names:
+		otters += 1 if str(name).begins_with("Froher Otter ") else 0
+	_check(names.has("Kluger Luchs 4") and otters == 3, "Pseudonyme in der Liste")
 	for node in [host] + guests:
 		node.close("")
 		node.queue_free()
@@ -275,7 +278,7 @@ func _test_session_race() -> void:
 	draw_rng.seed = 99
 	var host: Node = SESSION.new()
 	root.add_child(host)
-	host.set_process(false)
+	host.auto_poll = false
 	var config := {
 		"laps": 2,
 		"cps": 8,
@@ -296,7 +299,7 @@ func _test_session_race() -> void:
 	for i in range(2):
 		var guest: Node = SESSION.new()
 		root.add_child(guest)
-		guest.set_process(false)
+		guest.auto_poll = false
 		guest.grace = 20.0
 		guest.join_room("mem", {"ps": "Mutiger Biber %d" % (i + 1), "drv": "otter"}, 9100, make)
 		guests.append(guest)
