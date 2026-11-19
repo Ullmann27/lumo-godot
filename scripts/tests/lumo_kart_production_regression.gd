@@ -155,6 +155,9 @@ func _run() -> void:
 	# and hit_timer are the same product code as an ordinary race collision.
 	game.hit_timer = 0.0
 	game.shield_time = 0.0
+	# A rival may already have bumped the player during the boost steps; its
+	# 0.6 s contact cooldown would swallow this fixture contact.
+	game.rival_contact_timer = 0.0
 	game.opponents[0].position = game.player.position
 	game._track_events()
 	_check(game.hit_timer > 0.0, "Product collision creates an actual hit event")

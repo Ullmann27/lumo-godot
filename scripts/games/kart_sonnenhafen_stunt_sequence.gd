@@ -5,7 +5,7 @@ extends RefCounted
 ## - the kart follows the same 3D path that is rendered (kart_physical_loop),
 ##   gravity slows the climb and a too-slow kart is set back to the main lane;
 ## - a boost pad on the loop lane gives the needed speed;
-## - the loop entry stands 100 m before the precision ramp (was 28 m), so the
+## - the loop entry stands about 80 m before the precision ramp (was 28 m), so the
 ##   kart leaves the loop, settles and has a straight run-up to the ramp;
 ## - gold stars on the riding line are collected while looping.
 ## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
@@ -16,6 +16,7 @@ const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
 const BALLOON_SHADER = preload("res://assets/shaders/kart_balloon.gdshader")
 const EMBLEM = preload("res://assets/kart/stunt/lumo_balloon_emblem.png")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
@@ -35,11 +36,15 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
-## Position B, 80 m before the tunnel: a full-width precision stunt ramp about
-## 80 m after the loop exit. Unlike the 55 % panorama kicker it has no lift
-## bonus and no lift cap: flight distance follows from speed alone
-## (kart_precision_jump.gd), over a genuine open gap in the road.
+## Position B, at least 80 m before the tunnel: a full-width precision stunt ramp
+## after the loop exit. Unlike the 55 % panorama kicker it has no lift bonus and
+## no lift cap: flight distance follows from speed alone (kart_precision_jump.gd),
+## over a genuine open gap in the road. The real distance is jump_lead_m(): it is
+## coupled to the race pace so that a kart at full throttle (top speed, no
+## braking) still lands on open road before the tunnel mouth.
 const JUMP_LEAD_M: float = 80.0
+## Open road kept between a full-throttle landing and the tunnel mouth.
+const JUMP_TUNNEL_MARGIN_M: float = 8.0
 const JUMP_RAMP_LENGTH: float = 12.0
 ## 14 degrees: steep enough for a visible arc, gentle enough to read for kids.
 const JUMP_RAMP_HEIGHT: float = 3.0
@@ -114,8 +119,25 @@ static func pads(world) -> Array:
 	return [{"start": end - PAD_LENGTH, "end": end, "lateral": LOOP_LANE}]
 
 
+## Take-off distance before the tunnel mouth. The model flight of the reference
+## kart at full race pace (kart_powertrain.gd) plus a margin, never below
+## JUMP_LEAD_M. With the old 1.0 pace that stayed at 80 m; with the full pace on
+## every level (1.17) a full-throttle kart flew about 85 m and touched down inside
+## the tunnel mouth.
+static func jump_lead_m() -> float:
+	var flat: Dictionary = {
+		"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
+		"height": JUMP_RAMP_HEIGHT,
+		"flight_gravity": PRECISION_GRAVITY,
+		"lift_bonus": 0.0,
+	}
+	var full_throttle: float = POWERTRAIN.top_speed({}, POWERTRAIN.race_pace())
+	var flown: float = PRECISION.landing_distance(full_throttle, flat)
+	return maxf(JUMP_LEAD_M, ceilf(flown + JUMP_TUNNEL_MARGIN_M))
+
+
 static func jump_take_off(world) -> float:
-	return tunnel_start(world) - JUMP_LEAD_M
+	return tunnel_start(world) - jump_lead_m()
 
 
 static func kickers(world) -> Array:

@@ -87,7 +87,8 @@ class KartVehicleWorkflowTests(unittest.TestCase):
             fixture = temporary / 'kart-check'
             result.copied_sources = {
                 path.relative_to(fixture).as_posix(): path.read_bytes()
-                for path in fixture.rglob('*') if path.is_file() and path.suffix in ('.gd', '.gdshader')}
+                for path in fixture.rglob('*')
+                if path.is_file() and path.relative_to(fixture).as_posix() != 'project.godot'}
             result.logs = {name: (temporary / name).read_text() for name in ('import.log', 'vehicle.log')
                            if (temporary / name).is_file()}
             return result

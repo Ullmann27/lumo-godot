@@ -416,8 +416,26 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	var stats_width: float = 110.0 * ui_scale
 	# Die Bühne für die Kamera endet über den Knöpfen; sie liegen direkt darunter.
 	# Direkt über der Kartauswahl, ganz in der Bühne (nicht auf dem Rand der Auswahl).
-	var y: float = minf(stage.end.y + gap * 0.5, drawer.position.y - button_height - gap * 0.6)
-	var x: float = stage.get_center().x - (open_width + stats_width + gap) * 0.5
+	var y: float = stage.end.y + gap * 0.5
+	# Hochformat: Auswahl liegt unter der Bühne, die Knöpfe bleiben darüber. Quer liegt die
+	# Auswahl links neben der Bühne (oben bündig); ihre Oberkante darf die Knöpfe nicht über
+	# die Abschnitts-Reiter schieben (800×480: „Werte“ lag auf dem Reiter „Strecke“).
+	if drawer.position.y > stage.get_center().y:
+		y = minf(y, drawer.position.y - button_height - gap * 0.6)
+	# Die Knopfzeile bleibt in der Bühne: auf sehr flachen Querformaten (640×320) war sie
+	# breiter als die Bühne und lag über den Kartkarten links daneben.
+	var row_width: float = open_width + stats_width + gap
+	if stage.size.x > 0.0 and row_width > stage.size.x:
+		var fit: float = stage.size.x / row_width
+		open_width *= fit
+		stats_width *= fit
+		gap *= fit
+		row_width = stage.size.x
+	for button in [open_button, stats_button]:
+		# Schmaler als ihr Text: kürzen statt über die Nachbarn hinauswachsen.
+		button.clip_text = true
+		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	var x: float = maxf(stage.position.x, stage.get_center().x - row_width * 0.5)
 	open_button.position = Vector2(x, y)
 	open_button.size = Vector2(open_width, button_height)
 	stats_button.position = Vector2(x + open_width + gap, y)
