@@ -333,6 +333,30 @@
         "gravity_wave"
       ],
       "note": "Ringwelle bis 13 m hebt nahe Gegner 0,9 s an (nur Anzeige, sichere Landung), dann 72 % Tempo 1,1 s."
+    },
+    {
+      "id": "star_decoy",
+      "name": "Sternen-Duplikat",
+      "short": "DUPLIKAT",
+      "glyph": "✦",
+      "color": "#6fe8ff",
+      "behaviour": "star_decoy",
+      "seconds": 6.0,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "decoy_up",
+        "decoy_pop"
+      ],
+      "note": "Holografische Kopie 6 s: Raketen biegen zur Kopie ab, neue Angriffe treffen die Kopie (ein Treffer)."
     }
   ]
 }
