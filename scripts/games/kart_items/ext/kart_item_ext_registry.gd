@@ -16,6 +16,7 @@ const BEHAVIOURS: Dictionary = {
 	"whirlwind": "whirlwind",
 	"gravity_wave": "gravity_wave",
 	"star_decoy": "star_decoy",
+	"turbo_xl": "turbo_xl",
 }
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
 const SOUNDS: Array[String] = [
@@ -35,6 +36,7 @@ const SOUNDS: Array[String] = [
 	"gravity_wave",
 	"decoy_up",
 	"decoy_pop",
+	"turbo_xl",
 ]
 const ICON_DIR := "res://assets/kart/hud/items/"
 

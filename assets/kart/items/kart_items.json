@@ -357,6 +357,30 @@
         "decoy_pop"
       ],
       "note": "Holografische Kopie 6 s: Raketen biegen zur Kopie ab, neue Angriffe treffen die Kopie (ein Treffer)."
+    },
+    {
+      "id": "turbo_xl",
+      "name": "Turbo-Kette XL",
+      "short": "TURBO XL",
+      "glyph": "➜",
+      "color": "#7fdcff",
+      "behaviour": "turbo_xl",
+      "seconds": 1.5,
+      "charges": 3,
+      "role": "speed",
+      "weights": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        1
+      ],
+      "sound": "boost",
+      "sounds": [
+        "turbo_xl"
+      ],
+      "note": "Drei Ladungen je 1,5 s Schub + 8 %; keine Zündung vor Brücke/Kante/Rampe."
     }
   ]
 }
