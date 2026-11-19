@@ -19,9 +19,10 @@ const MAX_PACKET: int = 512
 const STATE_HZ: float = 15.0
 ## Großzügig: beim Streckenaufbau kann das andere Gerät einige Sekunden stumm sein.
 const TIMEOUT_S: float = 10.0
-const INTERP_DELAY: float = 0.12
 const MAX_COORD: float = 5000.0
 const CODEC = preload("res://scripts/games/kart_friends/kart_ghost_codec.gd")
+## Glättung aus der Netzbasis (lastfest: Min-Filter-Uhr, ±10 % Nachführung, begrenztes Aufholen).
+const INTERP = preload("res://scripts/games/net/lumo_net_interpolator.gd")
 
 ## "idle", "hosting", "joining", "lobby", "racing", "finished", "closed"
 var state: String = "idle"
@@ -35,14 +36,11 @@ var friend_track_version: String = ""
 ## Nur für Tests: Netzanfang statt der eigenen WLAN-Adresse (z. B. "127.0.0.").
 var network_prefix_override: String = ""
 var peer: ENetMultiplayerPeer
-var _snapshots: Array = []
+var _interp: RefCounted = INTERP.new()
 var _send_clock: float = 0.0
 var _quiet: float = 0.0
 var _clock: float = 0.0
 var _ping_clock: float = 0.0
-## Geglätteter Abstand zwischen eigener Uhr und Rennuhr des Freundes (Netzlaufzeit + Startversatz).
-var _offset: float = INF
-var _target_offset: float = INF
 
 
 ## Prüfziffer: gewichtete Summe, damit Zahlendreher auffallen.
@@ -180,47 +178,10 @@ func send_finish(time: float) -> void:
 		state = "finished"
 
 
-## Geglättete Position des Freundes: seine Rennuhr wird aus den ankommenden Daten geschätzt
-## und 0,12 s verzögert abgespielt, damit immer zwei Stützpunkte zum Überblenden da sind.
+## Geglättete Position des Freundes ({k, p, r, v, st}; {} solange nichts da ist).
 ## (race_time bleibt für Aufrufer erhalten, die keine eigene Uhr haben.)
 func friend_pose(_race_time: float) -> Dictionary:
-	if _snapshots.is_empty():
-		return {}
-	if _offset == INF:
-		return _snapshots[0]
-	var target: float = _clock - _offset - INTERP_DELAY
-	if _snapshots.size() == 1 or target <= float(_snapshots[0].k):
-		return _snapshots[0]
-	for i in range(_snapshots.size() - 1):
-		var a: Dictionary = _snapshots[i]
-		var b: Dictionary = _snapshots[i + 1]
-		if target <= float(b.k):
-			var blend: float = clampf(
-				(target - float(a.k)) / maxf(0.001, float(b.k) - float(a.k)), 0.0, 1.0
-			)
-			return {
-				"k": target,
-				"p": (a.p as Vector3).lerp(b.p, blend),
-				"r":
-				Vector3(
-					lerp_angle(a.r.x, b.r.x, blend),
-					lerp_angle(a.r.y, b.r.y, blend),
-					lerp_angle(a.r.z, b.r.z, blend)
-				),
-				"v": lerpf(a.v, b.v, blend),
-				"st": lerpf(a.st, b.st, blend)
-			}
-	# Neuere Daten fehlen: höchstens 0,15 s weiter schätzen, dann stehen bleiben.
-	var last: Dictionary = _snapshots[-1]
-	var ahead: float = clampf(target - float(last.k), 0.0, 0.15)
-	# Richtung und Tempo aus den letzten zwei Stützpunkten (unabhängig von der Kart-Achse).
-	var guess: Dictionary = last.duplicate()
-	if _snapshots.size() >= 2:
-		var before: Dictionary = _snapshots[-2]
-		var span: float = maxf(0.001, float(last.k) - float(before.k))
-		var velocity: Vector3 = ((last.p as Vector3) - (before.p as Vector3)) / span
-		guess.p = (last.p as Vector3) + velocity.limit_length(80.0) * ahead
-	return guess
+	return _interp.sample(_clock)
 
 
 func close(text: String = "Verbindung beendet.") -> void:
@@ -230,7 +191,7 @@ func close(text: String = "Verbindung beendet.") -> void:
 			peer.poll()
 		peer.close()
 	peer = null
-	_snapshots.clear()
+	_interp.clear()
 	friend = {}
 	friend_time = -1.0
 	if not text.is_empty():
@@ -247,12 +208,6 @@ func poll(delta: float) -> void:
 	if peer == null:
 		return
 	_clock += delta
-	# Wiedergabe nur sanft nachführen: höchstens 30 % schneller oder langsamer, auch wenn
-	# nach einer Ruckelpause viele Pakete auf einmal ankommen.
-	if _offset != INF:
-		# Großer Rückstand (z. B. Ruckeln beim ersten Bild) wird zügig aufgeholt.
-		var rate: float = 0.3 if absf(_target_offset - _offset) < 0.25 else 1.5
-		_offset = move_toward(_offset, _target_offset, rate * delta)
 	peer.poll()
 	if peer == null:
 		return
@@ -349,21 +304,9 @@ func _on_state(message: Dictionary) -> void:
 	var snap: Variant = _clean_state(message)
 	if not snap is Dictionary:
 		return
-	if not _snapshots.is_empty() and float(snap.k) <= float(_snapshots[-1].k):
-		return
-	_snapshots.append(snap)
-	var sample: float = _clock - float(snap.k)
-	# Zielwert: schnell zu kürzerer Laufzeit, langsam zu längerer (verspätete Pakete zählen wenig).
-	if _offset == INF:
-		_offset = sample
-		_target_offset = sample
-	else:
-		_target_offset = lerpf(_target_offset, sample, 0.3 if sample < _target_offset else 0.05)
-		if absf(sample - _offset) > 1.0:
-			_offset = sample  # nach langer WLAN-Pause neu einrasten
-			_target_offset = sample
-	while _snapshots.size() > 40:
-		_snapshots.pop_front()
+	_interp.push(
+		float(snap.k), _clock, snap.p, float(snap.r.y), float(snap.v), snap.r, float(snap.st)
+	)
 
 
 func _on_finish(message: Dictionary) -> void:
@@ -384,7 +327,7 @@ func _lost() -> void:
 	if peer != null:
 		peer.close()
 	peer = null
-	_snapshots.clear()
+	_interp.clear()
 	var text: String = (
 		"Die Verbindung zu %s ist unterbrochen – du fährst allein weiter." % name
 		if racing
@@ -395,9 +338,8 @@ func _lost() -> void:
 
 
 func _begin_race(track: String, delay: float) -> void:
-	_snapshots.clear()
+	_interp.clear()
 	friend_track_version = ""
-	_offset = INF
 	friend_time = -1.0
 	_send_clock = 0.0
 	_quiet = 0.0

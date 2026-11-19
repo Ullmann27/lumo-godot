@@ -4,9 +4,10 @@
 # Zwei echte Geräte im WLAN prüft das nicht.
 set -u
 GODOT="${GODOT_BIN:-/home/user/tools/godot}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 cd "$(dirname "$0")/../.."
 run() {
-  timeout 120 "$GODOT" --headless --path . --script res://scripts/tests/kart_lan_two_process_test.gd -- "$@"
+  timeout 240 "$GODOT" --headless --path . --script res://scripts/tests/kart_lan_two_process_test.gd -- "$@"
 }
 status=0
 logs="$(mktemp -d)"
@@ -15,7 +16,11 @@ for pair in "host:client" "host drop:client_drop"; do
   host_args="${pair%%:*}"; client_args="${pair##*:}"
   run $host_args > "$logs/host.log" 2>&1 &
   host_pid=$!
-  sleep 2
+  # Erst starten, wenn der Raum offen ist (unter Last braucht der Start viele Sekunden).
+  for _ in $(seq 1 180); do
+    grep -q 'Raumcode' "$logs/host.log" 2>/dev/null && break
+    sleep 0.5
+  done
   run $client_args > "$logs/client.log" 2>&1
   client_status=$?
   wait $host_pid

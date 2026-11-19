@@ -20,7 +20,8 @@ const MAX_SAMPLES: int = 48
 const CATCH_UP_FACTOR: float = 1.0
 const SNAP_M: float = 60.0
 
-## [{k, p: Vector3, yaw, v}] aufsteigend nach k.
+## [{k, p: Vector3, yaw, v, r: Vector3, st}] aufsteigend nach k
+## (r/st optional: Kart-Neigung und Lenkung).
 var samples: Array = []
 ## Wiedergabe: gezeigte Rennzeit = lokale Uhr − offset.
 var offset: float = INF
@@ -51,10 +52,18 @@ func clear() -> void:
 
 
 ## Neuer Stützpunkt (k = Rennzeit des Senders, local = eigene Uhr beim Empfang).
-func push(k: float, local: float, position: Vector3, yaw: float, speed: float) -> void:
+func push(
+	k: float,
+	local: float,
+	position: Vector3,
+	yaw: float,
+	speed: float,
+	rotation: Vector3 = Vector3.ZERO,
+	steer: float = 0.0
+) -> void:
 	if not samples.is_empty() and k <= float(samples[-1].k):
 		return  # veraltet oder doppelt (unzuverlässiger Kanal)
-	samples.append({"k": k, "p": position, "yaw": yaw, "v": speed})
+	samples.append({"k": k, "p": position, "yaw": yaw, "v": speed, "r": rotation, "st": steer})
 	while samples.size() > MAX_SAMPLES:
 		samples.pop_front()
 	_arrivals.append([local, local - k])
@@ -124,6 +133,13 @@ func _raw(local: float) -> Dictionary:
 				"p": (a.p as Vector3).lerp(b.p, blend),
 				"yaw": lerp_angle(float(a.yaw), float(b.yaw), blend),
 				"v": lerpf(float(a.v), float(b.v), blend),
+				"r":
+				Vector3(
+					lerp_angle(a.r.x, b.r.x, blend),
+					lerp_angle(a.r.y, b.r.y, blend),
+					lerp_angle(a.r.z, b.r.z, blend)
+				),
+				"st": lerpf(float(a.st), float(b.st), blend),
 				"extrapolated": false
 			}
 	# Neuere Daten fehlen: kurz in Fahrtrichtung weiter, dann stehen bleiben.
@@ -139,4 +155,6 @@ func _raw(local: float) -> Dictionary:
 
 
 static func _pose(s: Dictionary, k: float, extrapolated: bool) -> Dictionary:
-	return {"k": k, "p": s.p, "yaw": s.yaw, "v": s.v, "extrapolated": extrapolated}
+	return {
+		"k": k, "p": s.p, "yaw": s.yaw, "v": s.v, "r": s.r, "st": s.st, "extrapolated": extrapolated
+	}
