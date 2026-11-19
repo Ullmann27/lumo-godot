@@ -177,7 +177,23 @@ func _test_jump_windows(game) -> void:
 	player.release_jump()
 	_check(left_ground >= 0 and jumped, "a jump 0.12 s after running off the edge still works (coyote time)")
 	# Jump buffer: a press shortly before landing jumps right after landing.
-	_place(game, gap.y + 2.0, TUNING.PATH_CRUISE)
+	# Measured on open ground: the landing must not meet a crab (at the faster
+	# 1.6 tempo the first spot after a hole lands right on one).
+	var calm: Vector2 = gap
+	for candidate in game.world.level.gaps:
+		if candidate.x <= float(game.plan.intro_end) + 5.0:
+			continue
+		var free: bool = true
+		for enemy in game.plan.enemies:
+			if float(enemy.s) > candidate.y and float(enemy.s) < candidate.y + 30.0:
+				free = false
+		for hurdle in game.plan.hurdles:
+			if float(hurdle.s) > candidate.y and float(hurdle.s) < candidate.y + 30.0:
+				free = false
+		if free:
+			calm = candidate
+			break
+	_place(game, calm.y + 2.0, TUNING.PATH_CRUISE)
 	_steps(game, 20)
 	player.press_jump()
 	player.release_jump()

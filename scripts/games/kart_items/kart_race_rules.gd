@@ -28,7 +28,8 @@ const COMBO_BONUS_PER_STEP: float = 0.25
 const COMBO_MAX: int = 6
 
 ## Catch-up limits (fractions of top speed).
-const PLAYER_CATCH_UP_MAX := {"gemuetlich": 0.10, "normal": 0.07, "profi": 0.04}
+## Schlüssel sind die Stufen-Kennungen aus kart_catalog.gd (Entdecken/Abenteuer/Extrem).
+const PLAYER_CATCH_UP_MAX := {"gemuetlich": 0.10, "flott": 0.07, "pro": 0.04}
 const RIVAL_SLOW_MAX: float = 0.12
 const CATCH_UP_START_GAP: float = 18.0
 const CATCH_UP_FULL_GAP: float = 90.0
@@ -67,7 +68,7 @@ static func rival_rubber_band(rival_lead: float, difficulty: String) -> float:
 	if rival_lead <= 0.0:
 		return 1.0
 	var strength: float = (
-		1.0 if difficulty == "gemuetlich" else (0.75 if difficulty == "normal" else 0.5)
+		1.0 if difficulty == "gemuetlich" else (0.75 if difficulty == "flott" else 0.5)
 	)
 	return 1.0 - RIVAL_SLOW_MAX * strength * gap_ratio(rival_lead)
 

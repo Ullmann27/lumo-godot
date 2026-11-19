@@ -153,7 +153,7 @@ func _decide(game, steer: float) -> void:
 	for option in OPTIONS:
 		if not use_dash and float(option[2]) >= 0.0:
 			continue
-		var trial: Dictionary = _simulate(game, steer, float(option[0]), float(option[1]), float(option[2]), 1.6)
+		var trial: Dictionary = _simulate(game, steer, float(option[0]), float(option[1]), float(option[2]), 2.2)
 		if trial.ok and trial.drop and fallback.is_empty():
 			fallback = option
 		if trial.ok and not trial.drop:
@@ -209,41 +209,78 @@ func _simulate(game, steer: float, jump_at: float, hold: float, dash_at: float, 
 	var landed_for: float = 0.0
 	var pull: float = 1.0 if _braking and jump_at < 0.0 else _hold_back_at(source.s)
 	var stomped: Array[int] = []
-	while t < seconds:
-		if jump_at >= 0.0 and t >= jump_at and t < jump_at + STEP:
+	# The presses (wait, hold, FLITZEN) are timed per drawn frame like the real
+	# ones in _tick_inputs, the motion runs in the game's own course-time
+	# sub-steps (lumo_run._step): the copy flies exactly like Lumo at any tempo.
+	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE
+	var parts: int = maxi(1, ceili(pace - 0.001))
+	var sub: float = STEP * pace / float(parts)
+	var frame: int = 0
+	var press_frame: int = ceili(jump_at / STEP - 0.0001) if jump_at >= 0.0 else -1
+	var hold_frames: int = ceili(maxf(hold, 0.01) / STEP - 0.0001)
+	var dash_left: float = dash_at
+	var pressed: bool = false
+	var stop: bool = false
+	# Crumbling planks the copy steps on start to give way as they would for Lumo;
+	# the real state is put back afterwards.
+	var crumbled_before: Dictionary = track.crumbled.duplicate()
+	var rode: bool = false
+	while t < seconds and not stop:
+		if press_frame >= 0 and frame == press_frame:
 			copy.press_jump()
-		if copy.jump_held and t >= jump_at + hold:
+			pressed = true
+		elif pressed and copy.jump_held and frame >= press_frame + hold_frames:
 			copy.release_jump()
-		if dash_at >= 0.0 and jump_at >= 0.0 and t >= jump_at + dash_at and not copy.grounded and copy.air_dash_ready:
-			copy.press_dash()
-		clock += STEP
-		track.clock = clock
-		copy.step(STEP, Vector2(steer, pull), track)
-		t += STEP
-		if not copy.grounded:
-			airborne = true
-		if copy.h < -1.2:
-			result = {"ok": false, "drop": false, "danger_in": t}
-			break
-		if _touches_ride(copy, plan):
-			break
-		var harm: String = _harm(copy, track, clock, plan, stomped)
-		if harm.begins_with("stomp"):
-			# The stomp throws Lumo up again: follow that flight as well.
-			stomped.append(int(harm.substr(6)))
-			copy.bounce(TUNING.STOMP_SPEED)
-			airborne = true
-			continue
-		if not harm.is_empty():
-			result = {"ok": false, "drop": false, "danger_in": t}
-			break
-		if airborne and copy.grounded:
-			landed_for += STEP
-			if copy.h < start_h - 1.5:
-				result.drop = true
-			if landed_for > 0.3 and jump_at >= 0.0:
+		if pressed and dash_left >= 0.0 and frame > press_frame and not copy.grounded:
+			dash_left -= STEP
+			if dash_left < 0.0 and copy.air_dash_ready:
+				copy.press_dash()
+		frame += 1
+		for _part in range(parts):
+			clock += sub
+			track.clock = clock
+			copy.step(sub, Vector2(steer, pull), track)
+			track._carry(copy)
+			t += sub
+			if not copy.grounded:
+				airborne = true
+			if copy.h < -1.2:
+				result = {"ok": false, "drop": false, "danger_in": t}
+				stop = true
 				break
+			if _touches_ride(copy, plan):
+				rode = true
+				stop = true
+				break
+			var harm: String = _harm(copy, track, clock, plan, stomped)
+			if harm.begins_with("stomp"):
+				# The stomp throws Lumo up again: follow that flight as well.
+				stomped.append(int(harm.substr(6)))
+				copy.bounce(TUNING.STOMP_SPEED)
+				airborne = true
+				continue
+			if not harm.is_empty():
+				result = {"ok": false, "drop": false, "danger_in": t}
+				stop = true
+				break
+			if airborne and copy.grounded:
+				if landed_for <= 0.0 and track.ground_at(copy.s + 0.45, copy.lat, copy.h + 0.1) < copy.h - 1.0:
+					# Touching down on the very lip of a platform: one step too far
+					# and Lumo is in the hole. A careful child does not count on that.
+					result = {"ok": false, "drop": false, "danger_in": t}
+					stop = true
+					break
+				landed_for += sub
+				if copy.h < start_h - 1.5:
+					result.drop = true
+				if landed_for > 0.3 and jump_at >= 0.0:
+					stop = true
+					break
 	track.clock = saved_clock
+	track.crumbled = crumbled_before
+	if jump_at >= 0.0 and bool(result.ok) and airborne and landed_for <= 0.0 and not rode:
+		# Still in the air when the look-ahead ends: nobody knows where he lands.
+		result = {"ok": false, "drop": false, "danger_in": t}
 	return result
 
 

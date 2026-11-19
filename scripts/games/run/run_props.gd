@@ -507,6 +507,9 @@ func _build_bounce(index: int, pad: Dictionary) -> void:
 				_add("box", s, lat + side * 0.24, height + 0.14, Vector3(0.14, 0.04, 0.9), theme.pad_trim, true, Basis(Vector3.UP, side * 0.6))
 		return
 	var holder: Node3D = _holder(s, float(pad.lat), 0.0, "RunBounce%d" % index)
+	if str(pad.get("look", "")) == "glow_mushroom":
+		_build_glow_mushroom(index, holder)
+		return
 	_part(holder, "cylinder", Vector3(0, 0.08, 0), Vector3(2.5, 0.16, 2.5), _solid(Color("2f4a66")))
 	_part(holder, "cylinder", Vector3(0, 0.28, 0), Vector3(1.0, 0.36, 1.0), _solid(theme.pad_trim))
 	var top := Node3D.new()
@@ -517,6 +520,27 @@ func _build_bounce(index: int, pad: Dictionary) -> void:
 	_part(top, "cylinder", Vector3(0, 0.08, 0), Vector3(1.9, 0.12, 1.9), _solid(theme.pad_trim, true))
 	var emblem: MeshInstance3D = _part(top, "star", Vector3(0, 0.17, 0), Vector3.ONE * 0.62, _solid(theme.pad, true))
 	emblem.rotation.x = -PI * 0.5
+	_pads[index] = top
+
+
+## Zauberwald's glowing mushroom: a pale stem, a wide luminous cap with light
+## spots and a soft glow ring on the ground. The cap squashes when Lumo hops.
+func _build_glow_mushroom(index: int, holder: Node3D) -> void:
+	_part(holder, "cylinder", Vector3(0, 0.03, 0), Vector3(3.0, 0.04, 3.0), _solid(theme.pad.darkened(0.35), true))
+	_part(holder, "cylinder", Vector3(0, 0.22, 0), Vector3(0.7, 0.44, 0.7), _solid(Color("efe6ff")))
+	var top := Node3D.new()
+	top.name = "Top"
+	top.position.y = 0.46
+	holder.add_child(top)
+	var cap: StandardMaterial3D = _solid(theme.pad, true)
+	cap.emission_energy_multiplier = 1.3
+	_part(top, "ball", Vector3.ZERO, Vector3(2.2, 0.56, 2.2), cap)
+	var spot: StandardMaterial3D = _solid(theme.pad_trim, true)
+	spot.emission_energy_multiplier = 1.6
+	for k in range(5):
+		var angle: float = TAU * float(k) / 5.0 + 0.4
+		_part(top, "ball", Vector3(cos(angle) * 0.72, 0.2, sin(angle) * 0.72), Vector3(0.36, 0.14, 0.36), spot)
+	_part(top, "ball", Vector3(0, 0.3, 0), Vector3(0.45, 0.16, 0.45), spot)
 	_pads[index] = top
 
 

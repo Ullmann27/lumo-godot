@@ -65,6 +65,16 @@ const JUMP_HINT_LEAD_M: float = 70.0
 ## Maximum intentional lateral displacement during a precision flight.
 const PRECISION_AIR_LATERAL_M: float = 2.0
 const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
+## Item-Protokoll ohne Spielwirkung (Tests, Balance-Messung).
+const ITEM_TELEMETRY = preload("res://scripts/games/kart_items/kart_item_telemetry.gd")
+const ITEM_ZONES = preload("res://scripts/games/kart_items/kart_item_zones.gd")
+## „LUMO Sternenkompass“: Darstellung der einmaligen Ziehung (kart_items/kart_star_compass.gd).
+const STAR_COMPASS = preload("res://scripts/games/kart_items/kart_star_compass.gd")
+var star_compass = STAR_COMPASS.new()
+## Faire Sternraketen: Start-/Rettungsschutz, Verfolger-Limit, keine Treffer an Sturzstellen.
+const ROCKET_FAIRNESS = preload("res://scripts/games/kart_items/kart_rocket_fairness.gd")
+var rocket_fairness = ROCKET_FAIRNESS.new()
+var item_telemetry = ITEM_TELEMETRY.new()
 const RACE_RULES = preload("res://scripts/games/kart_items/kart_race_rules.gd")
 const ITEM_RUNTIME = preload("res://scripts/games/kart_items/kart_item_runtime.gd")
 const FX_DIRECTOR = preload("res://scripts/games/kart_items/kart_fx_director.gd")
@@ -481,6 +491,8 @@ func _build_world() -> void:
 	catalog_box_distances.clear()
 	catalog_box_laterals.clear()
 	catalog_box_collected.clear()
+	item_telemetry.clear()
+	rocket_fairness.reset()
 	obstacle_distances.clear()
 	opponents.clear()
 	opponent_headings.clear()
@@ -555,9 +567,10 @@ func _build_world() -> void:
 			_item_box(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
 		for entry in BOOST_RING_LAYOUT:
 			_boost_ring(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
-		for fraction in _catalog_box_fractions():
-			for lateral in CATALOG_BOX_ROW:
-				_catalog_box(PASSAGES.clear_distance(world, float(fraction) * track_length), float(lateral))
+		# Sammelzonen für Zufallsprismen: 5–8 je Runde (kart_items/kart_item_zones.gd).
+		for zone in ITEM_ZONES.plan(world, _catalog_zone_occupied()):
+			for lateral in zone.laterals:
+				_catalog_box(float(zone.distance), float(lateral))
 	player = VEHICLE.new()
 	player.set_meta("roadside_speed_factor", 1.0)
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, selected_driver)
@@ -2959,6 +2972,14 @@ func _drive_opponents(delta: float) -> void:
 				if ahead > 1.0 and ahead < maxf(26.0, absf(rival.motion_speed) * 1.35):
 					target_lane = item_box_laterals[ring]
 					break
+		if opponent_items[i].is_empty():
+			# Sammelzonen: auch Rivalen fahren das nächste Zufallsprisma an.
+			var prism_lane: float = ITEM_ZONES.rival_lane(
+				catalog_box_distances, catalog_box_laterals, float(sampled.distance),
+				float(sampled.lateral), rival.motion_speed, track_length
+			)
+			if prism_lane < INF:
+				target_lane = prism_lane
 		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
 		target_lane = RIVAL_RACECRAFT.choose_lane(
 			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
@@ -3289,6 +3310,10 @@ func _track_events() -> void:
 
 
 func _use_item() -> void:
+	if item_roulette_time > 0.0 and not item.is_empty() and racing and not paused and not finished:
+		# Tipp während der Ziehung: Ergebnis sofort zeigen, aber nichts benutzen.
+		_finish_item_roulette(true)
+		return
 	if item.is_empty() or not racing or paused or finished or item_roulette_time > 0.0:
 		return
 	if item == ROCKET_ID:
@@ -4806,7 +4831,7 @@ func _save_session() -> void:
 		"cup_index", "cup_points", "cup_results", "pending_cup_next", "finished", "completed_race", "result_payload",
 		"arena_scores", "arena_pickup_timers", "opponent_scores", "opponent_targets", "opponent_headings",
 		"item", "shield_time", "reset_count", "setup_snapshot", "item_box_collected", "opponent_items",
-		"item_charges", "catalog_box_collected"
+		"item_charges", "catalog_box_collected", "item_roulette_time"
 	]:
 		config.set_value("race", key, get(key))
 	for key in RIVAL_SESSION_TIMERS:
@@ -4996,6 +5021,13 @@ func _restore_item_continuity(config: ConfigFile) -> void:
 	# A resumed race never starts armed: pods unfold again and wait for the first tap.
 	rocket_phase = ""
 	item_roulette_time = 0.0
+	star_compass.clear()
+	# Eine laufende Ziehung läuft mit demselben Ergebnis weiter (nie neu gezogen).
+	var saved_roulette = config.get_value("race", "item_roulette_time", 0.0)
+	var roulette_saved: bool = typeof(saved_roulette) in [TYPE_INT, TYPE_FLOAT]
+	if not item.is_empty() and roulette_saved and float(saved_roulette) > 0.0:
+		star_compass.start(item, reduced_motion, Vector3.ZERO)
+		item_roulette_time = clampf(float(saved_roulette), 0.0, star_compass.total)
 	_sync_player_rocket_phase()
 	for key in RIVAL_SESSION_TIMERS:
 		var timers: Array = get(key)
@@ -5498,6 +5530,10 @@ func _rival_threatened(index: int) -> bool:
 
 
 func _grant_item(id: String) -> void:
+	# Ein direkt vergebenes Item beendet eine laufende Kompass-Darstellung (sonst würde der
+	# nächste Tipp nur die alte Ziehung überspringen).
+	item_roulette_time = 0.0
+	star_compass.clear()
 	item = id
 	item_charges = maxi(1, int(ITEM_CATALOG.entry(id).get("charges", 1)))
 	rocket_phase = ""
@@ -5680,6 +5716,7 @@ func _apply_item_event(event: Dictionary) -> void:
 	var rocket: bool = str(event.get("item", "")) == ROCKET_ID
 	if is_instance_valid(rocket_flight):
 		rocket_flight.on_item_event(event, rocket)
+	item_telemetry.note_event(str(event.type), event, elapsed)
 	if str(event.type) == "intercepted":
 		_stat("intercepted")
 		_fx("blocked", at)
@@ -5710,7 +5747,11 @@ func _apply_item_event(event: Dictionary) -> void:
 		player_grace_time > 0.0 if target == -1
 		else (target >= 0 and target < opponent_grace_times.size() and opponent_grace_times[target] > 0.0)
 	)
+	if not in_grace and not rocket_fairness.hit_allowed(self, target):
+		# Sturzstelle (Rampe, Brücke, offene Kante …): das Geschoss zerplatzt harmlos.
+		in_grace = true
 	if in_grace:
+		item_telemetry.note_event("grace", event, elapsed)
 		_fx("rocket_pop", at)
 		return
 	var grace: float = float(_lock_rules().grace)
@@ -5907,6 +5948,16 @@ func _catalog_box_fractions() -> Array[float]:
 	return picks
 
 
+## Bereits platzierte Ringe und Turbofelder: Sammelzonen halten davon Abstand.
+func _catalog_zone_occupied() -> Array:
+	var occupied: Array = item_box_distances.duplicate()
+	for entry in BOOST_RING_LAYOUT:
+		occupied.append(PASSAGES.clear_distance(world, float(entry[0]) * track_length))
+	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
+		occupied.append(PASSAGES.clear_distance(world, float(fraction) * track_length))
+	return occupied
+
+
 func _catalog_box(distance_on_track: float, lateral: float) -> void:
 	var basis: Basis = world.frame(distance_on_track)
 	var node: Node3D = ITEM_BOX_SCENE.instantiate()
@@ -5931,14 +5982,23 @@ func _collect_catalog_boxes(lap: int) -> void:
 		catalog_boxes[i].visible = false
 		_fx("item_box", catalog_boxes[i].global_position)
 		if item.is_empty():
-			_grant_item_with_roulette(_roll_catalog_item(_place()))
+			var prism_at: Vector3 = catalog_boxes[i].global_position
+			_grant_item_with_roulette(_roll_catalog_item(_place()), prism_at)
+			MYSTERY_PRISM.shatter(race_root, catalog_boxes[i].global_position, reduced_motion)
+			item_telemetry.note_draw(-1, _place(), item, lap, elapsed)
 			message.text = "Überraschung!"
+		else:
+			item_telemetry.note_full(-1, lap, elapsed)
 
 
 func _rival_collect_catalog_box(index: int) -> void:
 	for i in range(catalog_boxes.size()):
 		if opponents[index].position.distance_to(catalog_boxes[i].position) <= CATALOG_BOX_RADIUS:
 			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index])
+			item_telemetry.note_draw(
+				index, _opponent_place(index), opponent_items[index],
+				int(opponent_distances[index] / maxf(track_length, 1.0)), elapsed
+			)
 			opponent_item_cooldowns[index] = 1.8
 			return
 
@@ -5949,11 +6009,11 @@ func _rival_collect_catalog_box(index: int) -> void:
 ## "Entdecken" (gemuetlich) is generous so a child locks on almost at once.
 const LOCK_RULES: Dictionary = {
 	"gemuetlich": {"cone": 38.0, "range": 85.0, "lock": 0.45, "rival_lock": 2.2, "rival_hold": 7.0, "rival_salvo_gap": 7.0, "grace": 3.5},
-	"normal": {"cone": 28.0, "range": 65.0, "lock": 0.7, "rival_lock": 1.5, "rival_hold": 3.5, "rival_salvo_gap": 4.0, "grace": 2.6},
-	"profi": {"cone": 22.0, "range": 55.0, "lock": 0.9, "rival_lock": 1.1, "rival_hold": 1.8, "rival_salvo_gap": 2.5, "grace": 2.0},
+	"flott": {"cone": 28.0, "range": 65.0, "lock": 0.7, "rival_lock": 1.5, "rival_hold": 3.5, "rival_salvo_gap": 4.0, "grace": 2.6},
+	"pro": {"cone": 22.0, "range": 55.0, "lock": 0.9, "rival_lock": 1.1, "rival_hold": 1.8, "rival_salvo_gap": 2.5, "grace": 2.0},
 }
 const ROCKET_ID := "star_rocket"
-const ROULETTE_SECONDS: float = 1.05
+const ROULETTE_SECONDS: float = STAR_COMPASS.STANDARD_SECONDS
 const ITEM_HINTS_PATH := "user://kart_item_hints.cfg"
 ## Lock counts as "good enough" for homing from this progress on.
 const LOCK_HOMING_THRESHOLD: float = 0.5
@@ -5992,7 +6052,7 @@ func _popup(text: String, world: Vector3, color: Color) -> void:
 
 
 func _lock_rules() -> Dictionary:
-	return LOCK_RULES.get(difficulty, LOCK_RULES.normal)
+	return LOCK_RULES.get(difficulty, LOCK_RULES.flott)
 
 
 func _build_item_experience() -> void:
@@ -6047,6 +6107,7 @@ func _reset_item_experience() -> void:
 	lock_progress = 0.0
 	player_grace_time = 0.0
 	item_roulette_time = 0.0
+	star_compass.clear()
 	item_hint = ""
 	player_warning = 0.0
 	_lock_announced = false
@@ -6079,10 +6140,20 @@ func _sync_player_rocket_phase() -> void:
 
 
 ## Item box pickup: the slot wheel spins briefly, then the item is ready.
-func _grant_item_with_roulette(id: String) -> void:
+## Das Ergebnis steht schon fest (genau eine Ziehung); der Sternenkompass zeigt es nur.
+func _grant_item_with_roulette(id: String, from_world: Vector3 = Vector3.ZERO) -> void:
 	_grant_item(id)
-	item_roulette_time = 0.35 if reduced_motion else ROULETTE_SECONDS
+	item_roulette_time = star_compass.start(id, reduced_motion, from_world)
 	_sound_effect("roulette_tick")
+
+
+## Ende der Darstellung: regulär oder per Tipp aufs Item-Feld übersprungen.
+func _finish_item_roulette(skipped: bool) -> void:
+	item_roulette_time = 0.0
+	star_compass.finish(skipped)
+	_sound_effect("roulette_done")
+	message.text = "%s! Tippe ITEM." % str(ITEM_CATALOG.entry(item).get("name", "Überraschung"))
+	_show_item_hint(item)
 
 
 func _show_item_hint(id: String) -> void:
@@ -6167,6 +6238,7 @@ func _fire_player_rockets() -> void:
 	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
 		# Die Raketen erben das Kart-Tempo und sind schneller: man sieht sie wegfliegen.
 		item_runtime.fire_pair(ROCKET_ID, -1, distance, lane, target, launches, maxf(0.0, speed))
+		item_telemetry.note_salvo(-1, target, elapsed)
 	_fx("rocket_fire", player.global_position + Vector3.UP * 0.7)
 	_sound_effect("rocket_launch")
 	camera_punch = maxf(camera_punch, 0.0 if reduced_motion else 0.42)
@@ -6231,6 +6303,10 @@ func _update_rival_rockets(index: int, delta: float) -> bool:
 	var valid: bool = target != -99 and float(ahead.gap) < float(rules.range) * 0.8
 	if target == -1 and player_grace_time > 0.0:
 		valid = false
+	if target == -1 and not rocket_fairness.child_targetable(self, index):
+		valid = false
+	if target >= 0 and not rocket_fairness.hit_allowed(self, target):
+		valid = false
 	if target >= 0 and opponent_grace_times[target] > 0.0:
 		valid = false
 	if not valid:
@@ -6250,6 +6326,7 @@ func _update_rival_rockets(index: int, delta: float) -> bool:
 		launches = pods.take_pair()
 	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
 		item_runtime.fire_pair(ROCKET_ID, index, opponent_distances[index], opponent_lanes[index], target, launches)
+		item_telemetry.note_salvo(index, target, elapsed)
 	_fx("rocket_fire", opponents[index].global_position + Vector3.UP * 0.8, 0.5)
 	if target == -1:
 		message.text = "%s feuert Sternraketen auf dich – Schild!" % _rival_name(index)
@@ -6295,18 +6372,17 @@ func _sync_rival_pods(index: int, pairs: int, armed: bool) -> void:
 
 
 func _update_item_experience(delta: float) -> void:
+	rocket_fairness.observe(reset_count, elapsed, player_spin_time)
 	player_grace_time = maxf(0.0, player_grace_time - delta)
 	for i in range(opponent_grace_times.size()):
 		opponent_grace_times[i] = maxf(0.0, opponent_grace_times[i] - delta)
-	if item_roulette_time > 0.0:
-		var before: float = item_roulette_time
-		item_roulette_time = maxf(0.0, item_roulette_time - delta)
-		if int(before * 9.0) != int(item_roulette_time * 9.0):
-			_sound_effect("roulette_tick", 1.0 + (1.0 - item_roulette_time / ROULETTE_SECONDS) * 0.4)
-		if item_roulette_time <= 0.0:
-			_sound_effect("roulette_done")
-			message.text = "%s! Tippe ITEM." % str(ITEM_CATALOG.entry(item).get("name", "Überraschung"))
-			_show_item_hint(item)
+	var roulette_before: float = item_roulette_time
+	item_roulette_time = maxf(0.0, item_roulette_time - delta)
+	var tick_pitch: float = star_compass.advance(delta, roulette_before, item_roulette_time)
+	if tick_pitch > 0.0:
+		_sound_effect("roulette_tick", tick_pitch)
+	if roulette_before > 0.0 and item_roulette_time <= 0.0:
+		_finish_item_roulette(false)
 	if item_hint_time > 0.0:
 		item_hint_time = maxf(0.0, item_hint_time - delta)
 		if item_hint_time <= 0.0:
@@ -6370,7 +6446,12 @@ func _update_item_hud(delta: float) -> void:
 		"phase": rocket_phase if item_roulette_time <= 0.0 else "",
 		"item": shown_item, "charges": item_charges,
 		"item_color": ITEM_CATALOG.color(shown_item).to_html() if not shown_item.is_empty() else "#ffffff",
-		"roulette": item_roulette_time / ROULETTE_SECONDS if item_roulette_time > 0.0 else 0.0,
+		"roulette": (
+			item_roulette_time / maxf(0.01, star_compass.total) if item_roulette_time > 0.0 else 0.0
+		),
+		"compass": star_compass.hud_state(
+			item_roulette_time, camera, player.global_position + Vector3.UP * 0.9
+		),
 		"has_target": has_target, "target": lock_target, "target_world": target_world,
 		"target_name": _rival_name(lock_target) if has_target else "", "lock": lock_progress,
 		# Hook kart-garage: echte Entfernung zum Ziel und Reichweite für den Entfernungsbalken.

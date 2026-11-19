@@ -67,6 +67,7 @@ const ROUTES: Dictionary = {
 	},
 	"learning": LEARNING,
 	"tutor": LEARNING,
+	"holo": LEARNING,
 	"learn": LEARNING,
 	"reading_hub": LEARNING,
 	"alphabet": LEARNING,

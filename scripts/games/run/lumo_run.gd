@@ -22,6 +22,8 @@ const PROPS = preload("res://scripts/games/run/run_props.gd")
 const ACTOR = preload("res://scripts/games/run/run_actor.gd")
 const CAMERA = preload("res://scripts/games/run/run_camera.gd")
 const FX = preload("res://scripts/games/run/run_fx.gd")
+const MOMENTS = preload("res://scripts/games/run/run_moments.gd")
+const MOMENT_PROPS = preload("res://scripts/games/run/run_moment_props.gd")
 const HUD = preload("res://scripts/games/run/run_hud.gd")
 const MENUS = preload("res://scripts/games/run/run_menus.gd")
 const STAGE = preload("res://scripts/games/run/run_menu_stage.gd")
@@ -52,6 +54,10 @@ const SECTION_SAYINGS: Array[String] = [
 ## Longest piece of building work per frame while loading, in milliseconds.
 const PREPARE_SLICE_MS: int = 40
 
+## Every game event as it happens (player: jump, land, dash ...; track: star,
+## bounce, boost, stumble, fall ...). Used by the probes and the event log.
+signal moment(kind: String, detail: Dictionary)
+
 var phase: Phase = Phase.MENU
 var paused: bool = false
 var question_open: bool = false
@@ -70,6 +76,12 @@ var props
 var actor
 var camera
 var fx
+## Early highlights: announce, act, react (run_moments.gd + run_moment_props.gd).
+var moments = MOMENTS.new()
+var moment_props
+var _trail_left: float = 0.0
+var _trail_tick: float = 0.0
+var _trail_colour := Color.WHITE
 var hud
 var menus
 var stage
@@ -299,6 +311,10 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	props.name = "RunProps"
 	add_child(props)
 	props.build(world, plan, COURSES.theme(course_index), lightweight, reduced_motion)
+	moment_props = MOMENT_PROPS.new()
+	moment_props.name = "RunMoments"
+	props.add_child(moment_props)
+	moment_props.build(world, plan, Color(course.accent), reduced_motion)
 	player = PLAYER.new()
 	if plan.adventure:
 		player.use_path_feel()
@@ -353,6 +369,7 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	hud.set_course(shares, flags, plan.star_total)
 	hud.set_letters(plan.letters.map(func(letter: Dictionary) -> String: return str(letter.char)), track.letters)
 	hud.set_skip_visible(plan.adventure and not restored and plan.intro_end > plan.start_s)
+	moments.setup(plan.moments, player.s)
 	_section = -1
 	load_ms = Time.get_ticks_msec() - load_started
 	menus.close()
@@ -434,6 +451,7 @@ func _simulate(delta: float) -> void:
 	track.clock = run_clock
 	player.step(delta, steer, track)
 	var events: Array[Dictionary] = track.resolve(player, run_clock)
+	var happened: Array = player.events.duplicate()
 	for event in player.events:
 		_on_player_event(event)
 	player.events.clear()
@@ -441,6 +459,14 @@ func _simulate(delta: float) -> void:
 		_on_track_event(event)
 	if phase != Phase.RUNNING:
 		return
+	for step in moments.step(player, events, happened):
+		_on_moment(step)
+	if _trail_left > 0.0:
+		_trail_left -= delta
+		_trail_tick -= delta
+		if _trail_tick <= 0.0:
+			_trail_tick = 0.07
+			fx.play("sparkle", feet_transform().origin + Vector3.UP * 0.7, _trail_colour)
 	props.advance(delta, run_clock, player.s)
 	_combo_left = maxf(0.0, _combo_left - delta)
 	if _combo_left <= 0.0:
@@ -452,6 +478,8 @@ func _simulate(delta: float) -> void:
 			hud.set_skip_visible(false)
 	else:
 		_hint_ahead()
+		if not plan.moments.is_empty():
+			hud.set_coach(moments.coach_at(player.s))
 	if is_instance_valid(audio):
 		audio.update(delta, player, track)
 	hud.set_state(track.kept, _share(player.s), solved_count(), track.checkpoint)
@@ -481,6 +509,9 @@ func _announce_passages() -> void:
 
 
 func _coach_icon() -> String:
+	var calling: String = moments.coach_at(player.s)
+	if not calling.is_empty():
+		return calling
 	for coach in plan.coaches:
 		if player.s >= float(coach.s0) and player.s <= float(coach.s1):
 			return str(coach.icon)
@@ -522,11 +553,50 @@ func _update_view(delta: float, snap: bool) -> void:
 	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
 	fx.set_speed(camera.pace_now if phase == Phase.RUNNING else 0.0, camera.global_transform)
+	if is_instance_valid(moment_props):
+		moment_props.advance(delta, player.s)
 	if plan.adventure and is_instance_valid(world.scenery):
 		world.scenery.follow(camera.global_position, player.s, maxf(delta, 0.0001), feet.origin)
 
 
+## One step of a highlight: the announcement, the praise with its push forward,
+## or a kind word after a miss (the moment stays armed for the next try).
+func _on_moment(step: Dictionary) -> void:
+	var index: int = int(step.index)
+	var spot: Dictionary = plan.moments[index]
+	var feet: Vector3 = feet_transform().origin
+	var colour := Color(str(spot.get("colour", "ffe27a")))
+	moment.emit("moment_" + str(step.type), spot)
+	match str(step.type):
+		"cue":
+			moment_props.set_calling(index, true)
+			hud.banner(str(spot.name) + "!", -1)
+			hud.say(str(spot.say), 3.2)
+			_sound("gate", "ui_confirm")
+		"done":
+			moment_props.set_calling(index, false)
+			player.boost(MOMENTS.boost_seconds(spot))
+			fx.play("burst", feet + Vector3.UP * 0.9, colour)
+			fx.play("sparkle", feet + Vector3.UP * 1.4)
+			if not reduced_motion:
+				camera.kick(0.3)
+			_sound("checkpoint", "celebrate")
+			var praise: String = str(spot.done_say)
+			if moments.bullseye[index]:
+				praise += " Volltreffer!"
+			hud.say(praise, 2.4)
+			hud.banner("Volltreffer!" if moments.bullseye[index] else "Super!", -1)
+			# A trail of sparkles behind Lumo while the push lasts.
+			_trail_left = 0.9
+			_trail_colour = colour
+		"missed":
+			if not bool(step.get("again", false)):
+				moment_props.set_calling(index, false)
+			hud.say(str(spot.miss_say), 2.2)
+
+
 func _on_player_event(event: StringName) -> void:
+	moment.emit(str(event), {})
 	var feet: Vector3 = feet_transform().origin
 	match event:
 		&"jump":
@@ -566,6 +636,7 @@ func _on_player_event(event: StringName) -> void:
 
 
 func _on_track_event(event: Dictionary) -> void:
+	moment.emit(str(event.type), event)
 	var feet: Vector3 = feet_transform().origin
 	match str(event.type):
 		"star":

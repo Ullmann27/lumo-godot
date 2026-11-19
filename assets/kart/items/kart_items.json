@@ -93,16 +93,16 @@
       "range": 70.0,
       "role": "attack",
       "weights": [
-        0,
-        3,
-        5,
-        5,
-        4,
-        3
+        1.5,
+        6,
+        8,
+        9,
+        9,
+        8
       ],
       "sound": "item",
       "charges": 2,
-      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer."
+      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer. Gewichte 19.11.2026 (Monte-Carlo-Beleg scripts/tests/kart_rocket_odds_montecarlo.gd): Platz 1 selten (~5 %), Plätze 2-6 ~20-27 %; Ketten verhindert kart_rocket_fairness.gd."
     },
     {
       "id": "spark_ball",

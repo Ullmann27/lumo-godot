@@ -32,6 +32,7 @@ const SCENES: Dictionary = {
 	"run": "res://scenes/games/lumo_run.tscn",
 	"learning": "res://scenes/learning/learning_world.tscn",
 	"tutor": "res://scenes/learning/tutor_world.tscn",
+	"holo": "res://scenes/learning/holo_lesson.tscn",
 	"cards": "res://scenes/games/cards_table.tscn",
 	"connect_four": "res://scenes/games/connect_four_table.tscn",
 	"memory": "res://scenes/games/memory_table.tscn",
