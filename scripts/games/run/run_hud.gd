@@ -30,6 +30,8 @@ var marks := PackedFloat32Array()
 var mark_is_question := PackedByteArray()
 var reached: int = -1
 var _toast_left: float = 0.0
+## The text of the hint bubble as given (the bubble shows it broken into lines).
+var _toast_text: String = ""
 var _unit: float = 1.0
 var _bar := Rect2()
 var _two_rows: bool = false
@@ -64,6 +66,10 @@ func _ready() -> void:
 	toast.name = "Toast"
 	toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	toast.clip_text = false
+	# Lines are broken in _place_toast: a wrapping label measured its height at
+	# its old width, and a long hint after a short one became a tall dark board
+	# over Lumo.
+	toast.autowrap_mode = TextServer.AUTOWRAP_OFF
 	toast.hide()
 	add_child(toast)
 	countdown = UI.label("", 96.0, 1.0, UI.GOLD, true)
@@ -172,6 +178,7 @@ func set_dash_cooldown(value: float) -> void:
 
 
 func say(text: String, seconds: float = 2.4) -> void:
+	_toast_text = text
 	toast.text = text
 	toast.visible = not text.is_empty()
 	_toast_left = seconds
@@ -293,17 +300,30 @@ func layout() -> void:
 func _place_toast() -> void:
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	var u: float = _unit
-	var font: Font = THEME.HEADING
+	var font: Font = toast.get_theme_font("font")
 	var font_size: int = roundi(16.0 * u)
 	var limit: float = minf(view.x - 28.0 * u, 460.0 * u)
 	var inner: float = limit - 28.0 * u
-	var text_width: float = font.get_string_size(toast.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	var text_width: float = font.get_string_size(_toast_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	var lines: int = clampi(ceili(text_width / maxf(1.0, inner)), 1, 3)
-	var width: float = minf(text_width / float(lines) + 44.0 * u, limit)
-	var height: float = font.get_height(font_size) * float(lines) + 12.0 * u
+	# Balanced lines: about the same length each, never wider than the limit.
+	var target: float = minf(text_width / float(lines) + 16.0 * u, inner)
+	var rows: Array[String] = []
+	var row: String = ""
+	for word in _toast_text.split(" ", false):
+		var trial: String = word if row.is_empty() else row + " " + word
+		if not row.is_empty() and font.get_string_size(trial, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > target:
+			rows.append(row)
+			row = word
+		else:
+			row = trial
+	if not row.is_empty():
+		rows.append(row)
+	toast.text = "\n".join(rows)
 	toast.custom_minimum_size = Vector2.ZERO
-	toast.position = Vector2((view.x - width) * 0.5, top.position.y + top.size.y + 8.0 * u)
-	toast.size = Vector2(width, height)
+	toast.size = Vector2.ZERO
+	toast.reset_size()
+	toast.position = Vector2((view.x - toast.size.x) * 0.5, top.position.y + top.size.y + 8.0 * u)
 
 
 func _draw_pause() -> void:
