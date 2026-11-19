@@ -65,7 +65,7 @@ func tracked_count() -> int:
 func begin_tick() -> void:
 	for id in _entries:
 		var entry: Dictionary = _entries[id]
-		var node: Node3D = entry.node
+		var node: Node3D = entry.target.get_ref()
 		if not is_instance_valid(node) or not bool(entry.shown):
 			continue
 		if node.transform.is_equal_approx(entry.shown_transform):
@@ -94,7 +94,7 @@ func end_tick() -> void:
 				entry.prev = now
 		else:
 			_entries[id] = {
-				"node": node, "prev": now, "curr": now, "shown": false, "shown_transform": now
+				"target": weakref(node), "prev": now, "curr": now, "shown": false, "shown_transform": now
 			}
 	for id in _entries.keys():
 		if not seen.has(id):
@@ -124,7 +124,7 @@ func _process(_delta: float) -> void:
 	)
 	for id in _entries:
 		var entry: Dictionary = _entries[id]
-		var node: Node3D = entry.node
+		var node: Node3D = entry.target.get_ref()
 		if not is_instance_valid(node):
 			continue
 		var expected: Transform3D = entry.shown_transform if bool(entry.shown) else entry.curr

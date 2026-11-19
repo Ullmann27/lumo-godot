@@ -244,6 +244,8 @@ static func apply_reflections(environment: Environment, sky: Sky, enabled: bool)
 		environment.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	else:
 		environment.reflected_light_source = Environment.REFLECTION_SOURCE_BG
+		if sky != null and environment.sky == sky:
+			environment.sky = null
 
 
 static func _stain_material() -> StandardMaterial3D:

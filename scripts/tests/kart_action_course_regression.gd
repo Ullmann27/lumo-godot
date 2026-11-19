@@ -5,6 +5,7 @@ extends SceneTree
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const STEP: float = 1.0 / 60.0
 var game
@@ -28,7 +29,16 @@ func _check_plans() -> void:
 		var course: Dictionary = world.action
 		var config: Dictionary = ACTION.COURSES[track]
 		var stunt_pads: int = ACTION.STUNT.pads(world).size() if config.get("stunt", false) else 0
-		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads, "%s: alle Turbo-Felder haben Platz" % track)
+		var bridge_pads: int = 0
+		for passage in PASSAGES.of(world):
+			if str(passage.kind) != "bridge" or not passage.has("exit_end"):
+				continue
+			bridge_pads += 1
+			var reward: Array = course.pads.filter(func(pad): return pad.get("passage") == passage.id)
+			assert(reward.size() == 1 and reward[0].start >= passage.zone_end
+				and reward[0].end <= passage.exit_end, "%s: Turbo-Feld liegt hinter der Brücke" % passage.id)
+		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + bridge_pads,
+			"%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
 		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
@@ -191,7 +201,9 @@ func _check_kicker_and_dive() -> void:
 		game._physics_process(STEP)
 		if game.action_in_dive:
 			top = maxf(top, game.speed)
-	assert(top <= POWERTRAIN.top_speed({}) * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f m/s)" % top)
+	var rules: Dictionary = game.CATALOG.entry(game.CATALOG.DIFFICULTIES, game.difficulty)
+	var dry_top: float = POWERTRAIN.top_speed(game.kart_factors, float(rules.speed))
+	assert(top > 16.0 and top <= dry_top * ACTION.DIVE_SPEED + 0.6, "Unter Wasser fährt man langsamer (%.1f/%.1f m/s)" % [top, dry_top])
 	_place(float(dive.end) + 8.0, 0.0, 16.0)
 	game._physics_process(STEP)
 	assert(not game.action_in_dive and not game.dive_tint.visible, "Nach dem Tunnel wieder klare Sicht")

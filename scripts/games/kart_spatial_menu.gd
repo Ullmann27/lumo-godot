@@ -91,7 +91,6 @@ func _ready() -> void:
 	garage_interior.materials.podium.albedo_color = Color("d9dee6")
 	garage_interior.materials.podium.metallic = 0.2
 	garage_interior.materials.podium.roughness = 0.3
-	_studio_sky = SHOWROOM.studio_sky()
 	_style_view_choice()
 	parts_bay = PARTS_BAY.new()
 	add_child(parts_bay)
@@ -227,7 +226,10 @@ func _sync_home_stage() -> void:
 	if _home_environment != null:
 		_home_environment.ambient_light_color = Color("284286") if home_visible else _studio_ambient
 		_home_environment.ambient_light_energy = 0.36 if home_visible else _studio_ambient_energy
-		SHOWROOM.apply_reflections(_home_environment, _studio_sky, garage_interior.root.visible)
+		var workshop_visible := step == 2 and visible and _application_active and not _landing_active
+		if workshop_visible and _studio_sky == null:
+			_studio_sky = SHOWROOM.studio_sky()
+		SHOWROOM.apply_reflections(_home_environment, _studio_sky, workshop_visible)
 
 
 func _advance_home_camera(delta: float) -> void:
@@ -365,6 +367,8 @@ func _apply_responsive_layout() -> void:
 	var scale_factor := maxf(viewport_size.x / window_dp.x, viewport_size.y / window_dp.y)
 	var available := size / scale_factor
 	var portrait := available.x < available.y
+	var landscape_workshop := step == 2 and not portrait
+	var parts_open: bool = step == 2 and parts_bay != null and parts_bay.is_open()
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
 	var ultra_short := available.y < 300.0
@@ -415,6 +419,12 @@ func _apply_responsive_layout() -> void:
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
 		choices_rect = Rect2(margin, top, clampf(available.x * 0.31, 208, 360), maxf(72, footer_y - top - 12))
+	var parts_rect := choices_rect
+	if landscape_workshop:
+		# The view selector belongs above the kart list, outside the camera stage.
+		choices_rect.position.y += 56.0
+		choices_rect.size.y = maxf(48.0, choices_rect.size.y - 56.0)
+		parts_rect.size.y = available.y - margin - top
 	var stage_mode: bool = track_stage.wanted()
 	if stage_mode:
 		choices_rect = track_stage.layout(available, top, footer_y, margin, portrait, scale_factor)
@@ -466,23 +476,30 @@ func _apply_responsive_layout() -> void:
 	next_button.text = "START" if narrow or ultra_short else "Rennen starten"
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
-	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	view_choice.offset_left = -256 * scale_factor
-	view_choice.offset_right = -margin * scale_factor
-	view_choice.offset_top = top * scale_factor
-	view_choice.offset_bottom = (top + 48) * scale_factor
-	view_choice.visible = not _landing_active and step in [1, 2]
+	if landscape_workshop:
+		_stage_rect(view_choice, Rect2(margin, top, choices_rect.size.x, 48.0), scale_factor)
+	else:
+		view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+		view_choice.offset_left = -256 * scale_factor
+		view_choice.offset_right = -margin * scale_factor
+		view_choice.offset_top = top * scale_factor
+		view_choice.offset_bottom = (top + 48) * scale_factor
+	view_choice.visible = not _landing_active and step in [1, 2] and not parts_open
 	if parts_bay != null:
 		# Knöpfe in der freien Bühne über der Kartauswahl, Konfigurator über der Auswahl-Fläche.
 		var stage_px := _visible_stage_region()
 		var full := preview_container.get_global_rect()
 		var stage_rect := Rect2(full.position + stage_px.position * full.size, stage_px.size * full.size)
-		parts_bay.relayout(scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size),
-			Rect2(_selection_surface.position, _selection_surface.size))
+		var config_area := Rect2(parts_rect.position * scale_factor, parts_rect.size * scale_factor)
+		parts_bay.relayout(
+			scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size), config_area
+		)
 	for control in _stage_controls:
 		control.visible = not _landing_active
+	setup_left.visible = not _landing_active and not parts_open
+	footer.visible = not _landing_active and not (landscape_workshop and parts_open)
 	_stage_header.visible = not _landing_active and not ultra_short
-	_selection_surface.visible = not _landing_active and not stage_mode
+	_selection_surface.visible = not _landing_active and not stage_mode and not parts_open
 	call_deferred("_fit_welcome_camera")
 
 
@@ -631,7 +648,7 @@ func _visible_stage_region() -> Rect2:
 	else:
 		clear.position.x = _selection_surface.get_global_rect().end.x + inset
 		clear.end.x = stage.end.x - inset
-		if view_choice.is_visible_in_tree():
+		if step != 2 and view_choice.is_visible_in_tree():
 			clear.end.x = view_choice.global_position.x - inset
 	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
 	if step == 2 and parts_bay != null and not _landing_active:
