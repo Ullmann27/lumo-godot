@@ -100,7 +100,10 @@ func _run() -> void:
 	# 1b. Alter Streckenstand: freundliche Meldung, kein Freundes-Geist.
 	var old_meta: Dictionary = _with(meta, "track_version", "p1:aaaaaaaaaa")
 	game.friend_duel.load_options(
-		{"kartFriendGhost": codec.to_text(codec.encode(frames, old_meta).bytes)}
+		{
+			"kartFriendGhost": codec.to_text(codec.encode(frames, old_meta).bytes),
+			"friendsGhostShare": true
+		}
 	)
 	game._start_selected_race(setup)
 	await _settle(3)
@@ -112,7 +115,11 @@ func _run() -> void:
 	_check(str(game.message.text).contains("neue Strecke"), "freundliche Meldung im Rennen")
 	# 2. Kind öffnet ihn: Einladung, dann Rennen.
 	game.friend_duel.load_options(
-		{"kartFriendGhost": codec.to_text(file.bytes), "playerName": "Lena"}
+		{
+			"kartFriendGhost": codec.to_text(file.bytes),
+			"playerName": "Lena",
+			"friendsGhostShare": true
+		}
 	)
 	_check(game.friend_duel.has_friend(), "Geist angenommen")
 	game._show_garage()
@@ -128,7 +135,10 @@ func _run() -> void:
 	var router: Node = root.get_node("SceneRouter")
 	var saved_options: Dictionary = router.launch_options.duplicate(true)
 	router.launch_options = {
-		"kartFriendGhost": codec.to_text(file.bytes), "kartFriendStart": true, "playerName": "Lena"
+		"kartFriendGhost": codec.to_text(file.bytes),
+		"kartFriendStart": true,
+		"playerName": "Lena",
+		"friendsGhostShare": true
 	}
 	game.friend_duel.attach(game)
 	router.launch_options = saved_options
@@ -205,6 +215,30 @@ func _run() -> void:
 			bool(back.ok) and str(back.meta.track_version) == version,
 			"Rückspiel-Geist trägt Strecken-Version"
 		)
+	# 4b. Ohne Elternfreigabe „Geister-Duell erlauben“: kein Teilen-Knopf, keine Datei,
+	# kein Freundes-Geist, keine Aufforderung – leerer Vorname ist kein Fehler.
+	game.friend_duel.load_options({"kartFriendGhost": codec.to_text(file.bytes), "playerName": ""})
+	_check(not game.friend_duel.share_allowed, "Vorgabe: Geister-Duell aus")
+	_check(
+		not game.friend_duel.has_friend() and game.friend_duel.rejected.is_empty(),
+		"ohne Freigabe kein Freundes-Geist und kein Hinweis"
+	)
+	_check(game.friend_duel.player_name == "Freund", "leerer Vorname → Freund")
+	var bare := VBoxContainer.new()
+	game.friend_duel.race_state = ""
+	game.friend_duel.add_result_rows(game, bare)
+	_check(
+		bare.get_node_or_null("FriendGhostShareRow/FriendGhostShare") == null,
+		"ohne Freigabe kein FriendGhostShare-Knopf"
+	)
+	bare.free()
+	var files_before: int = DirAccess.get_files_at("user://kart_geister").size()
+	game.friend_duel.share_best(game)
+	_check(
+		DirAccess.get_files_at("user://kart_geister").size() == files_before,
+		"ohne Freigabe teilt share_best nichts"
+	)
+	game.friend_duel.load_options({"friendsGhostShare": true, "playerName": "Lena"})
 	# 5. Eigene Bestzeiten sind nicht die des Freundes.
 	_check(
 		(
@@ -220,7 +254,9 @@ func _run() -> void:
 	)
 	# 7. Beschädigte Datei: Ablehnung im Menü, kein Rennen, nichts gespeichert.
 	var before: float = float(game.records.config.get_value("times", game.records.record_key, 0.0))
-	game.friend_duel.load_options({"kartFriendGhost": "LUMOGEIST1:TEdTVAFmYWxzY2g"})
+	game.friend_duel.load_options(
+		{"kartFriendGhost": "LUMOGEIST1:TEdTVAFmYWxzY2g", "friendsGhostShare": true}
+	)
 	_check(
 		not game.friend_duel.has_friend() and not game.friend_duel.rejected.is_empty(),
 		"kaputter Geist abgelehnt"
@@ -232,7 +268,8 @@ func _run() -> void:
 	game.friend_duel.load_options(
 		{
 			"kartFriendGhost":
-			codec.to_text(codec.encode(frames, _with(meta, "track", "mondbahn")).bytes)
+			codec.to_text(codec.encode(frames, _with(meta, "track", "mondbahn")).bytes),
+			"friendsGhostShare": true
 		}
 	)
 	_check(

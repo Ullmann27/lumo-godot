@@ -28,15 +28,20 @@ var last_share_note: String = ""
 var invitation: Control
 ## „Zusammen fahren“ im WLAN – nur mit Elternfreigabe (Startoption friendsLan).
 var lan: Node
+## Elternfreigabe „Geister-Duell erlauben“ (Startoption friendsGhostShare, Vorgabe aus):
+## ohne sie kein Freundes-Geist, kein Teilen-Knopf und keine Geist-Datei zum Verschicken.
+var share_allowed: bool = false
 
 
 ## Liest Startoptionen (App: kartFriendGhost = Textform, playerName = Vorname).
 func load_options(options: Dictionary) -> void:
+	# Leerer Vorname (keine Freigabe) → Anzeigename „Freund“, nie ein Fehler.
 	player_name = CODEC.clean_name(str(options.get("playerName", "")))
+	share_allowed = options.get("friendsGhostShare", false) == true
 	friend = {}
 	rejected = ""
 	var raw: String = str(options.get("kartFriendGhost", ""))
-	if raw.is_empty():
+	if raw.is_empty() or not share_allowed:
 		return
 	var result: Dictionary = CODEC.decode(CODEC.bytes_from_text(raw))
 	if not bool(result.ok):
@@ -269,9 +274,10 @@ func add_result_rows(island: Node, column: Control) -> void:
 		var old := RESULT_WIDGETS.Row.new().setup("notice", CODEC.message("old_track"))
 		old.name = "FriendDuelOldTrack"
 		column.add_child(old)
-	# Im App-Rahmen nur, wenn er das Teilen-Menü anbietet (sonst landete die Datei unerreichbar
-	# im Spielordner: ein Knopf ohne Wirkung für das Kind). Ohne Rahmen (Desktop/Test): Datei.
-	if HostBridge.is_embedded() and not HostBridge.can_share_file():
+	# Nur mit Elternfreigabe; im App-Rahmen zusätzlich nur, wenn er das Teilen-Menü anbietet
+	# (sonst landete die Datei unerreichbar im Spielordner: ein Knopf ohne Wirkung für das Kind).
+	# Ohne Rahmen (Desktop/Test): Datei.
+	if not share_allowed or (HostBridge.is_embedded() and not HostBridge.can_share_file()):
 		return
 	var caption: String = (
 		"Meinen Geist an %s zurückschicken" % friend_name()
@@ -322,6 +328,8 @@ func export_best(island: Node) -> Dictionary:
 
 
 func share_best(island: Node) -> void:
+	if not share_allowed:
+		return
 	var result: Dictionary = export_best(island)
 	if not bool(result.ok):
 		_note(island, str(result.message))
