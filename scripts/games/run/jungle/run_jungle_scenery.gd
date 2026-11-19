@@ -1172,8 +1172,9 @@ func _structures() -> bool:
 			continue
 		if kind in ["dirt", "cave", "roots", "slide"]:
 			_water_plane(from - 1.0, to + 1.0, path.half_width_at(middle) + 2.5, -1.9)
-		elif kind in ["canopy", "plank", "stone", "rail"]:
-			# A misty drop: haze below the hole tells that it is deep.
+		elif kind in ["canopy", "plank", "stone", "rail"] and not _bridged(from, to):
+			# A misty drop: haze below the hole tells that it is deep. (Not under a
+			# plank bridge: seen along the bridge the haze card hid the planks.)
 			var mist := MeshInstance3D.new()
 			mist.mesh = MESHES.card(to - from + 6.0, 5.0)
 			mist.material_override = _materials["mist"]
@@ -1199,6 +1200,13 @@ func _railing(from: float, to: float, half: float, ropes: bool) -> void:
 		at = next
 
 
+func _bridged(from: float, to: float) -> bool:
+	for platform in level.platforms:
+		if float(platform.s0) >= from - 0.1 and float(platform.s1) <= to + 0.1 and str(platform.look) == "plank" and to - from > 12.0:
+			return true
+	return false
+
+
 func _is_glut(at: float) -> bool:
 	for item in level.decor:
 		if str(item.kind) == "glut" and at >= float(item.s0) - 0.1 and at <= float(item.s1):
@@ -1216,21 +1224,22 @@ func _glut(from: float, to: float) -> void:
 	material.emission_energy_multiplier = 2.6
 	material.roughness = 1.0
 	var half: float = path.half_width_at((from + to) * 0.5) + 2.0
-	var node: MeshInstance3D = _water_plane(from - 0.6, to + 0.6, half, -3.2)
+	# Just below the deck edge, so the glow fills the whole hole when seen from the path.
+	var node: MeshInstance3D = _water_plane(from - 0.3, to + 0.3, half, -1.1)
 	node.name = "Glut_%d" % int(from)
 	node.material_override = material
 	var at: float = from + 0.8
 	while at < to:
 		for lat in [-2.6, 0.0, 2.6]:
-			_put("flame", at, _xf(at, lat + _rng.randf_range(-0.5, 0.5), -3.1, Vector3.ONE * _rng.randf_range(1.2, 1.8)))
-			_embers(at, lat, -2.6)
+			_put("flame", at, _xf(at, lat + _rng.randf_range(-0.5, 0.5), -1.05, Vector3.ONE * _rng.randf_range(0.9, 1.4)))
+			_embers(at, lat, -0.6)
 		at += 1.6
 	if not low:
 		var light := OmniLight3D.new()
 		light.light_color = Color("ff8a3a")
 		light.light_energy = 2.2
 		light.omni_range = 9.0
-		light.position = _point((from + to) * 0.5, 0.0, -1.5)
+		light.position = _point((from + to) * 0.5, 0.0, 0.4)
 		add_child(light)
 
 

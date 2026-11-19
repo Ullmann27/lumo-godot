@@ -27,6 +27,12 @@ func _initialize() -> void:
 
 
 func _capture(name: String) -> void:
+	# A learning stop opened on the way would cover the picture: answer it first.
+	var guard: int = 0
+	while game.question_open and guard < 10:
+		game.answer(str(game.active_question.answer))
+		game.advance(STEP)
+		guard += 1
 	for _i in range(3):
 		await process_frame
 	await RenderingServer.frame_post_draw
@@ -65,6 +71,8 @@ func _place(s: float, speed: float) -> void:
 	game.track.falls.clear()
 	game.track.crumbled.clear()
 	game.player.place(s, 0.0, speed)
+	# No section banner from the jump: the run is already in this section.
+	game._section = game.world.section_at(s)
 	game.player.invulnerable = 0.0
 	game.player.release_jump()
 
@@ -101,6 +109,9 @@ func _run() -> void:
 		var number: int = 0
 		for passage in game.plan.passages:
 			number += 1
+			var only_passage: String = OS.get_environment("LUMO_PASSAGE")
+			if not only_passage.is_empty() and only_passage != str(passage.name):
+				continue
 			for line in ["lower", "upper"]:
 				bot = BOT.new(3)
 				bot.routes[str(passage.name)] = line
