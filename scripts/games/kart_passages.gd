@@ -12,6 +12,14 @@ extends RefCounted
 ##   Brückendeck Entwurf ................................................. 3,60 m (1,64 ×)
 ##   Absturz erst, wenn die Kartmitte DECK_FALL_MARGIN über der Kante ist.
 ##   Langsamstes Kart (boru_rally) Beschleunigung ......................... 35,2 m/s²
+## Lavapuls (Volcano Night Run): Während des Pulses fließt Lava quer über die Innenlinie.
+##   Heiße Zone = Band 2 × 2,5 m + Kartlänge 2 × 1,24 m ............... 7,5 m
+##   Ein Kart darf höchstens 0,4 s über der Lava sein → Mindesttempo 7,5 / 0,4 ≈ 18,7 m/s;
+##   Entwurf min_speed 18 m/s (65 km/h) je Frame geprüft.
+##   Normales Tempo (Kinderkart volles Eigentempo 48 m/s, nach der Kurve ≥ 30 m/s): drüber.
+##   Aus dem Stand an der Wartelinie (8 m vor der Mitte, 4,3 m bis zur Lava) erreicht auch das
+##   stärkste Kart nur √(2 · 40 · 4,3) ≈ 18,5 m/s – knapp; das langsamste (35,2 m/s²) 17,3 m/s
+##   → wer steht, wartet den Puls ab (2,2 s). Außen bleibt die Basaltspur immer kühl.
 ## Bewegte Hindernisse: Offenzeit ≥ Reaktionszeit 1,0 s + Fahrzeit des langsamsten Karts aus
 ## dem Stand von der Wartelinie bis hinter das Band (gemessen im Regressionstest).
 
@@ -23,6 +31,14 @@ const RIVAL_DECK_MARGIN: float = 0.60
 const RIVAL_BRIDGE_SPEED: float = 20.0
 const RIVAL_BRAKE: float = 26.0
 const RIVAL_LINE_LEAD: float = 80.0
+## Bridge queue: a kart counts as "in front" within this lateral gap (kart 2,19 m + room).
+const QUEUE_LANE_M: float = 2.6
+## Faster than this the kart is really driving, not parked aside.
+const QUEUE_MOVING_SPEED: float = 1.5
+## Within this distance before the deck every moving kart funnels into the single line.
+const QUEUE_FUNNEL_M: float = 14.0
+## A rival whose centre is this close to a closing gate band counts as "in front of it".
+const GATE_LANE_MARGIN: float = 1.2
 ## First warning sign before a passage zone; the spoken/written hint follows the pace
 ## (at least ANNOUNCE_SECONDS before the zone, never later than 70 m).
 const SIGN_LEAD_M: float = 170.0
@@ -289,31 +305,33 @@ static func free_lane(world, entry: Dictionary, state: Dictionary) -> float:
 	return (-half + band.x) * 0.5 if left_room >= right_room else (band.y + half) * 0.5
 
 
-static func gate_hits(world, entry: Dictionary, distance: float, lateral: float, t: float) -> bool:
+static func gate_hits(
+	world, entry: Dictionary, distance: float, lateral: float, t: float, speed: float = 0.0
+) -> bool:
 	var d: float = fposmod(distance, float(world.length))
 	if absf(d - float(entry.plane)) > float(entry.band) + KART_HALF_LENGTH:
 		return false
 	var state: Dictionary = swing_state(entry, t)
 	if str(state.phase) != "swing":
 		return false
+	# Lava pulse: with enough momentum the kart skims over the hot stream (see LAVA_MIN_SPEED).
+	if entry.has("min_speed") and absf(speed) >= float(entry.min_speed):
+		return false
 	var band: Vector2 = gate_band(entry, state)
 	if str(entry.get("object", "")) == "robot":
 		# The transport robot only blocks where it actually is on its crossing.
-		var width: float = band.y - band.x
-		var x: float = lerpf(-width * 0.5 - 1.8, width * 0.5 + 1.8, float(state.progress))
-		var robot_lateral: float = (band.x + band.y) * 0.5 + x * float(state.direction)
-		return absf(lateral - robot_lateral) < 1.8
+		return absf(lateral - robot_lateral(world, entry, state)) < 1.8
 	return lateral > band.x - 0.9 and lateral < band.y + 0.9
 
 
 ## Any moving blocker (Kiri or a gate) touching the kart at this place and time.
 static func blocker_hits(
-	world, entry: Dictionary, distance: float, lateral: float, t: float
+	world, entry: Dictionary, distance: float, lateral: float, t: float, speed: float = 0.0
 ) -> bool:
 	if str(entry.kind) == "swing":
 		return swing_hits(world, entry, distance, lateral, t)
 	if str(entry.kind) == "gate":
-		return gate_hits(world, entry, distance, lateral, t)
+		return gate_hits(world, entry, distance, lateral, t, speed)
 	return false
 
 
@@ -362,14 +380,35 @@ static func clear_time(entry: Dictionary, distance: float, speed: float, accel: 
 
 
 ## Leitlinie und Tempo-Obergrenze für einen Rivalen. lane = INF lässt die eigene Linie.
-## Traffic: Vector3(vorne m, quer m, Tempo) wie in kart_rival_racecraft; player_key ist der
+## Traffic: Vector3(vorne m, quer m, Tempo) wie in kart_rival_racecraft; player_entry ist der
 ## Index des Spielereintrags (Rivalen lassen dem Kind an der Engstelle den Vortritt).
+## lateral ist die eigene Querlage; kart_entries die Zahl der Kart-Einträge vorn in traffic
+## (danach folgen ruhende Streckenobjekte, die sich nie in die Brückenschlange einreihen).
 static func rival_control(
-	world, distance: float, speed: float, t: float, traffic: PackedVector3Array, player_entry: int
+	world,
+	distance: float,
+	speed: float,
+	t: float,
+	traffic: PackedVector3Array,
+	player_entry: int,
+	lateral: float = INF,
+	kart_entries: int = -1
 ) -> Dictionary:
 	var result := {"lane": INF, "speed": INF, "waiting": false, "smooth": false}
 	var d: float = fposmod(distance, float(world.length))
 	for entry in of(world):
+		if str(entry.kind) == "flow" and entry.has("arches") and lateral != INF:
+			# Root arches: aim for the opening we are closer to, never at the root pillar.
+			for arch in entry.arches:
+				var to_arch: float = float(arch[0]) - d
+				if to_arch < -2.0 or to_arch > 45.0:
+					continue
+				var lines: Vector2 = arch_lines(world, entry, arch)
+				result.lane = (
+					lines.x if absf(lateral - lines.x) < absf(lateral - lines.y) else lines.y
+				)
+				break
+			continue
 		if str(entry.kind) in ["flow", "view"]:
 			continue
 		if str(entry.kind) == "bridge":
@@ -388,13 +427,19 @@ static func rival_control(
 						+ 2.0 * RIVAL_BRAKE * maxf(0.0, ahead - 8.0)
 					)
 				)
-			# Yield to traffic lining up for the deck. A parked kart on the
-			# outer apron must not stop the whole field from entering the bridge.
-			var merge_half_width: float = float(entry.deck_width) * 0.5 + WIDEST_KART_M * 0.5
-			for index in range(traffic.size()):
+			# Single file: whoever is already in front, or the child beside us, goes first.
+			# Only karts that are really in the queue count: in our own lane, or moving
+			# onto the deck line. A kart that stands aside on the wide plaza (a child
+			# waiting at the edge, a rival parked abreast) never stops the queue: before
+			# 18.11.2026 a stationary kart 4 m to the side held the whole field forever
+			# (Winter-Sprint, rival chain stuck 80 m before the deck).
+			var karts: int = traffic.size() if kart_entries < 0 else kart_entries
+			for index in range(mini(karts, traffic.size())):
 				var other: Vector3 = traffic[index]
 				var first: float = -1.6 if index == player_entry else 0.3
-				if absf(other.y) > merge_half_width or other.x <= first or other.x >= 18.0:
+				if other.x <= first or other.x >= 18.0:
+					continue
+				if not _in_queue(other, lateral, ahead):
 					continue
 				# Keep a full kart length plus margin to the kart in front (5 m nose to nose).
 				var follow: float = maxf(0.0, other.z) + sqrt(2.0 * 8.0 * maxf(0.0, other.x - 5.0))
@@ -404,7 +449,10 @@ static func rival_control(
 			result.speed = cap
 		elif str(entry.kind) == "gate":
 			var gate_line: float = float(entry.wait_line) - d
-			if gate_line > 80.0 or d > float(entry.plane) + float(entry.band):
+			if (
+				gate_line > 80.0
+				or d > float(entry.plane) + float(entry.band) + KART_HALF_LENGTH + 1.0
+			):
 				continue
 			var gate_state: Dictionary = swing_state(entry, t)
 			var gate_need: float = clear_time(entry, d, speed, 30.0) + SWING_CLEAR_MARGIN
@@ -414,11 +462,31 @@ static func rival_control(
 			)
 			if gate_line < 0.0:
 				result.smooth = true
+				# Committed past the line: hold the chosen side through the gate. Before, the
+				# rival's own racing line pulled it from the open outer lane back into the band.
+				if lateral != INF:
+					var outside: bool = (
+						lateral >= band.y + GATE_LANE_MARGIN * 0.5
+						or lateral <= band.x - GATE_LANE_MARGIN * 0.5
+					)
+					result.lane = (
+						free_lane(world, entry, gate_state) if outside else (band.x + band.y) * 0.5
+					)
 				continue
 			# Short inner line when it stays open long enough, else the open outer lane.
 			result.lane = (
 				(band.x + band.y) * 0.5 if inner_ok else free_lane(world, entry, gate_state)
 			)
+			# Still in front of the closing band (no room to change lanes in time): brake,
+			# wait at the line and pull away at green, exactly like the child may do.
+			if (
+				not inner_ok
+				and lateral != INF
+				and lateral > band.x - GATE_LANE_MARGIN
+				and lateral < band.y + GATE_LANE_MARGIN
+			):
+				result.waiting = true
+				result.speed = sqrt(2.0 * RIVAL_BRAKE * maxf(0.0, gate_line - 0.6))
 		else:
 			var to_line: float = float(entry.wait_line) - d
 			if to_line > 70.0 or d > float(entry.plane) + float(entry.band):
@@ -433,3 +501,48 @@ static func rival_control(
 			result.waiting = true
 			result.speed = sqrt(2.0 * RIVAL_BRAKE * maxf(0.0, to_line - 0.6))
 	return result
+
+
+## Steht dieses Kart (traffic-Eintrag) vor uns in der Brückenschlange?
+static func _in_queue(other: Vector3, lateral: float, ahead: float) -> bool:
+	if lateral == INF:
+		return true
+	# Same lane: physically in front of our nose.
+	if absf(other.y - lateral) < QUEUE_LANE_M:
+		return true
+	# Merging onto the deck line ahead of us while moving: let it in first.
+	if other.z > QUEUE_MOVING_SPEED and absf(other.y) < absf(lateral) + 0.4:
+		return true
+	# Close to the deck everybody funnels into one line, whatever the lateral.
+	return ahead < QUEUE_FUNNEL_M and other.z > QUEUE_MOVING_SPEED
+
+
+## Root pillar lateral of a Zauberwald arch [distance, side of the narrow opening].
+static func arch_pillar(world, entry: Dictionary, arch: Array) -> float:
+	var half: float = world.road_width_at(float(arch[0])) * 0.5
+	return float(arch[1]) * (half - float(entry.narrow_width) - 0.5)
+
+
+## Centre lanes of the narrow opening (x) and of the wide mushroom opening (y).
+static func arch_lines(world, entry: Dictionary, arch: Array) -> Vector2:
+	var half: float = world.road_width_at(float(arch[0])) * 0.5
+	var side: float = float(arch[1])
+	var pillar: float = arch_pillar(world, entry, arch)
+	var narrow_centre: float = (pillar + side * (half - 0.2)) * 0.5
+	var wide_centre: float = -side * (half - 2.2)
+	return Vector2(narrow_centre, wide_centre)
+
+
+## Transport robot Bolti: parked beside the road, during the closed phase it rolls into its
+## band and back out (sin path). It never reaches further than 0,9 m into the band edge next
+## to the open lane, so the open lane stays 1,8 m + kart half width clear (18.11.2026: the
+## old straight crossing ran 1,8 m past the band and hit rivals in the open lane).
+static func robot_lateral(world, entry: Dictionary, state: Dictionary) -> float:
+	var band: Vector2 = gate_band(entry, state)
+	var half: float = world.road_width_at(float(entry.plane)) * 0.5 - 1.2
+	var free_left: bool = band.x - (-half) >= half - band.y
+	var near: float = band.x + 0.9 if free_left else band.y - 0.9
+	var far: float = band.y + 1.8 if free_left else band.x - 1.8
+	if str(state.phase) == "swing":
+		return lerpf(far, near, sin(clampf(float(state.progress), 0.0, 1.0) * PI))
+	return far

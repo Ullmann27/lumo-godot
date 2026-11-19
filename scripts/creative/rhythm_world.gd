@@ -134,6 +134,8 @@ func _ready() -> void:
 	audio = AudioStreamPlayer.new()
 	add_child(audio)
 	_ui()
+	# Erste Einführung je Kind (während ein Lied läuft): scripts/games/guides/rhythm_guide.gd
+	load("res://scripts/games/guides/rhythm_guide.gd").attach(self)
 	get_viewport().size_changed.connect(_layout)
 	RUNTIME.watch_safe_area(self, _layout)
 	_layout()

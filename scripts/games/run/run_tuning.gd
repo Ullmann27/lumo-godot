@@ -106,6 +106,19 @@ const PATH_TIME_SCALE: float = 1.5
 ## over PATH_FLOW_SECONDS, which adds up to PATH_FLOW_BONUS m/s (sprint).
 const PATH_FLOW_BONUS: float = 3.0
 const PATH_FLOW_SECONDS: float = 2.2
+## Flow stage 2: who keeps running cleanly for PATH_FLOW2_SECONDS more after the
+## sprint has built reaches the top pace (PATH_FLOW2_BONUS on top of stage 1).
+## Braking, a bump or a fall end both stages. Before stepping stones, drifting
+## or crumbling platforms the second stage pauses (see run_track.flow_cap), so
+## every precise jump is still made at the speeds the path was tested with.
+const PATH_FLOW2_BONUS: float = 1.8
+const PATH_FLOW2_SECONDS: float = 3.0
+## Metres before a precise spot (small, moving or crumbling platform) from which
+## the second flow stage pauses, and how much of it fades per second meanwhile.
+const PATH_PRECISE_LEAD: float = 24.0
+## Obstacles closer together than this (metres) make a dense stretch: there the
+## top stage pauses too, so it never shortens the time a child has to react.
+const PATH_DENSE_SPACING: float = 20.0
 ## Faster pick-up on the path, with 160 ms coyote time and a 220 ms input
 ## buffer in player time. The values below are in simulation time.
 const PATH_ACCELERATION: float = 9.0
@@ -116,12 +129,14 @@ const PATH_JUMP_BUFFER_SECONDS: float = 0.33
 ## jump or dodge (PATH_PAD_CLEAR metres are free).
 const PATH_PAD_LENGTH: float = 5.0
 const PATH_PAD_CLEAR: float = 22.0
-const PATH_PAD_SPACING: float = 70.0
+const PATH_PAD_SPACING: float = 56.0
 const PATH_PAD_SECONDS: float = 1.0
 ## Camera on the path: metres per second above Lumo's own pace that count as
 ## "full speed" for the pull-back, and the widening of the view in degrees.
 const PATH_PACE_RANGE: float = 8.0
-const PATH_FOV_KICK: float = 13.0
+const PATH_FOV_KICK: float = 16.0
+## How much lower the camera rides at full pace (closer to the ground = faster feel).
+const PATH_LOW_CAMERA: float = 0.45
 const PATH_LATERAL_SPEED: float = 6.0
 const PATH_SLOW_FACTOR: float = 0.0
 ## Second, smaller push in the air (FLITZEN while jumping), once per jump.

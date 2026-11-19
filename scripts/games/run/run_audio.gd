@@ -6,8 +6,12 @@ extends Node
 ## Lumo Kart world music. Volumes follow the existing settings: the music and
 ## effects sliders of Lumo Kart and the app-wide mute of AudioManager.
 
+const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 const RUN_PATH: String = "res://assets/audio/run/%s.ogg"
 const KART_PATH: String = "res://assets/audio/kart/%s.ogg"
+## Rushing air at high pace (the LUMO Kart wind loop, quietly under the music).
+const WIND_PATH: String = "res://assets/audio/kart/fx/wind.ogg"
+const WIND_DB: float = -14.0
 const PREFERENCES: String = "user://kart_preferences.cfg"
 const MUSIC_DB: float = -14.0
 const EFFECT_DB: float = -7.0
@@ -31,6 +35,8 @@ var _pool: Array[AudioStreamPlayer] = []
 var _next: int = 0
 var _chase_mix: float = 0.0
 var _finished: bool = false
+var wind: AudioStreamPlayer
+var _wind_mix: float = 0.0
 
 
 func _ready() -> void:
@@ -41,6 +47,7 @@ func _ready() -> void:
 	music = _player("Music")
 	chase = _player("Chase")
 	stinger_player = _player("Stinger")
+	wind = _player("Wind")
 	for index in range(6):
 		_pool.append(_player("Effect%d" % index))
 
@@ -97,6 +104,12 @@ func start_course(course_id: String, is_adventure: bool) -> void:
 			var stream: AudioStreamOggVorbis = _load(RUN_PATH % ("sfx_" + name), false)
 			if stream != null:
 				_effects[name] = stream
+		var air := load(WIND_PATH) as AudioStreamOggVorbis if ResourceLoader.exists(WIND_PATH) else null
+		if air != null:
+			air = air.duplicate()
+			air.loop = true
+			wind.stream = air
+			wind.volume_db = QUIET_DB
 		for name in ["finish", "bonus"]:
 			var stream: AudioStreamOggVorbis = _load(RUN_PATH % name, false)
 			if stream != null:
@@ -146,7 +159,7 @@ func set_chase(value: bool) -> void:
 
 
 func set_paused(value: bool) -> void:
-	for player in [music, chase, stinger_player]:
+	for player in [music, chase, stinger_player, wind]:
 		player.stream_paused = value
 
 
@@ -164,6 +177,16 @@ func update(delta: float, player, track) -> void:
 	if player.in_cart or player.is_riding() or player.s < 0.0:
 		wanted = 1.0
 	intensity = move_toward(intensity, wanted, delta / 2.5)
+	# Fahrtwind: rises with the sprint, the top stage and the speed pads.
+	var rush: float = clampf((player.speed - float(player.cruise)) / TUNING.PATH_PACE_RANGE, 0.0, 1.0)
+	if player.in_cart:
+		rush = 0.6
+	_wind_mix = move_toward(_wind_mix, rush, delta * 1.5)
+	if wind.stream != null and not muted():
+		if _wind_mix > 0.02 and not wind.playing:
+			wind.play()
+		wind.volume_db = effect_db() + WIND_DB + linear_to_db(maxf(0.0001, _wind_mix))
+		wind.pitch_scale = 0.9 + 0.25 * _wind_mix
 	_chase_mix = move_toward(_chase_mix, 1.0 if chasing else 0.0, delta / (0.6 if chasing else 2.0))
 	if layers != null:
 		var base: float = music_db()
@@ -179,6 +202,7 @@ func update(delta: float, player, track) -> void:
 func finish() -> void:
 	_finished = true
 	chasing = false
+	wind.stop()
 	var fade := create_tween()
 	fade.tween_property(music, "volume_db", QUIET_DB, 1.2)
 	chase.stop()

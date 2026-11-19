@@ -246,6 +246,7 @@ func _case_back_and_again(id: String) -> void:
 func _case_cup_then_course(id: String) -> void:
 	await _fresh()
 	await _press(_hub()._mode_tiles["cup"], "Kachel Turniere")
+	await _press(_hub()._live_start, "Sternen-Cup starten")
 	_expect_race(str(CATALOG.TRACKS[0].id), "cup", "G Turnier beginnt mit Strecke 1")
 	game._leave_race_for_menu()
 	await _settle()

@@ -56,7 +56,8 @@ func _clear_of_road(point: Vector3, margin: float = CLEARANCE) -> bool:
 	var closest: Vector3 = curve.get_closest_point(point)
 	var flat := Vector2(point.x - closest.x, point.z - closest.z)
 	var road_distance: float = curve.get_closest_offset(point)
-	var half: float = JUNGLE.width_at(road_distance) * 0.5 + 1.5
+	# The narrow Kronenbrücke deck keeps the canopy clearance of the full 14 m road.
+	var half: float = maxf(JUNGLE.width_at(road_distance), 14.0) * 0.5 + 1.5
 	return flat.length() > half + margin
 
 
@@ -285,6 +286,10 @@ func _particles(name_text: String, amount: int, colour: Color, size: float, glow
 	var quad := _coloured_quad(size)
 	var material := StandardMaterial3D.new()
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	# Keep the per-particle scale: a not yet emitted particle has scale 0 and black colour.
+	# Without this the billboard rebuilt its basis and drew it as a black square above the
+	# kart (18.11.2026, 784 dark pixels at screen centre in the Kiri/Kronenbrücke captures).
+	material.billboard_keep_scale = true
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = colour
 	material.vertex_color_use_as_albedo = true

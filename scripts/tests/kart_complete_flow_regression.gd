@@ -85,7 +85,8 @@ func _tap(control: Control) -> void:
 
 func _choice(title: String) -> Control:
 	for child in game.garage.choices.find_children("*", "Button", true, false):
-		if child is CHOICE and child.title == title:
+		# Auswahlkarten (Zeilen, Strecken-, Rennarten-, Fahrer- und Stufenkarten) tragen ihren Titel.
+		if (child is CHOICE or child.get("title") != null) and str(child.get("title")) == title:
 			return child
 	assert(false, "Expected visible native selection: " + title)
 	return null

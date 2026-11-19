@@ -37,8 +37,10 @@ func _check_plans() -> void:
 			var reward: Array = course.pads.filter(func(pad): return pad.get("passage") == passage.id)
 			assert(reward.size() == 1 and reward[0].start >= passage.zone_end
 				and reward[0].end <= passage.exit_end, "%s: Turbo-Feld liegt hinter der Brücke" % passage.id)
-		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + bridge_pads,
-			"%s: alle Turbo-Felder haben Platz" % track)
+		# LUMO passages add one reward pad behind a bridge (kart_passages.extend_action).
+		var passage_pads: int = course.pads.filter(func(pad): return pad.has("passage")).size()
+		assert(bridge_pads <= passage_pads, "%s: jede Brücke hat ihr Turbo-Feld" % track)
+		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + passage_pads, "%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
 		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)

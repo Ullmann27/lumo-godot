@@ -14,6 +14,8 @@ var _front: float = 0.0
 ## Set by the game while the stone ball rolls: the camera rises and pulls back
 ## so the ball is seen right behind Lumo.
 var chase_view: bool = false
+## How fast Lumo is beyond his own pace right now, 0..1 (speed lines, wind).
+var pace_now: float = 0.0
 
 
 func kick(strength: float) -> void:
@@ -37,6 +39,7 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 		pace = clampf((player.speed - float(player.cruise)) / TUNING.PATH_PACE_RANGE, -0.6, 1.0)
 	if reduced_motion:
 		pace = 0.0
+	pace_now = maxf(0.0, pace)
 	# High enough to see the star line on the road over Lumo's ears.
 	var back: float = (6.6 if portrait else 5.6) + pace * 1.1
 	var height: float = (4.4 if portrait else 3.7) + pace * 0.2
@@ -47,7 +50,8 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 		var half: float = float(world.half_width_at(player.s))
 		var tight: float = clampf((2.4 - half) / 1.0, 0.0, 1.0)
 		back = (5.9 if portrait else 5.0) - tight * 0.7 + pace * 0.8
-		height = (3.7 if portrait else 2.9) - tight * 0.25
+		# At full pace the camera rides lower: the ground rushes past closer.
+		height = (3.7 if portrait else 2.9) - tight * 0.25 - maxf(0.0, pace) * TUNING.PATH_LOW_CAMERA
 		ahead = 11.0 if portrait else 9.5
 		if player.in_cart or player.is_riding():
 			back += 1.2

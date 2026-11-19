@@ -129,6 +129,8 @@ func _ready() -> void:
 	wonder.set_reduced_motion(bool(SceneRouter.launch_options.get("reduceAnimations", false)))
 	add_child(wonder)
 	_ui()
+	# Erste Einführung je Kind (beim Erkunden): scripts/games/guides/treasure_guide.gd
+	load("res://scripts/games/guides/treasure_guide.gd").attach(self)
 	get_viewport().size_changed.connect(_layout)
 	RUNTIME.watch_safe_area(self, _layout)
 	_layout()

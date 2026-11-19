@@ -38,6 +38,11 @@ static func build(world, entry: Dictionary) -> void:
 		var object: Node3D = _gate_object(world, entry, band, basis)
 		object.name = "GateObject%d" % k
 		root.add_child(object)
+	# A post between the gated band and the open lane (boom post, temple pillar) stands on a
+	# low striped kerb island, so the two ways read as separate lanes. Visual only: as action
+	# obstacles the island points stopped rivals in both lanes (18.11.2026 test run).
+	if str(entry.get("object", "barrier")) in ["barrier", "stone"]:
+		_divider(world, root, entry, sides[0])
 	# The always open outer line: green chevrons, independent of the phase.
 	if not bool(entry.get("alternate", false)):
 		var band0: Vector2 = sides[0]
@@ -54,8 +59,38 @@ static func build(world, entry: Dictionary) -> void:
 	update(world, entry, 0.0)
 
 
+static func _divider(world, root: Node3D, entry: Dictionary, band: Vector2) -> void:
+	var half_road: float = world.road_width_at(float(entry.plane)) * 0.5
+	# Post side: the band edge that faces the open road.
+	var inner_edge: float = band.y if half_road - band.y > band.x + half_road else band.x
+	var side: float = 1.0 if inner_edge == band.y else -1.0
+	var post_lateral: float = inner_edge + side * 0.5
+	var a: float = float(entry.wait_line) - 4.0
+	var b: float = float(entry.plane) + float(entry.band) + 3.0
+	var island := MeshInstance3D.new()
+	island.name = "DividerIsland"
+	island.mesh = MESH.strip(world, a, b, post_lateral - 0.35, post_lateral + 0.35, 0.16, 0.0, 1.0)
+	island.material_override = MESH.material(Color("f2f4f6"), 0.0, 0.7)
+	root.add_child(island)
+	for k in range(int((b - a) / 2.0)):
+		var stripe := MeshInstance3D.new()
+		stripe.mesh = MESH.strip(
+			world,
+			a + float(k) * 2.0,
+			a + float(k) * 2.0 + 1.0,
+			post_lateral - 0.36,
+			post_lateral + 0.36,
+			0.17,
+			0.16,
+			1.0
+		)
+		stripe.material_override = MESH.material(Color("ff4b3a"), 0.5)
+		root.add_child(stripe)
+
+
 static func _band_strip(world, a: float, b: float, left: float, right: float) -> ArrayMesh:
-	return MESH.strip(world, a, b, left, right, 0.03, 0.03, 0.35)
+	# Above the road decal layer (volcano lava veins hid lines lifted only 0.03 m).
+	return MESH.strip(world, a, b, left, right, 0.07, 0.07, 0.35)
 
 
 static func _gate_object(world, entry: Dictionary, band: Vector2, basis: Basis) -> Node3D:
@@ -71,23 +106,34 @@ static func _gate_object(world, entry: Dictionary, band: Vector2, basis: Basis) 
 			# Striped harbour boom: pivots on its post at the outer band edge.
 			var post := MeshInstance3D.new()
 			post.mesh = box
-			post.scale = Vector3(0.45, 2.4, 0.45)
-			post.position = Vector3(width * 0.5 + 0.5, 1.2, 0.0)
+			# High boom with hanging pennants: seen from the chase camera above the kart
+			# (a 1.6 m boom disappeared behind Lumo while the child waited in front of it).
+			post.scale = Vector3(0.5, 3.4, 0.5)
+			post.position = Vector3(width * 0.5 + 0.5, 1.7, 0.0)
 			post.material_override = MESH.material(Color("e9eef2"))
 			node.add_child(post)
 			var pivot := Node3D.new()
 			pivot.name = "Pivot"
-			pivot.position = Vector3(width * 0.5 + 0.5, 1.6, 0.0)
+			pivot.position = Vector3(width * 0.5 + 0.5, 3.0, 0.0)
 			node.add_child(pivot)
 			for k in range(int(ceil(width + 0.5))):
+				var red: bool = k % 2 == 0
 				var stripe := MeshInstance3D.new()
 				stripe.mesh = box
-				stripe.scale = Vector3(1.0, 0.35, 0.3)
+				stripe.scale = Vector3(1.0, 0.45, 0.35)
 				stripe.position = Vector3(-0.5 - float(k), 0.0, 0.0)
 				stripe.material_override = MESH.material(
-					Color("ff4b3a") if k % 2 == 0 else Color("fafafa"), 0.4 if k % 2 == 0 else 0.0
+					Color("ff4b3a") if red else Color("fafafa"), 0.6 if red else 0.0
 				)
 				pivot.add_child(stripe)
+				var pennant := MeshInstance3D.new()
+				pennant.mesh = box
+				pennant.scale = Vector3(0.5, 1.1, 0.06)
+				pennant.position = Vector3(-0.5 - float(k), -0.8, 0.0)
+				pennant.material_override = MESH.material(
+					Color("fafafa") if red else Color("ff4b3a"), 0.0 if red else 0.6
+				)
+				pivot.add_child(pennant)
 		"stone":
 			for side in [-1.0, 1.0]:
 				var pillar := MeshInstance3D.new()
@@ -141,11 +187,11 @@ static func _gate_object(world, entry: Dictionary, band: Vector2, basis: Basis) 
 				plane + float(entry.band),
 				band.x,
 				band.y,
-				0.035,
-				0.035,
+				0.08,
+				0.08,
 				0.5
 			)
-			pool.material_override = MESH.material(Color("ff5a1f"), 0.3, 0.7)
+			pool.material_override = MESH.material(Color("2b2226"), 0.01, 0.9)
 			node.add_child(pool)
 			for side in [-1.0, 1.0]:
 				var rim := MeshInstance3D.new()
@@ -156,8 +202,8 @@ static func _gate_object(world, entry: Dictionary, band: Vector2, basis: Basis) 
 					plane + float(entry.band) + 0.4,
 					band.x - 0.3 if side < 0.0 else band.y,
 					band.x if side < 0.0 else band.y + 0.3,
-					0.05,
-					0.05,
+					0.12,
+					0.0,
 					0.5
 				)
 				rim.material_override = MESH.material(Color("ffd23a"), 1.8)
@@ -232,18 +278,27 @@ static func update(world, entry: Dictionary, t: float) -> void:
 				var wall: MeshInstance3D = object.get_node("Mover")
 				wall.visible = amount > 0.2 or (shown == "warn" and fposmod(t * 4.0, 1.0) < 0.5)
 			"lava":
+				# Cool dark crust → blinking orange cracks → bright flowing lava. On the
+				# veined volcano road a constant orange pool was not readable (18.11.2026).
 				var lava: StandardMaterial3D = object.get_node("Mover").material_override
-				lava.emission_energy_multiplier = lerpf(
-					0.3, 3.2, amount if shown != "warn" else 0.4 + 0.3 * sin(t * 12.0)
-				)
+				var crust := Color("2b2226")
+				var hot := Color("ffd84a").lerp(Color("ff5a1f"), 0.5 + 0.5 * sin(t * 9.0))
+				var glow: Color = crust
+				var energy: float = 0.0
+				if shown == "warn":
+					var blink: bool = fposmod(t * 4.0, 1.0) < 0.5
+					glow = Color("ff7a1f") if blink else crust.lerp(Color("ff7a1f"), 0.35)
+					energy = 1.6 if blink else 0.4
+				elif shown == "swing":
+					glow = hot
+					energy = lerpf(1.0, 4.5, amount)
+				lava.albedo_color = glow
+				lava.emission = glow
+				lava.emission_energy_multiplier = energy
 			_:
 				var robot: Node3D = object.get_node("Mover")
-				var x: float = -width * 0.5 - 1.8
-				if shown == "swing":
-					var p2: float = float(state.progress)
-					x = lerpf(-width * 0.5 - 1.8, width * 0.5 + 1.8, p2) * float(state.direction)
-				elif shown == "warn":
-					x = (-width * 0.5 - 1.8) * float(state.direction) + 0.15 * sin(t * 20.0)
-				else:
-					x = (-width * 0.5 - 1.8) * float(state.direction)
+				# Same path as the hit test (PASSAGES.robot_lateral), relative to the band centre.
+				var x: float = PASSAGES.robot_lateral(world, entry, state) - (band.x + band.y) * 0.5
+				if shown == "warn":
+					x += 0.15 * sin(t * 20.0)  # Bolti wiggles and beeps before he rolls.
 				robot.position.x = x

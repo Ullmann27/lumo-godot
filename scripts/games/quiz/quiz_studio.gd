@@ -99,6 +99,8 @@ func _ready() -> void:
 	_token = str(HostBridge.launch_options().get("tableToken", ""))
 	_build_studio()
 	_build_ui()
+	# Erste Einführung je Kind (während eine Frage offen ist): scripts/games/guides/quiz_guide.gd
+	load("res://scripts/games/guides/quiz_guide.gd").attach(self)
 	window.size_changed.connect(_layout)
 	MobileRuntime.safe_area_changed.connect(_layout)
 	_layout()

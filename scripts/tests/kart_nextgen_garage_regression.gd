@@ -115,10 +115,13 @@ func _host_visible_in_region(menu) -> void:
 			kart_box = Rect2(screen, Vector2.ZERO) if kart_points == 0 else kart_box.expand(screen)
 			kart_points += 1
 	_check(
-		kart_points > 0 and kart_outside == 0 and kart_box.size.x >= safe.size.x * 0.38,
+		# „Groß“ misst sich an der knappen Seite der Bühne: im flachen Handy-Querformat ist
+		# die Bühne nur ~90 dp hoch, dort füllt das Kart die Höhe statt 38 % der Breite.
+		kart_points > 0 and kart_outside == 0
+		and (kart_box.size.x >= safe.size.x * 0.38 or kart_box.size.y >= safe.size.y * 0.6),
 		(
-			"selected kart is large and complete in the clear stage (%d outside, %.0f%% wide)"
-			% [kart_outside, 100.0 * kart_box.size.x / maxf(safe.size.x, 1.0)]
+			"selected kart is large and complete in the clear stage (%d outside, %.0f%% wide; kart %s in stage %s, window %s)"
+			% [kart_outside, 100.0 * kart_box.size.x / maxf(safe.size.x, 1.0), kart_box, safe, root.size]
 		)
 	)
 	var skeleton: Skeleton3D = menu.service_station.host.skeleton

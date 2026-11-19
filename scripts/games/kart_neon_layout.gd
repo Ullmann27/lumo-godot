@@ -48,8 +48,9 @@ static func arrange(hub: Control) -> void:
 	else:
 		_portrait(hub, Rect2(m, top, area.x - 2 * m, bottom - top), k, g)
 	if hub._overlay.visible:
-		var w := minf(area.x - 2 * m, 560.0)
-		var h := minf(area.y - 2 * m, 640.0)
+		# Groß genug für bebilderte Karten (Cup-Strecken, Belohnungen, Sternenpfad).
+		var w := minf(area.x - 2 * m, 760.0)
+		var h := minf(area.y - 2 * m, 900.0)
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
 		hub._overlay.scale = Vector2.ONE
@@ -61,8 +62,8 @@ static func _scale_overlay(hub: Control, k: float) -> void:
 	hub._overlay_title.add_theme_font_size_override("font_size", roundi(24 * k))
 	hub.scale_overlay_lines(k, 15.0 if hub._race_kinds.visible else 17.0)
 	for kind in hub._race_kinds.get_children():
-		kind.custom_minimum_size = Vector2(0, 60) * k
-		kind.add_theme_font_size_override("font_size", roundi(13.5 * k))
+		kind.custom_minimum_size = Vector2(0, 72) * k
+		kind.add_theme_font_size_override("font_size", roundi(16.0 * k))
 	hub._live_start.custom_minimum_size = Vector2(0, 64) * k
 	hub._live_start.add_theme_font_size_override("font_size", roundi(22 * k))
 	var close: Button = hub._overlay.find_child("CloseOverlay", true, false)
@@ -226,6 +227,7 @@ static func _feature_row(hub: Control, r: Rect2, k: float, compact: bool) -> voi
 	var w := (r.size.x - 16.0) / 3.0
 	for i in range(3):
 		var tile = hub._feature_tiles[ids[i]]
+		tile.visible = true
 		tile.compact = compact
 		_place(tile, Rect2(r.position.x + i * (w + 8), r.position.y, w, r.size.y), k)
 
@@ -261,9 +263,17 @@ static func _landscape(hub: Control, r: Rect2, k: float, g: float, short: bool) 
 		var strip_h := clampf(right.size.y * 0.26, 60.0, 80.0)
 		var feature_h := clampf(right.size.y * 0.22, 54.0, 72.0)
 		var modes_h := right.size.y - strip_h - feature_h - 2 * g
+		# Sehr flache Fenster: die Modus-Kacheln brauchen 48 dp. Garage, Strecken und
+		# Belohnungen bleiben dann über die untere Leiste erreichbar.
+		var features := modes_h - ICON_POP >= 56.0
+		if not features:
+			modes_h += feature_h + g
 		_highlight(hub, Rect2(right.position, Vector2(right.size.x, strip_h)), k, true)
 		_mode_row(hub, Rect2(right.position.x, right.position.y + strip_h + g, right.size.x, modes_h), k, 4 if modes_h < 150.0 else 2, true)
-		_feature_row(hub, Rect2(right.position.x, right.end.y - feature_h, right.size.x, feature_h), k, true)
+		for tile in hub._feature_tiles.values():
+			tile.visible = features
+		if features:
+			_feature_row(hub, Rect2(right.position.x, right.end.y - feature_h, right.size.x, feature_h), k, true)
 		return
 	# Tablet/Fold quer wie im Zielbild: links die Schnellzugriff-Spalte aus dunklem Glas
 	# (Garage, Strecken, Belohnungen), in der Mitte Lumo neben dem Strecken-Highlight,
@@ -277,6 +287,7 @@ static func _landscape(hub: Control, r: Rect2, k: float, g: float, short: bool) 
 	var tile_h := (column_h - 2 * g) / 3.0
 	for i in range(3):
 		var tile = hub._feature_tiles[ids[i]]
+		tile.visible = true
 		tile.compact = false
 		_place(tile, Rect2(r.position.x, r.position.y + i * (tile_h + g), column_w, tile_h), k)
 	var centre := Rect2(r.position.x + column_w + g, r.position.y, r.size.x - column_w - g, top_h)

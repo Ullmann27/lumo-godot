@@ -27,6 +27,11 @@ const SIGN_HALF := Vector2(2.02, 0.56)
 const BUNTING_COLORS: Array[Color] = [
 	Color("ff5a4e"), Color("ffc532"), Color("3ae0ff"), Color("6ee06a"), Color("ff6fd2"), Color("8f7bff")
 ]
+## Ein gemeinsamer Studio-Himmel für alle Garagen-Menüs (einmal gebaut, bis zum Beenden).
+## Godot 4.6.3 (Kompatibilitäts-Renderer) verliert die beiden Radiance-Texturen eines Himmels,
+## der freigegeben wird, bevor der Renderer ihn einmal verarbeitet hat; das passierte, wenn
+## ein Rennen direkt nach dem Menüaufbau startete („Texture … leaked 87380 bytes“ beim Beenden).
+static var _studio_sky: Sky
 
 
 static func build(root: Node3D, materials: Dictionary, profile: String) -> Dictionary:
@@ -199,6 +204,12 @@ static func sign_points(root: Node3D) -> Array[Vector3]:
 ## Spiegelquelle: helles Studio-Panorama (Deckenleuchten, warme und farbige Bänder).
 ## Nur für Reflexionen, der Hintergrund bleibt die Garage selbst.
 static func studio_sky() -> Sky:
+	if _studio_sky == null:
+		_studio_sky = _build_studio_sky()
+	return _studio_sky
+
+
+static func _build_studio_sky() -> Sky:
 	var width := 256
 	var height := 128
 	var image := Image.create(width, height, false, Image.FORMAT_RGB8)
