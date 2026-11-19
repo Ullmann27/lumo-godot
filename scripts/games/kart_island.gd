@@ -94,6 +94,7 @@ const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const RESULT_KIT = preload("res://scripts/games/kart_result_kit.gd")
 const RESULT_BADGE = preload("res://scripts/games/kart_result_badge.gd")
 const RESULT_WIDGETS = preload("res://scripts/games/kart_result_widgets.gd")
+const FRIEND_DUEL = preload("res://scripts/games/kart_friends/kart_friend_duel.gd")
 const DESIGN_VIEWPORT := Vector2(1280.0, 720.0)
 const PEDAL_PAD_BASE_SIZE := Vector2(440.0, 300.0)
 ## Version 4 drops the removed learning-question state; older saves still resume as plain races.
@@ -370,6 +371,8 @@ var cup_results: Array = []
 var pending_cup_next: bool = false
 var completed_race: bool = false
 var records = RECORDS.new()
+## Geister-Duell mit Freunden (scripts/games/kart_friends/).
+var friend_duel = FRIEND_DUEL.new()
 var track_pass
 var _track_pass_owner := ""
 var ghost: LumoRaceKart
@@ -439,6 +442,7 @@ func _ready() -> void:
 		and int(session_config.get_value("race", "version", 0)) in SESSION_VERSIONS
 	)
 	_show_garage()
+	friend_duel.attach(self)
 	set_physics_process(true)
 	print("[Kart] Holographic garage ready: five modes, %d worlds, free steering" % CATALOG.TRACKS.size())
 
@@ -667,7 +671,8 @@ func _build_world() -> void:
 		_prepare_grid_roll()
 		if mode == "time_trial":
 			records.begin(track_id, selected_kart, difficulty)
-			if not records.replay.is_empty():
+			ghost = friend_duel.build_ghost(self)
+			if ghost == null and not records.replay.is_empty():
 				ghost = VEHICLE.new()
 				# Lumo's ghost is the real Lumo as well, not the stand-in figure.
 				ghost.set_animated_lumo_enabled(selected_driver == "fox")
@@ -1954,6 +1959,7 @@ func _physics_process(delta: float) -> void:
 			if mode == "time_trial":
 				records.capture(delta, elapsed, player.position, player.rotation, axis, speed)
 				_update_ghost()
+				friend_duel.tick(self, delta)
 			if mode != "training" and distance >= track_length * TOTAL_LAPS and checkpoint_index >= TOTAL_LAPS * 8:
 				_finish()
 		save_timer += delta
@@ -4195,6 +4201,7 @@ func _finish(cinematic: bool = true) -> void:
 		result_payload["crystals"] = arena_scores
 	if mode == "time_trial":
 		best_record = records.finish(elapsed, ghost_valid)
+		friend_duel.on_finish(self)
 	if mode == "cup":
 		var ranking: Array[Dictionary] = [{"id": 0, "distance": distance}]
 		for i in range(opponents.size()):
@@ -4304,6 +4311,7 @@ func _show_result() -> void:
 		var record_row := RESULT_WIDGETS.Row.new().setup("record", record_text)
 		record_row.name = "ResultRecord"
 		modal_column.add_child(record_row)
+		friend_duel.add_result_rows(self, modal_column)
 	var primary: Button
 	var secondary: Button
 	if mode == "cup":
