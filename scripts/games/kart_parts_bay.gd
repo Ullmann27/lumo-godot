@@ -422,6 +422,10 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	# die Abschnitts-Reiter schieben (800×480: „Werte“ lag auf dem Reiter „Strecke“).
 	if drawer.position.y > stage.get_center().y:
 		y = minf(y, drawer.position.y - button_height - gap * 0.6)
+	else:
+		# Querformat: Die Auswahl steht neben der Bühne. Die Knöpfe sitzen unten IN der
+		# Bühne – darunter beginnt die Fußleiste („Rennen starten“ lag sonst verdeckt).
+		y = stage.end.y - button_height - gap
 	# Die Knopfzeile bleibt in der Bühne: auf sehr flachen Querformaten (640×320) war sie
 	# breiter als die Bühne und lag über den Kartkarten links daneben.
 	var row_width: float = open_width + stats_width + gap
