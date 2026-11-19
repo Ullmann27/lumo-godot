@@ -298,7 +298,9 @@ func _signs() -> void:
 		var sign: Node3D = KIT.skill_sign(str(skill.name), color("accent"))
 		var ahead: Vector3 = Vector3(-sin(float(skill.heading)), 0, -cos(float(skill.heading)))
 		var side: Vector3 = Vector3(cos(float(skill.heading)), 0, -sin(float(skill.heading)))
-		sign.position = (skill.pos as Vector3) + ahead * 4.0 + side * 3.2 + Vector3.UP * 1.6
+		# Seitlich außerhalb der Fahrbahn und hoch genug, dass die Kamera vorbeischaut.
+		var lateral: float = float(skill.get("sign_side", 7.5))
+		sign.position = (skill.pos as Vector3) + ahead * 10.0 + side * lateral + Vector3.UP * 2.6
 		sign.rotation.y = float(skill.heading)
 		add_child(sign)
 	for plate in course.plates:
