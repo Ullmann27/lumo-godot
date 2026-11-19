@@ -60,7 +60,7 @@ func rival_wants(index: int, _item_id: String, _context: Dictionary) -> bool:
 			and not host.protected(key)
 			and not host.in_grace(key)
 		):
-			if key == -1 and not host.child_attackable():
+			if key == -1 and not host.child_attackable(index):
 				continue
 			near += 1
 	return near >= 1

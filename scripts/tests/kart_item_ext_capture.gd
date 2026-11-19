@@ -85,6 +85,8 @@ var pace: float = 17.0
 var offsets: Array = []
 var saved: int = 0
 var item: String = "thunder_star"
+## Kompass-Modus: diese Items nacheinander über den echten Sternenkompass ziehen.
+var compass_items: Array[String] = []
 
 
 func _initialize() -> void:
@@ -232,6 +234,8 @@ func _run() -> void:
 			profile = argument
 		elif argument == "rival":
 			rival_attacks = true
+		elif argument.begins_with("compass="):
+			compass_items.assign(argument.trim_prefix("compass=").split(","))
 	DirAccess.make_dir_recursive_absolute(destination)
 	DisplayServer.window_set_size(window_size)
 	root.size = window_size
@@ -245,13 +249,15 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 	game._start_selected_race(
-		{"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "normal"}
+		{"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"}
 	)
 	game._end_preview()
 	await physics_frame
 	game.countdown = 0.0
 	game.racing = true
 	game.message.text = ""
+	# Mitten im Rennen (nach dem 8-s-Startschutz der Raketen-Fairness).
+	game.elapsed = 60.0
 	# Die Rennszene setzt beim Start ihre eigene Fenstergröße: Zielgröße danach erneut setzen.
 	DisplayServer.window_set_size(window_size)
 	root.size = window_size
@@ -284,6 +290,17 @@ func _run() -> void:
 		rival_attacks = true
 		offsets[0] = [9.0, 0.0]
 	await _tick(1.2)
+	if not compass_items.is_empty():
+		for id in compass_items:
+			game._grant_item_with_roulette(id, game.player.global_position + Vector3.UP)
+			await _tick(game.star_compass.total + 0.12)
+			item = id
+			await _shot("kompass_ergebnis")
+			game.item = ""
+			game.item_charges = 0
+		var done: bool = await TEARDOWN.release_scene(self, game, "[KartItemExtCapture]")
+		quit(0 if done and saved == compass_items.size() else 1)
+		return
 	if shield:
 		if rival_attacks:
 			game.shield_time = 6.0

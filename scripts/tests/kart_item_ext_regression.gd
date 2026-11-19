@@ -20,6 +20,15 @@ const ALL_ITEMS: Array[String] = [
 	"arc_trap",
 	"time_bloom",
 ]
+const CHILD_ATTACKS: Array[String] = [
+	"thunder_star",
+	"frost_crystal",
+	"fire_meteor",
+	"whirlwind",
+	"gravity_wave",
+	"arc_trap",
+	"time_bloom"
+]
 var game
 var ext
 var checks: int = 0
@@ -43,13 +52,7 @@ func _check(condition: bool, label: String) -> void:
 func _start(track_id: String) -> void:
 	track = track_id
 	game._start_selected_race(
-		{
-			"mode": "race",
-			"driver": "fox",
-			"kart": "comet",
-			"track": track_id,
-			"difficulty": "normal"
-		}
+		{"mode": "race", "driver": "fox", "kart": "comet", "track": track_id, "difficulty": "flott"}
 	)
 	game._end_preview()
 	game.countdown = 0
@@ -105,6 +108,10 @@ func _tick(seconds: float, at: float, offsets: Array, keep_pushes: bool = false)
 
 func _fresh() -> void:
 	game._reset_gameplay_layer()
+	# Rennzeit nach dem Startschutz; Raketen-Fairness frisch (Trefferpause, Rettungsschutz).
+	game.elapsed = 60.0
+	game.rocket_fairness.reset()
+	game.rocket_fairness._resets_seen = game.reset_count
 	game.shield_time = 0.0
 	game.player_grace_time = 0.0
 	game.item = ""
@@ -1077,6 +1084,66 @@ func _test_bloom() -> void:
 	_check(effect.active.size() == 1, "Zeitblüte nach Fortsetzen da")
 
 
+# --- Fairness (gemeinsam mit den Raketen: kart_rocket_fairness.gd) ------------------------
+
+
+## Rivale 0 setzt `id` direkt ein (ohne KI-Vorprüfung); das Kind fährt in gelegte Gefahren.
+func _child_unharmed(id: String) -> bool:
+	var row: Dictionary = CATALOG.entry(id)
+	var effect = ext.effect(str(row.behaviour))
+	var offsets: Array = [[0.0, 0.0, 0.0], [3.0 if id == "arc_trap" else -8.0, 0.0]]
+	_place(safe_d, offsets)
+	effect.use(0, id, row)
+	var lowest: float = 1.0
+	var lane0: float = game.lane
+	for _f in range(150):
+		var at: float = safe_d
+		for entry in effect.active:
+			if id in ["arc_trap", "time_bloom"] and entry.has("progress"):
+				at = float(entry.progress)
+		_place(at, [[0.0, 0.0, 0.0], [offsets[1][0] + safe_d - at, 0.0]])
+		game._update_gameplay_layer(STEP)
+		lowest = minf(lowest, ext.speed_factor(-1) * ext.turn_factor(-1))
+	return lowest > 0.999 and absf(game.lane - lane0) < 0.05
+
+
+func _test_fairness() -> void:
+	for id in CHILD_ATTACKS:
+		if not id in items:
+			continue
+		_fresh()
+		game.elapsed = 3.0
+		_check(
+			await _child_unharmed(id), "%s: Startschutz (erste 8 s) gilt auch für dieses Item" % id
+		)
+		_fresh()
+		game.rocket_fairness.note_child_hit(game.elapsed)
+		_check(await _child_unharmed(id), "%s: 12-s-Trefferpause nach einem Treffer gilt" % id)
+	if "thunder_star" in items:
+		_fresh()
+		var behind: Array = [[0.0, 0.0, 0.0], [-14.0, 0.5], [-30.0, 1.0]]
+		_place(safe_d, behind)
+		var hits_before: int = int(ext.effect("lightning_strike").stats.hits)
+		game.opponent_items[0] = "thunder_star"
+		game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+		_check(
+			not game.rocket_fairness.child_targetable(game, 1),
+			"während ein Blitz anfliegt, darf keine Rakete das Kind erfassen"
+		)
+		await _tick(1.6, safe_d, behind)
+		_check(
+			int(ext.effect("lightning_strike").stats.hits) > hits_before, "Blitz trifft das Kind"
+		)
+		game.player_grace_time = 0.0
+		_check(
+			game.rocket_fairness.child_block_reason(game, 1) == "after_hit",
+			(
+				"nach dem Blitz-Treffer: Trefferpause auch für Raketen (%s)"
+				% game.rocket_fairness.child_block_reason(game, 1)
+			)
+		)
+
+
 func _run() -> void:
 	var tracks: Array[String] = ["sonnenhafen", "winter_sprint", "jungle_emerald_3600"]
 	for id in ALL_ITEMS:
@@ -1125,6 +1192,7 @@ func _run() -> void:
 			await _test_arc()
 		if "time_bloom" in items:
 			await _test_bloom()
+		await _test_fairness()
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	game.abandoned = true
 	game.queue_free()

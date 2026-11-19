@@ -23,7 +23,7 @@ const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const PLAYER: int = -1
 const SAVE_VERSION: int = 1
 ## Mindestabstand (s) zwischen zwei Rivalen-Angriffen mit neuen Items auf das Kind.
-const CHILD_ATTACK_GAP := {"gemuetlich": 9.0, "normal": 6.0, "profi": 4.0}
+const CHILD_ATTACK_GAP := {"gemuetlich": 9.0, "flott": 6.0, "pro": 4.0}
 ## Sicherer Korridor: so weit vor/hinter dem Ziel wird die Strecke geprüft (m).
 const SAFE_BEHIND: float = 6.0
 const SAFE_AHEAD: float = 30.0
@@ -373,10 +373,14 @@ func resolve(
 			race._popup(block_text, popup_point(target), Color("1aa3c4"))
 			sound("shield_ping")
 		return "blocked"
-	if in_grace(target):
+	# Gemeinsame Fairness-Regeln der Raketen (kart_rocket_fairness.gd): Start-/Rettungsschutz,
+	# 12-s-Trefferpause des Kindes, keine Treffer an Sturzstellen -> harmlos.
+	if in_grace(target) or not _fair_hit(target):
 		stats.grace += 1
 		return "grace"
 	set_grace(target)
+	if target == PLAYER and race.get("rocket_fairness") != null:
+		race.rocket_fairness.note_child_hit(float(race.elapsed))
 	stats.hits += 1
 	if target == PLAYER:
 		race._stat("player_hits_taken")
@@ -401,8 +405,19 @@ func note_attack(target: int) -> void:
 		child_attack_cooldown = float(CHILD_ATTACK_GAP.get(str(race.difficulty), 6.0))
 
 
-func child_attackable() -> bool:
-	return child_attack_cooldown <= 0.0 and not in_grace(PLAYER)
+## Darf Rivale `shooter` das Kind jetzt angreifen? Eigene Schutzfrist + dieselben Regeln wie
+## die Raketen-Erfassung (Startschutz, Rettungsschutz, Trefferpause, eine Salve zugleich, nur
+## ein Rivale erfasst das Kind, keine Sturzstelle).
+func child_attackable(shooter: int = -99) -> bool:
+	if child_attack_cooldown > 0.0 or in_grace(PLAYER):
+		return false
+	var fairness = race.get("rocket_fairness")
+	return fairness == null or fairness.child_targetable(race, shooter)
+
+
+func _fair_hit(target: int) -> bool:
+	var fairness = race.get("rocket_fairness")
+	return fairness == null or fairness.hit_allowed(race, target)
 
 
 ## Einmalige Warnzeile für das Kind (nicht jedes Bild neu).
@@ -498,7 +513,11 @@ func safe_at(at_progress: float, key: int = -99) -> bool:
 		if world.open_edge_side(x) != 0.0 or world.ramp_height(x) > 0.05:
 			return false
 		d += SAFE_STEP
-	return not PASSAGES.keeps_clear(world, at_progress, 10.0)
+	if PASSAGES.keeps_clear(world, at_progress, 10.0):
+		return false
+	# Dieselben Sturzstellen wie die Raketen-Fairness (Rampe, Looping, Sprung, Kante, Passagen).
+	var fairness = race.get("rocket_fairness")
+	return fairness == null or str(fairness.danger_at(world, at_progress)).is_empty()
 
 
 ## Nächster gültiger Gegner vor (`ahead_max`) oder – falls keiner – hinter (`behind_max`)
@@ -512,7 +531,7 @@ func pick_target(
 	for key in racer_keys():
 		if key == owner or in_grace(key) or airborne(key):
 			continue
-		if key == PLAYER and owner != PLAYER and not child_attackable():
+		if key == PLAYER and owner != PLAYER and not child_attackable(owner):
 			continue
 		var gap: float = progress(key) - own
 		var score: float = gap if gap > 0.5 else (-gap + 1000.0)
