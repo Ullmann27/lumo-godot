@@ -163,6 +163,21 @@ const SPECS: Dictionary = {
 			"hit_text": "Huch, Bolti! Bei Rot kurz warten oder links vorbei.",
 		},
 	],
+	"candy_cloud":
+	[
+		{
+			"kind": "flow",
+			"id": "zuckerwellen",
+			"name": "Drei Zuckerwellen",
+			"theme": "candy",
+			"reserve": false,
+			"zone_start": 1470.0,
+			"zone_end": 1660.0,
+			"apexes": [[1495.0, -1.0], [1572.0, -1.0], [1638.0, -1.0]],
+			"sign": "DREI ZUCKERWELLEN\nIm Rhythmus fahren",
+			"approach_text": "Drei Zuckerwellen: eins – zwei – drei, schön im Rhythmus!",
+		},
+	],
 	"volcano_night":
 	[
 		{
