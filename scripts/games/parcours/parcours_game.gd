@@ -604,6 +604,34 @@ func return_to_app(destination: String) -> void:
 	SceneRouter.goto("learn" if destination == "learn" else "games")
 
 
+## Tastatur (Desktop): E = Aussteigen/Hebel/Einsteigen, Leertaste = Springen,
+## Umschalt = Drift, B = Boost, R = zum Checkpoint, Escape = Pause.
+func _unhandled_key_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key == null or key.echo:
+		return
+	match key.physical_keycode:
+		KEY_E:
+			if key.pressed:
+				context_action()
+		KEY_SPACE:
+			jump_pressed(key.pressed)
+		KEY_SHIFT:
+			if key.pressed:
+				press_drift()
+			else:
+				release_drift()
+		KEY_B:
+			if key.pressed:
+				use_boost()
+		KEY_R:
+			if key.pressed:
+				manual_reset()
+		KEY_ESCAPE:
+			if key.pressed:
+				handle_back()
+
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
 		handle_back()
