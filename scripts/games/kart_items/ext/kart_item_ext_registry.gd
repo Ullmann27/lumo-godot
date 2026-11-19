@@ -18,6 +18,7 @@ const BEHAVIOURS: Dictionary = {
 	"star_decoy": "star_decoy",
 	"turbo_xl": "turbo_xl",
 	"arc_trap": "arc_trap",
+	"time_bloom": "time_bloom",
 }
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
 const SOUNDS: Array[String] = [
@@ -40,6 +41,8 @@ const SOUNDS: Array[String] = [
 	"turbo_xl",
 	"arc_place",
 	"arc_zap",
+	"bloom_open",
+	"bloom_slow",
 ]
 const ICON_DIR := "res://assets/kart/hud/items/"
 

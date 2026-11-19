@@ -406,6 +406,31 @@
         "arc_zap"
       ],
       "note": "Energiebogen 2,6 m breit hinter dem Kart, 8 s; Durchfahrt 70 % Tempo 0,9 s; immer umfahrbar."
+    },
+    {
+      "id": "time_bloom",
+      "name": "Zeitblüte",
+      "short": "ZEIT",
+      "glyph": "✿",
+      "color": "#ff9fd2",
+      "behaviour": "time_bloom",
+      "radius": 4.5,
+      "seconds": 5.0,
+      "role": "area",
+      "weights": [
+        0,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "bloom_open",
+        "bloom_slow"
+      ],
+      "note": "Zeitfeld Ø 9 m 18 m voraus, ~5 s; Gegner darin 55 % Tempo; nicht an Brücke/Kante/Checkpoint."
     }
   ]
 }
