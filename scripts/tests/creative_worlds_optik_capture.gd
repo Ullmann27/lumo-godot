@@ -94,6 +94,26 @@ func _capture_rhythm(dir: String) -> Dictionary:
 		cam.look_at(Vector3(0, 1.1, -6), Vector3.UP)
 	await _settle(6)
 	entry["cover"] = await _save(dir, "rhythm_cover")
+	# Side-speaker membranes, the previously unverified MultiMesh orientation.
+	if cam != null:
+		cam.position = Vector3(7.4, 2.9, -13.2)
+		cam.look_at(Vector3(8.6, 1.85, -18.0), Vector3.UP)
+	await _settle(6)
+	entry["speakers"] = await _save(dir, "rhythm_speakers")
+	# Representative result card (save path is the isolated optikcapture profile).
+	game.model.time = game.model.duration
+	game.model.hits = 34
+	game.model.misses = 6
+	game.model.score = game.model.maximum * 0.86
+	game.model.best_combo = 18
+	game.model.combo_bonus = 35
+	game.audio.stop()
+	game._finish()
+	if cam != null:
+		cam.position = Vector3(0, 12, 16)
+		cam.look_at(Vector3(0, 0, -8), Vector3.UP)
+	await _settle(8)
+	entry["result"] = await _save(dir, "rhythm_result")
 	entry["notes"] = game.model.notes.size()
 	game.queue_free()
 	await process_frame

@@ -1,0 +1,321 @@
+{
+ "generator": "tools/lumo_adventure_art/textures.py",
+ "license": "Eigenbau, prozedural, keine fremden Bilder",
+ "textures": {
+  "bark_albedo.jpg": {
+   "bytes": 71464,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "bark_normal.jpg": {
+   "bytes": 366999,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "confetti.png": {
+   "bytes": 778,
+   "size": [
+    128,
+    128
+   ]
+  },
+  "fabric_albedo.jpg": {
+   "bytes": 18956,
+   "size": [
+    256,
+    256
+   ]
+  },
+  "fabric_normal.jpg": {
+   "bytes": 71989,
+   "size": [
+    256,
+    256
+   ]
+  },
+  "felt_albedo.jpg": {
+   "bytes": 46929,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "felt_normal.jpg": {
+   "bytes": 278756,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "fern_frond.png": {
+   "bytes": 172747,
+   "size": [
+    512,
+    256
+   ]
+  },
+  "flame.png": {
+   "bytes": 36463,
+   "size": [
+    256,
+    256
+   ]
+  },
+  "grass_albedo.jpg": {
+   "bytes": 314884,
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  "grass_normal.jpg": {
+   "bytes": 239411,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "grass_tufts.png": {
+   "bytes": 418612,
+   "size": [
+    1024,
+    256
+   ]
+  },
+  "leaves_autumn.png": {
+   "bytes": 270239,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "leaves_broad.png": {
+   "bytes": 582962,
+   "size": [
+    1024,
+    1024
+   ]
+  },
+  "light_beam.png": {
+   "bytes": 6077,
+   "size": [
+    128,
+    256
+   ]
+  },
+  "moss_albedo.jpg": {
+   "bytes": 90848,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "moss_normal.jpg": {
+   "bytes": 374111,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "palm_bark_albedo.jpg": {
+   "bytes": 67510,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "palm_bark_normal.jpg": {
+   "bytes": 280937,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "palm_frond.png": {
+   "bytes": 348743,
+   "size": [
+    1024,
+    256
+   ]
+  },
+  "paper_albedo.jpg": {
+   "bytes": 35178,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "paper_normal.jpg": {
+   "bytes": 237841,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "path_albedo.jpg": {
+   "bytes": 83850,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "path_normal.jpg": {
+   "bytes": 104969,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "plaster_albedo.jpg": {
+   "bytes": 27921,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "plaster_normal.jpg": {
+   "bytes": 252177,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "rock_albedo.jpg": {
+   "bytes": 61208,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "rock_normal.jpg": {
+   "bytes": 339916,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "roof_albedo.jpg": {
+   "bytes": 57704,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "roof_normal.jpg": {
+   "bytes": 90798,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "ruin_albedo.jpg": {
+   "bytes": 74979,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "ruin_normal.jpg": {
+   "bytes": 260733,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "sand_albedo.jpg": {
+   "bytes": 72246,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "sand_normal.jpg": {
+   "bytes": 296756,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "soft_dot.png": {
+   "bytes": 3627,
+   "size": [
+    128,
+    128
+   ]
+  },
+  "speaker_mesh_albedo.jpg": {
+   "bytes": 27953,
+   "size": [
+    256,
+    256
+   ]
+  },
+  "speaker_mesh_normal.jpg": {
+   "bytes": 51004,
+   "size": [
+    256,
+    256
+   ]
+  },
+  "stone_albedo.jpg": {
+   "bytes": 57817,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "stone_normal.jpg": {
+   "bytes": 332930,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "table_wood_albedo.jpg": {
+   "bytes": 92926,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "table_wood_normal.jpg": {
+   "bytes": 301304,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "water_normal.jpg": {
+   "bytes": 297052,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "wings.png": {
+   "bytes": 141757,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "wood_albedo.jpg": {
+   "bytes": 81402,
+   "size": [
+    512,
+    512
+   ]
+  },
+  "wood_normal.jpg": {
+   "bytes": 291318,
+   "size": [
+    512,
+    512
+   ]
+  }
+ }
+}

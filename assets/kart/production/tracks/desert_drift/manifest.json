@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "theme": "desert_drift",
-  "label": "Oasengew\u00f6lbe",
+  "label": "Oasengewölbe",
   "source_blend": "art/lumo_kart/blender/tracks/desert_drift_tunnel_workshop.blend",
   "blender": "4.3.2",
   "units": "meters",
@@ -21,7 +21,7 @@
     1024
   ],
   "texture_density_texels_per_meter": 512,
-  "material_policy": "seven theme materials; original texture maps embedded in GLB",
+  "material_policy": "seven theme materials; original texture maps stored once per course under textures/ and referenced by every module (tools/lumo_kart_art/tracks/externalize_textures.py)",
   "modules": {
     "portal_entry": {
       "file": "portal_entry.glb",

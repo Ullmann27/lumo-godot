@@ -37,8 +37,10 @@ const DRIVERS: Array[Dictionary] = [
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
 static var KARTS: Array[Dictionary] = FLEET.KARTS
 const DIFFICULTIES: Array[Dictionary] = [
-	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Schnelle Rennen mit sanfter Hilfe am Fahrbahnrand.", "speed": 0.83, "rival": 0.86},
-	{"id": "flott", "name": "Abenteuer", "tag": "DOPPELTES RENNTEMPO", "description": "Doppeltes Renntempo, freie Lenkung und starke Rivalen.", "speed": 1.0, "rival": 0.96},
+	# Eigentempo ist auf allen Stufen gleich (volles Tempo, wie bisher auf "Extrem");
+	# die Stufen unterscheiden sich über die Rivalen und die Lenkhilfe.
+	{"id": "gemuetlich", "name": "Entdecken", "tag": "VOLLES TEMPO · LENKHILFE", "description": "Volles Tempo mit sanfter Lenkhilfe am Fahrbahnrand. Die Rivalen lassen dir Platz.", "speed": 1.17, "rival": 0.86},
+	{"id": "flott", "name": "Abenteuer", "tag": "FREIE LENKUNG", "description": "Volles Tempo, freie Lenkung und starke Rivalen.", "speed": 1.17, "rival": 0.96},
 	{"id": "pro", "name": "Extrem", "tag": "MAXIMALE HERAUSFORDERUNG", "description": "Rivalen nutzen volle Kartleistung, schnelle Kurven, Überholmanöver und verdiente Turbos.", "speed": 1.17, "rival": 1.0}
 ]
 const CUP_POINTS: Array[int] = [12, 9, 7, 5, 3, 1]

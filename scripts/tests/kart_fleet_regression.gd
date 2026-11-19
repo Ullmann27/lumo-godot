@@ -63,9 +63,12 @@ func _run() -> void:
 		kart.set_motion(12.0, 0.7, true, true)
 		kart._process(0.016)
 		assert(kart.flames[0].visible and kart.sparks[0].visible)
+		# Every design drives on an authored body; its own livery and physical
+		# profile keep it a design of its own.
+		assert(is_instance_valid(kart.production_vehicle), "Every kart uses an authored body")
+		assert(kart.production_vehicle.get_meta("fleet_design") == entry.id)
+		assert(["comet", "glider", "turbo"].has(kart.production_vehicle.get_meta("fleet_body")))
 		if FLEET.IDS.has(str(entry.id)):
-			var body: Node3D = kart.get_node("AuroraCoachwork")
-			assert(body.get_meta("fleet_design") == entry.id)
 			var info: Dictionary = FLEET.profile(str(entry.id))
 			var signature: String = str(info)
 			assert(not signatures.has(signature), "New designs need distinct physical profiles")

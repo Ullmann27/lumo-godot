@@ -66,11 +66,25 @@ jobs:
           git -C "$baseline" fetch --depth 1 origin 5b25223163cbb0dee5af3fe503e5e75bd11a9673
           git -C "$baseline" checkout --detach FETCH_HEAD
           test "$(git -C "$baseline" rev-parse HEAD)" = 5b25223163cbb0dee5af3fe503e5e75bd11a9673
+          # The frozen tree imports the Lumo reference CSV as a translation table, which
+          # crashes the Godot 4.6.3 importer (SIGSEGV). Mark it "keep" as on the current tree.
+          keep_csv=assets/characters/lumo/reference/lumo_reference_manifest.csv
+          if [ -f "$baseline/$keep_csv" ]; then
+            cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
+          fi
           # Import the pinned direct parent under the same software GL
           # context used by the actual comparison captures. Headless importer
           # crashed on the 1969 legacy importer; keep the
           # import mandatory and fail on any error, without bypassing images.
-          (cd "$baseline" && timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/historical-import.log")
+          # The importer of this frozen tree crashes sporadically (segmentation
+          # fault a few seconds after start, seen again on 18.11.). As in the
+          # other before/after workflows: scene notifications stay on the main
+          # thread and the idempotent import is repeated exactly once; a second
+          # crash still fails the job.
+          historical_import() {
+            (cd "$baseline" && timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' godot --audio-driver Dummy --rendering-method gl_compatibility --single-threaded-scene --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/historical-import.log")
+          }
+          historical_import || historical_import
           ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|Failed to load script' "$RUNNER_TEMP/historical-import.log"
           mkdir -p "$original/exports/sonnenhafen-finish/before"
           (cd "$baseline" && LUMO_POSES="$original/exports/sonnenhafen-finish/after/poses.json" LUMO_CAPTURE_DIR="$original/exports/sonnenhafen-finish/before" timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd)

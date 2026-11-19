@@ -59,7 +59,17 @@ jobs:
           test "$(git -C "$baseline" rev-parse HEAD)" = 38b3e4890cc0a4b5f70dfdb7a5d523274aa5d647
           cp scripts/tests/kart_sonnenhafen_obstruction_capture.gd \
             "$baseline/scripts/tests/kart_sonnenhafen_obstruction_capture.gd"
-          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          # The frozen tree imports the Lumo reference CSV as a translation table, which
+          # crashes the Godot 4.6.3 importer (SIGSEGV). Mark it "keep" as on the current tree.
+          keep_csv=assets/characters/lumo/reference/lumo_reference_manifest.csv
+          if [ -f "$baseline/$keep_csv" ]; then
+            cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
+          fi
+          # Godot 4.6.3 crashed here four times on 17.11. (segfault / heap corruption right
+          # after the first reimport line) while importing this unchanged older tree.
+          # One retry of the idempotent import; a second crash still fails the job.
+          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit) \
+            || (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
           mkdir -p "$GITHUB_WORKSPACE/exports/road-clearance/before"
           (cd "$baseline" && LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/exports/road-clearance/before" \
             timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \

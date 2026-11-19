@@ -1,15 +1,23 @@
 extends RefCounted
 ## Shared straight-line drivetrain used by the race and the workshop simulation.
-## Workshop figures use Abenteuer difficulty, level asphalt, no items or rivals.
+## Workshop figures use the race pace (identical on every difficulty since
+## 18.11.2026), level asphalt, no items or rivals.
 ## A single pace scale is shared by the physical drive and the workshop. Lateral
 ## response scales linearly; acceleration/braking scale quadratically so doubling
 ## road speed does not double turning radius or quadruple the braking distance.
+const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const PACE_SCALE: float = 2.0
 const DYNAMICS_SCALE: float = PACE_SCALE * PACE_SCALE
 
 
 static func top_speed(factors: Dictionary, difficulty_speed: float = 1.0) -> float:
 	return 20.5 * PACE_SCALE * float(factors.get("speed", 1.0)) * difficulty_speed
+
+
+## Eigentempo-Faktor im Rennen. Alle Stufen fahren gleich schnell; Werkstatt und
+## Prüfstand zeigen deshalb genau dieses Tempo.
+static func race_pace() -> float:
+	return float(CATALOG.entry(CATALOG.DIFFICULTIES, "flott").speed)
 
 
 static func acceleration(factors: Dictionary, braking: bool) -> float:
@@ -41,7 +49,7 @@ static func stopping_distance(factors: Dictionary, initial_speed: float = 20.0) 
 
 
 static func report(factors: Dictionary) -> Dictionary:
-	var maximum: float = top_speed(factors)
+	var maximum: float = top_speed(factors, race_pace())
 	var target: float = 50.0 / 3.6
 	var thrust: float = acceleration(factors, false)
 	# The race integrates speed with move_toward, i.e. a constant acceleration ramp.

@@ -1,6 +1,7 @@
 extends RefCounted
 ## Authoritative metre-scale centreline for Dschungelherz – Expedition Smaragd.
 ## The authored control polygon, elevation keys and width keys remain editable.
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const ID: String = "jungle_emerald_3600"
 const TARGET_LENGTH: float = 3600.0
 const SECTION_LENGTH: float = 300.0
@@ -25,7 +26,7 @@ static func definition() -> Dictionary:
 static func author_points() -> PackedVector3Array:
 	return PackedVector3Array([
 		Vector3(0, 0, -370), Vector3(140, 0, -365), Vector3(280, 0, -330),
-		Vector3(340, 0, -260), Vector3(430, 0, -290), Vector3(520, 0, -220),
+		Vector3(325, 0, -230), Vector3(445, 0, -315), Vector3(520, 0, -220),
 		Vector3(580, 0, -130), Vector3(610, 0, -10), Vector3(570, 0, 80),
 		Vector3(500, 0, 150), Vector3(420, 0, 180), Vector3(390, 0, 260),
 		Vector3(420, 0, 340), Vector3(350, 0, 430), Vector3(240, 0, 440),
@@ -49,6 +50,10 @@ static func authored_height(distance: float) -> float:
 
 static func width_at(distance: float) -> float:
 	var d: float = fposmod(distance, TARGET_LENGTH)
+	# Kronenbrücke: the narrow precision deck (kart_passages.gd) is the road itself.
+	var deck: float = PASSAGES.static_deck_half(ID, d)
+	if deck > 0.0:
+		return deck * 2.0
 	var start_width: float = 18.0 - 4.0 * _smooth((d - 70.0) / 150.0)
 	if d > 300.0:
 		start_width = 14.0 + 4.0 * _smooth((d - 3400.0) / 130.0)
@@ -155,6 +160,8 @@ static func build_road(world: Node3D) -> void:
 		var basis: Basis = world.frame(middle)
 		var half_width: float = width_at(middle) * 0.5
 		var step: float = next - d
+		if PASSAGES.static_deck_half(ID, middle) > 0.0:
+			continue  # Open precision deck: no curb, no rail (kart_passages builds its edges).
 		for side in [-1.0, 1.0]:
 			var curb_color := Color("ede0bf") if i % 4 < 2 else Color("2ca6a4")
 			world._prop("box", world.position_at(middle, side * (half_width + 0.26)) + basis.y * 0.06,
@@ -227,6 +234,9 @@ static func _wall_mesh(world: Node3D, start: float, end: float, side: float) -> 
 		vertices.append(edge + basis.y * 1.45)
 	for row in range(count):
 		var a: int = row * 2
+		var middle: float = lerpf(start, end, (float(row) + 0.5) / count)
+		if PASSAGES.static_deck_half(ID, middle) > 0.0:
+			continue
 		indices.append_array(PackedInt32Array([a, a + 2, a + 1, a + 1, a + 2, a + 3]))
 	var arrays: Array = []
 	arrays.resize(Mesh.ARRAY_MAX)

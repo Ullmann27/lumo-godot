@@ -97,6 +97,8 @@ func _ready() -> void:
 	get_tree().quit_on_go_back = false
 	_build_world()
 	_build_ui()
+	# Erste Einführung je Kind (beim Spielen): scripts/games/guides/jump_guide.gd
+	load("res://scripts/games/guides/jump_guide.gd").attach(self)
 	message.text = "%s · Halten = höher springen" % EXPEDITIONS.COURSES[course_index].name
 	if _restore_session():
 		_pause()
@@ -167,6 +169,9 @@ func _build_world() -> void:
 	collider.shape = capsule
 	actor.add_child(collider)
 	var visual: Node3D = LUMO.instantiate()
+	# Den echten Lumo baut diese Welt unten selbst ein (mit Plattform-Pose);
+	# die Grundformen-Figur bleibt nur Gang-/Testträger und Notfall-Ersatz.
+	visual.use_original_model = false
 	visual.scale = Vector3.ONE * 0.7
 	visual.rotation.y = PI
 	# Collider bottom sits 0.05 m above the actor origin; stand the feet on it

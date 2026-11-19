@@ -3,6 +3,7 @@ extends SceneTree
 
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
+const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
 const GARAGE := "res://scripts/games/kart_garage_menu.gd"
 const DRIVER_SPECIES: Array[String] = ["rabbit", "lion", "squirrel", "owl", "turtle"]
 var results: Array[Dictionary] = []
@@ -187,9 +188,17 @@ func _run() -> void:
 		_check_variant(variant)
 	_check_tuning()
 	_check_rivals()
+	var top = _kart("blitz")
+	_require(is_instance_valid(top.production_vehicle), "Fleet designs drive on an authored body")
+	_require(top.production_vehicle.get_meta("fleet_design") == "blitz"
+		and top.production_vehicle.get_meta("fleet_body") == "turbo", "Blitz keeps its identity on the GT body")
+	_require(top.wheel_rotors.size() == 4, "Vehicle API remains intact on a shared body")
+	top.free()
+	PRODUCTION.fallback_only = true
 	var previous = _kart("blitz")
-	_require(not is_instance_valid(previous.production_vehicle), "Unconverted fleet designs retain their authored procedural model")
-	_require(previous.wheel_rotors.size() == 4, "Legacy vehicle API remains intact")
+	PRODUCTION.fallback_only = false
+	_require(not is_instance_valid(previous.production_vehicle), "A missing body falls back to the sculpted in-code model")
+	_require(previous.wheel_rotors.size() == 4, "Fallback vehicle API remains intact")
 	previous.free()
 	# Garage resolves project autoloads after the SceneTree has initialized.
 	var garage = load(GARAGE).new()

@@ -5,7 +5,7 @@ extends RefCounted
 ## - the kart follows the same 3D path that is rendered (kart_physical_loop),
 ##   gravity slows the climb and a too-slow kart is set back to the main lane;
 ## - a boost pad on the loop lane gives the needed speed;
-## - the loop entry stands 100 m before the precision ramp (was 28 m), so the
+## - the loop entry stands about 80 m before the precision ramp (was 28 m), so the
 ##   kart leaves the loop, settles and has a straight run-up to the ramp;
 ## - gold stars on the riding line are collected while looping.
 ## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
@@ -16,13 +16,17 @@ const DECK_SHADER = preload("res://assets/shaders/kart_stunt_loop.gdshader")
 const BALLOON_SHADER = preload("res://assets/shaders/kart_balloon.gdshader")
 const EMBLEM = preload("res://assets/kart/stunt/lumo_balloon_emblem.png")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
 const LOOP_LEAD_M: float = 180.0
-const LOOP_LANE: float = 2.9
+## Entry lane (outer right) and the sideways move to the exit lane (inner
+## right). Both decks fit inside the right road half and never cross.
+const LOOP_LANE: float = 4.0
+const LOOP_EXIT_SHIFT: float = -2.75
 const LOOP_RADIUS: float = 8.0
-const DECK_HALF_WIDTH: float = 2.4
+const DECK_HALF_WIDTH: float = 1.2
 ## Half width of the precision ramp deck (old kicker slabs were 9.2 m wide).
 const RAMP_HALF_WIDTH: float = 4.6
 const WALL_HEIGHT: float = 0.55
@@ -32,11 +36,15 @@ const PAD_GAP_M: float = 16.0
 const PAD_LENGTH: float = 6.0
 const STAR_FRACTIONS: Array[float] = [0.14, 0.27, 0.40, 0.5, 0.60, 0.73, 0.86]
 
-## Position B, 80 m before the tunnel: a full-width precision stunt ramp about
-## 80 m after the loop exit. Unlike the 55 % panorama kicker it has no lift
-## bonus and no lift cap: flight distance follows from speed alone
-## (kart_precision_jump.gd), over a genuine open gap in the road.
+## Position B, at least 80 m before the tunnel: a full-width precision stunt ramp
+## after the loop exit. Unlike the 55 % panorama kicker it has no lift bonus and
+## no lift cap: flight distance follows from speed alone (kart_precision_jump.gd),
+## over a genuine open gap in the road. The real distance is jump_lead_m(): it is
+## coupled to the race pace so that a kart at full throttle (top speed, no
+## braking) still lands on open road before the tunnel mouth.
 const JUMP_LEAD_M: float = 80.0
+## Open road kept between a full-throttle landing and the tunnel mouth.
+const JUMP_TUNNEL_MARGIN_M: float = 8.0
 const JUMP_RAMP_LENGTH: float = 12.0
 ## 14 degrees: steep enough for a visible arc, gentle enough to read for kids.
 const JUMP_RAMP_HEIGHT: float = 3.0
@@ -92,9 +100,11 @@ static func prepare(world) -> void:
 		"start": loop_start(world),
 		"lane": LOOP_LANE,
 		"radius": LOOP_RADIUS,
-		"lateral_limit": DECK_HALF_WIDTH - 0.65,
+		"exit_shift": LOOP_EXIT_SHIFT,
+		"deck_half_width": DECK_HALF_WIDTH,
+		"lateral_limit": 0.3,
 		"entry_window": 1.6,
-		"lane_tolerance": 1.5,
+		"lane_tolerance": DECK_HALF_WIDTH + 0.1,
 		"min_entry_speed": 13.0,
 		"fail_lane": 0.0,
 		"stunt": true,
@@ -109,8 +119,25 @@ static func pads(world) -> Array:
 	return [{"start": end - PAD_LENGTH, "end": end, "lateral": LOOP_LANE}]
 
 
+## Take-off distance before the tunnel mouth. The model flight of the reference
+## kart at full race pace (kart_powertrain.gd) plus a margin, never below
+## JUMP_LEAD_M. With the old 1.0 pace that stayed at 80 m; with the full pace on
+## every level (1.17) a full-throttle kart flew about 85 m and touched down inside
+## the tunnel mouth.
+static func jump_lead_m() -> float:
+	var flat: Dictionary = {
+		"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
+		"height": JUMP_RAMP_HEIGHT,
+		"flight_gravity": PRECISION_GRAVITY,
+		"lift_bonus": 0.0,
+	}
+	var full_throttle: float = POWERTRAIN.top_speed({}, POWERTRAIN.race_pace())
+	var flown: float = PRECISION.landing_distance(full_throttle, flat)
+	return maxf(JUMP_LEAD_M, ceilf(flown + JUMP_TUNNEL_MARGIN_M))
+
+
 static func jump_take_off(world) -> float:
-	return tunnel_start(world) - JUMP_LEAD_M
+	return tunnel_start(world) - jump_lead_m()
 
 
 static func kickers(world) -> Array:
@@ -183,113 +210,14 @@ static func build(world) -> void:
 	_balloons(world)
 
 
-## Deck, side walls and the chunky outer spine as three real meshes that use
-## exactly the riding path of kart_physical_loop.
+## Deck, side walls and the chunky outer spine as continuous meshes that use
+## exactly the riding path of kart_physical_loop, including the flush road
+## plates in front of the entry and behind the exit.
 static func _deck(world, layout: Dictionary) -> void:
-	var deck := SurfaceTool.new()
-	deck.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var walls := SurfaceTool.new()
-	walls.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var spine := SurfaceTool.new()
-	spine.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var along: float = 0.0
-	var previous_center: Vector3 = LOOP.point(world, layout, 0.0)
-	var rows: Array = []
-	for i in range(DECK_SEGMENTS + 1):
-		var u: float = float(i) / float(DECK_SEGMENTS)
-		var basis: Basis = LOOP.frame_at(world, layout, u)
-		var center: Vector3 = LOOP.point(world, layout, u)
-		along += center.distance_to(previous_center)
-		previous_center = center
-		var left: Vector3 = LOOP.point(world, layout, u, -DECK_HALF_WIDTH)
-		var right: Vector3 = LOOP.point(world, layout, u, DECK_HALF_WIDTH)
-		rows.append({"left": left, "right": right, "up": basis.y, "v": along})
-	for i in range(DECK_SEGMENTS):
-		var a: Dictionary = rows[i]
-		var b: Dictionary = rows[i + 1]
-		_quad(deck, a.left, a.right, b.right, b.left, a.up, b.up, a.v, b.v)
-		for side in ["left", "right"]:
-			var lift_a: Vector3 = a.up * WALL_HEIGHT
-			var lift_b: Vector3 = b.up * WALL_HEIGHT
-			var inward: float = 1.0 if side == "left" else -1.0
-			var across_a: Vector3 = (a.right - a.left).normalized() * inward
-			var across_b: Vector3 = (b.right - b.left).normalized() * inward
-			_quad(
-				walls,
-				a[side],
-				a[side] + lift_a,
-				b[side] + lift_b,
-				b[side],
-				across_a,
-				across_b,
-				0,
-				1
-			)
-			_quad(
-				walls,
-				a[side] + lift_a,
-				a[side] + lift_a - across_a * 0.22,
-				b[side] + lift_b - across_b * 0.22,
-				b[side] + lift_b,
-				a.up,
-				b.up,
-				0,
-				1
-			)
-		var drop_a: Vector3 = -a.up * 0.42
-		var drop_b: Vector3 = -b.up * 0.42
-		var inset_a: Vector3 = (a.right - a.left) * 0.18
-		var inset_b: Vector3 = (b.right - b.left) * 0.18
-		_quad(
-			spine,
-			a.left + inset_a + drop_a,
-			b.left + inset_b + drop_b,
-			b.right - inset_b + drop_b,
-			a.right - inset_a + drop_a,
-			-a.up,
-			-b.up,
-			0,
-			1
-		)
-		_quad(
-			spine,
-			a.left,
-			b.left,
-			b.left + inset_b + drop_b,
-			a.left + inset_a + drop_a,
-			-a.up,
-			-b.up,
-			0,
-			1
-		)
-		_quad(
-			spine,
-			a.right - inset_a + drop_a,
-			b.right - inset_b + drop_b,
-			b.right,
-			a.right,
-			-a.up,
-			-b.up,
-			0,
-			1
-		)
-	var deck_material := ShaderMaterial.new()
-	deck_material.shader = DECK_SHADER
-	_add_mesh(world, "StuntLoopDeck", deck, deck_material)
-	var wall_material := StandardMaterial3D.new()
-	wall_material.albedo_color = WHITE
-	wall_material.roughness = 0.35
-	wall_material.emission_enabled = true
-	wall_material.emission = ORANGE
-	wall_material.emission_energy_multiplier = 0.35
-	wall_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_add_mesh(world, "StuntLoopWalls", walls, wall_material)
-	var spine_material := StandardMaterial3D.new()
-	spine_material.albedo_color = Color("2b3c5c")
-	spine_material.metallic = 0.55
-	spine_material.roughness = 0.38
-	spine_material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	_add_mesh(world, "StuntLoopSpine", spine, spine_material)
+	var nodes: Dictionary = LOOP.build_track(world, layout, {})
+	nodes.deck.name = "StuntLoopDeck"
+	nodes.walls.name = "StuntLoopWalls"
+	nodes.spine.name = "StuntLoopSpine"
 	# Running lights on the outside of the ring, like the reference loops.
 	for i in range(0, DECK_SEGMENTS, 4):
 		var u: float = float(i) / float(DECK_SEGMENTS)
@@ -372,16 +300,6 @@ static func _supports(world, layout: Dictionary) -> void:
 		world._prop(
 			"box", foot + Vector3.UP * 0.42, Vector3(2.1, 0.08, 2.1), CYAN, world.frame(d), true
 		)
-	# Plinth along the loop lane under the entry and exit plates.
-	for d in [start - 0.5, start + LOOP.ADVANCE + 0.5]:
-		var basis: Basis = world.frame(d)
-		world._prop(
-			"box",
-			world.position_at(d, LOOP_LANE) - basis.y * 0.05,
-			Vector3(DECK_HALF_WIDTH * 2.0 + 0.4, 0.12, 2.2),
-			Color("1d3150"),
-			basis
-		)
 
 
 ## Decorative gold stars inside the ring, like the reference loops.
@@ -389,7 +307,8 @@ static func _inner_stars(world, layout: Dictionary) -> void:
 	var start: float = float(layout.start)
 	var center_distance: float = start + LOOP.ADVANCE * 0.5
 	var basis: Basis = world.frame(start)
-	var center: Vector3 = world.position_at(center_distance, LOOP_LANE) + basis.y * LOOP_RADIUS
+	var middle_lane: float = LOOP_LANE + LOOP_EXIT_SHIFT * 0.5
+	var center: Vector3 = world.position_at(center_distance, middle_lane) + basis.y * LOOP_RADIUS
 	var facing := Basis(-basis.z, basis.y, basis.x)
 	for i in range(8):
 		var angle: float = TAU * float(i) / 8.0

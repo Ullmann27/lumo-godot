@@ -1,5 +1,5 @@
 {
-  "triangles": 15694,
+  "triangles": 16080,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -17,102 +17,102 @@
   "bounds_blender_m": {
     "min": [
       -0.9356952905654907,
-      -1.1749999523162842,
-      -0.001437842845916748
+      -1.215933918952942,
+      -0.0005786716938018799
     ],
     "max": [
       0.9356952905654907,
-      1.2208049297332764,
-      1.1922160387039185
+      1.2533023357391357,
+      1.1137707233428955
     ]
   },
   "dimensions_godot_m": [
     1.8713905811309814,
-    1.1936538815498352,
-    2.3958048820495605
+    1.1143493950366974,
+    2.4692362546920776
   ],
   "meshes": [
     {
       "node": "Aurora_glider_Mesh",
-      "triangles": 1048,
-      "vertices": 558,
+      "triangles": 884,
+      "vertices": 476,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "BonnetBadge_Mesh",
-      "triangles": 120,
-      "vertices": 64,
+      "triangles": 100,
+      "vertices": 54,
       "material_slots": 1,
       "non_manifold_edges": 0
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 5170,
-      "vertices": 2719,
+      "triangles": 5708,
+      "vertices": 3126,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FL_Mesh",
-      "triangles": 68,
-      "vertices": 38,
+      "triangles": 84,
+      "vertices": 50,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FL_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2096,
+      "vertices": 1106,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FR_Mesh",
-      "triangles": 68,
-      "vertices": 38,
+      "triangles": 84,
+      "vertices": 50,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FR_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2096,
+      "vertices": 1106,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RL_Mesh",
-      "triangles": 68,
-      "vertices": 38,
+      "triangles": 84,
+      "vertices": 50,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RL_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2096,
+      "vertices": 1106,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RR_Mesh",
-      "triangles": 68,
-      "vertices": 38,
+      "triangles": 84,
+      "vertices": 50,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RR_Mesh",
-      "triangles": 2176,
-      "vertices": 1112,
+      "triangles": 2096,
+      "vertices": 1106,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "SteeringWheel_Mesh",
-      "triangles": 380,
-      "vertices": 198,
+      "triangles": 668,
+      "vertices": 356,
       "material_slots": 3,
       "non_manifold_edges": 0
     }

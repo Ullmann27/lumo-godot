@@ -1,5 +1,5 @@
 {
-  "triangles": 49064,
+  "triangles": 59596,
   "mesh_nodes": 12,
   "material_count": 9,
   "materials": [
@@ -17,19 +17,19 @@
   "bounds_blender_m": {
     "min": [
       -0.935699999332428,
-      -1.1749999523162842,
+      -1.215933918952942,
       0.0
     ],
     "max": [
       0.935699999332428,
-      1.2208049297332764,
-      1.1915662288665771
+      1.2539944648742676,
+      1.114999771118164
     ]
   },
   "dimensions_godot_m": [
     1.871399998664856,
-    1.1915662288665771,
-    2.3958048820495605
+    1.114999771118164,
+    2.4699283838272095
   ],
   "meshes": [
     {
@@ -48,71 +48,71 @@
     },
     {
       "node": "Coachwork_Mesh",
-      "triangles": 16160,
-      "vertices": 8214,
+      "triangles": 21148,
+      "vertices": 10846,
       "material_slots": 9,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FL_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FL_Mesh",
-      "triangles": 6800,
-      "vertices": 3424,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_FR_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_FR_Mesh",
-      "triangles": 6800,
-      "vertices": 3424,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RL_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RL_Mesh",
-      "triangles": 6800,
-      "vertices": 3424,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "Steer_RR_Mesh",
-      "triangles": 216,
-      "vertices": 112,
+      "triangles": 312,
+      "vertices": 164,
       "material_slots": 2,
       "non_manifold_edges": 0
     },
     {
       "node": "Wheel_RR_Mesh",
-      "triangles": 6800,
-      "vertices": 3424,
+      "triangles": 7768,
+      "vertices": 3942,
       "material_slots": 4,
       "non_manifold_edges": 0
     },
     {
       "node": "SteeringWheel_Mesh",
-      "triangles": 1188,
-      "vertices": 602,
+      "triangles": 2476,
+      "vertices": 1260,
       "material_slots": 3,
       "non_manifold_edges": 0
     }
@@ -129,8 +129,8 @@
   "attachments_godot_m": {
     "DriverSeat": [
       0,
-      0.69,
-      0.07
+      0.31,
+      0.2
     ],
     "DriverOrigin": [
       0,
@@ -139,23 +139,23 @@
     ],
     "Grip_L": [
       -0.16,
-      1.055,
-      -0.34
+      0.7,
+      -0.04
     ],
     "Grip_R": [
       0.16,
-      1.055,
-      -0.34
+      0.7,
+      -0.04
     ],
     "Foot_L": [
-      -0.18,
-      0.8,
-      -0.24
+      -0.15,
+      0.31,
+      -0.34
     ],
     "Foot_R": [
-      0.18,
-      0.8,
-      -0.24
+      0.15,
+      0.31,
+      -0.34
     ],
     "FrontAxle": [
       0,

@@ -88,7 +88,7 @@ def verify(root: Path) -> dict:
                 'Cards report has different physical dimensions: ' + relative)
         layout_path = str(Path(relative).with_suffix('.layout.json'))
         layout, record = read_json(root, layout_path)
-        require(type(layout.get('schema')) is int and layout['schema'] == 1,
+        require(type(layout.get('schema')) is int and layout['schema'] == 2,
                 'Unsupported native Cards layout: ' + layout_path)
         require(type(layout.get('layout_sequence')) is int and layout['layout_sequence'] > 0,
                 'Cards layout lacks its original integer sequence: ' + layout_path)
@@ -101,13 +101,13 @@ def verify(root: Path) -> dict:
         require(layout.get('paused') is name.endswith('-paused.png'),
                 'Cards layout phase does not match its capture: ' + layout_path)
         hand = layout.get('hand')
-        discard = layout.get('discard')
+        focus = layout.get('table')
         require(isinstance(hand, list) and bool(hand)
                 and all(isinstance(row, dict) and isinstance(row.get('id'), str)
                         and bool(row['id'].strip()) and quad(row.get('quad')) for row in hand)
-                and isinstance(discard, dict) and isinstance(discard.get('id'), str)
-                and bool(discard['id'].strip()) and quad(discard.get('quad')),
-                'Cards layout lacks the actual hand/discard projection: ' + layout_path)
+                and isinstance(focus, dict) and isinstance(focus.get('id'), str)
+                and bool(focus['id'].strip()) and quad(focus.get('quad')),
+                'Cards layout lacks the actual hand/table projection: ' + layout_path)
         layouts[relative] = record
 
     targets = mobile.get('targets')

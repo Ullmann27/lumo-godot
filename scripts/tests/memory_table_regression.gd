@@ -158,13 +158,19 @@ func _visible_targets() -> void:
 		# Independently intersect the real camera ray with actual room meshes.
 		# Touchable rectangles alone did not catch the first tabletop occlusion.
 		for corner in [Vector2.ZERO,Vector2(-0.46,0.46),Vector2(0.46,0.46),Vector2(0.46,-0.46),Vector2(-0.46,-0.46)]:
-			var world: Vector3 = card.root.global_position+Vector3(corner.x*card.size.x,corner.y*card.size.y,0.057)
+			# Real face corner on the tilted 3D tabletop (board space -> world).
+			var world: Vector3 = table._board.to_global(Vector3(card.root.position.x+corner.x*card.size.x,
+				card.root.position.y+corner.y*card.size.y,table.CARD_Z+0.057))
 			var screen: Vector2 = table.camera.unproject_position(world)
 			var origin: Vector3 = table.camera.project_ray_origin(screen)
 			var direction: Vector3 = table.camera.project_ray_normal(screen)
 			var card_distance := (world-origin).dot(direction)
-			for child in table.get_children():
-				if not child is MeshInstance3D or not child.visible: continue
+			# Every static room mesh counts: table, felt, rim, legs, furniture.
+			var solids: Array = table.get_children()
+			solids.append_array(table.room_root.find_children("*","MeshInstance3D",true,false))
+			solids.append_array([table._mat,table._rim])
+			for child in solids:
+				if not child is MeshInstance3D or not child.is_visible_in_tree(): continue
 				var bounds: AABB = child.global_transform*child.get_aabb()
 				var near := 0.0
 				var far := INF

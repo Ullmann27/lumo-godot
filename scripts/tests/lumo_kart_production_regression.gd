@@ -155,6 +155,9 @@ func _run() -> void:
 	# and hit_timer are the same product code as an ordinary race collision.
 	game.hit_timer = 0.0
 	game.shield_time = 0.0
+	# A rival may already have bumped the player during the boost steps; its
+	# 0.6 s contact cooldown would swallow this fixture contact.
+	game.rival_contact_timer = 0.0
 	game.opponents[0].position = game.player.position
 	game._track_events()
 	_check(game.hit_timer > 0.0, "Product collision creates an actual hit event")
@@ -262,13 +265,16 @@ func _run() -> void:
 	_check(root.get_node("ProgressStore").total_stars() == stars_after and game.result_id == result_id,
 		"Replaying the finish cannot duplicate rewards or identity")
 	await _step(140)
-	_check(not game.player.lumo_animation.victory, "The one-shot finish animation returns to seated")
+	# Since the finish-screen rework Lumo keeps cheering while a podium result
+	# is shown: the one-shot clip ends and starts again instead of freezing.
+	_check(game.player.lumo_animation.victory, "Lumo keeps cheering while the podium result is shown")
 	await _capture("actual-finish-result")
 	await _start("training", "sonnenhafen", "rabbit")
 	_check(not is_instance_valid(game.player.lumo_animation) and game.player.driver.visible,
 		"Selecting a different driver never disguises it as Lumo")
 	await _start("training")
 	_check(is_instance_valid(game.player.lumo_animation), "Selecting Lumo again reconnects the shared model")
+	_check(not game.player.lumo_animation.victory, "A new drive starts seated, not cheering")
 	var load_kind: String = game.player.lumo_animation.actor.model_load_kind
 	game.abandoned = true
 	game.queue_free()

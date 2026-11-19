@@ -81,6 +81,8 @@ var celebration_place: int = 0
 var celebration_time: float = 0.0
 ## Lumos rechter Arm hängt an einem Schultergelenk: Lenken, Winken, Jubeln.
 const SHOULDER_RIGHT := Vector3(0.29, 1.215, 0.015)
+## Wheel hub to dash pod along the steering axis (metres).
+const STEERING_COLUMN_LENGTH: float = 0.34
 ## Schulter → Hand am Lenkrad (Ruhe) und Schulter → Hand hoch und nach außen (Jubel).
 const ARM_REST_DIR := Vector3(-0.13, -0.16, -0.355)
 const ARM_CHEER_DIR := Vector3(0.42, 0.78, -0.06)
@@ -89,6 +91,8 @@ var arm_blend: float = 0.0
 var racing_arm_joints: Array[Node3D] = []
 var racing_rest_grips: Array[Vector3] = []
 var wheel_rest_grips: Array[Vector3] = []
+## Seat height of the stand-in figure; its bob and hop move around this value.
+var driver_rest_height: float = 0.0
 ## Original Lumo stays behind his existing explicit adapter switch. Authored
 ## rival rigs have their own helper and never replace this character path.
 var animated_lumo_enabled := false
@@ -107,6 +111,9 @@ var production_vehicle
 var production_driver
 var production_lumo_seat
 var _preview_detail := false
+## Procedural rival-driver reactions (Lumo uses his rigged animation adapter).
+var hit_reaction: float = 0.0
+var brief_cheer_time: float = 0.0
 
 
 func _ready() -> void:
@@ -314,6 +321,42 @@ func set_driver_character(value: String) -> void:
 		_rebuild()
 
 
+## Short in-race cheer after a successful item hit, for every driver type: the real
+## rigged Lumo and the 3D rivals play their own celebrate clip (one hand stays on the
+## wheel while driving); code-built drivers raise a fist. The race ends it again.
+func cheer_in_race(seconds: float = 1.2) -> void:
+	if celebration_place > 0:
+		return
+	if is_instance_valid(lumo_animation):
+		lumo_animation.celebrate_finished_race(1)
+	elif is_instance_valid(production_driver):
+		production_driver.celebrate_finished_race(1)
+	elif is_instance_valid(rival_visual):
+		rival_visual.celebrate_finished_race(1)
+	else:
+		cheer_briefly(seconds)
+
+
+func end_in_race_cheer() -> void:
+	if celebration_place > 0:
+		return
+	if is_instance_valid(lumo_animation):
+		lumo_animation.clear_celebration()
+	elif is_instance_valid(production_driver):
+		production_driver.clear_celebration()
+	elif is_instance_valid(rival_visual):
+		rival_visual.clear_celebration()
+
+
+## Short in-race cheer (e.g. after a successful item hit): fist up, happy hop.
+func cheer_briefly(seconds: float = 1.2) -> void:
+	if is_instance_valid(lumo_animation) or celebration_place > 0:
+		return
+	brief_cheer_time = seconds
+	celebration_place = -1
+	celebration_time = 0.0
+
+
 func celebrate(place: int) -> void:
 	celebration_place = maxi(0, place)
 	celebration_time = 0.0
@@ -407,6 +450,7 @@ func _rebuild() -> void:
 	racing_arm_joints.clear()
 	racing_rest_grips.clear()
 	wheel_rest_grips.clear()
+	driver_rest_height = 0.0
 	head = null
 	tail = null
 	jaw = null
@@ -625,6 +669,7 @@ func _build() -> void:
 	chassis_look = spec
 	if _build_production_vehicle():
 		_make_driver()
+		_seat_stand_in_driver()
 		_make_far_mesh()
 		_merge_static(self)
 		return
@@ -651,14 +696,34 @@ func _build() -> void:
 	_merge_static(self)
 
 
+## The stand-in figure (far proxy, never the real Lumo) was modelled for the
+## former high seat. On production karts it follows the lowered cockpit, and
+## every driver's hands use the grips of the real steering wheel.
+func _seat_stand_in_driver() -> void:
+	if is_instance_valid(production_driver) or not is_instance_valid(driver):
+		return
+	driver.position += Vector3(0.0, -0.38, 0.13)
+	driver_rest_height = driver.position.y
+	wheel_rest_grips.assign(production_vehicle.wheel_rest_grips)
+
+
 func _build_production_vehicle() -> bool:
 	if not PRODUCTION_VEHICLE.supports(kart_style):
 		return false
 	var candidate = PRODUCTION_VEHICLE.new()
-	if not candidate.build(kart_style, look, FLEET.entry(kart_style).look):
+	# The body's own colours are the reference: a fleet kart on a shared body
+	# always receives its paint, a stock Comet keeps the authored finish.
+	var body: String = PRODUCTION_VEHICLE.body_of(kart_style)
+	var livery: Dictionary = look if body == kart_style else chassis_look
+	if not candidate.build(kart_style, livery, FLEET.entry(body).look):
 		candidate.free()
 		return false
 	production_vehicle = candidate
+	# Anbauteile aus der Werkstatt (Radaufsätze, Auspuffblenden) gelten für jede Karosserie.
+	production_vehicle.apply_parts(look)
+	# Garage, tests and tools read which fleet design and which body this is.
+	production_vehicle.set_meta("fleet_design", kart_style)
+	production_vehicle.set_meta("fleet_body", body)
 	add_child(production_vehicle)
 	wheel_pivots.assign(candidate.wheel_pivots)
 	wheel_rotors.assign(candidate.wheel_rotors)
@@ -684,7 +749,7 @@ func _build_production_vehicle() -> bool:
 			spark.hide()
 			spark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			sparks.append(spark)
-	var stance: float = 0.91 if kart_style == "glider" else (1.10 if kart_style == "turbo" else 1.0)
+	var stance: float = 0.91 if body == "glider" else (1.10 if body == "turbo" else 1.0)
 	for side in [-1.0, 1.0]:
 		var lamp := _box(self, Vector3(side * 0.242 * stance, 0.683, 1.065),
 			Vector3(0.150 * stance, 0.025, 0.002), Color("ff4054"))
@@ -1070,7 +1135,18 @@ func _make_steering_wheel() -> void:
 	_rod(steering_wheel, Vector3(0, 0, 0), Vector3(0, -0.13, 0), 0.02, CHROME, 0.6)
 	_ellipsoid(steering_wheel, Vector3(0, 0, -0.023), Vector3(0.065, 0.042, 0.017), NAVY, 0.4, 0.3)
 	_ellipsoid(steering_wheel, Vector3(0, 0, -0.04), Vector3(0.018, 0.018, 0.007), ICE, 0.3, 0.25)
-	_rod(self, Vector3(0, 0.68, -0.22), steering_wheel.position, 0.035, INK, 0.4)
+	# The column leaves the hub along the wheel's own axis, forward and down into a
+	# dash pod on the bonnet (it used to rise from the seat between the boots).
+	var column_axis: Vector3 = (steering_wheel.basis * Vector3.BACK).normalized()
+	var hub_back: Vector3 = steering_wheel.position + column_axis * 0.045
+	var column_base: Vector3 = steering_wheel.position + column_axis * STEERING_COLUMN_LENGTH
+	# One shared INK finish keeps the mobile surface budget (column, pod and mount batch).
+	var column := _rod(self, hub_back, column_base, 0.030, INK, 0.4)
+	column.name = "SteeringColumn"
+	var pod := _ellipsoid(self, column_base, Vector3(0.105, 0.075, 0.095), INK, 0.4)
+	pod.name = "SteeringDashPod"
+	var mount := _rod(self, column_base, Vector3(0, 0.58, column_base.z - 0.03), 0.05, INK, 0.4)
+	mount.name = "SteeringDashMount"
 
 
 func _tri(tool: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, outward: Vector3) -> void:
@@ -1907,7 +1983,7 @@ func _make_driver() -> void:
 			limb.position = origin
 			driver.add_child(limb)
 			racing_arm_joints.append(limb)
-			if is_lumo and side > 0:
+			if side > 0:
 				arm_right = limb
 			_make_racing_sleeve(limb, side, is_lumo)
 			_ellipsoid(limb, Vector3(side * 0.29, 1.215, 0.015) - origin, Vector3(0.092, 0.056, 0.096), NAVY if is_lumo else cream, 0.07, 0.6)
@@ -2552,19 +2628,29 @@ func _process(delta: float) -> void:
 			wheel_pivots[i].position.y = hub_height if reduced_motion else hub_height + sin(animation_time * 11.0 + i * 1.7) * minf(0.010, absf(motion_speed) * 0.0005)
 	if is_instance_valid(lumo_animation) or is_instance_valid(production_driver) or is_instance_valid(rival_visual):
 		return
+	if driver_hit_pending:
+		driver_hit_pending = false
+		hit_reaction = 1.0
+	hit_reaction = maxf(0.0, hit_reaction - delta * 1.25)
+	var jolt: float = 0.0 if reduced_motion else hit_reaction * hit_reaction
 	if driver:
-		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.06, minf(1, delta * 7.0))
-		driver.position.y = 0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006)
+		# Lean into the corner, settle back under boost, jolt on a friendly hit.
+		driver.rotation.z = lerpf(driver.rotation.z, -motion_steer * 0.09, minf(1, delta * 7.0)) + sin(animation_time * 31.0) * 0.07 * jolt
+		driver.rotation.x = lerpf(driver.rotation.x, 0.05 if motion_boost else (-0.03 if motion_brake > 0.3 else 0.0), minf(1, delta * 5.0))
+		driver.position.y = driver_rest_height + (0.0 if reduced_motion else sin(animation_time * 7.0) * minf(0.009, absf(motion_speed) * 0.0006))
 	if head:
-		head.rotation.y = lerpf(head.rotation.y, -motion_steer * 0.22, minf(1, delta * 8))
-		head.rotation.z = 0.0 if reduced_motion else sin(animation_time * 2.2) * 0.014 - motion_steer * 0.024
-		head.rotation.x = lerpf(head.rotation.x, -0.035 if motion_boost else 0.0, minf(1, delta * 5))
+		head.rotation.y = lerpf(head.rotation.y, -motion_steer * 0.30, minf(1, delta * 8)) + sin(animation_time * 21.0) * 0.32 * jolt
+		head.rotation.z = 0.0 if reduced_motion else sin(animation_time * 2.2) * 0.014 - motion_steer * 0.05
+		head.rotation.x = lerpf(head.rotation.x, -0.06 if motion_boost else 0.0, minf(1, delta * 5))
+	for ear_index in range(ear_joints.size()):
+		var ear: Node3D = ear_joints[ear_index]
+		ear.rotation.x = lerpf(ear.rotation.x, 0.30 * hit_reaction + (0.12 if motion_boost else 0.0), minf(1, delta * 8.0))
 	for eye in eyes:
 		var blink_phase: float = fposmod(animation_time + 0.45, 4.6)
 		var blink: float = 1.0
 		if blink_phase < 0.14:
 			blink = maxf(0.07, absf(blink_phase - 0.07) / 0.07)
-		eye.scale.y = blink
+		eye.scale.y = minf(blink, 1.0 - 0.55 * hit_reaction)
 	if jaw:
 		jaw.rotation.x = speaking_amount * 0.45
 		jaw.position = jaw_rest_position + Vector3(0, -speaking_amount * 0.035, 0)
@@ -2572,7 +2658,11 @@ func _process(delta: float) -> void:
 		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
 	if steering_wheel and not is_instance_valid(production_vehicle):
 		steering_wheel.rotation.z = -motion_steer * 0.40
-	if celebration_place > 0:
+	if brief_cheer_time > 0.0:
+		brief_cheer_time = maxf(0.0, brief_cheer_time - delta)
+		if brief_cheer_time <= 0.0 and celebration_place == -1:
+			celebration_place = 0
+	if celebration_place > 0 or celebration_place == -1:
 		_apply_celebration(delta)
 	_solve_steering_grips(delta)
 
@@ -2580,7 +2670,7 @@ func _process(delta: float) -> void:
 func _solve_steering_grips(delta: float) -> void:
 	if not steering_wheel or not driver:
 		return
-	var cheer: bool = arm_right != null and celebration_place >= 1 and celebration_place <= 3
+	var cheer: bool = arm_right != null and (celebration_place == -1 or (celebration_place >= 1 and celebration_place <= 3))
 	arm_blend = move_toward(arm_blend, 1.0 if cheer else 0.0, delta * 3.2)
 	var raise: float = smoothstep(0.0, 1.0, arm_blend)
 	for i in range(racing_arm_joints.size()):
@@ -2619,17 +2709,18 @@ func _solve_steering_grips(delta: float) -> void:
 
 func _apply_celebration(delta: float) -> void:
 	celebration_time += delta
+	# -1 is the short in-race cheer; it reads like a first place.
 	var happy: bool = celebration_place <= 3
-	var tempo: float = 1.7 if celebration_place == 1 else 1.15
+	var tempo: float = 1.7 if celebration_place <= 1 else 1.15
 	var beat: float = 0.0 if reduced_motion else sin(celebration_time * TAU * tempo)
 	if driver:
 		# Freudensprung im Sitz: Platz 1 hüpft, 2–3 wippen, ab 4 bleibt Lumo ruhig.
-		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place == 1 else 0.035)
-		driver.position.y = hop
+		var hop: float = 0.0 if reduced_motion or not happy else absf(beat) * (0.075 if celebration_place <= 1 else 0.035)
+		driver.position.y = driver_rest_height + hop
 		driver.rotation.z = beat * (0.05 if happy else 0.0)
 	if head:
 		var nod: float = 0.06 + absf(beat) * 0.06
-		head.rotation.x = lerpf(head.rotation.x, (-0.16 if celebration_place == 1 else -0.08) if happy else nod, minf(1, delta * 6))
+		head.rotation.x = lerpf(head.rotation.x, (-0.16 if celebration_place <= 1 else -0.08) if happy else nod, minf(1, delta * 6))
 		head.rotation.z = beat * (0.09 if happy else 0.02)
 		# Zur Kamera drehen, die beim Zieleinlauf seitlich nach vorn schwenkt.
 		head.rotation.y = lerpf(head.rotation.y, 0.3, minf(1, delta * 3))

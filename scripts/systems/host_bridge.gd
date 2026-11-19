@@ -67,6 +67,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 		not in [
 			"kart",
 			"jump",
+			"run",
 			"puzzle",
 			"build",
 			"rhythm",
@@ -75,6 +76,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 			"cards",
 			"connect_four",
 			"memory",
+			"chess",
 			"quiz",
 			"games",
 			"home"

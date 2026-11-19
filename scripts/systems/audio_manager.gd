@@ -3,10 +3,38 @@
 ## Leichtgewichtiger SFX-Layer. API:
 ##   AudioManager.play_sfx(name)
 ##   AudioManager.set_muted(b)
+##   AudioManager.has_sample(name) / AudioManager.set_sfx_volume(linear)
 ##
-## Sounds werden zur Laufzeit prozedural generiert (kein Asset-File noetig).
-## Pro SFX gibt es ein Preset (Frequenz, Dauer, Wellenform).
+## Bekannte Namen (SFX_SAMPLES) spielen echte, selbst erzeugte OGG-Klaenge aus
+## assets/audio/klangwelt/sfx/ (tools/art/generate_klangwelt_audio.py), mit
+## mehreren Varianten und leichter Tonhoehen-/Pegelvariation. Nur unbekannte
+## Namen fallen auf die alten prozedural erzeugten Toene (SFX_PRESETS) zurueck.
 extends Node
+
+signal voice_started(seconds: float)
+signal sfx_played(name: String)
+
+const SAMPLE_PATH: String = "res://assets/audio/klangwelt/sfx/%s_%d.ogg"
+# Name -> Anzahl Varianten (Dateien <name>_0.ogg .. <name>_<n-1>.ogg).
+const SFX_SAMPLES: Dictionary = {
+	"ui_click": 4, "ui_confirm": 3, "ui_cancel": 2, "ui_back": 2, "portal_tap": 2,
+	"card_next": 3, "star_collected": 4, "celebrate": 2, "card_deal": 4, "card_play": 4,
+	"card_draw": 3, "card_select": 3, "card_refuse": 2, "card_pass": 2, "card_shuffle": 2,
+	"card_flip": 3, "trick_win": 2, "quartet": 1, "round_win": 1, "turn_ping": 2,
+	"piece_drop": 4, "pair_found": 2, "pair_miss": 2, "answer_correct": 3, "answer_wrong": 2,
+	"coin": 4, "count_tick": 4, "build_place": 4, "build_remove": 3, "level_up": 1,
+	"treasure_found": 1, "puzzle_snap": 3, "dig": 3, "applause": 2, "crowd_ooh": 1,
+	"lumo_jingle": 1, "whoosh": 2,
+}
+## "disc_clack" (Vier-gewinnt-Stein) nutzt den aufgenommenen Stein-Klang statt des Ersatztons.
+const SFX_ALIASES: Dictionary = {"back": "ui_back", "disc_clack": "piece_drop"}
+# Sehr haeufige Toene variieren staerker, seltene Fanfaren kaum.
+const PITCH_SPREAD: Dictionary = {
+	"ui_click": 1.06, "card_deal": 1.07, "card_play": 1.05, "card_select": 1.04,
+	"count_tick": 1.0, "coin": 1.03, "build_place": 1.05, "dig": 1.08, "piece_drop": 1.04,
+}
+const SFX_DB: float = -4.0
+const SFX_VOICES: int = 6
 
 # (frequency_hz, duration_seconds, kind) - kind: "sine"|"square"|"chirp_up"|"chirp_down"
 const SFX_PRESETS: Dictionary = {
@@ -18,6 +46,18 @@ const SFX_PRESETS: Dictionary = {
 	"ui_confirm": {"freq": 720.0, "dur": 0.10, "kind": "chirp_up"},
 	"ui_cancel": {"freq": 280.0, "dur": 0.18, "kind": "chirp_down"},
 	"ui_back": {"freq": 360.0, "dur": 0.10, "kind": "chirp_down"},
+	# Kartentisch
+	"card_deal": {"freq": 940.0, "dur": 0.035, "kind": "chirp_down"},
+	"disc_clack": {"freq": 1650.0, "dur": 0.03, "kind": "square"},
+	"card_play": {"freq": 610.0, "dur": 0.07, "kind": "chirp_down"},
+	"card_draw": {"freq": 480.0, "dur": 0.06, "kind": "chirp_up"},
+	"card_select": {"freq": 820.0, "dur": 0.05, "kind": "sine"},
+	"card_refuse": {"freq": 230.0, "dur": 0.14, "kind": "square"},
+	"card_pass": {"freq": 300.0, "dur": 0.16, "kind": "chirp_down"},
+	"trick_win": {"freq": 700.0, "dur": 0.22, "kind": "chirp_up"},
+	"quartet": {"freq": 780.0, "dur": 0.30, "kind": "chirp_up"},
+	"round_win": {"freq": 590.0, "dur": 0.45, "kind": "chirp_up"},
+	"turn_ping": {"freq": 990.0, "dur": 0.09, "kind": "sine"},
 }
 
 const SAMPLE_RATE: float = 22050.0
@@ -25,18 +65,40 @@ const SAMPLE_RATE: float = 22050.0
 var _muted: bool = false
 var _player: AudioStreamPlayer
 var _cache: Dictionary = {}
+var _samples: Dictionary = {}
+var _last_variant: Dictionary = {}
+var _pool: Array[AudioStreamPlayer] = []
+var _next_voice: int = 0
+var _sfx_volume: float = 1.0
+var last_sfx_msec: int = -100000
+var last_sfx_name: String = ""
 
 
 func _ready() -> void:
 	_player = AudioStreamPlayer.new()
 	_player.bus = "Master"
 	add_child(_player)
+	for index in range(SFX_VOICES):
+		var voice := AudioStreamPlayer.new()
+		voice.name = "Sfx%d" % index
+		voice.bus = "Master"
+		voice.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(voice)
+		_pool.append(voice)
 	# Synchronisiere mit gespeicherten Settings, falls vorhanden.
 	if Engine.has_singleton("SettingsStore"):
 		var store: Node = Engine.get_singleton("SettingsStore")
 		if store.has_method("is_audio_muted"):
 			_muted = store.call("is_audio_muted")
 	print("[Audio] manager ready (muted:%s)" % _muted)
+
+
+func _exit_tree() -> void:
+	# Wiedergaben vor dem Programmende lösen (keine festgehaltenen Ressourcen).
+	for voice in _pool:
+		voice.stop()
+		voice.stream = null
+	_samples.clear()
 
 
 func set_muted(b: bool) -> void:
@@ -52,8 +114,40 @@ func is_muted() -> bool:
 	return _muted
 
 
+## Lautstaerke der Ereignistoene (0..1, z. B. aus dem Effekte-Regler).
+func set_sfx_volume(linear: float) -> void:
+	_sfx_volume = clampf(linear, 0.0, 1.0)
+
+
+func get_sfx_volume() -> float:
+	return _sfx_volume
+
+
+## true, wenn fuer den Namen echte Klangdateien hinterlegt sind.
+func has_sample(name: String) -> bool:
+	return SFX_SAMPLES.has(str(SFX_ALIASES.get(name, name)))
+
+
+## Alle Dateipfade eines Tons (fuer Tests und Doku).
+func sample_paths(name: String) -> PackedStringArray:
+	var key := str(SFX_ALIASES.get(name, name))
+	var paths := PackedStringArray()
+	for index in range(int(SFX_SAMPLES.get(key, 0))):
+		paths.append(SAMPLE_PATH % [key, index])
+	return paths
+
+
+## Laufende Sprachausgabe ueber play_voice (fuer Ducking der Musik).
+func is_voice_playing() -> bool:
+	return is_instance_valid(_player) and _player.playing
+
+
 func play_sfx(name: String) -> void:
 	if _muted:
+		return
+	var variants := _sample_variants(name)
+	if not variants.is_empty():
+		_play_variant(name, variants)
 		return
 	if not SFX_PRESETS.has(name):
 		push_warning("[Audio] unknown sfx: %s" % name)
@@ -61,8 +155,71 @@ func play_sfx(name: String) -> void:
 	var stream: AudioStream = _get_or_make(name)
 	if stream == null:
 		return
-	_player.stream = stream
-	_player.play()
+	# Alte Ersatztoene laufen ueber die Effekt-Stimmen; _player bleibt der Sprache vorbehalten.
+	_play_sample(name, stream)
+
+
+func _mark_sfx(name: String) -> void:
+	last_sfx_msec = Time.get_ticks_msec()
+	last_sfx_name = name
+	sfx_played.emit(name)
+
+
+func _play_sample(name: String, stream: AudioStream, pitch: float = 1.0, gain_db: float = 0.0) -> void:
+	if _sfx_volume <= 0.01 or _pool.is_empty():
+		_mark_sfx(name)
+		return
+	var voice: AudioStreamPlayer = _pool[_next_voice % _pool.size()]
+	# Freie Stimme bevorzugen, damit schnelle Folgen (Austeilen) sich nicht abschneiden.
+	for offset in range(_pool.size()):
+		var candidate: AudioStreamPlayer = _pool[(_next_voice + offset) % _pool.size()]
+		if not candidate.playing:
+			voice = candidate
+			break
+	_next_voice = (_pool.find(voice) + 1) % _pool.size()
+	voice.stream = stream
+	voice.pitch_scale = pitch
+	voice.volume_db = SFX_DB + gain_db + linear_to_db(_sfx_volume)
+	voice.play()
+	_mark_sfx(name)
+
+
+## Zufällige Variante (nie zweimal dieselbe hintereinander) mit leichter
+## Tonhöhen- und Pegelvariation. Bewusst ohne AudioStreamRandomizer: dessen
+## Wiedergabe hält beim Programmende Ressourcen fest.
+func _play_variant(name: String, variants: Array) -> void:
+	var key := str(SFX_ALIASES.get(name, name))
+	var index := 0
+	if variants.size() > 1:
+		index = randi() % (variants.size() - 1)
+		if index >= int(_last_variant.get(key, -1)):
+			index += 1
+	_last_variant[key] = index
+	var spread := float(PITCH_SPREAD.get(key, 1.025))
+	var pitch := exp(randf_range(-log(spread), log(spread)))
+	_play_sample(name, variants[index], pitch, randf_range(-1.2, 0.0))
+
+
+func _sample_variants(name: String) -> Array:
+	var key := str(SFX_ALIASES.get(name, name))
+	if not SFX_SAMPLES.has(key):
+		return []
+	if _samples.has(key):
+		return _samples[key]
+	var loaded: Array = []
+	for path in sample_paths(key):
+		if not ResourceLoader.exists(path):
+			continue
+		var stream := load(path) as AudioStream
+		if stream == null:
+			continue
+		if stream is AudioStreamOggVorbis:
+			(stream as AudioStreamOggVorbis).loop = false
+		loaded.append(stream)
+	if loaded.is_empty() and not SFX_PRESETS.has(key):
+		push_warning("[Audio] sample missing: %s" % key)
+	_samples[key] = loaded
+	return loaded
 
 
 ## Spielt eine Voice-WAV-Datei aus assets/audio/voice/ ab.
@@ -96,6 +253,7 @@ func play_voice(path: String) -> void:
 	if _cache.has(full):
 		_player.stream = _cache[full]
 		_player.play()
+		voice_started.emit((_cache[full] as AudioStream).get_length())
 		return
 	if not ResourceLoader.exists(full):
 		push_warning("[Audio] voice missing: %s" % full)
@@ -107,6 +265,7 @@ func play_voice(path: String) -> void:
 	_cache[full] = stream
 	_player.stream = stream
 	_player.play()
+	voice_started.emit(stream.get_length())
 
 
 func _manifest_matches_reference(parsed: Variant) -> bool:

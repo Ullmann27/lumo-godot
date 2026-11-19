@@ -85,7 +85,8 @@ func _tap(control: Control) -> void:
 
 func _choice(title: String) -> Control:
 	for child in game.garage.choices.find_children("*", "Button", true, false):
-		if child is CHOICE and child.title == title:
+		# Auswahlkarten (Zeilen, Strecken-, Rennarten-, Fahrer- und Stufenkarten) tragen ihren Titel.
+		if (child is CHOICE or child.get("title") != null) and str(child.get("title")) == title:
 			return child
 	assert(false, "Expected visible native selection: " + title)
 	return null
@@ -109,8 +110,10 @@ func _start_from_native_tabs() -> void:
 
 
 func _button(text: String) -> Button:
-	for child in game.modal_column.get_children():
-		if child is Button and child.text == text:
+	# Pause actions are direct children of the column; the finished-race panel
+	# keeps its actions in rows below the scroll area. Only a visible one counts.
+	for child in game.modal.find_children("*", "Button", true, false):
+		if child.text == text and child.is_visible_in_tree():
 			return child
 	assert(false, "Expected actual modal action: " + text)
 	return null
@@ -335,7 +338,7 @@ func _run() -> void:
 		if game.finish_cine_left <= 0:
 			break
 	assert(game.modal.visible)
-	var actual_stats_label: Label = game.modal_column.get_node("ResultStats")
+	var actual_stats_label: Control = game.modal_column.get_node("ResultStats")
 	assert(actual_stats_label.is_visible_in_tree())
 	var actual_stats: String = actual_stats_label.text
 	assert(
@@ -391,7 +394,7 @@ func _run() -> void:
 	game = await _fresh()
 	await _tap(game.garage.find_child("ResumeRace", true, false))
 	var reopened_payload: Dictionary = game.result_payload.duplicate(true)
-	var reopened_stats_label: Label = game.modal_column.get_node("ResultStats")
+	var reopened_stats_label: Control = game.modal_column.get_node("ResultStats")
 	var reopened_stats: String = reopened_stats_label.text
 	var reopened_ui: Dictionary = _flow_result_ui()
 	game._physics_process(STEP)

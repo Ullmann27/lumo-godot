@@ -36,15 +36,21 @@ func _pixels(control: Control) -> Rect2:
 	return Rect2(rectangle.position * factor, rectangle.size * factor)
 
 
+## Pause and settings buttons are direct children of the scroll column; the
+## finished-race panel keeps its actions in rows inside that same column.
+func _column_buttons() -> Array[Node]:
+	return game.modal_column.find_children("*", "Button", true, false)
+
+
 func _button(prefix: String) -> Button:
-	for child in game.modal_column.get_children():
-		if child is Button and child.text.begins_with(prefix):
+	for child in _column_buttons():
+		if child.text.begins_with(prefix):
 			return child
 	return null
 
 
 func _watch_buttons() -> void:
-	for child in game.modal_column.get_children():
+	for child in _column_buttons():
 		if child is Button:
 			var id: int = child.get_instance_id()
 			presses[id] = 0
@@ -530,7 +536,11 @@ func _run() -> void:
 	_watch_buttons()
 	phase = "result-button-drag"
 	await _capture("12-result-before-drag")
-	var new_drive := _button("Neue Fahrt auswählen")
+	# At 1280x720 the finished-race panel now shows every action without
+	# scrolling. A very flat window is the remaining case in which its actions
+	# scroll; the drag below must still move the content and press nothing.
+	await _resize(Vector2i(1280, 320))
+	var new_drive := _button("Zur Streckenwahl")
 	# The action may already be visible at the top; prepare room for a downward drag.
 	await _wheel(true)
 	await _reveal(new_drive)
@@ -546,6 +556,7 @@ func _run() -> void:
 		"Result drag cannot restart/leave the actual completed race"
 	):
 		return
+	await _resize(Vector2i(1280, 720))
 	await _reveal(new_drive)
 	id = new_drive.get_instance_id()
 	count_before = presses[id]
@@ -553,7 +564,7 @@ func _run() -> void:
 	await _capture("14-public-new-garage")
 	if not await _expect(
 		game.menu_active and presses[id] == count_before + 1,
-		"Normal result action tap opens the garage exactly once"
+		"Normal result action tap opens the track choice exactly once"
 	):
 		return
 	await _finish(0, "")

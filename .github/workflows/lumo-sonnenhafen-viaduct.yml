@@ -80,7 +80,19 @@ jobs:
           test "$(git -C "$baseline" rev-parse HEAD)" = b8f464d946f73d9b88458bf223f1b83db3975a1a
           cp "$original/scripts/tests/kart_sonnenhafen_viaduct_capture.gd" \
             "$baseline/scripts/tests/kart_sonnenhafen_viaduct_capture.gd"
-          (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
+          # The frozen tree imports the Lumo reference CSV as a translation table, which
+          # crashes the Godot 4.6.3 importer (SIGSEGV). Mark it "keep" as on the current tree.
+          keep_csv=assets/characters/lumo/reference/lumo_reference_manifest.csv
+          if [ -f "$baseline/$keep_csv" ]; then
+            cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
+          fi
+          # Godot 4.6.3 can crash in the first import of the historical checkout on
+          # a busy runner (same guard as in the grounding workflow): import the scenes
+          # on one thread and repeat the idempotent import once; a second crash fails.
+          historical_import() {
+            (cd "$baseline" && timeout 240s godot --headless --single-threaded-scene --path . --editor --import --quit)
+          }
+          historical_import || historical_import
           mkdir -p "$original/exports/viaduct/before"
           (cd "$baseline" && LUMO_CAPTURE_DIR="$original/exports/viaduct/before" \
             timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' \

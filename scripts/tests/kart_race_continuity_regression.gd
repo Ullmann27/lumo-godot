@@ -751,7 +751,7 @@ func _test_lap_driven_reopen() -> void:
 		finished_payload,
 		reopened_payload
 	)
-	var stats: Label = game.modal_column.get_node("ResultStats")
+	var stats: Control = game.modal_column.get_node("ResultStats")
 	var stats_text: String = stats.text
 	var stats_visible: bool = stats.is_visible_in_tree()
 	_lap_check(

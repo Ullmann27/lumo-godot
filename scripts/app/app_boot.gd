@@ -16,6 +16,7 @@ const COVER_BY_SCENE: Dictionary = {
 	"rhythm": "res://assets/creative/covers/rhythm.png",
 	"treasure": "res://assets/creative/covers/treasure.png",
 	"jump": "res://assets/kart/menu/lumo-world.webp",
+	"run": "res://assets/kart/menu/lumo-world.webp",
 }
 const TITLE_BY_SCENE: Dictionary = {
 	"kart": "LUMO KART",
@@ -25,10 +26,13 @@ const TITLE_BY_SCENE: Dictionary = {
 	"rhythm": "LUMO RHYTHM PARTY",
 	"treasure": "LUMO SCHATZSUCHE",
 	"jump": "LUMO ABENTEUER",
+	"run": "LUMO LAUF",
 	"learning": "LUMO LERNWERKSTATT",
+	"tutor": "NACHHILFE MIT LUMO",
 	"cards": "LUMO CARDS",
 	"connect_four": "VIER GEWINNT",
 	"memory": "LUMO MEMORY",
+	"chess": "LUMO SCHACH",
 	"quiz": "LUMO QUIZSHOW",
 }
 signal load_state_changed(state: String)
@@ -79,8 +83,13 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "quiz", "home", "games"
+		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
 	] else "games"
+	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
+	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.
+	var learning_payload: Variant = options.get("learning", {})
+	if target == "learning" and learning_payload is Dictionary and learning_payload.get("kind") == "tutor":
+		target = "tutor"
 	_show_cover(target)
 	_build_actions()
 	get_viewport().size_changed.connect(_layout)
@@ -307,7 +316,7 @@ func _back_to_games() -> void:
 	if load_phase == "transitioning":
 		return
 	if HostBridge.is_embedded():
-		if not HostBridge.return_to_app("learn" if target_scene == "learning" else "games"):
+		if not HostBridge.return_to_app("learn" if target_scene in ["learning", "tutor"] else "games"):
 			_show_failure(HostBridge.SAVE_FAILURE)
 	else:
 		_set_phase("idle")
@@ -323,7 +332,7 @@ func _show_cover(scene_id: String) -> void:
 	var cover: TextureRect = $Layer/Background
 	# Until a renderer capture of this lesson is shipped, use the neutral
 	# loading surface instead of falsely presenting the Kart world as learning.
-	cover.visible = scene_id not in ["learning", "memory", "quiz"]
+	cover.visible = scene_id not in ["learning", "tutor", "memory", "quiz"]
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
 	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
 	var title: Label = $Layer/Title
@@ -331,13 +340,13 @@ func _show_cover(scene_id: String) -> void:
 	title.add_theme_font_override("font", UI.HEADING)
 	title.add_theme_color_override("font_color", Color("f7fbff"))
 	var subtitle: Label = $Layer/Subtitle
-	subtitle.text = "MIT LUMO BEGREIFEN UND AUSPROBIEREN" if scene_id == "learning" else "DEIN NÄCHSTES ABENTEUER"
+	subtitle.text = "MIT LUMO BEGREIFEN UND AUSPROBIEREN" if scene_id in ["learning", "tutor"] else "DEIN NÄCHSTES ABENTEUER"
 	subtitle.add_theme_font_override("font", UI.BODY)
 	subtitle.add_theme_color_override("font_color", Color("53ddfd"))
 	var status: Label = $Layer/LoadingLabel
-	status.text = "Deine Lernansicht wird vorbereitet …" if scene_id == "learning" else "Spielwelt wird vorbereitet …"
+	status.text = "Deine Lernansicht wird vorbereitet …" if scene_id in ["learning", "tutor"] else "Spielwelt wird vorbereitet …"
 	if is_instance_valid(_back_button):
-		_back_button.text = "Zur Aufgabe" if scene_id == "learning" else "Zur Spielewelt"
+		_back_button.text = "Zur Aufgabe" if scene_id in ["learning", "tutor"] else "Zur Spielewelt"
 	status.add_theme_font_override("font", UI.BODY)
 	status.add_theme_color_override("font_color", Color("f7fbff"))
 	var bar: ProgressBar = $Layer/LoadBar

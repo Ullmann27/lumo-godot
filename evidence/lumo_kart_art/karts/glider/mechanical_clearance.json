@@ -106,8 +106,8 @@
     "RR": 0.0
   },
   "grip_rest_errors_m": {
-    "L": 1.228781230931777e-07,
-    "R": 1.228781230931777e-07
+    "L": 6.006850114687196e-08,
+    "R": 6.006850114687196e-08
   },
   "forward_axis_godot": "-Z",
   "source_file": "art/lumo_kart/blender/karts/aurora_glider.blend",

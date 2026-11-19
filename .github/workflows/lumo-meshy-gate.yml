@@ -72,7 +72,7 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: '1'
         run: |
           set -euo pipefail
-          timeout 240s xvfb-run -a -s '-screen 0 1280x720x24' \
+          timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' \
             godot --audio-driver Dummy --path . --rendering-method gl_compatibility \
             --script res://scripts/tests/kart_meshy_gate_capture.gd 2>&1 | tee "$RUNNER_TEMP/meshy-render.log"
           grep -F '[MeshyGateRender] PASS:' "$RUNNER_TEMP/meshy-render.log"

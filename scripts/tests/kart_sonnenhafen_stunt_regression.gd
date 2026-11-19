@@ -10,6 +10,7 @@ const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const STEP: float = 1.0 / 60.0
 var game
 ## A failed assert aborts its check; PASS needs every check to reach its end.
@@ -178,7 +179,10 @@ func _check_full_loop() -> void:
 	assert(stars >= 5, "Stars on the riding line collected (%d)" % stars)
 	# Onward: back on the road, fast, and into the tunnel without a reset.
 	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
-	assert(absf(float(road.lateral) - STUNT.LOOP_LANE) < 0.6, "Exit on the loop lane")
+	assert(
+		absf(float(road.lateral) - STUNT.LOOP_LANE - STUNT.LOOP_EXIT_SHIFT) < 0.6,
+		"Exit on the loop's exit lane beside the entry"
+	)
 	assert(absf(game.player.position.y - float(road.height)) < 0.3, "Exit on the road surface")
 	assert(game.speed > 12.0, "Kart keeps speed after the loop (%.1f)" % game.speed)
 	var tunnel: float = STUNT.tunnel_start(game.world)
@@ -253,7 +257,7 @@ func _check_stunt_jump() -> void:
 			jump = kicker
 	assert(not jump.is_empty(), "Stunt jump exists")
 	var tunnel: float = STUNT.tunnel_start(game.world)
-	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.JUMP_LEAD_M), "Jump at Position B")
+	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m()), "Jump at Position B")
 	assert(
 		float(jump.start) > float(game.world.loop_layout.start) + LOOP.ADVANCE,
 		"Ramp after the loop exit"
@@ -430,6 +434,14 @@ func _run() -> void:
 	await _check_too_slow()
 	await _check_stunt_jump()
 	await _check_precision_speeds()
+	# Quitting with the race still mounted left "resources still in use at exit"
+	# on some runs, which the probe runner rightly rejects. Release it first.
+	game.abandoned = true
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[SonnenhafenStunt]")):
+		push_error("[SonnenhafenStunt] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	if completed_checks != 5:
 		print("[SonnenhafenStunt] FAIL: %d of 5 checks completed" % completed_checks)
 		quit(1)

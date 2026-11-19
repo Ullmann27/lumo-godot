@@ -16,9 +16,21 @@ const REGIONS := [
 	"Hügelstadt",
 	"Blütenpark",
 	"Sternental",
-	"Lumo-Land"
+	"Lumo-Land",
+	# Seit 11/2026: die Stadt wächst bis 65 × 65 Bauplätze (Versorgungsrechnung
+	# für 4.000 Menschen, build_village_supply.gd). Alte IDs bleiben gleich.
+	"Uferwiesen",
+	"Mühlbachtal",
+	"Hasenhügel",
+	"Lindenhof",
+	"Seeblick",
+	"Sonnenfelder",
+	"Fernweide",
+	"Großes Tal"
 ]
-const PLOTS := [9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089]
+const PLOTS := [
+	9, 16, 25, 49, 81, 121, 169, 225, 361, 529, 729, 1089, 1369, 1681, 2025, 2401, 2809, 3249, 3721, 4225
+]
 const PROJECTS := {
 	"playground":
 	{
@@ -251,7 +263,7 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	var output := {"wood": 0, "stone": 0, "food": 0, "coins": 0}
 	var wells := water_capacity(model, town)
 	var enough_water := wells >= int(town.population)
-	var farms: int = model._count(town, "farm")
+	var farms: int = model._working(town, "farm")
 	var carrots := farms * (5 if enough_water else 3)
 	if int(town.region) >= 1:
 		carrots += farms
@@ -261,9 +273,9 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	town.crops.carrots = int(town.crops.carrots) + carrots
 	town.resources.food = int(town.resources.food) + carrots
 	output.food = carrots
-	var grain: int = model._count(town, "grain") * (4 if enough_water else 2)
+	var grain: int = model._working(town, "grain") * (4 if enough_water else 2)
 	town.crops.grain = mini(MAX_RESOURCE, int(town.crops.grain) + grain)
-	var batches := mini(model._count(town, "bakery"), int(town.crops.grain) / 3)
+	var batches := mini(model._working(town, "bakery"), int(town.crops.grain) / 3)
 	batches = mini(batches, (MAX_RESOURCE - int(town.resources.food)) / 4)
 	town.crops.grain = int(town.crops.grain) - batches * 3
 	town.crops.bread = int(town.crops.bread) + batches * 4
@@ -271,19 +283,20 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 	town.bread_batches = mini(MAX_COUNTER, int(town.bread_batches) + batches)
 	output.food = int(output.food) + batches * 4
 	var bridge_bonus := 1 if bool(town.city_projects.get("bridge", false)) else 0
-	output.wood = model._count(town, "lumber") * (4 + bridge_bonus)
+	output.wood = model._working(town, "lumber") * (4 + bridge_bonus)
 	output.stone = (
-		model._count(town, "quarry") * (3 + bridge_bonus + (1 if int(town.region) >= 2 else 0))
+		model._working(town, "quarry") * (3 + bridge_bonus + (1 if int(town.region) >= 2 else 0))
 	)
 	for resource in ["wood", "stone"]:
 		output[resource] = mini(int(output[resource]), MAX_RESOURCE - int(town.resources[resource]))
 		town.resources[resource] = int(town.resources[resource]) + int(output[resource])
-	var gross: int = model._count(town, "market") * 2
+	var gross: int = model._working(town, "market") * 2
 	if model._count(town, "road") > 0:
-		gross += model._count(town, "market")
+		gross += model._working(town, "market")
 	var paid := credit_income(town, gross)
 	output.coins = int(paid.net_income)
-	var needs := int(town.population)
+	# Bewohner (auch Soldaten) essen 1; Pferde der Reiter 1 zusätzlich.
+	var needs := int(town.population) + int(town.get("troop_upkeep", 0))
 	town.food_shortfall = maxi(0, needs - int(town.resources.food))
 	town.resources.food = maxi(0, int(town.resources.food) - needs)
 	synchronize_pantry(town)
@@ -330,6 +343,9 @@ static func produce(model, town: Dictionary, tomorrow: int) -> Dictionary:
 static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictionary:
 	var arrivals := 0
 	var births := 0
+	# Einmal je Tag zählen, nicht je Familie (Großstadt: 1.000 Häuser).
+	var water := water_capacity(model, town)
+	var has_school: bool = model._count(town, "school") > 0
 	for family: Dictionary in town.households:
 		if not satisfied:
 			continue
@@ -341,7 +357,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 		# Shortages pause growth; residents are never killed or taken away.
 		if (
 			int(town.resources.food) < int(town.population) + 2
-			or int(town.population) >= water_capacity(model, town)
+			or int(town.population) >= water
 			or int(town.population) >= MAX_POPULATION
 		):
 			continue
@@ -351,7 +367,7 @@ static func _grow_families(model, town: Dictionary, satisfied: bool) -> Dictiona
 			arrivals += 1
 		elif (
 			int(family.adults) == 2
-			and model._count(town, "school") > 0
+			and has_school
 			and int(family.children) < 2
 			and int(family.supplied_days) >= 8 + int(family.children) * 6
 		):
@@ -792,6 +808,19 @@ static func campaign_status(model, town: Dictionary) -> Dictionary:
 			"Alle zwölf Dorfgeschichten sind geschafft. Deine Stadt "
 			+ "bleibt erhalten und wächst mit deinen Ideen."
 		)
+	return result
+
+
+## All twelve chapters with their live goals and a state of "done",
+## "current" or "locked". Read-only: derived from the saved chapter index.
+static func campaign_overview(model, town: Dictionary) -> Array:
+	var reached := int(town.campaign_chapter)
+	var result: Array = []
+	for index in range(12):
+		var chapter := _chapter(model, town, index)
+		chapter.chapter = index + 1
+		chapter.state = "done" if index < reached else ("current" if index == reached else "locked")
+		result.append(chapter)
 	return result
 
 

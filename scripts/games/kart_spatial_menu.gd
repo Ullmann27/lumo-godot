@@ -4,8 +4,16 @@ extends "res://scripts/games/kart_garage_menu.gd"
 const SERVICE_STATION = preload("res://scripts/games/kart_garage_service_station.gd")
 const STAGE_PINCH = preload("res://scripts/games/kart_stage_pinch.gd")
 const HOME_PROMENADE = preload("res://scripts/games/kart_neon_arena.gd")
+const TRACK_STAGE = preload("res://scripts/games/kart_track_stage.gd")
+const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
+const PARTS_BAY = preload("res://scripts/games/kart_parts_bay.gd")
+## Große Karten für „Fahrer“ und „Tempo & Gegner“ (Auftrag 18.11., Abschnitt 4).
+const SECTIONS = preload("res://scripts/games/kart_menu_sections.gd")
+## „Teile wechseln“ + „Werte“ beim gewählten Kart (Garage), siehe kart_parts_bay.gd.
+var parts_bay
 var service_station
 var home_promenade
+var track_stage
 var track_pass
 var _pinch = STAGE_PINCH.new()
 var _camera_zoom := 1.0
@@ -25,10 +33,7 @@ var _home_mode := ""
 var _home_environment: Environment
 var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
-
-
-func _init() -> void:
-	setup["difficulty"] = "pro"
+var _studio_sky: Sky
 
 
 func _ready() -> void:
@@ -54,6 +59,10 @@ func _ready() -> void:
 	_selection_surface.add_theme_stylebox_override("panel", surface)
 	add_child(_selection_surface)
 	move_child(_selection_surface, setup_left.get_index())
+	track_stage = TRACK_STAGE.new()
+	track_stage.attach(self)
+	add_child(track_stage)
+	move_child(track_stage, premium_hero_shell.get_index() + 1)
 	workshop_button.reparent(setup_left, false)
 	workshop_button.text = "Lack, Teile & Effekte"
 	kart_bars.reparent(setup_left, false)
@@ -76,9 +85,19 @@ func _ready() -> void:
 		learn_button.pressed.disconnect(connection.callable)
 	learn_button.pressed.connect(func(): exit_requested.emit("games"))
 	# Brighter local studio materials; the original meshes and driver stay intact.
-	garage_interior.materials.wall.albedo_color = Color("37536e")
-	garage_interior.materials.floor.albedo_color = Color("415c76")
-	garage_interior.materials.ivory.albedo_color = Color("e2e4dc")
+	# Konzeptbild-Farbwelt: warme Sandwände, heller Epoxid-Boden, heller Drehteller.
+	garage_interior.materials.wall.albedo_color = Color("cdb79c")
+	garage_interior.materials.floor.albedo_color = Color("566377")
+	garage_interior.materials.ivory.albedo_color = Color("f1ece2")
+	garage_interior.materials.recess.albedo_color = Color("2a2f45")
+	garage_interior.materials.podium.albedo_color = Color("d9dee6")
+	garage_interior.materials.podium.metallic = 0.2
+	garage_interior.materials.podium.roughness = 0.3
+	_studio_sky = SHOWROOM.studio_sky()
+	_style_view_choice()
+	parts_bay = PARTS_BAY.new()
+	add_child(parts_bay)
+	parts_bay.setup(self)
 	service_station = SERVICE_STATION.new()
 	garage_interior.root.add_child(service_station)
 	service_station.build(garage_interior.materials)
@@ -88,8 +107,9 @@ func _ready() -> void:
 	for child in preview.get_children():
 		if child is WorldEnvironment and child.environment != null:
 			_home_environment = child.environment
-			_studio_ambient = _home_environment.ambient_light_color
-			_studio_ambient_energy = _home_environment.ambient_light_energy
+			# Hellere, warme Grundhelligkeit im Studio: keine schwarzen Schattenseiten mehr.
+			_studio_ambient = Color("8a8496")
+			_studio_ambient_energy = 0.62
 	_spatial_ready = true
 	_refresh()
 
@@ -135,10 +155,24 @@ func _refresh() -> void:
 	_sync_home_stage()
 	workshop_button.visible = step == 2
 	kart_bars.hide()
+	if parts_bay != null:
+		parts_bay._sync()
 	subtitle.hide()
+	SECTIONS.build(self, step, _select)
 	title_label.text = ["Rennen", "Dein Fahrer", "Deine Garage", "Rennwelten", "Tempo & Gegner"][step]
 	_update_track_goals()
+	track_stage.sync()
 	_apply_responsive_layout.call_deferred()
+
+
+func _refresh_preview() -> void:
+	# Die Streckenwahl zeigt Bilder: beim Blättern nicht jedes Mal die ganze Welt bauen.
+	if track_stage != null and track_stage.defers_world():
+		return
+	super._refresh_preview()
+	# Nova und Milo erscheinen im Menü als dieselben 3D-Figuren wie im Rennen.
+	if is_instance_valid(preview_kart) and preview_kart.has_method("set_reference_rival_enabled"):
+		preview_kart.set_reference_rival_enabled(true)
 
 
 func _update_track_goals() -> void:
@@ -171,8 +205,27 @@ func _apply_selected_preview() -> void:
 	var changed := _selection_reaction_pending
 	super._apply_selected_preview()
 	_sync_workshop_host()
+	if step == 2:
+		call_deferred("_fit_welcome_camera")
 	if changed and is_instance_valid(service_station):
 		service_station.react_to_selection()
+	if changed and step == 1:
+		_play_driver_signature()
+
+
+## Kurze eigene Bewegung des gewählten Fahrers: Lumo winkt, Nova und Milo jubeln.
+func _play_driver_signature() -> void:
+	if reduced_motion or not is_instance_valid(preview_kart):
+		return
+	var actor = preview_kart.get("lumo_animation")
+	if is_instance_valid(actor):
+		actor.play_menu_behavior("greeting_wave")
+		return
+	preview_kart.cheer_in_race(1.4)
+	var kart: Node3D = preview_kart
+	get_tree().create_timer(1.6).timeout.connect(func():
+		if is_instance_valid(kart):
+			kart.end_in_race_cheer())
 
 
 func _sync_workshop_host() -> void:
@@ -197,6 +250,7 @@ func _sync_home_stage() -> void:
 	if _home_environment != null:
 		_home_environment.ambient_light_color = Color("284286") if home_visible else _studio_ambient
 		_home_environment.ambient_light_energy = 0.36 if home_visible else _studio_ambient_energy
+		SHOWROOM.apply_reflections(_home_environment, _studio_sky, garage_interior.root.visible)
 
 
 func _advance_home_camera(delta: float) -> void:
@@ -272,6 +326,58 @@ func _update_garage_action_targets() -> void:
 		button.body.hide()
 
 
+## „Rundum ansehen“ als Glasknopf im Stil der Reiter (statt nacktem Auswahlfeld).
+func _style_view_choice() -> void:
+	var normal := _step_glass(false)
+	normal.bg_color = Color(0.03, 0.16, 0.34, 0.92)
+	normal.border_color = Color(0.40, 0.88, 1.0, 0.85)
+	normal.set_border_width_all(2)
+	normal.content_margin_left = 18
+	normal.content_margin_right = 14
+	var hover := _step_glass(true)
+	hover.content_margin_left = 18
+	hover.content_margin_right = 14
+	for state in ["normal", "focus", "disabled"]:
+		view_choice.add_theme_stylebox_override(state, normal)
+	for state in ["hover", "pressed", "hover_pressed"]:
+		view_choice.add_theme_stylebox_override(state, hover)
+	view_choice.add_theme_color_override("font_color", Color("f2fbff"))
+	view_choice.add_theme_color_override("font_hover_color", Color.WHITE)
+	view_choice.add_theme_font_override("font", UI.HEADING)
+	view_choice.add_theme_constant_override("arrow_margin", 14)
+	view_choice.add_theme_constant_override("h_separation", 8)
+	view_choice.icon = _orbit_icon()
+	view_choice.expand_icon = false
+
+
+## Kleines Rundum-Symbol (Kreisbogen mit Pfeilspitze), selbst gezeichnet.
+func _orbit_icon() -> Texture2D:
+	var size := 30
+	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0, 0, 0, 0))
+	var centre := Vector2(size, size) * 0.5
+	for y in range(size):
+		for x in range(size):
+			var offset := Vector2(x + 0.5, y + 0.5) - centre
+			var radius := offset.length()
+			var angle := fposmod(atan2(offset.y, offset.x), TAU)
+			var ring := 1.0 - clampf(absf(radius - 10.0) - 1.6, 0.0, 1.0)
+			if angle > TAU * 0.86:
+				ring = 0.0
+			image.set_pixel(x, y, Color(0.60, 0.95, 1.0, ring))
+	# Pfeilspitze am Ende des Bogens.
+	var tip := centre + Vector2(cos(TAU * 0.86), sin(TAU * 0.86)) * 10.0
+	for y in range(size):
+		for x in range(size):
+			var p := Vector2(x + 0.5, y + 0.5) - tip
+			var local := p.rotated(-TAU * 0.86)
+			if local.x > -5.0 and local.x < 2.0 and absf(local.y) < (local.x + 5.0) * 0.9:
+				if absf(local.y) < 6.0:
+					image.set_pixel(x, y, Color(1.0, 0.86, 0.35, 1.0))
+	var texture := ImageTexture.create_from_image(image)
+	return texture
+
+
 func _apply_responsive_layout() -> void:
 	if not _spatial_ready or not is_inside_tree():
 		return
@@ -307,8 +413,12 @@ func _apply_responsive_layout() -> void:
 	_set_physical_font(learn_button, 14, scale_factor)
 	var reward_style := progress_panel.get_theme_stylebox("panel") as StyleBoxFlat
 	reward_style.set_content_margin_all(0)
-	progress_label.visible = not narrow
-	progress_icon.visible = not narrow
+	# Stern sitzt mit Luft im runden Rahmen statt auf der Kante.
+	reward_style.content_margin_left = 16.0 * scale_factor
+	# Schmales Hochformat: nur Stern und Zahl (vorher blieb ein leerer Rahmen stehen).
+	progress_label.visible = true
+	progress_icon.visible = true
+	progress_label.text = ("%d" if narrow else "%d Sterne") % stars
 	_set_physical_font(progress_label, 16, scale_factor)
 	_set_physical_font(progress_icon, 22, scale_factor)
 	# Measure the actual children and panel margins before positioning the
@@ -327,9 +437,16 @@ func _apply_responsive_layout() -> void:
 	var choices_rect: Rect2
 	if portrait:
 		var drawer_height := clampf(available.y * 0.30, 160.0, 286.0)
+		if step in [0, 1, 4]:
+			# Große Rennarten-, Fahrer- und Stufenkarten statt schmaler Zeilen.
+			drawer_height = clampf(available.y * 0.36, 210.0, 330.0)
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
-		choices_rect = Rect2(margin, top, clampf(available.x * 0.31, 208, 360), maxf(72, footer_y - top - 12))
+		var drawer_width := clampf(available.x * (0.40 if step in [0, 1, 4] else 0.31), 208, 420 if step in [0, 1, 4] else 360)
+		choices_rect = Rect2(margin, top, drawer_width, maxf(72, footer_y - top - 12))
+	var stage_mode: bool = track_stage.wanted()
+	if stage_mode:
+		choices_rect = track_stage.layout(available, top, footer_y, margin, portrait, scale_factor)
 	_stage_rect(_selection_surface, choices_rect, scale_factor)
 	_stage_rect(setup_left, choices_rect.grow(-4.0 if short_view else -10.0), scale_factor)
 	setup_left.custom_minimum_size = Vector2.ZERO
@@ -357,6 +474,16 @@ func _apply_responsive_layout() -> void:
 					# actionable information and remain visible on every form factor.
 					if step == 3 and setup.mode == "race" and track_pass != null:
 						card.caption_label.show()
+	if stage_mode:
+		title_label.hide()
+		_stage_rect(setup_left, choices_rect, scale_factor)
+		track_stage.layout_cards(choices_rect, scale_factor)
+	else:
+		track_stage.release_drawer()
+	if step in [0, 1, 4]:
+		var title_dp := 0.0 if short_view else 40.0
+		var inset := 8.0 if short_view else 20.0
+		SECTIONS.layout(self, choices_rect.size - Vector2(inset + 4.0, inset + title_dp), scale_factor, short_view)
 	_stage_rect(footer, Rect2(margin, footer_y, available.x - margin * 2, footer_height), scale_factor)
 	footer_spacer.hide()
 	footer.columns = (3 if has_saved_race else 2) + (1 if workshop_in_footer else 0)
@@ -373,15 +500,22 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
 	view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	view_choice.offset_left = -194 * scale_factor
+	view_choice.offset_left = -256 * scale_factor
 	view_choice.offset_right = -margin * scale_factor
 	view_choice.offset_top = top * scale_factor
 	view_choice.offset_bottom = (top + 48) * scale_factor
 	view_choice.visible = not _landing_active and step in [1, 2]
+	if parts_bay != null:
+		# Knöpfe in der freien Bühne über der Kartauswahl, Konfigurator über der Auswahl-Fläche.
+		var stage_px := _visible_stage_region()
+		var full := preview_container.get_global_rect()
+		var stage_rect := Rect2(full.position + stage_px.position * full.size, stage_px.size * full.size)
+		parts_bay.relayout(scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size),
+			Rect2(_selection_surface.position, _selection_surface.size))
 	for control in _stage_controls:
 		control.visible = not _landing_active
 	_stage_header.visible = not _landing_active and not ultra_short
-	_selection_surface.visible = not _landing_active
+	_selection_surface.visible = not _landing_active and not stage_mode
 	call_deferred("_fit_welcome_camera")
 
 
@@ -424,6 +558,9 @@ func _fit_welcome_camera() -> void:
 		preview_camera.h_offset = 0.0
 		preview_camera.v_offset = 0.0
 		return
+	# Teile-Konfigurator offen: die Kamera steht am Rad bzw. am Heck, keine Gesamtansicht.
+	if parts_bay != null and parts_bay.is_open() and step == 2:
+		return
 	# Fit the actual chassis, seated rig and light rings to the unoccluded
 	# part of the live stage. Portrait width cannot reuse a landscape frustum.
 	var focus := Vector3(0, 0.95, 0)
@@ -431,9 +568,33 @@ func _fit_welcome_camera() -> void:
 	# angle keeps that origin inside the open service bay after the framing
 	# offset, so its right wall cannot occlude an otherwise valid frustum.
 	var direction := Vector3(1.6, 1.05, -4.6).normalized()
+	# Hochformat-Garage: flachere, frontalere Kamera wie ein Konzeptbild – das Kart steht
+	# groß im unteren Drittel, darüber Leuchtwand und Schild statt leerer Bodenfläche.
+	var portrait_garage: bool = step == 2 and aspect < 1.0 and garage_interior.root.visible
+	# Garage (Auftrag 18.11.): das gewählte Kart groß in niedriger Dreiviertelansicht, Lumo
+	# steht seitlich daneben; Leuchtwand und Werkbank bleiben Hintergrund und werden nicht
+	# mehr ins Bild gezwungen.
+	var garage_stage: bool = step == 2 and garage_interior.root.visible
+	if garage_stage:
+		focus = Vector3(0, 0.62, 0.15)
+		direction = Vector3(-2.35, 0.82, -3.6).normalized()
+	# Fahrer: nah an Figur und Cockpit, leicht von vorn – Gesicht und Silhouette groß.
+	var driver_stage: bool = step == 1 and inspection_view == 0
+	# Hauptmenü (offenes Fold): Kart und Lumo füllen die linke Bühne; der Lichtring darf
+	# angeschnitten sein, statt das Kart klein in die Mitte zu zwingen.
+	var landing_stage: bool = _landing_active and step == 0
+	if landing_stage:
+		focus = Vector3(0, 0.85, 0)
+		direction = Vector3(1.1, 0.95, -4.6).normalized()
+	if driver_stage:
+		focus = Vector3(0, 1.0, 0)
+		direction = Vector3(-1.2, 0.75, -3.4).normalized()
 	var region := _visible_stage_region()
 	var pixels := Vector2(preview_viewport.size)
 	var target := Rect2(region.position * pixels, region.size * pixels)
+	if garage_stage:
+		# Etwas Luft am Rand: das leichte Pendeln des Drehtellers schneidet kein Rad an.
+		target = target.grow_individual(-target.size.x * 0.05, -target.size.y * 0.03, -target.size.x * 0.05, -target.size.y * 0.02)
 	var points: Array[Vector3] = []
 	if step == 3:
 		if not is_instance_valid(preview_world):
@@ -447,8 +608,24 @@ func _fit_welcome_camera() -> void:
 		focus = bounds.get_center()
 		direction = Vector3(0.65, 0.90, -1.0).normalized()
 	else:
-		points = _stage_subject_points()
-	var distance := 6.0 if step == 3 else 4.8
+		points = _stage_subject_points(garage_stage or driver_stage or landing_stage)
+		if driver_stage and is_instance_valid(preview_kart):
+			# Nur Figur und Cockpit füllen das Bild (nicht die ganze Kartbreite): Kopf, Ohren
+			# und Oberkörper der (teils geskinnten) Figuren groß, Räder dürfen angeschnitten sein.
+			points.clear()
+			for x in [-0.5, 0.5]:
+				for y in [0.95, 2.02]:
+					for z in [-0.55, 0.4]:
+						points.append(preview_kart.to_global(Vector3(x, y, z)))
+		if garage_stage and not points.is_empty():
+			# Bildmitte = Mitte aus Kart, Lumo und Werkbank (nicht der Drehteller allein),
+			# damit die Gruppe das schmale Bild füllt.
+			var group := AABB(points[0], Vector3.ZERO)
+			for point in points:
+				group = group.expand(point)
+			focus.x = group.get_center().x * 0.6
+			focus.z = group.get_center().z * 0.6
+	var distance := 6.0 if step == 3 else (2.6 if garage_stage or driver_stage or landing_stage else 4.8)
 	preview_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	preview_camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	preview_camera.fov = 40.0 if aspect < 1.0 else 35.0
@@ -490,6 +667,11 @@ func _visible_stage_region() -> Rect2:
 	if _landing_active:
 		return _landing_stage_region
 	var stage := preview_container.get_global_rect()
+	if track_stage.active and stage.has_area():
+		# Rundkurs-Übersicht der Streckenwahl: genau im Rahmen des Bühnenbilds.
+		var frame: Rect2 = track_stage.picture_rect().grow(-8.0 * _preview_dp_scale())
+		if frame.has_area():
+			return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
 	var inset := 8.0 * _preview_dp_scale()
 	var clear := stage.grow(-inset)
 	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
@@ -501,14 +683,19 @@ func _visible_stage_region() -> Rect2:
 	else:
 		clear.position.x = _selection_surface.get_global_rect().end.x + inset
 		clear.end.x = stage.end.x - inset
+		# „Rundum ansehen“ belegt oben rechts nur einen Streifen. Früher schnitt er die ganze
+		# rechte Bühnenseite ab: Kamera weit weg, hinter der Studiowand, Knöpfe über der Auswahl.
 		if view_choice.is_visible_in_tree():
-			clear.end.x = view_choice.global_position.x - inset
+			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
+	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
+	if step == 2 and parts_bay != null and not _landing_active:
+		clear.end.y -= 62.0 * _preview_dp_scale()
 	if not clear.has_area():
 		return Rect2(0.36, 0.19, 0.61, 0.60)
 	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
 
 
-func _stage_subject_points() -> Array[Vector3]:
+func _stage_subject_points(close_up: bool = false) -> Array[Vector3]:
 	var points: Array[Vector3] = []
 	for mesh in preview_kart.find_children("*", "MeshInstance3D", true, false):
 		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == preview_kart.far_mesh:
@@ -523,14 +710,20 @@ func _stage_subject_points() -> Array[Vector3]:
 		points.append(head_point + Vector3.UP * 0.46)
 		points.append(head_point + Vector3(0.66, 0.37, 0))
 		points.append(head_point + Vector3(-0.66, 0.37, 0))
-	for ring in stage_rings:
+	# Nahaufnahme (Hochformat-Garage): Kart, Lumo und Werkbank füllen das Bild, der
+	# Drehteller darf seitlich angeschnitten sein.
+	for ring in ([] if close_up else stage_rings):
 		for sample in range(32):
 			var angle := TAU * sample / 32.0
 			var radius: float = ring.mesh.outer_radius
 			points.append(ring.to_global(Vector3(cos(angle) * radius, 0, sin(angle) * radius)))
 	if is_instance_valid(service_station):
 		points.append_array(service_station.subject_points())
-		points.append_array(service_station.workbench_points())
+		if not close_up:
+			points.append_array(service_station.workbench_points())
+	# Das LUMO-Schild gehört ins Bild, nie unter Reiter oder Kopfzeile (Gesamtansicht).
+	if step == 2 and garage_interior.root.visible and not close_up:
+		points.append_array(SHOWROOM.sign_points(garage_interior.root))
 	return points
 
 
@@ -566,3 +759,9 @@ func _process(delta: float) -> void:
 		preview_pivot.rotation.y = preview_angle + (0.0 if reduced_motion else sin(preview_idle_time * 0.35) * 0.07)
 	for button in garage_buttons.values():
 		button.body.hide()
+
+
+func handle_back() -> bool:
+	if parts_bay != null and parts_bay.handle_back():
+		return true
+	return super.handle_back()

@@ -3,10 +3,16 @@ extends RefCounted
 ## Positions the existing adapter and solves only leg and tail joint angles.
 ## The authored actor, skeleton proportions, clips and chassis remain unchanged.
 
-const ADAPTER_OFFSET := Vector3(0.0, 0.14, -0.10)
+## From the kart's DriverSeat marker (top of the seat cushion) to the adapter
+## origin: Lumo's hip joints end up 6.5 cm above the cushion, pelvis centred.
+const SEAT_TO_ADAPTER := Vector3(0.0, -0.637, 0.052)
+## Pedal contact inside the footwell, in Coachwork space (see build_karts.py).
+const PEDAL_SUPPORT := Vector3(0.15, 0.2295, -0.40)
 const TAIL_BONES := ["TailBase", "Tail1"]
-const TAIL_PITCHES := [-50.0, -70.0]
-const TAIL_YAWS := [0.0, 20.0]
+## The tail leaves the cockpit through the gap under the seat back and rises
+## behind it.
+const TAIL_PITCHES := [-38.0, -78.0]
+const TAIL_YAWS := [0.0, 0.0]
 const TOE_LIFT := 0.25
 const SOLE_CLEARANCE := 0.003
 const SEAT_CLEARANCE := 0.008
@@ -29,7 +35,8 @@ var _tail_bones := PackedInt32Array()
 var _sampled_tail_rotations: Array[Quaternion] = []
 var _applied_tail_rotations: Array[Quaternion] = []
 var _tail_applied := false
-var _knee_poles: Array[Vector3] = [Vector3(-0.48, 0.99, -0.60), Vector3(0.48, 0.99, -0.60)]
+## Knees point up and outwards, past the steering column, as in a real kart.
+var _knee_poles: Array[Vector3] = [Vector3(-0.52, 0.80, -0.05), Vector3(0.52, 0.80, -0.05)]
 
 
 func bind_visual(vehicle: Node3D, adapter) -> bool:
@@ -51,7 +58,10 @@ func bind_visual(vehicle: Node3D, adapter) -> bool:
 		return false
 	# The previous procedural seat sits lower and farther back. Keep its
 	# source pose untouched; place this adapter in the imported seat frame.
-	adapter.position = ADAPTER_OFFSET
+	var seat_marker: Node3D = vehicle.production_vehicle.asset_root.find_child("DriverSeat", true, false)
+	if seat_marker == null:
+		return false
+	adapter.position = kart.to_local(seat_marker.global_position) + SEAT_TO_ADAPTER
 	# The old 2031 karts keep their existing seat position; R02 receives measured contact.
 	if vehicle.production_vehicle.has_method("is_r02") and vehicle.production_vehicle.is_r02():
 		if vehicle.production_vehicle.has_method("driver_origin_offset"):
@@ -104,7 +114,7 @@ func bind_visual(vehicle: Node3D, adapter) -> bool:
 		contact.y = lowest
 		# The front rubber grip is at y=.7175,z=-.30 inside Coachwork.
 		# Its actual imported stance transform supplies the pedal's X scale.
-		var support := kart.to_local(coachwork.to_global(Vector3(side * 0.18, 0.7175, -0.30)))
+		var support := kart.to_local(coachwork.to_global(Vector3(side * PEDAL_SUPPORT.x, PEDAL_SUPPORT.y, PEDAL_SUPPORT.z)))
 		support_points.append(support)
 		foot_targets.append(support + Vector3.UP * SOLE_CLEARANCE - contact)
 	_fit_sole_height()

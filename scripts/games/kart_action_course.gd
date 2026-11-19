@@ -6,6 +6,8 @@ extends RefCounted
 ## fahrphysikalisch berechneter Flugphase; die übrigen Strecken bleiben unverändert.
 
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const RAMP = preload("res://scripts/games/track_pieces/kart_ramp_piece.gd")
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
 const PAD_BOOST_SECONDS: float = 1.0
@@ -168,6 +170,7 @@ static func _blocked_ranges(world, length: float) -> Array:
 	var loop: Dictionary = world.loop_layout
 	if not loop.is_empty():
 		blocked.append(Vector2(float(loop.start) - CLEARANCE, float(loop.start) + 70.0))
+	blocked.append_array(PASSAGES.blocked_ranges(world))
 	return blocked
 
 
@@ -330,16 +333,11 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 	if bool(kicker.get("precision_jump", false)):
 		STUNT.build_precision_ramp(world, kicker)
 		return
-	var ramp_length: float = float(kicker.length)
-	var steps: int = ceili(ramp_length)
-	for step in range(steps):
-		var along: float = float(kicker.start) + (float(step) + 0.5) * ramp_length / float(steps)
-		var basis: Basis = world.frame(along)
-		var rise: float = (float(step) + 0.5) / float(steps) * float(kicker.height)
-		var slab: Basis = basis.rotated(basis.x, float(kicker.angle))
-		var at: Vector3 = world.position_at(along) + basis.y * (rise * 0.5)
-		var color: Color = Color("f7c84a") if step % 2 == 0 else Color("23324a")
-		world._prop("box", at, Vector3(9.2, maxf(0.08, rise), ramp_length / float(steps) + 0.05), color, slab)
+	# One smooth swept wedge (was a stack of 1 m boxes with visible steps).
+	RAMP.build(
+		world, float(kicker.start), float(kicker.length), float(kicker.height), 4.6,
+		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a")}
+	)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
 	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(9.4, 0.08, 0.3), accent, lip_basis, true)

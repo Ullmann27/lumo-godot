@@ -99,16 +99,30 @@ func _host_visible_in_region(menu) -> void:
 		"original standing body, ears and hands fit clear stage (%d outside)" % outside
 	)
 	var wheel_points: Array[Vector3] = menu.service_station.workbench_points()
-	var wheel_outside := 0
-	for point in wheel_points:
-		if (
-			menu.preview_camera.is_position_behind(point)
-			or not safe.has_point(menu.preview_camera.unproject_position(point))
-		):
-			wheel_outside += 1
+	# Auftrag 18.11.: das gewählte Kart ist der Star der Bühne (Werkbank nur Hintergrund).
+	var kart_outside := 0
+	var kart_box := Rect2()
+	var kart_points := 0
+	for mesh in menu.preview_kart.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == menu.preview_kart.far_mesh:
+			continue
+		var bounds: AABB = mesh.get_aabb()
+		for corner in range(8):
+			var point: Vector3 = mesh.to_global(bounds.get_endpoint(corner))
+			var screen: Vector2 = menu.preview_camera.unproject_position(point)
+			if menu.preview_camera.is_position_behind(point) or not safe.has_point(screen):
+				kart_outside += 1
+			kart_box = Rect2(screen, Vector2.ZERO) if kart_points == 0 else kart_box.expand(screen)
+			kart_points += 1
 	_check(
-		wheel_points.size() == 8 and wheel_outside == 0,
-		"real balancing wheel fits the unoccluded live stage"
+		# „Groß“ misst sich an der knappen Seite der Bühne: im flachen Handy-Querformat ist
+		# die Bühne nur ~90 dp hoch, dort füllt das Kart die Höhe statt 38 % der Breite.
+		kart_points > 0 and kart_outside == 0
+		and (kart_box.size.x >= safe.size.x * 0.38 or kart_box.size.y >= safe.size.y * 0.6),
+		(
+			"selected kart is large and complete in the clear stage (%d outside, %.0f%% wide; kart %s in stage %s, window %s)"
+			% [kart_outside, 100.0 * kart_box.size.x / maxf(safe.size.x, 1.0), kart_box, safe, root.size]
+		)
 	)
 	var skeleton: Skeleton3D = menu.service_station.host.skeleton
 	var head_index := skeleton.find_bone("Head")
@@ -291,7 +305,8 @@ func _run() -> void:
 		)
 		await _tap(menu.step_buttons[3])
 		_check(
-			menu.choices.get_child_count() == 12, "all twelve production tracks remain selectable"
+			menu.choices.get_child_count() == preload("res://scripts/games/kart_catalog.gd").TRACKS.size(),
+			"all production tracks of the catalogue remain selectable"
 		)
 		var first_world = menu.choices.get_child(0)
 		_check(

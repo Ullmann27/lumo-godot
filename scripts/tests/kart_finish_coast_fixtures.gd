@@ -16,7 +16,7 @@ func _show_result() -> void:
 	result_seen = true
 
 
-func _sound_effect(_kind: String) -> void:
+func _sound_effect(_kind: String, _pitch: float = 1.0) -> void:
 	pass
 
 

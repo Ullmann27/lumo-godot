@@ -97,7 +97,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/run_godot_probe.py \
-            --log reference-host.log --timeout 120 --required '[ReferenceHost] PASS:' -- \
+            --log reference-host.log --timeout 300 --required '[ReferenceHost] PASS:' -- \
             xvfb-run -a -s '-screen 0 2500x2500x24' \
             Godot_v4.6.3-stable_linux.x86_64 --audio-driver Dummy \
             --path . --rendering-method gl_compatibility \

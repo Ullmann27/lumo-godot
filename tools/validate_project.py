@@ -85,6 +85,7 @@ def main() -> int:
         "scripts/systems/event_bus.gd",
         "scripts/systems/settings_store.gd",
         "scripts/systems/audio_manager.gd",
+        "scripts/systems/game_soundscape.gd",
         "scripts/ui/mobile_safe_area.gd",
     ]:
         check_file(REPO / s, "FAIL", "script")
@@ -97,7 +98,7 @@ def main() -> int:
         autoload_block = m.group(1)
     for autoload in ["EventBus", "PerformanceManager", "SceneRouter",
                      "MobileRuntime", "AssetLoader",
-                     "SettingsStore", "AudioManager"]:
+                     "SettingsStore", "AudioManager", "GameSoundscape"]:
         if re.search(rf"^\s*{autoload}\s*=", autoload_block, re.MULTILINE):
             emit("PASS", "autoload", autoload)
         else:

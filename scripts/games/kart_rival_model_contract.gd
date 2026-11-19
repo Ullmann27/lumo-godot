@@ -7,8 +7,22 @@ const MAX_SURFACES := 16
 const CLIPS := ["kart_seated", "kart_steer_left", "kart_steer_right", "kart_hit", "kart_celebrate"]
 
 
+## Rival models live with the other production kart assets; the former
+## characters folder stays accepted. The stale single prefix rejected every
+## shipped rival, so races silently fell back to the stand-in figures.
+const MODEL_ROOTS: Array[String] = [
+	"res://assets/kart/production/drivers/",
+	"res://assets/characters/rivals/",
+]
+
+
 static func model_path_allowed(path: String) -> bool:
-	return path.begins_with("res://assets/characters/rivals/") and path.ends_with(".glb") and not ".." in path
+	if not path.ends_with(".glb") or ".." in path:
+		return false
+	for root in MODEL_ROOTS:
+		if path.begins_with(root):
+			return true
+	return false
 
 
 static func _belongs_to(node: Node, model: Node) -> bool:

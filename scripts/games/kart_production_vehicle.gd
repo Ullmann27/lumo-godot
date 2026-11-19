@@ -3,9 +3,20 @@ extends Node3D
 ## changes at LOD boundaries; wheel/driver anchors never move or get replaced.
 
 const VARIANTS: Array[String] = ["comet", "glider", "turbo"]
+## Every kart of the fleet drives one of the three authored bodies, so the
+## driver always sits in a real cockpit. Paint, trim, accent and neon come
+## from the kart's own look.
+const BODY_OF: Dictionary = {
+	"comet": "comet", "boru_rally": "comet", "nala_comet": "comet", "zuri_volt": "comet",
+	"terra": "comet", "koloss": "comet",
+	"glider": "glider", "gecko_velo": "glider", "noa_tide": "glider", "iva_aurora": "glider",
+	"turbo": "turbo", "blitz": "turbo", "phantom": "turbo", "stella": "turbo",
+}
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
 const LOD_HYSTERESIS := 2.0
+## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
+const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
 static var _scenes: Dictionary = {}
 
 var variant := ""
@@ -27,10 +38,39 @@ var _braking := -1.0
 var _near_distance := 16.0
 var _far_distance := 36.0
 var _preview_detail := false
+var design := ""
+var _finish := "metallic"
+var _profile := "high"
+## Eigene Lack-Kopien dieses Karts (je Karosserie-Teil), damit Flakes nach Profil schalten.
+var _paints: Array[StandardMaterial3D] = []
+## Nummern und Aufkleber: nur in der nahen LOD sichtbar.
+var _dressing: Array[Node3D] = []
+## Schaustück-Teile (Glas, Anlauffarben, Staubfilm) aus aurora_<v>_showcase.glb: nur in
+## Garage, Werkstatt und auf dem Podest, nie im Rennen. Wird erst bei Bedarf geladen.
+var _showcase_meshes: Array[MeshInstance3D] = []
+var _showcase_loaded := false
+const DUST_PATH := "res://assets/kart/production/details/kart_dust_film.png"
+## Austauschbare Anbauteile (Radaufsätze, Auspuffblenden), siehe kart_tuning.gd und
+## tools/lumo_kart_art/karts/build_parts.py. Wurzel jedes Teils = sein Montagepunkt.
+const PARTS_PATH := "res://assets/kart/production/parts/kart_parts.glb"
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
+## Montierte Teile je Steckplatz ("wheel_cover"/"exhaust" -> id); Tests lesen das.
+var mounted_parts: Dictionary = {}
+var _part_nodes: Array[Node3D] = []
+
+
+## The sculpted in-code karts remain the fallback for a body that cannot be
+## loaded. Tests set this to keep that fallback path exercised.
+static var fallback_only: bool = false
 
 
 static func supports(id: String) -> bool:
-	return id in VARIANTS
+	return BODY_OF.has(id) and not fallback_only
+
+
+## Authored body ("comet", "glider" or "turbo") of a fleet kart.
+static func body_of(id: String) -> String:
+	return str(BODY_OF.get(id, ""))
 
 
 static func _scene(path: String) -> PackedScene:
@@ -46,12 +86,14 @@ static func _scene(path: String) -> PackedScene:
 func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	if not supports(id) or asset_root != null:
 		return false
-	variant = id
+	variant = body_of(id)
+	design = id
+	_finish = FINISH.finish_of(id)
 	name = "ProductionKart"
 	set_process(false)
 	for level in range(3):
 		var suffix := "" if level == 0 else "_lod%d" % level
-		var path := MODEL_DIRECTORY + "aurora_" + id + suffix + ".glb"
+		var path := MODEL_DIRECTORY + "aurora_" + variant + suffix + ".glb"
 		var packed := _scene(path)
 		if packed == null:
 			return false
@@ -109,8 +151,12 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 			return false
 		wheel_rest_grips.append(grip.position)
 		boost_positions.append(boost.position)
+	var dressed_look: Dictionary = stock.duplicate()
+	dressed_look.merge(look, true)
+	_dressing = FINISH.dress(asset_root, design, dressed_look)
 	set_lod(0)
 	set_braking(0.0)
+	_refresh_finish()
 	return true
 
 
@@ -133,9 +179,14 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 			mesh.set_surface_override_material(surface, _materials[key])
 			continue
 		var finish: StandardMaterial3D
-		if material_name.ends_with("_paint") and custom_paint:
+		if material_name.ends_with("_paint"):
+			# Jede Lackschicht ist eine eigene Kopie: Lackart je Design, ohne Stock-Material
+			# anderer Karts zu verändern.
 			finish = original.duplicate() as StandardMaterial3D
-			finish.albedo_color = look.get("paint", original.albedo_color)
+			# Serienlack kommt aus der Flotte (Comet: kräftiges Kometenblau statt Nachtblau,
+			# damit Lack und Glanz im Schauraum und auf der Strecke lesbar sind).
+			finish.albedo_color = look.get("paint", original.albedo_color) if custom_paint else stock.get("paint", original.albedo_color)
+			_paints.append(finish)
 		elif material_name == "CeramicPearl" and custom_paint:
 			finish = original.duplicate() as StandardMaterial3D
 			finish.albedo_color = look.get("trim", original.albedo_color)
@@ -187,6 +238,8 @@ func set_braking(amount: float) -> void:
 
 
 func set_graphics_quality(profile: String) -> void:
+	_profile = profile
+	_refresh_finish()
 	match profile:
 		"light", "low":
 			_near_distance = 7.0
@@ -201,8 +254,69 @@ func set_graphics_quality(profile: String) -> void:
 
 func set_preview_detail(enabled: bool) -> void:
 	_preview_detail = enabled
+	_refresh_finish()
+	if enabled and not _showcase_loaded:
+		_load_showcase()
 	if enabled:
 		set_lod(0)
+	_sync_showcase()
+
+
+func _load_showcase() -> void:
+	_showcase_loaded = true
+	if asset_root == null:
+		return
+	var path := MODEL_DIRECTORY + "aurora_" + variant + "_showcase.glb"
+	if not ResourceLoader.exists(path):
+		return
+	var packed := _scene(path)
+	if packed == null:
+		return
+	var source := packed.instantiate() as Node3D
+	for player in source.find_children("*", "AnimationPlayer", true, false):
+		player.free()
+	for item in source.find_children("*", "MeshInstance3D", true, false):
+		var mesh := item as MeshInstance3D
+		var target := asset_root.get_node_or_null(source.get_path_to(mesh.get_parent()))
+		if not target is Node3D:
+			continue
+		mesh.owner = null
+		mesh.get_parent().remove_child(mesh)
+		mesh.name = str(mesh.name) + "_Showcase"
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		target.add_child(mesh)
+		for surface in range(mesh.mesh.get_surface_count()):
+			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+			if original != null and original.resource_name == "RoadDustFilm":
+				var dust := original.duplicate() as StandardMaterial3D
+				dust.albedo_color = Color(1, 1, 1, 1)
+				dust.albedo_texture = load(DUST_PATH)
+				dust.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				dust.roughness = 0.95
+				dust.metallic = 0.0
+				mesh.set_surface_override_material(surface, dust)
+		_showcase_meshes.append(mesh)
+	source.free()
+
+
+func _sync_showcase() -> void:
+	for mesh in _showcase_meshes:
+		mesh.visible = _preview_detail and lod_level == 0
+
+
+func showcase_mesh_count() -> int:
+	return _showcase_meshes.size()
+
+
+## Klarlack-Flakes (Detail-Normal-Map) nur in HIGH oder als Schaustück in Garage/Werkstatt.
+func _refresh_finish() -> void:
+	var flakes: bool = _preview_detail or _profile == "high"
+	for paint in _paints:
+		FINISH.apply_paint(paint, _finish, flakes)
+
+
+func dressing_nodes() -> Array[Node3D]:
+	return _dressing
 
 
 func update_distance(distance_squared: float) -> void:
@@ -228,6 +342,9 @@ func set_lod(level: int) -> void:
 	for index in range(_lod_meshes.size()):
 		for mesh in _lod_meshes[index]:
 			mesh.visible = index == lod_level
+	for node in _dressing:
+		node.visible = lod_level == 0
+	_sync_showcase()
 
 
 func visible_surface_count() -> int:
@@ -235,3 +352,74 @@ func visible_surface_count() -> int:
 	for mesh in _lod_meshes[lod_level]:
 		count += mesh.mesh.get_surface_count()
 	return count
+
+
+## Anbauteile nach dem Look setzen (Serie = nichts angebaut). Mehrfach aufrufbar: Vorschau
+## in der Garage wechselt sofort, ohne das Kart neu zu bauen.
+func apply_parts(look: Dictionary) -> void:
+	for node in _part_nodes:
+		if is_instance_valid(node):
+			_dressing.erase(node)
+			node.get_parent().remove_child(node)
+			node.free()
+	_part_nodes.clear()
+	mounted_parts = {}
+	if asset_root == null:
+		return
+	var packed: PackedScene = _scene(PARTS_PATH) if ResourceLoader.exists(PARTS_PATH) else null
+	var paint: Color = _paints[0].albedo_color if not _paints.is_empty() else Color("e8eef6")
+	for slot in TUNING.PART_SLOTS:
+		var entry: Dictionary = TUNING.option(slot, str(look.get(slot, "serie")))
+		mounted_parts[slot] = str(entry.get("id", "serie"))
+		var node_name: String = str(entry.get("node", ""))
+		if node_name.is_empty() or packed == null:
+			continue
+		if slot == "wheel_cover":
+			for rotor in wheel_rotors:
+				var cover := _part_instance(packed, node_name, paint)
+				if cover == null:
+					continue
+				rotor.add_child(cover)
+				# Aufsätze schauen nach +X (rechte Seite); links um die Hochachse gedreht.
+				if rotor.get_parent().position.x < 0.0:
+					cover.basis = Basis(Vector3.UP, PI)
+				_part_nodes.append(cover)
+		else:
+			for side in ["L", "R"]:
+				var marker := asset_root.find_child("Boost_" + side, true, false) as Node3D
+				var tip := _part_instance(packed, node_name, paint)
+				if marker == null or tip == null:
+					if tip != null:
+						tip.free()
+					continue
+				marker.add_child(tip)
+				# Etwas größer als modelliert: im Rennen sieht man das Heck nur klein von hinten.
+				tip.scale = Vector3.ONE * 1.5
+				_part_nodes.append(tip)
+	for node in _part_nodes:
+		node.visible = lod_level == 0
+		_dressing.append(node)
+
+
+func _part_instance(packed: PackedScene, node_name: String, paint: Color) -> Node3D:
+	var source := packed.instantiate()
+	var found := source.find_child(node_name, true, false) as Node3D
+	if found == null:
+		source.free()
+		return null
+	found.owner = null
+	for child in found.find_children("*", "", true, false):
+		child.owner = null
+	found.get_parent().remove_child(found)
+	source.free()
+	found.transform = Transform3D.IDENTITY
+	found.name = "Part_" + node_name
+	for mesh in found.find_children("*", "MeshInstance3D", true, false):
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		for surface in range(mesh.mesh.get_surface_count()):
+			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+			if original != null and original.resource_name == "PartPaint":
+				var tinted := original.duplicate() as StandardMaterial3D
+				tinted.albedo_color = paint
+				mesh.set_surface_override_material(surface, tinted)
+	return found

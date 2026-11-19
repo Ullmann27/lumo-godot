@@ -35,11 +35,11 @@ def write_fixture(root: Path) -> None:
         path.write_bytes(pixels)
         if relative in verifier.CARDS_PNGS:
             layout = {
-                'schema': 1, 'layout_sequence': 1, 'pending': 0,
+                'schema': 2, 'layout_sequence': 1, 'pending': 0,
                 'settled': True, 'ui_visible': True, 'observation_source': 'fixture',
                 'window_px': list(dimensions), 'paused': path.name.endswith('-paused.png'),
                 'hand': [{'id': 'fixture-hand', 'quad': [[20, 20], [80, 20], [80, 100], [20, 100]]}],
-                'discard': {'id': 'fixture-discard', 'quad': [[120, 20], [180, 20], [180, 100], [120, 100]]},
+                'table': {'id': 'fixture-table', 'quad': [[120, 20], [180, 20], [180, 100], [120, 100]]},
             }
             path.with_suffix('.layout.json').write_text(json.dumps(layout))
             cards_images.append({'path': str(path), 'size': list(dimensions)})
@@ -109,7 +109,7 @@ class SafeAreaRasterTests(unittest.TestCase):
 
     def test_missing_unsettled_foreign_or_mismatched_cards_layout_rejects(self):
         for mutation in ('missing', 'schema-bool', 'sequence-float', 'pending', 'unsettled', 'hidden',
-                         'wrong-source', 'viewport', 'phase', 'hand', 'discard', 'empty-id', 'nonfinite'):
+                         'wrong-source', 'viewport', 'phase', 'hand', 'table', 'empty-id', 'nonfinite'):
             root = self.fixture()
             path = (root / next(iter(verifier.CARDS_PNGS))).with_suffix('.layout.json')
             layout = json.loads(path.read_text())
@@ -121,7 +121,7 @@ class SafeAreaRasterTests(unittest.TestCase):
                     'unsettled': ('settled', False), 'hidden': ('ui_visible', False),
                     'wrong-source': ('observation_source', 'android_window_insets'),
                     'viewport': ('window_px', [2400, 1080]), 'phase': ('paused', True),
-                    'hand': ('hand', []), 'discard': ('discard', {}),
+                    'hand': ('hand', []), 'table': ('table', {}),
                     'empty-id': ('hand', [{'id': '', 'quad': [[20, 20], [80, 20], [80, 100], [20, 100]]}]),
                     'nonfinite': ('hand', [{'quad': [[float('nan'), 1]] * 4}]),
                 }[mutation]

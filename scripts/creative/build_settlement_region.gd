@@ -1,23 +1,48 @@
 extends Node3D
-## Bounded, spatially batched scenery for two 33 × 33 settlement districts.
-## Plot identity is stable: the original first 25 cells keep their exact coordinates.
+## Die große Dorfkarte: Tal mit Hügeln, Fluss, Seen, Küste und Bergen aus der
+## Höhenkarte (build_village_terrain.gd). Die Stadt des Kindes wächst in Ringen
+## bis 65 × 65 Bauplätze (4.225); der alte 33 × 33 Ortsteil behält alle
+## Grundstücks-IDs und Lagen, die ersten 25 Felder liegen exakt wie früher.
+## Vegetation, Felsen und Landmarken sind gebündelt (MultiMesh je Gebiet).
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const DAY = preload("res://scripts/creative/creative_nextgen_environment.gd")
+const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
+const LANDSCAPE = preload("res://scripts/creative/build_village_landscape.gd")
+const ART = preload("res://scripts/creative/build_village_art.gd")
 const SPACING := 5.3
 const TOWN_CENTER := 100.0
-const MAX_PLOTS := 1089
+const MAX_PLOTS := 4225
+## Größter Ring (65 × 65 = Ring 32). Der klassische Wettbau-Ortsteil am
+## Ostufer bleibt 33 × 33 (Ring 16).
+const MAX_RING := 32
+const RIVAL_RING := 16
 const HALF_EXTENT := 94.0
+## Halbe Kantenlänge der ganzen Stadt des Kindes (Ring 32 + Rand).
+const PLAYER_HALF_EXTENT := 176.0
 const CHUNK_SIZE := 47.0
-const DISTRICT_COLORS := [Color("9dbb75"), Color("abc080"), Color("a5ba75"), Color("b4c887")]
+const WILD_CHUNK := 160.0
+const BRIDGES := [-58.3, 0.0, 58.3]
+## Pro Qualitätsstufe: Vegetationsdichte, Sichtweiten, Wiesendetails.
+const BUDGETS := {
+	"low": {"trees": 0.3, "near": 95.0, "meadow": 0.0, "rocks": 0.5, "shadows_far": false},
+	"medium": {"trees": 0.62, "near": 135.0, "meadow": 0.45, "rocks": 0.8, "shadows_far": false},
+	"high": {"trees": 1.0, "near": 185.0, "meadow": 1.0, "rocks": 1.0, "shadows_far": true},
+}
 var _kit := KIT.new()
 var _chunks: Array[Node3D] = []
+var _wild: Array[Node3D] = []
 var _built := false
 var _last_focus := Vector3(INF, INF, INF)
-# Unused future building plots remain available in the game model but are no
-# longer pre-painted as an endless maze of roads from the first village day.
 var _road_layers: Dictionary = {}
 var _garden_groups: Dictionary = {}
 var _unlocked_counts: Dictionary = {}
+var _built_plots: Dictionary = {false: [], true: []}
+var _far_bank_open := false
+var landscape: Node3D
+var tier := "medium"
+var budget: Dictionary = BUDGETS.medium
+var animated: Array[Node3D] = []
+var bridge_decks: Array[Vector3] = []
 
 
 static func plot_coordinate(index: int) -> Vector2i:
@@ -41,13 +66,35 @@ static func plot_coordinate(index: int) -> Vector2i:
 	return Vector2i(offset - ring + 1, -ring)
 
 
+## Inverse of plot_coordinate for taps on the terrain itself.
+static func plot_index_at(coordinate: Vector2i) -> int:
+	var ring := maxi(absi(coordinate.x), absi(coordinate.y))
+	if ring > MAX_RING:
+		return -1
+	if ring <= 1:
+		return (coordinate.y + 1) * 3 + coordinate.x + 1
+	var base := (ring * 2 - 1) * (ring * 2 - 1)
+	if coordinate.x == ring and coordinate.y > -ring:
+		return base + coordinate.y + ring - 1
+	base += ring * 2
+	if coordinate.y == ring and coordinate.x < ring and coordinate.x > -ring:
+		return base + coordinate.x + ring - 1
+	base += ring * 2 - 1
+	if coordinate.x == -ring:
+		return base + coordinate.y + ring
+	base += ring * 2 + 1
+	return base + coordinate.x + ring - 1
+
+
 static func plot_position(index: int, opponent := false) -> Vector3:
 	var coordinate := plot_coordinate(index)
-	return Vector3(
-		(TOWN_CENTER if opponent else -TOWN_CENTER) + coordinate.x * SPACING,
-		0.03,
-		coordinate.y * SPACING
-	)
+	var x := (TOWN_CENTER if opponent else -TOWN_CENTER) + coordinate.x * SPACING
+	var z := coordinate.y * SPACING
+	return Vector3(x, TERRAIN.height(x, z) + 0.03, z)
+
+
+static func ground(x: float, z: float) -> float:
+	return TERRAIN.height(x, z)
 
 
 static func extent_for_plots(count: int) -> float:
@@ -64,22 +111,33 @@ func build_landscape(mode := "settlement") -> void:
 		return
 	_built = true
 	name = "LivingVillageRegion"
+	tier = LumoQuality.tier()
+	budget = BUDGETS.get(tier, BUDGETS.medium)
+	landscape = LANDSCAPE.new()
+	add_child(landscape)
+	landscape.build(tier)
 	for side in [false, true]:
 		_build_bank(side)
 	_build_river()
-	for z in [-58.3, 0.0, 58.3]:
+	for z in BRIDGES:
 		_build_bridge(z)
 	_build_waterfront(false)
 	_build_waterfront(true)
-	_title("LUMOS WIESENSTADT", Vector3(-TOWN_CENTER, 3.3, -91.0), Color("fff3d2"))
+	_build_wilderness()
+	_build_landmarks()
+	_title("LUMOS WIESENSTADT", Vector3(-TOWN_CENTER, 0, -91.0), Color("fff3d2"))
 	_title(
 		"MIRAS NACHBARDORF" if mode == "rival" else "DAS NACHBARDORF",
-		Vector3(TOWN_CENTER, 3.3, -91.0),
+		Vector3(TOWN_CENTER, 0, -91.0),
 		Color("ffd5af")
 	)
 	set_meta("max_plots_per_town", MAX_PLOTS)
 	set_meta("land_dimensions", Vector2(HALF_EXTENT * 2.0, HALF_EXTENT * 2.0))
+	set_meta("map_dimensions", TERRAIN.size())
 	set_meta("scenery_chunks", _chunks.size())
+	set_meta("wilderness_chunks", _wild.size())
+	set_meta("blocked_plots_player", TERRAIN.blocked_count(false))
+	set_meta("blocked_plots_neighbor", TERRAIN.blocked_count(true))
 	update_focus(Vector3(-TOWN_CENTER, 0, 0))
 
 
@@ -88,59 +146,61 @@ func _build_bank(opponent: bool) -> void:
 	var bank := StaticBody3D.new()
 	bank.name = "NeighborLand" if opponent else "PlayerLand"
 	add_child(bank)
-	var side := _kit.box(
-		bank,
-		Vector3(center, -1.4, 0),
-		Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0),
-		Color("c3ad80")
-	)
-	side.material_override = DAY.bank_material()
-	_kit.collision(
-		bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0)
-	)
+	if not opponent and TERRAIN.available():
+		bank.add_child(landscape.collision_shape())
+	elif not TERRAIN.available():
+		var side := _kit.box(
+			bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0), Color("c3ad80")
+		)
+		side.material_override = DAY.bank_material()
+		_kit.collision(bank, Vector3(center, -1.4, 0), Vector3(HALF_EXTENT * 2.0, 2.8, HALF_EXTENT * 2.0))
+	# Kept as an (empty) presentation layer: streets are painted into the
+	# terrain now, so they follow every hill instead of floating above it.
 	var road_layer := MultiMeshInstance3D.new()
 	road_layer.name = "VillageLanesNeighbor" if opponent else "VillageLanesPlayer"
-	road_layer.material_override = _kit.material(Color("a6bc9e"))
 	add_child(road_layer)
 	_road_layers[opponent] = road_layer
 	var garden := Node3D.new()
 	garden.name = "WildflowerBeltNeighbor" if opponent else "WildflowerBeltPlayer"
 	add_child(garden)
 	_garden_groups[opponent] = garden
-	for z_index in range(4):
-		for x_index in range(4):
+	var hill_lists := {"rock_a": [], "rock_b": [], "rock_c": [], "tree_fir": [], "bush": []}
+	var count := ceili(_half(opponent) * 2.0 / CHUNK_SIZE)
+	var start := -float(count) * CHUNK_SIZE * 0.5
+	for z_index in range(count):
+		for x_index in range(count):
 			var chunk := Node3D.new()
-			chunk.name = (
-				"District_%s_%d_%d" % ["neighbor" if opponent else "home", x_index, z_index]
-			)
+			chunk.name = "District_%s_%d_%d" % ["neighbor" if opponent else "home", x_index, z_index]
 			chunk.position = Vector3(
-				center - HALF_EXTENT + CHUNK_SIZE * (x_index + 0.5),
-				0,
-				-HALF_EXTENT + CHUNK_SIZE * (z_index + 0.5)
+				center + start + CHUNK_SIZE * (x_index + 0.5), 0, start + CHUNK_SIZE * (z_index + 0.5)
 			)
 			add_child(chunk)
 			_chunks.append(chunk)
-			var grass := _kit.box(
-				self,
-				chunk.position + Vector3(0, 0.006, 0),
-				Vector3(CHUNK_SIZE, 0.012, CHUNK_SIZE),
-				DISTRICT_COLORS[(x_index + z_index) % 4]
-			)
-			var material := DAY.ground_material().duplicate() as StandardMaterial3D
-			material.albedo_color = DISTRICT_COLORS[(x_index + z_index) % 4]
-			grass.material_override = material
-			_decorate_chunk(chunk, x_index, z_index, opponent)
-	# The entrance plaza lies outside every buildable cell, including the final ring.
-	_kit.box(self, Vector3(center, 0.04, -90.3), Vector3(13.0, 0.05, 4.8), Color("dbcfad"))
-	for x in [-5.0, 5.0]:
-		_kit.cylinder(self, Vector3(center + x, 1.1, -90.3), 0.09, 2.2, Color("8c6140"))
-		_kit.sphere(self, Vector3(center + x, 2.3, -90.3), Vector3.ONE * 0.42, Color("ffd68a"))
+			_decorate_chunk(chunk, opponent, hill_lists)
+	# One batch per kind and town: rocky hills cost five draw calls in total.
+	var hills := Node3D.new()
+	hills.name = "DistrictHills" + ("Neighbor" if opponent else "Player")
+	add_child(hills)
+	for kind in hill_lists:
+		ART.batch(hills, "Hill_" + kind, kind, hill_lists[kind], 260.0, kind != "bush")
 	set_unlocked_plots(9, opponent)
 
 
+## Halbe Kantenlänge des ganzen Ortsteils einer Seite (größter Ring + Rand).
+static func _half(opponent: bool) -> float:
+	return HALF_EXTENT if opponent else PLAYER_HALF_EXTENT
 
-# Only the actually unlocked district is drawn. This changes no plot IDs,
-# ownership, building capacity, saved data or unlock thresholds.
+
+## Erst die Lieferbrücke macht das andere Flussufer zu Bauland.
+func set_far_bank_open(open: bool) -> void:
+	if open == _far_bank_open:
+		return
+	_far_bank_open = open
+	_paint(false)
+
+
+## Only the actually unlocked district is drawn. This changes no plot IDs,
+## ownership, building capacity, saved data or unlock thresholds.
 func set_unlocked_plots(count: int, opponent := false) -> void:
 	if not _road_layers.has(opponent):
 		return
@@ -148,183 +208,292 @@ func set_unlocked_plots(count: int, opponent := false) -> void:
 	if int(_unlocked_counts.get(opponent, -1)) == bounded:
 		return
 	_unlocked_counts[opponent] = bounded
-	var ring := 1
-	for index in range(bounded):
-		var point := plot_coordinate(index)
-		ring = maxi(ring, maxi(absi(point.x), absi(point.y)))
-	var width := float(ring * 2 + 1) * SPACING
-	var center := TOWN_CENTER if opponent else -TOWN_CENTER
-	var lines: Array[Transform3D] = []
-	for grid in range(-ring - 1, ring + 1):
-		var offset := (float(grid) + 0.5) * SPACING
-		lines.append(Transform3D(
-			Basis.from_scale(Vector3(0.38, 0.012, width)),
-			Vector3(center + offset, 0.024, 0)))
-		lines.append(Transform3D(
-			Basis.from_scale(Vector3(width, 0.012, 0.38)),
-			Vector3(center, 0.025, offset)))
-	var road_mesh := MultiMesh.new()
-	road_mesh.transform_format = MultiMesh.TRANSFORM_3D
-	road_mesh.mesh = _box_mesh()
-	road_mesh.instance_count = lines.size()
-	for index in range(lines.size()):
-		road_mesh.set_instance_transform(index, lines[index])
-	var road: MultiMeshInstance3D = _road_layers[opponent]
-	road.multimesh = road_mesh
-	set_meta("road_lines_neighbor" if opponent else "road_lines_player", lines.size())
+	var ring := _ring(bounded)
+	set_meta("road_lines_neighbor" if opponent else "road_lines_player", (ring + 1) * 4)
+	_paint(opponent)
 	_replant_village_edge(bounded, opponent)
 
 
-# Batched scenery around the unlocked town. Trees and wildflowers move to
-# the NEW meadow border when a region is expanded; no old plant is left on
-# a building plot and no simulated residents or collision objects are made.
+func _ring(count: int) -> int:
+	var ring := 1
+	for index in range(count):
+		var point := plot_coordinate(index)
+		ring = maxi(ring, maxi(absi(point.x), absi(point.y)))
+	return ring
+
+
+## Which plots carry a building: dirt yards and lanes are painted around them.
+func set_built_plots(plots: Array, opponent := false) -> void:
+	var sorted := plots.duplicate()
+	sorted.sort()
+	if sorted == _built_plots[opponent]:
+		return
+	_built_plots[opponent] = sorted
+	_paint(opponent)
+
+
+func _paint(opponent: bool) -> void:
+	if landscape == null or not _unlocked_counts.has(opponent):
+		return
+	var count: int = _unlocked_counts[opponent]
+	var unlocked: Array = []
+	var built: Dictionary = {}
+	for index in range(count):
+		if TERRAIN.plot_blocked(index, opponent):
+			continue
+		if not opponent and not _far_bank_open and TERRAIN.plot_far_bank(index):
+			continue
+		var at := plot_position(index, opponent)
+		unlocked.append(Vector2(at.x, at.z))
+	for index in _built_plots[opponent]:
+		var at := plot_position(int(index), opponent)
+		built[Vector2(at.x, at.z)] = true
+	landscape.paint_town(TOWN_CENTER if opponent else -TOWN_CENTER, unlocked, built, _ring(count))
+
+
+func _place(x: float, z: float, scale: float, yaw: float, sink := 0.05) -> Transform3D:
+	var basis := Basis(Vector3.UP, yaw).scaled(Vector3.ONE * scale)
+	return Transform3D(basis, Vector3(x, TERRAIN.height(x, z) - sink, z))
+
+
+## Batched scenery around the unlocked town. Trees and wildflowers move to
+## the NEW meadow border when a region is expanded; no plant is left on a
+## building plot and no simulated residents or collision objects are made.
 func _replant_village_edge(count: int, opponent: bool) -> void:
 	var group: Node3D = _garden_groups[opponent]
 	for node in group.get_children():
 		group.remove_child(node)
 		node.queue_free()
-	var distance := extent_for_plots(count) + 6.0
-	var trunks: Array[Transform3D] = []
-	var crowns: Array[Transform3D] = []
-	var flowers: Array[Transform3D] = []
+	var distance := extent_for_plots(count) + 5.0
 	var center := TOWN_CENTER if opponent else -TOWN_CENTER
-	for index in range(84):
+	var lists := {"tree_oak": [], "tree_birch": [], "bush": [], "flowers": [], "grass_tuft": [], "rock_c": []}
+	for index in range(110):
 		var angle := float(index) * 2.3999632 + (0.4 if opponent else 0.0)
-		var radius := distance + float(index % 5) * 2.0
-		var x := sin(angle) * radius
+		var radius := distance + float(index % 6) * 2.2
+		var x := center + sin(angle) * radius
 		var z := cos(angle) * radius
-		if maxf(absf(x), absf(z)) > HALF_EXTENT - 3.0:
+		if maxf(absf(x - center), absf(z)) > _half(opponent) - 3.0:
 			continue
-		var at := Vector3(center + x, 0.07, z)
-		if index % 4 == 0:
-			var height := 1.5 + float(index % 3) * 0.3
-			trunks.append(Transform3D(
-				Basis.from_scale(Vector3(0.25, height, 0.25)),
-				at + Vector3.UP * height * 0.5))
-			crowns.append(Transform3D(
-				Basis.from_scale(Vector3(1.5, 1.5, 1.5)),
-				at + Vector3.UP * (height + 0.25)))
-		else:
-			flowers.append(Transform3D(
-				Basis.from_scale(Vector3(0.5, 0.40, 0.5)),
-				at + Vector3.UP * 0.2))
-	_batch(group, "MeadowSaplingTrunks", _box_mesh(), trunks, Color("936b4a"), 100)
-	_batch(group, "MeadowSaplingCrowns", _sphere_mesh(), crowns, Color("549875"), 100)
-	_batch(group, "MeadowWildflowers", _sphere_mesh(), flowers, Color("f4bfda"), 100)
-	set_meta("garden_instances_neighbor" if opponent else "garden_instances_player",
-		trunks.size() + crowns.size() + flowers.size())
+		if TERRAIN.is_water(x, z) or absf(x - TERRAIN.river_center(z)) < 13.0:
+			continue
+		var kind := "flowers"
+		match index % 5:
+			0:
+				kind = "tree_oak" if index % 3 else "tree_birch"
+			1:
+				kind = "bush"
+			3:
+				kind = "grass_tuft" if index % 2 else "rock_c"
+		lists[kind].append(_place(x, z, 0.8 + float(index % 4) * 0.12, angle))
+	var total := 0
+	for kind in lists:
+		ART.batch(group, "Meadow_" + kind, kind, lists[kind], 0.0, kind.begins_with("tree"))
+		total += lists[kind].size()
+	set_meta("garden_instances_neighbor" if opponent else "garden_instances_player", total)
 
 
-func _decorate_chunk(chunk: Node3D, xi: int, zi: int, opponent: bool) -> void:
-	var trunks: Array[Transform3D] = []
-	var crowns: Array[Transform3D] = []
-	var flowers: Array[Transform3D] = []
-	var rocks: Array[Transform3D] = []
-	for i in range(12):
-		var local := Vector3(
-			-21.5 + fmod(float(i * 13 + xi * 7), 43.0),
-			0,
-			-21.5 + fmod(float(i * 19 + zi * 5), 43.0)
-		)
-		var world := chunk.position + local
-		var center := TOWN_CENTER if opponent else -TOWN_CENTER
-		var edge := maxf(absf(world.x - center), absf(world.z))
-		if edge < 88.7:
+## Rocky hills and the district's outer meadow: firs, rocks and bushes on the
+## cells that are NOT buildable, so the rule is visible in the world.
+func _decorate_chunk(chunk: Node3D, opponent: bool, lists: Dictionary) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash(chunk.name)
+	var half := CHUNK_SIZE * 0.5
+	var center := TOWN_CENTER if opponent else -TOWN_CENTER
+	for index in range(int(46 * float(budget.rocks))):
+		var x := chunk.position.x + rng.randf_range(-half, half)
+		var z := chunk.position.z + rng.randf_range(-half, half)
+		var coordinate := Vector2i(roundi((x - center) / SPACING), roundi(z / SPACING))
+		var plot := plot_index_at(coordinate)
+		var ring := RIVAL_RING if opponent else MAX_RING
+		var outside := maxf(absf(x - center), absf(z)) > (float(ring) + 0.5) * SPACING
+		if not outside and (plot < 0 or not TERRAIN.plot_blocked(plot, opponent)):
 			continue
-		var height := 2.6 + float(i % 3) * 0.6
-		trunks.append(
-			Transform3D(
-				Basis.from_scale(Vector3(0.32, height, 0.32)), local + Vector3.UP * (height * 0.5)
-			)
-		)
-		crowns.append(
-			Transform3D(
-				Basis.from_scale(Vector3(2.0, 2.3, 2.0)), local + Vector3.UP * (height + 0.3)
-			)
-		)
-		rocks.append(
-			Transform3D(Basis.from_scale(Vector3(0.75, 0.35, 0.6)), local + Vector3(1.2, 0.20, 0.5))
-		)
-		for petal in range(3):
-			flowers.append(
-				Transform3D(
-					Basis.from_scale(Vector3(0.18, 0.22, 0.18)),
-					local + Vector3(0.5 + petal * 0.27, 0.18, -1.1)
-				)
-			)
-	_batch(chunk, "OrchardTrunks", _box_mesh(), trunks, Color("966338"))
-	_batch(chunk, "OrchardCanopies", _sphere_mesh(), crowns, Color("5b974b"))
-	_batch(chunk, "MeadowFlowers", _sphere_mesh(), flowers, Color("f4b957"))
-	_batch(chunk, "RoundedRiverStones", _sphere_mesh(), rocks, Color("a8aaa1"))
+		if TERRAIN.is_water(x, z) or absf(x - TERRAIN.river_center(z)) < 9.0:
+			continue
+		var steep := TERRAIN.steepness(x, z)
+		var kind := "bush"
+		if steep > 0.12 or index % 3 == 0:
+			kind = ["rock_a", "rock_b", "rock_c"][index % 3]
+		elif index % 2 == 0:
+			kind = "tree_fir"
+		var scale := rng.randf_range(0.7, 1.4) if kind.begins_with("rock") else rng.randf_range(0.8, 1.2)
+		lists[kind].append(_place(x, z, scale, rng.randf() * TAU, 0.2 if kind.begins_with("rock") else 0.05))
+
+
+## Wälder, Felsen und Wiesen außerhalb der Ortsteile, in groben Gebieten
+## gebündelt: nahe Fassung mit Blattwerk, ferne Fassung als einfache Krone.
+func _build_wilderness() -> void:
+	if not TERRAIN.available():
+		return
+	var origin := TERRAIN.origin()
+	var extent := TERRAIN.size()
+	var spacing := 7.0 / sqrt(maxf(0.05, float(budget.trees)))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7171
+	var cells: Dictionary = {}
+	var z := origin.y + 4.0
+	while z < origin.y + extent.y - 4.0:
+		var x := origin.x + 4.0
+		while x < origin.x + extent.x - 4.0:
+			var px := x + rng.randf_range(-0.45, 0.45) * spacing
+			var pz := z + rng.randf_range(-0.45, 0.45) * spacing
+			x += spacing
+			# Kein Wald auf Bauland: weder in der Stadt des Kindes (bis Ring 32)
+			# noch im alten Ostufer-Ortsteil noch in den Nachbarstädten.
+			if absf(px + TOWN_CENTER) < PLAYER_HALF_EXTENT and absf(pz) < PLAYER_HALF_EXTENT:
+				continue
+			if absf(px - TOWN_CENTER) < 92.0 and absf(pz) < 92.0:
+				continue
+			if not TERRAIN.territory_at(px, pz).is_empty():
+				continue
+			var h := TERRAIN.height(px, pz)
+			if h < TERRAIN.WATER_LEVEL + 0.7 or absf(px - TERRAIN.river_center(pz)) < 12.0:
+				continue
+			var steep := TERRAIN.steepness(px, pz)
+			var forest := _forest_noise(px, pz)
+			var kind := ""
+			if steep > 0.42 or h > 40.0:
+				if rng.randf() < 0.18 * float(budget.rocks):
+					kind = "rock_b"
+			elif forest > 0.42 or (h > 9.0 and forest > 0.3):
+				kind = "tree_fir" if (h > 8.0 or rng.randf() < 0.35) else ("tree_oak" if rng.randf() < 0.6 else "tree_birch")
+			elif rng.randf() < 0.12:
+				kind = ["bush", "rock_b", "tree_oak"][rng.randi() % 3]
+			if kind.is_empty():
+				continue
+			var key := Vector2i(floori((px - origin.x) / WILD_CHUNK), floori((pz - origin.y) / WILD_CHUNK))
+			if not cells.has(key):
+				cells[key] = {}
+			if not cells[key].has(kind):
+				cells[key][kind] = []
+			var scale := rng.randf_range(0.8, 1.35)
+			cells[key][kind].append(_place(px, pz, scale, rng.randf() * TAU, 0.25 if kind.begins_with("rock") else 0.08))
+		z += spacing
+	var near: float = budget.near
+	var far_kind := {"tree_oak": "tree_low", "tree_birch": "tree_low", "tree_fir": "fir_low"}
+	var trees := 0
+	for key in cells:
+		var holder := Node3D.new()
+		holder.name = "Wild_%d_%d" % [key.x, key.y]
+		holder.position = Vector3.ZERO
+		add_child(holder)
+		_wild.append(holder)
+		var far_lists := {"tree_low": [], "fir_low": []}
+		for kind in cells[key]:
+			var transforms: Array = cells[key][kind]
+			if far_kind.has(kind):
+				trees += transforms.size()
+				ART.batch(holder, kind, kind, transforms, near, true)
+				far_lists[far_kind[kind]].append_array(transforms)
+			else:
+				ART.batch(holder, kind, kind, transforms, near * 1.6, kind != "bush")
+		# Broadleaf trees share one far crown: two far batches per area.
+		for far in far_lists:
+			ART.batch(holder, far, far, far_lists[far], 0.0, bool(budget.shadows_far), near - 12.0)
+	set_meta("wilderness_trees", trees)
+
+
+static func _forest_noise(x: float, z: float) -> float:
+	var value := sin(x * 0.031 + 1.7) * sin(z * 0.027 - 0.4) * 0.5 + 0.5
+	value = value * 0.6 + (sin(x * 0.083 + z * 0.061) * 0.5 + 0.5) * 0.4
+	return value
 
 
 func _build_river() -> void:
-	var water := _kit.box(self, Vector3(0, -0.32, 0), Vector3(11.9, 0.10, 230), Color("489bb1"))
-	var shader := ShaderMaterial.new()
-	shader.shader = preload("res://assets/shaders/kart_water.gdshader")
-	water.material_override = shader
-	for x in [-6.2, 6.2]:
-		var rocks: Array[Transform3D] = []
-		for i in range(45):
-			rocks.append(
-				Transform3D(
-					Basis.from_scale(Vector3(0.9, 0.65, 1.6)), Vector3(x, -0.18, -92.0 + i * 4.2)
-				)
-			)
-		_batch(self, "RiverbankStones", _sphere_mesh(), rocks, Color("b7b2a2"), 220)
-	var hill_shapes: Array[Transform3D] = []
-	for i in range(12):
-		hill_shapes.append(
-			Transform3D(
-				Basis.from_scale(Vector3(30 + (i % 3) * 9, 10 + (i % 4) * 4, 24)),
-				Vector3(-220 + i * 40, -7, -120 - (i % 2) * 10)
-			)
-		)
-	_batch(self, "DistantSoftHills", _sphere_mesh(), hill_shapes, Color("789d83"), 0)
+	if not TERRAIN.available():
+		var water := _kit.box(self, Vector3(0, -0.32, 0), Vector3(11.9, 0.10, 230), Color("489bb1"))
+		var shader := ShaderMaterial.new()
+		shader.shader = preload("res://assets/shaders/kart_water.gdshader")
+		water.material_override = shader
+		return
+	var stones: Array = []
+	var reeds: Array = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2210
+	var z := -150.0
+	while z < 115.0:
+		for side in [-1.0, 1.0]:
+			var x: float = TERRAIN.river_center(z) + side * rng.randf_range(6.2, 8.0)
+			if rng.randf() < 0.55:
+				stones.append(_place(x, z, rng.randf_range(0.35, 0.8), rng.randf() * TAU, 0.2))
+			elif rng.randf() < 0.8:
+				reeds.append(_place(x + side * 0.6, z, rng.randf_range(0.8, 1.2), rng.randf() * TAU, 0.0))
+		z += rng.randf_range(2.4, 4.2)
+	ART.batch(self, "RiverbankStones", "rock_c", stones, 240.0, false)
+	ART.batch(self, "RiverReeds", "reeds", reeds, 160.0, false)
 
 
 func _build_bridge(z: float) -> void:
 	var bridge := StaticBody3D.new()
 	bridge.name = "VillageRiverBridge_%d" % int(z)
 	add_child(bridge)
-	_kit.box(bridge, Vector3(0, 0.06, z), Vector3(13.5, 0.16, 2.3), Color("d8b785"))
-	_kit.collision(bridge, Vector3(0, -0.03, z), Vector3(13.5, 0.20, 2.3))
-	var planks: Array[Transform3D] = []
-	for i in range(19):
-		planks.append(
-			Transform3D(
-				Basis.from_scale(Vector3(0.045, 0.02, 2.16)), Vector3(-6.3 + i * 0.7, 0.15, z)
-			)
-		)
-	_batch(bridge, "BridgePlankSeams", _box_mesh(), planks, Color("a78353"))
+	var x := TERRAIN.river_center(z)
+	var deck := 0.06
+	if TERRAIN.available():
+		deck = maxf(TERRAIN.height(x - 11.0, z), TERRAIN.height(x + 11.0, z)) + 0.05
+	bridge.position = Vector3(x, deck, z)
+	bridge_decks.append(bridge.position)
+	if ART.exists("bridge"):
+		bridge.add_child(ART.instance("bridge"))
+	else:
+		_kit.box(bridge, Vector3(0, 0, 0), Vector3(13.5, 0.16, 2.3), Color("d8b785"))
+	_kit.collision(bridge, Vector3(0, -0.15, 0), Vector3(22.0, 0.3, 3.0))
 	for side in [-1.0, 1.0]:
-		_kit.box(
-			bridge, Vector3(0, 0.78, z + side * 1.12), Vector3(13.4, 0.12, 0.12), Color("a67d4a")
-		)
-		for x in [-6.3, -3.1, 0.0, 3.1, 6.3]:
-			_kit.box(
-				bridge, Vector3(x, 0.45, z + side * 1.12), Vector3(0.12, 0.9, 0.12), Color("a67d4a")
-			)
+		_kit.collision(bridge, Vector3(0, 0.5, side * 1.35), Vector3(22.0, 1.0, 0.3))
 
 
 func _build_waterfront(opponent: bool) -> void:
 	var direction := 1.0 if opponent else -1.0
-	var x := direction * 8.2
-	_kit.box(self, Vector3(x, 0.05, 9), Vector3(3.2, 0.12, 7), Color("c9aa7b"))
-	for i in range(3):
-		_kit.box(
-			self,
-			Vector3(x, 0.32 + float(i % 2) * 0.15, 7 + i * 1.4),
-			Vector3(0.80, 0.60, 0.80),
-			Color("bb8954")
-		)
-	_title("LIEFERSTEG", Vector3(x, 2.0, 9), Color("f9e6be"))
+	var z := 9.0
+	var x := TERRAIN.river_center(z) + direction * 6.4
+	var dock := ART.instance("dock") if ART.exists("dock") else Node3D.new()
+	dock.name = "Liefersteg_" + ("Neighbor" if opponent else "Player")
+	dock.position = Vector3(x, TERRAIN.WATER_LEVEL + 0.55, z)
+	add_child(dock)
+	var house := ART.instance("warehouse") if ART.exists("warehouse") else Node3D.new()
+	var hx := TERRAIN.river_center(18.0) + direction * 10.6
+	house.position = Vector3(hx, TERRAIN.height(hx, 18.0), 18.0)
+	house.rotation.y = -direction * PI * 0.5
+	add_child(house)
+	_title("LIEFERSTEG", Vector3(x, 0, z), Color("f9e6be"), 2.6)
 
 
-func _title(caption: String, at: Vector3, color: Color) -> void:
+## Bauten, die die Karte erzählen: Wassermühle am Fluss, Wachtürme auf den
+## Felshügeln, Werkstatt am Ortsrand. Keine Spielwirkung, keine Grundstücke.
+func _build_landmarks() -> void:
+	if not TERRAIN.available():
+		return
+	var mill_z := -30.0
+	var mill_x := TERRAIN.river_center(mill_z) - 10.6
+	_landmark("watermill", Vector3(mill_x, TERRAIN.height(mill_x - 1.0, mill_z), mill_z), 0.0)
+	for spot in [Vector2(-172.0, 50.0), Vector2(168.0, 62.0)]:
+		_landmark("watchtower", Vector3(spot.x, TERRAIN.height(spot.x, spot.y) - 0.4, spot.y), 0.6)
+	# Vor dem Westrand der ganz ausgebauten Stadt, nie auf einem Bauplatz.
+	var shop_x := -TOWN_CENTER - PLAYER_HALF_EXTENT - 8.0
+	_landmark("workshop", Vector3(shop_x, TERRAIN.height(shop_x, 6.0), 6.0), PI * 0.5)
+	for index in range(6):
+		var lz := -34.0 + index * 12.0
+		for side in [-1.0, 1.0]:
+			var lx: float = TERRAIN.river_center(lz) + side * 12.2
+			_landmark("lantern", Vector3(lx, TERRAIN.height(lx, lz), lz), 0.0)
+
+
+func _landmark(kind: String, at: Vector3, yaw: float) -> void:
+	if not ART.exists(kind):
+		return
+	var node := ART.instance(kind)
+	node.position = at
+	node.rotation.y = yaw
+	add_child(node)
+	for child in node.get_children():
+		if str(child.name).begins_with("Spin_"):
+			animated.append(child)
+
+
+func _title(caption: String, at: Vector3, color: Color, lift := 3.3) -> void:
 	var sign := Label3D.new()
 	sign.text = caption
-	sign.position = at
+	sign.position = Vector3(at.x, TERRAIN.height(at.x, at.z) + lift, at.z)
 	sign.font_size = 48
 	sign.pixel_size = 0.014
 	sign.modulate = color
@@ -341,9 +510,14 @@ func update_focus(at: Vector3) -> void:
 	_last_focus = at
 	for chunk in _chunks:
 		chunk.visible = (
-			Vector2(chunk.position.x - at.x, chunk.position.z - at.z).length_squared()
-			< 145.0 * 145.0
+			Vector2(chunk.position.x - at.x, chunk.position.z - at.z).length_squared() < 165.0 * 165.0
 		)
+
+
+func advance(delta: float) -> void:
+	for part in animated:
+		if is_instance_valid(part):
+			part.rotate_object_local(Vector3.RIGHT, delta * (0.9 if str(part.name) == "Spin_Wheel" else 0.6))
 
 
 static func _box_mesh() -> BoxMesh:
@@ -359,27 +533,3 @@ static func _sphere_mesh() -> SphereMesh:
 	shape.radial_segments = 10
 	shape.rings = 5
 	return shape
-
-
-func _batch(
-	parent: Node3D,
-	label: String,
-	shape: Mesh,
-	transforms: Array[Transform3D],
-	color: Color,
-	range_end := 170.0
-) -> void:
-	if transforms.is_empty():
-		return
-	var mesh := MultiMesh.new()
-	mesh.transform_format = MultiMesh.TRANSFORM_3D
-	mesh.mesh = shape
-	mesh.instance_count = transforms.size()
-	for index in range(transforms.size()):
-		mesh.set_instance_transform(index, transforms[index])
-	var node := MultiMeshInstance3D.new()
-	node.name = label
-	node.multimesh = mesh
-	node.material_override = _kit.material(color)
-	node.visibility_range_end = range_end
-	parent.add_child(node)

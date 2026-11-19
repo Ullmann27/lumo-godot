@@ -1,6 +1,7 @@
 extends Node3D
 const STATE = preload("res://scripts/creative/puzzle_state.gd")
 const PIECE = preload("res://scripts/creative/puzzle_piece.gd")
+const ADVENTURE = preload("res://scripts/creative/adventure_kit.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
 const RUNTIME = preload("res://scripts/creative/creative_runtime.gd")
 const ART = preload("res://scripts/creative/puzzle_atelier_art.gd")
@@ -143,6 +144,8 @@ func _ready() -> void:
 	_make_alive_picture()
 	_make_snap_burst()
 	_ui()
+	# Erste Einführung je Kind (sobald ein Puzzle offen ist): scripts/games/guides/puzzle_guide.gd
+	load("res://scripts/games/guides/puzzle_guide.gd").attach(self)
 	get_viewport().size_changed.connect(_resize_ui)
 	RUNTIME.watch_safe_area(self, _resize_ui)
 	_resize_ui()
@@ -934,7 +937,7 @@ func _make_alive_picture() -> void:
 func _make_snap_burst() -> void:
 	snap_burst = GPUParticles3D.new()
 	snap_burst.name = "SnapBurst"
-	snap_burst.amount = 18
+	snap_burst.amount = 26
 	snap_burst.lifetime = 0.55
 	snap_burst.one_shot = true
 	snap_burst.explosiveness = 1.0
@@ -946,16 +949,23 @@ func _make_snap_burst() -> void:
 	process.initial_velocity_max = 2.6
 	process.gravity = Vector3(0, -2.5, 0)
 	snap_burst.process_material = process
-	var draw := SphereMesh.new()
-	draw.radius = 0.045
-	draw.height = 0.09
-	draw.radial_segments = 8
-	draw.rings = 4
+	process.scale_min = 0.6
+	process.scale_max = 1.3
+	var fade := Gradient.new()
+	fade.set_color(0, Color("fff2c0"))
+	fade.set_color(1, Color(1.0, 0.75, 0.3, 0.0))
+	var ramp := GradientTexture1D.new()
+	ramp.gradient = fade
+	process.color_ramp = ramp
+	var draw := QuadMesh.new()
+	draw.size = Vector2(0.26, 0.26)
 	var spark := StandardMaterial3D.new()
-	spark.albedo_color = Color("ffe7a0")
-	spark.emission_enabled = true
-	spark.emission = Color("ffd36a")
-	spark.emission_energy_multiplier = 0.8
+	spark.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	spark.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	spark.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	spark.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	spark.vertex_color_use_as_albedo = true
+	spark.albedo_texture = ADVENTURE.texture("soft_dot.png")
 	draw.material = spark
 	snap_burst.draw_pass_1 = draw
 	add_child(snap_burst)
@@ -977,11 +987,76 @@ func _make_alive() -> void:
 		snap_burst.global_position = Vector3(0, 0.4, 0)
 		snap_burst.amount = 28
 		snap_burst.restart()
+	_celebrate_finish()
 	status.text = "Dein Bild ist lebendig geworden!"
 
 
 func _hide_alive() -> void:
 	picture_alive = false
+	var glow := get_node_or_null("FinishGlow") as SpotLight3D
+	if glow != null:
+		glow.visible = false
 	if alive_picture != null:
 		alive_picture.hide()
 	guide.hide()
+
+
+
+## Fertiges Bild wird gefeiert: Konfetti über dem Tisch und ein warmer Lichtkegel.
+func _celebrate_finish() -> void:
+	var reduced := bool(SceneRouter.launch_options.get("reduceAnimations", false))
+	var old := get_node_or_null("FinishConfetti")
+	if old != null:
+		old.queue_free()
+	if not reduced:
+		var confetti := GPUParticles3D.new()
+		confetti.name = "FinishConfetti"
+		confetti.amount = 120
+		confetti.lifetime = 3.0
+		confetti.one_shot = true
+		confetti.explosiveness = 0.9
+		confetti.position = Vector3(0, 6.0, 0)
+		confetti.visibility_aabb = AABB(Vector3(-9, -8, -7), Vector3(18, 12, 14))
+		var proc := ParticleProcessMaterial.new()
+		proc.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		proc.emission_box_extents = Vector3(5.0, 0.3, 3.0)
+		proc.direction = Vector3(0, 1, 0)
+		proc.spread = 60.0
+		proc.initial_velocity_min = 1.0
+		proc.initial_velocity_max = 3.0
+		proc.gravity = Vector3(0, -3.0, 0)
+		proc.angle_min = -180.0
+		proc.angle_max = 180.0
+		proc.angular_velocity_min = -200.0
+		proc.angular_velocity_max = 200.0
+		proc.anim_offset_max = 1.0
+		confetti.process_material = proc
+		var quad := QuadMesh.new()
+		quad.size = Vector2(0.24, 0.24)
+		var cm := StandardMaterial3D.new()
+		cm.albedo_texture = ADVENTURE.texture("confetti.png")
+		cm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+		cm.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+		cm.particles_anim_h_frames = 2
+		cm.particles_anim_v_frames = 2
+		cm.cull_mode = BaseMaterial3D.CULL_DISABLED
+		quad.material = cm
+		confetti.draw_pass_1 = quad
+		add_child(confetti)
+		confetti.emitting = true
+	var glow := get_node_or_null("FinishGlow") as SpotLight3D
+	if glow == null:
+		glow = SpotLight3D.new()
+		glow.name = "FinishGlow"
+		glow.position = Vector3(0, 9.0, 3.0)
+		add_child(glow)
+		glow.look_at(Vector3(0, 0, 0), Vector3.UP)
+		glow.light_color = Color("ffe2a8")
+		glow.spot_angle = 30.0
+		glow.spot_range = 16.0
+		glow.shadow_enabled = false
+	glow.light_energy = 0.0
+	glow.visible = true
+	var tw := create_tween()
+	tw.tween_property(glow, "light_energy", 2.2, 0.8)
+	tw.tween_property(glow, "light_energy", 0.9, 1.6)

@@ -1,412 +1,453 @@
 extends SceneTree
-## Native input/render state contracts; authoritative rules are tested in Flutter.
-const TABLE = "res://scenes/games/cards_table.tscn"
+## Der neue Kartentisch von der Auswahl bis zum Endstand – bedient mit echten
+## Berührungen. Regeln und KI prüft cards_rules_regression.gd ohne Szene.
+
+const TABLE := "res://scenes/games/cards_table.tscn"
+const DRIVER = preload("res://scripts/tests/helpers/cards_table_driver.gd")
+const SESSION = preload("res://scripts/games/cards/cards_session.gd")
+const INTRO = preload("res://scripts/games/cards/cards_intro.gd")
+const DECK = preload("res://scripts/games/cards/rules/star_deck.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const CHILD := "cards-table-regression"
+const SHAPES := [
+	[Vector2i(720, 1280), 1.75], [Vector2i(1280, 720), 1.75],
+	[Vector2i(1768, 2208), 2.4], [Vector2i(2208, 1768), 2.4],
+]
+const SPEED := 60.0
+
 var checks := 0
-var failures := 0
-var requests: Array[Dictionary] = []
+var failures: Array[String] = []
+var table: Node
+var settled: Array[Dictionary] = []
+var rewards: Array[Dictionary] = []
 
 
-class HeaderReturnHost:
+class Host:
 	extends RefCounted
-	var destinations: Array[String] = []
+	var rewards: Array[String] = []
+	var returns: Array[String] = []
+
+	# gdlint: disable=function-name
+	func reward(payload: String) -> int:
+		rewards.append(payload)
+		return 1
 
 	# gdlint: disable=function-name
 	func returnToApp(destination: String, _payload: String) -> int:
-		destinations.append(destination)
+		returns.append(destination)
 		return 1
 
 
-static func fixture() -> Dictionary:
-	return {
-		"protocol": 1,
-		"token": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-		"revision": 4,
-		"ack": 0,
-		"roundId": "cards-render-fixture",
-		"phase": "playing",
-		"paused": false,
-		"reduceMotion": true,
-		"viewer": 0,
-		"current": 0,
-		"players":
-		[{"name": "Du", "count": 7, "stars": 0}, {"name": "Lumo", "count": 7, "stars": 0}],
-		"hand":
-		[
-			{"id": "r1", "color": "orange", "type": "number", "number": 1, "playable": true},
-			{"id": "b2", "color": "blue", "type": "number", "number": 2, "playable": false},
-			{"id": "wild", "color": "green", "type": "colorMagic", "playable": true},
-			{"id": "g4", "color": "green", "type": "number", "number": 4, "playable": false},
-			{"id": "y5", "color": "purple", "type": "number", "number": 5, "playable": true},
-			{"id": "r6", "color": "orange", "type": "number", "number": 6, "playable": true},
-			{"id": "pause", "color": "blue", "type": "thinkPause", "playable": false}
-		],
-		"top": {"id": "r5", "color": "orange", "type": "number", "number": 5},
-		"selectedColor": "orange",
-		"drawCount": 97,
-		"message": "Dein Zug · Goldene Karten passen.",
-		"winner": null,
-		"canDraw": true
-	}
-
-
-static func wire_fixture() -> Dictionary:
-	# The Android mailbox crosses JSON; all its numbers arrive as floats.
-	return JSON.parse_string(JSON.stringify(fixture()))
-
-
-static func face_texture_errors(table: Node3D) -> Array[String]:
-	var expected := {
-		"r1": "red/red_1.png",
-		"b2": "blue/blue_2.png",
-		"wild": "special/color_magic.png",
-		"g4": "green/green_4.png",
-		"y5": "yellow/yellow_5.png",
-		"r6": "red/red_6.png",
-		"pause": "blue/blue_think_pause.png",
-		"r5": "red/red_5.png"
-	}
-	var nodes: Dictionary = table._cards.duplicate()
-	if table.discard_root.get_child_count() > 0:
-		nodes["r5"] = table.discard_root.get_child(table.discard_root.get_child_count() - 1)
-	var errors: Array[String] = []
-	for id: String in nodes:
-		var found := false
-		for child in nodes[id].get_children():
-			if child is MeshInstance3D and child.mesh is PlaneMesh:
-				var material: StandardMaterial3D = child.material_override
-				var texture: Texture2D = material.albedo_texture if material != null else null
-				found = (
-					texture != null
-					and texture.resource_path == "res://assets/cards_table/cards/" + expected[id]
-					and texture.get_width() > 0
-					and texture.get_height() > 0
-				)
-		if not found:
-			errors.append("missing/wrong actual face material: " + id)
-	return errors
-
-
 func _initialize() -> void:
-	call_deferred("_run")
+	_run.call_deferred()
 
 
-func check(condition: bool, label: String) -> void:
+func _check(condition: bool, label: String) -> void:
 	checks += 1
 	if not condition:
-		failures += 1
-		push_error("Cards table: " + label)
+		failures.append(label)
+		push_error("[CardsTable] " + label)
+
+
+func _open() -> void:
+	table = load(TABLE).instantiate()
+	root.add_child(table)
+	table.time_scale = SPEED
+	table.settled.connect(func(payload: Dictionary) -> void: settled.append(payload))
+	await DRIVER.settle(self, 4)
+
+
+func _close(label: String) -> void:
+	_check(await SCENE_TEARDOWN.release_scene(self, table, "[CardsTable] " + label), label + " releases the scene")
+	table = null
+	await DRIVER.settle(self, 2)
+
+
+func _press(id: String, label: String) -> void:
+	_check(await DRIVER.press(self, table, id), label)
+	await DRIVER.settle(self, 2)
 
 
 func _run() -> void:
-	var table = load(TABLE).instantiate()
-	root.add_child(table)
-	table.action_requested.connect(func(request: Dictionary): requests.append(request))
-	var batched_instances := 0
-	for batch: MultiMeshInstance3D in table.room_batches:
-		batched_instances += batch.multimesh.instance_count
-		check(
-			batch.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON,
-			"room batching preserves cast shadows"
-		)
-	check(
-		batched_instances == table.room_source_boxes, "batching preserves every original room box"
-	)
-	check(
-		table.room_batches.size() * 5 < batched_instances,
-		"static room boxes use at least five times fewer instances"
-	)
-	for group in range(3):
-		var floor_batch: MultiMeshInstance3D = table.get_node("RoomBatch_floor%d" % group)
-		check(
-			floor_batch.multimesh.instance_count == [7, 7, 6][group],
-			"all twenty floor planks survive batching"
-		)
-		# The dummy headless renderer does not retain MultiMesh transforms.
-		# The real-renderer capture checks all twenty uploaded transforms instead.
-	for group in range(4):
-		var book_batch: MultiMeshInstance3D = table.get_node("RoomBatch_cloth_book%d" % group)
-		check(
-			book_batch.multimesh.instance_count == [8, 8, 8, 6][group],
-			"all thirty cloth-bound books remain actual geometry"
-		)
-	check(
-		table.find_children("*", "OmniLight3D", false, false).size() == 3,
-		"room light sources remain unchanged"
-	)
-	print(
-		"CARDS_ROOM_BATCHES sources=%d batches=%d" % [batched_instances, table.room_batches.size()]
-	)
-	check(
-		typeof(wire_fixture().top.number) == TYPE_FLOAT, "fixture exercises actual JSON number type"
-	)
-	var folders := {"orange": "red", "purple": "yellow", "blue": "blue", "green": "green"}
-	for color: String in folders:
-		for number in range(10):
-			var card: Dictionary = JSON.parse_string(
-				JSON.stringify({"color": color, "type": "number", "number": number})
-			)
-			var texture: Texture2D = table._texture(card, true)
-			var expected := (
-				"res://assets/cards_table/cards/%s/%s_%d.png"
-				% [folders[color], folders[color], number]
-			)
-			check(
-				texture != null and texture.resource_path == expected,
-				"JSON card resolves original number face: %s %d" % [color, number]
-			)
-	for shape in [
-		Vector2i(1280, 720),
-		Vector2i(412, 915),
-		Vector2i(690, 829),
-		Vector2i(2400, 1080),
-		Vector2i(1080, 2400)
-	]:
-		root.size = shape
-		get_root().get_node("HostBridge")._options = {
-			"displayDensity": 2.625 if shape.x == 2400 or shape.y == 2400 else 1.0
-		}
-		await process_frame
+	Engine.max_fps = 0
+	var bridge := root.get_node("HostBridge")
+	var original_options: Dictionary = bridge._options.duplicate(true)
+	var original_host: Object = bridge._host
+	bridge._options = {"displayDensity": 1.75, "childKey": CHILD, "sessionId": "cards-session", "soundEnabled": false}
+	bridge.reward_reported.connect(func(payload: Dictionary) -> void: rewards.append(payload))
+	var save_path := SESSION.path_for(CHILD)
+	DirAccess.remove_absolute(save_path)
+	root.size = SHAPES[0][0]
+	for game: String in SESSION.GAMES:
+		_check(INTRO.ready(game).is_empty(), "intro round of %s teaches its rule: %s" % [game, INTRO.ready(game)])
+	_check(not ResourceLoader.exists("res://assets/cards_table/cards/red/red_draw_two.png")
+		and not FileAccess.file_exists("res://scripts/games/cards/cards_table_actor.gd"), "the old UNO table art and actor are gone")
+	await _open()
+	_scene_checks()
+	var only := ""
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--only="):
+			only = argument.trim_prefix("--only=")
+	if only.is_empty():
+		await _layouts()
+	if only in ["", "stich"]:
+		await _stich(bridge)
+	if only in ["", "leiter"]:
+		await _leiter()
+	if only in ["", "quartett"]:
+		await _quartett(bridge)
+	if is_instance_valid(table):
+		await _close("end")
+	bridge._options = original_options
+	bridge._host = original_host
+	DirAccess.remove_absolute(save_path)
+	print("CARDS_TABLE_RUNTIME_%s checks=%d failures=%d" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
+	quit(0 if failures.is_empty() else 1)
+
+
+func _scene_checks() -> void:
+	_check(table.screen == "select" and table.hud.overlay_kind == "select", "the route opens the game selection")
+	for game: String in SESSION.GAMES:
+		_check(table.hud.find_button("Tile_" + game) != null, "selection offers " + game)
+	_check(table.seats.size() == 4, "Lumo and three fellow players sit at the table")
+	_check(table.seats[0].kind == "lumo" and table.seats[0].usable() and table.seats[0].skeleton.get_bone_count() == 65,
+		"Lumo is the original 65-bone character")
+	for player in range(1, table.seats.size()):
+		_check(table.seats[player].usable() and table.seats[player].kind in table.ROSTER, "fellow player %d is a roster character" % player)
+	_check(table.room.batches.size() > 0 and table.room.batched_instances > table.room.batches.size() * 5,
+		"static room parts are batched (%d parts in %d batches)" % [table.room.batched_instances, table.room.batches.size()])
+	_check(table.room.find_children("*", "OmniLight3D", true, false).size() + table.room.find_children("*", "SpotLight3D", true, false).size() <= 3,
+		"the room keeps a small light budget")
+	_check(table.room.camera.current, "the table camera is active")
+
+
+func _targets(label: String, density: float) -> void:
+	var view := Rect2(Vector2.ZERO, Vector2(root.size))
+	var seen := 0
+	for button: Button in table.hud.visible_buttons():
+		var rect := Rect2(button.get_global_transform_with_canvas() * Vector2.ZERO, button.size)
+		seen += 1
+		_check(view.grow(0.5).encloses(rect), "%s: %s stays inside the screen %s" % [label, button.name, rect])
+		_check(minf(rect.size.x, rect.size.y) / density >= 47.9, "%s: %s is at least 48 dp (%s)" % [label, button.name, rect.size / density])
+	_check(seen > 0, label + " shows touch targets")
+
+
+func _layouts() -> void:
+	var bridge := root.get_node("HostBridge")
+	for entry: Array in SHAPES:
+		root.size = entry[0]
+		bridge._options["displayDensity"] = entry[1]
+		await DRIVER.settle(self, 3)
 		table._resize()
-		table.apply_state(wire_fixture())
-		await process_frame
-		await process_frame
-		var face_errors := face_texture_errors(table)
-		check(
-			face_errors.is_empty(), "JSON hand and discard bind face textures: " + str(face_errors)
-		)
-		await _header_safe_area(table, shape)
-		check(table.actor.is_usable(), "original 65-bone actor loaded")
-		var hips: Vector3 = table.actor.skeleton.to_global(
-			table.actor.skeleton.get_bone_global_pose(table.seated.pelvis).origin
-		)
-		check(
-			hips.distance_to(table.seated.seat) < 0.015,
-			"authored seated pelvis contacts actual chair"
-		)
-		check(table.seated.legs.size() == 10, "seated lower body preserved during reactions")
-		check(table.hand_root.get_child_count() >= 3, "real hand geometry exists")
-		var viewport := Rect2(Vector2.ZERO, Vector2(shape))
-		for button in table.ui.find_children("*", "Button", true, false):
-			if button.is_visible_in_tree():
-				check(button.size.y / table._ui_scale >= 48, "48dp action target")
-				check(
-					viewport.encloses(button.get_global_rect()),
-					"action inside viewport: " + button.text
-				)
-		var discard_node: Node3D = table.discard_root.get_child(
-			table.discard_root.get_child_count() - 1
-		)
-		var discard_bottom := 0.0
-		for corner in [
-			Vector3(-0.415, 0.02, -0.59),
-			Vector3(0.415, 0.02, -0.59),
-			Vector3(-0.415, 0.02, 0.59),
-			Vector3(0.415, 0.02, 0.59)
-		]:
-			discard_bottom = maxf(
-				discard_bottom, table.camera.unproject_position(discard_node.to_global(corner)).y
-			)
-		var first_hand: Node3D = table._cards["r1"]
-		var hand_top := INF
-		for corner in [
-			Vector3(-0.415, 0.02, -0.59),
-			Vector3(0.415, 0.02, -0.59),
-			Vector3(-0.415, 0.02, 0.59),
-			Vector3(0.415, 0.02, 0.59)
-		]:
-			hand_top = minf(
-				hand_top, table.camera.unproject_position(first_hand.to_global(corner)).y
-			)
-		check(discard_bottom < hand_top, "hand never obscures current discard in any density")
-		var legal = table._cards["r1"]
-		var point: Vector2 = table.camera.unproject_position(legal.global_position)
-		check(viewport.has_point(point), "card projects into viewport")
-		var touch := InputEventScreenTouch.new()
-		touch.index = 2
-		touch.pressed = true
-		touch.position = point
-		table._unhandled_input(touch)
-		check(table._selected == "r1", "native touch selects legal mesh")
-		check(requests.is_empty(), "single tap does not accidentally play")
-		touch.position = table.camera.unproject_position(legal.global_position)
-		table._unhandled_input(touch)
-		check(
-			requests.size() == 1 and requests[0].action == "play" and requests[0].cardId == "r1",
-			"second tap emits exact card action"
-		)
-		check(requests[0].revision == 4, "command binds published revision")
-		table._send("draw")
-		check(requests.size() == 1, "pending action prevents second command")
-		var acknowledged := wire_fixture()
-		acknowledged.ack = requests[0].sequence
-		acknowledged.revision = 5
-		table.apply_state(acknowledged)
-		check(table._pending == 0, "only acknowledgement releases input")
-		requests.clear()
-		table._selected = ""
-		var hidden := wire_fixture()
-		hidden.phase = "passDevice"
-		hidden.hand = []
-		table.apply_state(hidden)
-		await process_frame
-		check(table._cards.is_empty() and table.modal.visible, "handover hides hand")
-		var question := wire_fixture()
-		question.phase = "learningQuestion"
-		question.question = {"prompt": "Was ist 8 + 5?", "options": ["11", "13", "15"]}
-		table.apply_state(question)
-		await process_frame
-		var answer_buttons: Array = table.modal_content.find_children("*", "Button", true, false)
-		check(answer_buttons.size() == 3, "learning choices use authoritative question")
-		answer_buttons[1].pressed.emit()
-		check(
-			requests.size() == 1 and requests[0].action == "answer" and requests[0].index == 1,
-			"native choice emits answer index"
-		)
-		requests.clear()
-		table._pending = 0
-		var long_question := wire_fixture()
-		long_question.phase = "learningQuestion"
-		long_question.round = 2
-		long_question.totalRounds = 3
-		long_question.question = {
-			"prompt":
-			"Lumo hat acht Sterne und bekommt fünf dazu. Wie viele Sterne sind es zusammen?",
-			"options": ["Zwölf Sterne", "Dreizehn Sterne", "Vierzehn Sterne", "Fünfzehn Sterne"]
-		}
-		table.apply_state(long_question)
-		await process_frame
-		await process_frame
-		table._layout_modal()
-		await process_frame
-		check(
-			table.heading.text == "Sternenpokal 2/3",
-			"native table displays authoritative tournament leg"
-		)
-		check(
-			viewport.encloses(table.modal.get_global_rect()),
-			"four-option question panel remains inside viewport"
-		)
-		for button in table.modal_content.find_children("*", "Button", true, false):
-			check(button.size.y / table._ui_scale >= 48, "question answer retains 48dp")
-		table._clear_authority_view()
-		check(
-			table._cards.is_empty() and not table.modal.visible,
-			"authority loss hides hand and previous child's learning question"
-		)
-		check(
-			table.status.text.is_empty() and not table.call_button.visible,
-			"authority loss hides counters and bonus actions"
-		)
-		requests.clear()
-		table._pending = 0
-		table._sequence = 0
-		table._page = 0
-	await _header_back_touch(table)
-	table.queue_free()
-	await process_frame
-	print(
-		(
-			"CARDS_TABLE_RUNTIME_%s checks=%d failures=%d"
-			% ["PASS" if failures == 0 else "FAIL", checks, failures]
-		)
-	)
-	quit(0 if failures == 0 else 1)
-
-
-func _tap_header(control: Control) -> void:
-	var point := control.get_global_rect().get_center()
-	for pressed in [true, false]:
-		var touch := InputEventScreenTouch.new()
-		touch.index = 1
-		touch.position = point
-		touch.pressed = pressed
-		Input.parse_input_event(touch)
-		await process_frame
-
-
-func _header_safe_area(table: Node3D, shape: Vector2i) -> void:
-	# Insets are a declared geometry fixture, not an Android measurement.
-	# Two physical pixels per viewport pixel exercise the actual conversion.
-	table.set_process(false)
-	var original: Dictionary = table._state.duplicate(true)
-	var card_position: Vector3 = table._cards["r1"].position
-	var footer_rect: Rect2 = table.footer.get_global_rect()
-	table._apply_header_safe_area(Rect2(32, 180, 56, 80), Vector2(shape) * 2)
-	await process_frame
-	await process_frame
-	var safe := Rect2(16, 90, shape.x - 44, shape.y - 130)
-	for button: Button in table.header.find_children("*", "Button", true, false):
-		check(
-			safe.encloses(button.get_global_rect()),
-			"header avoids status bar/cutout: " + button.text
-		)
-		check(
-			button.size.x / table._ui_scale >= 48 and button.size.y / table._ui_scale >= 48,
-			"safe header retains full 48dp touch target: " + button.text
-		)
-	check(
-		(
-			table._state == original
-			and table._cards["r1"].position == card_position
-			and table.footer.get_global_rect() == footer_rect
-		),
-		"safe header preserves public state and the existing hand/footer projection"
-	)
-	await _tap_header(table.pause_button)
-	check(
-		requests.size() == 1 and requests[0].action == "pause" and requests[0].revision == 4,
-		"real touch reaches inset Pause and retains the authoritative revision"
-	)
-	if requests.size() == 1:
-		var paused := original.duplicate(true)
-		paused.paused = true
-		paused.canDraw = false
-		paused.revision = 5
-		paused.ack = requests[0].sequence
-		table.apply_state(paused)
-		await process_frame
-		# A changed cutout/rotation must replace the former inset, not accumulate it.
-		table._apply_header_safe_area(Rect2(108, 64, 28, 48), Vector2(shape) * 2)
-		await process_frame
-		safe = Rect2(54, 32, shape.x - 68, shape.y - 56)
-		for button: Button in table.header.find_children("*", "Button", true, false):
-			check(
-				safe.encloses(button.get_global_rect()), "changed safe area keeps header reachable"
-			)
-		await _tap_header(table.pause_button)
-		check(
-			requests.size() == 2 and requests[1].action == "resume" and requests[1].revision == 5,
-			"real inset Weiter touch requests resume of the same paused round"
-		)
-	table._pending = 0
-	table._sequence = 0
-	requests.clear()
-	table.apply_state(original)
-	# Resume re-reads platform bounds even when the viewport size did not change.
-	table._notification(Node.NOTIFICATION_APPLICATION_RESUMED)
-	await process_frame
-	var resumed_header: Rect2 = table.header.get_global_rect()
+		await DRIVER.settle(self, 3)
+		var label := "%dx%d" % [root.size.x, root.size.y]
+		_targets(label + " selection", entry[1])
+		table.session.mark_intro_seen("leiter")
+		table._on_chosen("game", {"game": "leiter"})
+		await DRIVER.settle(self, 3)
+		_targets(label + " setup", entry[1])
+		table._on_chosen("start", {"game": "leiter"})
+		_check(await DRIVER.idle(self, table), label + " deal settles")
+		_targets(label + " play", entry[1])
+		var hand: Array = table.hand_cards()
+		_check(hand.size() == 9, label + " shows nine hand cards")
+		var view := Rect2(Vector2.ZERO, Vector2(root.size))
+		for card: int in hand:
+			var point: Vector2 = DRIVER.hand_point(table, card)
+			_check(view.has_point(point), "%s: hand card %d is reachable at %s" % [label, card, point])
+			_check(table._hand_card_at(point) == card, "%s: the visible corner of card %d picks that card (got %d at %s)" % [label, card, table._hand_card_at(point), point])
+		var ladder_x: Array = []
+		for card: int in table.cards:
+			if table.cards[card].zone == "fan":
+				_check(view.grow(40).has_point(table.card_point(card)), label + " fellow players' cards are in view")
+		for plate: Button in table.hud.plates:
+			ladder_x.append(plate.position.x)
+			_check(view.encloses(Rect2(plate.get_global_transform_with_canvas() * Vector2.ZERO, plate.size)), label + " name plate inside the screen")
+		table._pause()
+		await DRIVER.settle(self, 3)
+		_targets(label + " pause", entry[1])
+		table._on_chosen("quit", {})
+		await DRIVER.settle(self, 3)
+		table.session.discard("leiter")
+	table.session.data.intro_seen.erase("leiter")
+	table.session.save_file()
+	root.size = SHAPES[0][0]
+	bridge._options["displayDensity"] = SHAPES[0][1]
+	await DRIVER.settle(self, 3)
 	table._resize()
-	await process_frame
-	check(
-		resumed_header == table.header.get_global_rect() and table._state == original,
-		"resume and resize agree on current platform bounds without changing the round"
-	)
-	table.set_process(true)
+	table._open_select()
+	await DRIVER.settle(self, 3)
 
 
-func _header_back_touch(table: Node3D) -> void:
-	var bridge = root.get_node("HostBridge")
-	var previous_host: Object = bridge._host
-	var previous_pending: bool = bridge._return_pending
-	var host := HeaderReturnHost.new()
+## Führt durch die Einführung; das Kind handelt in den Mitmach-Schritten selbst.
+func _intro(game: String) -> void:
+	await DRIVER.touch(self, DRIVER.control_centre(table.hud.find_button("Tile_" + game)))
+	await DRIVER.settle(self, 3)
+	_check(table.screen == "play" and table.game == game and not table._intro_steps.is_empty(), game + ": first visit starts the playable introduction")
+	_check(is_instance_valid(table.hud.bubble), game + ": Lumo explains in a speech bubble")
+	_check(table.hud.find_button("intro_skip") != null, game + ": the introduction can be skipped")
+	var steps := 0
+	var guard := 0
+	while not table._intro_steps.is_empty() and guard < 40:
+		guard += 1
+		_check(await DRIVER.idle(self, table), game + ": introduction step settles")
+		var step: Dictionary = table._intro_step()
+		if step.is_empty():
+			break
+		match str(step.wait):
+			"tap", "done":
+				steps += 1
+				await _press("intro_next", game + ": Weiter is pressed")
+			"select":
+				steps += 1
+				_check(table._can_act(), game + ": the child may choose a card in the introduction")
+				var own: int = table.rules.s.r.hands[0][0]
+				await DRIVER.touch(self, DRIVER.hand_point(table, own))
+				await DRIVER.settle(self, 3)
+				_check(table._pick_rank == DECK.rank(own), game + ": tapping a card selects its value")
+			"play":
+				steps += 1
+				_check(table._can_act(), game + ": the child plays a real move in the introduction")
+				var move: Dictionary = DRIVER.suggestion(table)
+				if game == "quartett":
+					move = {"ask": table._pick_rank, "from": 1}
+				var before: int = int(table.rules.s.moves)
+				_check(await DRIVER.play(self, table, move), game + ": introduction move is made by touch")
+				await DRIVER.idle(self, table)
+				_check(int(table.rules.s.moves) > before, game + ": the introduction move counts in the real rule core")
+	_check(steps == 4, "%s: the introduction has four steps (%d)" % [game, steps])
+	await DRIVER.settle(self, 3)
+	_check(table.hud.overlay_kind == "setup" and table.session.intro_seen(game), game + ": after the introduction the settings open")
+	_check(not table.session.has_match(game), game + ": the practice round is not saved")
+
+
+func _pick(key: String, value: int, label: String) -> void:
+	await _press("Pick_%s_%d" % [key, value], label)
+
+
+## Spielt mit Berührungen, bis `stop` wahr wird oder die Partie endet.
+func _play_until(stop: Callable, label: String) -> void:
+	var guard := 0
+	while guard < 600 and table.screen in ["play"]:
+		guard += 1
+		if not await DRIVER.idle(self, table, 40.0):
+			_check(false, label + ": the table hangs")
+			return
+		if stop.call():
+			return
+		if table.hud.overlay_kind == "round":
+			await _press("next_round", label + ": next round")
+			continue
+		if not table.hud.overlay_kind.is_empty():
+			return
+		if table._can_act():
+			var before: int = int(table.rules.s.moves)
+			var move: Dictionary = DRIVER.suggestion(table)
+			if not await DRIVER.play(self, table, move):
+				_check(false, "%s: move %s could not be made by touch" % [label, str(move)])
+				return
+			await DRIVER.idle(self, table, 40.0)
+			if table.rules != null and int(table.rules.s.moves) == before:
+				_check(false, "%s: touch move %s was not accepted" % [label, str(move)])
+				return
+
+
+func _final_checks(game: String, result_id: String, stars_before: int) -> Dictionary:
+	_check(table.screen == "final" and table.hud.overlay_kind == "final", game + ": the match ends with the final standings")
+	_check(settled.size() == 1, game + ": the result is settled exactly once")
+	var payload: Dictionary = settled[0] if settled.size() == 1 else {}
+	_check(payload.get("resultId") == result_id and payload.get("game") == "cards" and payload.get("variant") == game
+		and payload.get("status") == "completed", game + ": the result carries the match id")
+	var place: int = int(table.rules.places()[0])
+	_check(int(payload.get("place", 0)) == place and int(payload.get("stars", 0)) == SESSION.stars_for(place, int(table.rules.s.difficulty), table.rules.rounds_total()),
+		game + ": stars follow the place")
+	_check(root.get_node("ProgressStore").total_stars() == stars_before + int(payload.get("stars", 0)), game + ": stars are added once")
+	_check(table.session.is_booked(result_id) and not table.session.has_match(game), game + ": the finished match is booked and cleared")
+	return payload
+
+
+func _stich(bridge: Node) -> void:
+	var game := "stich"
+	await _intro(game)
+	await _pick("players", 4, game + ": three fellow players")
+	await _pick("difficulty", 2, game + ": hard")
+	await _pick("rounds", 3, game + ": three rounds")
+	_check(table.session.prefs() == {"players": 4, "difficulty": 2, "rounds": 3}, game + ": the choices are stored")
+	await _press("start", game + ": start")
+	_check(await DRIVER.idle(self, table), game + ": deal settles")
+	_check(table.rules.players() == 4 and int(table.rules.s.difficulty) == 2 and table.rules.rounds_total() == 3, game + ": the match follows the settings")
+	_check(table.cards.size() == 28 + table.STOCK_SHOWN, game + ": every hand card and the stock are 3D cards")
+	var result_id := str(table.rules.s.result_id)
+	_check(result_id.begins_with("cards-stich-"), game + ": the match has its own result id")
+	await _play_until(func() -> bool: return table._can_act() and table._legal_cards.size() < table.rules.s.r.hands[0].size(), game)
+	# Nicht bedienbare Karte: wird abgelehnt und erklärt.
+	var refused := -1
+	for card: int in table.rules.s.r.hands[0]:
+		if not table._legal_cards.has(card):
+			refused = card
+	_check(refused >= 0, game + ": a hand with a forbidden card is reached")
+	var before: Dictionary = table.rules.snapshot()
+	await DRIVER.touch(self, DRIVER.hand_point(table, refused))
+	await DRIVER.settle(self, 3)
+	_check(table.rules.snapshot() == before and table._selected.is_empty(), game + ": a card that may not be played stays in the hand")
+	_check("bedienen" in table.hud.hint_label.text, game + ": the table says why: " + table.hud.hint_label.text)
+	_check(table.cards[refused].look() == "dim", game + ": forbidden cards are dimmed")
+	var legal: int = table._legal_cards.keys()[0]
+	_check(table.cards[legal].glow != null and table.cards[legal].glow.visible, game + ": playable cards glow")
+	# Ziehen: Karte nach oben auf den Tisch schieben.
+	var from: Vector2 = DRIVER.hand_point(table, legal)
+	await DRIVER.drag(self, from, Vector2(root.size.x * 0.5, root.size.y * 0.45))
+	await DRIVER.idle(self, table)
+	_check(not table.rules.s.r.hands[0].has(legal), game + ": dragging a card onto the table plays it")
+	# Pause hält die Mitspieler an.
+	await _play_until(func() -> bool: return table._can_act(), game)
+	await _press("Pause", game + ": pause")
+	_check(table.hud.overlay_kind == "pause" and table._paused, game + ": the pause menu opens")
+	for id: String in ["continue", "rules", "restart", "quit"]:
+		_check(table.hud.find_button(id) != null, game + ": pause offers " + id)
+	await _press("rules", game + ": rules")
+	_check(table.hud.overlay_kind == "rules", game + ": rules are shown")
+	await _press("rules_done", game + ": back from rules")
+	var moves: int = int(table.rules.s.moves)
+	_check(table.hud.overlay.mouse_filter == Control.MOUSE_FILTER_STOP and not table._can_act(), game + ": the pause menu covers the table")
+	table._tap_card(int(table.rules.s.r.hands[0][0]))
+	await DRIVER.settle(self, 6)
+	_check(int(table.rules.s.moves) == moves and table._selected.is_empty(), game + ": nothing moves while paused")
+	await _press("continue", game + ": continue")
+	_check(table.hud.overlay_kind.is_empty() and not table._paused, game + ": play goes on")
+	# Speichern und Fortsetzen: Tisch schließen, neu öffnen, gleiche Partie.
+	await _play_until(func() -> bool: return table._can_act() and int(table.rules.s.r.trick_no) >= 2, game)
+	var saved: Dictionary = table.rules.snapshot()
+	await _close("stich mid-match")
+	await _open()
+	_check(table.session.has_match(game), game + ": a running match is found after reopening")
+	await DRIVER.touch(self, DRIVER.control_centre(table.hud.find_button("Tile_" + game)))
+	await DRIVER.settle(self, 3)
+	_check(table.hud.overlay_kind == "setup" and table.hud.find_button("resume") != null, game + ": reopening offers to continue")
+	await _press("resume", game + ": resume")
+	_check(await DRIVER.idle(self, table), game + ": resumed table settles")
+	_check(table.rules.snapshot() == saved, game + ": the resumed match is identical")
+	_check(str(table.rules.s.result_id) == result_id, game + ": the result id survives the resume")
+	var expected_cards: int = saved.r.played.size() + table.STOCK_SHOWN + saved.r.trick.size()
+	for hand: Array in saved.r.hands:
+		expected_cards += hand.size()
+	_check(table.seats.size() == 4 and table.cards.size() == expected_cards, game + ": cards and players are rebuilt from the save")
+	# Mit eingebetteter App: Meldung über die Brücke.
+	var host := Host.new()
 	bridge._host = host
+	var stars_before: int = root.get_node("ProgressStore").total_stars()
+	settled.clear()
+	rewards.clear()
+	var rounds_seen := 0
+	await _play_until(func() -> bool: return false, game)
+	rounds_seen = table.rules.s.history.size()
+	_check(rounds_seen == 3 and table.rules.phase() == "match_over", game + ": three rounds are played to the end")
+	var payload := _final_checks(game, result_id, stars_before)
+	_check(host.rewards.size() == 1 and JSON.parse_string(host.rewards[0]).get("resultId") == result_id, game + ": the host receives one reward call")
+	_check(rewards.size() == 1, game + ": the bridge reports the reward once")
+	# Größe ändern und erneut öffnen: keine zweite Buchung.
+	table._resize()
+	await DRIVER.settle(self, 3)
+	table._finish_match()
+	await DRIVER.settle(self, 3)
+	_check(settled.size() == 1 and host.rewards.size() == 1 and root.get_node("ProgressStore").total_stars() == stars_before + int(payload.get("stars", 0)),
+		game + ": showing the standings again books nothing")
+	await _close("stich finished")
+	await _open()
+	_check(not table.session.has_match(game) and table.session.is_booked(result_id), game + ": reopening after the end offers no finished match")
+	_check(root.get_node("ProgressStore").total_stars() == stars_before + int(payload.get("stars", 0)) and host.rewards.size() == 1, game + ": reopening books nothing")
+	# Zurück zur App über die Brücke.
+	await _press("leave", game + ": leave")
+	_check(host.returns == ["games"] and table._closed, game + ": Zurück returns to the app once")
+	bridge._host = null
 	bridge._return_pending = false
-	var back: Button = table.header.get_node("Top").get_child(0).get_node("Back")
-	await _tap_header(back)
-	check(
-		host.destinations == ["games"] and table._closed,
-		"real Zurück touch keeps the existing acknowledged return to the host"
-	)
-	bridge._host = previous_host
-	bridge._return_pending = previous_pending
+	await _close("stich returned")
+	await _open()
+
+
+func _leiter() -> void:
+	var game := "leiter"
+	await _intro(game)
+	await _pick("players", 3, game + ": two fellow players")
+	await _pick("difficulty", 0, game + ": easy")
+	await _pick("rounds", 1, game + ": one round")
+	await _press("start", game + ": start")
+	_check(await DRIVER.idle(self, table), game + ": deal settles")
+	_check(table.rules.players() == 3 and table.seats.size() == 3 and table.cards.size() == 27, game + ": three players, 27 cards")
+	var first_id := str(table.rules.s.result_id)
+	await _play_until(func() -> bool: return table._can_act() and not table._legal_cards.is_empty() and table._legal_cards.size() < table.rules.s.r.hands[0].size(), game)
+	var refused := -1
+	for card: int in table.rules.s.r.hands[0]:
+		if not table._legal_cards.has(card):
+			refused = card
+	var before: Dictionary = table.rules.snapshot()
+	await DRIVER.touch(self, DRIVER.hand_point(table, refused))
+	await DRIVER.settle(self, 3)
+	_check(table.rules.snapshot() == before, game + ": a card that does not fit stays in the hand")
+	_check("Leiter" in table.hud.hint_label.text, game + ": the table explains the ladder: " + table.hud.hint_label.text)
+	var legal: int = table._legal_cards.keys()[0]
+	await DRIVER.touch(self, DRIVER.hand_point(table, legal))
+	await DRIVER.settle(self, 3)
+	_check(table._selected == [legal] and table.hud.action_button.visible and table.hud.action_button.text == "Legen",
+		game + ": the first tap lifts the card and offers Legen")
+	await _press("Action", game + ": Legen")
+	await DRIVER.idle(self, table)
+	_check(table.rules.s.r.laid.has(legal) and table.cards[legal].zone == "ladder", game + ": the card lies in its ladder")
+	# Neu starten ersetzt die Partie durch eine neue.
+	await _play_until(func() -> bool: return table._can_act(), game)
+	await _press("Pause", game + ": pause")
+	await _press("restart", game + ": restart")
+	_check(table.hud.overlay_kind == "confirm", game + ": restarting asks first")
+	await _press("restart_yes", game + ": confirm restart")
+	_check(await DRIVER.idle(self, table), game + ": new deal settles")
+	_check(str(table.rules.s.result_id) != first_id and table.rules.s.r.laid.size() <= 3 and table.rules.round_number() == 1,
+		game + ": a restart is a new match with a new result id")
+	var result_id := str(table.rules.s.result_id)
+	var stars_before: int = root.get_node("ProgressStore").total_stars()
+	settled.clear()
+	await _play_until(func() -> bool: return false, game)
+	_final_checks(game, result_id, stars_before)
+	await _press("menu", game + ": back to the selection")
+	_check(table.screen == "select", game + ": Anderes Spiel opens the selection")
+
+
+func _quartett(bridge: Node) -> void:
+	var game := "quartett"
+	await _intro(game)
+	await _pick("players", 2, game + ": one fellow player")
+	await _pick("difficulty", 1, game + ": medium")
+	await _pick("rounds", 1, game + ": one round")
+	await _press("start", game + ": start")
+	_check(await DRIVER.idle(self, table), game + ": deal settles")
+	_check(table.rules.players() == 2 and table.seats.size() == 2 and table.cards.size() == 32, game + ": two players, 32 cards")
+	await _play_until(func() -> bool: return table._can_act() and not table._legal_cards.is_empty(), game)
+	var own: int = table.rules.s.r.hands[0][0]
+	await DRIVER.touch(self, DRIVER.hand_point(table, own))
+	await DRIVER.settle(self, 3)
+	_check(table._pick_rank == DECK.rank(own), game + ": tapping a card chooses the value to ask for")
+	_check(not table.hud.plates[0].disabled and "Wen fragst du" in table.hud.hint_label.text, game + ": fellow players become touch targets")
+	var before: int = int(table.rules.s.moves)
+	await DRIVER.touch(self, DRIVER.control_centre(table.hud.plates[0]))
+	await DRIVER.idle(self, table)
+	_check(int(table.rules.s.moves) > before, game + ": tapping a fellow player asks the question")
+	var result_id := str(table.rules.s.result_id)
+	var stars_before: int = root.get_node("ProgressStore").total_stars()
+	settled.clear()
+	await _play_until(func() -> bool: return false, game)
+	_check(table.rules.sets_total() == table.rules.ranks_in_play().size(), game + ": every quartet is laid")
+	var sets_shown := 0
+	for card: int in table.cards:
+		if table.cards[card].zone == "set":
+			sets_shown += 1
+	_check(sets_shown == 32, game + ": all quartets lie on the table")
+	_final_checks(game, result_id, stars_before)
+	await _press("again", game + ": play again")
+	_check(await DRIVER.idle(self, table), game + ": new match settles")
+	_check(table.screen == "play" and str(table.rules.s.result_id) != result_id, game + ": Nochmal starts a fresh match")
+	table._on_chosen("pause", {})
+	await DRIVER.settle(self, 2)
+	await _press("quit", game + ": quit to selection")
+	_check(table.screen == "select" and table.session.has_match(game), game + ": Beenden keeps the match for later")
+	table.session.discard(game)
+	_check(bridge._host == null, "the standalone table needs no host")
+	await _close("final")

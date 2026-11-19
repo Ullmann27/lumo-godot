@@ -1,39 +1,48 @@
 extends SceneTree
-## Production Cards with an isolated display-inset boundary and genuine touch input.
-## The 136/63 and 145/63 portrait insets were observed in the original API35 log;
-## they are not a measurement of the final screenshot's Godot window-inset state.
+## Der Kartentisch mit Systemrändern (Statusleiste, Kamera-Aussparung,
+## Gestenleiste): alles Bedienbare bleibt im sicheren Bereich und reagiert auf
+## echte Berührungen. Die Ränder sind eine erklärte Vorgabe, keine Gerätemessung.
 
-const TABLE = "res://scenes/games/cards_table.tscn"
-const FIXTURE = preload("res://scripts/tests/cards_table_regression.gd")
+const TABLE := "res://scenes/games/cards_table.tscn"
+const FIXTURE := "res://scripts/tests/fixtures/cards_safe_area_table.gd"
+const DRIVER = preload("res://scripts/tests/helpers/cards_table_driver.gd")
+const SESSION = preload("res://scripts/games/cards/cards_session.gd")
 const SAFE_AREA = preload("res://scripts/app/android_safe_area.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const CHILD := "cards-safe-area"
+## Name, Fenster, Dichte, Ränder (links, oben, rechts, unten in Bildpunkten).
 const PROFILES := [
 	["android35_portrait", Vector2i(1080, 2400), 2.625, Rect2(0, 136, 0, 63)],
 	["android35_portrait_earlier_inset", Vector2i(1080, 2400), 2.625, Rect2(0, 145, 0, 63)],
 	["landscape_cutout_fixture", Vector2i(2400, 1080), 2.625, Rect2(136, 63, 0, 63)],
 	["short_landscape_fixture", Vector2i(640, 360), 1.0, Rect2(0, 32, 0, 24)],
 	["desktop_without_insets", Vector2i(1280, 720), 1.0, Rect2()],
+	["phone_portrait_720", Vector2i(720, 1280), 1.75, Rect2(0, 58, 0, 42)],
+	["phone_landscape_720", Vector2i(1280, 720), 1.75, Rect2(84, 0, 0, 36)],
+	["fold_portrait", Vector2i(1768, 2208), 2.4, Rect2(0, 84, 0, 58)],
+	["fold_landscape", Vector2i(2208, 1768), 2.4, Rect2(0, 84, 0, 58)],
 ]
+const CAPTURES := {"android35_portrait": ["playing", "paused"], "landscape_cutout_fixture": ["playing"]}
 
-var table
+var table: Node
 var density := 1.0
 var safe_pixels := Rect2()
 var profile_name := ""
 var checks := 0
 var failures: Array[String] = []
-var requests: Array[Dictionary] = []
 var targets: Array[Dictionary] = []
 var inputs: Array[Dictionary] = []
 var images: Array[Dictionary] = []
-var projected_views: Array[Dictionary] = []
 var capture := false
 var output := "res://exports/cards-safe-area"
+var layout_sequence := 0
 
 
 func _initialize() -> void:
 	capture = "--capture" in OS.get_cmdline_user_args()
 	if not OS.get_environment("LUMO_CAPTURE_DIR").is_empty():
 		output = OS.get_environment("LUMO_CAPTURE_DIR")
-	call_deferred("_run")
+	_run.call_deferred()
 
 
 func _check(condition: bool, label: String) -> void:
@@ -43,18 +52,9 @@ func _check(condition: bool, label: String) -> void:
 		push_error("[CardsSafeArea] " + profile_name + ": " + label)
 
 
-func _settle(frames: int = 5) -> void:
-	for frame in range(frames):
-		await process_frame
-
-
-func _physical_rect(control: Control) -> Rect2:
-	var factor := Vector2(root.size) / root.get_visible_rect().size
+func _rect(control: Control) -> Rect2:
 	var transform := control.get_global_transform_with_canvas()
-	var rect := Rect2((transform * Vector2.ZERO) * factor, Vector2.ZERO)
-	for point in [Vector2(control.size.x, 0), control.size, Vector2(0, control.size.y)]:
-		rect = rect.expand((transform * point) * factor)
-	return rect
+	return Rect2(transform * Vector2.ZERO, control.size)
 
 
 func _array(rect: Rect2) -> Array:
@@ -62,207 +62,227 @@ func _array(rect: Rect2) -> Array:
 
 
 func _target(control: Control, label: String) -> void:
-	var pixels := _physical_rect(control)
+	var pixels := _rect(control)
 	var dp := pixels.size / density
-	_check(control.is_visible_in_tree(), label + " is visible")
-	_check(minf(dp.x, dp.y) >= 47.99, "%s actual touch target is %s dp" % [label, dp])
-	_check(safe_pixels.grow(0.51).encloses(pixels),
-		"%s must be wholly outside system insets: target=%s safe=%s" % [label, pixels, safe_pixels])
-	targets.append({"profile": profile_name, "label": label, "rect_px": _array(pixels),
-		"dp": [dp.x, dp.y], "safe_rect_px": _array(safe_pixels)})
+	_check(minf(dp.x, dp.y) >= 47.99, "%s is a %s dp touch target" % [label, dp])
+	_check(safe_pixels.grow(0.51).encloses(pixels), "%s stays clear of the system edges: %s in %s" % [label, pixels, safe_pixels])
+	targets.append({"profile": profile_name, "label": label, "rect_px": _array(pixels), "dp": [dp.x, dp.y],
+		"safe_rect_px": _array(safe_pixels)})
 
 
-func _button(caption: String) -> Button:
-	for node in table.ui.find_children("*", "Button", true, false):
-		if node.text == caption and node.is_visible_in_tree():
-			return node
-	return null
+func _all_targets(stage: String) -> void:
+	var seen := 0
+	for button: Button in table.hud.visible_buttons():
+		if button.mouse_filter == Control.MOUSE_FILTER_IGNORE:
+			# Namensschilder sind nur Ziel, wenn gefragt werden darf; sichtbar im sicheren Bereich bleiben sie immer.
+			_check(safe_pixels.grow(0.51).encloses(_rect(button)), "%s %s stays inside the safe area" % [stage, button.name])
+			continue
+		seen += 1
+		_target(button, stage + " " + button.name)
+	_check(seen > 0, stage + " offers touch targets")
 
 
-func _touch(point: Vector2) -> void:
-	for down in [true, false]:
-		var event := InputEventScreenTouch.new()
-		event.index = 2
-		event.position = point
-		event.pressed = down
-		Input.parse_input_event(event)
-		Input.flush_buffered_events()
-		await process_frame
-	await _settle(2)
-
-
-func _tap(control: Button, label: String, edge: bool = false) -> void:
-	_check(is_instance_valid(control), label + " exists")
-	if not is_instance_valid(control):
+func _tap(id: String, label: String, edge: bool = false) -> void:
+	var button: Button = table.hud.find_button(id)
+	_check(button != null and not button.disabled, label + " is available")
+	if button == null:
 		return
-	_target(control, label)
-	_check(not control.disabled, label + " is enabled")
-	var point := _physical_rect(control).get_center()
+	_target(button, label)
+	var point := _rect(button).get_center()
 	if edge:
+		# 22 dp neben der Mitte: auch der Rand des Knopfs muss reagieren.
 		point.y += 22.0 * density
-	inputs.append({"profile": profile_name, "label": label,
-		"screen_touch_px": [point.x, point.y], "edge_22_dp": edge})
-	await _touch(point)
+	inputs.append({"profile": profile_name, "label": label, "screen_touch_px": [point.x, point.y], "edge_22_dp": edge})
+	await DRIVER.touch(self, point)
+	await DRIVER.settle(self, 3)
 
 
-func _ack(paused: bool = false) -> void:
-	var next: Dictionary = table._state.duplicate(true)
-	next["revision"] = int(next.revision) + 1
-	next["ack"] = table._sequence
-	next["paused"] = paused
-	table.apply_state(JSON.parse_string(JSON.stringify(next)))
-	await _settle()
+func _quad_rect(quad: Array) -> Rect2:
+	var box := Rect2(Vector2(quad[0][0], quad[0][1]), Vector2.ZERO)
+	for corner: Array in quad:
+		box = box.expand(Vector2(corner[0], corner[1]))
+	return box
 
 
-func _capture(name: String) -> void:
+func _hand_checks(stage: String) -> Array:
+	var hand: Array = []
+	var controls: Array[Rect2] = []
+	for control: Control in [table.hud.hint_panel, table.hud.me_plate, table.hud.action_button, table.hud.top_bar]:
+		if control.is_visible_in_tree():
+			controls.append(_rect(control))
+	for card: int in table.hand_cards():
+		var quad: Array = table.card_quad(card)
+		var box := _quad_rect(quad)
+		hand.append({"id": str(card), "quad": quad})
+		_check(safe_pixels.grow(1.0).encloses(box), "%s hand card %d stays inside the safe area: %s" % [stage, card, box])
+		if not table._selected.has(card):
+			for control: Rect2 in controls:
+				_check(not box.intersects(control), "%s hand card %d does not cover a control" % [stage, card])
+		var point: Vector2 = DRIVER.hand_point(table, card)
+		_check(table._hand_card_at(point) == card, "%s hand card %d is hit at its visible corner" % [stage, card])
+	_check(hand.size() >= 1, stage + " shows the hand")
+	return hand
+
+
+func _capture(name: String, hand: Array) -> void:
 	if not capture:
 		return
-	await _settle()
+	root.disable_3d = false
+	await DRIVER.settle(self, 5)
 	await RenderingServer.frame_post_draw
 	var rendered := root.get_texture().get_image()
-	_check(not rendered.is_empty() and rendered.get_size() == root.size,
-		"capture is the actual full-size viewport")
+	_check(not rendered.is_empty() and rendered.get_size() == root.size, "capture is the full-size viewport")
 	var path := output.path_join(name + ".png")
-	_check(rendered.save_png(path) == OK, "actual viewport PNG was saved")
-	var snapshot := (FileAccess.get_file_as_string("user://cards_layout_v1.json")
-		if FileAccess.file_exists("user://cards_layout_v1.json") else "")
-	var layout_file := FileAccess.open(output.path_join(name + ".layout.json"), FileAccess.WRITE)
-	_check(layout_file != null and not snapshot.is_empty(), "capture includes the actual settled native layout readback")
-	if layout_file != null:
-		layout_file.store_string(snapshot)
-		layout_file.close()
-	images.append({"path": path, "profile": profile_name,
-		"size": [root.size.x, root.size.y], "safe_rect_px": _array(safe_pixels)})
+	_check(rendered.save_png(path) == OK, "viewport PNG was saved")
+	var focus := {}
+	for card: int in table.cards:
+		if table.cards[card].zone == "trump":
+			focus = {"id": str(card), "quad": table.card_quad(card)}
+	layout_sequence += 1
+	var layout := {
+		"schema": 2, "layout_sequence": layout_sequence, "settled": table.is_idle(), "ui_visible": table.hud.is_visible_in_tree(),
+		"observation_source": "fixture", "pending": 0, "paused": table._paused, "game": table.game,
+		"density": density, "window_px": [root.size.x, root.size.y], "safe_rect_px": _array(safe_pixels),
+		"hand": hand, "table": focus,
+	}
+	var file := FileAccess.open(output.path_join(name + ".layout.json"), FileAccess.WRITE)
+	_check(file != null, "layout sidecar opens")
+	if file != null:
+		file.store_string(JSON.stringify(layout))
+		file.close()
+	images.append({"path": path, "profile": profile_name, "size": [root.size.x, root.size.y], "safe_rect_px": _array(safe_pixels)})
+	root.disable_3d = true
 
 
-func _hand_layout() -> void:
-	var factor := Vector2(root.size) / root.get_visible_rect().size
-	var projected_hand := []
-	for id in table._cards:
-		var card: Node3D = table._cards[id]
-		var projected := Rect2()
-		var first := true
-		var quad := []
-		for corner in [Vector3(-0.415, 0.017, -0.59), Vector3(0.415, 0.017, -0.59),
-			Vector3(0.415, 0.017, 0.59), Vector3(-0.415, 0.017, 0.59)]:
-			var point: Vector2 = table.camera.unproject_position(card.to_global(corner)) * factor
-			projected = Rect2(point, Vector2.ZERO) if first else projected.expand(point)
-			quad.append([point.x, point.y])
-			first = false
-		projected_hand.append({"id": id, "quad": quad})
-		_check(safe_pixels.grow(1).encloses(projected), "card face remains inside safe bounds: " + id)
-		_check(not projected.intersects(_physical_rect(table.footer)),
-			"card face does not overlap the relocated footer: " + id)
-	_check(FIXTURE.face_texture_errors(table).is_empty(), "original face textures remain bound")
-	var snapshot: Variant = (JSON.parse_string(FileAccess.get_file_as_string("user://cards_layout_v1.json"))
-		if FileAccess.file_exists("user://cards_layout_v1.json") else null)
-	_check(snapshot is Dictionary, "stable production layout is atomically readable")
-	if snapshot is Dictionary:
-		_check(snapshot.token == table._state.token and int(snapshot.revision) == int(table._state.revision)
-			and int(snapshot.ack) == int(table._state.ack), "layout readback belongs to the actual mailbox state")
-		_check(snapshot.settled and snapshot.ui_visible and snapshot.observation_source == "fixture",
-			"desktop inset fixture is explicitly distinguished from an Android observation")
-		_check(snapshot.hand.size() == projected_hand.size(), "readback includes every visible hand face")
-		for index in range(mini(snapshot.hand.size(), projected_hand.size())):
-			_check(snapshot.hand[index].id == projected_hand[index].id, "readback preserves public hand order")
-			for corner in range(4):
-				var a: Array = snapshot.hand[index].quad[corner]
-				var b: Array = projected_hand[index].quad[corner]
-				_check(Vector2(a[0], a[1]).distance_to(Vector2(b[0], b[1])) < 0.1,
-					"published actual mesh projection agrees with independent camera readback")
-	projected_views.append({"profile": profile_name, "hand": projected_hand,
-		"ui_rect": _array(_physical_rect(table.ui)), "native_layout": snapshot})
+## Spielkacheln: Titel einzeilig und ganz lesbar, Fächer und Text in der Kachel.
+func _tile_checks() -> void:
+	for id: String in ["stich", "leiter", "quartett"]:
+		var tile: Button = table.hud.find_button("Tile_" + id)
+		_check(tile != null, id + " tile is shown")
+		if tile == null:
+			continue
+		var box := _rect(tile).grow(0.5)
+		var title: Label = tile.get_node("Body/Text/Title")
+		_check(title.fits(), "%s title fits on one line (%s px font in %s px)" % [id, title.get_theme_font_size("font_size"), title.size.x])
+		_check(title.get_theme_font_size("font_size") >= int(15.0 * density), id + " title stays big enough to read")
+		for part: Control in [tile.get_node("Body/Fan"), title, tile.get_node("Body/Text/Status")]:
+			_check(box.encloses(_rect(part)), "%s %s stays inside its tile" % [id, part.name])
 
 
-func _header_observation_is_applied_once() -> void:
-	# The integrated 993c header refresh remains callable after the complete UI
-	# has acquired the measured safe area. It must not inset the header twice.
-	var before_state: Dictionary = table._state.duplicate(true)
-	var before_page: int = table._page
-	var before_cards: Array = table._cards.keys()
-	var observed := Rect2(safe_pixels.position, Vector2(root.size) - safe_pixels.end)
-	table._apply_header_safe_area(observed, Vector2(root.size))
-	await _settle(2)
-	var expected_origin := safe_pixels.position + Vector2(12, 8) * density
-	var header_rect := _physical_rect(table.header)
-	_check(header_rect.position.distance_to(expected_origin) < 0.51,
-		"integrated header applies the actual safe-area origin exactly once")
-	_check(absf(header_rect.end.x - (safe_pixels.end.x - 12 * density)) < 0.51,
-		"integrated header applies the actual right edge exactly once")
-	table._update_header_safe_area()
-	await _settle(2)
-	_check(_physical_rect(table.header).position.distance_to(expected_origin) < 0.51,
-		"later header refresh preserves the same measured UI origin")
-	_check(table._state == before_state and table._page == before_page
-		and table._cards.keys() == before_cards,
-		"header refresh preserves authoritative state, hand identities and page")
+## Namensschilder: ganzer Name lesbar, keine Überlappung, Tischmitte frei.
+func _plate_checks(stage: String) -> void:
+	var shown: Array[Button] = []
+	for plate: Button in table.hud.plates:
+		if plate.visible:
+			shown.append(plate)
+			for line: String in ["Row/Text/Name", "Row/Text/Info"]:
+				var label: Label = plate.get_node(line)
+				_check(not label.clip_text and label.size.x + 0.5 >= label.get_minimum_size().x,
+					"%s %s shows the whole text '%s'" % [stage, plate.name, label.text])
+	for a in range(shown.size()):
+		for b in range(a + 1, shown.size()):
+			_check(not _rect(shown[a]).intersects(_rect(shown[b])), "%s plates %s and %s do not overlap" % [stage, shown[a].name, shown[b].name])
+		if table.hud.trump_chip.visible:
+			_check(not _rect(shown[a]).intersects(_rect(table.hud.trump_chip)), stage + " plate does not cover the trump chip")
+	# Stich und Auslage liegen um die Tischmitte: kein Bedienelement darf sie verdecken.
+	for spot: Vector3 in [Vector3(0, 0.98, 0), Vector3(0.3, 0.98, 0.2), Vector3(-0.3, 0.98, 0.2), Vector3(0, 0.98, -0.3)]:
+		var point: Vector2 = table.camera.unproject_position(spot)
+		for control: Control in [table.hud.hint_panel, table.hud.me_plate, table.hud.action_button, table.hud.top_bar] + shown:
+			if control.is_visible_in_tree():
+				_check(not _rect(control).has_point(point), "%s %s leaves the table centre %s visible" % [stage, control.name, spot])
 
 
 func _exercise() -> void:
-	await _header_observation_is_applied_once()
-	for control in table.ui.find_children("*", "Button", true, false):
-		if control.is_visible_in_tree():
-			_target(control, "initial " + control.text)
-	_check(table.inset_reads > 0, "production layout reads the platform safe-area boundary")
-	_check(safe_pixels.grow(0.51).encloses(_physical_rect(table.header)), "whole header clears the system insets")
-	_hand_layout()
-	if profile_name in ["android35_portrait", "landscape_cutout_fixture"]:
-		await _capture(profile_name + "-playing")
-	var before := requests.size()
-	await _tap(table.pause_button, "Pause edge touch", true)
-	_check(requests.size() == before + 1 and requests.back().action == "pause", "real Pause touch emits one pause request")
-	_check(not bool(table._state.paused), "touch does not invent an authoritative paused state")
-	_check(table._pending > 0, "pause still waits for host acknowledgement")
-	_check(not FileAccess.file_exists("user://cards_layout_v1.json"),
-		"pending input immediately invalidates the previous settled observation")
-	await _ack(true)
-	_check(table.modal.visible, "host pause opens the actual pause panel")
-	_check(safe_pixels.grow(0.51).encloses(_physical_rect(table.modal)), "pause panel is inside safe bounds")
-	if profile_name == "android35_portrait":
-		await _capture(profile_name + "-paused")
-	before = requests.size()
-	await _tap(_button("Weiterspielen"), "Resume touch", true)
-	_check(requests.size() == before + 1 and requests.back().action == "resume", "real Resume touch preserves the request protocol")
-	await _ack(false)
-	if table._page_size < 7:
-		await _tap(_button("›"), "Next-page touch", true)
-		_check(table._page == 1, "real page touch advances the existing hand page")
-		await _tap(_button("‹"), "Previous-page touch", true)
-		_check(table._page == 0, "real page touch restores the first hand page")
-	before = requests.size()
-	var hand_before: Array = table._state.hand.duplicate(true)
-	await _tap(table.draw_button, "Draw edge touch", true)
-	_check(requests.size() == before + 1 and requests.back().action == "draw", "real Draw touch emits one request")
-	_check(table._state.hand == hand_before, "drawing keeps the authoritative hand unchanged until host ack")
-	await _ack(false)
-	var point: Vector2 = table.camera.unproject_position(table._cards["r1"].global_position)
-	await _touch(point * Vector2(root.size) / root.get_visible_rect().size)
-	_check(table._selected == "r1", "real card-face touch still selects the original projected card")
-	# The existing desktop touch-to-mouse emulation may also submit the card.
-	# Complete the fixture's host roundtrip before measuring the Play button;
-	# this test does not claim a new single-tap/double-tap gameplay contract.
-	await _ack(false)
-	before = requests.size()
-	await _tap(table.play_button, "Play selected card touch")
-	_check(requests.size() == before + 1 and requests.back().action == "play"
-		and requests.back().cardId == "r1", "relocated Play emits the original selected-card request")
-	await _ack(false)
-	var call_state: Dictionary = table._state.duplicate(true)
-	call_state.canCall = true
-	table.apply_state(call_state)
-	await _settle()
-	for control in table.actions.get_children():
-		if control is Button and control.is_visible_in_tree():
-			_target(control, "three-action footer " + control.text)
-	before = requests.size()
-	await _tap(table.call_button, "LUMO call touch")
-	_check(requests.size() == before + 1 and requests.back().action == "call", "optional LUMO action remains reachable")
-	await _ack(false)
-	await _tap(_button("Zurück"), "Back edge touch", true)
-	_check(table.return_calls == 1, "actual Back hit reaches the existing return callback")
-	for request in requests:
-		_check(request.token == FIXTURE.fixture().token, "touch requests retain the original session token")
-		_check(int(request.revision) >= 4 and int(request.sequence) > 0, "touch requests retain revision and sequence binding")
+	_check(table.inset_reads > 0, "the layout reads the platform safe-area boundary")
+	# Auswahl.
+	_all_targets("selection")
+	_tile_checks()
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.safe)), "the whole interface is inset")
+	await _tap("Tile_stich", "Sternenstich tile", true)
+	_check(table.hud.overlay_kind == "setup", "a real touch on the tile opens the settings")
+	_all_targets("setup")
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.overlay.get_node("Panel"))), "the settings panel is inside the safe area")
+	await _tap("Pick_rounds_1", "one round")
+	await _tap("Pick_players_4", "three fellow players")
+	await _tap("Pick_difficulty_0", "easy")
+	await _tap("start", "start", true)
+	_check(await DRIVER.idle(self, table, 60.0), "the deal settles")
+	_check(table.screen == "play" and table.rules != null, "the match runs")
+	# Spiel: warten, bis das Kind dran ist.
+	var guard := 0
+	while not table._can_act() and guard < 20:
+		guard += 1
+		await DRIVER.idle(self, table, 60.0)
+		await DRIVER.settle(self, 2)
+	_check(table._can_act(), "the child gets a turn")
+	_all_targets("play")
+	for plate: Button in table.hud.plates:
+		_check(safe_pixels.grow(0.51).encloses(_rect(plate)), "name plate %s is inside the safe area" % plate.name)
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.top_bar)), "the header clears the status bar")
+	var hand := _hand_checks("play")
+	_plate_checks("play")
+	if profile_name in CAPTURES:
+		await _capture(profile_name + "-playing", hand)
+	# Erste Berührung hebt die Karte, der Knopf „Legen“ erscheint im sicheren Bereich.
+	var legal: int = table._legal_cards.keys()[0]
+	var point: Vector2 = DRIVER.hand_point(table, legal)
+	inputs.append({"profile": profile_name, "label": "hand card", "screen_touch_px": [point.x, point.y], "edge_22_dp": false})
+	await DRIVER.touch(self, point)
+	await DRIVER.idle(self, table, 10.0)
+	_check(table._selected == [legal], "a real touch lifts the playable card")
+	_check(safe_pixels.grow(1.0).encloses(_quad_rect(table.card_quad(legal))), "the lifted card stays inside the safe area")
+	var moves: int = int(table.rules.s.moves)
+	await _tap("Action", "Legen", true)
+	await DRIVER.idle(self, table, 60.0)
+	_check(int(table.rules.s.moves) > moves, "Legen plays the lifted card")
+	# Pause.
+	guard = 0
+	while not table._can_act() and table.rules.phase() == "playing" and guard < 20:
+		guard += 1
+		await DRIVER.idle(self, table, 60.0)
+	var before: Dictionary = table.rules.snapshot()
+	await _tap("Pause", "pause", true)
+	_check(table.hud.overlay_kind == "pause" and table._paused, "a real touch opens the pause menu")
+	_all_targets("pause")
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.overlay.get_node("Panel"))), "the pause panel is inside the safe area")
+	if profile_name in CAPTURES and "paused" in CAPTURES[profile_name]:
+		await _capture(profile_name + "-paused", _hand_checks("paused"))
+	await _tap("rules", "rules")
+	_all_targets("rules")
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.overlay.get_node("Panel"))), "the rules panel is inside the safe area")
+	await _tap("rules_done", "back from rules")
+	await _tap("continue", "continue", true)
+	_check(table.hud.overlay_kind.is_empty() and not table._paused and table.rules.snapshot() == before, "the pause changes nothing in the match")
+	# Zu Ende spielen: Rundenwertung und Endstand im sicheren Bereich.
+	guard = 0
+	while table.screen == "play" and guard < 400:
+		guard += 1
+		if not await DRIVER.idle(self, table, 60.0):
+			break
+		if not table.hud.overlay_kind.is_empty():
+			break
+		if table._can_act():
+			if not await DRIVER.play(self, table, DRIVER.suggestion(table)):
+				_check(false, "a touch move fails while finishing the round")
+				break
+	await DRIVER.idle(self, table, 60.0)
+	_check(table.hud.overlay_kind == "final", "the one-round match ends with the standings")
+	_all_targets("final")
+	_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.overlay.get_node("Panel"))), "the standings are inside the safe area")
+	await _tap("menu", "another game")
+	_check(table.screen == "select", "the selection returns")
+	# Einführung: Sprechblase im sicheren Bereich.
+	await _tap("Tile_quartett", "Lumo-Quartett tile")
+	await DRIVER.idle(self, table, 60.0)
+	_check(is_instance_valid(table.hud.bubble), "the first visit shows Lumo's speech bubble")
+	if is_instance_valid(table.hud.bubble):
+		_check(safe_pixels.grow(0.51).encloses(_rect(table.hud.bubble)), "the speech bubble is inside the safe area")
+		_all_targets("introduction")
+		await _tap("intro_skip", "skip the introduction")
+	_check(table.hud.overlay_kind == "setup", "skipping leads to the settings")
+	await _tap("back", "back to the selection")
+	await _tap("leave", "Zurück", true)
+	_check(table.return_calls == 1, "a real touch on Zurück reaches the return to the app")
 
 
 func _run() -> void:
@@ -270,57 +290,60 @@ func _run() -> void:
 		push_error("Cards safe-area capture requires an actual renderer")
 		quit(2)
 		return
+	Engine.max_fps = 0
 	DirAccess.make_dir_recursive_absolute(output)
-	var previous_emulation := Input.emulate_touch_from_mouse
-	Input.emulate_touch_from_mouse = true
-	_check(Input.emulate_mouse_from_touch, "Godot routes actual touch events to GUI buttons")
-	# Independent geometry cases for the Android View-offset conversion, not
-	# a constant copied from the UI. Existing Android padding must not be added twice.
+	_check(Input.emulate_mouse_from_touch, "touch events reach the buttons")
+	# Unabhängige Geometriefälle der Android-Umrechnung (unverändert gültig).
 	var decor := Vector2(1080, 2400)
 	var bars := Rect2(0, 136, 0, 63)
-	_check(SAFE_AREA.insets_inside_view(decor, Rect2(Vector2.ZERO, decor), bars) == bars,
-		"full edge-to-edge View retains both measured system insets")
-	_check(SAFE_AREA.insets_inside_view(decor, Rect2(0, 136, 1080, 2201), bars) == Rect2(),
-		"fully padded View does not receive the system insets twice")
-	_check(SAFE_AREA.insets_inside_view(decor, Rect2(0, 63, 1080, 2337), bars) == Rect2(0, 73, 0, 63),
-		"partially padded View receives only the actual remaining overlap")
-	_check(SAFE_AREA.insets_inside_view(Vector2(2400, 1080), Rect2(80, 20, 2320, 1060),
-		Rect2(136, 63, 0, 63)) == Rect2(56, 43, 0, 63),
-		"landscape cutout and partial View offset remain separate physical edges")
-	for profile in PROFILES:
+	_check(SAFE_AREA.insets_inside_view(decor, Rect2(Vector2.ZERO, decor), bars) == bars, "edge-to-edge view keeps both system insets")
+	_check(SAFE_AREA.insets_inside_view(decor, Rect2(0, 136, 1080, 2201), bars) == Rect2(), "a padded view is not inset twice")
+	_check(SAFE_AREA.insets_inside_view(decor, Rect2(0, 63, 1080, 2337), bars) == Rect2(0, 73, 0, 63), "a partly padded view gets the remaining overlap")
+	_check(SAFE_AREA.insets_inside_view(Vector2(2400, 1080), Rect2(80, 20, 2320, 1060), Rect2(136, 63, 0, 63)) == Rect2(56, 43, 0, 63),
+		"landscape cutout and view offset stay separate edges")
+	var bridge := root.get_node("HostBridge")
+	var original: Dictionary = bridge._options.duplicate(true)
+	var save_path := SESSION.path_for(CHILD)
+	root.disable_3d = capture
+	for profile: Array in PROFILES:
 		profile_name = profile[0]
 		root.size = profile[1]
 		density = profile[2]
 		var insets: Rect2 = profile[3]
 		safe_pixels = Rect2(insets.position, Vector2(root.size) - insets.position - insets.size)
-		root.get_node("HostBridge")._options = {"displayDensity": density,
-			"cardsToken": FIXTURE.fixture().token, "soundEnabled": false}
-		requests.clear()
+		bridge._options = {"displayDensity": density, "childKey": CHILD, "soundEnabled": false}
+		DirAccess.remove_absolute(save_path)
+		await DRIVER.settle(self, 3)
 		table = load(TABLE).instantiate()
-		# Load after autoload initialization, as the production scene does.
-		table.set_script(load("res://scripts/tests/fixtures/cards_safe_area_table.gd"))
+		table.set_script(load(FIXTURE))
 		table.display_insets = insets
-		table._android_safe_area = {"view_size": Vector2(root.size), "decor_size": Vector2(root.size),
-			"render_rect": Rect2(Vector2.ZERO, Vector2(root.size)), "system_insets": insets,
-			"insets": insets, "window_size": root.size}
 		root.add_child(table)
-		table.action_requested.connect(func(request: Dictionary): requests.append(request))
-		await _settle(8)
+		table.time_scale = 60.0
+		await DRIVER.settle(self, 6)
+		# Solange Android noch keine Ränder gemeldet hat, bleibt die Oberfläche verborgen.
+		table._android_safe_area_enabled = true
 		table._resize()
-		table.apply_state(FIXTURE.wire_fixture())
-		await _settle(8)
+		_check(not table.hud.visible, "no control is shown before the system edges are known")
+		table.observation = {"view_size": Vector2(root.size), "decor_size": Vector2(root.size),
+			"render_rect": Rect2(Vector2.ZERO, Vector2(root.size)), "system_insets": insets, "insets": insets, "window_size": root.size}
+		table._resize()
+		_check(table.hud.visible, "the interface appears with the measured edges")
+		table.session.mark_intro_seen("stich")
+		await DRIVER.settle(self, 4)
 		await _exercise()
-		table.queue_free()
-		await _settle()
-	Input.emulate_touch_from_mouse = previous_emulation
+		_check(await SCENE_TEARDOWN.release_scene(self, table, "[CardsSafeArea] " + profile_name), "the scene is released")
+		table = null
+		await DRIVER.settle(self, 3)
+	root.disable_3d = false
+	bridge._options = original
+	DirAccess.remove_absolute(save_path)
 	var report := FileAccess.open(output.path_join("cards-safe-area.json"), FileAccess.WRITE)
 	_check(report != null, "evidence report opens")
 	if report != null:
-		report.store_string(JSON.stringify({"checks": checks, "failures": failures,
-			"renderer": DisplayServer.get_name(), "android_device_measurement": false,
-			"fixture_scope": "API35 log-observed portrait insets; explicit synthetic landscape/desktop cases",
-			"targets": targets, "input_events": inputs, "images": images,
-			"projected_views": projected_views}, "  "))
+		report.store_string(JSON.stringify({"checks": checks, "failures": failures, "renderer": DisplayServer.get_name(),
+			"android_device_measurement": false,
+			"fixture_scope": "declared insets: API35 log-observed portrait bars, synthetic cutout, phone, fold and desktop cases",
+			"profiles": PROFILES.size(), "targets": targets, "input_events": inputs, "images": images}, "  "))
 		report.close()
 	print("CARDS_SAFE_AREA_%s checks=%d failures=%d profiles=%d images=%d" % [
 		"PASS" if failures.is_empty() else "FAIL", checks, failures.size(), PROFILES.size(), images.size()])

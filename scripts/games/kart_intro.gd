@@ -147,6 +147,8 @@ func _build_stage(viewport: SubViewport) -> void:
 		star.material_override = _glow(Color("ffd36b") if index % 4 == 0 else Color("a8deee"))
 		stage.add_child(star)
 	kart = VEHICLE.new()
+	# The intro shows the real rigged Lumo, never the sculpted stand-in fox.
+	kart.set_animated_lumo_enabled(true)
 	kart.configure("fox", Color("357cba"), "comet")
 	kart.reduced_motion = reduced_motion
 	stage.add_child(kart)
