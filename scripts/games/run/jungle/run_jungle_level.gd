@@ -192,8 +192,10 @@ func _decor(kind: String, at: float, lat: float, extra: Dictionary = {}) -> void
 ## Registers an adventure passage: announced `lead` metres before its hole,
 ## with a safe line (shorter jump, more time) and a brave line (longer jump,
 ## gold stars). Both are branches for the scripted player as well.
+## 50 m lead: at the 1.5 path tempo with both flow stages (20 m/s on screen) the
+## child still gets 2.5 s of warning (46 m were 2.3 s).
 func _passage(name: String, hole: float, length_m: float, safe: Dictionary, brave: Dictionary, say: String,
-		brave_speed: float, lead: float = 46.0) -> void:
+		brave_speed: float, lead: float = 50.0) -> void:
 	passages.append({
 		"name": name, "s0": hole, "s1": hole + length_m, "announce": hole - lead, "say": say,
 		"safe_lat": float(safe.lat), "safe_gap": float(safe.gap), "brave_lat": float(brave.lat), "brave_gap": float(brave.gap),
