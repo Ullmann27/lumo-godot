@@ -150,18 +150,25 @@ func _run() -> void:
 		var ui_scale: float = root.get_visible_rect().size.x / (float(pixels.x) / density)
 		var selected_count := 0
 		for card in cards.get_children():
-			if card.selection_mark.visible:
+			# Mode cards are drawn showcase cards (kart_showcase_card.gd, since 18.11.2026):
+			# the selection is a thick accent frame plus check badge, the name is drawn
+			# at the size _fit() chooses for the card's text width.
+			if card.selected:
 				selected_count += 1
 			_check(_dp(card, density).y >= 47.8, "Selectable mode is never a 28px substitute")
-			_check(float(card.title_label.get_theme_font_size("font_size")) / ui_scale >= 15.5,
-				"Readable mode type at actual density")
-			var title_size: int = card.title_label.get_theme_font_size("font_size")
-			var title_font: Font = card.title_label.get_theme_font("font")
+			var k: float = maxf(card.ui_scale, 0.25)
+			var text_width: float = card.size.x - 20.0 * k
+			if card.art_share <= 0.0 and (card.selected or card.disabled):
+				text_width -= 76.0 * k
+			var title_font: Font = card.UI.HEADING
+			var title_size: int = card._fit(title_font, card.title, text_width, 24.0 * k, 13.0 * k)
+			_check(float(title_size) / ui_scale >= 15.5,
+				"Readable mode type at actual density (%.1f dp)" % (float(title_size) / ui_scale))
 			var full_width: float = title_font.get_string_size(
-				card.title_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
-			_check(card.title_label.size.x + 0.75 >= full_width,
+				card.title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
+			_check(text_width + 0.75 >= full_width,
 				"Complete mode name, not an ellipsis: " + card.title + " " + str(pixels)
-				+ " density=" + str(density) + " available=" + str(card.title_label.size.x)
+				+ " density=" + str(density) + " available=" + str(text_width)
 				+ " required=" + str(full_width))
 			scroll.ensure_control_visible(card)
 			await _settle(2)
@@ -178,7 +185,7 @@ func _run() -> void:
 					" page=", scroll.get_v_scroll_bar().page)
 			_check(reachable,
 				"Every mode is reachable without clipping: " + card.title + " " + str(pixels))
-		_check(selected_count == 1 and cards.get_child(0).selection_mark.visible,
+		_check(selected_count == 1 and cards.get_child(0).selected,
 			"Exactly the real selected mode has a check mark")
 		if float(pixels.x) / density >= 760 and float(pixels.y) / density >= 600:
 			_check(scroll.get_global_rect().grow(1).encloses(cards.get_global_rect()),
