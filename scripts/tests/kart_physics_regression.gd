@@ -3,6 +3,7 @@ extends SceneTree
 ## is announced, and neither reversing over the line nor jumping ahead creates lap progress.
 const STEP: float = 1.0 / 60.0
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
 ## An assertion aborts its function. PASS requires every check to finish.
@@ -40,6 +41,16 @@ func _face(heading: float, speed: float) -> void:
 func _test_walls(track: String) -> void:
 	for side in [1.0, -1.0]:
 		await _start("training", track)
+		# Start on a protected section when an open bridge occupies the first
+		# straight. The passage probe separately checks that falling there rescues the kart.
+		for passage in PASSAGES.of(game.world):
+			if str(passage.kind) == "bridge" and float(passage.deck_start) < 320.0:
+				var after_bridge: float = float(passage.exit_end) + 12.0
+				game.distance = after_bridge
+				game.previous_road_distance = after_bridge
+				game.player.transform = game.world.reset_transform(after_bridge)
+				_face(game._heading(after_bridge), 0.0)
+				break
 		var start_distance: float = game.distance
 		var widest: float = 0.0
 		var overshoot: float = -INF
