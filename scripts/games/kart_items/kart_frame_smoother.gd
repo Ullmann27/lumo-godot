@@ -96,7 +96,11 @@ func end_tick() -> void:
 				entry.prev = now
 		else:
 			_entries[id] = {
-				"target": weakref(node), "prev": now, "curr": now, "shown": false, "shown_transform": now
+				"target": weakref(node),
+				"prev": now,
+				"curr": now,
+				"shown": false,
+				"shown_transform": now
 			}
 	for id in _entries.keys():
 		if not seen.has(id):

@@ -409,7 +409,9 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	var compact_drawer := drawer.size.x < 320.0 * ui_scale
 	for id in slot_buttons:
 		var tab: Button = slot_buttons[id]
-		tab.add_theme_font_size_override("font_size", roundi((14 if compact_drawer else 16) * ui_scale))
+		tab.add_theme_font_size_override(
+			"font_size", roundi((14 if compact_drawer else 16) * ui_scale)
+		)
 		tab.custom_minimum_size = Vector2((78 if compact_drawer else 104) * ui_scale, button_height)
 		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		tab.clip_text = true
