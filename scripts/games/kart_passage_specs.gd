@@ -1,0 +1,84 @@
+extends RefCounted
+## Entwurfswerte der LUMO-Passagen je Strecke (Meter auf der fertig geglätteten Fahrbahn).
+## Logik: kart_passages.gd. Aufbau und Bewegung: kart_passage_art.gd.
+
+## Entwurf je Strecke. "bridge": schmales Deck ohne Planke über einer Lücke, davor ebener,
+## griffiger Vorplatz voller Breite. "swing": bewegtes Hindernis mit Wartelinie.
+const SPECS: Dictionary = {
+	"winter_sprint":
+	[
+		{
+			"kind": "bridge",
+			"id": "eisbruecke",
+			"name": "Gletscher-Eisbrücke",
+			"theme": "ice",
+			"plaza_start": 80.0,
+			"deck_start": 100.0,
+			"deck_end": 124.0,
+			"exit_end": 165.0,
+			"deck_width": 3.6,
+			"respawn": 90.0,
+			"sign": "EISBRÜCKE\nLangsam ausrichten",
+			"approach_text": "Eisbrücke! Bremsen, ausrichten, langsam hinüber.",
+		},
+	],
+	"jungle_emerald_3600":
+	[
+		{
+			"kind": "flow",
+			"id": "wurzelallee",
+			"name": "S-Kurve der Riesenwurzeln",
+			"theme": "jungle",
+			"zone_start": 335.0,
+			"zone_end": 500.0,
+			"apexes": [[388.0, -1.0], [462.0, 1.0]],
+			"sign": "ALLEE DER RIESENWURZELN\nLinks – rechts schwingen",
+			"approach_text": "Die Wurzel-S-Kurve: links, dann rechts – schön schwingen!",
+		},
+		{
+			"kind": "view",
+			"id": "wasserfallblick",
+			"name": "Wasserfall-Blick",
+			"theme": "jungle",
+			"zone_start": 965.0,
+			"zone_end": 1045.0,
+			"landmark": 1082.0,
+			"lateral": -27.0,
+			"sign": "WASSERFALL-BLICK\nGeradeaus schauen",
+			"approach_text": "Schau mal geradeaus: der große Smaragd-Wasserfall!",
+		},
+		{
+			"kind": "bridge",
+			"id": "kronenbruecke",
+			"name": "Kronenbrücke",
+			"theme": "canopy",
+			"plaza_start": 1858.0,
+			"deck_start": 1886.0,
+			"deck_end": 1922.0,
+			"exit_end": 1960.0,
+			"deck_width": 3.6,
+			"respawn": 1872.0,
+			"sign": "KRONENBRÜCKE\nMitte halten",
+			"approach_text": "Kronenbrücke! Ausrichten und in der Mitte bleiben.",
+		},
+		{
+			"kind": "swing",
+			"id": "lianenaffe",
+			"name": "Lianenaffe Kiri",
+			"theme": "jungle",
+			"wait_start": 2652.0,
+			"wait_line": 2690.0,
+			"plane": 2698.0,
+			"band": 2.2,
+			"open": 4.2,
+			"warn": 1.6,
+			"swing": 2.0,
+			"offset": 1.3,
+			"respawn": 2670.0,
+			"pivot_height": 12.0,
+			"reach": 8.6,
+			"sign": "LIANENAFFE KIRI\nBei Rot kurz warten",
+			"approach_text": "Kiri ruft! Bei Rot kurz warten, bei Grün vorbei.",
+		},
+	],
+}
