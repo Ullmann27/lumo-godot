@@ -11,7 +11,8 @@ const CAMERA_ELEVATION := 56.0
 const CAMERA_FOV := 30.0
 const TABLE_HEIGHT := 0.98
 ## Längste Seite der Tischplatte in Metern.
-const TABLE_SPAN := 1.8
+## Großer Spieltisch: so bleibt Lumo neben den Karten in natürlicher Größe.
+const TABLE_SPAN := 3.2
 ## Die hinteren Karten erscheinen in der Schrägsicht kleiner; die Rasterwahl
 ## plant dafür Reserve ein, damit jede Karte ≥ 48 dp bleibt.
 const PERSPECTIVE_RESERVE := 1.3
@@ -743,6 +744,11 @@ func _fit_table(grid_rect: Rect2,pixel_factor: Vector2) -> void:
 	_frame_camera(size,pixel_factor)
 
 
+## Querformat: Lumo sitzt rechts neben dem Tisch; Hochformat: hinter dem Tisch.
+func _lumo_beside() -> bool:
+	return _safe_rect.size.x > _safe_rect.size.y
+
+
 ## Kamera so stellen, dass das projizierte Kartenraster in die Brettfläche passt.
 func _frame_camera(grid_size: Vector2,pixel_factor: Vector2) -> void:
 	var elevation := deg_to_rad(CAMERA_ELEVATION)
@@ -779,12 +785,14 @@ func _projected(corners: Array[Vector3],back: Vector3,distance: float,pan: Vecto
 
 ## Stuhl, Lumo, Kakao und Kekse wandern mit der Tischgröße mit.
 func _place_props(half: Vector2) -> void:
-	var side := _safe_rect.size.x >= 850.0 and _safe_rect.size.y >= 480.0
+	var side := _lumo_beside()
 	var seat: Transform3D
 	if side:
 		# Breites Querformat: Lumo sitzt rechts am Tisch, Blick zur Mitte.
-		var at := Vector3(half.x+0.22,-TABLE_HEIGHT,-0.1)
-		seat = Transform3D(Basis.IDENTITY,at).looking_at(Vector3(0,-TABLE_HEIGHT,-0.1),Vector3.UP)
+		# Vorn rechts am Tisch: so steht sein Kopf tief genug im Bild und frei.
+		var at := Vector3(half.x+0.24,-TABLE_HEIGHT,half.y*0.3)
+		# Schräg zum Tisch und zum Kind gedreht: man sieht sein Gesicht.
+		seat = Transform3D(Basis.IDENTITY,at).looking_at(Vector3(0,-TABLE_HEIGHT,half.y*1.6),Vector3.UP)
 	else:
 		# Sonst sitzt er hinten am Tisch und schaut zum Kind.
 		var at := Vector3(0.35,-TABLE_HEIGHT,-half.y-0.14)
@@ -1042,12 +1050,15 @@ func _layout() -> void:
 	var inset := (TABLE_MARGIN+TABLE_RIM)*_table_scale*100.0+2.0
 	_board_rect = Rect2(safe.position+Vector2(14+inset,board_top+inset),
 		Vector2(maxf(50,safe.size.x-28-inset*2.0),maxf(66,safe.size.y-board_top-footer_height-14-inset*2.0)))
-	var fox_room := safe.size.x >= 850.0 and safe.size.y >= 480.0
-	if fox_room: _board_rect.size.x -= 170.0
+	var fox_room := _lumo_beside()
+	# Querformat: rechts bleibt Platz für Lumo auf seinem Stuhl neben dem Tisch.
+	if fox_room: _board_rect.size.x -= clampf(safe.size.x*0.26,150.0,280.0)
 	elif _board_rect.size.y > _board_rect.size.x*1.25:
-		# Hochformat: oben bleibt Platz für Lumo hinter dem Tisch.
-		_board_rect.position.y += 110.0
-		_board_rect.size.y -= 110.0
+		# Hochformat: oben bleibt Platz für Lumo hinter dem Tisch – so viel, dass sein Kopf
+		# unter der Kopfzeile frei steht, solange das Brett hochformatig bleibt.
+		var lumo_room := clampf(_board_rect.size.y-_board_rect.size.x*1.25,110.0,210.0)
+		_board_rect.position.y += lumo_room
+		_board_rect.size.y -= lumo_room
 	overlay.position = Vector2(8,header_height+10)
 	overlay.size = Vector2(safe.size.x-16,maxf(80,safe.size.y-header_height-18))
 	camera.size = logical.y/100.0
