@@ -4,6 +4,9 @@ extends Node3D
 ## Imported meshes retain their PBR finishes, mechanical joints and authored LODs.
 
 const FAR_DETAIL_DISTANCE: float = 32.0
+## Original LUMO fox tail must clear the outer edge of the rear cockpit.
+const FOX_TAIL_CLEARANCE_SOCKET := Vector3(0.56, 1.10, 0.24)
+const TAIL_REST_YAW: float = 0.63
 const DETAIL_HYSTERESIS: float = 4.0
 const INK := Color("101c30")
 const NAVY := Color("15355e")
@@ -2303,9 +2306,11 @@ func _make_eye(side: float, fur_shadow: Color) -> void:
 func _make_tail(fur: Color, cream: Color) -> void:
 	tail = Node3D.new()
 	tail.name = "TailJoint"
-	# Route through the right cockpit opening, clear of the seat's x=0.35 edge.
-	tail.position = Vector3(0.39, 0.99, 0.24)
-	tail.rotation.y = 0.63
+	# Mount outside the side shell and above the cockpit rim. This keeps
+	# the thick fur volume clear when the tail sweeps during racing.
+	tail.position = FOX_TAIL_CLEARANCE_SOCKET if animal == "fox" else Vector3(0.39, 0.99, 0.24)
+	tail.rotation.y = TAIL_REST_YAW
+	tail.set_meta("kart_tail_clearance_revision", 1 if animal == "fox" else 0)
 	tail.rotation.x = -0.15
 	driver.add_child(tail)
 	if animal != "fox" and RIVAL_FINISH.make_tail(self, fur, cream):
@@ -2655,7 +2660,7 @@ func _process(delta: float) -> void:
 		jaw.rotation.x = speaking_amount * 0.45
 		jaw.position = jaw_rest_position + Vector3(0, -speaking_amount * 0.035, 0)
 	if tail and not reduced_motion:
-		tail.rotation.y = 0.63 + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
+		tail.rotation.y = TAIL_REST_YAW + sin(animation_time * 2.6) * 0.055 - motion_steer * 0.07
 	if steering_wheel and not is_instance_valid(production_vehicle):
 		steering_wheel.rotation.z = -motion_steer * 0.40
 	if brief_cheer_time > 0.0:
@@ -2727,7 +2732,7 @@ func _apply_celebration(delta: float) -> void:
 	for ear in ear_joints:
 		ear.rotation.x = lerpf(ear.rotation.x, (-0.22 if happy else 0.08) + beat * 0.06, minf(1, delta * 6))
 	if tail:
-		tail.rotation.y = 0.63 + beat * (0.20 if happy else 0.08)
+		tail.rotation.y = TAIL_REST_YAW + beat * (0.20 if happy else 0.08)
 	if jaw and happy:
 		# Fröhlich offener Mund, solange Lumo nicht spricht.
 		jaw.rotation.x = maxf(jaw.rotation.x, 0.22 + absf(beat) * 0.12)
