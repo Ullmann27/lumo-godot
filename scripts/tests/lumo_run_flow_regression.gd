@@ -125,9 +125,15 @@ func _test_tempo(game) -> void:
 	_check(reached_cruise > 0.0 and reached_cruise < 1.4, "Lumo is at cruise speed quickly (%.2f s)" % reached_cruise)
 	_check(top >= TUNING.PATH_CRUISE + TUNING.PATH_FLOW_BONUS * 0.75 and peak_flow > 0.8, "running on freely builds a sprint (top %.1f m/s on screen, flow %.2f)" % [top * SCALE, peak_flow])
 	# Braking takes the momentum away (a stop is a stop).
+	# Judged at the moment he stands: a creature of the path may bump the standing
+	# Lumo afterwards (at the 1.5 path tempo one reaches him within the second).
 	game.touch_steer = Vector2(0.0, 1.0)
-	_steps(game, 60)
-	_check(player.flow < 0.1 and player.speed < 0.5, "pulling back stops Lumo and ends the sprint (flow %.2f, %.1f m/s)" % [player.flow, player.speed])
+	var stopped_after: int = -1
+	for brake_step in range(60):
+		_steps(game, 1)
+		if stopped_after < 0 and absf(player.speed) < 0.5:
+			stopped_after = brake_step + 1
+	_check(stopped_after > 0 and player.flow < 0.1, "pulling back stops Lumo and ends the sprint (flow %.2f, stopped after %d frames)" % [player.flow, stopped_after])
 	game.touch_steer = Vector2.ZERO
 	# A speed pad.
 	_place(game, float(pad.s0) - 2.0, TUNING.PATH_CRUISE)
