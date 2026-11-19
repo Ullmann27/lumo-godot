@@ -73,3 +73,16 @@ die vorhandene Fahrbahnhöhe), `incoming()`/`lane_bias()` (Lichtbogen-Falle wie 
 | Einschlag +0,28 s | Einschlag | verästelter Blitz Wolke → Kartdach, dreimal neu verästelt, Lichtblitz + Funken; mit Schild endet er an der Kuppel und leitet in drei Ästen zur Fahrbahn ab |
 | +0–1,15 s | Reaktion | Tempo 68 %, ab ⅓ weich zurück auf 100 %; Funkenbögen kriechen über das Kart |
 | +0–1,1 s | Abklingen | Brandring am Boden glüht aus, Wolke weitet sich und verblasst |
+
+### Frostkristall (`frost_capsule`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00 s | Auslöser | Eiskapsel (facettierter Kristall mit Leuchtkern) löst sich vorn vom Kart |
+| 0–Flug | Weg | Bogen vom Abwurfpunkt zum *aktuellen* Ziel (folgt ihm); Höhe 1,2 m + 4 % der Distanz; Flugzeit = Abstand / 38 m/s (0,55–1,30 s); weiß-blaue Frostspur zeichnet die Bahn nach |
+| Flug | Einschlag | Kapsel zerspringt in Splitter + Frostnebel; mit Schild an der Kuppelseite, die zur Kapsel zeigt |
+| Flug + 0–0,2 s | Reaktion | Eiskrusten wachsen an allen vier echten Radnaben (`wheel_pivots`) |
+| Flug + 0–1,6 s | Reaktion | Lenkung 58 %, Haftung 55 %, Tempo 90 % (ab ⅓ weich zurück); Raureif-Spur hinter den Hinterrädern bleibt kurz auf der Fahrbahn liegen |
+| letzte 0,6 s | Abklingen | Krusten schrumpfen, Tropfen fallen, Dampf steigt |
+
+Sperre: Ziel nur, wenn `safe_at()` gilt; wird es im Flug unsicher, verpufft der Frost (Splitter, keine Wirkung).

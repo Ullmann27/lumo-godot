@@ -209,6 +209,32 @@
         "thunder_strike"
       ],
       "note": "Laden am eigenen Kart, Stern fliegt über das Ziel, Wolke + Bodenring warnen, Blitz von oben. Schild wehrt ab, Schonzeit gilt."
+    },
+    {
+      "id": "frost_crystal",
+      "name": "Frostkristall",
+      "short": "FROST",
+      "glyph": "❄",
+      "color": "#8fe3ff",
+      "behaviour": "frost_capsule",
+      "range": 50.0,
+      "seconds": 1.6,
+      "role": "attack",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "frost_launch",
+        "frost_hit",
+        "frost_melt"
+      ],
+      "note": "Eiskapsel im Bogen, Eis an den Rädern 1,6 s (Lenkung 58 %, nie blockiert), taut sichtbar. Nie an Brücke/Kante/Rampe."
     }
   ]
 }
