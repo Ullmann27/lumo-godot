@@ -294,7 +294,7 @@ func _poll_audio() -> void:
 	if int(value.get("id", 0)) != _expected_audio_id:
 		return
 	var status := str(value.get("state", ""))
-	var audible := value.get("audible", false) == true and status == "playing"
+	var audible: bool = value.get("audible", false) == true and status == "playing"
 	var envelope := clampf(float(value.get("envelope", 0.0)), 0.0, 1.0) if audible else 0.0
 	var position := maxi(0, int(value.get("positionMs", 0)))
 	var key := str(_expected_audio_id) + ":" + status + ":" + str(position)
