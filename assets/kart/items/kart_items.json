@@ -381,6 +381,31 @@
         "turbo_xl"
       ],
       "note": "Drei Ladungen je 1,5 s Schub + 8 %; keine Zündung vor Brücke/Kante/Rampe."
+    },
+    {
+      "id": "arc_trap",
+      "name": "Lichtbogen-Falle",
+      "short": "BOGEN",
+      "glyph": "∩",
+      "color": "#c08cff",
+      "behaviour": "arc_trap",
+      "life": 8.0,
+      "seconds": 0.9,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "arc_place",
+        "arc_zap"
+      ],
+      "note": "Energiebogen 2,6 m breit hinter dem Kart, 8 s; Durchfahrt 70 % Tempo 0,9 s; immer umfahrbar."
     }
   ]
 }
