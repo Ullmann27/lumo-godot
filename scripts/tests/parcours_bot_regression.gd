@@ -170,6 +170,35 @@ func _fall_test(world_id: String) -> void:
 	)
 
 
+## Geheimweg: über die Rampe auf den Steg, Geheimsterne und Fundstelle einsammeln.
+func _secret_test(world_id: String) -> void:
+	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
+	var course = worlds.build(world_id)
+	_check(course.secret_routes.size() >= 1, "%s: Fahrlinie über den Geheimweg" % world_id)
+	if course.secret_routes.is_empty():
+		return
+	var route: Array = course.secret_routes[0]
+	var run = load("res://scripts/games/parcours/parcours_run.gd").new()
+	run.setup(course, "erkunden")
+	run.drive.factors = _factors()
+	run.drive.difficulty = "gemuetlich"
+	var first: Vector3 = route[0].pos
+	var second: Vector3 = route[1].pos
+	var to: Vector3 = second - first
+	run.drive.place(first + to.normalized() * 0.5 - Vector3.UP * 0.3, atan2(-to.x, -to.z))
+	course.route = route
+	var bot = load("res://scripts/games/parcours/parcours_bot.gd").new(9, 0.3, 0.08)
+	var top: float = -INF
+	for i in range(60 * 12):
+		var input: Dictionary = bot.drive_input(run, STEP)
+		run.step(STEP, float(input.axis), float(input.brake), true, true)
+		top = maxf(top, run.drive.position.y - first.y)
+	if trace:
+		print("[trace] secret %s top=%.1f end=%s route=%s" % [world_id, top, run.drive.position, route])
+	_check(run.secrets_found.size() >= 1, "%s: Geheimweg gefunden" % world_id)
+	_check(run.secret_star_count() >= 3, "%s: Geheimsterne gesammelt (%d)" % [world_id, run.secret_star_count()])
+
+
 func _phase_test(world_id: String) -> void:
 	var worlds = load("res://scripts/games/parcours/parcours_worlds.gd")
 	var a = worlds.build(world_id)
@@ -247,6 +276,7 @@ func _run() -> void:
 			continue
 		_phase_test(world_id)
 		_fall_test(world_id)
+		_secret_test(world_id)
 		var runs: Array = [[11, 0.25, "gemuetlich"], [23, 0.40, "gemuetlich"], [37, 0.32, "flott"]]
 		for spec in runs:
 			var r: Dictionary = _drive_world(world_id, int(spec[0]), float(spec[1]), str(spec[2]))

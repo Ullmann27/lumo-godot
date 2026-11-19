@@ -147,7 +147,8 @@ func spin_disc(radius: float, speed: float, posts: int = 0, extra: Dictionary = 
 		course.blockers.append({
 			"shape": "cylinder",
 			"base": Transform3D(Basis.IDENTITY, centre + Vector3(cos(a), 0.0, sin(a)) * radius * 0.6),
-			"size": Vector3(0.7, 2.6, 0.7), "motion": spin, "style": "gear_post"
+			"size": Vector3(0.7, 2.6, 0.7), "motion": spin, "style": "gear_post",
+			"color": Color(course.theme.get("post", Color("ffb13b")))
 		})
 	course.route.append({"pos": centre + Vector3.UP * 0.3, "cap": 10.0})
 	pos += forward() * radius * 2.0

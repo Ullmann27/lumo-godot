@@ -119,10 +119,11 @@ func _run() -> void:
 		game.restart_world()
 		await process_frame
 		var stars_before: int = root.get_node("ProgressStore").total_stars()
+		var booked_before: int = game.rewards_booked
 		var outcome: Dictionary = await _drive_to_finish(game, world_id)
 		_check(game.finished, "%s: Szene fährt bis ins Ziel" % world_id)
 		_check((outcome.rewards as Array).size() == 1, "%s: Ergebnis genau einmal an den Host (%d)" % [world_id, (outcome.rewards as Array).size()])
-		_check(game.rewards_booked == 1, "%s: Belohnung genau einmal gebucht" % world_id)
+		_check(game.rewards_booked == booked_before + 1, "%s: Belohnung genau einmal gebucht" % world_id)
 		_check(root.get_node("ProgressStore").total_stars() == stars_before + 3, "%s: 3 Sterne gutgeschrieben" % world_id)
 		var payload: Dictionary = game.result_payload
 		_check(str(payload.game) == "kart" and str(payload.mode) == "parcours" and int(payload.solved) == 0, "%s: Ergebnisvertrag" % world_id)

@@ -290,7 +290,7 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 		"gear_post":
 			var post := Node3D.new()
 			post.name = "GearPost"
-			post.add_child(mesh_node(cyl_mesh(size.x, size.x, size.y, 14), lit(Color("ffb13b"), 0.35, 0.6), Vector3(0, size.y * 0.5, 0)))
+			post.add_child(mesh_node(cyl_mesh(size.x, size.x, size.y, 14), lit(Color(blocker.get("color", Color("ffb13b"))), 0.35, 0.6), Vector3(0, size.y * 0.5, 0)))
 			var crown := mesh_node(torus_mesh(size.x * 0.6, size.x * 1.2, 20, 6), glow(accent, 1.2), Vector3(0, size.y + 0.05, 0))
 			post.add_child(crown)
 			return post
@@ -414,10 +414,14 @@ static func float_jets(node: Node3D, slab: Dictionary, color: Color) -> void:
 
 ## Kulisse nie in oder dicht an der Fahrbahn (auch nicht im Blick der Fahrerkamera).
 static func clear_of_course(course, p: Vector3, size: float) -> bool:
-	for slab in course.slabs:
-		var c: Vector3 = slab.reach_center
-		var flat: float = Vector2(p.x - c.x, p.z - c.z).length()
-		if flat < float(slab.reach_radius) + size * 1.2 + 14.0 and absf(p.y - c.y) < size * 1.5 + 14.0:
+	var probe := Vector3(p.x, 10000.0, p.z)
+	for index in range(course.slabs.size()):
+		if not course._near_bounds(course.slabs[index], p):
+			var c: Vector3 = course.slabs[index].reach_center
+			var r: float = float(course.slabs[index].reach_radius) + size + 8.0
+			if Vector2(p.x - c.x, p.z - c.z).length() > r:
+				continue
+		if not course._slab_ground(index, probe, 0.0, course.mechanisms, size * 0.7 + 5.0).is_empty():
 			return false
 	return true
 

@@ -19,18 +19,18 @@ static func build():
 	course.kill_y = WATER_Y - 4.0
 	course.pace = 0.4
 	course.theme = {
-		"sky_top": Color("3f86c9"), "sky_horizon": Color("f2e2a8"), "ground": Color("3d5a2c"),
-		"sun": Color("ffe2a8"), "sun_energy": 1.35, "sun_rotation": Vector3(-42, 25, 0),
-		"ambient": Color("a7c98c"), "ambient_energy": 0.55, "fog": Color("cfe3b9"),
-		"fog_density": 0.0055, "exposure": 0.95, "deck": Color("5b4a36"),
-		"deck_top": Color("b9a27c"), "deck_line": Color("6f5a3e"), "edge": Color("ffd24a"),
+		"sky_top": Color("2f74c0"), "sky_horizon": Color("ffd59a"), "ground": Color("2d4a22"),
+		"sun": Color("ffd89a"), "sun_energy": 1.3, "sun_rotation": Vector3(-42, 25, 0),
+		"ambient": Color("8fb27a"), "ambient_energy": 0.42, "fog": Color("a9c99a"),
+		"fog_density": 0.0022, "exposure": 0.86, "deck": Color("4a3a2a"),
+		"deck_top": Color("9c8664"), "deck_line": Color("57452f"), "edge": Color("ffd24a"),
 		"trim": Color("e8b44a"), "rail": Color("7a5a38"), "rail_post": Color("5b4430"),
-		"stone": Color("b8a68a"), "stone_line": Color("6c5c46"), "bridge": Color("9a6a3e"),
+		"stone": Color("a08b6c"), "stone_line": Color("4f4232"), "bridge": Color("9a6a3e"),
 		"bridge_line": Color("4a321c"), "moss": Color("7aa24e"), "accent": Color("ff9a3c"),
 		"metal": Color("6d5b45"), "support": Color("6a5a46"), "secret": Color("8f6a3a"),
 		"secret_glow": Color("ffd36a"), "boost": Color("ffd24a"), "plate": Color("ffcf4a"),
-		"cloud": Color("f4f7ef"), "rock": Color("6b6252"), "grass": Color("5f9a3e"),
-		"tree": Color("2f7a3a"), "water": Color("1f5a52"), "tower": Color("a9946f"),
+		"cloud": Color("dfe8d6"), "post": Color("8a7658"), "rock": Color("6b6252"), "grass": Color("5f9a3e"),
+		"tree": Color("2a6e34"), "water": Color("123f3a"), "tower": Color("8a7658"),
 		"support_depth": 10.0, "music": "zauberwald", "float": Color("b8a68a"),
 		"float_line": Color("6c5c46"), "float_glow": Color("ffd24a"), "gear": Color("c9a050")
 	}
@@ -237,9 +237,9 @@ static func _scenery(course) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1302
 	course.scenery.append({"kind": "water", "pos": Vector3(0, WATER_Y, -100), "size": 900.0, "anchored": true})
-	for i in range(70):
+	for i in range(150):
 		var a: float = rng.randf() * TAU
-		var r: float = rng.randf_range(40.0, 230.0)
+		var r: float = rng.randf_range(10.0, 230.0)
 		course.scenery.append({
 			"kind": "jungle_tree", "pos": Vector3(cos(a) * r + 40.0, WATER_Y, sin(a) * r - 90.0),
 			"size": rng.randf_range(5.0, 11.0)
