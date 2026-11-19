@@ -64,17 +64,29 @@ func foot_input(run) -> Dictionary:
 	var points: Array = s.foot_route
 	var done: bool = run.station_done.has(run.station)
 	if done:
-		var home: Vector3 = s.kart_pos
-		var back: Vector3 = home - run.walker.position
-		return {"move": Vector2(back.x, back.z).normalized(), "jump": false, "lever": false}
+		# Zurück über dieselben Steine (jeder Sprung wieder nötig), dann zum Kart.
+		var back: Array = []
+		for k in range(points.size() - 2, -1, -1):
+			back.append({"pos": points[k].pos, "jump": true})
+		back.append({"pos": s.kart_pos})
+		return _follow(run, back)
 	if foot_target >= points.size():
 		return {"move": Vector2.ZERO, "jump": false, "lever": true}
-	var point: Dictionary = points[foot_target]
+	return _follow(run, points)
+
+
+func _follow(run, points: Array) -> Dictionary:
+	if run.station_done.has(run.station) and foot_target < 100:
+		foot_target = 100
+	var index: int = foot_target - 100 if foot_target >= 100 else foot_target
+	if index >= points.size():
+		return {"move": Vector2.ZERO, "jump": false, "lever": not run.station_done.has(run.station)}
+	var point: Dictionary = points[index]
 	var p: Vector3 = point.pos
 	var to: Vector3 = p - run.walker.position
-	if Vector2(to.x, to.z).length() < 0.9 and absf(to.y) < 1.2:
+	if Vector2(to.x, to.z).length() < 0.9 and absf(to.y) < 1.2 and run.walker.grounded:
 		foot_target += 1
-		return {"move": Vector2.ZERO, "jump": false, "lever": false}
+		return {"move": Vector2(to.x, to.z).normalized() * 0.3, "jump": false, "lever": false}
 	var jump: bool = (
 		bool(point.get("jump", false))
 		and Vector2(to.x, to.z).length() < float(point.get("jump_at", 3.4))

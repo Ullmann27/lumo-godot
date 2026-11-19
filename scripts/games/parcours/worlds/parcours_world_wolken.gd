@@ -207,22 +207,78 @@ static func build():
 	var wide_heading: float = pen.heading
 	pen.star_line(3, 64.0, 3.0)
 	pen.straight(64.0)
-	pen.checkpoint("finale")
+	pen.checkpoint("werkbank")
 	_secret_gear_path(course, wide_start, wide_heading)
+	# Fußabschnitt: Die Werkbank-Brücke ist eingefahren. Lumo steigt aus, hüpft über
+	# schwebende Trittsteine zum Hebel und fährt die Brücke aus.
 	pen.width = 12.0
-	pen.star_line(3, 28.0, 0.0)
-	pen.turn(18.0, -90.0)
-	pen.style = "ramp"
-	pen.straight(30.0, -6.0)
+	_workbench_station(course, pen)
 	pen.style = "deck"
-	pen.turn(16.0, 90.0)
-	pen.straight(16.0)
+	pen.checkpoint("bruecke_aus")
+	pen.straight(12.0)
+	# Zahnrad-Spirale: anderthalb Runden abwärts um den großen Zahnradturm.
+	pen.checkpoint("spirale")
+	pen.star_line(4, 60.0, 0.0)
+	pen.style = "ramp"
+	pen.turn(19.0, -540.0, -12.0, true, true, {"width": 10.0})
+	pen.style = "deck"
+	pen.checkpoint("zielgerade")
+	pen.star_line(3, 24.0, -2.0)
+	pen.straight(24.0)
 	course.finish = {"pos": pen.pos + Vector3.UP * 0.5, "radius": 7.0, "heading": pen.heading}
 	pen.straight(22.0)
 	pen.end_route()
 	_scenery(course)
 	course.finalize()
 	return course
+
+
+static func _workbench_station(course, pen) -> void:
+	var wait_start: Vector3 = pen.pos
+	var heading: float = pen.heading
+	var ahead: Vector3 = pen.forward()
+	var side: Vector3 = pen.right()
+	pen.straight(14.0, 0.0, true, false, {"style": "wait", "hold_unless": "bridge_a", "hold_from": 0.4})
+	var kart_pos: Vector3 = wait_start + ahead * 8.0
+	# Lücke mit Tor; die Brücke parkt links daneben, bis der Hebel sie ausfährt.
+	course.blockers.append({
+		"shape": "box", "base": Transform3D(Basis(Vector3.UP, heading), pen.pos),
+		"size": Vector3(12.0, 2.2, 0.6), "closed_unless": "bridge_a", "style": "gate"
+	})
+	pen.style = "bridge"
+	pen.straight(16.0, 0.0, true, true, {
+		"motion": {"type": "extend", "mechanism": "bridge_a", "retract": -side * 15.0, "seconds": 1.8}
+	})
+	course.mechanisms["bridge_a"] = false
+	# Trittsteine rechts neben dem Wartefeld, dann die Hebelinsel.
+	var stones: Array[float] = [9.0, 12.9, 16.8]
+	for k in range(stones.size()):
+		var centre: Vector3 = kart_pos + side * stones[k]
+		course.slabs.append({
+			"kind": "box", "base": Transform3D(Basis(Vector3.UP, heading), centre - ahead * 1.2),
+			"length": 2.4, "width": 2.4, "rise": 0.0, "rail_left": false, "rail_right": false,
+			"style": "float", "level": 3, "foot_only": true
+		})
+	var island: Vector3 = kart_pos + side * 21.5
+	course.slabs.append({
+		"kind": "box", "base": Transform3D(Basis(Vector3.UP, heading), island - ahead * 2.0),
+		"length": 4.0, "width": 4.0, "rise": 0.0, "rail_left": false, "rail_right": false,
+		"style": "deck", "level": 3, "foot_only": true
+	})
+	var route: Array = [{"pos": kart_pos + side * 5.2}]
+	for k in range(stones.size()):
+		route.append({"pos": kart_pos + side * stones[k], "jump": true})
+	route.append({"pos": kart_pos + side * 20.5, "jump": true})
+	course.stations.append({
+		"id": "werkbank", "kart_pos": kart_pos, "radius": 7.0,
+		"foot_start": kart_pos + side * 2.6, "foot_heading": heading - PI * 0.5,
+		"lever": island, "lever_heading": heading - PI * 0.5, "mechanism": "bridge_a",
+		"intro": "Hier geht es nur zu Fuß weiter. Tipp auf AUSSTEIGEN!",
+		"foot_intro": "Spring über die Trittsteine zum Hebel!",
+		"done_text": "Die Brücke fährt aus! Zurück zum Kart und EINSTEIGEN.",
+		"foot_retry": "Plumps – die Lumo-Wolke trägt dich zurück. Spring etwas früher!",
+		"foot_route": route
+	})
 
 
 ## Geheimer Zahnradsteg: links auf dem breiten Deck führt eine Rampe auf einen schmalen
