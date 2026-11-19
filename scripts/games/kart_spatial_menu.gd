@@ -702,8 +702,7 @@ func _visible_stage_region() -> Rect2:
 		clear.end.x = stage.end.x - inset
 		# „Rundum ansehen“ belegt oben rechts nur einen Streifen. Früher schnitt er die ganze
 		# rechte Bühnenseite ab: Kamera weit weg, hinter der Studiowand, Knöpfe über der Auswahl.
-		# Garage quer: „Rundum ansehen“ steht links über der Kartauswahl, nicht in der Bühne.
-		if step != 2 and view_choice.is_visible_in_tree():
+		if view_choice.is_visible_in_tree():
 			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
 	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
 	if step == 2 and parts_bay != null and not _landing_active:
