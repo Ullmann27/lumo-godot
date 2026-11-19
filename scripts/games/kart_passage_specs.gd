@@ -193,6 +193,21 @@ const SPECS: Dictionary = {
 			"approach_text": "Um den Planeten: innen eng, außen ruhig – schau zum Ausgang!",
 		},
 	],
+	"desert_drift":
+	[
+		{
+			"kind": "flow",
+			"id": "oasenkehre",
+			"name": "Dünenkurve zur Oasenkehre",
+			"theme": "desert",
+			"reserve": false,
+			"zone_start": 290.0,
+			"zone_end": 405.0,
+			"apexes": [[322.0, -1.0], [384.0, -1.0]],
+			"sign": "OASENKEHRE\nWeit außen oder spät innen",
+			"approach_text": "Die Oasenkehre wird enger: weit außen sicher – spät innen schnell!",
+		},
+	],
 	"volcano_night":
 	[
 		{
