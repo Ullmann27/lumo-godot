@@ -9,6 +9,7 @@ extends Node3D
 ## einem Buch), damit die Karten groß bleiben.
 
 const MODELS = preload("res://scripts/learning/holo/holo_models.gd")
+const FIGURES = preload("res://scripts/learning/holo/holo_figures.gd")
 const CARD_HEIGHT := 1.0
 const CARD_DEPTH := 0.16
 const GAP := 0.18
@@ -475,8 +476,10 @@ func show_picture(id: String) -> void:
 	torus.rings = 40
 	ring.mesh = torus
 	ring.material_override = MODELS.holo_material(Color("8ff0ff"), 1.4)
+	if calm_holograms:
+		ring.material_override.set_shader_parameter("lines", 0.0)
 	picture.add_child(ring)
-	var figure := MODELS.holo_figure(id, Color("62e6ff"), calm_holograms)
+	var figure := FIGURES.build(id)
 	figure.name = "Figur"
 	figure.scale = Vector3.ONE * 1.4
 	picture.add_child(figure)

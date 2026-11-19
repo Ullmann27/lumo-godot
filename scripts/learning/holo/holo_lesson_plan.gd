@@ -7,7 +7,7 @@ extends RefCounted
 ## und bewertet nur Eingaben des Kindes. Sie vergibt nichts und speichert nichts:
 ## Das Ergebnis geht einmal als Zusammenfassung an die App zurück.
 
-const MODELS = preload("res://scripts/learning/holo/holo_models.gd")
+const FIGURES = preload("res://scripts/learning/holo/holo_figures.gd")
 const KINDS: Array[String] = ["holo_word_problem", "holo_sentence"]
 ## verb = Tunwort finden, order = Satz bauen, noun = Namenwort finden.
 const MODES: Array[String] = ["verb", "order", "noun"]
@@ -153,7 +153,7 @@ func _check_sentence(raw: Dictionary) -> Dictionary:
 		if int(raw.nounIndex) == int(raw.verbIndex):
 			return {}
 		var picture := str(raw.get("picture", ""))
-		if picture not in MODELS.PICTURES:
+		if picture not in FIGURES.PICTURES:
 			return {}
 		checked["nounIndex"] = int(raw.nounIndex)
 		checked["picture"] = picture

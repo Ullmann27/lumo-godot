@@ -521,9 +521,14 @@ func _low_profile() -> void:
 	await _idle(game)
 	_check(game.events.has("picture:fuchs"), "LOW noun: same picture")
 	var figure: Node3D = game.word_room.picture.get_node("Figur")
-	var part: MeshInstance3D = figure.get_child(0)
+	var pedestal: MeshInstance3D = game.word_room.picture.get_child(0)
 	_check(
-		part.material_override.get_shader_parameter("lines") == 0.0, "LOW noun: calm hologram lines"
+		pedestal.material_override.get_shader_parameter("lines") == 0.0,
+		"LOW noun: calm hologram ring"
+	)
+	_check(
+		figure.get_node_or_null("Bodenschatten") != null,
+		"LOW noun: soft ground shadow without realtime shadows"
 	)
 	await _close(game)
 	manager.current_profile = before
