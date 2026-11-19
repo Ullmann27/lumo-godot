@@ -1223,6 +1223,8 @@ func _glut(from: float, to: float) -> void:
 	material.emission = Color("ff6a1a")
 	material.emission_energy_multiplier = 2.6
 	material.roughness = 1.0
+	# The strip is built like the water planes, whose shader draws both sides.
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var half: float = path.half_width_at((from + to) * 0.5) + 2.0
 	# Just below the deck edge, so the glow fills the whole hole when seen from the path.
 	var node: MeshInstance3D = _water_plane(from - 0.3, to + 0.3, half, -1.1)
