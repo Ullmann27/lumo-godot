@@ -86,7 +86,8 @@ static func build_rewards(list: VBoxContainer, stars: int) -> void:
 
 
 ## Saison: Sternenpfad als senkrechter Weg; jede Station mit Bild, Name und Schwelle.
-static func build_season(list: VBoxContainer, stars: int) -> void:
+## Liefert die nächste noch offene Station (oder null), damit das Fenster dorthin blättert.
+static func build_season(list: VBoxContainer, stars: int) -> Control:
 	var path := VBoxContainer.new()
 	path.name = "StarPathRoute"
 	path.set_meta("overlay_path", true)
@@ -95,6 +96,7 @@ static func build_season(list: VBoxContainer, stars: int) -> void:
 	list.add_child(path)
 	var all := PATH.milestones()
 	var next := PATH.next_milestone(stars)
+	var target: Control = null
 	for index in range(all.size()):
 		var entry: Dictionary = all[index]
 		var station := Station.new()
@@ -107,6 +109,9 @@ static func build_season(list: VBoxContainer, stars: int) -> void:
 		station.art = milestone_art(entry)
 		station.stars = stars
 		path.add_child(station)
+		if station.is_next:
+			target = station
+	return target
 
 
 ## Größe der Karten und Stationen im dp-Maßstab `k` bei `width_dp` Innenbreite.

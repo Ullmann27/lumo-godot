@@ -661,11 +661,21 @@ func _open_overlay(kind: String) -> void:
 	else:
 		_overlay_title.text = "Belohnungen"
 		_overlay_line("%d von %d Belohnungen freigeschaltet. Nichts davon kann man kaufen." % [unlocked, all.size()], Color("d9e6ff"))
+	var next_station: Control = null
 	if kind == "season":
-		OVERLAYS.build_season(_overlay_list, total_stars)
+		next_station = OVERLAYS.build_season(_overlay_list, total_stars)
 	else:
 		OVERLAYS.build_rewards(_overlay_list, total_stars)
 	_show_overlay("Dock_season" if kind == "season" else "Dock_rewards")
+	if next_station != null:
+		_scroll_overlay_to.call_deferred(next_station)
+
+
+## Der Sternenpfad öffnet bei der nächsten offenen Station statt immer ganz oben.
+func _scroll_overlay_to(target: Control) -> void:
+	await get_tree().process_frame
+	if is_instance_valid(target) and _overlay.visible:
+		(_overlay_list.get_parent() as ScrollContainer).ensure_control_visible(target)
 
 
 func _show_overlay(dock_name: String) -> void:
