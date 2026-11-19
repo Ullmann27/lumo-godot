@@ -3484,7 +3484,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 			)
 			focus = focus.lerp(hub, 0.35)
 		camera.position = (
-			desired_loop if snap else camera.position.lerp(desired_loop, minf(1.0, delta * 4.0))
+			desired_loop if snap else camera.position.lerp(desired_loop, 1.0 - exp(-delta * 4.0))
 		)
 		camera.look_at(focus)
 		# The loop camera must not freeze boost FOV, speed streaks or reduced-motion preferences.
@@ -3510,7 +3510,8 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	camera.position = (
 		desired
 		if snap
-		else camera.position.lerp(desired, minf(1.0, delta * VISUAL_GRADE.CAMERA_LERP))
+		# Exponential damping: same path at every frame rate, no jump after a hitch.
+		else camera.position.lerp(desired, 1.0 - exp(-delta * VISUAL_GRADE.CAMERA_LERP))
 	)
 	if finished:
 		target = player.position + Vector3.UP * 1.25
@@ -3538,7 +3539,7 @@ func _update_result_camera(delta: float, snap: bool) -> void:
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = viewport_size.x / maxf(1.0, viewport_size.y)
 	var target_fov: float = clampf(_resize_compensated_fov(48.0, aspect), 48.0, 76.0)
-	camera.fov = target_fov if immediate else lerpf(camera.fov, target_fov, minf(1.0, delta * 4.0))
+	camera.fov = target_fov if immediate else lerpf(camera.fov, target_fov, 1.0 - exp(-delta * 4.0))
 	var tan_vertical: float = tan(deg_to_rad(target_fov) * 0.5)
 	var tan_horizontal: float = tan_vertical * aspect
 	# Kart mit Lumo (schräg von vorn, mit Perspektive etwa 3,6 m breit und
@@ -3551,7 +3552,7 @@ func _update_result_camera(delta: float, snap: bool) -> void:
 	var target: Vector3 = player.position + Vector3.UP * 1.0
 	var desired: Vector3 = _result_camera_position(view_distance, target)
 	if not immediate:
-		desired = camera.position.lerp(desired, minf(1.0, delta * 4.5))
+		desired = camera.position.lerp(desired, 1.0 - exp(-delta * 4.5))
 	camera.position = _clear_finish_camera(desired, target)
 	if mode != "arena" and is_instance_valid(world):
 		camera.position = world.clip_tunnel_camera(player.position + Vector3.UP, camera.position)
@@ -3617,7 +3618,7 @@ func _update_camera_speed_effects(delta: float, snap: bool, speed_ratio: float) 
 	camera_base_fov = (
 		target_fov
 		if snap or camera_base_fov <= 0.0
-		else lerpf(camera_base_fov, target_fov, minf(1.0, delta * VISUAL_GRADE.FOV_LERP))
+		else lerpf(camera_base_fov, target_fov, 1.0 - exp(-delta * VISUAL_GRADE.FOV_LERP))
 	)
 	var kicked_fov: float = camera_base_fov
 	if camera_punch > 0.0 and not reduced_motion:
