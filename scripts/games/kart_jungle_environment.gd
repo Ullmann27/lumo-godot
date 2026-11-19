@@ -56,7 +56,8 @@ func _clear_of_road(point: Vector3, margin: float = CLEARANCE) -> bool:
 	var closest: Vector3 = curve.get_closest_point(point)
 	var flat := Vector2(point.x - closest.x, point.z - closest.z)
 	var road_distance: float = curve.get_closest_offset(point)
-	var half: float = JUNGLE.width_at(road_distance) * 0.5 + 1.5
+	# The narrow Kronenbrücke deck keeps the canopy clearance of the full 14 m road.
+	var half: float = maxf(JUNGLE.width_at(road_distance), 14.0) * 0.5 + 1.5
 	return flat.length() > half + margin
 
 
@@ -238,12 +239,7 @@ func _build_landmarks() -> void:
 			for lantern in 3:
 				_put("ball", spot.at + spot.basis.x * lantern * 4.0 + Vector3.UP * 3.2,
 					Vector3.ONE * 0.35, Color("ffcf6b"), Basis.IDENTITY, true)
-	# 4 Hinter dem Wasserfall: cliff with a glowing veil of falling water.
-	var fall: Dictionary = _landmark_point(3, -1.0, 14.0)
-	if _clear_of_road(fall.at, 6.0):
-		_put("rock", fall.at + Vector3.UP * 11.0, Vector3(16.0, 22.0, 9.0), Color("5b6158"), fall.basis)
-		_put("box", fall.at + fall.basis.x * 5.0 + Vector3.UP * 10.0,
-			Vector3(0.6, 20.0, 7.0), Color("9fe3ea"), fall.basis, true)
+	# 4 Hinter dem Wasserfall: the large waterfall is the Wasserfall-Blick of kart_passages.gd.
 	# 5 Wurzelgrotte: mossy boulders on both sides.
 	for side in [-1.0, 1.0]:
 		var grotto: Dictionary = _landmark_point(4, side, 9.0)
@@ -290,6 +286,10 @@ func _particles(name_text: String, amount: int, colour: Color, size: float, glow
 	var quad := _coloured_quad(size)
 	var material := StandardMaterial3D.new()
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	# Keep the per-particle scale: a not yet emitted particle has scale 0 and black colour.
+	# Without this the billboard rebuilt its basis and drew it as a black square above the
+	# kart (18.11.2026, 784 dark pixels at screen centre in the Kiri/Kronenbrücke captures).
+	material.billboard_keep_scale = true
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = colour
 	material.vertex_color_use_as_albedo = true

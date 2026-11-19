@@ -65,11 +65,11 @@ func tracked_count() -> int:
 func begin_tick() -> void:
 	for id in _entries:
 		var entry: Dictionary = _entries[id]
-		# Erst prüfen, dann typisiert zuweisen: ein freigegebenes Objekt in einer
-		# Node3D-Variable ist in GDScript ein Laufzeitfehler (z. B. Rakete getroffen).
-		if not is_instance_valid(entry.node) or not bool(entry.shown):
+		# Untyped first: a node freed with the previous race must not be assigned to Node3D.
+		var held: Variant = entry.node
+		if not is_instance_valid(held) or not bool(entry.shown):
 			continue
-		var node: Node3D = entry.node
+		var node: Node3D = held
 		if node.transform.is_equal_approx(entry.shown_transform):
 			node.transform = entry.curr
 		else:
@@ -126,9 +126,10 @@ func _process(_delta: float) -> void:
 	)
 	for id in _entries:
 		var entry: Dictionary = _entries[id]
-		if not is_instance_valid(entry.node):
+		var held: Variant = entry.node
+		if not is_instance_valid(held):
 			continue
-		var node: Node3D = entry.node
+		var node: Node3D = held
 		var expected: Transform3D = entry.shown_transform if bool(entry.shown) else entry.curr
 		if not node.transform.is_equal_approx(expected):
 			# Jemand anderes hat die Lage gesetzt: übernehmen, nicht überschreiben.

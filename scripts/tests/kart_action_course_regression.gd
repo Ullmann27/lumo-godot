@@ -28,7 +28,9 @@ func _check_plans() -> void:
 		var course: Dictionary = world.action
 		var config: Dictionary = ACTION.COURSES[track]
 		var stunt_pads: int = ACTION.STUNT.pads(world).size() if config.get("stunt", false) else 0
-		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads, "%s: alle Turbo-Felder haben Platz" % track)
+		# LUMO passages add one reward pad behind a bridge (kart_passages.extend_action).
+		var passage_pads: int = course.pads.filter(func(pad): return pad.has("passage")).size()
+		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + passage_pads, "%s: alle Turbo-Felder haben Platz" % track)
 		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
 		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
