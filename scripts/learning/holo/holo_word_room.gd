@@ -18,7 +18,7 @@ const SHELF_TOP := 0.16
 const ROW_DZ := 2.35
 ## Zeilenbreite, ab der im Hochformat umgebrochen wird.
 const WRAP_WIDTH := 5.0
-const CAPTIONS := {"verb": "Tunwort", "noun": "Namenwort"}
+const CAPTIONS := {"verb": "Tunwort", "noun": "Namenwort", "adjective": "Wiewort"}
 const HALO_IDLE := Color("6fdcff")
 const HALO_LIFT := Color("ffd34d")
 const HALO_HINT := Color("8af7c4")
@@ -37,6 +37,8 @@ var selected := -1
 var answer_field: Node3D
 var full_stop: Label3D
 var picture: Node3D
+## Wiewort-Hilfe: zwei Figuren, die sich in Größe oder Farbe unterscheiden.
+var contrast: Node3D
 ## Zeilen der Kartenreihe bzw. des Tabletts (z-Lage je Zeile).
 var row_z: Array[float] = []
 var row_half_width := 0.0
@@ -61,6 +63,7 @@ func build(
 	row_z.clear()
 	_floor.clear()
 	picture = null
+	contrast = null
 	answer_field = null
 	full_stop = null
 	selected = -1
@@ -102,6 +105,13 @@ func _build_pick(sentence_order: Array[int], narrow: bool) -> void:
 		var shelf := _shelf(_width_of(rows[row]) + 0.7)
 		shelf.position = Vector3(0, 0, z)
 		add_child(shelf)
+	if mode == "strip":
+		# Nur der Satz als Kartenleiste (Lesen): kein Antwortfeld.
+		_box = AABB(
+			Vector3(-row_half_width - 0.35, 0, row_z[0] - 0.6),
+			Vector3(row_half_width * 2.0 + 0.7, 1.4, row_z[-1] - row_z[0] + 1.2)
+		)
+		return
 	# Genug Abstand, damit Karte und Bild im Feld keine Karte der Reihe verdecken.
 	var field_z := row_z[-1] + 2.7
 	# Links im Feld ist Platz für das Bild (Namenwort), rechts liegt die Karte.
@@ -275,13 +285,20 @@ func _field(width: float, caption: String) -> Node3D:
 	return root
 
 
-## Karte: abgerundet mit Fase und Kartonkante, leuchtender Halo dahinter,
-## weicher Schatten darunter. Alle Karten gleich gefärbt.
 func _card(word: String, width: float) -> Node3D:
+	return card_node(word, width, _face_basis)
+
+
+## Karte: abgerundet mit Fase und Kartonkante, leuchtender Halo dahinter,
+## weicher Schatten darunter. Alle Karten gleich gefärbt. Auch die Silben-
+## und Lesekarten nutzen diese Karte.
+static func card_node(
+	word: String, width: float, facing: Basis, height: float = CARD_HEIGHT, font: int = 150
+) -> Node3D:
 	var root := Node3D.new()
 	var body := MeshInstance3D.new()
 	body.name = "Body"
-	body.mesh = MODELS.card_mesh(Vector3(width, CARD_HEIGHT, CARD_DEPTH))
+	body.mesh = MODELS.card_mesh(Vector3(width, height, CARD_DEPTH))
 	var paper := MODELS.rim_material(Color("f6f1e1"), Color("9ff2ff"), 0.6)
 	paper.set_shader_parameter("rim_strength", 0.18)
 	paper.set_shader_parameter("self_light", 0.32)
@@ -289,14 +306,14 @@ func _card(word: String, width: float) -> Node3D:
 	var edge := MODELS.rim_material(Color("c9b48a"), Color("9ff2ff"), 0.7)
 	edge.set_shader_parameter("rim_strength", 0.35)
 	body.set_surface_override_material(1, edge)
-	body.basis = _face_basis
+	body.basis = facing
 	root.add_child(body)
 	var halo := MeshInstance3D.new()
 	halo.name = "Halo"
-	halo.mesh = MODELS.card_mesh(Vector3(width + 0.16, CARD_HEIGHT + 0.16, 0.02))
+	halo.mesh = MODELS.card_mesh(Vector3(width + 0.16, height + 0.16, 0.02))
 	halo.material_override = MODELS.flat(HALO_IDLE, 1.1)
-	halo.basis = _face_basis
-	halo.position = _face_basis.z * -(CARD_DEPTH * 0.5 + 0.02)
+	halo.basis = facing
+	halo.position = facing.z * -(CARD_DEPTH * 0.5 + 0.02)
 	halo.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(halo)
 	var shadow := MeshInstance3D.new()
@@ -314,12 +331,12 @@ func _card(word: String, width: float) -> Node3D:
 	var label := Label3D.new()
 	label.name = "Wort"
 	label.text = word
-	label.font_size = 150
+	label.font_size = font
 	label.pixel_size = 0.0034
 	label.modulate = Color("12304f")
 	label.outline_size = 0
-	label.basis = _face_basis
-	label.position = _face_basis.z * (CARD_DEPTH * 0.5 + 0.012)
+	label.basis = facing
+	label.position = facing.z * (CARD_DEPTH * 0.5 + 0.012)
 	label.double_sided = false
 	root.add_child(label)
 	return root
@@ -417,9 +434,16 @@ func highlight(index: int, value: float, color: Color = HALO_LIFT) -> void:
 
 
 func _glow(index: int, value: float, color: Color = HALO_LIFT) -> void:
-	paper(index).set_shader_parameter("highlight", value * 0.35)
-	# Hervorheben über den Halo: heller und farbig; die Karte bleibt gleichfarbig.
-	var halo: MeshInstance3D = cards[index].get_node("Halo")
+	card_glow(cards[index], value, color)
+
+
+## Hervorheben über den Halo: heller und farbig; die Karte bleibt gleichfarbig.
+static func card_glow(card: Node3D, value: float, color: Color = HALO_LIFT) -> void:
+	var body: MeshInstance3D = card.get_node("Body")
+	(body.get_surface_override_material(0) as ShaderMaterial).set_shader_parameter(
+		"highlight", value * 0.35
+	)
+	var halo: MeshInstance3D = card.get_node("Halo")
 	var material := halo.material_override as StandardMaterial3D
 	var shade := color if value > 0.0 else HALO_IDLE
 	material.albedo_color = shade
@@ -460,7 +484,8 @@ func to_slot(index: int, slot: int) -> void:
 ## Das Ding/Tier erscheint als Hologramm neben der gewählten Karte im
 ## Antwortfeld – erst nach der richtigen Wahl. Ein Sockelring trägt das Bild.
 ## Bei ruhiger Bewegung steht es sofort da.
-func show_picture(id: String) -> void:
+func show_picture(id: String, look: String = "") -> void:
+	clear_contrast()
 	if is_instance_valid(picture):
 		picture.free()
 	picture = Node3D.new()
@@ -479,9 +504,9 @@ func show_picture(id: String) -> void:
 	if calm_holograms:
 		ring.material_override.set_shader_parameter("lines", 0.0)
 	picture.add_child(ring)
-	var figure := FIGURES.build(id)
+	var figure := FIGURES.build(id, FIGURES.COLOR_WORDS.get(look, Color(0, 0, 0, 0)))
 	figure.name = "Figur"
-	figure.scale = Vector3.ONE * 1.4
+	figure.scale = Vector3.ONE * {"klein": 0.95, "groß": 1.75}.get(look, 1.4)
 	picture.add_child(figure)
 	if reduced_motion:
 		return
@@ -489,6 +514,49 @@ func show_picture(id: String) -> void:
 	var tween := _track(create_tween())
 	tween.tween_property(picture, "scale", Vector3.ONE * 1.12, 0.45).set_trans(Tween.TRANS_BACK)
 	tween.tween_property(picture, "scale", Vector3.ONE, 0.2)
+
+
+## Wiewort-Hilfe: zwei gleiche Figuren im Antwortfeld, eine klein und eine
+## groß bzw. in zwei Farben. Keine Beschriftung – das Kind vergleicht selbst.
+func show_contrast(id: String, kind: String, look: String) -> void:
+	clear_contrast()
+	contrast = Node3D.new()
+	contrast.name = "Vergleich"
+	contrast.position = answer_field.position + Vector3(0, 0.05, 0)
+	add_child(contrast)
+	var looks: Array = []
+	if kind == "size":
+		looks = [{"scale": 0.85}, {"scale": 1.6}]
+	else:
+		var other := "blau" if look != "blau" else "rot"
+		if id == "ente" and look == "gelb":
+			other = "weiß"
+		looks = [
+			{"scale": 1.25, "color": FIGURES.COLOR_WORDS[look]},
+			{"scale": 1.25, "color": FIGURES.COLOR_WORDS[other]}
+		]
+	var step := minf(1.5, _field_width * 0.27)
+	for index in range(2):
+		var figure := FIGURES.build(id, looks[index].get("color", Color(0, 0, 0, 0)))
+		figure.name = "Figur%d" % index
+		figure.scale = Vector3.ONE * float(looks[index].scale)
+		figure.rotation.y = -0.4
+		figure.position = Vector3((index * 2 - 1) * step, 0, 0)
+		contrast.add_child(figure)
+	answer_field.get_node("Feldname").visible = false
+	if reduced_motion:
+		return
+	contrast.scale = Vector3.ONE * 0.05
+	var tween := _track(create_tween())
+	tween.tween_property(contrast, "scale", Vector3.ONE, 0.4).set_trans(Tween.TRANS_BACK)
+
+
+func clear_contrast(restore_label: bool = false) -> void:
+	if is_instance_valid(contrast):
+		contrast.free()
+	contrast = null
+	if restore_label and is_instance_valid(answer_field):
+		answer_field.get_node("Feldname").visible = true
 
 
 func card_rect(camera: Camera3D, index: int) -> Rect2:

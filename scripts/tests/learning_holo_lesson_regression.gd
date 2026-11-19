@@ -1,5 +1,8 @@
+# gdlint: disable=max-file-lines
+# Ein Regressionstest für alle Holo-Räume (Mathe und Deutsch).
 extends SceneTree
-## Holo-Lernräume: Textaufgabe (Zehnerübergang) und Deutsch (Tunwort, Satzbau).
+## Holo-Lernräume: Textaufgabe (Zehnerübergang) und Deutsch (Tunwort, Satzbau,
+## Namenwort, Wiewort, Silben klatschen, Lesen).
 ## Echte Eingaben über die öffentlichen Kind-Aktionen der Szene.
 
 const FIXTURES = preload("res://scripts/tests/holo_lesson_fixtures.gd")
@@ -60,6 +63,11 @@ func _run() -> void:
 	await _order_flow()
 	await _noun_flow()
 	_noun_validation()
+	_figures()
+	_syllable_validation()
+	await _syllable_flow()
+	await _adjective_flow()
+	await _reading_flow()
 	await _layouts()
 	await _low_profile()
 	print("[HoloLesson] checks=%d failures=%d" % [checks, failures])
@@ -684,3 +692,337 @@ func _lumo_beside_cards(game: Node3D, name_value: String) -> void:
 	elif is_instance_valid(room.answer_field):
 		var field: Vector2 = game.camera.unproject_position(room.answer_field.global_position)
 		_check(not fox.has_point(field), name_value + " Lumo beside the answer field")
+
+
+# ---------------------------------------------------------------- Silben, Wiewort, Lesen
+
+
+## Silben klatschen mit echter Bewegung: Klatschen, falsche Zahl, Hilfe 1,
+## Hilfe 2 (Lumo klatscht mit den Armknochen, die Karte teilt sich), richtige
+## Antwort, ähnliches Wort allein, Ergebnis genau einmal.
+func _syllable_flow() -> void:
+	var game := await _open(FIXTURES.syllables(), false)
+	_check(game.valid and game.plan.mode == "syllables", "syllables scene valid")
+	var room = game.syllable_room
+	_check(room.visible and not game.word_room.visible, "syllable room shown")
+	_check(
+		room.word_card.visible and room.syllable_cards.is_empty(), "word card not split at start"
+	)
+	var view: String = game.prompt_label.text + game.bubble_text.text + game.feedback.text
+	_check(
+		not view.contains("Ba-na") and not view.contains("Ba – na"), "first view hides syllables"
+	)
+	_check(view.contains("Klatschen"), "first view names the clap button")
+	_check(is_instance_valid(room.picture), "banana picture next to the word")
+	_check(game.clap != null, "clap motion bound to the original skeleton")
+	_check(game.clap_button != null and game.clap_button.is_visible_in_tree(), "clap button")
+	_check(game.confirm_button.disabled, "check disabled before clapping")
+	_check(game.pick(room.card_rect(game.camera).get_center()) == 0, "word card is a touch target")
+	var rest_gap: float = game.clap.hand_gap()
+	_check(rest_gap > 1.0, "hands apart at rest (%.2f)" % rest_gap)
+	game.clap_syllable()
+	game.clap_syllable()
+	_check(game.plan.claps == 2 and room.tokens.size() == 2, "two claps, two clap tokens")
+	_check(game.feedback.text.contains("zweimal"), "clap count shown in words")
+	_check(not game.confirm_button.disabled, "check enabled after clapping")
+	_check(game.confirm() == "wrong", "two claps are wrong for Banane")
+	_check(game.plan.hint_level == 1, "syllables: hint 1 after the first mistake")
+	_check(game.plan.claps == 0 and room.tokens.is_empty(), "claps cleared after a check")
+	_check(game.bubble_text.text.contains("zweimal geklatscht"), "calm feedback names the claps")
+	_check(game.bubble_text.text.contains("Bei jeder Silbe geht dein Mund auf"), "hint 1 wording")
+	_check(room.syllable_cards.is_empty(), "hint 1 does not split the card")
+	await _idle(game)
+	for count in range(4):
+		game.clap_syllable()
+	_check(game.confirm() == "wrong", "four claps are wrong")
+	await process_frame
+	_check(game.busy and game.plan.hint_level == 2, "full help runs")
+	var smallest := INF
+	var started := Time.get_ticks_msec()
+	while game.busy and Time.get_ticks_msec() - started < 30000:
+		smallest = minf(smallest, game.clap.hand_gap())
+		await process_frame
+	_check(game.events.has("lumo_clap:3"), "Lumo claps three times")
+	for beat in range(3):
+		_check(game.events.has("lumo_clap_beat:%d" % beat), "clap beat %d with a card pulse" % beat)
+	_check(smallest < 0.3, "Lumo's palms meet (%.2f m, rest %.2f m)" % [smallest, rest_gap])
+	_check(game.clap.hand_gap() > rest_gap * 0.8, "arms back after the clap")
+	_check(room.syllable_cards.size() == 3 and room.arcs.size() == 3, "card split with three arcs")
+	_check(not room.word_card.visible, "whole card hidden while split")
+	var texts: Array[String] = []
+	for card: Node3D in room.syllable_cards:
+		texts.append(card.get_node("Wort").text)
+	_check(texts == ["Ba", "na", "ne"], "syllable cards Ba na ne")
+	_check(game.bubble_text.text.contains("Ba – na – ne"), "Lumo says Ba – na – ne")
+	for count in range(3):
+		game.clap_syllable()
+	_check(game.confirm() == "correct", "three claps are right")
+	await _idle(game)
+	_check(game.feedback.text.contains("„Ba-na-ne“ hat 3 Silben"), "right feedback")
+	_check(game.events.count("lumo_clap:3") == 2, "Lumo claps again after the right answer")
+	_check(game.start_twin(), "syllable twin starts")
+	await _idle(game)
+	_check(game.plan.current().word == "Sonne", "similar word Sonne")
+	_check(room.syllable_cards.is_empty() and room.word_card.visible, "twin card not split")
+	_check(room.tokens.is_empty() and game.plan.claps == 0, "twin starts without claps")
+	game.request_hint()
+	await _idle(game)
+	_check(game.bubble_text.text.contains("Mund"), "twin tip")
+	_check(room.syllable_cards.is_empty(), "twin tip does not split")
+	for count in range(3):
+		game.clap_syllable()
+	_check(game.confirm() == "wrong", "three claps wrong for Sonne")
+	_check(game.feedback.text.contains("Sprich es langsam"), "twin: calm feedback")
+	_check(game.plan.hint_level <= 2 and not game.busy, "twin: no automatic full help")
+	game.clap_syllable()
+	game.clap_syllable()
+	_check(game.confirm() == "correct", "Sonne solved alone")
+	await _idle(game)
+	_check(game.plan.phase == "done", "syllables done")
+	_check(game.clap_syllable() == game.plan.claps, "no clapping after the end")
+	game.return_to_lesson()
+	game.return_to_lesson()
+	var holo: Dictionary = game.last_return.get("holo", {})
+	_check(game.return_count == 1, "syllables: result returned exactly once")
+	_check(
+		holo.get("mode") == "syllables" and holo.get("originalAnswer") == "3",
+		"syllables result answer 3"
+	)
+	_check(holo.get("hintLevel") == 2 and holo.get("twinSolved") == true, "syllables help + twin")
+	_check(holo.get("twinPrompt") == "Wie viele Silben hat Sonne?", "twin prompt for the log")
+	_check(holo.get("twinAttempts") == 2, "twin attempts counted")
+	await _close(game)
+	# Ruhige Bewegung: Hände ruhig zusammen, Karte sofort geteilt.
+	game = await _open(
+		FIXTURES.syllables("Ball", ["Ball"], "ball", "Tomate", ["To", "ma", "te"], "")
+	)
+	_check(game.valid, "one-syllable word valid")
+	game.clap_syllable()
+	game.clap_syllable()
+	game.confirm()
+	await _idle(game)
+	game.request_hint()
+	await _idle(game)
+	_check(game.clap.hold and game.clap.hand_gap() < 0.3, "calm: hands rest together")
+	_check(game.syllable_room.syllable_cards.size() == 1, "calm: card shown as one syllable")
+	game.clap_syllable()
+	_check(game.confirm() == "correct", "Ball has one syllable")
+	await _idle(game)
+	_check(game.feedback.text.contains("hat eine Silbe"), "singular: eine Silbe")
+	_check(game.start_twin(), "calm twin")
+	await _idle(game)
+	_check(not game.clap.hold, "calm clap released for the twin")
+	_check(not is_instance_valid(game.syllable_room.picture), "word without picture")
+	await _close(game)
+
+
+func _syllable_validation() -> void:
+	var broken: Array[Dictionary] = []
+	broken.append(FIXTURES.syllables("Banane", ["Ban", "ane", "e"]))
+	broken.append(FIXTURES.syllables("Banane", ["Ba", "na"]))
+	broken.append(FIXTURES.syllables("Schokolade", ["Scho", "ko", "la", "d", "e"]))
+	var lower := FIXTURES.syllables("banane", ["ba", "na", "ne"])
+	broken.append(lower)
+	var no_vowel := FIXTURES.syllables("Apfel", ["Ap", "f", "el"])
+	broken.append(no_vowel)
+	var bad_picture := FIXTURES.syllables()
+	bad_picture.picture = "drache"
+	broken.append(bad_picture)
+	var bad_prompt := FIXTURES.syllables()
+	bad_prompt.prompt = "Wie viele Silben hat das Wort?"
+	broken.append(bad_prompt)
+	var same_twin := FIXTURES.syllables("Sonne", ["Son", "ne"], "sonne")
+	broken.append(same_twin)
+	for index in range(broken.size()):
+		_check(
+			not plan_script.new().configure(broken[index]),
+			"invalid syllable payload %d rejected" % index
+		)
+	_check(plan_script.new().configure(FIXTURES.syllables()), "valid syllable payload accepted")
+
+
+func _adjective_flow() -> void:
+	var game := await _open(FIXTURES.adjective(), false)
+	_check(game.valid and game.plan.mode == "adjective", "adjective scene valid")
+	var room = game.word_room
+	_cards_neutral(room, "adjective")
+	_check(room.answer_field.get_node("Feldname").text == "Wiewort", "field says Wiewort")
+	_check(
+		game.prompt_label.text.contains("Welches Wort sagt, wie der Fuchs ist?"),
+		"question wie der Fuchs ist"
+	)
+	_check(not game.bubble_text.text.contains("kleine"), "first view does not name the adjective")
+	game.tap_card(2)
+	_check(game.confirm() == "wrong", "Fuchs is not the adjective")
+	_check(game.bubble_text.text.contains("Namenwort"), "adjective: concrete help for a noun")
+	await _idle(game)
+	_check(game.events.has("contrast:fuchs:size"), "hint 1: two figures compared")
+	_check(is_instance_valid(room.contrast) and room.contrast.get_child_count() == 2, "two figures")
+	var small: Node3D = room.contrast.get_child(0)
+	var big: Node3D = room.contrast.get_child(1)
+	_check(big.scale.x > small.scale.x * 1.5, "one small, one big figure")
+	var idle_halo: Color = room.halo_color(0)
+	for index in range(room.cards.size()):
+		_check(room.halo_color(index) == idle_halo, "hint 1 marks no card %d" % index)
+	_check(game.bubble_text.text.contains("Wiewort sagt, wie etwas ist"), "hint 1 wording")
+	_check(game.drop_card_on_field(3) == "wrong", "springt is not the adjective")
+	_check(game.bubble_text.text.contains("Tunwort"), "adjective: concrete help for a verb")
+	await _idle(game)
+	_check(game.events.has("show_adjective:kleine"), "full help shows kleine")
+	_check(not is_instance_valid(room.contrast), "figures gone in the full help")
+	_check(game.bubble_text.text.contains("sagt, wie der Fuchs ist"), "full help wording")
+	game.tap_card(1)
+	_check(game.confirm() == "correct", "kleine is the adjective")
+	await _idle(game)
+	_check(game.events.has("picture:fuchs:klein"), "small fox hologram")
+	_check(game.feedback.text.contains("Es sagt, wie der Fuchs ist."), "right feedback")
+	_check(game.start_twin(), "adjective twin")
+	await _idle(game)
+	_check(game.plan.current().sentence == "Der gelbe Ball rollt.", "twin sentence")
+	game.request_hint()
+	await _idle(game)
+	_check(game.bubble_text.text.contains("Wie ist es?"), "adjective twin tip")
+	game.tap_card(0)
+	_check(game.confirm() == "wrong", "Der is not the adjective")
+	_check(game.feedback.text.contains("Begleiter"), "adjective: concrete help for an article")
+	game.tap_card(1)
+	_check(game.confirm() == "correct", "gelbe chosen alone")
+	await _idle(game)
+	_check(game.events.has("picture:ball:gelb"), "yellow ball hologram")
+	game.return_to_lesson()
+	var holo: Dictionary = game.last_return.get("holo", {})
+	_check(
+		holo.get("mode") == "adjective" and holo.get("originalAnswer") == "kleine",
+		"adjective result"
+	)
+	_check(holo.get("twinSolved") == true and game.return_count == 1, "adjective twin once")
+	await _close(game)
+	var broken: Array[Dictionary] = []
+	var on_verb := FIXTURES.adjective()
+	on_verb.adjIndex = 3
+	broken.append(on_verb)
+	var bad_contrast := FIXTURES.adjective()
+	bad_contrast.contrast = "shape"
+	broken.append(bad_contrast)
+	var bad_look := FIXTURES.adjective()
+	bad_look.look = "lila"
+	broken.append(bad_look)
+	var bad_question := FIXTURES.adjective()
+	bad_question.question = "Was tut der Fuchs?"
+	broken.append(bad_question)
+	for index in range(broken.size()):
+		_check(
+			not plan_script.new().configure(broken[index]),
+			"invalid adjective payload %d rejected" % index
+		)
+	var two_adjectives := FIXTURES.adjective()
+	two_adjectives.types = ["artikel", "adjektiv", "adjektiv", "verb"]
+	var scene := await _open(two_adjectives, true)
+	_check(not scene.valid, "adjective types must name exactly one Wiewort")
+	await _close(scene)
+
+
+func _reading_flow() -> void:
+	var game := await _open(FIXTURES.reading(), false)
+	_check(game.valid and game.plan.mode == "reading", "reading scene valid")
+	var room = game.reading_room
+	_check(room.plates.size() == 3 and room.visible, "three scenes")
+	_check(not game.confirm_button.is_visible_in_tree(), "no check button: tap the scene")
+	var ring: Color = room.ring_color(0)
+	for index in range(3):
+		_check(room.ring_color(index) == ring, "scene %d same colour" % index)
+		var props: Node3D = room.plates[index].get_node("Moebel")
+		_check(
+			props.name == "Moebel" and room.things[index].name == "Ding", "same props %d" % index
+		)
+		var rect: Rect2 = room.scene_rect(game.camera, index)
+		_check(game.pick(rect.get_center()) == index, "scene %d is a touch target" % index)
+		_check(minf(rect.size.x, rect.size.y) >= 126.0, "scene %d big enough" % index)
+	_check(
+		room.things[0].position.y > room.things[1].position.y + 0.5, "darauf above, darunter below"
+	)
+	_check(room.things[2].position.x > room.things[0].position.x + 0.5, "daneben beside")
+	_check(game.choose_scene(0) == "wrong", "auf dem Tisch is wrong")
+	_check(game.bubble_text.text.contains("passt noch nicht"), "reading: calm feedback")
+	await _idle(game)
+	_check(game.events.has("reading_hint"), "reading hint 1")
+	_check(game.bubble_text.text.contains("Wort für Wort"), "hint 1 wording")
+	_check(game.choose_scene(2) == "wrong", "neben dem Tisch is wrong")
+	await _idle(game)
+	_check(game.events.has("key_word:unter"), "full help names unter")
+	_check(room.strip.halo_color(3) == room.strip.HALO_LIFT, "key word glows")
+	for index in range(room.strip.cards.size()):
+		if index != 3:
+			_check(room.strip.halo_color(index) != room.strip.HALO_LIFT, "other word %d" % index)
+	for index in range(3):
+		_check(room.ring_color(index) == ring, "full help marks no scene %d" % index)
+	_check(game.choose_scene(1) == "correct", "unter dem Tisch is right")
+	await _idle(game)
+	_check(room.ring_color(1) == room.RING_RIGHT, "chosen scene glows after the right answer")
+	_check(game.start_twin(), "reading twin")
+	await _idle(game)
+	_check(game.plan.current().place == "kiste", "twin with the box")
+	_check(game.choose_scene(1) == "wrong", "vor der Kiste is wrong")
+	_check(game.feedback.text.contains("Lies den Satz noch einmal"), "twin feedback")
+	_check(game.choose_scene(2) == "correct", "in der Kiste solved alone")
+	await _idle(game)
+	game.return_to_lesson()
+	var holo: Dictionary = game.last_return.get("holo", {})
+	_check(
+		holo.get("mode") == "reading" and holo.get("originalAnswer") == "darunter", "reading result"
+	)
+	_check(holo.get("twinSolved") == true and game.return_count == 1, "reading twin once")
+	await _close(game)
+	var broken: Array[Dictionary] = []
+	var wrong_key := FIXTURES.reading()
+	wrong_key.answer = "darauf"
+	broken.append(wrong_key)
+	var under_box := FIXTURES.reading()
+	under_box.twin.scenes = ["darunter", "darin", "daneben"]
+	broken.append(under_box)
+	var unknown := FIXTURES.reading()
+	unknown.object = "drache"
+	broken.append(unknown)
+	var two_places := FIXTURES.reading()
+	two_places.sentence = "Der Ball liegt unter dem Tisch auf dem Boden."
+	two_places.words = ["Der", "Ball", "liegt", "unter", "dem", "Tisch", "auf"]
+	broken.append(two_places)
+	for index in range(broken.size()):
+		_check(
+			not plan_script.new().configure(broken[index]),
+			"invalid reading payload %d rejected" % index
+		)
+
+
+## Jede Bildfigur: getrennte Materialien, leuchtende Kontur, Bodenschatten,
+## gemeinsame Materialien je Farbe (handytauglich).
+func _figures() -> void:
+	var figures_script: GDScript = load("res://scripts/learning/holo/holo_figures.gd")
+	var ids: Array[String] = []
+	ids.assign(figures_script.PICTURES)
+	ids.append_array(figures_script.PROPS)
+	for id in ids:
+		var figure: Node3D = figures_script.build(id)
+		var materials := {}
+		var outlined := 0
+		var parts := 0
+		for node in figure.find_children("*", "MeshInstance3D", true, false):
+			if node.name == "Bodenschatten":
+				continue
+			parts += 1
+			materials[node.material_override] = true
+			if node.material_override.next_pass != null:
+				outlined += 1
+		_check(parts >= 3, "%s built from %d parts" % [id, parts])
+		_check(materials.size() >= 2, "%s has separate materials" % id)
+		_check(outlined >= 1, "%s has a glowing outline" % id)
+		_check(
+			figure.get_node_or_null("Bodenschatten") != null or id == "sonne",
+			"%s has a ground shadow" % id
+		)
+		var again: Node3D = figures_script.build(id)
+		var first: MeshInstance3D = figure.find_children("*", "MeshInstance3D", true, false)[0]
+		var second: MeshInstance3D = again.find_children("*", "MeshInstance3D", true, false)[0]
+		_check(first.material_override == second.material_override, "%s shares materials" % id)
+		figure.free()
+		again.free()
