@@ -43,8 +43,8 @@ func _shot(label: String) -> void:
 			roundi(image.get_height() * float(width) / image.get_width()),
 			Image.INTERPOLATE_LANCZOS
 		)
-	var path: String = out_dir.path_join("%s_%02d_%s.png" % [world_id, shots.size(), label])
-	image.save_png(path)
+	var path: String = out_dir.path_join("%s_%02d_%s.jpg" % [world_id, shots.size(), label])
+	image.save_jpg(path, 0.88)
 	shots.append(path)
 	print("[ParcoursCapture] ", info, " -> ", path)
 
