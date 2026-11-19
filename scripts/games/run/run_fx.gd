@@ -10,6 +10,8 @@ var low: bool = false
 var _pools: Dictionary = {}
 var _next: Dictionary = {}
 var _dot: Texture2D
+## Speed lines rushing past the camera at high pace (not in calm or light mode).
+var _streaks: CPUParticles3D
 
 
 func setup(lightweight: bool, calm: bool) -> void:
@@ -27,6 +29,50 @@ func setup(lightweight: bool, calm: bool) -> void:
 			emitters.append(emitter)
 		_pools[kind] = emitters
 		_next[kind] = 0
+	if not low:
+		_streaks = _make_streaks()
+		add_child(_streaks)
+
+
+## Thin bright lines in front of the lens that fly past: more the faster Lumo is.
+func _make_streaks() -> CPUParticles3D:
+	var lines := CPUParticles3D.new()
+	lines.name = "SpeedLines"
+	lines.amount = 28
+	lines.lifetime = 0.32
+	lines.local_coords = true
+	lines.emitting = false
+	# A ring around the view axis: the lines stream along the edges of the
+	# picture and leave the middle (Lumo and the path) free.
+	lines.emission_shape = CPUParticles3D.EMISSION_SHAPE_RING
+	lines.emission_ring_axis = Vector3(0, 0, 1)
+	lines.emission_ring_height = 3.0
+	lines.emission_ring_radius = 5.2
+	lines.emission_ring_inner_radius = 3.6
+	lines.direction = Vector3(0, 0, 1)
+	lines.spread = 2.0
+	lines.gravity = Vector3.ZERO
+	lines.initial_velocity_min = 34.0
+	lines.initial_velocity_max = 44.0
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.012, 0.012, 1.1)
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.albedo_color = Color(1.0, 0.98, 0.9, 0.38)
+	material.disable_receive_shadows = true
+	mesh.material = material
+	lines.mesh = mesh
+	lines.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return lines
+
+
+## Called every frame with the camera and how far above his pace Lumo runs (0..1).
+func set_speed(pace: float, eye: Transform3D) -> void:
+	if _streaks == null:
+		return
+	_streaks.global_transform = eye.translated_local(Vector3(0.0, 0.0, -7.5))
+	_streaks.emitting = pace > 0.35
 
 
 func play(kind: String, at: Vector3, colour: Color = Color.WHITE) -> void:
