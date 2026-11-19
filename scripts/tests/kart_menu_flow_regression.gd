@@ -82,7 +82,10 @@ func _run() -> void:
 			"Menu headings use the app heading face"
 		)
 		var mode_grid: GridContainer = game.garage.choices.get_child(0)
-		assert(mode_grid.get_child_count() == 5, "Five race modes; the learning cup is gone")
+		assert(
+			mode_grid.get_child_count() == 6,
+			"Six modes incl. Abenteuer-Parcours; the learning cup is gone"
+		)
 		var cup_button: Button = null
 		for mode_button in mode_grid.get_children():
 			if str(mode_button.title) == "Sternen-Cup":

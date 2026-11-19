@@ -463,6 +463,12 @@ func _ready() -> void:
 	_show_garage()
 	friend_duel.attach(self)
 	set_physics_process(true)
+	if (
+		str(HostBridge.launch_options().get("kartEntry", "")) == "parcours"
+		and not bool(SceneRouter.launch_options.get("parcoursEntryUsed", false))
+	):
+		# Direkter Einstieg aus der App in den Abenteuer-Parcours (Weltwahl).
+		_open_parcours.call_deferred(garage.setup.duplicate(true))
 	print("[Kart] Holographic garage ready: five modes, %d worlds, free steering" % CATALOG.TRACKS.size())
 
 
@@ -816,6 +822,9 @@ func _reference_select_mode(selected: String) -> void:
 		print("[Kart] track_selected: ", selected, " mode=", garage.setup.mode)
 		return
 	match selected:
+		"parcours":
+			_open_parcours(garage.setup)
+			return
 		"race", "cup", "time_trial", "training", "arena":
 			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
@@ -838,6 +847,15 @@ func _reference_select_mode(selected: String) -> void:
 	garage._refresh()
 	garage._apply_responsive_layout.call_deferred()
 
+
+
+## Abenteuer-Parcours: eigene Szene (scripts/games/parcours/) mit dem gewählten Kart und
+## Fahrer; deren Weltwahl führt zurück ins Kart-Menü.
+func _open_parcours(setup: Dictionary) -> void:
+	SceneRouter.launch_options["kart"] = str(setup.get("kart", selected_kart))
+	SceneRouter.launch_options["driver"] = str(setup.get("driver", selected_driver))
+	SceneRouter.launch_options["parcoursEntryUsed"] = true
+	SceneRouter.goto("kart_parcours")
 
 
 ## Wer eine Strecke aussucht, will genau diese fahren. Cup und Arena haben keine
@@ -929,6 +947,9 @@ func _intro_wanted() -> bool:
 
 
 func _start_selected_race(setup: Dictionary) -> void:
+	if str(setup.get("mode", "")) == "parcours":
+		_open_parcours(setup)
+		return
 	setup_snapshot = setup.duplicate(true)
 	mode = _known_mode(str(setup.get("mode", "race")))
 	selected_driver = str(setup.get("driver", "fox"))

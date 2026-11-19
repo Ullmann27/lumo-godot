@@ -8,13 +8,14 @@ const CARD = preload("res://scripts/games/kart_showcase_card.gd")
 const KIT = preload("res://scripts/games/kart_ui3d.gd")
 const DRIVER_ART := "res://assets/kart/menu/drivers/%s.webp"
 ## Rennarten (Reiter „Rennen“): Reihenfolge wie bisher, Symbol und Farbe wie im Hauptmenü.
-const MODE_ORDER: Array[String] = ["race", "time_trial", "arena", "cup", "training"]
+const MODE_ORDER: Array[String] = ["race", "time_trial", "arena", "cup", "training", "parcours"]
 const MODE_LOOK := {
 	"race": ["icon_flag", Color("ffa91f"), "Dein schneller Start"],
 	"time_trial": ["icon_stopwatch", Color("21ccff"), "Du gegen deinen Geist"],
 	"arena": ["icon_star_crystal", Color("b760ed"), "90 Sekunden Abenteuer"],
 	"cup": ["icon_trophy", Color("8a5cff"), "Alle Welten · ein Pokal"],
 	"training": ["icon_route", Color("37e0a0"), "Entdecken ohne Druck"],
+	"parcours": ["icon_chevrons", Color("ff8a3d"), "Geschicklichkeit · zu Fuß"],
 }
 ## Stufe, auf der das Rennen am Fahrbahnrand sanft mitlenkt (siehe kart_island.gd, _drive_player).
 const ASSIST_LEVEL := "gemuetlich"
