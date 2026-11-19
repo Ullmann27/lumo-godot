@@ -330,6 +330,8 @@ func set_countdown(value: float) -> void:
 
 func update_hud(run, style: String) -> void:
 	var course = run.course
+	if game.countdown <= 0.0 and not countdown_label.text.is_empty():
+		countdown_label.text = ""
 	if style == "zeitlauf":
 		info.text = "%s · %s" % [course.title, format_time(run.elapsed)]
 	else:
@@ -405,7 +407,7 @@ func show_result(payload: Dictionary, stats: Dictionary, answer: Dictionary, sav
 	lines.append("Parcours-Sterne: %d von %d" % [int(payload.starTokens), int(payload.starTotal)])
 	lines.append("Geheimwege: %d" % (payload.secrets as Array).size())
 	lines.append("Belohnung: %d ★ für dein Sternekonto" % int(payload.stars))
-	var body := _label("\n".join(lines), 30)
+	var body := _label("\n".join(lines), 26)
 	body.name = "ResultLines"
 	modal_column.add_child(body)
 	if not saved:

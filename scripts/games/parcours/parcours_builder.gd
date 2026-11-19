@@ -72,13 +72,13 @@ func _environment() -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.ambient_light_color = color("ambient")
 	env.ambient_light_sky_contribution = 0.55
-	env.ambient_light_energy = 0.9
+	env.ambient_light_energy = float(course.theme.get("ambient_energy", 0.6))
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = float(course.theme.get("exposure", 1.0))
 	env.fog_enabled = true
 	env.fog_light_color = color("fog")
 	env.fog_density = float(course.theme.get("fog_density", 0.004))
-	env.fog_sky_affect = 0.25
+	env.fog_sky_affect = float(course.theme.get("fog_sky", 0.0))
 	env.glow_enabled = not lightweight
 	env.glow_intensity = 0.55
 	env.glow_bloom = 0.08
@@ -95,7 +95,7 @@ func _environment() -> void:
 	sun.light_energy = float(course.theme.get("sun_energy", 1.4))
 	sun.shadow_enabled = not lightweight
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	sun.directional_shadow_max_distance = 90.0
+	sun.directional_shadow_max_distance = 70.0
 	sun.shadow_blur = 1.5
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
@@ -298,7 +298,7 @@ func advance(t: float, state: Dictionary, run) -> void:
 			var spin: float = 0.0 if reduced_motion else t * 1.8 + i * 0.4
 			var bob: float = 0.0 if reduced_motion else sin(t * 2.2 + i) * 0.12
 			star_multimesh.set_instance_transform(
-				i, Transform3D(Basis(Vector3.UP, spin), (course.stars[i].pos as Vector3) + Vector3.UP * bob)
+				i, Transform3D(Basis(Vector3.UP, spin).scaled(Vector3.ONE * 1.5), (course.stars[i].pos as Vector3) + Vector3.UP * bob)
 			)
 		for index in range(checkpoint_nodes.size()):
 			KIT.set_checkpoint_lit(checkpoint_nodes[index], run.reached.has(index))

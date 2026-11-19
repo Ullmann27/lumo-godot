@@ -18,29 +18,27 @@ static func build():
 	course.pace = 0.4
 	course.target_seconds = Vector2(120, 240)
 	course.theme = {
-		"sky_top": Color("3d7fd6"),
-		"sky_horizon": Color("ffd9b0"),
-		"ground": Color("f4f1ff"),
-		"sun": Color("fff1d6"),
-		"sun_energy": 1.55,
-		"sun_rotation": Vector3(-38, 35, 0),
-		"ambient": Color("b9cff5"),
-		"fog": Color("e9eefc"),
-		"fog_density": 0.0035,
-		"deck": Color("2f5f99"),
-		"deck_top": Color("e7eef9"),
-		"edge": Color("ffc642"),
-		"rail": Color("ffd56a"),
-		"bridge": Color("d8a46a"),
-		"float": Color("8fd3ff"),
-		"accent": Color("ff8a3d"),
-		"metal": Color("6d7f99"),
-		"cloud": Color("ffffff"),
+		"sky_top": Color("2a64c8"), "sky_horizon": Color("f6c99a"), "ground": Color("c9d8f2"),
+		"sun": Color("ffe6c4"), "sun_energy": 1.25, "sun_rotation": Vector3(-34, 40, 0),
+		"ambient": Color("a8c2ee"), "ambient_energy": 0.5, "fog": Color("dfe8fb"),
+		"fog_density": 0.0016, "exposure": 0.95, "deck": Color("27497c"),
+		"deck_top": Color("8fa7cf"), "deck_line": Color("3a5788"), "edge": Color("ffc23a"),
+		"trim": Color("ffb43a"), "rail": Color("ffcf5c"), "rail_post": Color("4e6286"),
+		"bridge": Color("c08a55"), "bridge_line": Color("6a4426"), "float": Color("6fbff2"),
+		"float_line": Color("2f6ea8"), "float_glow": Color("8fe8ff"), "disc": Color("a8b8d6"),
+		"secret": Color("d8a24a"), "secret_glow": Color("ffd166"), "boost": Color("3ef2ff"),
+		"accent": Color("ff7a3d"), "metal": Color("5a6e91"), "support": Color("3b5480"),
+		"gear": Color("d8a84a"), "cloud": Color("f2f5ff"), "rock": Color("9c8574"),
+		"grass": Color("7cc46a"), "tree": Color("3f9a5a"), "support_depth": 26.0,
 		"music": "bergwelt"
 	}
 	var pen = PEN.new(course, Vector3(0.0, BASE_Y, 0.0), 0.0, 12.0)
 	course.start = {"pos": pen.pos + Vector3.FORWARD * 6.0, "heading": 0.0}
 	pen.checkpoint("start", 8.0)
+	course.scenery.append({
+		"kind": "hangar", "pos": pen.pos + pen.right() * 26.0 + pen.forward() * 14.0 + Vector3.DOWN * 0.7,
+		"size": 18.0, "yaw": PI * 0.5, "anchored": true
+	})
 	# Startplatz der Werkstatt.
 	pen.star_line(3, 34.0, -2.5)
 	pen.straight(34.0)
@@ -219,6 +217,10 @@ static func build():
 	# Zahnrad-Spirale: anderthalb Runden abwärts um den großen Zahnradturm.
 	pen.checkpoint("spirale")
 	pen.star_line(4, 60.0, 0.0)
+	course.scenery.append({
+		"kind": "tower", "pos": pen.pos + pen.right() * 19.0 + Vector3.DOWN * 14.0, "size": 7.0,
+		"height": 32.0, "anchored": true
+	})
 	pen.style = "ramp"
 	pen.turn(19.0, -540.0, -12.0, true, true, {"width": 10.0})
 	pen.style = "deck"

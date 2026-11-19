@@ -31,6 +31,24 @@ static func mesh_node(mesh: Mesh, material: Material, at: Vector3 = Vector3.ZERO
 	return node
 
 
+static func sphere_mesh(radius: float = 0.5, segments: int = 12) -> SphereMesh:
+	var mesh := SphereMesh.new()
+	mesh.radius = radius
+	mesh.height = radius * 2.0
+	mesh.radial_segments = segments
+	mesh.rings = maxi(4, segments / 2)
+	return mesh
+
+
+static func torus_mesh(inner: float, outer: float, rings: int = 32, sides: int = 8) -> TorusMesh:
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = inner
+	mesh.outer_radius = outer
+	mesh.rings = rings
+	mesh.ring_segments = sides
+	return mesh
+
+
 static func box_mesh(size: Vector3) -> BoxMesh:
 	var mesh := BoxMesh.new()
 	mesh.size = size
@@ -75,31 +93,29 @@ static func star_mesh() -> ArrayMesh:
 static func checkpoint_arch(is_start: bool, accent: Color, edge: Color) -> Node3D:
 	var root := Node3D.new()
 	root.name = "CheckpointArch"
-	var frame := lit(Color("eef3fb"), 0.35, 0.5)
+	var parts = MESHES.new()
 	for side in [-1.0, 1.0]:
-		var post := mesh_node(cyl_mesh(0.28, 0.36, 4.6), frame, Vector3(side * 5.4, 2.3, 0))
-		root.add_child(post)
-		var cap := mesh_node(SphereMesh.new(), glow(edge, 1.4), Vector3(side * 5.4, 4.75, 0))
-		cap.scale = Vector3.ONE * 0.55
-		cap.name = "Lamp%d" % int(side)
-		root.add_child(cap)
-	var beam := mesh_node(box_mesh(Vector3(11.4, 0.55, 0.5)), frame, Vector3(0, 4.45, 0))
-	root.add_child(beam)
-	var band := mesh_node(box_mesh(Vector3(9.6, 0.62, 0.08)), glow(accent, 1.2), Vector3(0, 3.7, 0))
+		parts.cylinder("frame", Vector3(side * 6.4, -0.2, 0), Vector3(side * 6.4, 6.6, 0), 0.34, 0.26, 12)
+		parts.box("frame", Vector3(side * 6.4, 0.15, 0), Vector3(1.1, 0.3, 1.1))
+	parts.box("frame", Vector3(0, 6.75, 0), Vector3(13.4, 0.5, 0.55))
+	var frame := MeshInstance3D.new()
+	frame.mesh = parts.commit({"frame": lit(Color("eef3fb"), 0.35, 0.5)})
+	root.add_child(frame)
+	var band := mesh_node(box_mesh(Vector3(11.0, 0.7, 0.12)), glow(accent, 1.2), Vector3(0, 6.05, 0))
 	band.name = "Band"
 	root.add_child(band)
-	var label := Label3D.new()
-	label.text = "START" if is_start else "CHECKPOINT"
-	label.font_size = 96
-	label.pixel_size = 0.009
-	label.outline_size = 18
-	label.modulate = Color.WHITE
-	label.position = Vector3(0, 3.7, 0.08)
-	root.add_child(label)
-	var back := label.duplicate() as Label3D
-	back.rotation.y = PI
-	back.position.z = -0.08
-	root.add_child(back)
+	for side in [-1.0, 1.0]:
+		var cap := mesh_node(sphere_mesh(0.32), glow(edge, 1.4), Vector3(side * 6.4, 7.1, 0))
+		root.add_child(cap)
+	for flip in [0.0, PI]:
+		var label := Label3D.new()
+		label.text = "START" if is_start else "CHECKPOINT"
+		label.font_size = 64
+		label.pixel_size = 0.007
+		label.outline_size = 12
+		label.position = Vector3(0, 6.05, 0.08 if flip == 0.0 else -0.08)
+		label.rotation.y = flip
+		root.add_child(label)
 	return root
 
 
@@ -118,34 +134,33 @@ static func set_checkpoint_lit(gate: Node3D, lit_up: bool) -> void:
 static func finish_arch(accent: Color) -> Node3D:
 	var root := Node3D.new()
 	root.name = "FinishArch"
-	var frame := lit(Color("ffffff"), 0.3, 0.4)
+	var parts = MESHES.new()
 	for side in [-1.0, 1.0]:
-		root.add_child(mesh_node(cyl_mesh(0.42, 0.55, 6.4), frame, Vector3(side * 6.6, 3.2, 0)))
-		var ball := mesh_node(SphereMesh.new(), glow(Color("ffd84a"), 2.0), Vector3(side * 6.6, 6.7, 0))
-		ball.scale = Vector3.ONE * 0.9
-		root.add_child(ball)
-	# Schachbrettband aus kleinen Quadern.
-	var dark := lit(Color("16213a"), 0.5)
-	var light := lit(Color("f6f8ff"), 0.5)
-	for i in range(18):
+		parts.cylinder("frame", Vector3(side * 7.2, -0.2, 0), Vector3(side * 7.2, 7.4, 0), 0.5, 0.4, 12)
+	for i in range(20):
 		for row in range(2):
-			var tile := mesh_node(
-				box_mesh(Vector3(0.72, 0.5, 0.3)), dark if (i + row) % 2 == 0 else light,
-				Vector3(-6.12 + i * 0.72, 5.75 + row * 0.5, 0)
-			)
-			root.add_child(tile)
-	var label := Label3D.new()
-	label.text = "ZIEL"
-	label.font_size = 180
-	label.pixel_size = 0.01
-	label.outline_size = 26
-	label.modulate = Color("ffd84a")
-	label.position = Vector3(0, 4.5, 0.2)
-	root.add_child(label)
-	var ring := mesh_node(TorusMesh.new(), glow(accent, 1.5), Vector3(0, 0.08, 0))
+			var key: String = "dark" if (i + row) % 2 == 0 else "light"
+			parts.box(key, Vector3(-6.84 + i * 0.72, 6.9 + row * 0.5, 0), Vector3(0.72, 0.5, 0.3))
+	var frame := MeshInstance3D.new()
+	frame.mesh = parts.commit({
+		"frame": lit(Color("ffffff"), 0.3, 0.4), "dark": lit(Color("16213a"), 0.5),
+		"light": lit(Color("f6f8ff"), 0.5)
+	})
+	root.add_child(frame)
+	for side in [-1.0, 1.0]:
+		root.add_child(mesh_node(sphere_mesh(0.5), glow(Color("ffd84a"), 2.0), Vector3(side * 7.2, 7.8, 0)))
+	for flip in [0.0, PI]:
+		var label := Label3D.new()
+		label.text = "ZIEL"
+		label.font_size = 128
+		label.pixel_size = 0.009
+		label.outline_size = 20
+		label.modulate = Color("ffd84a")
+		label.position = Vector3(0, 5.6, 0.2 if flip == 0.0 else -0.2)
+		label.rotation.y = flip
+		root.add_child(label)
+	var ring := mesh_node(torus_mesh(0.92, 1.0, 48, 4), glow(accent, 1.5), Vector3(0, 0.08, 0))
 	ring.scale = Vector3(7.0, 1.0, 3.0)
-	(ring.mesh as TorusMesh).inner_radius = 0.92
-	(ring.mesh as TorusMesh).outer_radius = 1.0
 	root.add_child(ring)
 	return root
 
@@ -155,16 +170,16 @@ static func skill_sign(text: String, accent: Color) -> Node3D:
 	var root := Node3D.new()
 	root.name = "SkillSign"
 	root.add_child(mesh_node(cyl_mesh(0.09, 0.12, 3.2), lit(Color("d8e2f0"), 0.4, 0.6), Vector3(0, -0.9, 0)))
-	var plate := mesh_node(box_mesh(Vector3(3.6, 1.0, 0.12)), lit(Color("0e2240"), 0.3, 0.3), Vector3(0, 0.8, 0))
+	var plate := mesh_node(box_mesh(Vector3(4.8, 1.2, 0.12)), lit(Color("0e2240"), 0.3, 0.3), Vector3(0, 0.8, 0))
 	root.add_child(plate)
-	var rim := mesh_node(box_mesh(Vector3(3.8, 1.18, 0.06)), glow(accent, 1.4), Vector3(0, 0.8, -0.05))
+	var rim := mesh_node(box_mesh(Vector3(5.0, 1.38, 0.06)), glow(accent, 1.4), Vector3(0, 0.8, -0.05))
 	root.add_child(rim)
 	var label := Label3D.new()
 	label.text = text
 	label.font_size = 64
 	label.pixel_size = 0.0075
 	label.outline_size = 10
-	label.width = 440
+	label.width = 620
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.position = Vector3(0, 0.8, 0.08)
 	root.add_child(label)
@@ -174,9 +189,7 @@ static func skill_sign(text: String, accent: Color) -> Node3D:
 static func station_marker(accent: Color) -> Node3D:
 	var root := Node3D.new()
 	root.name = "StationMarker"
-	var ring := mesh_node(TorusMesh.new(), glow(accent, 1.8), Vector3(0, 0.06, 0))
-	(ring.mesh as TorusMesh).inner_radius = 2.6
-	(ring.mesh as TorusMesh).outer_radius = 2.9
+	var ring := mesh_node(torus_mesh(2.6, 2.9, 40, 4), glow(accent, 1.8), Vector3(0, 0.06, 0))
 	root.add_child(ring)
 	var label := Label3D.new()
 	label.text = "AUSSTEIGEN"
@@ -198,7 +211,7 @@ static func lever(accent: Color) -> Node3D:
 	arm.rotation.x = -0.7
 	root.add_child(arm)
 	arm.add_child(mesh_node(cyl_mesh(0.07, 0.07, 1.3), lit(Color("d0d8e6"), 0.3, 0.8), Vector3(0, 0.65, 0)))
-	var knob := mesh_node(SphereMesh.new(), glow(accent, 1.6), Vector3(0, 1.35, 0))
+	var knob := mesh_node(sphere_mesh(), glow(accent, 1.6), Vector3(0, 1.35, 0))
 	knob.scale = Vector3.ONE * 0.36
 	arm.add_child(knob)
 	var label := Label3D.new()
@@ -240,7 +253,7 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 				)
 				bar.add_child(piece)
 			for side in [-1.0, 1.0]:
-				var lamp := mesh_node(SphereMesh.new(), glow(Color("ff4038"), 2.4), Vector3(side * (size.x * 0.5 + 0.2), 2.85, 0))
+				var lamp := mesh_node(sphere_mesh(), glow(Color("ff4038"), 2.4), Vector3(side * (size.x * 0.5 + 0.2), 2.85, 0))
 				lamp.name = "Lamp" + ("L" if side < 0.0 else "R")
 				lamp.scale = Vector3.ONE * 0.5
 				root.add_child(lamp)
@@ -249,9 +262,7 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 			var post := Node3D.new()
 			post.name = "GearPost"
 			post.add_child(mesh_node(cyl_mesh(size.x, size.x, size.y, 14), lit(Color("ffb13b"), 0.35, 0.6), Vector3(0, size.y * 0.5, 0)))
-			var crown := mesh_node(TorusMesh.new(), glow(accent, 1.2), Vector3(0, size.y + 0.05, 0))
-			(crown.mesh as TorusMesh).inner_radius = size.x * 0.6
-			(crown.mesh as TorusMesh).outer_radius = size.x * 1.2
+			var crown := mesh_node(torus_mesh(size.x * 0.6, size.x * 1.2, 20, 6), glow(accent, 1.2), Vector3(0, size.y + 0.05, 0))
 			post.add_child(crown)
 			return post
 		"pendulum", "hammer":
@@ -347,12 +358,27 @@ static func float_jets(node: Node3D, slab: Dictionary, color: Color) -> void:
 			node.add_child(jet)
 
 
+## Kulisse nie in oder dicht an der Fahrbahn (auch nicht im Blick der Fahrerkamera).
+static func clear_of_course(course, p: Vector3, size: float) -> bool:
+	for slab in course.slabs:
+		var c: Vector3 = slab.reach_center
+		var flat: float = Vector2(p.x - c.x, p.z - c.z).length()
+		if flat < float(slab.reach_radius) + size * 1.2 + 14.0 and absf(p.y - c.y) < size * 1.5 + 14.0:
+			return false
+	return true
+
+
 ## Kulisse je Welt aus `course.scenery`.
 static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 	var clouds: Array[Transform3D] = []
 	var rocks: Array[Dictionary] = []
 	var gears: Array[Dictionary] = []
 	for item in course.scenery:
+		if (
+			str(item.kind) not in ["cloud"] and not bool(item.get("anchored", false))
+			and not clear_of_course(course, item.pos, float(item.size))
+		):
+			continue
 		match str(item.kind):
 			"cloud":
 				var rng := RandomNumberGenerator.new()
@@ -366,10 +392,14 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 				rocks.append(item)
 			"gear":
 				gears.append(item)
+			"tower":
+				_gear_tower(parent, course, item)
+			"hangar":
+				_hangar(parent, course, item)
 	if not clouds.is_empty():
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
-		var sphere := SphereMesh.new()
+		var sphere := sphere_mesh()
 		sphere.radial_segments = 16
 		sphere.rings = 8
 		mm.mesh = sphere
@@ -387,39 +417,104 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 		node.material_override = m
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(node)
+	var far_parts = MESHES.new()
 	for item in rocks:
-		var island := Node3D.new()
-		island.name = "SkyIsland"
-		island.position = item.pos
 		var size: float = float(item.size)
-		var rock := mesh_node(cyl_mesh(size, size * 0.15, size * 1.4, 9), lit(Color(course.theme.get("rock", Color("8d7a6b"))), 0.9), Vector3(0, -size * 0.7, 0))
-		island.add_child(rock)
-		var grass := mesh_node(cyl_mesh(size * 1.02, size * 1.02, size * 0.18, 9), lit(Color(course.theme.get("grass", Color("79c66a"))), 0.9), Vector3(0, 0.05, 0))
-		island.add_child(grass)
+		var p: Vector3 = item.pos
+		far_parts.cylinder("rock", p + Vector3.DOWN * size * 1.4, p, size * 0.12, size, 9)
+		far_parts.cylinder("grass", p + Vector3.DOWN * 0.1, p + Vector3.UP * size * 0.16, size * 1.02, size * 0.98, 9)
 		for k in range(3):
-			var tree := mesh_node(SphereMesh.new(), lit(Color(course.theme.get("tree", Color("3f9a52"))), 0.9), Vector3(cos(k * 2.1) * size * 0.5, size * 0.35, sin(k * 2.1) * size * 0.5))
-			tree.scale = Vector3.ONE * size * 0.35
-			island.add_child(tree)
-		for child in island.get_children():
-			(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			(child as GeometryInstance3D).visibility_range_end = 480.0
-		parent.add_child(island)
+			var t: Vector3 = p + Vector3(cos(k * 2.1) * size * 0.5, size * 0.16, sin(k * 2.1) * size * 0.5)
+			far_parts.cylinder("trunk", t, t + Vector3.UP * size * 0.25, size * 0.05, size * 0.04, 6)
+			far_parts.cylinder("tree", t + Vector3.UP * size * 0.2, t + Vector3.UP * size * 0.75, size * 0.26, size * 0.02, 8)
+	if not rocks.is_empty():
+		var islands := MeshInstance3D.new()
+		islands.name = "SkyIslands"
+		islands.mesh = far_parts.commit({
+			"rock": lit(Color(course.theme.get("rock", Color("8d7a6b"))), 0.9),
+			"grass": lit(Color(course.theme.get("grass", Color("79c66a"))), 0.9),
+			"trunk": lit(Color("6b4a32"), 0.9),
+			"tree": lit(Color(course.theme.get("tree", Color("3f9a52"))), 0.9)
+		})
+		islands.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(islands)
 	for item in gears:
 		var gear := Node3D.new()
 		gear.name = "SkyGear"
 		gear.position = item.pos
-		gear.rotation = Vector3(PI * 0.5, randf() * TAU, 0)
+		gear.rotation = Vector3(PI * 0.5, float(item.get("yaw", 0.0)), 0)
 		var size: float = float(item.size)
-		var ring := mesh_node(TorusMesh.new(), lit(Color(course.theme.get("gear", Color("d9a84a"))), 0.35, 0.8))
-		(ring.mesh as TorusMesh).inner_radius = size * 0.7
-		(ring.mesh as TorusMesh).outer_radius = size
+		var parts = MESHES.new()
+		for k in range(14):
+			var a: float = TAU * k / 14.0
+			var dir := Vector3(cos(a), sin(a), 0)
+			parts.box("gear", dir * size * 1.02, Vector3(size * 0.2, size * 0.24, size * 0.26), Basis(Vector3.BACK, a))
+		var ring := MeshInstance3D.new()
+		ring.mesh = torus_mesh(size * 0.62, size * 0.92, 28, 6)
+		var gear_material := lit(Color(course.theme.get("gear", Color("d9a84a"))), 0.35, 0.8)
+		ring.material_override = gear_material
 		gear.add_child(ring)
-		for k in range(12):
-			var a: float = TAU * k / 12.0
-			var tooth := mesh_node(box_mesh(Vector3(size * 0.22, size * 0.22, size * 0.3)), ring.material_override, Vector3(cos(a) * size * 1.05, sin(a) * size * 1.05, 0))
-			tooth.rotation.z = a
-			gear.add_child(tooth)
+		var teeth := MeshInstance3D.new()
+		teeth.mesh = parts.commit({"gear": gear_material})
+		gear.add_child(teeth)
 		for child in gear.get_children():
 			(child as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(gear)
 		parent.animated.append({"kind": "spin", "node": gear, "axis": Vector3(0, 0, 1), "speed": 0.15})
+
+
+## Großer Zahnradturm (Mitte der Spirale): Säule, Zahnkränze, Leuchtspitze.
+static func _gear_tower(parent: Node3D, course, item: Dictionary) -> void:
+	var p: Vector3 = item.pos
+	var height: float = float(item.get("height", 40.0))
+	var radius: float = float(item.size)
+	var parts = MESHES.new()
+	parts.cylinder("body", p + Vector3.DOWN * 30.0, p + Vector3.UP * height, radius * 1.1, radius * 0.8, 16)
+	for k in range(int(height / 9.0)):
+		var y: float = 4.0 + k * 9.0
+		parts.cylinder("ring", p + Vector3.UP * y, p + Vector3.UP * (y + 1.2), radius * 1.35, radius * 1.35, 20)
+		for t in range(16):
+			var a: float = TAU * t / 16.0 + k * 0.2
+			var dir := Vector3(cos(a), 0, sin(a))
+			parts.box("ring", p + dir * radius * 1.45 + Vector3.UP * (y + 0.6), Vector3(1.0, 1.0, 0.8), Basis.looking_at(dir, Vector3.UP))
+	parts.cylinder("glow", p + Vector3.UP * height, p + Vector3.UP * (height + 3.0), radius * 0.5, 0.2, 12)
+	var node := MeshInstance3D.new()
+	node.name = "GearTower"
+	node.mesh = parts.commit({
+		"body": lit(Color(course.theme.get("tower", Color("31507f"))), 0.5, 0.4),
+		"ring": lit(Color(course.theme.get("gear", Color("d8a84a"))), 0.35, 0.8),
+		"glow": glow(Color(course.theme.get("edge", Color("ffc23a"))), 2.0)
+	})
+	parent.add_child(node)
+
+
+## Werkstatthalle neben dem Start: Bogendach, Fenster, Schornstein mit Ballon.
+static func _hangar(parent: Node3D, course, item: Dictionary) -> void:
+	var p: Vector3 = item.pos
+	var yaw: float = float(item.get("yaw", 0.0))
+	var size: float = float(item.size)
+	var parts = MESHES.new()
+	parts.xform = Transform3D(Basis(Vector3.UP, yaw), p)
+	parts.box("wall", Vector3(0, size * 0.3, 0), Vector3(size * 1.4, size * 0.6, size))
+	for i in range(9):
+		var a0: float = PI * i / 9.0
+		var a1: float = PI * (i + 1) / 9.0
+		var r: float = size * 0.72
+		var y0: float = size * 0.6
+		var q0 := Vector3(cos(a0) * r, y0 + sin(a0) * r * 0.55, 0)
+		var q1 := Vector3(cos(a1) * r, y0 + sin(a1) * r * 0.55, 0)
+		var half := Vector3(0, 0, size * 0.52)
+		parts.quad("roof", q0 - half, q1 - half, q1 + half, q0 + half, Color.BLACK, [], [], (q0 + q1) * 0.5 - Vector3(0, y0, 0))
+	for k in range(4):
+		parts.box("window", Vector3(-size * 0.45 + k * size * 0.3, size * 0.36, size * 0.505), Vector3(size * 0.18, size * 0.22, 0.1))
+	parts.cylinder("wall", Vector3(size * 0.5, size * 0.6, -size * 0.3), Vector3(size * 0.5, size * 1.5, -size * 0.3), size * 0.08, size * 0.07, 10)
+	var node := MeshInstance3D.new()
+	node.name = "WorkshopHangar"
+	node.mesh = parts.commit({
+		"wall": lit(Color("e9eef7"), 0.6, 0.1), "roof": lit(Color(course.theme.get("accent", Color("ff7a3d"))), 0.5, 0.2),
+		"window": glow(Color("ffd98a"), 1.2)
+	})
+	parent.add_child(node)
+	var balloon := mesh_node(sphere_mesh(size * 0.22, 14), lit(Color("ff6f61"), 0.6), p + Basis(Vector3.UP, yaw) * Vector3(size * 0.5, size * 1.75, -size * 0.3))
+	balloon.scale = Vector3(1, 1.25, 1)
+	parent.add_child(balloon)
