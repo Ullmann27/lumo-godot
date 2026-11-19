@@ -33,6 +33,8 @@ var secrets: Array[Dictionary] = []
 var stations: Array[Dictionary] = []
 ## Geschicklichkeitsstellen: Ankündigung (Satz von Lumo), Stelle, Hilfe nach Fehler.
 var skills: Array[Dictionary] = []
+## Druckplatten: das Kart fährt darüber und schaltet einen Mechanismus (Tor, Brücke).
+var plates: Array[Dictionary] = []
 ## Umschaltbare Mechanismen (Brücke, Tor, Aufzug): Name -> Anfangszustand.
 var mechanisms: Dictionary = {}
 ## Fahrlinie für den Prüf-Bot (und für die Kamera-Vorschau), mit Warteregeln.

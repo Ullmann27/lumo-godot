@@ -24,6 +24,15 @@ func _init(seed_value: int = 7, reaction_seconds: float = 0.32, noise_amount: fl
 ## Liefert {axis, brake, gas} für das Kart.
 func drive_input(run, delta: float) -> Dictionary:
 	var drive = run.drive
+	if not _history.is_empty() and (_history[-1].pos as Vector3).distance_to(drive.position) > 8.0:
+		# Nach einer Rettung: Fahrlinie ab dem nächstgelegenen Punkt neu aufnehmen.
+		_history.clear()
+		var best: float = INF
+		for i in range(run.course.route.size()):
+			var d: float = (run.course.route[i].pos as Vector3).distance_to(drive.position)
+			if d < best:
+				best = d
+				target = i
 	_history.append({"pos": drive.position, "heading": drive.heading, "t": run.t})
 	while _history.size() > 2 and run.t - float(_history[1].t) >= reaction:
 		_history.pop_front()

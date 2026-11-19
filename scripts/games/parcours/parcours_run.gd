@@ -105,6 +105,14 @@ func _progress(p: Vector3) -> void:
 		if p.distance_to(secret.pos as Vector3) <= float(secret.radius):
 			secrets_found[index] = true
 			events.append({"kind": "secret", "text": "Geheimweg gefunden: %s!" % secret.name})
+	for plate in course.plates:
+		var key: String = str(plate.mechanism)
+		if bool(state.get(key, false)):
+			continue
+		if p.distance_to(plate.pos as Vector3) <= float(plate.radius):
+			state[key] = true
+			state[key + "_at"] = t
+			events.append({"kind": "plate", "text": str(plate.text)})
 	var skill: int = course.skill_at(p)
 	if skill >= 0 and not skills_seen.has(skill):
 		skills_seen[skill] = true

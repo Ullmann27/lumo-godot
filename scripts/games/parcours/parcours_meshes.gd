@@ -145,7 +145,7 @@ func slab(
 	var open_right: float = 0.0 if bool(slab_data.rail_right) else 1.0
 	var tint := Color(open_left, open_right, 1.0 if centre_line else 0.0)
 	var count: int = segments_for(slab_data)
-	var disc: bool = str(slab_data.get("style", "")) == "disc"
+	var disc: bool = str(slab_data.get("style", "")) in ["disc", "sun_disc"]
 	if disc:
 		tint = Color(0, 1, 0)
 	for i in range(count):

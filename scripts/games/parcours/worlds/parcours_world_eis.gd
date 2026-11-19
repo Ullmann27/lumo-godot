@@ -18,19 +18,19 @@ static func build():
 	course.kill_y = WATER_Y - 4.0
 	course.pace = 0.4
 	course.theme = {
-		"sky_top": Color("173f8f"), "sky_horizon": Color("bfe3ff"), "ground": Color("8fb4d9"),
-		"sun": Color("fff0dc"), "sun_energy": 1.2, "sun_rotation": Vector3(-26, -55, 0),
-		"ambient": Color("9fc8f2"), "ambient_energy": 0.55, "fog": Color("d6ecff"),
-		"fog_density": 0.0042, "exposure": 0.95, "deck": Color("2c5f8f"),
-		"deck_top": Color("dfe9f4"), "deck_line": Color("8aa7c4"), "edge": Color("5ff0ff"),
+		"sky_top": Color("0b2a68"), "sky_horizon": Color("f0a978"), "ground": Color("1b3a63"),
+		"sun": Color("ffc896"), "sun_energy": 1.35, "sun_rotation": Vector3(-17, -60, 0),
+		"ambient": Color("6f93c8"), "ambient_energy": 0.42, "fog": Color("8fb3df"),
+		"fog_density": 0.0026, "exposure": 0.88, "deck": Color("1f4a78"),
+		"deck_top": Color("b9cde4"), "deck_line": Color("5f7fa6"), "edge": Color("5ff0ff"),
 		"trim": Color("7ee8ff"), "rail": Color("cfe9ff"), "rail_post": Color("6f8fb3"),
-		"ice": Color("b8e6ff"), "ice_line": Color("4b9ad1"), "ice_glow": Color("7ff3ff"),
+		"ice": Color("86c4ec"), "ice_line": Color("2f6fa6"), "ice_glow": Color("7ff3ff"),
 		"glass": Color("a6e2ff"), "snow": Color("f2f6fb"), "accent": Color("8a7bff"),
 		"metal": Color("6b86a8"), "support": Color("5d7fa6"), "gear": Color("9ad7ff"),
-		"cloud": Color("f4f8ff"), "rock": Color("6f7f94"), "grass": Color("f4f8ff"),
-		"tree": Color("2f6b58"), "tower": Color("6fb8e6"), "water": Color("0f3f6b"),
-		"support_depth": 14.0, "music": "bergwelt", "moss": Color("eef4fb"),
-		"stone_line": Color("b3c7dc"), "boost": Color("5ff0ff")
+		"cloud": Color("c9d9ef"), "rock": Color("4a5a76"), "grass": Color("f4f8ff"),
+		"tree": Color("2f6b58"), "tower": Color("4f9fd8"), "water": Color("0a2f57"),
+		"support_depth": 14.0, "music": "bergwelt", "moss": Color("cbdaea"),
+		"stone_line": Color("7f98b6"), "boost": Color("5ff0ff")
 	}
 	var pen = PEN.new(course, Vector3(0.0, BASE_Y, 0.0), 0.0, 12.0)
 	pen.style = "moss"

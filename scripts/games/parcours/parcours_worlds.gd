@@ -4,6 +4,7 @@ extends RefCounted
 
 const WOLKEN = preload("res://scripts/games/parcours/worlds/parcours_world_wolken.gd")
 const EIS = preload("res://scripts/games/parcours/worlds/parcours_world_eis.gd")
+const DSCHUNGEL = preload("res://scripts/games/parcours/worlds/parcours_world_dschungel.gd")
 
 const ENTRIES: Array[Dictionary] = [
 	{
@@ -21,6 +22,14 @@ const ENTRIES: Array[Dictionary] = [
 		"tag": "SPIRALEN · EISBRÜCKEN · RÄTSEL",
 		"color": Color("9fe6ff"),
 		"description": "Spiralrampen, durchsichtige Eisbrücken und ein Kristallrätsel zu Fuß."
+	},
+	{
+		"id": "dschungeltempel",
+		"name": "Dschungel-Tempel",
+		"letter": "C",
+		"tag": "LIANENTORE · STEINWALZEN · SÄULENSPRUNG",
+		"color": Color("9dcb6b"),
+		"description": "Wurzelwege, die Lianenhalle, rollende Steinwalzen und eine alte Steinbrücke."
 	},
 ]
 
@@ -45,4 +54,6 @@ static func build(world_id: String):
 			return WOLKEN.build()
 		"eisturm":
 			return EIS.build()
+		"dschungeltempel":
+			return DSCHUNGEL.build()
 	return WOLKEN.build()

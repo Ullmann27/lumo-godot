@@ -285,10 +285,11 @@ func _on_event(e: Dictionary) -> void:
 		"secret":
 			hud.say(str(e.text))
 			kart_audio.effect("confetti")
-		"skill", "station", "leave", "near_lever", "lever", "enter", "lever_ok", "lever_wrong":
+		"skill", "station", "leave", "near_lever", "lever", "enter", "lever_ok", "lever_wrong", "plate":
 			hud.say(str(e.text))
-			if str(e.kind) == "lever":
+			if str(e.kind) in ["lever", "plate"]:
 				kart_audio.effect("switch_chime")
+				kart_audio.effect("stone_rumble")
 		"reset":
 			hud.say(str(e.text))
 			kart_audio.effect("whoosh")

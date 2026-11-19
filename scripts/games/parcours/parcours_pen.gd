@@ -130,6 +130,31 @@ func aim_at(
 		straight(length, rise, rails, rails, extra)
 
 
+## Drehscheibe direkt voraus (rund, ohne Geländer); der Stift steht danach dahinter.
+func spin_disc(radius: float, speed: float, posts: int = 0, extra: Dictionary = {}) -> int:
+	var centre: Vector3 = pos + forward() * radius
+	var spin := {"type": "spin", "pivot": Vector3(centre.x, 0.0, centre.z), "speed": speed}
+	var slab := {
+		"kind": "arc", "base": Transform3D(Basis.IDENTITY, Vector3(centre.x, 0.0, centre.z)),
+		"radius": radius * 0.5, "width": radius, "a0": 0.0, "a1": TAU, "y0": centre.y,
+		"y1": centre.y, "rail_left": false, "rail_right": false, "style": "disc",
+		"level": level, "no_assist": true, "cap": 12.0, "motion": spin
+	}
+	slab.merge(extra, true)
+	course.slabs.append(slab)
+	for k in range(posts):
+		var a: float = TAU * k / posts + 0.6
+		course.blockers.append({
+			"shape": "cylinder",
+			"base": Transform3D(Basis.IDENTITY, centre + Vector3(cos(a), 0.0, sin(a)) * radius * 0.6),
+			"size": Vector3(0.7, 2.6, 0.7), "motion": spin, "style": "gear_post"
+		})
+	course.route.append({"pos": centre + Vector3.UP * 0.3, "cap": 10.0})
+	pos += forward() * radius * 2.0
+	travelled += radius * 2.0
+	return course.slabs.size() - 1
+
+
 ## Lücke für einen Sprung: der Stift springt weiter, ohne Boden zu legen.
 func gap(length: float, drop: float = 0.0) -> void:
 	pos += forward() * length - Vector3.UP * drop

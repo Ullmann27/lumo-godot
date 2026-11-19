@@ -316,6 +316,18 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 			face.position = Vector3(0, size.y + 0.5, 0)
 			root.add_child(face)
 			return root
+		"log":
+			var root := Node3D.new()
+			root.name = "StoneRoller"
+			var roller := mesh_node(cyl_mesh(size.x * 0.5, size.x * 0.5, size.z, 14), lit(Color("9a8a70"), 0.85), Vector3(0, size.y * 0.5, 0))
+			roller.rotation.x = PI * 0.5
+			roller.name = "Roller"
+			root.add_child(roller)
+			for z in [-0.45, 0.45]:
+				var band := mesh_node(cyl_mesh(size.x * 0.52, size.x * 0.52, 0.3, 14), lit(Color("c9a050"), 0.4, 0.6), Vector3(0, size.y * 0.5, z * size.z))
+				band.rotation.x = PI * 0.5
+				root.add_child(band)
+			return root
 		"vine_gate":
 			var root := Node3D.new()
 			root.name = "VineGate"
@@ -417,6 +429,7 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 	var gears: Array[Dictionary] = []
 	var far_items: Array[Dictionary] = []
 	var floes: Array[Dictionary] = []
+	var trees: Array[Dictionary] = []
 	for item in course.scenery:
 		if (
 			str(item.kind) not in ["cloud"] and not bool(item.get("anchored", false))
@@ -442,7 +455,9 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 				_hangar(parent, course, item)
 			"water":
 				_water(parent, course, item)
-			"mountain", "pine_isle", "ice_tower", "crystal_column":
+			"jungle_tree":
+				trees.append(item)
+			"mountain", "pine_isle", "ice_tower", "crystal_column", "pyramid", "temple_wall":
 				far_items.append(item)
 			"floe":
 				floes.append(item)
@@ -468,6 +483,7 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(node)
 	_far_items(parent, course, far_items)
+	_jungle_trees(parent, course, trees, lightweight)
 	if not floes.is_empty():
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -632,6 +648,24 @@ static func _far_items(parent: Node3D, course, items: Array[Dictionary]) -> void
 					var a: float = TAU * k / 6.0 + 0.3
 					var base: Vector3 = p + Vector3(cos(a), 0, sin(a)) * size * 1.2 + Vector3.UP * 2.0
 					parts.cylinder("ice", base, base + Vector3(cos(a), 3.0, sin(a)) * 3.0 + Vector3.UP * 8.0, 2.6, 0.2, 6)
+			"pyramid":
+				for k in range(5):
+					var step_size: float = size * (1.0 - k * 0.18)
+					parts.box("stone_dark", p + Vector3.UP * (k * size * 0.22 + size * 0.11), Vector3(step_size * 2.0, size * 0.22, step_size * 2.0))
+				parts.box("glow", p + Vector3.UP * (size * 1.15), Vector3(size * 0.3, size * 0.12, size * 0.3))
+			"temple_wall":
+				var yaw: float = float(item.yaw)
+				var basis := Basis(Vector3.UP, yaw)
+				var h2: float = float(item.get("height", 7.0))
+				var length: float = size
+				var blocks: int = maxi(1, int(length / 4.0))
+				for k in range(blocks):
+					var z: float = (float(k) + 0.5) / blocks - 0.5
+					var c: Vector3 = p + basis * Vector3(0, 0, z * length)
+					parts.box("stone_dark", c + Vector3.UP * (h2 * 0.5 - 0.5), Vector3(1.6, h2 + 1.0, length / blocks - 0.08), basis)
+					if k % 2 == 0:
+						parts.box("moss_top", c + Vector3.UP * (h2 + 0.05), Vector3(1.9, 0.5, length / blocks * 0.8), basis)
+						parts.box("glow", c + Vector3.UP * (h2 * 0.55), Vector3(1.7, 0.5, 0.5), basis)
 			"crystal_column":
 				var h: float = float(item.get("height", 30.0))
 				parts.cylinder("ice", p, p + Vector3.UP * h, size, size * 0.7, 6)
@@ -647,8 +681,87 @@ static func _far_items(parent: Node3D, course, items: Array[Dictionary]) -> void
 	node.name = "FarScenery"
 	node.mesh = parts.commit({
 		"rock": lit(Color(course.theme.get("rock", Color("6f7f94"))), 0.9),
-		"snow": lit(Color("f6f9ff"), 0.7), "tree": lit(Color(course.theme.get("tree", Color("2f6b58"))), 0.9),
+		"snow": lit(Color(course.theme.get("snow_cap", Color("eef4fb"))), 0.7), "tree": lit(Color(course.theme.get("tree", Color("2f6b58"))), 0.9),
 		"ice": ice, "glow": glow(Color(course.theme.get("ice_glow", course.theme.get("edge", Color("7ff3ff")))), 1.6),
-		"rim": lit(Color("dff4ff"), 0.2, 0.3)
+		"rim": lit(Color("dff4ff"), 0.2, 0.3),
+		"stone_dark": lit(Color(course.theme.get("tower", Color("a9946f"))), 0.9),
+		"moss_top": lit(Color(course.theme.get("grass", Color("5f9a3e"))), 0.9)
 	})
 	parent.add_child(node)
+
+
+## Sonnenplatte im Boden: leuchtet, bis das Kart darüberfährt, dann sinkt sie ein.
+static func pressure_plate(accent: Color) -> Node3D:
+	var root := Node3D.new()
+	root.name = "PressurePlate"
+	root.add_child(mesh_node(cyl_mesh(2.6, 2.8, 0.2, 24), lit(Color("7d6a52"), 0.8), Vector3(0, 0.05, 0)))
+	var face := mesh_node(cyl_mesh(2.1, 2.2, 0.16, 24), glow(accent, 1.8), Vector3(0, 0.18, 0))
+	face.name = "Face"
+	root.add_child(face)
+	for k in range(8):
+		var a: float = TAU * k / 8.0
+		var ray := mesh_node(box_mesh(Vector3(0.3, 0.08, 1.0)), glow(accent, 2.2), Vector3(cos(a) * 3.3, 0.06, sin(a) * 3.3))
+		ray.rotation.y = -a + PI * 0.5
+		root.add_child(ray)
+	var label := Label3D.new()
+	label.text = "☀"
+	label.font_size = 160
+	label.pixel_size = 0.012
+	label.modulate = Color("fff4c8")
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.position = Vector3(0, 2.2, 0)
+	label.name = "Hint"
+	root.add_child(label)
+	return root
+
+
+static func set_plate(node: Node3D, pressed: bool) -> void:
+	var face := node.get_node_or_null("Face") as Node3D
+	if face != null:
+		face.position.y = lerpf(face.position.y, 0.06 if pressed else 0.18, 0.2)
+		var m := (face as MeshInstance3D).material_override as StandardMaterial3D
+		m.emission_energy_multiplier = 0.4 if pressed else 1.8
+	var hint := node.get_node_or_null("Hint") as Label3D
+	if hint != null:
+		hint.visible = not pressed
+
+
+## Urwaldbäume: Stamm, Brettwurzeln und drei Kronenballen; Kronen als MultiMesh.
+static func _jungle_trees(parent: Node3D, course, items: Array[Dictionary], lightweight: bool) -> void:
+	if items.is_empty():
+		return
+	var parts = MESHES.new()
+	var crowns: Array[Transform3D] = []
+	var count: int = items.size() if not lightweight else items.size() / 2
+	for i in range(count):
+		var item: Dictionary = items[i]
+		var p: Vector3 = item.pos
+		var size: float = float(item.size)
+		var height: float = size * 3.2
+		parts.cylinder("trunk", p + Vector3.DOWN * 2.0, p + Vector3.UP * height, size * 0.22, size * 0.12, 8)
+		for k in range(3):
+			var a: float = TAU * k / 3.0 + size
+			var r := Vector3(cos(a), 0, sin(a))
+			parts.cylinder("trunk", p + r * size * 0.55 + Vector3.DOWN, p + Vector3.UP * size * 0.9, size * 0.08, size * 0.05, 5)
+		for k in range(3):
+			var a: float = TAU * k / 3.0 + size * 0.7
+			var offset := Vector3(cos(a) * size * 0.55, height - k * size * 0.25, sin(a) * size * 0.55)
+			var s: float = size * (1.15 - k * 0.12)
+			crowns.append(Transform3D(Basis().scaled(Vector3(s, s * 0.62, s)), p + offset))
+	var node := MeshInstance3D.new()
+	node.name = "JungleTrunks"
+	node.mesh = parts.commit({"trunk": lit(Color("5b4632"), 0.9)})
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(node)
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = sphere_mesh(1.0, 10)
+	mm.instance_count = crowns.size()
+	for i in range(crowns.size()):
+		mm.set_instance_transform(i, crowns[i])
+	var canopy := MultiMeshInstance3D.new()
+	canopy.name = "JungleCanopy"
+	canopy.multimesh = mm
+	canopy.material_override = lit(Color(course.theme.get("tree", Color("2f7a3a"))), 0.85)
+	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(canopy)

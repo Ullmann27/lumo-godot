@@ -17,7 +17,8 @@ const STYLE_TABLE := {
 	"disc": [0, "disc", "deck_line", "edge"], "boostband": [6, "deck_top", "deck_line", "boost"],
 	"secret": [1, "secret", "bridge_line", "secret_glow"], "ice": [3, "ice", "ice_line", "ice_glow"],
 	"glass": [3, "glass", "ice_line", "ice_glow"], "stone": [4, "stone", "stone_line", "edge"],
-	"moss": [7, "moss", "stone_line", "edge"], "wood": [1, "bridge", "bridge_line", "edge"]
+	"moss": [7, "moss", "stone_line", "edge"], "wood": [1, "bridge", "bridge_line", "edge"],
+	"stairs": [4, "stone", "stone_line", "edge"], "sun_disc": [4, "stone", "stone_line", "edge"]
 }
 
 var course
@@ -191,7 +192,7 @@ func _course_geometry() -> void:
 		var narrow: bool = float(slab.width) < 6.0
 		var body_key: String = "glass_body" if style_id == "glass" else "body"
 		target.slab(slab, "surface:" + style_id, thickness, narrow and style_id != "secret", solid_to, body_key)
-		if style_id == "disc":
+		if style_id in ["disc", "sun_disc"]:
 			KIT.disc_teeth(target, slab)
 		if style_id == "lift":
 			KIT.lift_cage(target, slab)
@@ -279,6 +280,11 @@ func _signs() -> void:
 		sign.position = (skill.pos as Vector3) + ahead * 4.0 + side * 3.2 + Vector3.UP * 1.6
 		sign.rotation.y = float(skill.heading)
 		add_child(sign)
+	for plate in course.plates:
+		var disc: Node3D = KIT.pressure_plate(color("plate", Color("ffcf4a")))
+		disc.position = plate.pos as Vector3
+		add_child(disc)
+		animated.append({"kind": "plate", "node": disc, "mechanism": str(plate.mechanism)})
 	for station in course.stations:
 		var marker: Node3D = KIT.station_marker(color("accent"))
 		marker.position = station.kart_pos as Vector3
@@ -331,6 +337,8 @@ func advance(t: float, state: Dictionary, run) -> void:
 					(entry.node as Node3D).rotate_object_local(entry.axis as Vector3, float(entry.speed) / 60.0)
 			"lever":
 				KIT.set_lever(entry.node, bool(state.get(str(entry.mechanism), false)))
+			"plate":
+				KIT.set_plate(entry.node, bool(state.get(str(entry.mechanism), false)))
 
 
 func _count() -> void:
