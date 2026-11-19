@@ -6,6 +6,7 @@ extends Node3D
 
 const MESHES = preload("res://scripts/games/parcours/parcours_meshes.gd")
 const SURFACE_SHADER = preload("res://assets/shaders/parcours_surface.gdshader")
+const GLASS_SHADER = preload("res://assets/shaders/parcours_glass.gdshader")
 const KIT = preload("res://scripts/games/parcours/parcours_kit.gd")
 
 ## Oberflächenstil je Plattenstil: [Shaderstil, Grundfarbe-Schlüssel, Linienfarbe, Leuchtfarbe]
@@ -152,6 +153,16 @@ func _materials() -> void:
 	materials["accent"] = lit(color("accent"), 0.5, 0.2)
 	materials["teeth"] = lit(color("gear", color("metal")), 0.4, 0.7)
 	materials["solid"] = lit(color("deck").darkened(0.1), 0.7, 0.1)
+	var glass := ShaderMaterial.new()
+	glass.shader = GLASS_SHADER
+	glass.set_shader_parameter("base_color", color("glass", Color("9fdcff")))
+	glass.set_shader_parameter("glow_color", color("ice_glow", Color("8ff0ff")))
+	materials["surface:glass"] = glass
+	var glass_body := ShaderMaterial.new()
+	glass_body.shader = GLASS_SHADER
+	glass_body.set_shader_parameter("base_color", color("glass", Color("9fdcff")).darkened(0.2))
+	glass_body.set_shader_parameter("opacity", 0.6)
+	materials["glass_body"] = glass_body
 
 
 func _style_of(slab: Dictionary) -> String:
@@ -178,7 +189,8 @@ func _course_geometry() -> void:
 		if bool(slab.get("solid", false)):
 			solid_to = minf(0.0, float(slab.rise)) - 0.05
 		var narrow: bool = float(slab.width) < 6.0
-		target.slab(slab, "surface:" + style_id, thickness, narrow and style_id != "secret", solid_to)
+		var body_key: String = "glass_body" if style_id == "glass" else "body"
+		target.slab(slab, "surface:" + style_id, thickness, narrow and style_id != "secret", solid_to, body_key)
 		if style_id == "disc":
 			KIT.disc_teeth(target, slab)
 		if style_id == "lift":
@@ -271,6 +283,16 @@ func _signs() -> void:
 		var marker: Node3D = KIT.station_marker(color("accent"))
 		marker.position = station.kart_pos as Vector3
 		add_child(marker)
+		if station.has("levers"):
+			for i in range(station.levers.size()):
+				var entry: Dictionary = station.levers[i]
+				var puzzle_lever: Node3D = KIT.lever(Color(entry.color))
+				puzzle_lever.name = "Lever_%s_%d" % [station.id, i]
+				puzzle_lever.position = entry.pos as Vector3
+				puzzle_lever.rotation.y = float(entry.get("heading", 0.0))
+				add_child(puzzle_lever)
+				animated.append({"kind": "lever", "node": puzzle_lever, "mechanism": "%s_lever_%d" % [station.id, i]})
+			continue
 		var lever: Node3D = KIT.lever(color("accent"))
 		lever.name = "Lever_" + str(station.id)
 		lever.position = station.lever as Vector3

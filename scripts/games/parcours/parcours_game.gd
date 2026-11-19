@@ -285,7 +285,7 @@ func _on_event(e: Dictionary) -> void:
 		"secret":
 			hud.say(str(e.text))
 			kart_audio.effect("confetti")
-		"skill", "station", "leave", "near_lever", "lever", "enter":
+		"skill", "station", "leave", "near_lever", "lever", "enter", "lever_ok", "lever_wrong":
 			hud.say(str(e.text))
 			if str(e.kind) == "lever":
 				kart_audio.effect("switch_chime")
@@ -409,7 +409,7 @@ func context_label() -> String:
 	if run.on_foot:
 		var s: Dictionary = course.stations[run.station]
 		if not run.station_done.has(run.station):
-			return "HEBEL" if run.walker.position.distance_to(s.lever as Vector3) <= 2.4 else ""
+			return "HEBEL" if run.nearest_lever(s) >= 0 else ""
 		if run.can_enter_kart():
 			return "EINSTEIGEN"
 	return ""

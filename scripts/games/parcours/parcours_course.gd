@@ -39,6 +39,8 @@ var mechanisms: Dictionary = {}
 var route: Array[Dictionary] = []
 ## Wegpunkte des Fußabschnitts für den Bot, je Station.
 var foot_routes: Dictionary = {}
+## Fahrlinien über die Geheimwege (für den Geheimweg-Test).
+var secret_routes: Array = []
 var start: Dictionary = {}
 var finish: Dictionary = {}
 ## Deko-Inseln, Wolken, Bäume … (nur Optik, kein Boden).
@@ -383,6 +385,12 @@ func blocker_active(index: int, state: Dictionary) -> bool:
 	if not needs.is_empty():
 		return not bool(state.get(needs, false))
 	return true
+
+
+## Ein Hubtor (Gleitbewegung nach oben) ist offen, wenn es hoch genug steht.
+func timed_gate_open(index: int, t: float) -> bool:
+	var lift: Vector3 = blocker_transform(index, t).origin - (blockers[index].base as Transform3D).origin
+	return lift.y > float(blockers[index].get("open_above", 1.9))
 
 
 func blocker_transform(index: int, t: float, state: Dictionary = {}) -> Transform3D:

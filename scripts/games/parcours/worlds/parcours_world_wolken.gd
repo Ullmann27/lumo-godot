@@ -206,7 +206,7 @@ static func build():
 	pen.star_line(3, 64.0, 3.0)
 	pen.straight(64.0)
 	pen.checkpoint("werkbank")
-	_secret_gear_path(course, wide_start, wide_heading)
+	PEN.secret_ramp(course, wide_start, wide_heading, -6.0, 3.0, "zahnradsteg", "Geheimer Zahnradsteg")
 	# Fußabschnitt: Die Werkbank-Brücke ist eingefahren. Lumo steigt aus, hüpft über
 	# schwebende Trittsteine zum Hebel und fährt die Brücke aus.
 	pen.width = 12.0
@@ -222,7 +222,9 @@ static func build():
 		"height": 32.0, "anchored": true
 	})
 	pen.style = "ramp"
-	pen.turn(19.0, -540.0, -12.0, true, true, {"width": 10.0})
+	pen.turn(19.0, -270.0, -6.0, true, true, {"width": 10.0})
+	pen.checkpoint("spirale_mitte")
+	pen.turn(19.0, -270.0, -6.0, true, true, {"width": 10.0})
 	pen.style = "deck"
 	pen.checkpoint("zielgerade")
 	pen.star_line(3, 24.0, -2.0)
@@ -281,31 +283,6 @@ static func _workbench_station(course, pen) -> void:
 		"foot_retry": "Plumps – die Lumo-Wolke trägt dich zurück. Spring etwas früher!",
 		"foot_route": route
 	})
-
-
-## Geheimer Zahnradsteg: links auf dem breiten Deck führt eine Rampe auf einen schmalen
-## Steg drei Meter über der Fahrbahn. Wer herunterfällt, landet weich auf dem Deck.
-static func _secret_gear_path(course, start: Vector3, heading: float) -> void:
-	var pen = PEN.new(course, start, heading, 3.6)
-	pen.shift(-6.0)
-	pen.straight(6.0, 0.0, false, false, {"style": "none"})
-	pen.style = "secret"
-	var first: int = pen.straight(14.0, 3.0, false, false, {"solid": true})
-	course.secrets.append(
-		{
-			"id": "zahnradsteg",
-			"name": "Geheimer Zahnradsteg",
-			"pos": pen.pos + Vector3.UP * 0.6,
-			"radius": 3.5
-		}
-	)
-	pen.star_line(4, 26.0, 0.0, true)
-	pen.straight(26.0, 0.0, false, false)
-	var last: int = pen.straight(14.0, -3.0, false, false, {"solid": true})
-	for index in [first, last]:
-		course.slabs[index]["solid"] = true
-	# Die Route des Bots bleibt auf dem Hauptweg; der Geheimweg hat eine eigene.
-	course.route.resize(course.route.size() - 4)
 
 
 static func _scenery(course) -> void:

@@ -138,7 +138,7 @@ static func segments_for(slab: Dictionary) -> int:
 ## material, `centre_line` zeichnet die gelbe Mittellinie (schmale Brücken).
 func slab(
 	slab_data: Dictionary, surface_key: String, thickness: float, centre_line: bool,
-	solid_to: float = INF
+	solid_to: float = INF, body_key: String = "body"
 ) -> void:
 	var width: float = float(slab_data.width)
 	var open_left: float = 0.0 if bool(slab_data.rail_left) else 1.0
@@ -172,9 +172,9 @@ func slab(
 			br1.y = solid_to
 		var out_left: Vector3 = -(f0.right as Vector3)
 		var out_right: Vector3 = f0.right
-		quad("body", l1, bl1, bl0, l0, Color.BLACK, [], [], out_left)
-		quad("body", r0, br0, br1, r1, Color.BLACK, [], [], out_right)
-		quad("body", bl0, bl1, br1, br0, Color.BLACK, [], [], Vector3.DOWN)
+		quad(body_key, l1, bl1, bl0, l0, Color.BLACK, [], [], out_left)
+		quad(body_key, r0, br0, br1, r1, Color.BLACK, [], [], out_right)
+		quad(body_key, bl0, bl1, br1, br0, Color.BLACK, [], [], Vector3.DOWN)
 		# Helle Zierleiste an der Plattenkante.
 		var t1 := Vector3.DOWN * 0.03
 		var t2 := Vector3.DOWN * 0.2
@@ -184,9 +184,9 @@ func slab(
 		quad("trim", r0 + t1 + lift_r, r0 + t2 + lift_r, r1 + t2 + lift_r, r1 + t1 + lift_r, Color.BLACK, [], [], out_right)
 		var ahead: Vector3 = (f1.centre as Vector3) - (f0.centre as Vector3)
 		if i == 0 and str(slab_data.kind) == "box" and not disc:
-			quad("body", l0, bl0, br0, r0, Color.BLACK, [], [], -ahead)
+			quad(body_key, l0, bl0, br0, r0, Color.BLACK, [], [], -ahead)
 		if i == count - 1 and str(slab_data.kind) == "box" and not disc:
-			quad("body", r1, br1, bl1, l1, Color.BLACK, [], [], ahead)
+			quad(body_key, r1, br1, bl1, l1, Color.BLACK, [], [], ahead)
 	for side in [-1.0, 1.0]:
 		var railed: bool = bool(slab_data.rail_right) if side > 0.0 else bool(slab_data.rail_left)
 		if railed:

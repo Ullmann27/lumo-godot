@@ -257,6 +257,35 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 				lamp.name = "Lamp" + ("L" if side < 0.0 else "R")
 				lamp.scale = Vector3.ONE * 0.5
 				root.add_child(lamp)
+			# Rätseltor: farbige Lampen zeigen die Reihenfolge der Hebel (links nach rechts).
+			var lamps: Array = blocker.get("lamps", [])
+			if not lamps.is_empty():
+				root.add_child(mesh_node(box_mesh(Vector3(size.x + 0.8, 0.5, 0.4)), materials.frame, Vector3(0, 3.1, 0)))
+				for i in range(lamps.size()):
+					var x: float = (float(i) - (lamps.size() - 1) * 0.5) * 1.6
+					var hint := mesh_node(sphere_mesh(0.42), glow(Color(lamps[i]), 2.6), Vector3(x, 3.6, 0))
+					root.add_child(hint)
+					var number := Label3D.new()
+					number.text = str(i + 1)
+					number.font_size = 72
+					number.pixel_size = 0.008
+					number.outline_size = 14
+					number.position = Vector3(x, 4.35, 0)
+					number.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+					root.add_child(number)
+			return root
+		"ice_gate":
+			var root := Node3D.new()
+			root.name = "IceGate"
+			var slab_material := StandardMaterial3D.new()
+			slab_material.albedo_color = Color(0.7, 0.92, 1.0, 0.72)
+			slab_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			slab_material.emission_enabled = true
+			slab_material.emission = Color("6fd8ff")
+			slab_material.emission_energy_multiplier = 0.6
+			slab_material.roughness = 0.05
+			root.add_child(mesh_node(box_mesh(size), slab_material, Vector3(0, size.y * 0.5, 0)))
+			root.add_child(mesh_node(box_mesh(Vector3(size.x, 0.18, size.z + 0.1)), glow(Color("bff4ff"), 1.8), Vector3(0, 0.09, 0)))
 			return root
 		"gear_post":
 			var post := Node3D.new()
@@ -272,7 +301,20 @@ static func blocker_visual(blocker: Dictionary, materials: Dictionary, accent: C
 			return root
 		"block":
 			var root := Node3D.new()
-			root.add_child(mesh_node(box_mesh(size), lit(Color(blocker.get("color", Color("9fe6ff"))), 0.15, 0.1), Vector3(0, size.y * 0.5, 0)))
+			root.name = "IceBlock"
+			var ice := lit(Color(blocker.get("color", Color("a9e9ff"))), 0.08, 0.0)
+			ice.emission_enabled = true
+			ice.emission = Color("4fc3ff")
+			ice.emission_energy_multiplier = 0.35
+			root.add_child(mesh_node(box_mesh(size), ice, Vector3(0, size.y * 0.5, 0)))
+			var face := Label3D.new()
+			face.text = "◆"
+			face.font_size = 96
+			face.pixel_size = 0.01
+			face.modulate = Color("e9fbff")
+			face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+			face.position = Vector3(0, size.y + 0.5, 0)
+			root.add_child(face)
 			return root
 		"vine_gate":
 			var root := Node3D.new()
@@ -373,6 +415,8 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 	var clouds: Array[Transform3D] = []
 	var rocks: Array[Dictionary] = []
 	var gears: Array[Dictionary] = []
+	var far_items: Array[Dictionary] = []
+	var floes: Array[Dictionary] = []
 	for item in course.scenery:
 		if (
 			str(item.kind) not in ["cloud"] and not bool(item.get("anchored", false))
@@ -396,6 +440,12 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 				_gear_tower(parent, course, item)
 			"hangar":
 				_hangar(parent, course, item)
+			"water":
+				_water(parent, course, item)
+			"mountain", "pine_isle", "ice_tower", "crystal_column":
+				far_items.append(item)
+			"floe":
+				floes.append(item)
 	if not clouds.is_empty():
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -415,6 +465,22 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 		m.emission_enabled = true
 		m.emission = Color(course.theme.get("cloud", Color.WHITE)) * 0.35
 		node.material_override = m
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(node)
+	_far_items(parent, course, far_items)
+	if not floes.is_empty():
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = cyl_mesh(1.0, 1.1, 0.5, 9)
+		mm.instance_count = floes.size()
+		for i in range(floes.size()):
+			var f: Dictionary = floes[i]
+			var size: float = float(f.size)
+			mm.set_instance_transform(i, Transform3D(Basis(Vector3.UP, i * 1.3).scaled(Vector3(size, 1.0, size * 0.7)), f.pos))
+		var node := MultiMeshInstance3D.new()
+		node.name = "IceFloes"
+		node.multimesh = mm
+		node.material_override = lit(Color("eaf6ff"), 0.4)
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(node)
 	var far_parts = MESHES.new()
@@ -518,3 +584,71 @@ static func _hangar(parent: Node3D, course, item: Dictionary) -> void:
 	var balloon := mesh_node(sphere_mesh(size * 0.22, 14), lit(Color("ff6f61"), 0.6), p + Basis(Vector3.UP, yaw) * Vector3(size * 0.5, size * 1.75, -size * 0.3))
 	balloon.scale = Vector3(1, 1.25, 1)
 	parent.add_child(balloon)
+
+
+static func _water(parent: Node3D, course, item: Dictionary) -> void:
+	var plane := PlaneMesh.new()
+	plane.size = Vector2.ONE * float(item.size)
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(course.theme.get("water", Color("0f3f6b")))
+	m.roughness = 0.12
+	m.metallic = 0.25
+	m.metallic_specular = 0.8
+	var node := mesh_node(plane, m, item.pos)
+	node.name = "Water"
+	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(node)
+
+
+## Berge, Kieferninseln, Kristallturm und Kristallsäule in wenigen Flächen.
+static func _far_items(parent: Node3D, course, items: Array[Dictionary]) -> void:
+	if items.is_empty():
+		return
+	var parts = MESHES.new()
+	for item in items:
+		var p: Vector3 = item.pos
+		var size: float = float(item.size)
+		match str(item.kind):
+			"mountain":
+				parts.cylinder("rock", p, p + Vector3.UP * size * 1.1, size, size * 0.32, 10)
+				parts.cylinder("snow", p + Vector3.UP * size * 1.1, p + Vector3.UP * size * 1.55, size * 0.32, 0.5, 10)
+			"pine_isle":
+				parts.cylinder("snow", p + Vector3.DOWN * 1.0, p + Vector3.UP * 1.2, size, size * 0.9, 10)
+				for k in range(5):
+					var a: float = TAU * k / 5.0 + size
+					var t: Vector3 = p + Vector3(cos(a), 0, sin(a)) * size * 0.5 + Vector3.UP * 1.2
+					parts.cylinder("tree", t, t + Vector3.UP * size * 0.9, size * 0.22, 0.2, 8)
+					parts.cylinder("snow", t + Vector3.UP * size * 0.55, t + Vector3.UP * size * 0.95, size * 0.1, 0.05, 8)
+			"ice_tower":
+				var height: float = float(item.get("height", 40.0))
+				parts.cylinder("ice", p, p + Vector3.UP * height, size * 1.05, size * 0.98, 8)
+				for k in range(8):
+					var a: float = TAU * (k + 0.5) / 8.0
+					var dir := Vector3(cos(a), 0, sin(a))
+					parts.box("glow", p + dir * size * 1.0 + Vector3.UP * height * 0.5, Vector3(0.5, height * 0.96, 0.5), Basis.looking_at(dir, Vector3.UP))
+				for y in [height * 0.33, height * 0.66, height - 0.4]:
+					parts.cylinder("rim", p + Vector3.UP * (y - 0.4), p + Vector3.UP * (y + 0.4), size * 1.12, size * 1.12, 16)
+				for k in range(6):
+					var a: float = TAU * k / 6.0 + 0.3
+					var base: Vector3 = p + Vector3(cos(a), 0, sin(a)) * size * 1.2 + Vector3.UP * 2.0
+					parts.cylinder("ice", base, base + Vector3(cos(a), 3.0, sin(a)) * 3.0 + Vector3.UP * 8.0, 2.6, 0.2, 6)
+			"crystal_column":
+				var h: float = float(item.get("height", 30.0))
+				parts.cylinder("ice", p, p + Vector3.UP * h, size, size * 0.7, 6)
+				parts.cylinder("glow", p + Vector3.UP * h, p + Vector3.UP * (h + 9.0), size * 0.7, 0.3, 6)
+				for k in range(5):
+					var a: float = TAU * k / 5.0
+					var base: Vector3 = p + Vector3(cos(a), 0, sin(a)) * size * 0.8 + Vector3.UP * (h * 0.3 + k * 3.0)
+					parts.cylinder("ice", base, base + Vector3(cos(a), 1.4, sin(a)) * 6.0, 1.6, 0.15, 6)
+	var ice := lit(Color(course.theme.get("tower", Color("6fb8e6"))), 0.08, 0.1)
+	ice.emission_enabled = true
+	ice.emission = Color(course.theme.get("tower", Color("6fb8e6"))) * 0.35
+	var node := MeshInstance3D.new()
+	node.name = "FarScenery"
+	node.mesh = parts.commit({
+		"rock": lit(Color(course.theme.get("rock", Color("6f7f94"))), 0.9),
+		"snow": lit(Color("f6f9ff"), 0.7), "tree": lit(Color(course.theme.get("tree", Color("2f6b58"))), 0.9),
+		"ice": ice, "glow": glow(Color(course.theme.get("ice_glow", course.theme.get("edge", Color("7ff3ff")))), 1.6),
+		"rim": lit(Color("dff4ff"), 0.2, 0.3)
+	})
+	parent.add_child(node)

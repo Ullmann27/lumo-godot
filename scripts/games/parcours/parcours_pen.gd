@@ -113,6 +113,23 @@ func turn(
 	return index
 
 
+## Auf einen Punkt zudrehen (Bogen mit `radius`) und bis `stop_short` davor fahren.
+func aim_at(
+	target: Vector3, radius: float, stop_short: float, rise: float = 0.0, rails: bool = true,
+	extra: Dictionary = {}
+) -> void:
+	for attempt in range(2):
+		var to: Vector3 = target - pos
+		var wanted: float = atan2(-to.x, -to.z)
+		var delta: float = rad_to_deg(angle_difference(heading, wanted))
+		if absf(delta) > 0.5:
+			turn(radius, delta, 0.0, rails, rails, extra)
+	var rest: Vector3 = target - pos
+	var length: float = Vector2(rest.x, rest.z).length() - stop_short
+	if length > 0.5:
+		straight(length, rise, rails, rails, extra)
+
+
 ## Lücke für einen Sprung: der Stift springt weiter, ohne Boden zu legen.
 func gap(length: float, drop: float = 0.0) -> void:
 	pos += forward() * length - Vector3.UP * drop
@@ -180,3 +197,28 @@ func wait_point(rule: Dictionary, cap: float = 0.0) -> void:
 
 func end_route() -> void:
 	course.route.append({"pos": pos + Vector3.UP * 0.3, "cap": 0.0})
+
+
+## Geheimer Steg über einem breiten Deck: Rampe hinauf, schmaler Steg mit Geheimsternen,
+## Rampe hinunter. Wer herunterfällt, landet weich auf dem Deck darunter (kein Sturz).
+static func secret_ramp(
+	course, start: Vector3, facing: float, lateral: float, height: float, secret_id: String,
+	secret_name: String, style_id: String = "secret"
+) -> void:
+	var pen = new(course, start, facing, 3.6)
+	var keep: int = course.route.size()
+	pen.shift(lateral)
+	pen.straight(6.0, 0.0, false, false, {"style": "none"})
+	pen.style = style_id
+	var first: int = pen.straight(14.0, height, false, false, {"solid": true, "secret_path": true})
+	course.secrets.append({
+		"id": secret_id, "name": secret_name, "pos": pen.pos + Vector3.UP * 0.6, "radius": 3.5
+	})
+	pen.star_line(4, 26.0, 0.0, true)
+	pen.straight(26.0, 0.0, false, false, {"secret_path": true})
+	var last: int = pen.straight(14.0, -height, false, false, {"solid": true, "secret_path": true})
+	course.slabs[first]["solid"] = true
+	course.slabs[last]["solid"] = true
+	# Eigene Route für den Geheimweg; die Hauptroute des Bots bleibt unverändert.
+	course.secret_routes.append(course.route.slice(keep))
+	course.route.resize(keep)

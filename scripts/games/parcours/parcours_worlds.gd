@@ -3,6 +3,7 @@ extends RefCounted
 ## eine Welt kommt erst hinein, wenn ihr Bot-Test Start bis Ziel besteht.
 
 const WOLKEN = preload("res://scripts/games/parcours/worlds/parcours_world_wolken.gd")
+const EIS = preload("res://scripts/games/parcours/worlds/parcours_world_eis.gd")
 
 const ENTRIES: Array[Dictionary] = [
 	{
@@ -12,6 +13,14 @@ const ENTRIES: Array[Dictionary] = [
 		"tag": "BRÜCKEN · SCHWEBER · AUFZUG",
 		"color": Color("8fd3ff"),
 		"description": "Schmale Brücken, schwebende Plattformen und ein Aufzug über den Wolken."
+	},
+	{
+		"id": "eisturm",
+		"name": "Eis-Turm",
+		"letter": "B",
+		"tag": "SPIRALEN · EISBRÜCKEN · RÄTSEL",
+		"color": Color("9fe6ff"),
+		"description": "Spiralrampen, durchsichtige Eisbrücken und ein Kristallrätsel zu Fuß."
 	},
 ]
 
@@ -34,4 +43,6 @@ static func build(world_id: String):
 	match world_id:
 		"wolkenwerkstatt":
 			return WOLKEN.build()
+		"eisturm":
+			return EIS.build()
 	return WOLKEN.build()

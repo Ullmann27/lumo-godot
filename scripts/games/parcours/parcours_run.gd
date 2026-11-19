@@ -173,14 +173,49 @@ func enter_kart() -> bool:
 	return true
 
 
-## Aktionstaste zu Fuß: Hebel umlegen, wenn Lumo davor steht.
+## Hebel einer Station: eine Liste (Rätsel, Reihenfolge in `order`) oder ein einzelner.
+static func station_levers(s: Dictionary) -> Array:
+	if s.has("levers"):
+		return s.levers
+	return [{"pos": s.lever}]
+
+
+func nearest_lever(s: Dictionary) -> int:
+	var levers: Array = station_levers(s)
+	var best: int = -1
+	var best_distance: float = 2.4
+	for i in range(levers.size()):
+		var d: float = walker.position.distance_to(levers[i].pos as Vector3)
+		if d <= best_distance:
+			best = i
+			best_distance = d
+	return best
+
+
+## Aktionstaste zu Fuß: Hebel umlegen, wenn Lumo davor steht. Beim Rätsel zählt die
+## Reihenfolge; ein falscher Hebel setzt freundlich zurück (Lumo gibt einen Tipp).
 func use_lever() -> bool:
-	if not on_foot or station < 0:
+	if not on_foot or station < 0 or station_done.has(station):
 		return false
 	var s: Dictionary = course.stations[station]
-	var lever: Vector3 = s.lever
-	if walker.position.distance_to(lever) > 2.4 or station_done.has(station):
+	var lever: int = nearest_lever(s)
+	if lever < 0:
 		return false
+	var sid: String = str(s.id)
+	var order: Array = s.get("order", [0])
+	var step: int = int(state.get(sid + "_step", 0))
+	if lever != int(order[step]):
+		state[sid + "_step"] = 0
+		for i in range(station_levers(s).size()):
+			state["%s_lever_%d" % [sid, i]] = false
+		events.append({"kind": "lever_wrong", "text": str(s.get("hint", "Probier einen anderen Hebel."))})
+		return true
+	state["%s_lever_%d" % [sid, lever]] = true
+	step += 1
+	state[sid + "_step"] = step
+	if step < order.size():
+		events.append({"kind": "lever_ok", "text": "Richtig! Noch %d." % (order.size() - step)})
+		return true
 	station_done[station] = true
 	var mechanism: String = str(s.mechanism)
 	state[mechanism] = true
@@ -193,7 +228,7 @@ func _foot_logic() -> void:
 	if station < 0:
 		return
 	var s: Dictionary = course.stations[station]
-	if not station_done.has(station) and walker.position.distance_to(s.lever as Vector3) <= 2.4:
+	if not station_done.has(station) and nearest_lever(s) >= 0:
 		if not bool(state.get("near_lever", false)):
 			events.append({"kind": "near_lever", "text": "Drück auf HEBEL!"})
 		state["near_lever"] = true
