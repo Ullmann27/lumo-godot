@@ -48,3 +48,7 @@ __pycache__/
 
 # Generated developer-pack build output (GitHub Actions artifacts only)
 dist/
+
+# Mitspieler-Tiere: .blend wird von tools/lumo_kart_art/drivers/build_animal_drivers.py
+# reproduzierbar erzeugt (je ~1,6 MB) und nicht versioniert.
+art/lumo_kart/blender/drivers/*.blend

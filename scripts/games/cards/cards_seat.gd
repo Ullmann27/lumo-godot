@@ -203,7 +203,11 @@ func react(what: String) -> void:
 		"play":
 			_mood_left = 0.55
 			hide_emote()
-			_play_clip("kart_steer_right" if seat_index % 2 == 0 else "kart_steer_left", 0.55)
+			# Mitspieler haben eine eigene „Karte legen"-Bewegung; Lumo lenkt kurz.
+			if not _is_lumo and player.has_animation("card_play"):
+				_play_clip("card_play", 0.9)
+			else:
+				_play_clip("kart_steer_right" if seat_index % 2 == 0 else "kart_steer_left", 0.55)
 		"wave":
 			_mood_left = 1.8
 			_play_clip("greeting_wave", 1.8)

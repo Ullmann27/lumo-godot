@@ -9,6 +9,8 @@ const ACTOR = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const OUT := "res://tools/cards/portraits/"
 const SIZE := 512
 const RIVALS: Array[String] = ["lion", "owl", "rabbit", "squirrel", "turtle"]
+## Highest point above the Head bone that still belongs to the portrait.
+const HEAD_REACH := {"squirrel": 0.5}
 
 
 func _initialize() -> void:
@@ -55,7 +57,7 @@ func _run() -> void:
 		var player: AnimationPlayer = model.find_children("*", "AnimationPlayer", true, false)[0]
 		player.play("kart_seated")
 		player.seek(0.4, true)
-		await _shoot(camera, _head_box(model), id)
+		await _shoot(camera, _head_box(model, HEAD_REACH.get(id, 9.0)), id)
 		model.queue_free()
 		await process_frame
 	var lumo := ACTOR.new()
@@ -69,7 +71,7 @@ func _run() -> void:
 
 
 ## Kopfbereich: alles oberhalb des Halses, aus den echten Mesh-Grenzen.
-func _head_box(model: Node3D) -> AABB:
+func _head_box(model: Node3D, reach: float = 9.0) -> AABB:
 	var skeleton: Skeleton3D = model.find_children("*", "Skeleton3D", true, false)[0]
 	skeleton.force_update_all_bone_transforms()
 	var neck: Vector3 = skeleton.to_global(skeleton.get_bone_global_pose(skeleton.find_bone("Neck")).origin)
@@ -78,6 +80,8 @@ func _head_box(model: Node3D) -> AABB:
 	for mesh: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
 		var box: AABB = mesh.global_transform * mesh.get_aabb()
 		top = maxf(top, box.end.y)
+	# The squirrel's tail rises above its ears: frame the head, not the tail.
+	top = minf(top, head.y + reach)
 	var height := top - neck.y
 	return AABB(Vector3(head.x - height * 0.5, neck.y - height * 0.08, head.z), Vector3(height, height * 1.08, 0.0))
 

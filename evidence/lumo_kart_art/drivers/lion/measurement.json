@@ -1,14 +1,5 @@
 {
   "species": "lion",
-  "authoring": "Local Blender Python mesh construction; reference-guided original LUMO rival art. No external generation.",
-  "blender": "4.3.2",
-  "runtime_integrated": false,
-  "axes": {
-    "blender": "X right,+Y forward,Z up",
-    "godot": "X right,Y up,-Z forward"
-  },
-  "units": "metres",
-  "rig": "DriverRig",
   "bones": [
     "Root",
     "Pelvis",
@@ -30,156 +21,134 @@
     "Thigh.R",
     "Shin.R",
     "Foot.R",
-    "Ear.R"
-  ],
-  "markers": [
-    "Grip_L",
-    "Grip_R",
-    "Foot_L",
-    "Foot_R",
-    "SeatAnchor",
-    "HeadAnchor",
-    "NeckAnchor"
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R"
   ],
   "animations": {
     "idle": {
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 0.0,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 2.9583333333333335,
-      "godot_clip_length_s": 3.0
+      "sampled_max_hand_origin_error_m": 0.0
     },
     "kart_seated": {
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 6.343065695104826e-07,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 2.9583333333333335,
-      "godot_clip_length_s": 3.0
+      "sampled_max_hand_origin_error_m": 6.014238617006113e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 1.9583333333333333,
-      "godot_clip_length_s": 2.0
+      "sampled_max_hand_origin_error_m": 6.043702301583661e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 1.9583333333333333,
-      "godot_clip_length_s": 2.0
+      "sampled_max_hand_origin_error_m": 6.043702301583661e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 5.094802676820385e-07,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 1.4583333333333333,
-      "godot_clip_length_s": 1.5
+      "sampled_max_hand_origin_error_m": 6.014238617006113e-07
     },
     "celebrate": {
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 0.0,
-      "exported_first_key_s": 0.041666666666666664,
-      "active_key_span_s": 2.9583333333333335,
-      "godot_clip_length_s": 3.0
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_hit": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "greeting_wave": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "agree_nod": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "point_portal": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "card_play": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
     }
   },
   "lods": {
     "lod0": {
-      "vertices": 20752,
-      "triangles": 41008,
+      "vertices": 14177,
+      "triangles": 28020,
       "materials": 6,
-      "nonmanifold_edges": 0,
-      "zero_weight_vertices": 0,
-      "max_weight_sum_error": 2.9802322387695312e-08,
-      "max_influences": 2,
-      "evaluated_dimensions_blender_m": [
-        0.8279998898506165,
-        1.0662376880645752,
-        1.2401467561721802
+      "max_weight_sum_error": 4.377216100692749e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.9046,
+        1.0366,
+        1.2555
       ],
       "file": "assets/kart/production/drivers/lion/driver.glb",
-      "sha256": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833"
+      "bytes": 1431396,
+      "sha256": "d173ff749373d15cf9b7c42f5b5c616d88276766e440df7b6da3e597343cdbc7"
     },
     "lod1": {
-      "vertices": 11935,
-      "triangles": 23374,
+      "vertices": 9427,
+      "triangles": 18520,
       "materials": 6,
-      "nonmanifold_edges": 0,
-      "zero_weight_vertices": 0,
-      "max_weight_sum_error": 8.940696716308594e-08,
-      "max_influences": 2,
-      "evaluated_dimensions_blender_m": [
-        0.8279998898506165,
-        1.0662376880645752,
-        1.240160346031189
+      "max_weight_sum_error": 3.818422555923462e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.9046,
+        1.0366,
+        1.2555
       ],
       "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
-      "sha256": "14df7f9d3dbcc19759779e589c0a83305960d9495f587394809c07bb5935305e"
+      "bytes": 1067532,
+      "sha256": "402f0f50fd3fd242be72005566c0f7016ce3318b18d687d4b2474ae8c380f2fc"
     },
     "lod2": {
-      "vertices": 6194,
-      "triangles": 11892,
+      "vertices": 7052,
+      "triangles": 13770,
       "materials": 6,
-      "nonmanifold_edges": 0,
-      "zero_weight_vertices": 0,
-      "max_weight_sum_error": 8.940696716308594e-08,
-      "max_influences": 2,
-      "evaluated_dimensions_blender_m": [
-        0.8279998898506165,
-        1.0659313201904297,
-        1.2405853271484375
+      "max_weight_sum_error": 4.0745362639427185e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.9046,
+        1.0366,
+        1.2558
       ],
       "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
-      "sha256": "e3d091927fe6db0975711cd3a73ea7c1f636792987a8efa31666e506f005c05a"
+      "bytes": 884404,
+      "sha256": "52f0c29495718b4b4bb76da8e7461bd2bb8b86c719ac7ad2b69f41421e8fa13e"
     }
   },
-  "texture_images": [
-    {
-      "name": "LUMO_Fabric_MicroNormal",
-      "width": 512,
-      "height": 512,
-      "packed_bytes": 21018,
-      "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
-    },
-    {
-      "name": "LUMO_Organic_MicroNormal",
-      "width": 512,
-      "height": 512,
-      "packed_bytes": 236489,
-      "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
-    }
-  ],
-  "material_policy": "Six PBR finishes with per-vertex palette colors and two locally authored 512px periodic micro-normal maps, packed in Blender and embedded in GLB.",
-  "reference_paths": [
-    "assets/characters/rivals/reference/inputs/lion-front.jpg",
-    "assets/characters/rivals/reference/inputs/lion-material.jpg"
-  ],
-  "eye_scale": {
-    "sclera_width_m": 0.10752,
-    "sclera_height_m": 0.13944,
-    "maximum_local_sclera_protrusion_m": 0.01092,
-    "head_width_m": 0.5315887499999999,
-    "comment": "Eye surfaces follow the measured curved skull; closed shallow cornea geometry and attached lids replace protruding globes."
-  },
-  "proof_limit": "Blender render and mesh measurements only. Godot and Android tests must be reported separately.",
-  "head_proportion_scale": 0.84,
-  "head_scale_attachment_blender_m": [
-    0.0,
-    -0.014999999664723873,
-    1.4199999570846558
-  ]
+  "build_seconds": 58.5,
+  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
 }

@@ -1,5 +1,7 @@
 extends SceneTree
 ## In-memory skinned fixtures test the adapter without fabricating roster assets.
+## The roster itself is production-ready: every rival has a real imported rig
+## that passes the contract, and an explicit unready flag still always wins.
 const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
 const ADAPTER = preload("res://scripts/games/kart_rival_visual_adapter.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
@@ -65,13 +67,15 @@ func _fixture() -> Node3D:
 func _vehicle_cadence(packed: PackedScene, hz: int) -> void:
 	# The real island supplies runtime state every physics frame, even when
 	# suspension has not changed. Exercise that full path with a test-only
-	# skinned fixture; the production roster remains explicitly unready.
+	# skinned fixture on a kart animal without a production rig (roster
+	# animals drive their authored production rig instead, checked below).
 	var kart: LumoRaceKart = VEHICLE.new()
-	kart.configure("rabbit", Color.WHITE, "comet")
+	kart.configure("otter", Color.WHITE, "comet")
 	root.add_child(kart)
 	kart.set_process(false)
 	var visual := ADAPTER.new()
 	kart.add_child(visual)
+	_check(kart.production_driver == null, "%d Hz fixture kart has no production rig" % hz)
 	_check(visual.bind_scene(packed), "%d Hz vehicle fixture binds an actual rig" % hz)
 	kart.rival_visual = visual
 	kart.driver.hide()
@@ -98,9 +102,18 @@ func _vehicle_cadence(packed: PackedScene, hz: int) -> void:
 
 func _run() -> void:
 	for entry in ROSTER.all():
-		_check(not bool(entry.runtimeReady), "Pending " + str(entry.id) + " remains explicitly unready")
-		_check(ROSTER.racing_scene(str(entry.id)) == null, "Pending model is never silently instantiated")
-	_check(not ROSTER.ready_for_race(), "The roster cannot claim assets that are still absent")
+		var id := str(entry.id)
+		_check(bool(entry.runtimeReady), "Roster rival " + id + " is marked ready")
+		var scene: PackedScene = ROSTER.racing_scene(id)
+		_check(scene != null, "Ready rival " + id + " loads its real imported rig")
+		if scene != null:
+			var instance := scene.instantiate()
+			_check(
+				bool(CONTRACT.inspect(instance).valid),
+				"Imported rig of " + id + " satisfies the contract"
+			)
+			instance.free()
+	_check(ROSTER.ready_for_race(), "Every kart rival has a usable racing model")
 	_check(not CONTRACT.model_path_allowed("res://assets/characters/rivals/../lumo.glb"), "Parent traversal is outside the rival model contract")
 	_check(not CONTRACT.model_path_allowed("res://assets/characters/rivals/test.tscn"), "Runtime roster accepts imported GLB data only")
 	var good := _fixture()
@@ -127,9 +140,25 @@ func _run() -> void:
 	good = _fixture()
 	_check(packed.pack(good) == OK, "Fresh test-only rig is packed")
 	good.free()
+	# An explicit unready flag wins over any cached, validated scene.
+	# (The cached roster is read-only; swap in a copy with rabbit unready.)
+	var original_rows: Array[Dictionary] = ROSTER.all()
+	var trial: Array[Dictionary] = []
+	for row in original_rows:
+		var copy: Dictionary = row.duplicate(true)
+		if str(copy.id) == "rabbit":
+			copy["runtimeReady"] = false
+		trial.append(copy)
+	ROSTER._cache = trial
+	var cached: Variant = ROSTER._validated_scenes.get("rabbit")
 	ROSTER._validated_scenes["rabbit"] = packed
 	_check(ROSTER.racing_scene("rabbit") == null, "An old cached model cannot override explicit unready state")
-	ROSTER._validated_scenes.erase("rabbit")
+	_check(not ROSTER.ready_for_race(), "One unready rival blocks the race roster")
+	ROSTER._cache = original_rows
+	if cached == null:
+		ROSTER._validated_scenes.erase("rabbit")
+	else:
+		ROSTER._validated_scenes["rabbit"] = cached
 	var adapter := ADAPTER.new()
 	root.add_child(adapter)
 	_check(adapter.bind_scene(packed), "Adapter actually instantiates the valid rig")
@@ -174,12 +203,29 @@ func _run() -> void:
 	_check(kart.rival_visual == null, "Reference preference is safe before entering the tree")
 	root.add_child(kart)
 	kart.set_process(false)
-	_check(kart.rival_visual == null and kart.driver.visible, "Unready reference preserves the current full 3D driver")
+	_check(
+		kart.production_driver != null and kart.driver == kart.production_driver,
+		"A roster rival drives its authored production rig"
+	)
+	_check(
+		kart.rival_visual == null and kart.driver.visible,
+		"The production rig is never doubled by a reference adapter"
+	)
 	kart.set_reference_rival_enabled(true)
-	_check(kart.rival_visual == null, "Repeated preference never invents a missing model")
+	_check(kart.rival_visual == null, "Repeated preference never adds a second driver")
 	kart.set_reference_rival_enabled(false)
-	_check(kart.driver.visible, "Disabling references keeps the real fallback visible")
+	_check(kart.driver.visible, "Disabling references keeps the production rig visible")
 	kart.free()
+	var legacy: LumoRaceKart = VEHICLE.new()
+	legacy.configure("otter", Color.WHITE, "comet")
+	legacy.set_reference_rival_enabled(true)
+	root.add_child(legacy)
+	legacy.set_process(false)
+	_check(
+		legacy.rival_visual == null and legacy.driver.visible,
+		"An animal without a roster model keeps its full 3D driver"
+	)
+	legacy.free()
 	print("[RivalAdapter] checks=", checks, " failures=", failures.size())
 	if failures.is_empty():
 		print("[RivalAdapter] PASS: actual rig instantiation, validation, one clock, pause and honest readiness")

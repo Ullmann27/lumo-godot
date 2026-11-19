@@ -51,14 +51,16 @@ func _imported_scene(identity: String, level: int) -> void:
 	if skeleton == null or animator == null:
 		visual.free()
 		return
-	_check(skeleton.get_bone_count() == 21, "Authored 21-bone rival rig: " + path)
+	_check(skeleton.get_bone_count() == DRIVER.BONES.size(), "Authored body and face rival rig: " + path)
+	for bone in DRIVER.BONES:
+		_check(skeleton.find_bone(bone) >= 0, "Rig bone present: " + path + "/" + bone)
 	animator.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	var tracks: Dictionary = {}
 	for clip in CLIPS:
 		_check(animator.has_animation(clip), "Imported clip " + identity + "/" + clip)
 		if animator.has_animation(clip):
 			tracks[clip] = animator.get_animation(clip).get_track_count()
-			_check(tracks[clip] == 63, "All constant T/R/S reset tracks remain: " + path + "/" + clip)
+			_check(tracks[clip] == DRIVER.BONES.size() * 3, "All constant T/R/S reset tracks remain: " + path + "/" + clip)
 	for clip in ["idle", "kart_seated", "celebrate", "kart_seated", "kart_steer_left", "idle", "kart_jump", "kart_steer_right", "kart_seated"]:
 		animator.play(clip, 0.0)
 		animator.seek(0.7, true)
@@ -162,7 +164,7 @@ func _adapter(identity: String) -> void:
 	var elapsed_before: float = adapter.elapsed
 	for index in range(10):
 		adapter.advance_tick(0.1)
-	_same_pose(adapter, before, "Pause freezes all 21 bones")
+	_same_pose(adapter, before, "Pause freezes all rig bones")
 	_check(adapter.elapsed == elapsed_before, "Pause freezes the animation clock.")
 	for level in [2, 1, 0]:
 		adapter.set_visual_lod(level)

@@ -20,7 +20,9 @@ const DECK = preload("res://scripts/games/cards/rules/star_deck.gd")
 const TABLE_KIT = preload("res://scripts/games/table_room/table_room_kit.gd")
 
 const LUMO_ANGLE := -96.0
-const OPPONENT_ANGLES := {1: [180.0], 2: [-138.0, 138.0], 3: [-122.0, 180.0, 122.0]}
+## Plätze so verteilt, dass von der Kamera aus keine Figur eine andere verdeckt:
+## nie direkt hinter Lumo (links), bei drei Mitspielern einer rechts gegenüber.
+const OPPONENT_ANGLES := {1: [180.0], 2: [-152.0, 128.0], 3: [-156.0, 156.0, 104.0]}
 const ROSTER: Array[String] = ["squirrel", "owl", "turtle", "lion", "rabbit"]
 const GOLD := Color(1.0, 0.78, 0.25, 0.95)
 const CYAN := Color(0.35, 0.9, 1.0, 0.95)

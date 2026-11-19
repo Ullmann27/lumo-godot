@@ -1,5 +1,6 @@
 extends Node3D
-## The five authored rival rigs, driven only by the existing vehicle state.
+## The authored rival animal rigs, driven only by the existing vehicle state.
+## Each rig has the 21 body bones plus jaw, eye and lid bones for the face.
 ## This adapter never changes vehicle transforms, physics or race progress.
 
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
@@ -11,7 +12,8 @@ const CLIPS := [&"idle", &"kart_seated", &"kart_steer_left", &"kart_steer_right"
 const BONES := [
 	"Root", "Pelvis", "Spine", "Chest", "Neck", "Head", "Tail",
 	"UpperArm.L", "Forearm.L", "Hand.L", "Thigh.L", "Shin.L", "Foot.L", "Ear.L",
-	"UpperArm.R", "Forearm.R", "Hand.R", "Thigh.R", "Shin.R", "Foot.R", "Ear.R"
+	"UpperArm.R", "Forearm.R", "Hand.R", "Thigh.R", "Shin.R", "Foot.R", "Ear.R",
+	"Jaw", "Eye.L", "Eye.R", "Lid.L", "Lid.R"
 ]
 static var _scene_cache: Dictionary = {}
 
@@ -176,7 +178,7 @@ func _valid_rig(candidate: Skeleton3D, animator: AnimationPlayer) -> bool:
 	for clip in CLIPS:
 		if not animator.has_animation(clip):
 			return false
-		# All 21 bones carry T/R/S, including the constant seated resets.
+		# All bones carry T/R/S, including the constant seated resets.
 		# A default import that prunes them is unsuitable after idle/celebrate.
 		if animator.get_animation(clip).get_track_count() != BONES.size() * 3:
 			return false

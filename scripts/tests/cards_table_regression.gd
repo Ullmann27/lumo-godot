@@ -101,6 +101,12 @@ func _run() -> void:
 	bridge._options = original_options
 	bridge._host = original_host
 	DirAccess.remove_absolute(save_path)
+	# Ein letzter Klick-Ton darf beim Beenden nicht mehr laufen (sonst meldet
+	# Godot gelegentlich ui_click als „resources still in use").
+	var soundscape := root.get_node_or_null("GameSoundscape")
+	if soundscape != null:
+		soundscape.release_audio()
+	await create_timer(0.5).timeout
 	print("CARDS_TABLE_RUNTIME_%s checks=%d failures=%d" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)
 
