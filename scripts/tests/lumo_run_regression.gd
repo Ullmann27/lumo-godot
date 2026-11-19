@@ -1164,7 +1164,8 @@ func _test_adventure_path() -> void:
 		buffered = buffered or (player.vy > 5.0 and player.h < 1.0)
 	player.release_jump()
 	_check(buffered, "a jump pressed just before landing is buffered on the path")
-	var hole: Vector2 = world.level.gaps[3]
+	# Indices count the vine stream of the introduction (gaps[1]) since 19.11.
+	var hole: Vector2 = world.level.gaps[4]
 	_place_on_path(game, hole.x - 6.0)
 	_until(game, func() -> bool: return player.s > hole.x + 0.15, null, 200)
 	_steps(game, 2)
@@ -1175,7 +1176,7 @@ func _test_adventure_path() -> void:
 	_check(player.jumping and player.vy > 5.0, "coyote time: a jump just after the edge still works")
 	# Falling into a hole: back to the rescue point, no stars lost, help after two falls.
 	_until(game, func() -> bool: return player.grounded, null, 300)
-	var gap: Vector2 = world.level.gaps[5]
+	var gap: Vector2 = world.level.gaps[6]
 	_place_on_path(game, gap.x - 5.0)
 	var rescue_before: int = track.rescues
 	var kept: int = track.kept
@@ -1207,7 +1208,9 @@ func _test_adventure_path() -> void:
 	for kind in ["vine", "zip"]:
 		var index: int = -1
 		for candidate in range(plan.rides.size()):
-			if str(plan.rides[candidate].kind) == kind:
+			# The high vine of the introduction is caught only with a jump
+			# (lumo_run_moments_regression): here the first one caught running.
+			if str(plan.rides[candidate].kind) == kind and (kind != "vine" or float(plan.rides[candidate].h) < 2.0):
 				index = candidate
 				break
 		var line: Dictionary = plan.rides[index]

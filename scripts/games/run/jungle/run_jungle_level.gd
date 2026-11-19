@@ -40,6 +40,8 @@ var branches: Array[Dictionary] = []
 ## The three adventure passages (see _passage): where they are, their two lines
 ## and the numbers they were built with (gaps in metres).
 var passages: Array[Dictionary] = []
+## Early highlights (announce, act, react), see run_moments.gd.
+var moments: Array[Dictionary] = []
 var chase: Dictionary = {}
 var cart: Dictionary = {}
 var bonus: Dictionary = {}
@@ -152,13 +154,14 @@ func _barrel(at: float, lat: float, h: float, target_s: float, target_lat: float
 	)
 
 
-func _vine(handle: float, lat: float, rope: float, swing: float) -> void:
+func _vine(handle: float, lat: float, rope: float, swing: float, handle_h: float = 1.9) -> void:
 	# The pivot hangs above and ahead of the handle; Lumo swings from -swing to +swing.
+	# A handle at 1.9 m is caught running; from about 2.7 m Lumo has to jump for it.
 	var pivot_s: float = handle + rope * sin(swing)
-	var pivot_h: float = 1.9 + rope * cos(swing)
+	var pivot_h: float = handle_h + rope * cos(swing)
 	rides.append(
 		{
-			"kind": "vine", "s": handle, "lat": lat, "h": 1.9, "ps": pivot_s, "ph": pivot_h, "rope": rope,
+			"kind": "vine", "s": handle, "lat": lat, "h": handle_h, "ps": pivot_s, "ph": pivot_h, "rope": rope,
 			"a0": -swing, "a1": swing * 1.15, "time": 1.25,
 		}
 	)
@@ -192,10 +195,10 @@ func _decor(kind: String, at: float, lat: float, extra: Dictionary = {}) -> void
 ## Registers an adventure passage: announced `lead` metres before its hole,
 ## with a safe line (shorter jump, more time) and a brave line (longer jump,
 ## gold stars). Both are branches for the scripted player as well.
-## 50 m lead: at the 1.5 path tempo with both flow stages (20 m/s on screen) the
-## child still gets 2.5 s of warning (46 m were 2.3 s).
+## 54 m lead: at the 1.6 path tempo with both flow stages (21.3 m/s on screen)
+## the child still gets 2.5 s of warning (50 m were 2.35 s).
 func _passage(name: String, hole: float, length_m: float, safe: Dictionary, brave: Dictionary, say: String,
-		brave_speed: float, lead: float = 50.0) -> void:
+		brave_speed: float, lead: float = 54.0) -> void:
 	passages.append({
 		"name": name, "s0": hole, "s1": hole + length_m, "announce": hole - lead, "say": say,
 		"safe_lat": float(safe.lat), "safe_gap": float(safe.gap), "brave_lat": float(brave.lat), "brave_gap": float(brave.gap),
@@ -258,7 +261,8 @@ func _intro() -> void:
 	_enemy("crab", crab_at + 12.0, 0.0, 1.6, 1.4)
 	coaches.append({"s0": crab_at + 2.0, "s1": crab_at + 13.0, "icon": "stomp"})
 	_safe(crab_at + 3.0)
-	# 4. Barrel: Lumo climbs in and is shot across a gully.
+	_vine_moment()
+	# 5. Barrel: Lumo climbs in and is shot across a gully.
 	var barrel_at: float = _leg(14.0, 0.0, 0.0, 2.4, "dirt")
 	coaches.append({"s0": barrel_at + 2.0, "s1": barrel_at + 14.0, "icon": "barrel"})
 	var gully: float = _hole(13.0)
@@ -268,6 +272,32 @@ func _intro() -> void:
 	_safe(gully + 16.0)
 	intro_end = s - 4.0
 	_decor("arch", intro_end, 0.0, {"look": "start"})
+
+
+## The first highlight (before the first barrel): a glowing ring over the
+## stream edge, a vine hanging high above the water. SPRINGEN at the ring and
+## Lumo catches the vine and swings across; who misses splashes into the shallow
+## stream and is back at the ring a moment later.
+func _vine_moment() -> void:
+	var run_up: float = _leg(16.0, 0.0, 0.0, 2.4, "dirt")
+	_safe(run_up + 2.0)
+	_line(run_up + 3.0, run_up + 11.0, 0.0, 0.0)
+	var stream: float = _hole(8.0)
+	var handle: float = stream - 0.4
+	_vine(handle, 0.0, 4.6, 0.78, TUNING.VINE_HIGH_HANDLE)
+	_arc(stream + 0.5, stream + 8.0, 0.0, 3.4, 5, 2.0)
+	_gold(stream + 4.0, 0.0, 4.4)
+	_decor("torch", stream - 3.0, -2.9)
+	_decor("torch", stream - 3.0, 2.9)
+	coaches.append({"s0": stream - 12.0, "s1": stream + 1.0, "icon": "jump"})
+	moments.append({
+		"id": "liane", "name": "Lianenschwung", "need": "ride", "look": "vine",
+		"cue": run_up - 22.0, "go": stream - 12.0, "s0": stream - 4.0, "s1": stream + 8.0,
+		"lat": 0.0, "arch_s": stream - 2.6, "colour": "ffd75e", "coach": "jump",
+		"say": "Liane! Am Leuchtring SPRINGEN und festhalten!",
+		"done_say": "Juhu, geschwungen!", "miss_say": "Platsch! Gleich nochmal – am Ring springen.",
+	})
+	_leg(14.0, 0.0, 0.0, 2.4, "dirt")
 
 
 ## Section 1, the root path: earth, roots, logs, crabs, a rope bridge, first branch.
@@ -492,7 +522,8 @@ func _waterfall_cave() -> void:
 	ceilings.append(Vector3(a, a + 300.0, 6.4))
 	_decor("cave_mouth", a + 1.0, 0.0)
 	_line(a + 3.0, a + 22.0, 0.0, 0.0)
-	_enemy("beetle", a + 16.0, 0.0, 4.0, 1.1)
+	# The beetle walks early in the slope, so the run-up to the pool is clear.
+	_enemy("beetle", a + 9.0, 0.0, 4.0, 1.1)
 	_decor("waterfall", a + 30.0, 0.0, {"height": 8.0, "width": 7.0, "curtain": true})
 	var pool: float = _hole(13.0)
 	_platform(pool + 2.5, pool + 5.0, 0.0, 1.3, 0.0, "lily", {"axis": "h", "amp": 0.6, "rate": 1.6})

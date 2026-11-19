@@ -48,6 +48,8 @@ var coaches: Array[Dictionary] = []
 var sections: Array[Dictionary] = []
 var branches: Array[Dictionary] = []
 var passages: Array[Dictionary] = []
+## Early highlights: announce, act, react (see run_moments.gd).
+var moments: Array[Dictionary] = []
 var decor: Array[Dictionary] = []
 var chase: Dictionary = {}
 var cart: Dictionary = {}
@@ -55,6 +57,7 @@ var bonus: Dictionary = {}
 var intro_end: float = 0.0
 var signature: String = ""
 var _reserved: Array[Vector2] = []
+var _opening_highlight: bool = false
 var _rng := RandomNumberGenerator.new()
 var _world
 
@@ -74,9 +77,10 @@ func _generate(world, selected: Dictionary) -> void:
 	if world.get("level") != null:
 		_adopt_level(world.level)
 	else:
-		_reserve(0.0, start_s + 34.0)
 		_reserve(finish_s - 38.0, length)
 		_adopt_world_features()
+		var opening_end: float = _place_opening(str(selected.get("theme", "")))
+		_reserve(0.0, opening_end)
 		_place_checkpoints()
 		_place_beats()
 		# The opening stretch is reserved from procedural obstacles. Give both
@@ -122,6 +126,8 @@ func _adopt_level(level) -> void:
 	sections.assign(level.sections.duplicate(true))
 	branches.assign(level.branches.duplicate(true))
 	passages.assign(level.passages.duplicate(true))
+	if level.get("moments") != null:
+		moments.assign(level.moments.duplicate(true))
 	decor.assign(level.decor.duplicate(true))
 	checkpoints.assign(level.checkpoints.duplicate(true))
 	for roof in level.ceilings:
@@ -345,6 +351,99 @@ func _place_checkpoints() -> void:
 		checkpoints[index]["question"] = questions.has(index)
 
 
+# ------------------------------------------------------------------ opening highlights
+
+## The first metres of a road course: a choice of two star lines within the
+## first seconds, then the world's own highlight (announce, act, react).
+## Returns where the reserved opening ends (the beats follow after it).
+func _place_opening(look: String) -> float:
+	var plain: float = start_s + 34.0
+	if look != "forest" and look != "harbour":
+		return plain
+	var end: float = start_s + 140.0
+	if not _free(start_s, end):
+		return plain
+	var usable: float = float(_world.wall_lateral_at(start_s + 70.0)) - 0.9
+	var lane: float = clampf(usable * 0.55, 1.6, 2.4)
+	_opening_highlight = true
+	if look == "forest":
+		# The mushroom way on the right: the left verge has low branches.
+		return _mushroom_hops(start_s + 70.0, lane, -lane) + 4.0
+	return _wave_jump(start_s + 94.0, lane) + 4.0
+
+
+## Zauberwald: three glowing mushrooms on one side (`upper`, the right since
+## 19.11.) hop Lumo up onto the upper way with gold stars; on the other side
+## the low way with a log to jump. Both ways
+## meet again behind the upper way.
+func _mushroom_hops(first: float, upper: float, lower: float) -> float:
+	var flight: float = TUNING.flight_seconds(TUNING.BOUNCE_SPEED)
+	var hop: float = TUNING.CRUISE * flight
+	var third: float = first + 2.0 * hop
+	var top: float = 2.6
+	var deck_end: float = third + 28.0
+	_trail(start_s + 20.0, first - 3.0, 0.0, upper)
+	_trail(start_s + 26.0, first + 6.0, 0.0, lower)
+	for index in range(3):
+		var at: float = first + float(index) * hop
+		var power: float = TUNING.HIGH_PATH_BOUNCE_SPEED if index == 2 else TUNING.BOUNCE_SPEED
+		bounces.append({"s": at, "lat": upper, "radius": 1.3, "half": 1.3, "power": power, "look": "glow_mushroom"})
+		if index < 2:
+			for step in range(5):
+				var t: float = flight * (float(step) + 0.8) / 5.6
+				var value: int = TUNING.GOLD_STAR_VALUE if index == 1 and step == 2 else 1
+				_star(at + TUNING.CRUISE * t, upper, STAR_HEIGHT + TUNING.flight_height(TUNING.BOUNCE_SPEED, t), value)
+	platforms.append({"s0": third + 5.5, "s1": deck_end, "lat": upper, "half": 1.8, "top": top})
+	var along: float = third + 9.0
+	while along < deck_end - 2.0:
+		_star(along, upper, top + STAR_HEIGHT)
+		along += STAR_SPACING
+	_star(deck_end - 1.0, upper, top + STAR_HEIGHT + 0.2, TUNING.GOLD_STAR_VALUE)
+	# The low way: a log to jump, a plain line of stars.
+	_hurdle(first + hop, lower, 1.6)
+	_arc(first + hop - 3.6, first + hop + 3.6, lower, 2.1, 5)
+	_trail(first + hop + 6.0, deck_end - 2.0, lower, lower)
+	_trail(deck_end + 2.0, deck_end + 9.0, upper, 0.0)
+	moments.append({
+		"id": "pilzsprung", "name": "Leuchtpilz-Sprünge", "need": "upper", "height": 2.0, "look": "mushroom",
+		"cue": start_s + 24.0, "go": first - 14.0, "s0": first - 2.0, "s1": deck_end,
+		"lat": upper, "arch_s": first - 5.0, "colour": "7dffe6", "coach": "bounce",
+		"say": "Leuchtpilze! Rechts hüpfen – oben warten Goldsterne.",
+		"done_say": "Der obere Weg – Goldsterne!", "miss_say": "Unten lang – auch gut!",
+	})
+	return deck_end + 9.0
+
+
+## Sonnenhafen: first the choice between a line of stars (left) and a turbo
+## strip (right), then the wave: a full-width turbo strip, SPRINGEN at the glowing
+## ring and over the rolling wave onto the landing target.
+func _wave_jump(edge: float, lane: float) -> float:
+	var gap: float = 5.0
+	var strip: float = edge - 22.0
+	_trail(start_s + 20.0, start_s + 50.0, 0.0, -lane)
+	boosts.append({"s0": start_s + 34.0, "s1": start_s + 39.0, "lat": lane, "half": 1.5, "seconds": 0.8})
+	_trail(start_s + 22.0, start_s + 32.0, 0.0, lane, 2.5)
+	_trail(start_s + 52.0, strip - 3.0, -lane, 0.0)
+	boosts.append({"s0": strip, "s1": strip + 6.0, "lat": 0.0, "half": 20.0})
+	channels.append({"s0": edge, "s1": edge + gap, "real": false, "respawn": strip + 8.0, "exit": edge + gap + 3.0, "look": "wave"})
+	var land: float = edge + gap + 4.5
+	# Star arc over the wave, the gold star at its top.
+	for step in range(7):
+		var u: float = float(step) / 6.0
+		var value: int = TUNING.GOLD_STAR_VALUE if step == 3 else 1
+		_star(lerpf(edge - 3.0, land - 1.0, u), 0.0, STAR_HEIGHT + 2.0 * 4.0 * u * (1.0 - u), value)
+	_trail(land + 4.0, land + 14.0, 0.0, lane * 0.6)
+	moments.append({
+		"id": "wellensprung", "name": "Wellensprung", "need": "clear", "look": "wave",
+		"cue": start_s + 56.0, "go": edge - 11.0, "s0": edge - 4.0, "s1": edge + gap,
+		"lat": 0.0, "arch_s": edge - 0.6, "colour": "ffb648", "coach": "jump",
+		"land_s": land, "land_lat": 0.0, "boost": 1.0,
+		"say": "Welle voraus! Über den Turbostreifen – am Ring SPRINGEN!",
+		"done_say": "Toller Wellensprung!", "miss_say": "Platsch! Nochmal – am Ring springen.",
+	})
+	return land + 14.0
+
+
 # ------------------------------------------------------------------ beats
 
 func _place_beats() -> void:
@@ -352,6 +451,9 @@ func _place_beats() -> void:
 	var lateral: float = 0.0
 	var last: String = ""
 	var opening: Array[String] = ["trail", "hurdle", "boost", "channel"]
+	if _opening_highlight:
+		# Right after a highlight the next task follows without an empty stretch.
+		opening = ["hurdle", "boost", "channel"]
 	var end: float = finish_s - 40.0
 	while along < end:
 		var blocked_until: float = _blocked_until(along, along + 30.0)
