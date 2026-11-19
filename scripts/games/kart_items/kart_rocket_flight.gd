@@ -352,6 +352,15 @@ func impact(at: Vector3, strength: float = 1.0) -> void:
 	flash.visible = true
 	for key in ["smoke", "sparks"]:
 		var particles: CPUParticles3D = pack[key]
+		# Milder Einschlag (am eigenen Kart): auch Rauch und Funken kleiner.
+		if not particles.has_meta("base_scale"):
+			particles.set_meta(
+				"base_scale", Vector2(particles.scale_amount_min, particles.scale_amount_max)
+			)
+		var base: Vector2 = particles.get_meta("base_scale")
+		var k := clampf(strength, 0.4, 1.0)
+		particles.scale_amount_min = base.x * k
+		particles.scale_amount_max = base.y * k
 		particles.global_position = at
 		particles.restart()
 		particles.emitting = true
