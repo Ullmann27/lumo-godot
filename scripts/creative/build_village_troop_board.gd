@@ -178,10 +178,11 @@ func _post_picker() -> void:
 		var button := _button(
 			str(GUARDS.POSTS[post]),
 			_act.bind("post", post, 0),
-			104.0,
+			118.0,
 			"primary" if chosen else "cream",
 			16
 		)
+		button.autowrap_mode = TextServer.AUTOWRAP_OFF
 		button.name = "TroopPost_" + post
 		posts.add_child(button)
 

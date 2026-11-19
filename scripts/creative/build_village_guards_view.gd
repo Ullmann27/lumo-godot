@@ -181,7 +181,7 @@ func sync() -> void:
 		var sign := Label3D.new()
 		sign.name = "Sign"
 		sign.text = "%s · %d Soldaten\n%s" % [str(GUARDS.POSTS[post]), count, " · ".join(parts)]
-		sign.position = base + Vector3(0, 6.5, 0)
+		sign.position = base + Vector3(0, 10.5 if post == "mitte" else 6.5, 0)
 		sign.font = VHUD.FONT
 		sign.font_size = 46
 		sign.outline_size = 14
@@ -197,7 +197,7 @@ func sync() -> void:
 		var icon := Sprite3D.new()
 		icon.name = "Banner"
 		icon.texture = VHUD.texture("troop_" + leading)
-		icon.position = base + Vector3(0, 6.5, 0)
+		icon.position = base + Vector3(0, 10.5 if post == "mitte" else 6.5, 0)
 		icon.offset = Vector2(0, 170)
 		icon.pixel_size = 0.0002
 		icon.fixed_size = true
