@@ -11,6 +11,7 @@ const EFFECT_DIR := "res://scripts/games/kart_items/ext/effects/"
 const BEHAVIOURS: Dictionary = {
 	"lightning_strike": "thunder_star",
 	"frost_capsule": "frost_crystal",
+	"fire_meteor": "fire_meteor",
 }
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
 const SOUNDS: Array[String] = [
@@ -20,6 +21,9 @@ const SOUNDS: Array[String] = [
 	"frost_launch",
 	"frost_hit",
 	"frost_melt",
+	"meteor_launch",
+	"meteor_hit",
+	"ember_hiss",
 ]
 const ICON_DIR := "res://assets/kart/hud/items/"
 

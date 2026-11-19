@@ -27,12 +27,13 @@ gehaltenen Items, Sternenschild, Schonzeit und HUD bleiben, wo sie waren.
   `_rival_gameplay_factor`; Lenkung/Haftung des Kindes in `_drive_player`; Lenkgrenze und
   Ausweich-Spurversatz der Rivalen in `_drive_opponents`; `_rival_threatened` kennt die neuen
   Anflüge (KI hebt den Schild); Warnanzeige `player_warning`; Schild-Gesamtdauer im HUD;
-  Speichern (`item_ext`-Schlüssel), Fortsetzen, Grafik-Neuaufbau.
+  Speichern (`item_ext`-Schlüssel), Fortsetzen, Grafik-Neuaufbau; Anzeige-Versatz für den
+  Bild-Glätter (`_display_offset`: Raketen-Wirbel + Anhebung der Schwerkraft-Welle).
 - `kart_item_catalog.gd`: Verhalten aus der Registry gelten als gültig.
 - `kart_item_hud.gd`: unbekanntes Item → gerendertes Symbol `icon_<id>`.
 - `kart_audio.gd`: Töne aus der Registry laufen wie die Raketen-Töne.
 
-## Ein neues Item (Welle 2: Schwerkraft-Welle, Sternen-Duplikat, Turbo-Kette XL, Lichtbogen-Falle, Zeitblüte)
+## Ein weiteres Item hinzufügen
 
 1. Zeile in `kart_items.json` mit neuem `behaviour`, vorsichtigen Gewichten, `sounds`.
 2. `effects/<item>.gd` erbt `kart_item_ext_effect.gd`; Daten nur im Streckenraum
@@ -42,10 +43,9 @@ gehaltenen Items, Sternenschild, Schonzeit und HUD bleiben, wo sie waren.
 3. Eintrag in `REGISTRY.BEHAVIOURS` (+ Töne in `SOUNDS`), Symbol in den Icon-Generator.
 4. Abschnitt im Regressionstest und in der Bildfolge.
 
-Vorbereitet für Welle 2: `host.push()` (Schwerkraft-Welle: Anheben = nur Darstellung, Landung über
-die vorhandene Fahrbahnhöhe), `incoming()`/`lane_bias()` (Lichtbogen-Falle wie Glutfeld),
-`add_mod()` mit Tempo-Faktor (Zeitblüte), Ablenkung von Zielsystemen über `pick_target()`
-(Sternen-Duplikat). Turbo-Kette XL nutzt `charges` + das vorhandene Boost-Verhalten.
+Gemeinsame Wirt-Funktionen, die die Welle-2-Items nutzen: `offset_for()` (reine Anzeige-Anhebung,
+Schwerkraft-Welle), `absorb()`-Abfang vor dem Schild (Sternen-Duplikat), `lane_bias()` (KI weicht
+Falle/Feld/Meteor aus), `add_mod()` (Tempo-/Lenkfaktoren), `push()` (sicherer Korridor).
 
 ## Gemeinsame Regeln
 
@@ -86,3 +86,16 @@ die vorhandene Fahrbahnhöhe), `incoming()`/`lane_bias()` (Lichtbogen-Falle wie 
 | letzte 0,6 s | Abklingen | Krusten schrumpfen, Tropfen fallen, Dampf steigt |
 
 Sperre: Ziel nur, wenn `safe_at()` gilt; wird es im Flug unsicher, verpufft der Frost (Splitter, keine Wirkung).
+
+### Feuermeteor (`fire_meteor`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,15 s | Auslöser | Kugel löst sich vorn vom Kart, Feuerschweif + Rauch setzen ein |
+| 0,15–1,70 s | Weg | 1,1 m über der Fahrbahn, Kart-Tempo + 22 m/s (mind. 30 m/s), lenkt mit 5 m/s quer zum Rivalen vorn (≤ 32 m); Schweif, Rauchfahne, Funken |
+| Kontakt | Einschlag | Glutblitz + Funkenregen am Kart (jeder Fahrer in der Bahn, nicht nur das Ziel) |
+| +0–1,2 s | Reaktion | Tempo 62 % (weich zurück), Rußwolke steigt 1,0 s vom Kart |
+| 1,35–1,70 s | Landung (ohne Treffer) | Kugel senkt sich auf die Fahrbahn |
+| +0–3,5 s | Glutfeld | nur auf sicherer Fahrbahn und mit Platz zur Planke: Glutscheibe Ø 2,8 m glüht orange → rot → aus, Brandfleck verblasst, Glutfunken steigen; Durchfahrt einmal je Fahrer 0,7 s 82 % Tempo |
+
+KI weicht anfliegenden Meteoren (≤ 22 m dahinter) und Glutfeldern (≤ 26 m davor) über `lane_bias()` aus.

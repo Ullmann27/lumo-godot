@@ -235,6 +235,32 @@
         "frost_melt"
       ],
       "note": "Eiskapsel im Bogen, Eis an den Rädern 1,6 s (Lenkung 58 %, nie blockiert), taut sichtbar. Nie an Brücke/Kante/Rampe."
+    },
+    {
+      "id": "fire_meteor",
+      "name": "Feuermeteor",
+      "short": "METEOR",
+      "glyph": "☄",
+      "color": "#ff7a2f",
+      "behaviour": "fire_meteor",
+      "seconds": 1.2,
+      "life": 1.7,
+      "role": "attack",
+      "weights": [
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "meteor_launch",
+        "meteor_hit",
+        "ember_hiss"
+      ],
+      "note": "Glühende Kugel nach vorn; Treffer = kurz 62 % Tempo + Rußwolke, sonst Glutfeld 3,5 s auf sicherer Fahrbahn."
     }
   ]
 }
