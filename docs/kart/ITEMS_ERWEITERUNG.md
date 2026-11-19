@@ -111,3 +111,86 @@ KI weicht anfliegenden Meteoren (≤ 22 m dahinter) und Glutfeldern (≤ 26 m da
 
 Regeln: Obergrenze 12 s (erneutes Einsammeln frischt auf, addiert nicht); die Festung hält die
 Schilduhr mindestens auf ihrer Restzeit, ein Sternenschild währenddessen verlängert/verkürzt nicht.
+
+### Wirbelwind (`whirlwind`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,15 s | Auslöser | Wirbel entsteht vor dem Kart, Staub am Boden |
+| 0,15–3,0 s | Weg | Kart-Tempo + 12 m/s (mind. 26 m/s); das Kind lenkt ihn (3,2 m/s quer), sonst zieht er mit 2 m/s zur Spur des Rivalen; drei drehende Windbänder, Streckenteilchen je Thema (Sand, Schnee, Blätter, Glut, Funken) |
+| Kontakt | Einschlag | Böe, Trichter fällt in eine Teilchenwolke auseinander |
+| +0–0,55 s | Reaktion | Versatz bis 2,2 m (weg von der Wirbelmitte, sonst zur Mitte), geklemmt 1,15 m vor der Planke, an Brücke/Kante/Rampe gar nicht; 0,8 s 85 % Tempo, Lenkung 80 % |
+| +0,55–1,3 s | Abklingen | Teilchen fliegen aus und sinken, Staub legt sich |
+
+### Schwerkraft-Welle (`gravity_wave`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,20 s | Auslöser | Lichtpuls unter dem eigenen Kart |
+| 0,20–0,75 s | Weg | drei wellige Verzerrungsringe (cyan → violett) laufen auf der Fahrbahnebene bis 13 m; Mittelpunkt fährt mit dem Kart |
+| Kamm erreicht Gegner | Einschlag | Abstand Kart–Wellenmitte ≤ Kammradius → Treffer (Schild/Schonzeit/Luft ausgenommen) |
+| +0–0,9 s | Reaktion | Kart schwebt bis 1,2 m (nur Anzeige über den Bild-Glätter, `_display_offset`; die Fahrposition bleibt auf der Fahrbahn = sichere Landung), Hologramm-Säulen + Teilchen; Tempo 72 % für 1,1 s |
+| +0,9–1,3 s | Abklingen | Landung, Ringe verblassen |
+
+### Sternen-Duplikat (`star_decoy`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,30 s | Auslöser | Lichtblitz, holografische Kopie gleitet 2,1 m seitlich / 0,8 m zurück heraus (Seite mit mehr Platz) |
+| 0,30–6,0 s | Wirken | Kopie aus den echten Kart-Meshes, Holo-Shader (Lichtzeilen, Fresnel, additiv) – das echte Kart bleibt fest und farbig; Sternraketen auf das Kart (≤ 35 m) verlieren die Zielerfassung und biegen zur Kopie ab |
+| Treffer | Einschlag | Raketenpaar oder neuer Angriff trifft die Kopie: Lichtsplitter, „DUPLIKAT!“ – das Kart bleibt unberührt (eine Abwehr je Kopie) |
+| 5,4–6,0 s | Abklingen | Kopie verblasst |
+
+### Turbo-Kette XL (`turbo_xl`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,12 s | Zündung | Zündring am Heck, zwei Auspuffstrahlen schießen heraus |
+| 0,12–1,50 s | Schub | vorhandener Kart-Schub (gleiche Fahrphysik) + 8 % Höchsttempo; Strahlen pulsieren, Energielinien an den Flanken (Länge ∝ Tempo) |
+| 1,50–1,80 s | Abklingen | Strahlen schrumpfen |
+
+Drei Ladungen (Kind: je Tipp eine; KI: nacheinander mit 1,1 s Pause). Keine Zündung, wenn bis 30 m
+voraus Brücke, Kante, Rampe oder Passagen-Zone liegt; kommt so eine Stelle, endet der Schub weich.
+
+### Lichtbogen-Falle (`arc_trap`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,35 s | Auslöser | zwei Pfosten fallen 3 m hinter dem Kart auf die Fahrbahn |
+| 0,35–8 s | Lauern | knisternder Bogen (2,6 m breit, 1,4 m hoch) + violette Bodenlinie; Fahrer, die darauf zufahren, werden gewarnt (Kind: roter Pfeil), KI lenkt vorbei |
+| Kontakt | Einschlag | Blitz und Funken am Kart; Tempo 70 % für 0,9 s |
+| danach | Abklingen | Bogen bricht zusammen, Pfosten versinken (0,5 s) |
+
+Nie unpassierbar: neben dem Bogen bleiben zur Planke immer ≥ 2,4 m frei; kein Setzen an Brücke/Kante/Rampe/Passage.
+
+### Zeitblüte (`time_bloom`)
+
+| Zeit | Phase | Was passiert |
+|---|---|---|
+| 0,00–0,45 s | Auslöser | Same fliegt im Bogen 12 m vor den nächsten Gegner (≤ 50 m), sonst 18 m voraus |
+| 0,45–1,05 s | Öffnen | zwölf Blütenblätter falten sich auf, Feld Ø 9 m, Zifferblatt mit laufendem Zeiger |
+| 1,05–5,5 s | Wirken | Gegner im Feld: Tempo 55 % solange drin, Zeitring am Kart; eigenes Kart und alle außerhalb normal |
+| 5,5–6,2 s | Abklingen | Blätter schließen sich, Feld erlischt |
+
+Nicht auf Brücke/Kante/Rampe/Passage und nicht über einer Checkpoint-Grenze (±8 m + Radius).
+
+## Gewichte (Platz 1–6, vorläufig)
+
+| Item | 1 | 2 | 3 | 4 | 5 | 6 | Begründung |
+|---|---|---|---|---|---|---|---|
+| Donnerstern | 0 | 1 | 1 | 2 | 1 | 1 | Angriff nach vorn: Spitzenreiter hätte kaum Ziel; Mittelfeld am meisten |
+| Frostkristall | 1 | 1 | 1 | 1 | 1 | 0 | mild (kein Tempoverlust), auch Spitze darf kontern; Letzter bekommt lieber Aufholhilfen |
+| Feuermeteor | 0 | 1 | 1 | 1 | 1 | 1 | Angriff nach vorn, Glutfeld nützt auch hinten |
+| Sternenfestung | 1 | 1 | 1 | 0 | 0 | 0 | Verteidigung für vorn (wie Sternenschild), seltener als dieser |
+| Wirbelwind | 1 | 1 | 1 | 1 | 1 | 1 | sanfteste Wirkung, überall gleich |
+| Schwerkraft-Welle | 1 | 1 | 1 | 1 | 1 | 0 | Nahbereich, braucht Gegner in 13 m |
+| Sternen-Duplikat | 1 | 1 | 1 | 1 | 0 | 0 | Verteidigung gegen Raketen (vorn wichtiger) |
+| Turbo-Kette XL | 0 | 0 | 1 | 1 | 2 | 1 | Aufholhilfe; Platz 6 nur 1, damit Nordlicht dort > 15 % bleibt |
+| Lichtbogen-Falle | 1 | 1 | 1 | 0 | 0 | 0 | Falle nach hinten: nützt dem, der vorn fährt |
+| Zeitblüte | 0 | 1 | 1 | 1 | 1 | 0 | Feld vor Gegnern: braucht Gegner vorn |
+
+Je Platz kommen mit allen zehn Items 4–10 Gewichtspunkte dazu (bisher 26–29 je Platz): jedes
+neue Item liegt bei rund 2,5–6 % je Ziehung; die neun alten Items behalten ihre Gewichte und
+ihr Verhältnis zueinander (Platz 6: Nordlicht 5 von 31 = 16 %).
+Die vorhandenen Prüfungen (Nordlicht ab Platz 6 > 15 %, keine Rakete für Platz 1) bleiben erfüllt.
+Feinabstimmung nach dem Zusammenführen mit der Ziehungs-/Zonenmessung (anderer Helfer).

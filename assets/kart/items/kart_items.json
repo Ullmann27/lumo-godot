@@ -285,6 +285,30 @@
         "fortress_end"
       ],
       "note": "12 s Doppelkuppel (gold außen, cyan innen) mit Restzeit-Ring. Obergrenze 12 s, frischt auf statt zu stapeln."
+    },
+    {
+      "id": "whirlwind",
+      "name": "Wirbelwind",
+      "short": "WIRBEL",
+      "glyph": "࿋",
+      "color": "#7ff0dc",
+      "behaviour": "whirlwind",
+      "life": 3.0,
+      "role": "attack",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "whirl_go",
+        "whirl_hit"
+      ],
+      "note": "Lenkbarer Luftwirbel; versetzt einen Rivalen bis 2,2 m seitlich, nur im sicheren Korridor."
     }
   ]
 }
