@@ -109,11 +109,13 @@ func _run() -> void:
 	layer.hide()
 	before = layer.animation_time
 	await create_timer(0.06).timeout
-	_check(not layer.is_processing() and is_equal_approx(layer.animation_time, before), "hidden layer stops its clock")
+	var frozen: bool = not layer.is_processing() and is_equal_approx(layer.animation_time, before)
+	_check(frozen, "hidden layer stops its clock")
 	layer.notification(Node.NOTIFICATION_APPLICATION_PAUSED)
 	layer.show()
 	await create_timer(0.06).timeout
-	_check(not layer.is_processing() and is_equal_approx(layer.animation_time, before), "show does not resume an application-paused layer")
+	frozen = not layer.is_processing() and is_equal_approx(layer.animation_time, before)
+	_check(frozen, "show does not resume an application-paused layer")
 	layer.notification(Node.NOTIFICATION_APPLICATION_RESUMED)
 	await create_timer(0.06).timeout
 	_check(layer.animation_time > before, "application resume restores visible animation")
@@ -137,7 +139,10 @@ func _run() -> void:
 	layer = AMBIENCE.attach(holder, "learning_garden", "unexpected_tier")
 	layer.set_reduced_motion(false)
 	root.add_child(holder)
-	_check(not layer.reduced_motion and layer.is_processing(), "pre-ready owner override survives host reduced motion")
+	_check(
+		not layer.reduced_motion and layer.is_processing(),
+		"pre-ready owner override survives host reduced motion"
+	)
 	performance.call("set_profile", 0, false)
 	_check(layer.quality_tier == "low", "unknown tier follows the app profile")
 	performance.call("set_profile", 2, false)

@@ -26,7 +26,9 @@ func _run() -> void:
 		"Original 3D Lumo character missing from the new hub"
 	)
 	var fox: Node3D = hub.find_child("OriginalAnimatedLumo", true, false)
-	assert(fox.has_method("is_usable") and fox.is_usable(), "The original imported fox must be usable")
+	assert(
+		fox.has_method("is_usable") and fox.is_usable(), "The original imported fox must be usable"
+	)
 	assert(fox.skeleton.get_bone_count() == 65, "The original 65-bone rig must be preserved")
 	assert(fox.facial_pose != null, "The existing original facial animation must be connected")
 	for id in ["kart", "jump", "stars"]:
@@ -43,8 +45,10 @@ func _run() -> void:
 		var bounds: AABB = hub.get("_lumo_bounds")
 		for corner in range(8):
 			var point: Vector3 = hub.to_global(bounds.get_endpoint(corner))
-			assert(hero.get_global_rect().grow(1.0).has_point(camera.unproject_position(point)),
-				"The original fox must remain inside its free hero area")
+			assert(
+				hero.get_global_rect().grow(1.0).has_point(camera.unproject_position(point)),
+				"The original fox must remain inside its free hero area"
+			)
 		var actions := hub.find_child("ScrollableRealGameActions", true, false) as ScrollContainer
 		assert(
 			actions != null and actions.size.y >= 48.0,

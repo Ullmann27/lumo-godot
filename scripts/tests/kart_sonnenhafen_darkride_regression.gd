@@ -29,9 +29,10 @@ func _run() -> void:
 		var road_mesh: MeshInstance3D = ride.get_node("DarkrideIlluminatedRoad")
 		assert(road_mesh.material_override is ShaderMaterial, "Wayfinding must be shader-only")
 		assert(road_mesh.mesh.get_surface_count() == 1, "No new road geometry for shoulder guides")
-		var guide_strength: Variant = (road_mesh.material_override as ShaderMaterial).get_shader_parameter("wayfinding_strength")
+		var road_shader := road_mesh.material_override as ShaderMaterial
+		var guide_strength: Variant = road_shader.get_shader_parameter("wayfinding_strength")
 		assert(guide_strength == null or float(guide_strength) > 0.5, "Shoulder guides switched off")
-		assert("wayfinding_strength" in (road_mesh.material_override as ShaderMaterial).shader.code, "Shoulder guide uniform missing")
+		assert("wayfinding_strength" in road_shader.shader.code, "Shoulder guide uniform missing")
 		for name in ["DarkrideRockAndCanopy", "DarkrideIlluminatedRoad"]:
 			var node: MeshInstance3D = ride.get_node(name)
 			assert(node.mesh.get_surface_count() == 1, "Missing procedural triangle surface")

@@ -105,8 +105,10 @@ func _palette(button: Button) -> Dictionary:
 		colors[item] = button.get_theme_color(item).to_html()
 	for style_name in STYLE_ITEMS:
 		var style := button.get_theme_stylebox(style_name) as StyleBoxFlat
-		_check(style != null and is_equal_approx(style.bg_color.a, 1.0),
-			button.text + " has an observable opaque " + style_name + " background")
+		_check(
+			style != null and is_equal_approx(style.bg_color.a, 1.0),
+			button.text + " has an observable opaque " + style_name + " background"
+		)
 		if style == null:
 			continue
 		backgrounds[style_name] = style.bg_color.to_html()
@@ -120,9 +122,13 @@ func _palette(button: Button) -> Dictionary:
 			minimum = minf(minimum, ratio)
 			# Check every real state-color/background pairing, including focus
 			# overlays, without copying Button's internal state-precedence code.
-			_check(ratio >= MIN_CONTRAST,
-				"%s %s/%s contrast %.6f >= %.1f" % [
-					button.text, style_name, item, ratio, MIN_CONTRAST])
+			_check(
+				ratio >= MIN_CONTRAST,
+				(
+					"%s %s/%s contrast %.6f >= %.1f"
+					% [button.text, style_name, item, ratio, MIN_CONTRAST]
+				)
+			)
 	return {
 		"caption": button.text,
 		"colors": colors,
@@ -195,7 +201,10 @@ func _run() -> void:
 	factory.actions = actions
 	var theme := ThemeDB.get_default_theme()
 	for item in FONT_ITEMS:
-		_check(item in theme.get_color_list("Button"), "Engine exposes actual Button theme item " + item)
+		_check(
+			item in theme.get_color_list("Button"),
+			"Engine exposes actual Button theme item " + item
+		)
 	var palettes: Array[Dictionary] = []
 	for caption in ["Stimme stoppen", "Ein Objekt zeigen"]:
 		var button: Button = factory._button(caption, _activate)
@@ -216,7 +225,8 @@ func _run() -> void:
 		"palettes": palettes,
 		"input_observations": observations,
 		"callback_activations": activations,
-		"limits": [
+		"limits":
+		[
 			"Exact production factory tested in isolation; no full learning scene or 3D assets",
 			"Theme colors and actual input states; no framebuffer or Android pixel measurement",
 			"Original Android draw mode unknown; this run does not identify it",
@@ -233,7 +243,12 @@ func _run() -> void:
 			quit(1)
 			return
 		file.store_string(JSON.stringify(result, "\t") + "\n")
-	print("[LearningButtonContrast] %d/%d PASS; %d FAIL" % [checks - failures.size(), checks, failures.size()])
+	print(
+		(
+			"[LearningButtonContrast] %d/%d PASS; %d FAIL"
+			% [checks - failures.size(), checks, failures.size()]
+		)
+	)
 	factory.free()
 	actions.free()
 	quit(0 if failures.is_empty() else 1)
