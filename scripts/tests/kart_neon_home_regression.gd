@@ -3,6 +3,7 @@ extends SceneTree
 const HUB = preload("res://scripts/games/kart_neon_hub.gd")
 const ARENA = preload("res://scripts/games/kart_neon_arena.gd")
 const PATH = preload("res://scripts/games/kart_star_path.gd")
+const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 var checks := 0
 var failures: Array[String] = []
 var routes: Array[String] = []
@@ -89,7 +90,20 @@ func _run() -> void:
 	_check(routes == ["race"] and starts == 1 and hub.current_mode == "race", "Rennen startet sofort ein echtes Rennen")
 	routes.clear()
 	hub._mode_tiles["cup"].pressed.emit()
-	_check(routes == ["cup"] and starts == 2, "Turniere startet den echten Sternen-Cup")
+	_check(routes == ["cup"] and starts == 1 and hub._overlay.visible and hub._overlay_title.text == "Sternen-Cup",
+		"Turniere zeigt zuerst den Sternen-Cup (noch kein Start)")
+	var cup_tracks: GridContainer = hub._overlay_list.get_node_or_null("CupTracks")
+	_check(cup_tracks != null and cup_tracks.get_child_count() == CATALOG.TRACKS.size(),
+		"Sternen-Cup zeigt alle %d Strecken" % CATALOG.TRACKS.size())
+	if cup_tracks != null:
+		for index in range(cup_tracks.get_child_count()):
+			var card = cup_tracks.get_child(index)
+			_check(card.art != null and card.title.begins_with("%d · " % (index + 1)),
+				"Cup-Strecke %d hat Bild und Reihenfolge" % (index + 1))
+	_check(hub._live_start.visible, "Sternen-Cup hat einen Startknopf")
+	hub._live_start.pressed.emit()
+	_check(starts == 2 and hub.current_mode == "cup", "Startknopf beginnt den echten Sternen-Cup")
+	hub._close_overlay()
 	routes.clear()
 	hub._mode_tiles["event"].pressed.emit()
 	_check(routes.size() == 2 and routes[0] == hub._weekly_track and routes[1] == "race" and starts == 3,
@@ -97,6 +111,9 @@ func _run() -> void:
 	routes.clear()
 	hub._mode_tiles["season"].pressed.emit()
 	_check(hub._overlay.visible and hub._overlay_title.text == "Sternenpfad", "Saison öffnet den Sternenpfad")
+	var route: VBoxContainer = hub._overlay_list.get_node_or_null("StarPathRoute")
+	_check(route != null and route.get_child_count() == PATH.milestones().size(),
+		"Sternenpfad als Weg mit einer Station je echter Freischaltung")
 	_check(hub.handle_back() and not hub._overlay.visible, "Zurück schließt den Sternenpfad")
 	hub._feature_tiles["garage"].pressed.emit()
 	hub._feature_tiles["world"].pressed.emit()
@@ -104,6 +121,15 @@ func _run() -> void:
 	routes.clear()
 	hub._feature_tiles["rewards"].pressed.emit()
 	_check(hub._overlay.visible and hub._overlay_title.text == "Belohnungen", "Belohnungen zeigt echte Freischaltungen")
+	var rewards: GridContainer = hub._overlay_list.get_node_or_null("RewardCards")
+	_check(rewards != null and rewards.get_child_count() == PATH.milestones().size(), "Belohnungen als Karten")
+	if rewards != null:
+		var pictures := {}
+		for card in rewards.get_children():
+			_check(card.art != null, "Belohnung %s hat ein Bild" % card.title)
+			if card.art != null:
+				pictures[card.art.resource_path] = true
+		_check(pictures.size() == rewards.get_child_count(), "jede Belohnung hat ihr eigenes Bild")
 	hub._close_overlay()
 	_check(hub._navigation.get_child_count() == 9, "neun Einträge in der unteren Leiste")
 	hub._navigation.get_node("Landing_settings").pressed.emit()

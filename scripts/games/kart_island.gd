@@ -60,6 +60,7 @@ const FRAME_SMOOTHER = preload("res://scripts/games/kart_items/kart_frame_smooth
 const ITEM_STATUS_FX = preload("res://scripts/games/kart_items/kart_item_status_fx.gd")
 const SHIELD_DOME = preload("res://scripts/games/kart_items/kart_shield_dome.gd")
 const BOOST_RING_SCENE = preload("res://scenes/games/props/kart_boost_ring.tscn")
+const MODAL_STYLE = preload("res://scripts/games/kart_modal_style.gd")
 const TRIGGER_GROUP := "lumo_kart_triggers"
 ## Built-in boost ring layout per course (fraction of lap, lateral offset).
 const BOOST_RING_LAYOUT: Array = [[0.27, 0.0], [0.61, -1.6]]
@@ -824,6 +825,7 @@ func _reference_open_settings() -> void:
 	modal_column.add_child(_label("Ton, Steuerung und Darstellung für deine nächste Fahrt.", 18))
 	_append_preferences()
 	menu_settings_navigation.show()
+	MODAL_STYLE.dress(modal, _modal_dp_scale())
 	modal.show()
 	modal_backdrop.move_to_front()
 	modal.move_to_front()
@@ -1520,8 +1522,9 @@ func _apply_responsive_layout() -> void:
 	var modal_width: float = minf(
 		620.0 * ui_scale, maxf(1.0, safe_ui.size.x - margin_dp * 2.0 * ui_scale)
 	)
+	# Hochformat (Fold offen): Pause und Einstellungen ohne abgeschnittene Zeilen.
 	var modal_height: float = minf(
-		520.0 * ui_scale, maxf(1.0, safe_ui.size.y - margin_dp * 2.0 * ui_scale)
+		(780.0 if compact_portrait else 560.0) * ui_scale, maxf(1.0, safe_ui.size.y - margin_dp * 2.0 * ui_scale)
 	)
 	for side in ["left", "right", "top", "bottom"]:
 		modal_padding.add_theme_constant_override("margin_" + side, roundi(8.0 * ui_scale))
@@ -3751,12 +3754,24 @@ func _pause() -> void:
 	pause_navigation.show()
 	modal_column.add_child(_label("Eine kleine Pause", 28))
 	modal_column.add_child(_label("Dein Rennen wartet. Du kannst später hier weiterfahren.", 19))
-	modal_column.add_child(_button("Weiterfahren", _resume))
+	var resume := _button("Weiterfahren", _resume)
+	resume.name = "PauseResume"
+	resume.custom_minimum_size.y = 72
+	resume.add_theme_font_size_override("font_size", 26)
+	modal_column.add_child(resume)
 	if mode == "training":
-		modal_column.add_child(_button("Training abschließen", _finish))
+		var finish_training := _button("Training abschließen", _finish)
+		finish_training.name = "FinishTraining"
+		modal_column.add_child(finish_training)
+	# Die Wege aus der Pause stehen direkt unter „Weiterfahren“, die Einstellungen danach.
+	var new_drive := _button("Neue Fahrt auswählen", _leave_race_for_menu)
+	new_drive.name = "PauseNewDrive"
+	modal_column.add_child(new_drive)
+	var abandon := _button("Rennen abbrechen", _abandon, Color("3a4577"))
+	abandon.name = "PauseAbandon"
+	modal_column.add_child(abandon)
 	_append_preferences()
-	modal_column.add_child(_button("Neue Fahrt auswählen", _leave_race_for_menu))
-	modal_column.add_child(_button("Rennen abbrechen", _abandon, Color("3a4577")))
+	MODAL_STYLE.dress(modal, _modal_dp_scale())
 	modal.show()
 	_apply_responsive_layout()
 	call_deferred("_apply_responsive_layout")
@@ -3824,15 +3839,17 @@ func _append_preferences() -> void:
 	)
 	detail.name = "GraphicsProfileToggle"
 	modal_column.add_child(detail)
-	var challenge := _button(
-		"Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott", func(): pass
-	)
+	# Alle drei Stufen des Katalogs (Entdecken → Abenteuer → Extrem) der Reihe nach.
+	var challenge := _button(_level_toggle_text(), func(): pass)
 	challenge.pressed.connect(
 		func():
-			difficulty = "flott" if difficulty == "gemuetlich" else "gemuetlich"
+			var ids: Array[String] = []
+			for level in CATALOG.DIFFICULTIES:
+				ids.append(str(level.id))
+			difficulty = ids[posmod(ids.find(known_level(difficulty)) + 1, ids.size())]
 			if menu_active:
 				garage.setup.difficulty = difficulty
-			challenge.text = "Tempo: gemütlich" if difficulty == "gemuetlich" else "Tempo: flott"
+			challenge.text = _level_toggle_text()
 			_save_preferences()
 	)
 	challenge.name = "DifficultyToggle"
@@ -3853,6 +3870,19 @@ func _append_preferences() -> void:
 	modal_column.add_child(_volume_row("Effekte", effects_volume, func(value: float):
 		effects_volume = value
 		_apply_volumes()))
+
+func _level_toggle_text() -> String:
+	return "Stufe: " + str(CATALOG.entry(CATALOG.DIFFICULTIES, known_level(difficulty)).name)
+
+
+## Pixel je dp wie in _apply_responsive_layout (für Rahmen und Ecken des Fensters).
+func _modal_dp_scale() -> float:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var window_size: Vector2 = Vector2(get_window().size) / MobileRuntime.get_ui_density()
+	if window_size.x <= 0.0 or window_size.y <= 0.0:
+		return 1.0
+	return maxf(viewport_size.x / window_size.x, viewport_size.y / window_size.y)
+
 
 func _resume() -> void:
 	if menu_active:
@@ -4088,8 +4118,12 @@ func _show_result() -> void:
 		)
 		secondary = RESULT_WIDGETS.Action.new().setup("Zur Spieleauswahl", _return_to_world, "secondary")
 	else:
-		primary = RESULT_WIDGETS.Action.new().setup("Zur Spieleauswahl", _return_to_world, "primary", "next")
-		secondary = RESULT_WIDGETS.Action.new().setup("Noch einmal fahren", _restart_setup, "secondary", "replay")
+		# Die zwei nächsten Schritte groß (Auftrag 18.11.): gleich noch einmal oder eine
+		# andere Strecke wählen. Spielewelt und Lernen bleiben klein darunter.
+		primary = RESULT_WIDGETS.Action.new().setup("Noch einmal", _restart_setup, "primary", "replay")
+		secondary = RESULT_WIDGETS.Action.new().setup("Zur Streckenwahl", _leave_to_track_choice, "secondary", "next")
+	primary.name = "ResultPrimary"
+	secondary.name = "ResultSecondary"
 	var main_row := BoxContainer.new()
 	main_row.name = "ResultMainActions"
 	main_row.add_child(primary)
@@ -4097,7 +4131,10 @@ func _show_result() -> void:
 	modal_column.add_child(main_row)
 	var more_row := BoxContainer.new()
 	more_row.name = "ResultMoreActions"
-	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Neue Fahrt auswählen", _leave_race_for_menu))
+	if pending_cup_next:
+		more_row.add_child(RESULT_WIDGETS.Action.new().setup("Neue Fahrt auswählen", _leave_race_for_menu))
+	else:
+		more_row.add_child(RESULT_WIDGETS.Action.new().setup("Zur Spieleauswahl", _return_to_world))
 	more_row.add_child(RESULT_WIDGETS.Action.new().setup("Zum Lernen", func(): _return_to_app("learn")))
 	modal_column.add_child(more_row)
 	for row in [main_row, more_row]:
@@ -4429,6 +4466,12 @@ func _leave_race_for_menu() -> void:
 	_save_session()
 	saved_session_available = not abandoned and (not finished or pending_cup_next)
 	_show_garage()
+
+
+## Ergebnis → „Zur Streckenwahl“: zurück ins Menü, direkt in die Rennwelten.
+func _leave_to_track_choice() -> void:
+	_leave_race_for_menu()
+	_reference_select_mode("world")
 
 
 func _rebuild_graphics() -> void:
