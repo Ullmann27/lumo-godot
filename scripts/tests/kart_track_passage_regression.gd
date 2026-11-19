@@ -855,12 +855,19 @@ func _run() -> void:
 	args.erase("quick")
 	var field_only: bool = args.has("field")
 	args.erase("field")
+	# Fixed race seed (default 20261118) so every rival-field run is reproducible.
+	var race_seed: int = 20261118
+	for arg in args.duplicate():
+		if str(arg).begins_with("seed="):
+			race_seed = int(str(arg).trim_prefix("seed="))
+			args.erase(arg)
 	var tracks: Array = args if not args.is_empty() else PASSAGES.SPEC_DATA.SPECS.keys()
 	root.size = Vector2i(1280, 720)
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
+	game.race_seed = race_seed
 	await _settle()
 	if is_instance_valid(game.kart_audio):
 		game.kart_audio.set_muted(true)  # The test drives minutes of race time; no audio needed.

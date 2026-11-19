@@ -101,7 +101,14 @@ static func _lane_cost(
 static func traffic_speed(current: float, traffic: PackedVector3Array, desired: float) -> float:
 	var limit: float = desired
 	for obstacle in traffic:
-		if obstacle.x <= 0.0 or absf(obstacle.y - current) >= 1.5:
+		# A parked cone/pillar (speed 0) only blocks within the same 0.9 m contact radius
+		# the child's kart uses (kart_island._track_events) plus 0.1 m. With 1.5 m a rival
+		# squeezed between a slalom cone and the verge stopped for good (Volcano, 18.11.2026).
+		# A parked obstacle already beside the nose (< 1.2 m ahead) cannot be avoided by
+		# stopping either: braking to 0 there froze the rival for good.
+		var parked: bool = obstacle.z < 0.1
+		var reach: float = 1.0 if parked else 1.5
+		if obstacle.x <= (1.2 if parked else 0.0) or absf(obstacle.y - current) >= reach:
 			continue
 		# Brake while the overtake is still taking shape. The cap permits a
 		# smooth approach but reaches the lead car's speed at a two-metre gap.
