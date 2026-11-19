@@ -88,8 +88,9 @@ const TOTAL_LAPS: int = 2
 const ROAD_WIDTH: float = 10.8
 const SESSION: String = "user://kart_sonnenhafen_session.cfg"
 const PREFERENCES: String = "user://kart_preferences.cfg"
-const BOOST_ACCELERATION_MULTIPLIER: float = 2.0
+const BOOST_ACCELERATION_MULTIPLIER: float = POWERTRAIN.BOOST_ACCELERATION
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const RESULT_KIT = preload("res://scripts/games/kart_result_kit.gd")
 const RESULT_BADGE = preload("res://scripts/games/kart_result_badge.gd")
 const RESULT_WIDGETS = preload("res://scripts/games/kart_result_widgets.gd")
@@ -613,6 +614,8 @@ func _build_world() -> void:
 		# Without the authored roster a fox can race as a rival: then it is
 		# the real Lumo too, never the stand-in figure.
 		opponent.set_animated_lumo_enabled(animals[i] == "fox")
+		# Leistungsteile der Rivalen (ab „Abenteuer“), sichtbar und mit Wirkung.
+		opponent.set_look(PART_CATALOG.rival_parts(i, difficulty))
 		opponent.configure(animals[i], colors[i], rival_karts[i % rival_karts.size()])
 		opponent.set_reference_rival_enabled(reference_rivals)
 		opponent.reduced_motion = reduced_motion
@@ -2036,6 +2039,10 @@ func _factor(name: String, fallback: float = 1.0) -> float:
 	return float(kart_factors.get(name, fallback))
 
 
+func _rival_part_boost(index: int) -> Dictionary:
+	return RIVAL_RACECRAFT.part_boost(opponents[index].kart_style, index, difficulty)
+
+
 ## Boost-Dauer des Karts: ein starker Turbo hält länger.
 func _boost_for(seconds: float) -> float:
 	return seconds * _factor("boost_time")
@@ -2064,7 +2071,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			target *= 1.0 - absf(axis) * 0.24
 	var boost_active: bool = boost_time > 0
 	if boost_active:
-		target *= 1.0 + 0.42 * _factor("boost_power")
+		target *= POWERTRAIN.boost_scale(kart_factors)
 	# Explicit gas prevents accidental reverse; passive Auto-Gas must not block it.
 	if braking > 0.5 and not airborne and not manual_gas:
 		if speed <= 0.9:
@@ -2102,18 +2109,14 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:
 		speed = move_toward(speed, target, delta * acceleration)
-	var grip_turn: float = clampf(absf(speed) / (8.0 * POWERTRAIN.PACE_SCALE), 0, 1)
-	var turn_rate: float = (1.42 + (0.35 if drifting else 0.0)) * _factor("turn") * grip_turn * POWERTRAIN.PACE_SCALE
-	if speed < 0.0:
-		turn_rate = -turn_rate
-	if airborne:
-		turn_rate *= 0.35
+	# Lenkrate, Haftung, Drift-Ladung und Landung aus kart_powertrain.gd (wie der Prüfstand).
+	var turn_rate: float = POWERTRAIN.turn_rate(kart_factors, speed, drifting, airborne)
 	if landing_settle > 0.0:
 		turn_rate *= lerpf(1.0, 0.62, clampf(landing_settle / 0.32, 0.0, 1.0))
 		landing_settle = maxf(0.0, landing_settle - delta)
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
-	var grip: float = (3.1 if drifting else 9.0 * _factor("grip")) * POWERTRAIN.PACE_SCALE
+	var grip: float = POWERTRAIN.grip_rate(kart_factors, drifting)
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
 	# Child-friendly precision flight: velocity-only boundary, measured from
 	# the SAME curving road frame as the game's lane value. The lip frame alone
@@ -2134,7 +2137,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	player.position += physical_velocity * delta
 	_constrain_tunnel_motion(before_horizontal)
 	if drifting and speed > 6 and not airborne:
-		drift_charge = minf(3, drift_charge + delta * absf(axis) * POWERTRAIN.PACE_SCALE)
+		drift_charge = minf(3, drift_charge + delta * POWERTRAIN.drift_charge_rate(kart_factors, axis))
 	if mode == "arena":
 		player.position.y = 0.035
 		var radius: float = Vector2(player.position.x, player.position.z).length()
@@ -2392,7 +2395,7 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			and precision_result != PRECISION.LANDING_ZONE
 			and precision_result != PRECISION.LANDING_LONG
 		):
-			landing_settle = maxf(landing_settle, clampf((impact - 4.5) * 0.05, 0.10, 0.32))
+			landing_settle = maxf(landing_settle, POWERTRAIN.landing_settle(kart_factors, impact))
 			var along := Vector3(-sin(player_heading), 0, -cos(player_heading))
 			var sideways: Vector3 = physical_velocity - along * physical_velocity.dot(along)
 			physical_velocity -= sideways * 0.42
@@ -2770,7 +2773,7 @@ func _update_rival_item_tactics(index: int, local_gap: Vector3, delta: float) ->
 				)
 				var rival_score: Dictionary = RESONANCE.award(
 					absf(opponents[index].motion_speed), RIVAL_RACECRAFT.cruise_speed(
-						opponents[index].kart_style, CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
+						opponents[index].kart_style, CATALOG.entry(CATALOG.DIFFICULTIES, difficulty), index
 					),
 					float(rival_road.lateral) - item_box_laterals[item_box_distances.find(box_distance)],
 					float(opponents[index].get_meta("racecraft_drift_charge", 0.0)),
@@ -2838,7 +2841,10 @@ func _update_rival_drift(index: int, road: Dictionary, pace: float, delta: float
 		# a sustained controlled turn, and a collision cancels it completely.
 		if controlled and pace >= 8.0 and charge >= DRIFT_TIERS[0] and _rival_can_boost(index):
 			var tier: int = 1 if charge >= DRIFT_TIERS[1] else 0
-			opponent_boost_times[index] = maxf(opponent_boost_times[index], DRIFT_BOOST_SECONDS[tier])
+			opponent_boost_times[index] = maxf(
+				opponent_boost_times[index],
+				DRIFT_BOOST_SECONDS[tier] * float(_rival_part_boost(index).time)
+			)
 		charge = 0.0
 	rival.set_meta("racecraft_drift_charge", charge)
 	return drifting_now
@@ -2871,7 +2877,7 @@ func _rival_can_boost(index: int) -> bool:
 	var road: Dictionary = world.sample_road(opponents[index].position, fposmod(opponent_distances[index], track_length))
 	var road_distance: float = float(road.distance)
 	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, difficulty)
-	var cruise: float = RIVAL_RACECRAFT.cruise_speed(opponents[index].kart_style, rules)
+	var cruise: float = RIVAL_RACECRAFT.cruise_speed(opponents[index].kart_style, rules, index)
 	var precision_ahead: bool = false
 	for kicker in world.action.get("kickers", []):
 		if bool(kicker.get("precision_jump", false)):
@@ -2975,9 +2981,10 @@ func _drive_opponents(delta: float) -> void:
 		opponent_headings[i] += clampf(angle, -turn_cap, turn_cap)
 		# Same fleet performance figures as the human kart, without tuning or
 		# a player-gap multiplier. Strong drivers brake for actual upcoming bends.
-		var target_speed: float = RIVAL_RACECRAFT.cruise_speed(rival.kart_style, rules)
+		var target_speed: float = RIVAL_RACECRAFT.cruise_speed(rival.kart_style, rules, i)
 		if opponent_boost_times[i] > 0.0:
-			target_speed *= 1.32
+			# Leistungsteile der Rivalen (Turbo) wirken wie beim Kind; ohne Teile genau 1,32.
+			target_speed *= 1.0 + 0.32 * float(_rival_part_boost(i).power)
 		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
 		# Die Rampenplanung beschleunigt vom zuletzt GEPLANTEN Tempo aus, nicht vom
@@ -2987,7 +2994,7 @@ func _drive_opponents(delta: float) -> void:
 		target_speed = RIVAL_RAMP_PLAN.target_speed(
 			world, float(sampled.distance), rival.kart_style, float(rules.speed),
 			float(rival.get_meta(&"racecraft_planned_speed", absf(rival.motion_speed))),
-			target_speed, opponent_boost_times[i] > 0.0, delta
+			target_speed, opponent_boost_times[i] > 0.0, delta, i, difficulty
 		)
 		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
 		rival.set_meta(&"racecraft_planned_speed", target_speed)
