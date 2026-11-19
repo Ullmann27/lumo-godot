@@ -2,10 +2,13 @@ extends Control
 ## „Teile wechseln“ direkt beim gewählten Kart (Garage, Schritt „Karts“) – schon bei 0 Sternen.
 ##
 ## Ablauf wie ein kindgerechter Fahrzeugkonfigurator:
-##   „Teile wechseln“ → Kategorie „Räder“ oder „Auspuff“ → Kamera fährt kurz ans Vorderrad
-##   bzw. ans Heck → gerenderte Teilebilder (Serie immer dabei) → Antippen zeigt die Variante
-##   sofort am Kart → „Montieren“ speichert (pro Kinderprofil und Kart, kart_tuning.gd),
-##   „Zurück“ verwirft die offene Vorschau. Alle Teile hier sind reine Optik: „Aussehen“.
+##   „Teile wechseln“ → Steckplatz (Motor, Reifen, Flügel, Turbo, Fahrwerk, Radkappe,
+##   Auspuff) → Kamera fährt kurz ans Teil → gerenderte Teilebilder (Serie immer dabei) →
+##   Antippen zeigt die Variante sofort am Kart und auf dem Prüfstand den gemessenen
+##   Unterschied (vorher → nachher, kart_dyno.gd) → „Montieren“ speichert (pro Kinderprofil
+##   und Kart, kart_tuning.gd), „Zurück“ verwirft die offene Vorschau. Gesperrte Teile zeigen
+##   ihren Sternpreis und lassen sich mit verdienten Sternen freischalten (kein Kauf).
+##   Radkappe und Auspuff sind reine Optik: „Aussehen“.
 ## Dazu „Werte“: die fünf vollständigen, beschrifteten Fahrwerte des gewählten Karts.
 ## Die Knöpfe sind mindestens 48 dp groß; nichts blinkt.
 
@@ -15,6 +18,13 @@ const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const DYNO = preload("res://scripts/games/kart_dyno.gd")
+const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
+const BETTER := Color("7dff9a")
+const WORSE := Color("ffb26b")
+const SAME := Color("c9d6e6")
+## Breite eines Steckplatz-Knopfs in dp (Höhe 52 dp).
+const SLOT_WIDTH := 92.0
 const THUMBS := "res://assets/kart/production/parts/thumbs/%s.png"
 const ACCENT := Color("ff9a3c")
 
@@ -27,16 +37,26 @@ var stats_bars
 var stats_title: Label
 var title_label: Label
 var slot_buttons: Dictionary = {}
+var slot_row: HFlowContainer
+var body_scroll: ScrollContainer
 var tile_row: HBoxContainer
+## Prüfstand: gemessene Werte vorher → nachher für das angetippte Teil.
+var dyno_box: VBoxContainer
+var dyno_title: Label
+var dyno_grid: GridContainer
+var dyno_text: Label
+## Letzte Prüfstand-Messung (Tests lesen sie): {metric: [vorher, nachher]}.
+var dyno_values: Dictionary = {}
 var mount_button: Button
 var back_button: Button
 var tiles: Dictionary = {}
 ## Offene Auswahl: Steckplatz -> Teil-ID (noch nicht gespeichert).
 var pending: Dictionary = {}
-var slot: String = "wheel_cover"
+var slot: String = "engine"
 var _open := false
 var _scale := 1.0
 var _drawer := Rect2()
+var _stage := Rect2()
 
 
 func setup(owner_menu) -> void:
@@ -152,6 +172,24 @@ func _build_panel() -> void:
 	title_label = _label("Teile wechseln", 20, Color("ffe7a8"))
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title_label)
+	# Steckplätze, Teilebilder und Prüfstand rollen senkrecht, wenn der Konfigurator flach ist
+	# (Querformat: linke Spalte); „Zurück“ und „Montieren“ bleiben immer unten sichtbar.
+	body_scroll = ScrollContainer.new()
+	body_scroll.name = "PartsBodyScroll"
+	body_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	body_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.add_child(body_scroll)
+	var body := VBoxContainer.new()
+	body.add_theme_constant_override("separation", 8)
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body_scroll.add_child(body)
+	column = body
+	# Sieben Steckplätze; sie brechen in eine zweite Reihe um, statt abgeschnitten zu werden.
+	slot_row = HFlowContainer.new()
+	slot_row.name = "PartsSlotRow"
+	slot_row.add_theme_constant_override("h_separation", 8)
+	slot_row.add_theme_constant_override("v_separation", 8)
+	column.add_child(slot_row)
 	for id in TUNING.PART_SLOTS:
 		var button := _action(
 			str(TUNING.SLOT_NAMES[id]),
@@ -161,7 +199,7 @@ func _build_panel() -> void:
 		)
 		button.name = "PartsSlot_" + id
 		button.toggle_mode = true
-		head.add_child(button)
+		slot_row.add_child(button)
 		slot_buttons[id] = button
 	var scroll := ScrollContainer.new()
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -172,9 +210,10 @@ func _build_panel() -> void:
 	tile_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(tile_row)
+	_build_dyno(column)
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
-	column.add_child(actions)
+	body_scroll.get_parent().add_child(actions)
 	back_button = _action("← Zurück", _on_back, Color(0.06, 0.16, 0.32, 0.96), Color.WHITE)
 	back_button.name = "PartsBackButton"
 	back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -184,6 +223,32 @@ func _build_panel() -> void:
 	mount_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(mount_button)
 	panel.hide()
+
+
+func _build_dyno(column: VBoxContainer) -> void:
+	var frame := PanelContainer.new()
+	frame.name = "PartsDyno"
+	frame.add_theme_stylebox_override(
+		"panel", _style(Color(0.01, 0.05, 0.13, 0.9), Color(0.4, 0.88, 1.0, 0.45), 16)
+	)
+	column.add_child(frame)
+	dyno_box = VBoxContainer.new()
+	dyno_box.add_theme_constant_override("separation", 4)
+	frame.add_child(dyno_box)
+	dyno_title = _label("Prüfstand", 15, Color("9fe8ff"))
+	dyno_title.clip_text = true
+	dyno_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	dyno_box.add_child(dyno_title)
+	dyno_grid = GridContainer.new()
+	dyno_grid.name = "PartsDynoGrid"
+	dyno_grid.columns = 5
+	dyno_grid.add_theme_constant_override("h_separation", 10)
+	dyno_grid.add_theme_constant_override("v_separation", 2)
+	dyno_box.add_child(dyno_grid)
+	dyno_text = _label("", 15, Color.WHITE)
+	dyno_text.name = "PartsDynoText"
+	dyno_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	dyno_box.add_child(dyno_text)
 
 
 func _kart_id() -> String:
@@ -283,14 +348,43 @@ func _build_tiles() -> void:
 		var name_label := _label(str(option.name), 14, Color.WHITE)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(name_label)
-		var tag := _label(
-			"Aussehen" + ("  ✓" if chosen and id == _saved(slot) else ""), 11, Color("9fe8ff")
-		)
+		var tag := _label(_tag_text(option, id), 11, _tag_colour(id))
+		tag.name = "PartTag"
 		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(tag)
 		tile_row.add_child(tile)
 		tiles[id] = tile
 	_apply_tile_size()
+	_refresh_dyno()
+
+
+func _is_look_slot(slot_id: String) -> bool:
+	return TUNING.LOOK_SLOTS.has(slot_id)
+
+
+func _workshop():
+	return menu.workshop if menu != null else null
+
+
+func _owned(slot_id: String, id: String) -> bool:
+	var workshop = _workshop()
+	return workshop == null or workshop.has_option(slot_id, id)
+
+
+func _tag_text(option: Dictionary, id: String) -> String:
+	var mounted: bool = id == _saved(slot)
+	if not _owned(slot, id):
+		return "★ %d" % int(option.get("cost", 0))
+	var text: String = "Aussehen" if _is_look_slot(slot) else str(option.get("short", ""))
+	return text + ("  ✓" if mounted else "")
+
+
+func _tag_colour(id: String) -> Color:
+	return Color("ffd645") if not _owned(slot, id) else Color("9fe8ff")
+
+
+func _current(slot_id: String) -> String:
+	return str(pending.get(slot_id, _saved(slot_id)))
 
 
 func _on_tile(id: String) -> void:
@@ -300,13 +394,127 @@ func _on_tile(id: String) -> void:
 	var vehicle = _vehicle()
 	if vehicle != null:
 		vehicle.apply_parts(preview_look())
+	_refresh_dyno()
 	_focus_camera()
 
 
+## Prüfstand: misst das montierte Kart und das Kart mit dem angetippten Teil (kart_dyno.gd,
+## dieselben Formeln wie im Rennen) und zeigt die Werte des Steckplatzes vorher → nachher.
+func _refresh_dyno() -> void:
+	if dyno_grid == null:
+		return
+	for child in dyno_grid.get_children():
+		dyno_grid.remove_child(child)
+		child.queue_free()
+	dyno_values = {}
+	var id: String = _current(slot)
+	var option: Dictionary = TUNING.option(slot, id)
+	var workshop = _workshop()
+	if _is_look_slot(slot) or workshop == null:
+		dyno_title.text = "Aussehen"
+		dyno_text.text = "Nur fürs Aussehen – fährt genau wie vorher."
+		_sync_action()
+		return
+	var saved_id: String = _saved(slot)
+	var before: Dictionary = DYNO.measure(workshop.multipliers(_kart_id()))
+	var after: Dictionary = DYNO.measure(workshop.multipliers_with(_kart_id(), {slot: id}))
+	dyno_title.text = (
+		"Prüfstand: %s → %s" % [str(TUNING.option(slot, saved_id).name), str(option.name)]
+		if id != saved_id
+		else "Prüfstand: %s (montiert)" % str(option.name)
+	)
+	for metric in PART_CATALOG.SLOT_METRICS[slot]:
+		var old_value: float = float(before[metric])
+		var new_value: float = float(after[metric])
+		dyno_values[metric] = [old_value, new_value]
+		var verdict: int = DYNO.verdict(metric, old_value, new_value)
+		var colour: Color = BETTER if verdict > 0 else (WORSE if verdict < 0 else SAME)
+		var name_label := _label(str(DYNO.LABELS[metric].name), 14, Color("d8ecff"))
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		dyno_grid.add_child(name_label)
+		var before_label := _label(DYNO.format_value(metric, old_value), 14, SAME)
+		before_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		dyno_grid.add_child(before_label)
+		dyno_grid.add_child(_label("→", 14, SAME))
+		var after_label := _label(DYNO.format_value(metric, new_value), 15, colour)
+		after_label.name = "DynoAfter_" + metric
+		after_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		dyno_grid.add_child(after_label)
+		var word := _label(
+			"besser" if verdict > 0 else ("weniger" if verdict < 0 else "gleich"), 12, colour
+		)
+		dyno_grid.add_child(word)
+	dyno_text.text = str(option.get("text", ""))
+	_apply_dyno_font()
+	_sync_action()
+
+
+## „Montieren“ wird zu „Freischalten · n ★“, wenn das angetippte Teil noch gesperrt ist.
+func _sync_action() -> void:
+	if mount_button == null:
+		return
+	var id: String = _current(slot)
+	var workshop = _workshop()
+	mount_button.disabled = false
+	if _owned(slot, id) or workshop == null:
+		mount_button.text = "Montieren"
+		return
+	var price: int = int(TUNING.option(slot, id).get("cost", 0))
+	if workshop.can_buy_option(slot, id):
+		mount_button.text = "Freischalten · %d ★" % price
+	else:
+		mount_button.text = "Noch %d ★ sammeln" % maxi(1, price - int(workshop.available()))
+		mount_button.disabled = true
+
+
+func _apply_dyno_font() -> void:
+	if dyno_grid == null:
+		return
+	_set_dyno_font(1.0)
+	var width: float = panel.size.x
+	if _drawer.has_area():
+		# Querformat (Konfigurator in der linken Spalte): für eine lesbare Prüfstand-Tabelle darf
+		# er etwas in die Bühne wachsen (höchstens ein Viertel ihrer Breite).
+		width = _drawer.size.x
+		var beside: bool = _stage.has_area() and _drawer.position.y <= _stage.get_center().y
+		if beside:
+			var want: float = dyno_grid.get_combined_minimum_size().x + 56.0 * _scale
+			width = clampf(want, _drawer.size.x, _drawer.size.x + _stage.size.x * 0.25)
+		panel.size.x = width
+	# Umbrechender Satz braucht eine feste Breite, sonst rechnet er sich unendlich hoch.
+	dyno_text.custom_minimum_size = Vector2(maxf(80.0, width - 60.0 * _scale), 0)
+	# Reicht auch das nicht, wird die Tabelle kleiner gesetzt, statt den Konfigurator weiter zu
+	# verbreitern. Innenbreite: Rand des Konfigurators, Rahmen des Prüfstands, Rollbalken.
+	var room: float = width - 56.0 * _scale
+	var need: float = dyno_grid.get_combined_minimum_size().x
+	if need > room:
+		_set_dyno_font(maxf(0.6, room / need))
+
+
+func _set_dyno_font(factor: float) -> void:
+	for label in dyno_grid.get_children():
+		var size: int = 15 if str(label.name).begins_with("DynoAfter") else 14
+		if label.get_index() % 5 == 4:
+			size = 12
+		label.add_theme_font_size_override("font_size", roundi(size * _scale * factor))
+	dyno_title.add_theme_font_size_override("font_size", roundi(15 * _scale))
+	dyno_text.add_theme_font_size_override("font_size", roundi(15 * _scale))
+
+
 func _on_mount() -> void:
-	if menu.workshop != null:
+	var workshop = _workshop()
+	var id: String = _current(slot)
+	if workshop != null and not workshop.has_option(slot, id):
+		# Erst freischalten (verdiente Sterne, kein Kauf), dann bleibt der Konfigurator offen.
+		if workshop.buy_option(slot, id):
+			_build_tiles()
+			if menu.has_method("_refresh_star_label"):
+				menu._refresh_star_label()
+		return
+	if workshop != null:
 		for key in pending:
-			menu.workshop.choose(_kart_id(), key, str(pending[key]))
+			# Gesperrte Vorschauen anderer Steckplätze werden nicht gespeichert.
+			workshop.choose(_kart_id(), key, str(pending[key]))
 	pending = {}
 	_close()
 	parts_mounted.emit(_kart_id())
@@ -348,7 +556,8 @@ func _focus_camera() -> void:
 	var centre: Vector3 = kart.global_position + Vector3(0, 0.45, 0)
 	var target: Vector3
 	var outward: Vector3
-	if slot == "wheel_cover" and not vehicle.wheel_rotors.is_empty():
+	var at_wheel: bool = slot in ["wheel_cover", "tires", "suspension"]
+	if at_wheel and not vehicle.wheel_rotors.is_empty():
 		var wheel: Node3D = vehicle.wheel_rotors[0]
 		var eye: Vector3 = menu.preview_camera.global_position
 		for rotor in vehicle.wheel_rotors:
@@ -372,11 +581,17 @@ func _focus_camera() -> void:
 	else:
 		var marker := vehicle.asset_root.find_child("Boost_R", true, false) as Node3D
 		target = marker.global_position if marker != null else centre
-		outward = kart.global_basis.z * 1.25 + kart.global_basis.x * 0.6 + Vector3(0, 0.38, 0)
+		if slot in ["engine", "wing", "booster"] and vehicle.has_method("_anchor"):
+			target = vehicle.asset_root.to_global(vehicle._anchor(slot))
+		if slot in ["engine", "wing", "booster"]:
+			# Schräg von hinten oben: Heckdeck, Flügel und Turbo über dem Sitz sichtbar.
+			outward = kart.global_basis.z * 2.1 + kart.global_basis.x * 1.2 + Vector3(0, 1.25, 0)
+		else:
+			outward = kart.global_basis.z * 1.25 + kart.global_basis.x * 0.6 + Vector3(0, 0.38, 0)
 	menu.preview_camera.h_offset = 0.0
 	menu.preview_camera.v_offset = 0.0
 	# Blickpunkt etwas unter dem Teil: es steht dann in der freien Bühne über dem Konfigurator.
-	var look_at: Vector3 = target - Vector3(0, 0.24 if slot == "wheel_cover" else 0.12, 0)
+	var look_at: Vector3 = target - Vector3(0, 0.24 if at_wheel else 0.12, 0)
 	menu._move_preview_camera(
 		target + outward, look_at, Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE
 	)
@@ -461,24 +676,46 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	)
 	stats_panel.size = stats_size
 	_drawer = drawer
-	panel.position = drawer.position
-	panel.size = drawer.size
+	_stage = stage
 	_apply_tile_size()
 	_sync()
 
 
+## Reihen der Steckplatz-Knöpfe bei der Breite des Konfigurators.
+func _slot_rows(width: float) -> int:
+	var inner: float = width - 20.0 * _scale
+	# Gleiche Knopfbreite wie in relayout() (schmaler Konfigurator: 78, sonst 104).
+	var slot_w: float = SLOT_WIDTH * _scale
+	if not slot_buttons.is_empty():
+		slot_w = maxf(1.0, (slot_buttons.values()[0] as Button).custom_minimum_size.x)
+	var per_row: int = maxi(1, floori((inner + 8.0 * _scale) / (slot_w + 8.0 * _scale)))
+	return ceili(float(slot_buttons.size()) / float(per_row))
+
+
+## Konfigurator: liegt auf der Auswahl-Fläche und wächst, wo nötig, in die Bühne hinein
+## (höchstens bis 40 % ihrer Höhe), damit Teilebilder, Prüfstand und Knöpfe Platz haben.
+## Die Teilebilder bekommen, was übrig bleibt; nichts ragt über die Fußleiste.
 func _apply_tile_size() -> void:
-	# Kopfzeile + Knopfzeile (je 52 dp) und Abstände gehen ab; die Teilebilder bekommen den Rest,
-	# damit der Konfigurator nie über die Fußleiste hinauswächst.
-	var room: float = _drawer.size.y if _drawer.has_area() else panel.size.y
-	var edge: float = clampf(room - 104.0 * _scale - 44.0 * _scale, 64.0 * _scale, 170.0 * _scale)
+	var drawer: Rect2 = _drawer if _drawer.has_area() else Rect2(panel.position, panel.size)
+	var gap: float = 8.0 * _scale
+	var slots_h: float = _slot_rows(drawer.size.x) * (52.0 + 8.0) * _scale - gap
+	var dyno_h: float = 4.0 * 24.0 * _scale + 50.0 * _scale
+	var fixed: float = 20.0 * _scale + 30.0 * _scale + slots_h + 52.0 * _scale + dyno_h + gap * 4.0
+	var wanted_edge: float = 150.0 * _scale
+	var top: float = drawer.position.y
+	var below_stage: bool = _stage.has_area() and drawer.position.y > _stage.get_center().y
+	if below_stage:
+		top = minf(top, drawer.end.y - fixed - wanted_edge)
+		top = maxf(top, _stage.position.y + _stage.size.y * 0.4)
+	var rect := Rect2(drawer.position.x, top, drawer.size.x, drawer.end.y - top)
+	var edge: float = clampf(rect.size.y - fixed, 64.0 * _scale, 170.0 * _scale)
 	for id in tiles:
 		tiles[id].custom_minimum_size = Vector2(edge * 0.95, edge)
 		for label in tiles[id].find_children("*", "Label", true, false):
 			label.add_theme_font_size_override(
 				"font_size", roundi((14 if label.get_index() == 1 else 11) * _scale)
 			)
-	if _drawer.has_area():
-		panel.reset_size()
-		panel.position = _drawer.position
-		panel.size = _drawer.size
+	panel.reset_size()
+	panel.position = rect.position
+	panel.size = rect.size
+	_apply_dyno_font()

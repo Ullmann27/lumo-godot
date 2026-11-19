@@ -4,6 +4,10 @@ extends SceneTree
 ## Rennfahrzeug) → zurück ins Menü → Spielstand neu laden (Teile wieder da). Dazu: Karten
 ## zeigen höchstens zwei beschriftete Werte, „Werte“ zeigt alle fünf, „Teile wechseln“ ist
 ## bei 0 Sternen erreichbar und ≥ 48 dp groß, alte Spielstände ohne Teile laden als Serie.
+## Leistungsteile (19.11.): Sprintmotor antippen → Prüfstand zeigt gemessenes vorher → nachher
+## → montieren → Fahrfaktoren ändern sich messbar; gesperrter Langstreckenmotor nennt die
+## fehlenden Sterne und lässt sich mit verdienten Sternen freischalten; Reifen, Flügel, Turbo,
+## Fahrwerk sitzen sichtbar am Kart und im Rennen; das Rennen fährt mit genau diesen Faktoren.
 ## Kopflos: godot --headless --path . --script res://scripts/tests/kart_parts_flow_regression.gd
 
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
@@ -11,6 +15,7 @@ const CHILD := "parts_flow_child"
 var failures: Array[String] = []
 var checks := 0
 var game
+var _dp := 1.0
 
 
 func _initialize() -> void:
@@ -37,6 +42,112 @@ func _count_parts(vehicle, prefix: String) -> int:
 	if vehicle == null:
 		return 0
 	return vehicle.find_children("Part_" + prefix + "*", "Node3D", true, false).size()
+
+
+func _count_mounts(vehicle, node_name: String) -> int:
+	if vehicle == null:
+		return 0
+	return vehicle.find_children("Mount_" + node_name + "*", "Node3D", true, false).size()
+
+
+func _performance_parts(garage, bay) -> void:
+	var workshop = garage.workshop
+	var base_factors: Dictionary = workshop.multipliers("comet")
+	bay._on_open()
+	bay._on_slot("engine")
+	_check(bay.tiles.size() >= 3 and bay.tiles.has("serie"), "Motor: Serie + Varianten")
+	var pictures := 0
+	for id in bay.tiles:
+		var picture: TextureRect = bay.tiles[id].find_child("PartPicture", true, false)
+		if picture != null and picture.texture != null:
+			pictures += 1
+	_check(pictures == bay.tiles.size(), "jedes Motor-Teil hat ein gerendertes Teilebild")
+	bay._on_tile("sprint")
+	await _frames(4)
+	var vehicle = _vehicle(garage.preview_kart)
+	_check(_count_mounts(vehicle, "Engine_Sprint") == 1, "Sprintmotor sofort am Kart (Vorschau)")
+	var values: Dictionary = bay.dyno_values
+	_check(
+		values.has("top_kmh") and values.has("sprint_s"), "Prüfstand zeigt Endtempo und Anfahren"
+	)
+	if values.has("sprint_s") and values.has("top_kmh"):
+		_check(
+			float(values.sprint_s[1]) < float(values.sprint_s[0]) - 0.05,
+			"Prüfstand: Sprintmotor fährt messbar schneller an"
+		)
+		_check(
+			float(values.top_kmh[1]) < float(values.top_kmh[0]) - 1.0,
+			"Prüfstand: Sprintmotor hat messbar weniger Endtempo (Abwägung)"
+		)
+	_check(
+		"→" in bay.dyno_title.text and not bay.dyno_text.text.is_empty(),
+		"Prüfstand nennt vorher → nachher und einen Satz"
+	)
+	_check(
+		bay.panel.get_global_rect().end.y <= garage.footer.get_global_rect().position.y + 1.0,
+		"Konfigurator mit Prüfstand bleibt über der Fußleiste"
+	)
+	for button in bay.slot_buttons.values():
+		var rect: Rect2 = button.get_global_rect()
+		_check(
+			rect.size.y >= 48.0 * _dp - 0.5 and bay.panel.get_global_rect().encloses(rect),
+			"Steckplatz %s ≥ 48 dp und ganz im Konfigurator" % button.text
+		)
+	bay._on_mount()
+	await _frames(4)
+	var factors: Dictionary = workshop.multipliers("comet")
+	_check(workshop.chosen("comet", "engine") == "sprint", "Sprintmotor gespeichert")
+	_check(
+		is_equal_approx(float(factors.accel), float(base_factors.accel) * 1.14),
+		"Fahrfaktor Beschleunigung ändert sich messbar (×1,14)"
+	)
+	# Gesperrt: Langstreckenmotor kostet 10 Sterne, das Kind hat 0.
+	bay._on_open()
+	bay._on_slot("engine")
+	bay._on_tile("dauer")
+	await _frames(2)
+	_check(
+		bay.mount_button.disabled and bay.mount_button.text.begins_with("Noch"),
+		"gesperrtes Teil nennt fehlende Sterne"
+	)
+	var tag: Label = bay.tiles["dauer"].find_child("PartTag", true, false)
+	_check(tag != null and "★ 10" in tag.text, "Kachel zeigt den Sternpreis")
+	workshop.report_lifetime(30)
+	bay._refresh_dyno()
+	_check(bay.mount_button.text.begins_with("Freischalten"), "mit Sternen: „Freischalten“")
+	var before_stars: int = workshop.available()
+	bay._on_mount()
+	await _frames(2)
+	_check(
+		workshop.has_option("engine", "dauer") and workshop.available() == before_stars - 10,
+		"Freischalten zieht genau 10 verdiente Sterne ab"
+	)
+	_check(
+		bay.is_open() and bay.mount_button.text == "Montieren",
+		"danach „Montieren“ (%s, %s)" % [bay.is_open(), bay.mount_button.text]
+	)
+	bay._on_mount()
+	await _frames(4)
+	_check(workshop.chosen("comet", "engine") == "dauer", "Langstreckenmotor montiert")
+	var mounts: Dictionary = {
+		"tires": ["haft", "Tire_Grip", 4],
+		"wing": ["gross", "Wing_Big", 1],
+		"booster": ["kurz", "Booster_Short", 2],
+		"suspension": ["sprung", "Damper_Spring", 4],
+	}
+	for slot_id in mounts:
+		bay._on_open()
+		bay._on_slot(slot_id)
+		bay._on_tile(str(mounts[slot_id][0]))
+		await _frames(2)
+		_check(bay.dyno_values.size() >= 2, "%s: Prüfstand zeigt Werte" % slot_id)
+		bay._on_mount()
+		await _frames(4)
+		vehicle = _vehicle(garage.preview_kart)
+		_check(
+			_count_mounts(vehicle, str(mounts[slot_id][1])) == int(mounts[slot_id][2]),
+			"%s sichtbar am Kart (%d×)" % [mounts[slot_id][1], mounts[slot_id][2]]
+		)
 
 
 func _run() -> void:
@@ -82,6 +193,7 @@ func _run() -> void:
 		_finish()
 		return
 	var dp: float = garage._preview_dp_scale() if garage.has_method("_preview_dp_scale") else 1.0
+	_dp = dp
 	var button_rect: Rect2 = bay.open_button.get_global_rect()
 	_check(
 		button_rect.size.y >= 48.0 * dp - 0.5 and button_rect.size.x >= 48.0 * dp,
@@ -192,6 +304,7 @@ func _run() -> void:
 	bay._on_mount()
 	await _frames(4)
 	_check(garage.workshop.chosen("comet", "exhaust") == "doppel", "Doppelrohr gespeichert")
+	await _performance_parts(garage, bay)
 	# Rennen starten: Teile am Rennfahrzeug.
 	game.selected_kart = "comet"
 	garage.start_requested.emit(garage.setup.duplicate(true))
@@ -213,6 +326,27 @@ func _run() -> void:
 			),
 			"Teile sind am Rennfahrzeug sichtbar angebaut"
 		)
+		_check(
+			(
+				race_kart.mounted_parts.get("engine") == "dauer"
+				and _count_mounts(race_kart, "Engine_Long") == 1
+				and _count_mounts(race_kart, "Tire_Grip") == 4
+				and _count_mounts(race_kart, "Wing_Big") == 1
+				and _count_mounts(race_kart, "Booster_Short") == 2
+				and _count_mounts(race_kart, "Damper_Spring") == 4
+			),
+			"Leistungsteile am Rennfahrzeug sichtbar"
+		)
+	game._refresh_kart_factors()
+	var expected: Dictionary = game.workshop.multipliers("comet")
+	_check(
+		(
+			is_equal_approx(float(game._factor("speed")), float(expected.speed))
+			and is_equal_approx(float(game._factor("boost_power")), float(expected.boost_power))
+			and is_equal_approx(float(game._factor("landing")), 0.35)
+		),
+		"Rennen fährt mit den Faktoren der montierten Teile"
+	)
 	if game.has_method("_leave_race_for_menu"):
 		game._leave_race_for_menu()
 		await _frames(8)
@@ -227,6 +361,19 @@ func _run() -> void:
 	)
 	_check(reloaded.chosen("glider", "wheel_cover") == "serie", "anderes Kart bleibt Serie")
 	_check(
+		(
+			reloaded.chosen("comet", "engine") == "dauer"
+			and reloaded.chosen("comet", "suspension") == "sprung"
+			and reloaded.chosen("glider", "engine") == "serie"
+			and reloaded.has_option("engine", "dauer")
+		),
+		"Leistungsteile und Freischaltung nach Neustart wieder da"
+	)
+	_check(
+		TUNING.new("anderes_kind", 0).chosen("comet", "engine") == "serie",
+		"anderes Kinderprofil fährt Serie-Motor"
+	)
+	_check(
 		TUNING.new("anderes_kind", 0).chosen("comet", "wheel_cover") == "serie",
 		"anderes Kinderprofil bleibt Serie"
 	)
@@ -235,7 +382,7 @@ func _run() -> void:
 			reloaded.chosen("comet", "rims") == "chrom"
 			and reloaded.available() == game.workshop.available()
 		),
-		"Felgen und Sterne unverändert (Teile kosten nichts)"
+		"Felgen und Sterne unverändert nach Neustart"
 	)
 	DirAccess.remove_absolute(path)
 	DirAccess.remove_absolute(TUNING.path_for("anderes_kind"))
