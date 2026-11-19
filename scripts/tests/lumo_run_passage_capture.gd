@@ -62,8 +62,10 @@ func _until(done: Callable, limit: int = 60 * 30) -> bool:
 
 func _place(s: float, speed: float) -> void:
 	var passed: int = -1
+	# Checkpoints up to the passage count as reached: no learning stop (and no
+	# fading question card) gets into the pictures of the passage.
 	for checkpoint in game.plan.checkpoints:
-		if float(checkpoint.s) < s:
+		if float(checkpoint.s) < s + 60.0:
 			passed = int(checkpoint.index)
 	game.track.checkpoint = maxi(game.track.checkpoint, passed)
 	game.track.rescue = game.plan.respawn_index(s)
