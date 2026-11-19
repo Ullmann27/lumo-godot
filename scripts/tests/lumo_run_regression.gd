@@ -1492,6 +1492,6 @@ func _test_adventure_bots() -> void:
 	var total: float = 0.0
 	for value in times:
 		total += value
-	# Tempo update of 18.11.2026: the path plays 1.3 times faster (was about 180 s).
-	_check(total / float(times.size()) > 100.0, "a run lasts minutes, not seconds (average %.0f s)" % (total / float(times.size())))
-	print("[LumoRun] jungle bots: %d/%d finished, average %.0f s, longest %.0f s" % [finished, JUNGLE_SEEDS, total / float(times.size()), worst_time])
+	var average: float = total / float(times.size())
+	_check(average >= 85.0 and average <= 105.0, "the full adventure stays near its 100-second target (average %.0f s)" % average)
+	print("[LumoRun] jungle bots: %d/%d finished, average %.0f s, longest %.0f s" % [finished, JUNGLE_SEEDS, average, worst_time])

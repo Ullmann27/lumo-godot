@@ -106,11 +106,11 @@ const PATH_TIME_SCALE: float = 1.5
 ## over PATH_FLOW_SECONDS, which adds up to PATH_FLOW_BONUS m/s (sprint).
 const PATH_FLOW_BONUS: float = 3.0
 const PATH_FLOW_SECONDS: float = 2.2
-## Faster pick-up on the path, and kinder jump windows than on the roads
-## (in path time; on screen they are PATH_TIME_SCALE times shorter).
+## Faster pick-up on the path, with 160 ms coyote time and a 220 ms input
+## buffer in player time. The values below are in simulation time.
 const PATH_ACCELERATION: float = 9.0
-const PATH_COYOTE_SECONDS: float = 0.2
-const PATH_JUMP_BUFFER_SECONDS: float = 0.28
+const PATH_COYOTE_SECONDS: float = 0.24
+const PATH_JUMP_BUFFER_SECONDS: float = 0.33
 ## Speed pads on the long safe stretches of the path. The path is dense, so a
 ## pad's push is short: Lumo is back at his own pace before the next thing to
 ## jump or dodge (PATH_PAD_CLEAR metres are free).

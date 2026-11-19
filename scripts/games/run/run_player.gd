@@ -43,8 +43,8 @@ var air_dash_ready: bool = true
 var flow: float = 0.0
 var flow_bonus: float = 0.0
 var acceleration: float = TUNING.ACCELERATION
-var coyote_window: float = TUNING.COYOTE_SECONDS
-var buffer_window: float = TUNING.JUMP_BUFFER_SECONDS
+var coyote_window: float = TUNING.COYOTE_SECONDS * TUNING.ROAD_TIME_SCALE
+var buffer_window: float = TUNING.JUMP_BUFFER_SECONDS * TUNING.ROAD_TIME_SCALE
 ## A barrel, vine, zip line or warp Lumo is riding (empty when he runs).
 var ride: Dictionary = {}
 var ride_index: int = -1
