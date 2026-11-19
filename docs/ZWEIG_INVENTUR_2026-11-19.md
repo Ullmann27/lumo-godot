@@ -1,14 +1,134 @@
 # Zweig-Inventur Godot – 19.11.2026
 
 Grundlage: gemeinsame Linie `origin/repair/lumo-quiz-run-kart-20261119` (`1c9211e`).
-Arbeitszweig: `agent/inventur-godot`. Stand: **in Arbeit** (wird laufend fortgeschrieben).
+Arbeitszweig: `agent/inventur-godot`. Stand: **abgeschlossen** für alle 117 Zweige mit Inhaltsrest (37 Familien).
 
-Verfahren: Für jeden der 117 Zweige mit Inhaltsrest (aus `godot_inhalt.tsv`) wird jede
-Datei, die der Zweig seit seiner Abzweigung von der Linie geändert hat, mit der Linie
-verglichen:
-- **gleich**: Linie hat denselben Inhalt.
-- **überholt (Fassung auf Linie gewesen)**: genau dieser Dateiinhalt (Blob) kam in der
-  Geschichte der Linie vor und wurde dort später weiterentwickelt oder bewusst entfernt.
-- **neu**: dieser Inhalt war nie auf der Linie → Einzelprüfung.
+## Verfahren
 
-(Tabellen folgen.)
+117 Remote-Zweige haben laut maschineller Klassifikation (`godot_inhalt.tsv`) noch einen
+Rest mit Spielinhalt oder Tests. Für jeden Zweig wurde jede Datei, die er seit seiner
+Abzweigung von der Linie (merge-base) geändert hat, mit der Linie verglichen:
+
+- **gleich** – Linie hat denselben Inhalt.
+- **Fassung war auf der Linie** – genau dieser Dateiinhalt (Blob) kam in der Geschichte der
+  Linie vor und wurde dort später weiterentwickelt oder bewusst entfernt → überholt.
+- **neu** – dieser Inhalt war nie auf der Linie → Einzelprüfung (Diff gegen Linie,
+  fehlende Funktionen/Konstanten, Commit-Geschichte, ggf. Lauf).
+
+Familien = Zweige, die Commits teilen (Zusammenhangskomponenten über gemeinsame Commits):
+**37 Familien**. Befund-Schlüssel: **(a) überholt** (Beleg auf der Linie), **(b) nur
+Belege/Doku/CI**, **(c) fehlte → übernommen** (Commit), **(d) bewusst nicht übernommen**
+(Grund). Hilfsdaten (nicht im Repo): `dateien.tsv` (22 879 Datei-Urteile, davon 4 163
+„neu“, 432 davon in scripts/scenes/assets/tools), `familien.txt`, `funcs_fehlend.tsv`.
+
+## Ergebnis je Familie (neueste zuerst)
+
+| Fam. | Zweige | Inhalt | Befund | Aktion | Test |
+|---|---|---|---|---|---|
+| F01 (2026-11-18) | `delivery/lumo-schach-2048-20261118` | Fremde Schachfassung: 3D-Schach, 4 Stufen, geführte Lernrunde (Schäfermatt) | Regeln, Stufen, Coach, 20 Lektionen auf der Linie vollständiger und getestet (`scripts/games/chess/*`, `chess_*_regression`). **Fehlte:** geführte Erste-Partie-Runde aus der Grundstellung. | c – `eb9bc12` Lektion „Das schnelle Matt“ ans Ende des Lernwegs, Schritt-Feld `from` | Schaefer 28/28, chess_table_regression 919/919, Bild angesehen |
+| F02 (2026-11-16) | `fix/lumo-learning-button-state-contrast-20261116` | Lern-Knöpfe: lesbarer Text in allen Zuständen + Kontrast-Test | Korrektur auf der Linie in neuerer Form (`1b6bd7a`, dunkles Atrium). **Fehlte:** der Test. | c – `04eb688` Test `learning_button_state_contrast_regression.gd` | 79/79 PASS |
+| F03 (2026-11-16) | `integration/lumo-2031-nextgen-jungle-20261116` | Dorf: Knopf „Freies Feld“, Kapitel-HUD; Kart-Neon-Menü (2031) | a – Linie hat „Freier Bauplatz“ (`_focus_next_free_plot`, VHUD) und das weiterentwickelte Neon-Menü (`kart_neon_hub.gd`, 752 Zeilen, bis 19.11.). | keine | – |
+| F04 (2026-11-16) | `integration/lumo-2034-allworkshop-jungle-bauwelt-20261116` | Neon-Hub (2034), Werkstatt, Bauwelt-Kinderführung | a – `kart_neon_hub.gd` der Linie ist der spätere Ausbau (Sternenpfad, Overlays); Bauwelt-Dateien als Fassung auf der Linie gewesen; Dichte-Umgehung in `kart_spatial_landing.gd` auf der Linie bereits gelöst. | keine | – |
+| F05 (2026-11-16) | `integration/lumo-nextgen-learning-20261115` | = F02 (Integrationszweig derselben Korrektur) | wie F02 | c – `04eb688` | 79/79 PASS |
+| F06 (2026-11-15) | `chatgpt/lumo-nextgen-chat3-3d-20261115` | Neues Blender-Lumo „chat3“ mit Lernbühne, 8 Lernobjekte, GLB/.blend (12 MB) | d – ersetzt Lumo durch ein neu gebautes Modell (Regel: Original-Lumo bleibt); isolierte Bühne ohne Anbindung; Dateien > 1,5 MB. Lernbühne/Zehnerfeld auf der Linie als Holo-Lernräume (`b499b14`). | nicht übernommen | – |
+| F07 (2026-11-15) | `chatgpt/lumo-nextgen-native-blender-integration-20261115` | chat3-Lumo im Lernen, Eltern-Dialog mit Mikro, Muster/Aufgabenkarten nur lesend | d/a – Lumo-Ersatz abgelehnt (s. F06); Muster, Aufgabenkarte (`_build_task_card`, „Auftrag ansehen“) und Gespräch (`learning_conversation_panel.gd`, Mikro-Knopf standardmäßig verborgen) auf der Linie neuer; Font-Lazy-Load nur Erstimport-Umgehung. | nicht übernommen | – |
+| F08 (2026-11-15) | `checkpoint/lumo-dream-minimap-verified-20261114-2708`, `checkpoint/lumo-kart-minimap-verified-20261114-2708`, `evidence/lumo-current-c4-kart-20261114` + 26 weitere | 29 Zweige vom 14./15.11. (evidence/integration/checkpoint): Traum, Schatz-Irrlichter, Hub-Portale, Dorf-HUD, Kart-Tunnel-Leitteile (Blender), Prüfskripte | a – Linienfassungen sind Obermengen (`afc0df9a`, `f052c279`: game_hub, wonder_garden, treasure_wisps, Tests); b – Belege/Prüfskripte (`validate_live_connections.sh`, Raster-Prüfer); d – Tunnel-Leitteile (`combined-art-2023-f131`): übernommen und geprüft (22/22 Tunnel PASS), aber hinter den inzwischen eingebauten Leitplanken unsichtbar (Bildvergleich: 0,4 % Pixel) → wieder entfernt. Generator `build_dream_garden.py` → F11. | Teil in F11 | Tunnel-Test 22/22 (vor Rücknahme), Bildvergleich |
+| F09 (2026-11-15) | `feature/lumo-volcano-landscape-pilot-20261115`, `fix/lumo-kart-chevrons-tail-clearance-20261115` | Kurven-Pfeiltafeln als echtes V in Kurvenrichtung; Fuchsschweif außerhalb der Cockpitschale | c – fehlte auf der Linie (alte Doppelbalken, alter Schweifansatz). | c – `b0b35fd` | KartArrowTail PASS, Bild angesehen |
+| F10 (2026-11-15) | `integration/lumo-learning-nextgen-20261115` | chat3-Lernführer, Aufgabenarten, Musteranzeige, „Ganze Frage lesen“ | d/a – Lumo-Ersatz abgelehnt; Muster/Aufgabe/„Auftrag ansehen“ auf der Linie (`_show_task_prompt`). | nicht übernommen | – |
+| F11 (2026-11-14) | `chatgpt/lumo-dream-ambience-20261114`, `chatgpt/lumo-dream-garden-source-20261114`, `chatgpt/lumo-learning-wonder-details-20261114` + 3 weitere | Traum-Ambiente (Pause/Sichtbarkeit), Traumgarten-Modelle mit Generator, Hub-Portale, Wunder-Garten, Dorf-Start aus Flutter | c – Linie hatte in `c2e025f9` ältere Quellstände (Linienfassungen sind Vorfahren). Fehlte: Ambiente stoppt unsichtbar/im Hintergrund, Besitzer-Wunsch vor Host, Hub-Aufnahme, Original-Lumo-Prüfung im Hub, Generator + .blend-Quellen. a – Hub/Wunder/Dorf-Start auf der Linie neuer. d – Buch-Platzierung im Hochformat: Atelier ist seit `a3c7072a` ausgeblendet. | c – `47a4cfe` | DreamAmbience 178/178, DreamGarden 544/544, KartNextGenUI PASS, Bild angesehen |
+| F12 (2026-11-14) | `chatgpt/lumo-learning-wonder-feedback-20261114`, `chatgpt/lumo-treasure-magic-wisps-20261114` | Lern-Sterne bei richtigen 3D-Aktionen, Schatz-Sternenspuren | a – alle Dateifassungen waren auf der Linie; `treasure_wisps.gd` dort neuer (`celebration_only`). | keine | – |
+| F13 (2026-11-14) | `chatgpt/lumo-native-qa-worker-20261114` | QA-Bericht „Auffindbarkeit“ (Python) | b – Prüfbericht mit festen Aussagen; Befunde (Hub zeigt nicht alle Spiele) später behoben (8 Routen, `game_hub_magic_regression`). | keine | – |
+| F14 (2026-11-14) | `chatgpt/lumo-nextgen-feature-20261114` | CI-Runner Studio-Abnahme | b – CI-Werkzeug. | keine | – |
+| F15 (2026-11-14) | `integration/lumo-kart-material-20261114`, `integration/lumo-next-authorities-20261114` | Gegner-Karosserie-Material, Englisch-Objekte vergrößern, Memory/Quiz | a – `kart_modular_aero_kit.gd` auf der Linie neuer (`d3bfa635`); Englisch-Layout der Linie skaliert kompakt ×1,5 und misst neu; Memory/Quiz/English-Dateien waren auf der Linie. | keine | – |
+| F16 (2026-11-13) | `chatgpt/lumo-audio-diagnostic-76980a94` | Diagnose-Kopie des Lasso-Audiotests | b – Diagnose; Linie hat `kart_lasso_production_regression.gd` und `GameSoundscape.release_audio()`. | keine | – |
+| F17 (2026-11-13) | `chatgpt/lumo-complete-nextgen-20261113` | Dorf-Wirtschaft, Bewohner, Region (13.11.) | a – alle Dateifassungen waren auf der Linie. | keine | – |
+| F18 (2026-11-11) | `chatgpt/lumo-character-art-20261111` | Lumo-Kart-Animationsadapter, Aufmerksamkeit | a – Fassungen waren auf der Linie. | keine | – |
+| F19 (2026-11-11) | `chatgpt/lumo-garage-art-20261111` | Garage-Innenraum/-Menü (11.11.) | a – Fassungen waren auf der Linie. | keine | – |
+| F20 (2026-11-10) | `lumo-2013/bauwelt-sandbox-20261110` | Bauwelt: Füllen/Kopieren/Spiegeln | a – auf der Linie vorhanden (`build_sandbox_tools.gd`, `_set_sandbox_mode`, Tests). | keine | – |
+| F21 (2026-11-10) | `lumo-2013/jump-20261110` | Sprungwelt: Wolkeninseln, Sprungkissen | a – Fassung war auf der Linie. | keine | – |
+| F22 (2026-11-10) | `lumo-2013/kart-menu-20261110` | Kart-Garage 3D-Knöpfe, Luft-Trick-Start (2013, WIP) | a – Linie hat 3D-Knopfwahl (`_pick_garage_action`) und Luft-Tricks; 96 % der Zeilen vorhanden. | keine | – |
+| F23 (2026-11-10) | `lumo-2013/puzzle-20261110` | Puzzle-Atelier, lebendes Bild (2013, WIP) | a – `puzzle_atelier_art.gd`, `alive_picture`, Tipps-Anzeige auf der Linie; 90 % der Zeilen. | keine | – |
+| F24 (2026-11-10) | `lumo-2014/kart-ai-20261110` | Rivalen-Renntaktik, Drift-Belohnung (2014) | a – `kart_rival_racecraft.gd` und Feinabstimmung auf der Linie (`_rival_target_near`, PACE_SCALE). | keine | – |
+| F25 (2026-11-10) | `lumo-2014/kart-geometry-20261110` | Rivalen-Flug, Looping-Kontakt (2014) | a – `kart_rival_flight.gd`, `kart_rival_stunts.gd`, Looping-Ausfahrt über `PHYSICAL_LOOP.exit_lane` auf der Linie. | keine | – |
+| F26 (2026-11-03) | `design/sonnenhafen-physical-flight-and-ramp-20261103` | Sonnenhafen: Flug nach Tempo, Ampel-Hinweis, Leuchtrampe (Entwurf) | a – Linie hat dieselbe Funktion als Präzisionssprung (`kart_precision_jump.gd`, Hinweis rot/grün/orange, `40396739` vom 18.11.). | keine | – |
+| F27 (2026-11-03) | `feat/lumo-65bone-grounded-walk-20261103` | Lumo 65-Knochen-Gang | a – Fassungen waren auf der Linie (`lumo_walk_locomotion.gd`, Test). | keine | – |
+| F28 (2026-11-03) | `feat/sonnenhafen-physics-ramp-mainline-loop-20261103` | Sonnenhafen: ballistischer Sprung, Ampel, Pfeile im Asphalt | a – Sprung wie F26 auf der Linie anders gelöst; Asphalt-Shader der Linie anders weiterentwickelt (Oberflächen, Nässe, Rinnen) – Pfeil-Muster ist Gestaltungsvariante. | keine | – |
+| F29 (2026-11-03) | `grok/lumo-gait-cycle2`, `grok/lumo-renderkit-cycle3`, `grok/welten-optik-cycle1` | Grok-Zyklen: Gang in der Sprungwelt, RenderKit, Bauwelt-Texturen | a – `LumoGait`, `LumoQuality` und Texturen auf der Linie, Tests in `validate_project.sh`. | keine | – |
+| F30 (2026-10-26) | `sol/kart-quality-20261026` | Kart-Kamera exponentiell gedämpft + Test | c – Linie dämpfte noch mit `minf(1, delta*k)` (Test vorher 9/22 rot). | c – `f29102c` (5 Zeilen in `kart_island.gd`) | 22/22 PASS, Workshop + Fahrgefühl PASS |
+| F31 (2026-10-25) | `claude/kart-rival-race-craft-20261022` | Rivalen: Kurvenkönnen, Überholen, Windschatten, Feldzusammenhalt | a – Linie hat Renntaktik mit Überholprofilen (`kart_rival_racecraft`, „extreme rivals“ 12.11.) und eigenen Windschatten (`slipstream_charge`). Simulationstest passt zur alten Logik. | keine | – |
+| F32 (2026-10-20) | `design/lumo-kart-premium-ui-implementation-20261020`, `ops/lumo-kart-cloud-checkpoint-protection-20261020` | Kart-Startseite aus Referenzbild, Cloud-Sicherung | a – Verdrahtung überholt (`kart_neon_hub.gd`); c – Bilder bytegleich auf der Linie, aber ohne Herkunft/Werkzeug; Test zu vorhandenem `tools/lumo_autosave.py` fehlte. | c – `a8e939e` | 3 Python-Tests OK, py_compile |
+| F33 (2026-10-17) | `chatgpt/lumo-1971-bauwelt-originals-runtime-evidence-2026-10-17` | Aufnahme-Skript Bauwelt 1971 | b – Belegaufnahme; Linie hat `creative_build_capture.gd`. | keine | – |
+| F34 (2026-10-17) | `chatgpt/lumo-darkride-road-guidance-qa-2026-10-17` | Höhle Sonnenhafen: Leitmarken am Fahrbahnrand | c – fehlte im neu gestalteten Höhlen-Shader. | c – `9b612ae` | Darkride PASS, Bildvergleich |
+| F35 (2026-10-16) | `chatgpt/kart-android-real-race-gate-1957-2026-10-16` | PDF-Archiv aller Quelltexte | b – Archivwerkzeug ohne Spielwirkung. | keine | – |
+| F36 (2026-10-15) | `chatgpt/fold-kart-controls-2026-10-07`, `chatgpt/kart-brake-reverse-2026-10-07`, `chatgpt/kart-developer-packs-zip-2026-10-06` + 39 weitere | 42 Zweige 2.–15.10. (codex/chatgpt/claude/copilot/integration): Kart-Flotte, Sonnenhafen, Himmelsinseln, Modals, Werkstatt, Gesicht, Bauwelt-Assets | a – 340 Commits, auf der Linie konsolidiert (u. a. `a7f281d`): alle Skripte vorhanden, 70–100 % der hinzugefügten Codezeilen wörtlich auf der Linie (große Dateien 90–99 %), Rest ältere Varianten (Farben, Katalogstruktur → `kart_fleet.gd`). `kart_pause_touch_scroll_regression.gd`: Pause seit 18.11. neu gestaltet, Test läuft dort nicht mehr (600 s ohne Ergebnis). | keine | Stichproben, Zeilenabgleich |
+| F37 (2026-10-10) | `chatgpt/sulafat-godot-audio-2026-10-10` | Sulafat-Stimmen nur mit Freigabe-Manifest | a – Linie hat strengere Fassung (`play_voice` mit Referenzprüfung) und neueren Generator. | keine | – |
+
+Schlüssel Aktion: **c** = fehlte und ist jetzt auf `agent/inventur-godot` (Commit), **a** = überholt
+(Beleg in der Spalte Befund), **b** = nur Belege/Doku/CI, **d** = bewusst nicht übernommen (Grund).
+Alle Tests: **PASS LOKAL** (Godot 4.6.3 headless bzw. xvfb + gl_compatibility im Container).
+**NICHT GETESTET**: Gerät (Fold7), Android-APK, CI auf GitHub, Blender-Neuerzeugung der
+übernommenen Generatoren (nur `py_compile`).
+
+### Familien mit vielen Zweigen
+
+- **F08**: `checkpoint/lumo-dream-minimap-verified-20261114-2708`, `checkpoint/lumo-kart-minimap-verified-20261114-2708`, `evidence/lumo-current-c4-kart-20261114`, `evidence/lumo-discovery-originals-20261114`, `evidence/lumo-e9a9-warnings-callgraph-909ddb52fe7b`, `evidence/lumo-garage-scroll-909ddb52fe7b`, `evidence/lumo-host-6b-native-originals-20261114`, `evidence/lumo-hub-original-20261114`, `evidence/lumo-native-847-discovery-originals-20261114`, `evidence/lumo-native-847-pr-originals-20261114`, `evidence/lumo-native-e9a9-ci-20261114`, `evidence/lumo-native-host-1e22-43596913210`, `evidence/lumo-native-upstream-057-20261114`, `integration/lumo-combined-art-2023-f131`, `integration/lumo-discovery-connections-20261114`, `integration/lumo-discovery-final-20261114`, `integration/lumo-hub-original-20261114`, `integration/lumo-live-base-reconciled-20261114`, `integration/lumo-live-c4-recovery-20261114`, `integration/lumo-live-connections-20261114`, `integration/lumo-live-dream-minimap-union-20261114`, `integration/lumo-live-runtime-20261114`, `integration/lumo-live-treasure-wisps-20261114`, `integration/lumo-magic-studio-2020-20261114`, `integration/lumo-native-village-discovery-union-20261114`, `repair/lumo-native-2020-apk-20261114`, `repair/lumo-native-complete-portals-20261114`, `repair/lumo-native-discovery-gate-20261114`, `repair/lumo-village-live-completion-20261114`
+- **F11**: `chatgpt/lumo-dream-ambience-20261114`, `chatgpt/lumo-dream-garden-source-20261114`, `chatgpt/lumo-learning-wonder-details-20261114`, `chatgpt/lumo-magic-gamehub-portals-20261114`, `chatgpt/lumo-village-native-host-20261114`, `integration/lumo-dream-paradise-20261114`
+- **F36**: `chatgpt/fold-kart-controls-2026-10-07`, `chatgpt/kart-brake-reverse-2026-10-07`, `chatgpt/kart-developer-packs-zip-2026-10-06`, `chatgpt/kart-himmelsinseln-stage2-2026-10-05`, `chatgpt/kart-rival-feedback-2026-10-07`, `chatgpt/kart-video-quality-2026-10-07`, `chatgpt/kart-video-visual-grade-2026-10-07`, `chatgpt/lumo-bauwelt-12-procedural-assets-2026-10-15`, `chatgpt/lumo-character-production-2026-10-09`, `chatgpt/lumo-complete-games-2026-10-07`, `chatgpt/lumo-face-showroom-2026-10-09`, `chatgpt/lumo-fox-expressive-face-2026-10-09`, `chatgpt/lumo-fox-eye-proportions-2026-10-09`, `chatgpt/lumo-sculpted-eye-sockets-2026-10-09`, `chatgpt/puzzle-3d-core-2026-10-07`, `chatgpt/repair-opus-handoff-2026-10-07`, `claude/continue-previous-chat-KtY7p`, `claude/kart-finish-cine`, `codex/lumo-1909-snapshot-backdrop-2026-10-09`, `codex/lumo-action-workshop-2026-10-09`, `codex/lumo-claude-game-entry-2026-10-09`, `codex/lumo-cup-finish-regression-2026-10-09`, `codex/lumo-face-continuation-2026-10-10`, `codex/lumo-game-entry-brand-2026-10-09`, `codex/lumo-holographic-kart-2026-10-03`, `codex/lumo-integrated-runtime-2026-10-08`, `codex/lumo-island-cup-2026-10-02`, `codex/lumo-kart-fleet-2026-10-08`, `codex/lumo-kart-premium-menu-2026-10-10`, `codex/lumo-kart-sunharbor-2026-10-02`, `codex/lumo-lap-session-recovery-2026-10-09`, `codex/lumo-modal-fixture-state-2026-10-08`, `codex/lumo-modal-touch-2026-10-08`, `codex/lumo-modal-viewport-repair-2026-10-09`, `codex/lumo-race-continuity-2026-10-08`, `codex/lumo-reference-design-2026-10-08`, `codex/lumo-unified-kart-2026-10-03`, `codex/lumo-visual-fidelity-2026-10-08`, `codex/opus-vehicle-regression-fix`, `codex/track-reference-import-2026-10-05`, `copilot/lumo-kart-upload-streckenpakete`, `integration/lumo-kart-opus-tracks-2026-10-05`
+
+## Commits dieser Inventur
+
+| Commit | Familie | Inhalt |
+|---|---|---|
+| `de228a0` | – | Inventur-Datei angelegt |
+| `04eb688` | F02/F05 | Kontrast-Regressionstest der Lern-Knöpfe |
+| `b0b35fd` | F09 | Kurvenpfeile als echtes V, Fuchsschweif frei vom Cockpit, Test |
+| `47a4cfe` | F11 | Traum-Ambiente pausiert unsichtbar/im Hintergrund; Generator + .blend der Traumgarten-Modelle; Hub-Prüfung Original-Lumo; Tests in `validate_project.sh` |
+| `f29102c` | F30 | Kart-Kamera exponentiell gedämpft, Test |
+| `a8e939e` | F32 | Herkunft + Zuschnitt-Werkzeug der Kart-Startbilder, Autosave-Test |
+| `9b612ae` | F34 | Leitmarken in der Sonnenhafen-Höhle |
+| `eb9bc12` | F01 | Schach-Lektion „Das schnelle Matt“, Test |
+| `e947a5c` | – | Formatierung der übernommenen Tests |
+
+## Offene Punkte
+
+- F08 Tunnel-Leitteile: funktionieren (Tunnel-Sichtfreiheit 22/22), sind aber hinter den
+  Leitplanken der Linie nicht zu sehen. Wenn gewünscht: neu platzieren (innerhalb der
+  Leitplanke würde der Fahrraum von 5,9 m Halbbreite berührt) – Gestaltungsentscheidung.
+- `tools/validate_discovery_connections.sh` verweist auf das nicht vorhandene
+  `tools/validate_live_connections.sh` (nur Kommentar; der Zweig-Stand dieses Skripts erwartet
+  alte Prüfzahlen, z. B. 170 statt jetzt 178 Ambiente-Prüfungen) – nicht übernommen.
+- gdlint/gdformat: `kart_island.gd`, `kart_vehicle.gd`, `kart_world.gd` sind auf der Linie
+  unformatiert (445/262/85 Befunde); nicht umformatiert (andere Helfer arbeiten darin), keine
+  neuen Befunde.
+
+## Archivierung
+
+Nichts wurde gelöscht oder auf GitHub geändert. Empfehlung:
+
+**1. Gefahrlos löschbar – vollständig in der Linie enthalten** (161 Zweige; gilt, solange die
+Linie `repair/lumo-quiz-run-kart-20261119` bzw. ihr Nachfolger erhalten bleibt):
+Vorfahren der Linie (159; ausgenommen und **nicht** zu löschen: `main`, die Linie selbst,
+`fable/lumo-holos-und-strecken-20261119`, `ccr-54af69f2-4uged4` – aktive Arbeits-/Hauptzweige) und inhaltlich enthaltene Zweige (2): `feat/sonnenhafen-long-flight-20261028`, `feat/sonnenhafen-water-lava-cave-20261028`.
+
+<details><summary>Liste der 159 Vorfahren</summary>
+
+`assist/lumo-kart-support-team-20261104`, `astra/lumo-animation-quality-2026-10-11`, `chatgpt/argon-lumo-review-pdf-2026-10-15`, `chatgpt/godot-launcher-anr-test-recovery-2026-10-16`, `chatgpt/kart-1986-real-scene-quality-regression-2026-10-19`, `chatgpt/kart-asphalt-material-polish-2026-10-16`, `chatgpt/kart-quality-profile-autoload-fix-2026-10-18`, `chatgpt/lumo-1977-full-race-resume-precision-2026-10-18`, `chatgpt/lumo-2016-gameplay-effects-20261111`, `chatgpt/lumo-action-stage-20261112`, `chatgpt/lumo-agent-squad-2026-10-04`, `chatgpt/lumo-ai-3d-factory-first-slice-2026-10-17`, `chatgpt/lumo-all-games-integration-20261103`, `chatgpt/lumo-argon-coordinate-audit-2026-10-17`, `chatgpt/lumo-b-sonnenhafen-viaduct-2026-10-17`, `chatgpt/lumo-b1-viaduct-ci-approved-2026-10-17`, `chatgpt/lumo-b2-sonnenhafen-long-course-2026-10-17`, `chatgpt/lumo-b3-hero-coast-ci-approved-2026-10-17`, `chatgpt/lumo-b3-long-coast-hero-scenes-2026-10-17`, `chatgpt/lumo-b4-road-nearest-kd-2026-10-17`, `chatgpt/lumo-b5-true-coastal-foam-2026-10-17`, `chatgpt/lumo-b6-clear-sonnenhafen-road-2026-10-17`, `chatgpt/lumo-b6-road-clearance-ci-approved-2026-10-17`, `chatgpt/lumo-c4-return-recovery-20261114`, `chatgpt/lumo-creative-effects-20261113`, `chatgpt/lumo-darkride-cartoon-burst-vfx-2026-10-17`, `chatgpt/lumo-darkride-first-playable-2026-10-17`, `chatgpt/lumo-darkride-lap-reactive-neon-2026-10-17`, `chatgpt/lumo-darkride-mineral-strata-artpass-2026-10-17`, `chatgpt/lumo-darkride-reduced-motion-state-guard-2026-10-18`, `chatgpt/lumo-darkride-road-guidance-2026-10-17`, `chatgpt/lumo-gate-terrain-flush-detail-2026-10-17`, `chatgpt/lumo-gemini-visual-implementation-2026-10-15`, `chatgpt/lumo-godot-1938-complete-integration-2026-10-12`, `chatgpt/lumo-godot-1938-emergency-fallback-2026-10-12`, `chatgpt/lumo-graphics-expansion-20261113`, `chatgpt/lumo-kart-adventure-20261114-a839`, `chatgpt/lumo-kart-bauwelt-integrated-2026-10-15`, `chatgpt/lumo-kart-home-20261113`, `chatgpt/lumo-kart-larger-world-preview-2026-10-15`, `chatgpt/lumo-kart-modular-parts-20261114`, `chatgpt/lumo-living-village-20261113`, `chatgpt/lumo-meshy-start-finish-gate-2026-10-17`, `chatgpt/lumo-milestone-a-drive-guards-2026-10-17`, `chatgpt/lumo-multilevel-road-projection-2026-10-17`, `chatgpt/lumo-nextgen-20261113`, `chatgpt/lumo-original-fox-jump-20261103`, `chatgpt/lumo-pro-agent-fallbacks-2026-10-05`, `chatgpt/lumo-puzzle-menu-20261113`, `chatgpt/lumo-racing-skill-resonance-gates-2026-10-18`, `chatgpt/lumo-railkit-first-track-2026-10-15`, `chatgpt/lumo-sol-portrait-menu-recovery-20261021`, `chatgpt/lumo-sonnenhafen-cinema-rock-material-2026-10-18`, `chatgpt/lumo-studio-2020-20261114`, `chatgpt/lumo-studio-20261113`, `chatgpt/lumo-sunharbor-art-20261111`, `chatgpt/lumo-technical-art-20261111`, `chatgpt/lumo-track-art-pass-20261115`, `chatgpt/lumo-village-release-repairs-20261113`, `chatgpt/lumo-winter-world-20261113`, `chatgpt/sonnenhafen-animated-crane-hoist-2026-10-17`, `chatgpt/sonnenhafen-grounding-corrugation-2026-10-17`, `chatgpt/sonnenhafen-lookout-3d-landmarks-2026-10-16`, `chatgpt/sonnenhafen-water-visual-qa-2026-10-15`, `chatgpt/sulafat-safety-on-kart-pin-2026-10-10`, `checkpoint/lumo-blender-production-20261115-f131`, `checkpoint/lumo-c4-return-independent-20261114-2708`, `checkpoint/lumo-graphics-review-20261113`, `checkpoint/lumo-puzzle-connections-20261113`, `checkpoint/lumo-treasure-504-visibility-20261114-2708`, `checkpoint/lumo-treasure-runtime-evidence-20261114-2708`, `claude/kart-2027-menu-flow-20261029`, `claude/kart-2027-physics-feel-20261029`, `claude/kart-2027-stunt-on-2006-20261106`, `claude/kart-2027-track-kit-20261029`, `claude/kart-integration-2026-10-16`, `claude/kart-landing-landscape-fit-20261022`, `claude/lumo-nextgen-combined-20261113`, `claude/sonnenhafen-harbor-crane-2026-10-17`, `codex/kart-start-light-polish-2026-10-19`, `codex/lumo-1977-cavern-production-2026-10-18`, `codex/lumo-aaa-safe-visuals-2026-10-10`, `codex/lumo-kart-reference-final-2026-10-10`, `codex/sonnenhafen-tactile-cinema-2026-10-18`, `computer/lumo-character-animation-2026-10-10`, `computer/lumo-kart-aaa-2026-10-10`, `computer/lumo-kart-animation-integration-2026-10-10`, `computer/lumo-kart-production-menu-2026-10-10`, `computer/lumo-kart-real-loading-2026-10-11`, `computer/lumo-kart-stage2-fixture-cleanup-2026-10-11`, `computer/lumo-next-level-menu-2026-10-11`, `computer/lumo-rival-reference-2026-10-10`, `computer/lumo-sulafat-reference-2026-10-10`, `computer/lumo-visual-foundation-2026-10-10`, `delivery/lumo-2051-completion`, `delivery/lumo-2052-run-course-start`, `design/sonnenhafen-precision-flight-road-20261103`, `evidence/lumo-discovery-afc0df9-20261114`, `feature/lumo-child-guided-bauwelt-20261116`, `feature/lumo-jungle-emerald-3600-20261115-a298`, `feature/lumo-nextgen-conversation-20261115-403a`, `feature/lumo-nextgen-fox-20261115`, `feature/lumo-nextgen-voice-godot-bridge-20261115`, `fix/lumo-loop-camera-effects-20261113`, `fix/lumo-native-android-capabilities-20261115`, `fix/lumo-playready-hub-20261117`, `grok/sonnenhafen-jump-cycle1`, `handoff/jungle-emerald-assets-20261115-1a6e`, `integration/astra-kart-landing-on-verified-gameplay-20261021`, `integration/kart-verified-gameplay-base-20261021`, `integration/lumo-1999-pinned-godot-20261028`, `integration/lumo-2006-native-20261103`, `integration/lumo-2023-native-complete-20261115`, `integration/lumo-2032-workshop-contrast-20261116`, `integration/lumo-2034-workshop-bauwelt-neon-20261116`, `integration/lumo-c4-connections-20261114`, `integration/lumo-complete-native-20261114-7a1`, `integration/lumo-connections-20261113`, `integration/lumo-discovery-bd-20261114`, `integration/lumo-dream-connections-20261114`, `integration/lumo-kart-2000-sonnenhafen-flight-cave-20261028`, `integration/lumo-learning-generation-20261115-ea41`, `integration/lumo-next-packaging-20261114`, `integration/lumo-playready-20261117`, `integration/lumo-reviewed-delta-20261115-58e0`, `integration/lumo-safe-area-20261113`, `integration/sonnenhafen-2027-stunts-20261030`, `lumo-2013/bauwelt-20261110`, `lumo-2013/creative-godot-20261110`, `lumo-2013/creative-repair-20261110`, `lumo-2013/guard-ci-20261110`, `lumo-2013/guard-flakes-20261110`, `lumo-2013/integration-20261110`, `lumo-2013/integration-repair-20261110`, `lumo-2014/integration-20261110`, `lumo-2040/bauwelt-20261117`, `lumo-2040/kart-20261117`, `lumo-2040/kreativ-20261117`, `lumo-2040/memory-godot-20261117`, `lumo-2040/tutor-godot-20261117`, `lumo-kart/gameplay-items-20261117`, `lumo-kart/menu-strecken-20261117`, `lumo-next/design-worlds-20261110`, `lumo-next/eleven-tracks-20261110`, `lumo-next/game-identity-2013-20261110`, `lumo-next/godot-integration-20261110`, `lumo-next/kart-integration-20261110`, `lumo-nullpunkt/integration-20261117`, `qa/sonnenhafen-2003-aerial-flight-captures-20261029`, `repair/lumo-kart-2027-pickup-continuity-20261030`, `repair/lumo-learning-workshop-3d-20261116`, `reviewbase/lumo-2023-native-d38967-20261115`, `sol/lumo-1936-unified-integration-2026-10-12`, `sol/lumo-1937-kart-quality-2026-10-12`, `sol/lumo-harbor-pavilions-1939-2026-10-14`, `sol/lumo-kart-fold-games-2026-10-12`, `sol/lumo-runtime-crystals-kart-20261021`, `support/lumo-nextgen-native-ci-contract-fixes-20261115`, `work/lumo-festival-graphics-20261114`
+
+</details>
+
+**2. Archivierbar – Inhalt überholt oder übernommen, Rest nur Belege/Doku** (vor dem
+Löschen als Tag `archiv/<name>` sichern, weil Belegordner nur dort liegen):
+die 9 Zweige ohne Spielinhalt im Rest – `chatgpt/kart-android-adb-resilience-2026-10-16`, `chatgpt/lumo-3d-agent-network-20261114`, `chatgpt/lumo-source-recovery-20261114`, `checkpoint/lumo-native-merge-20261114-2708`, `codex/lumo-godot-nextgen-audit-20261023`, `design/lumo-kart-ui-brief-20261020`, `fix/lumo-2034-3d-english-animals-20261116`, `grok/lumo-bauplan`, `lumo-next/eleven-tracks-handoff-20261110` – sowie alle Zweige der
+Familien F01–F05, F09, F11–F25, F27, F29, F30, F32–F37.
+
+**3. Archivieren, nicht löschen** (enthalten bewusst nicht übernommene, eigenständige Quellen):
+- F06: chat3-Blender-Lumo und Lernobjekte (.blend/.glb, nicht übernommen) – `chatgpt/lumo-nextgen-chat3-3d-20261115`
+- F07: wie F06 – `chatgpt/lumo-nextgen-native-blender-integration-20261115`
+- F10: wie F06 – `integration/lumo-learning-nextgen-20261115`
+- F08: `integration/lumo-combined-art-2023-f131`: Blender-Tunnel-Leitteile (GLB, .blend, Generator) – geprüft, derzeit unsichtbar – `integration/lumo-combined-art-2023-f131`
+- F26: alternative Sprungphysik (Entwurf) – `design/sonnenhafen-physical-flight-and-ramp-20261103`
+- F28: alternative Sprungphysik + Asphalt-Pfeile – `feat/sonnenhafen-physics-ramp-mainline-loop-20261103`
+- F31: Rivalen-Simulationstest zur alten Logik – `claude/kart-rival-race-craft-20261022`
+- übrige Zweige von F08: wie Gruppe 2.
+
+`origin/gh-pages` (Webseite) ist kein Entwicklungszweig und bleibt unberührt.
