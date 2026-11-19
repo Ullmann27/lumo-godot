@@ -289,7 +289,8 @@ func _run() -> void:
 			_check_subject_clear(garage, [garage._stage_header, garage.step_strip, garage.setup_left, garage.footer, garage.view_choice])
 			await _tap(garage.step_buttons[1])
 			await _check_header_touch(garage)
-			_check_showcase(garage, "DriverCard_", 3)
+			# One card per driver of the catalog (Lumo, Nova, Milo and the Frog).
+			_check_showcase(garage, "DriverCard_", load("res://scripts/games/kart_catalog.gd").DRIVERS.size())
 			await _tap(garage.step_buttons[2])
 			await _check_header_touch(garage)
 		await _shot("garage-%dx%d" % [dimensions.x, dimensions.y])
