@@ -30,6 +30,7 @@ const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
 const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
 const DOCK = preload("res://scripts/creative/build_village_dock.gd")
 const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
+const TROOP_BOARD = preload("res://scripts/creative/build_village_troop_board.gd")
 const SPACING := 5.3
 const MAX_DETAILED_FACILITIES := 96
 var model
@@ -138,6 +139,7 @@ var schedule
 var area_tabs: Dictionary = {}
 var dock_tools: Array[Control] = []
 var troop_row: HBoxContainer
+var troop_board: PanelContainer
 
 
 func _ready() -> void:
@@ -781,7 +783,7 @@ func _sync_facilities(view_focus: Vector3) -> void:
 	# Existing living-village batching: preserve every saved building while
 	# loading detailed meshes and colliders only around the camera or explorer.
 	var active: Dictionary = {}
-	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": []}
+	var silhouettes := {"homes": [], "fields": [], "services": [], "roofs": [], "trees": []}
 	for opponent in [false, true]:
 		if opponent and mode != "rival":
 			continue
@@ -822,19 +824,16 @@ func _sync_facilities(view_focus: Vector3) -> void:
 				var field := str(building.kind) in ["farm", "grain", "road"]
 				var group := "fields" if field else ("homes" if str(building.kind) == "house" else "services")
 				var height := 0.22 if field else 2.1
-				silhouettes[group].append(
-					Transform3D(
-						Basis.from_scale(Vector3(3.35, height, 3.35)),
-						at + Vector3.UP * (height * 0.5 + 0.06)
+				if not model.living_village:
+					silhouettes[group].append(
+						Transform3D(Basis.from_scale(Vector3(3.35, height, 3.35)), at + Vector3.UP * (height * 0.5 + 0.06))
 					)
-				)
-				if not field:
-					silhouettes.roofs.append(
-						Transform3D(
-							Basis.from_scale(Vector3(3.8, 1.3 if model.living_village else 0.44, 3.8)),
-							at + Vector3.UP * (height + (0.7 if model.living_village else 0.25))
+					if not field:
+						silhouettes.roofs.append(
+							Transform3D(Basis.from_scale(Vector3(3.8, 0.44, 3.8)), at + Vector3.UP * (height + 0.25))
 						)
-					)
+					continue
+				_city_silhouette(silhouettes, str(building.kind), int(building.plot), at, opponent)
 	for key in facility_nodes.keys():
 		if not active.has(key):
 			facility_nodes[key].queue_free()
@@ -844,6 +843,11 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		remove_child(previous_node)
 		previous_node.queue_free()
 	overview_nodes.clear()
+	if model.living_village:
+		_city_batches(silhouettes)
+		set_meta("detailed_facilities", facility_nodes.size())
+		set_meta("map_batches", overview_nodes.size())
+		return
 	var colors := {
 		"homes": Color("eed8a6"), "fields": Color("89ae63"),
 		"services": Color("80b7b1"), "roofs": Color("b96c50")
@@ -876,6 +880,89 @@ func _sync_facilities(view_focus: Vector3) -> void:
 		overview_nodes.append(proxy)
 	set_meta("detailed_facilities", facility_nodes.size())
 	set_meta("map_batches", overview_nodes.size())
+
+
+## Stadtbild aus der Ferne: Häuser in verschiedenen Größen, Wandfarben und
+## Dachfarben je Viertel, Dächer in wechselnder Richtung, Wegeplätze mit Baum.
+## Weiterhin ein MultiMesh je Gruppe (Zeichenaufrufe wie vorher).
+const CITY_ROOFS: Array[Color] = [
+	Color("b4573c"), Color("8e4a32"), Color("5f6b78"), Color("a8683f"), Color("7a3b2e"), Color("4f5d6b")
+]
+const CITY_WALLS: Array[Color] = [
+	Color("e9dcc2"), Color("f1e7d0"), Color("dcc7a1"), Color("e8d5b5"), Color("d9cdb8"), Color("f3ead8")
+]
+
+
+func _city_silhouette(silhouettes: Dictionary, kind: String, plot: int, at: Vector3, opponent: bool) -> void:
+	var hash_value := posmod(plot * 2654435761, 1000003)
+	var quarter := 0
+	var center := REGION.TOWN_CENTER if opponent else -REGION.TOWN_CENTER
+	var offset := Vector2(at.x - center, at.z)
+	if offset.length() > 12.0:
+		quarter = 1 + posmod(int(floor((offset.angle() + PI) / TAU * 6.0)), 6)
+	var roof: Color = CITY_ROOFS[posmod(quarter + (1 if hash_value % 7 == 0 else 0), CITY_ROOFS.size())]
+	var wall: Color = CITY_WALLS[hash_value % CITY_WALLS.size()]
+	if kind in ["farm", "grain"]:
+		var crop := Color("c7b06a") if kind == "grain" else Color("8fae5a").lerp(Color("b5a35e"), float(hash_value % 5) / 8.0)
+		silhouettes.fields.append([Transform3D(Basis.from_scale(Vector3(3.35, 0.22, 3.35)), at + Vector3.UP * 0.17), crop])
+		return
+	if kind == "road":
+		# Wegeplatz: heller Platz mit Baum (Auflockerung).
+		silhouettes.fields.append([Transform3D(Basis.from_scale(Vector3(4.2, 0.12, 4.2)), at + Vector3.UP * 0.1), Color("cdbf9e")])
+		silhouettes.trees.append([Transform3D(Basis.from_scale(Vector3(2.6, 3.0, 2.6)), at + Vector3.UP * 3.0), Color("5f8f3a")])
+		return
+	var service := kind != "house"
+	var width := 3.6 if service else 2.7 + float(hash_value % 4) * 0.2
+	var depth := 3.4 if service else 2.6 + float((hash_value / 4) % 3) * 0.25
+	var height := 2.6 if service else 1.7 + float((hash_value / 12) % 3) * 0.55
+	var turned := (hash_value / 36) % 2 == 1
+	var yaw := PI * 0.5 if turned else 0.0
+	var basis := Basis(Vector3.UP, yaw)
+	silhouettes["services" if service else "homes"].append(
+		[Transform3D(basis.scaled(Vector3(width, height, depth)), at + Vector3.UP * (height * 0.5 + 0.06)),
+			Color("d8cdb8") if service else wall]
+	)
+	silhouettes.roofs.append(
+		[Transform3D(basis.scaled(Vector3(width + 0.5, 1.1 + float(hash_value % 3) * 0.2, depth + 0.5)),
+			at + Vector3.UP * (height + 0.62)), roof.darkened(0.1) if service else roof]
+	)
+
+
+func _city_batches(silhouettes: Dictionary) -> void:
+	for group: String in silhouettes:
+		var entries: Array = silhouettes[group]
+		if entries.is_empty():
+			continue
+		var batch := MultiMesh.new()
+		batch.transform_format = MultiMesh.TRANSFORM_3D
+		batch.use_colors = true
+		var shape: PrimitiveMesh = BoxMesh.new()
+		if group == "roofs":
+			shape = PrismMesh.new()
+		elif group == "trees":
+			var crown := SphereMesh.new()
+			crown.radial_segments = 8
+			crown.rings = 5
+			crown.radius = 0.5
+			crown.height = 1.0
+			shape = crown
+		if shape is BoxMesh or shape is PrismMesh:
+			shape.size = Vector3.ONE
+		batch.mesh = shape
+		batch.instance_count = entries.size()
+		for index in range(entries.size()):
+			batch.set_instance_transform(index, entries[index][0])
+			batch.set_instance_color(index, entries[index][1])
+		var proxy := MultiMeshInstance3D.new()
+		proxy.name = "VillageMap_" + group
+		proxy.multimesh = batch
+		var paint := StandardMaterial3D.new()
+		paint.vertex_color_use_as_albedo = true
+		paint.roughness = 0.88
+		proxy.material_override = paint
+		proxy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(proxy)
+		overview_nodes.append(proxy)
 
 
 func _refresh_labels() -> void:
@@ -1505,6 +1592,45 @@ func _look_neighbor() -> void:
 	_camera_update(true)
 
 
+## Kamera über allen drei Nachbarstädten, im Hoch- wie im Querformat (Karte der
+## Nachbarn). Die Ortsschilder haben feste Bildschirmgröße und bleiben lesbar.
+func show_neighbor_towns() -> void:
+	if paused or walking or not model.living_village:
+		return
+	var low := Vector2(INF, INF)
+	var high := Vector2(-INF, -INF)
+	var margin := TERRAIN.NEIGHBOR_HALF + 8.0
+	for id in TERRAIN.NEIGHBOR_SITES:
+		var site: Vector2 = TERRAIN.NEIGHBOR_SITES[id]
+		low = Vector2(minf(low.x, site.x - margin), minf(low.y, site.y - margin))
+		high = Vector2(maxf(high.x, site.x + margin), maxf(high.y, site.y + margin))
+	var middle := (low + high) * 0.5
+	var span := high - low
+	var aspect := get_viewport().get_visible_rect().size.aspect()
+	# Die lange Seite der Nachbarschaft (Nord–Süd) liegt quer im Querformat.
+	var across := span.x
+	var along := span.y
+	orbit = 0.0
+	if aspect > 1.0:
+		orbit = PI * 0.5
+		across = span.y
+		along = span.x
+	tilt = 1.3
+	var half_fov := deg_to_rad(camera.fov * 0.5)
+	# Oben und unten liegen Leisten: nur gut zwei Drittel der Höhe zählen.
+	var need := maxf(along * 0.5 / (tan(half_fov) * 0.68), across * 0.5 / (tan(half_fov) * aspect * 0.7))
+	radius = need
+	focus = Vector3(middle.x, 0, middle.y)
+	focus.y = REGION.ground(focus.x, focus.z)
+	camera.far = maxf(camera.far, radius * 1.8)
+	_rebuild()
+	_camera_update(true)
+	var towns := PackedStringArray()
+	for entry in NEIGHBORS.NEIGHBORS:
+		towns.append(str(entry.town))
+	feedback.text = "Deine Nachbarstädte: %s. Die Schilder zeigen, was sie gerade bauen." % ", ".join(towns)
+
+
 func _pan_village(dx: int, dz: int) -> void:
 	if _transactions_blocked() or not model.living_village:
 		return
@@ -1566,7 +1692,7 @@ func _hud_rect(control: Control) -> Rect2:
 
 
 func _world_gesture_starts_on_ui(point: Vector2) -> bool:
-	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel]:
+	for control in [top, bottom, pause_panel, goal_card, camera_cluster, toast, more_panel, troop_board]:
 		if not is_instance_valid(control) or not control.is_visible_in_tree():
 			continue
 		var local: Vector2 = control.get_global_transform_with_canvas().affine_inverse() * point
@@ -1629,6 +1755,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _pick_plot(point: Vector2) -> void:
+	# Banner oder Formation eines Verbands angetippt: Tafel für dieses Tor.
+	if model.living_village and is_instance_valid(guards_view) and dock != null and dock.is_open("schuetzen"):
+		var post: String = guards_view.post_at_screen(camera, point)
+		if not post.is_empty():
+			guard_post = post
+			open_troop_board()
+			return
 	var origin := camera.project_ray_origin(point)
 	var query := PhysicsRayQueryParameters3D.create(
 		origin, origin + camera.project_ray_normal(point) * 180, 1
@@ -1686,6 +1819,8 @@ func _camera_update(immediate := false) -> void:
 	if model.living_village:
 		camera.position.y = maxf(camera.position.y, REGION.ground(camera.position.x, camera.position.z) + 3.0)
 	camera.look_at(look)
+	if model.living_village:
+		ATMOSPHERE.set_view_distance(self, snappedf(target_radius, 5.0))
 	if is_instance_valid(village_region):
 		village_region.update_focus(focus)
 	if is_instance_valid(village_residents):
@@ -2234,6 +2369,11 @@ func _build_village_ui() -> void:
 	_dock_tool(transaction_buttons[4], "versorgen", true)
 	_dock_tool(transaction_buttons[5], "versorgen", true)
 	_dock_tool(transaction_buttons[2], "nachbarn")
+	var towns_button := VHUD.button("Nachbarstädte zeigen", _from_more.bind(show_neighbor_towns), 190, "teal", 15)
+	towns_button.name = "VillageNeighborTowns"
+	towns_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	_dock_tool(towns_button, "nachbarn")
+	actions.add_child(towns_button)
 	var neighbor_button := VHUD.button("Nachbarn", _from_more.bind(_neighbors_dialog), 110, "teal", 15)
 	neighbor_button.name = "VillageNeighbors"
 	neighbor_button.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -2250,6 +2390,10 @@ func _build_village_ui() -> void:
 	troop_row.add_theme_constant_override("separation", 8)
 	_dock_tool(troop_row, "schuetzen")
 	actions.add_child(troop_row)
+	var board_button := VHUD.button("Truppen & Verbände", _from_more.bind(open_troop_board), 190, "rose", 15)
+	board_button.name = "VillageTroopBoard"
+	board_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	troop_row.add_child(board_button)
 	var guard_quick := VHUD.button("Wache ausbilden", _quick_guard, 150, "cream", 15)
 	guard_quick.name = "VillageTroop_wache"
 	guard_quick.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -2268,7 +2412,8 @@ func _build_village_ui() -> void:
 	field_button = VHUD.button("Felder ziehen", _from_more.bind(_toggle_field_drag), 150, "teal", 15)
 	field_button.name = "VillageFieldDrag"
 	field_button.mouse_filter = Control.MOUSE_FILTER_PASS
-	more_box.add_child(field_button)
+	_dock_tool(field_button, "versorgen", true)
+	actions.add_child(field_button)
 	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	more_box.add_child(expand_button)
@@ -2305,6 +2450,10 @@ func _build_village_ui() -> void:
 		card.set_meta("dock_section", DOCK.section_of_kind(kind))
 		card.set_meta("dock_card", kind)
 	_build_area_tabs(dock_box)
+	troop_board = TROOP_BOARD.new()
+	troop_board.setup(self)
+	troop_board.hide()
+	safe_ui.add_child(troop_board)
 	pause_panel = PanelContainer.new()
 	pause_panel.add_theme_stylebox_override("panel", _panel())
 	pause_panel.custom_minimum_size = Vector2(300, 0)
@@ -2431,6 +2580,8 @@ func _layout_village_hud(size: Vector2) -> void:
 		)
 	if is_instance_valid(evening_button):
 		evening_button.text = "☀" if time_of_day > 0.6 else "☾"
+	if is_instance_valid(troop_board) and troop_board.visible:
+		troop_board.fit(Rect2(Vector2(gap, top_end + gap), Vector2(size.x - gap * 2.0, maxf(200.0, dock_top - top_end - gap * 2.0))))
 
 
 func _toggle_more() -> void:
@@ -2984,6 +3135,8 @@ func _defense_dialog() -> void:
 		_village_caption(body, "%s kommt in %d Tag%s." % [raids.threat_title(pending), days, "" if days == 1 else "en"], 19)
 		_lumo_says(body, "%s %s" % [str(pending.reason), str(forecast.advice)])
 		_village_caption(body, GUARDS.advice(str(pending.threat)))
+		if not str(forecast.get("army", "")).is_empty():
+			_village_caption(body, str(forecast.army), 17)
 		# Wer kommt, warum – und die EINE einfache Handlung, die jetzt hilft.
 		var help := "%s %s" % [SCHEDULE.stage_change(int(pending.level)), SCHEDULE.simple_help(raids, model)]
 		_village_caption(body, help.strip_edges(), 17)
@@ -3225,80 +3378,37 @@ func _field_drag_finish() -> void:
 func _open_guard_units(dialog: Window) -> void:
 	if is_instance_valid(dialog):
 		dialog.queue_free()
-	_reopen_guard_units.call_deferred()
+	open_troop_board()
 
 
-func _reopen_guard_units() -> void:
-	await get_tree().process_frame
-	if not is_instance_valid(village_window):
-		_guard_units_dialog()
-
-
-## Verbände mit Gesamtzahl, Standort und Versorgung; Ausbilden in 1/10/100.
+## Früherer Verbände-Dialog: öffnet jetzt die große Tafel im Bereich „Schützen“.
 func _guard_units_dialog() -> void:
-	if raids == null:
+	open_troop_board()
+
+
+func open_troop_board() -> void:
+	if raids == null or not is_instance_valid(troop_board) or _transactions_blocked():
 		return
-	var view: Dictionary = _village_dialog("Wachen-Verbände")
-	if view.is_empty():
+	if dock != null and dock.is_open("schuetzen"):
+		select_dock_section("schuetzen")
+	if is_instance_valid(more_panel):
+		more_panel.hide()
+	troop_board.show()
+	troop_board.refresh()
+	_layout()
+
+
+func troop_board_closed() -> void:
+	_layout()
+
+
+## Handlung aus der Tafel (Ausbilden, Verlegen, Teilen, Entlassen, Standort).
+func troop_board_action(action: String, argument: String, number: int) -> void:
+	if action.begins_with("train_"):
+		guard_kind = action.trim_prefix("train_")
+		_guard_action("train", guard_post, number, null)
 		return
-	var body: VBoxContainer = view.body
-	var dialog: Window = view.dialog
-	dialog.name = "GuardUnitsDialog"
-	var info: Dictionary = GUARDS.overview(model, raids)
-	_village_caption(body, "%d Soldaten in %d Verbänden · noch %d Plätze" % [int(info.total), int(info.units), int(info.room)], 18)
-	_village_caption(body, "Soldaten essen wie alle Bewohner, Pferde 1 mehr: %d Portionen am Tag. %s" % [int(info.food_per_day), str(info.reserve_text)])
-	if not raids.pending.is_empty():
-		_lumo_says(body, GUARDS.advice(str(raids.pending.threat)))
-	_village_caption(body, "Welche Truppe?", 17)
-	var kinds := HFlowContainer.new()
-	kinds.add_theme_constant_override("h_separation", 6)
-	kinds.add_theme_constant_override("v_separation", 6)
-	body.add_child(kinds)
-	for kind in GUARDS.TROOPS.KINDS:
-		var picked: bool = kind == guard_kind
-		var kind_button := _button(("● " if picked else "") + "%s %d" % [GUARDS.TROOPS.title(kind), int(info.kinds[kind])], _guard_action.bind("kind", kind, 0, dialog), 120)
-		kind_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		kinds.add_child(kind_button)
-	_village_caption(body, str(GUARDS.TROOPS.TYPES[guard_kind].why))
-	var site := GUARDS.TROOPS.site_needed(guard_kind)
-	if not site.is_empty() and not GUARDS.has_site(raids, guard_kind):
-		var spec: Dictionary = GUARDS.TROOPS.SITES[site]
-		_raid_button(body, "%s bauen: %s" % [str(spec.title), _cost_text(spec.cost)], _guard_action.bind("site", site, 0, dialog), model._affords(model._player, spec.cost))
-	_village_caption(body, "Neue Soldaten stellen sich hier auf:", 17)
-	var posts := HFlowContainer.new()
-	posts.add_theme_constant_override("h_separation", 6)
-	posts.add_theme_constant_override("v_separation", 6)
-	body.add_child(posts)
-	for post in GUARDS.POST_ORDER:
-		var chosen: bool = post == guard_post
-		var post_button := _button(("● " if chosen else "") + str(GUARDS.POSTS[post]), _guard_action.bind("post", post, 0, dialog), 96)
-		post_button.mouse_filter = Control.MOUSE_FILTER_PASS
-		posts.add_child(post_button)
-	for count in GUARDS.STEPS:
-		var error := GUARDS.train_error(model, raids, int(count), guard_post, guard_kind)
-		_raid_button(body, "%d %s ausbilden: %s" % [count, GUARDS.TROOPS.title(guard_kind, int(count)), _cost_text(GUARDS.TROOPS.cost(guard_kind, int(count)))], _guard_action.bind("train", guard_post, int(count), dialog), error.is_empty())
-		if not error.is_empty() and int(count) > 1:
-			_village_caption(body, "  " + error)
-			break
-	_village_caption(body, "Deine Verbände", 18)
-	for unit in raids.units:
-		var id := int(unit.id)
-		_village_caption(body, "%s · %d %s · %s" % [str(unit.name), int(unit.size), GUARDS.TROOPS.title(str(unit.type), int(unit.size)), str(GUARDS.POSTS[str(unit.post)])], 16)
-		var row := HFlowContainer.new()
-		row.add_theme_constant_override("h_separation", 6)
-		body.add_child(row)
-		var next_post: String = GUARDS.POST_ORDER[(GUARDS.POST_ORDER.find(str(unit.post)) + 1) % GUARDS.POST_ORDER.size()]
-		for spec in [
-			["Nach %s" % str(GUARDS.POSTS[next_post]), "move", next_post, id],
-			["Teilen", "split", "", id],
-			["1 entlassen", "dismiss", "", id],
-		]:
-			var action_button := _button(str(spec[0]), _guard_action.bind(str(spec[1]), str(spec[2]), int(spec[3]), dialog), 120)
-			action_button.mouse_filter = Control.MOUSE_FILTER_PASS
-			action_button.disabled = str(spec[1]) == "split" and int(unit.size) < 2
-			row.add_child(action_button)
-	if raids.units.size() > 1:
-		_raid_button(body, "Alle Verbände je Standort zusammenlegen", _guard_action.bind("regroup", "", 0, dialog))
+	_guard_action(action, argument, number, null)
 
 
 func _guard_action(action: String, argument: String, number: int, dialog: Window) -> void:
@@ -3336,4 +3446,5 @@ func _guard_action(action: String, argument: String, number: int, dialog: Window
 	_save()
 	if is_instance_valid(dialog):
 		dialog.queue_free()
-	_reopen_guard_units.call_deferred()
+	if is_instance_valid(troop_board) and troop_board.visible:
+		troop_board.refresh()

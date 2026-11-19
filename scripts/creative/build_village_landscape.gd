@@ -187,26 +187,35 @@ func paint_town(center_x: float, unlocked: Array, built: Dictionary, ring: int) 
 	var half := float(ring) * SPACING + SPACING * 0.5
 	var area := Rect2(center_x - half - 2.0, -half - 2.0, half * 2.0 + 4.0, half * 2.0 + 4.0)
 	_fill(area, Color(0, 0, 0))
-	# Gassen rund um jedes erschlossene Feld (nie durch Fluss oder Fels),
-	# die beiden Hauptstraßen durch die Ortsmitte breiter.
+	# Gassen nur dort, wo gebaut ist (und die beiden Hauptstraßen durch die
+	# Ortsmitte, breiter): freie Bauplätze bleiben Wiese statt Schachbrett.
+	var homes: Dictionary = {}
+	for point: Vector2 in built:
+		homes[Vector2i(roundi(point.x * 10.0), roundi(point.y * 10.0))] = true
 	for point: Vector2 in unlocked:
+		var here := homes.has(Vector2i(roundi(point.x * 10.0), roundi(point.y * 10.0)))
 		for side in [-1.0, 1.0]:
 			var lane_x: float = point.x + side * SPACING * 0.5
 			var lane_z: float = point.y + side * SPACING * 0.5
 			var main_x := absf(lane_x - center_x) < 0.1 + SPACING * 0.5 and absf(lane_x - center_x) > 0.1
 			var main_z := absf(lane_z) < 0.1 + SPACING * 0.5 and absf(lane_z) > 0.1
+			var next_x := homes.has(Vector2i(roundi((point.x + side * SPACING) * 10.0), roundi(point.y * 10.0)))
+			var next_z := homes.has(Vector2i(roundi(point.x * 10.0), roundi((point.y + side * SPACING) * 10.0)))
 			var wide_x := 2.2 if main_x else 1.2
 			var wide_z := 2.2 if main_z else 1.2
-			_fill(Rect2(lane_x - wide_x * 0.5, point.y - SPACING * 0.5 - 0.6, wide_x, SPACING + 1.2),
-				Color(1.0 if main_x else 0.75, 0, 0))
-			_fill(Rect2(point.x - SPACING * 0.5 - 0.6, lane_z - wide_z * 0.5, SPACING + 1.2, wide_z),
-				Color(1.0 if main_z else 0.75, 0, 0))
+			if main_x or here or next_x:
+				_fill(Rect2(lane_x - wide_x * 0.5, point.y - SPACING * 0.5 - 0.6, wide_x, SPACING + 1.2),
+					Color(1.0 if main_x else 0.75, 0, 0))
+			if main_z or here or next_z:
+				_fill(Rect2(point.x - SPACING * 0.5 - 0.6, lane_z - wide_z * 0.5, SPACING + 1.2, wide_z),
+					Color(1.0 if main_z else 0.75, 0, 0))
 	for point: Vector2 in unlocked:
 		var cell := Rect2(point.x - 2.3, point.y - 2.3, 4.6, 4.6)
 		if built.has(point):
 			_fill(cell.grow(-0.15), Color(0, 0.85, 0))
 		else:
-			_fill(cell.grow(-0.6), Color(0, 0.32, 0))
+			# Nur eine leise Spur (abgemähte Wiese), kein helles Quadrat.
+			_fill(cell.grow(-1.1), Color(0, 0.24, 0))
 	# Landstraße vom Ortsrand zur mittleren Brücke (solange der Ort diesseits
 	# des Flusses endet).
 	var edge := center_x + (half if center_x < 0 else -half)

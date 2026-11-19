@@ -13,13 +13,13 @@ const SHADOWS := {
 const DAY := {
 	"sun_color": Color("fff1da"), "sun_energy": 1.75, "sun_pitch": -38.0, "sun_yaw": -32.0,
 	"sky_top": Color("2f6fb4"), "sky_horizon": Color("b9d4e4"), "ground_horizon": Color("a7bccb"),
-	"ambient": Color("aac2da"), "ambient_energy": 0.32, "fog": Color("a4bfd6"), "fog_density": 0.0016,
+	"ambient": Color("aac2da"), "ambient_energy": 0.32, "fog": Color("a4bfd6"), "fog_density": 0.0009,
 	"exposure": 0.86, "night": 0.0, "fill": 0.18,
 }
 const EVENING := {
 	"sun_color": Color("ffa868"), "sun_energy": 1.05, "sun_pitch": -15.0, "sun_yaw": -68.0,
 	"sky_top": Color("34407a"), "sky_horizon": Color("f2a072"), "ground_horizon": Color("8c6f86"),
-	"ambient": Color("8a8fbf"), "ambient_energy": 0.42, "fog": Color("b88f96"), "fog_density": 0.0024,
+	"ambient": Color("8a8fbf"), "ambient_energy": 0.42, "fog": Color("b88f96"), "fog_density": 0.0016,
 	"exposure": 1.05, "night": 1.0, "fill": 0.12,
 }
 
@@ -40,7 +40,7 @@ static func apply(root: Node3D, tier: String) -> void:
 	env.fog_aerial_perspective = 0.06
 	env.fog_sun_scatter = 0.18
 	env.fog_height = 6.0
-	env.fog_height_density = 0.0 if tier == "low" else 0.012
+	env.fog_height_density = 0.0 if tier == "low" else 0.006
 	env.glow_enabled = tier != "low"
 	env.glow_intensity = 0.35
 	env.glow_strength = 0.9
@@ -83,7 +83,7 @@ static func set_time(root: Node3D, t: float) -> void:
 	env.ambient_light_color = (DAY.ambient as Color).lerp(EVENING.ambient, k)
 	env.ambient_light_energy = lerpf(DAY.ambient_energy, EVENING.ambient_energy, k)
 	env.fog_light_color = (DAY.fog as Color).lerp(EVENING.fog, k)
-	env.fog_density = lerpf(DAY.fog_density, EVENING.fog_density, k)
+	env.fog_density = lerpf(DAY.fog_density, EVENING.fog_density, k) * float(root.get_meta("village_fog_scale", 1.0))
 	env.tonemap_exposure = lerpf(DAY.exposure, EVENING.exposure, k)
 	if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
 		var sky := env.sky.sky_material as ProceduralSkyMaterial
@@ -101,3 +101,13 @@ static func set_time(root: Node3D, t: float) -> void:
 	ART.material().set_shader_parameter("night", k)
 	root.set_meta("village_time_of_day", t)
 	root.set_meta("village_night", k)
+
+
+## Aus großer Höhe (Übersicht, Karte der Nachbarstädte) weniger Dunst: der
+## Nebel wird mit dem Kameraabstand dünner, damit Schilder und Städte klar bleiben.
+static func set_view_distance(root: Node3D, distance: float) -> void:
+	var scale := clampf(110.0 / maxf(distance, 1.0), 0.2, 1.0)
+	if is_equal_approx(scale, float(root.get_meta("village_fog_scale", 1.0))):
+		return
+	root.set_meta("village_fog_scale", scale)
+	set_time(root, float(root.get_meta("village_time_of_day", 0.35)))

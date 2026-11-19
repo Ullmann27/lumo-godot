@@ -277,7 +277,7 @@ static func dismiss(raids, id: int, count: int, model = null) -> String:
 const SMALL_FORCE: int = 20
 
 
-static func defense(raids, threat: String) -> float:
+static func defense(raids, threat: String, side := "", reserve_share := 1.0) -> float:
 	var away := int(raids.expedition.get("guards", 0))
 	var units: Array = raids.units
 	if away > 0:
@@ -290,9 +290,16 @@ static func defense(raids, threat: String) -> float:
 				var take := mini(away, int(unit.size))
 				unit.size = int(unit.size) - take
 				away -= take
-	var points: float = TROOPS.points(
-		units, str(THREAT_ATTACKER.get(threat, "pluenderer")), str(THREAT_SIDE.get(threat, "sued")), raids.parts
-	)
+	var attacker := str(THREAT_ATTACKER.get(threat, "pluenderer"))
+	if not side.is_empty():
+		# Ein großes Heer an mehreren Toren (build_village_attack_scale.gd): Verbände
+		# zählen an ihrem Tor, die Reserve der Stadtmitte teilt sich auf.
+		var at_side := 0.0
+		for unit in units:
+			var share := reserve_share if str(unit.get("post", "mitte")) == "mitte" else 1.0
+			at_side += TROOPS.unit_points(unit, attacker, side, raids.parts) * share
+		return at_side
+	var points: float = TROOPS.points(units, attacker, str(THREAT_SIDE.get(threat, "sued")), raids.parts)
 	# Ein kleines Dorf muss noch nicht aufstellen: bis SMALL_FORCE Wachen zählt jede
 	# mindestens so viel wie früher die einfache Wache. Erst größere Truppen leben
 	# von Art, Aufstellung und Schutzbauten.
