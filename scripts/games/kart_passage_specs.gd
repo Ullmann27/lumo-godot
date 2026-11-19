@@ -14,12 +14,14 @@ const SPECS: Dictionary = {
 			"theme": "ice",
 			# Auf dem geraden Hochplateau, gut 14 s nach dem Start: das Feld ist entzerrt,
 			# die Anfahrt gerade. (Vorher 100 m hinter der Startlinie in einer Kurve.)
-			"plaza_start": 716.0,
-			"deck_start": 740.0,
-			"deck_end": 764.0,
-			"exit_end": 805.0,
+			# Vorplatz, Rettungspunkt und Deck liegen im selben Streckenabschnitt (Grenze bei
+			# 745,9 m) und auf dem ebensten Stück des Plateaus (Steigung <= 3 %).
+			"plaza_start": 746.0,
+			"deck_start": 766.0,
+			"deck_end": 790.0,
+			"exit_end": 831.0,
 			"deck_width": 3.6,
-			"respawn": 728.0,
+			"respawn": 754.0,
 			"sign": "EISBRÜCKE\nLangsam ausrichten",
 			"approach_text": "Eisbrücke! Bremsen, ausrichten, langsam hinüber.",
 		},
@@ -224,10 +226,11 @@ const SPECS: Dictionary = {
 			"min_speed": 18.0,
 			# Auf der langen Geraden in Rundenmitte (vorher 104 m hinter der Startlinie,
 			# wo das ganze Feld gleichzeitig ankam).
-			"wait_start": 990.0,
-			"wait_line": 1018.0,
-			"plane": 1026.0,
-			"respawn": 1000.0,
+			# Wartezone, Rettungspunkt und Strom im selben Streckenabschnitt (Grenze bei 1004 m).
+			"wait_start": 1012.0,
+			"wait_line": 1040.0,
+			"plane": 1048.0,
+			"respawn": 1022.0,
 			"lat_min": -5.0,
 			"lat_max": -0.8,
 			"open": 4.2,
