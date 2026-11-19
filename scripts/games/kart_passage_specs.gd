@@ -178,6 +178,21 @@ const SPECS: Dictionary = {
 			"approach_text": "Drei Zuckerwellen: eins – zwei – drei, schön im Rhythmus!",
 		},
 	],
+	"galaxy_ringway":
+	[
+		{
+			"kind": "flow",
+			"id": "planetenring",
+			"name": "Planeten-Doppelkurve",
+			"theme": "galaxy",
+			"reserve": false,
+			"zone_start": 565.0,
+			"zone_end": 745.0,
+			"apexes": [[588.0, -1.0], [668.0, -1.0], [722.0, -1.0]],
+			"sign": "PLANETENRING\nInnen eng – außen ruhig",
+			"approach_text": "Um den Planeten: innen eng, außen ruhig – schau zum Ausgang!",
+		},
+	],
 	"volcano_night":
 	[
 		{
