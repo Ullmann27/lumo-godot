@@ -89,7 +89,8 @@ var _road_kd_count: int = 0
 var _rng := RandomNumberGenerator.new()
 
 func build(
-	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false
+	lightweight: bool, selected_track: String = "sonnenhafen", geometry_only: bool = false,
+	spread_frames: bool = false
 ) -> void:
 	_piece_markers = TRACK_PIECES.collect_markers(self)
 	for child in get_children():
@@ -114,7 +115,10 @@ func build(
 	track_name = definition.name
 	road_width = float(definition.get("road_width_m", WIDTH))
 	_rng.seed = definition.seed
-	DETAIL_LAYER.schedule(self)  # Detail-Schicht (Verwitterung, Kleinteile, Publikum, Licht, Start/Ziel-Bühne) – läuft deferred, also nach dem gesamten Weltaufbau aller Zweige.
+	# Deferred details must see the finished scenery, including on a staged build.
+	var staged_classic := spread_frames and track_id in ["zauberwald", "sonnenhafen"]
+	if not staged_classic:
+		DETAIL_LAYER.schedule(self)
 	_make_curve()
 	jump={}
 	loop_layout={}
@@ -181,6 +185,8 @@ func build(
 	STUNT.prepare(self)
 	_terrain()
 	_road()
+	if staged_classic:
+		await get_tree().process_frame
 	match track_id:
 		"zauberwald":
 			_forest()
@@ -190,6 +196,8 @@ func build(
 			_holo_city_dressing()
 		_: _harbour()
 	_navigation()
+	if staged_classic:
+		await get_tree().process_frame
 	if track_id=="sonnenhafen":
 		_grand_prix_dressing()
 		HARBOR_AQUARIUM.build(self)
@@ -203,6 +211,8 @@ func build(
 		GENERATION.build(self)
 		if not geometry_only:
 			DARK_RIDE.build(self)
+	if staged_classic:
+		await get_tree().process_frame
 	LANDMARKS.build(self)
 	FLEET_DRESSING.build(self)
 	TRACK_DETAIL.build(self)
@@ -210,10 +220,14 @@ func build(
 	ADVENTURE_TUNNELS.build(self)
 	if not geometry_only:
 		ADVENTURE_DRESSING.build(self)
+	if staged_classic:
+		await get_tree().process_frame
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)
 		SCENERY.build(self)
+	if staged_classic:
+		DETAIL_LAYER.schedule(self)
 
 func _make_curve() -> void:
 	if track_id == JUNGLE.ID:

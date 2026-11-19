@@ -92,25 +92,33 @@ const SOLID_KINDS: Array[String] = [
 const TREE_KINDS: Array[String] = ["tree0", "tree1", "tree2", "tree0_far", "tree1_far", "tree2_far", "giant", "palm0", "palm1"]
 
 
-func build(world, layout, lightweight: bool) -> void:
+func build(world, layout, lightweight: bool, spread_frames: bool = false) -> void:
 	path = world
 	level = layout
 	low = lightweight
 	tier = 0 if low else (2 if _profile() == "high" else 1)
 	_rng.seed = 20261118
 	_make_materials()
+	if spread_frames:
+		await get_tree().process_frame
 	_make_kinds()
 	_index_path()
 	_environment()
 	_decks()
+	if spread_frames:
+		await get_tree().process_frame
 	_terrain()
 	_cave()
 	_bonus_hall()
+	if spread_frames:
+		await get_tree().process_frame
 	_vegetation()
 	_structures()
 	_decor()
 	_fauna()
 	_background()
+	if spread_frames:
+		await get_tree().process_frame
 	_flush()
 	_ambient_particles()
 	_apply_mood(0.0)

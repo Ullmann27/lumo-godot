@@ -108,7 +108,7 @@ func _ready() -> void:
 	if not child_key.is_empty() and child_key != "standalone":
 		child_scope = child_key.sha256_text()
 	reduced_motion = bool(options.get("reduceAnimations", false))
-	lightweight = SettingsStore.get_profile() == "low"
+	lightweight = SettingsStore.get_profile() == "low" or PerformanceManager.software_rendered_mobile()
 	result_id = HostBridge.new_result_id()
 	_previous_auto_accept_quit = get_tree().auto_accept_quit
 	_previous_quit_on_go_back = get_tree().quit_on_go_back
@@ -118,7 +118,7 @@ func _ready() -> void:
 	var wanted: int = COURSES.index_of(str(options.get("runCourse", "")))
 	if wanted >= 0 and bool(options.get("runAutoStart", false)):
 		SceneRouter.launch_options.erase("runAutoStart")
-		start_course(wanted, false)
+		_on_course_chosen(wanted, false)
 	else:
 		_show_start()
 	print("[LumoRun] ready: grade=%d subject=%s courses=%d" % [grade, subject, COURSES.count()])
@@ -208,28 +208,47 @@ func _on_course_chosen(index: int, with_save: bool) -> void:
 	if phase != Phase.MENU:
 		return
 	phase = Phase.LOADING
+	# Finish dispatching the click before removing its focused Button.
+	_begin_course_load.call_deferred(index, with_save)
+
+
+func _begin_course_load(index: int, with_save: bool) -> void:
+	if not is_inside_tree() or phase != Phase.LOADING:
+		return
 	var course: Dictionary = COURSES.course(index)
 	menus.open("loading", {"name": course.name, "accent": course.accent})
-	# Let the loading card be drawn before the world is built in one go.
+	_release_stage()
+	# queue_free runs at the end of the frame. Give the loading panel a frame
+	# of its own before allocating the world and the second rigged fox.
 	await get_tree().process_frame
 	await get_tree().process_frame
 	if is_inside_tree() and phase == Phase.LOADING:
-		start_course(index, with_save)
+		await start_course(index, with_save, true)
 
 
-## Builds the course and puts Lumo on the start line (or at the saved checkpoint).
-func start_course(index: int, with_save: bool) -> void:
+func _release_stage() -> void:
 	if is_instance_valid(stage):
 		remove_child(stage)
 		stage.queue_free()
 		stage = null
+
+
+## Direct simulations can build synchronously. Interactive starts and restarts
+## yield between expensive stages while the loading panel remains responsive.
+func start_course(index: int, with_save: bool, spread_frames: bool = false) -> void:
+	_release_stage()
 	course_index = clampi(index, 0, COURSES.count() - 1)
 	var course: Dictionary = COURSES.course(course_index)
 	var load_started: int = Time.get_ticks_msec()
 	world = PATH_WORLD.new() if bool(course.get("path", false)) else WORLD.new()
 	world.name = "RunWorld"
 	add_child(world)
-	world.build(lightweight, str(course.track))
+	if bool(course.get("path", false)):
+		await world.build(lightweight, str(course.track), spread_frames)
+	else:
+		await world.build(lightweight, str(course.track), false, spread_frames)
+	if spread_frames:
+		await get_tree().process_frame
 	if world.find_children("*", "WorldEnvironment", true, false).is_empty():
 		# Dschungelherz brings no sky or sun of its own; give it the daylight that
 		# its track definition describes instead of the project's default dusk.
@@ -249,6 +268,8 @@ func start_course(index: int, with_save: bool) -> void:
 	props.player = player
 	if props.jungle != null:
 		props.jungle.track = track
+	if spread_frames:
+		await get_tree().process_frame
 	actor = ACTOR.new()
 	actor.name = "Lumo"
 	add_child(actor)
@@ -269,6 +290,8 @@ func start_course(index: int, with_save: bool) -> void:
 		audio = AUDIO.new()
 		audio.name = "RunAudio"
 		add_child(audio)
+	if spread_frames:
+		await get_tree().process_frame
 	audio.start_course(str(course.id), plan.adventure)
 	PerformanceManager.set_profile(PerformanceManager.current_profile, false)
 	session_path = _path(course_index)
@@ -348,7 +371,10 @@ func advance(delta: float) -> void:
 
 
 func _step(delta: float) -> void:
+	var previous_elapsed := elapsed
 	elapsed += delta
+	if previous_elapsed < 1.0 and elapsed >= 1.0:
+		print("[LumoRun] running %s s=%.2f" % [COURSES.course(course_index).id, player.s])
 	# The adventure path plays PATH_TIME_SCALE times faster than it was laid out
 	# (see run_tuning.gd), in steps that are no longer than before.
 	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else 1.0

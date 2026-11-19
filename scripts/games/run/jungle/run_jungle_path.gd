@@ -28,7 +28,7 @@ var _ground := PackedFloat32Array()
 var _gaps: Array[Vector2] = []
 
 
-func build(lightweight: bool, _track: String = "") -> void:
+func build(lightweight: bool, _track: String = "", spread_frames: bool = false) -> void:
 	low_detail = lightweight
 	level = LEVEL.make()
 	length = float(level.length)
@@ -39,7 +39,7 @@ func build(lightweight: bool, _track: String = "") -> void:
 	scenery = SCENERY.new()
 	scenery.name = "JungleScenery"
 	add_child(scenery)
-	scenery.build(self, level, lightweight)
+	await scenery.build(self, level, lightweight, spread_frames)
 
 
 ## The kart worlds light themselves here; the scenery has already done it.

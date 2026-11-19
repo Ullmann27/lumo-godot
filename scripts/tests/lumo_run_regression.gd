@@ -171,6 +171,17 @@ func _tap(control: Control) -> void:
 		await process_frame
 
 
+func _wait_for_course(game, menu_stage: WeakRef = null) -> void:
+	for frame in range(90):
+		if game.world != null and menu_stage != null:
+			_check(menu_stage.get_ref() == null, "the menu rig is freed before world construction")
+			menu_stage = null
+		if game.phase != game.Phase.LOADING:
+			return
+		await process_frame
+	_check(false, "interactive course start completed within 90 frames")
+
+
 func _button(game, path: String) -> Button:
 	return game.menus.get_node_or_null(path) as Button
 
@@ -286,10 +297,10 @@ func _test_start_screen_and_controls() -> void:
 			_check(_find(card, "Resume") == null, "course card %d offers no resume without a save" % index)
 	# Choose Zauberwald with a real tap on its button.
 	var chosen: Button = _find(game.menus.get_node("Course1"), "Start") as Button
+	var old_stage: WeakRef = weakref(game.stage)
 	await _tap(chosen)
 	_check(game.phase in [game.Phase.LOADING, game.Phase.COUNTDOWN], "tap on Los! starts loading")
-	for _i in range(8):
-		await process_frame
+	await _wait_for_course(game, old_stage)
 	_check(game.phase == game.Phase.COUNTDOWN and game.course_index == 1, "course is built after loading")
 	_check(str(game.world.track_id) == "zauberwald", "Zauberwald runs through the zauberwald world")
 	_check(not is_instance_valid(game.stage), "menu backdrop is released when the course starts")
@@ -719,8 +730,7 @@ func _test_learning_and_save() -> void:
 	_check(_find(game.menus.get_node("Course0"), "Resume") == null, "other courses have no save")
 	if resume != null:
 		await _tap(resume)
-	for _i in range(8):
-		await process_frame
+	await _wait_for_course(game)
 	game.set_process(false)
 	_check(game.phase == game.Phase.COUNTDOWN and game.course_index == 1, "continue rebuilds the course")
 	_check(game.track.checkpoint == stops[1], "resume starts at the saved checkpoint")
