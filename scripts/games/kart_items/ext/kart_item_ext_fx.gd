@@ -74,6 +74,27 @@ static func glow(
 	return material
 
 
+## Alpha-gemischt (nicht additiv): bleibt auf hellem Schnee/Himmel sichtbar.
+static func soft(
+	color: Color, billboard: bool = false, textured: bool = true
+) -> StandardMaterial3D:
+	var key: String = "soft/%s/%s/%s" % [color.to_html(), str(billboard), str(textured)]
+	if _cache.has(key):
+		return _cache[key]
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	material.albedo_color = color
+	material.vertex_color_use_as_albedo = true
+	if billboard:
+		material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	if textured:
+		material.albedo_texture = soft_dot()
+	_cache[key] = material
+	return material
+
+
 ## Eigene (nicht geteilte) Kopie, wenn ein Effekt die Farbe/Alpha pro Bild ändert.
 static func glow_unique(
 	color: Color, billboard: bool = false, texture: Texture2D = null

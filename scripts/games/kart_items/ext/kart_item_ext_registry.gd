@@ -8,9 +8,15 @@ extends RefCounted
 
 const EFFECT_DIR := "res://scripts/games/kart_items/ext/effects/"
 ## Verhalten -> Verhaltensdatei (ohne Pfad und Endung).
-const BEHAVIOURS: Dictionary = {}
+const BEHAVIOURS: Dictionary = {
+	"lightning_strike": "thunder_star",
+}
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
-const SOUNDS: Array[String] = ["ext_warning"]
+const SOUNDS: Array[String] = [
+	"ext_warning",
+	"thunder_charge",
+	"thunder_strike",
+]
 const ICON_DIR := "res://assets/kart/hud/items/"
 
 

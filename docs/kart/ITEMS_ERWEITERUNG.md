@@ -62,3 +62,14 @@ die vorhandene Fahrbahnhöhe), `incoming()`/`lane_bias()` (Lichtbogen-Falle wie 
   Bewegung halbiert und verzichtet auf Flackern/Drehen – die Aussage bleibt gleich.
 
 ## Zeitachsen der Effektketten
+
+### Donnerstern (`lightning_strike`)
+
+| Zeit | Phase | Was passiert (aus echten Positionen) |
+|---|---|---|
+| 0,00–0,45 s | Auslöser | Stern steigt vom eigenen Kartdach auf, kleine Blitzbögen am Kart |
+| 0,45–0,80 s | Weg | Stern fliegt im Bogen vom eigenen Kart über das Ziel, Leuchtspur |
+| 0,80 s–Einschlag | Vorwarnung | Gewitterwolke 6,2 m über dem fahrenden Ziel, gelber Ring auf der Fahrbahn schrumpft; Einschlag bei 0,95 s (Rivale), 1,15 s (Kind), 1,35 s (Kind, „Entdecken“) |
+| Einschlag +0,28 s | Einschlag | verästelter Blitz Wolke → Kartdach, dreimal neu verästelt, Lichtblitz + Funken; mit Schild endet er an der Kuppel und leitet in drei Ästen zur Fahrbahn ab |
+| +0–1,15 s | Reaktion | Tempo 68 %, ab ⅓ weich zurück auf 100 %; Funkenbögen kriechen über das Kart |
+| +0–1,1 s | Abklingen | Brandring am Boden glüht aus, Wolke weitet sich und verblasst |

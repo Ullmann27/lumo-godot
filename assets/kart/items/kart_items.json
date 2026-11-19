@@ -183,6 +183,32 @@
         5
       ],
       "sound": "boost"
+    },
+    {
+      "id": "thunder_star",
+      "name": "Donnerstern",
+      "short": "DONNER",
+      "glyph": "ϟ",
+      "color": "#ffd23f",
+      "behaviour": "lightning_strike",
+      "range": 48.0,
+      "seconds": 1.15,
+      "slow": 0.68,
+      "role": "attack",
+      "weights": [
+        0,
+        1,
+        1,
+        2,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "thunder_charge",
+        "thunder_strike"
+      ],
+      "note": "Laden am eigenen Kart, Stern fliegt über das Ziel, Wolke + Bodenring warnen, Blitz von oben. Schild wehrt ab, Schonzeit gilt."
     }
   ]
 }

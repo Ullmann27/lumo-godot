@@ -332,6 +332,9 @@ func resolve(
 	if protected(target):
 		stats.blocked += 1
 		race._stat("blocked")
+		for behaviour in effects:
+			if effects[behaviour].has_method("on_blocked"):
+				effects[behaviour].on_blocked(target, at)
 		if target == PLAYER:
 			if is_instance_valid(race.shield_visual) and race.shield_visual.has_method("impact"):
 				race.shield_visual.impact(at)
@@ -341,7 +344,7 @@ func resolve(
 			if source == PLAYER:
 				say("%s hat einen Schild – abgewehrt!" % race._rival_name(target))
 		if target == PLAYER or source == PLAYER:
-			race._popup(block_text, kart_top(target) + Vector3.UP * 1.0, Color("1aa3c4"))
+			race._popup(block_text, popup_point(target), Color("1aa3c4"))
 			sound("shield_ping")
 		return "blocked"
 	if in_grace(target):
@@ -353,11 +356,7 @@ func resolve(
 		race._stat("player_hits_taken")
 	if source == PLAYER and target >= 0:
 		race._stat("player_hits_scored")
-		race._popup(
-			"TREFFER!",
-			kart_top(target) + Vector3.UP * 1.1,
-			Color(CATALOG.color(item_id)).darkened(0.1)
-		)
+		race._popup("TREFFER!", popup_point(target), Color(CATALOG.color(item_id)).darkened(0.1))
 		race.player.cheer_in_race(1.2)
 		race._cheer_timer = 1.2
 	elif target == PLAYER and source >= 0 and source < race.opponents.size():
@@ -514,6 +513,12 @@ func kart_top(key: int) -> Vector3:
 	if not is_instance_valid(node):
 		return Vector3.ZERO
 	return node.global_position + node.global_basis.y.normalized() * 1.25
+
+
+## Ruf-Schild neben (nicht über) dem Kart: der Effekt von oben bleibt sichtbar.
+func popup_point(key: int) -> Vector3:
+	var side: Vector3 = track_basis(progress(key)).x.normalized()
+	return kart_top(key) + side * (2.1 if lateral(key) <= 0.0 else -2.1) + Vector3.UP * 0.2
 
 
 func kart_centre(key: int) -> Vector3:
