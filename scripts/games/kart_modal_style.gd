@@ -57,6 +57,9 @@ static func button_skin(accent: Color, k: float, state: String, gold: bool) -> S
 
 
 static func dress_button(button: Button, k: float) -> void:
+	# Lange Beschriftungen („Steuerung: Rechtshänder (Lenken links)“) brechen um, statt das
+	# Fenster im schmalen Hochformat über den Bildschirmrand zu drücken.
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var accent: Color = ACCENTS.get(str(button.name), NEON)
 	var gold: bool = accent == GOLD
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
