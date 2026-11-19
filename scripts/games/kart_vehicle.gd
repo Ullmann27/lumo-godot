@@ -151,7 +151,7 @@ func set_reference_rival_enabled(enabled: bool) -> void:
 func _ensure_rival_visual() -> void:
 	if not is_inside_tree() or companion_mode or animal == "fox" or not reference_rival_enabled:
 		return
-	if is_instance_valid(rival_visual) or not is_instance_valid(driver):
+	if is_instance_valid(production_driver) or is_instance_valid(rival_visual) or not is_instance_valid(driver):
 		return
 	var candidate = RIVAL_VISUAL.new()
 	candidate.name = "ImportedRivalDriver"
@@ -1904,7 +1904,7 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
 
 
 func _build_production_driver() -> bool:
-	if companion_mode or animal not in ["rabbit", "lion", "squirrel", "owl", "turtle"]:
+	if companion_mode or animal not in ["rabbit", "lion", "squirrel", "owl", "turtle", "frog"]:
 		return false
 	wheel_rest_grips.clear()
 	if is_instance_valid(production_vehicle):

@@ -5,6 +5,9 @@ extends RefCounted
 ## Forward speed in m/s. Lumo is drawn at hero scale so the kart worlds fit him.
 const CRUISE: float = 13.0
 const START_SPEED: float = 4.0
+const START_COUNTDOWN_SECONDS: float = 1.0
+## Advance the whole road course together so jump arcs and obstacle positions stay matched.
+const ROAD_TIME_SCALE: float = 1.2
 const MIN_SPEED: float = 5.0
 const SLOW_FACTOR: float = 0.62
 const ACCELERATION: float = 6.5
@@ -94,11 +97,11 @@ static func reward(solved: int, stars_rating: int) -> int:
 ## Lumo's pace on the narrow path as the level was laid out; pulling back stops
 ## him completely. Every jump, mushroom, platform and creature is built for this.
 const PATH_CRUISE: float = 8.5
-## Tempo update of 18.11.2026: the whole path plays this much faster than it was
+## The whole path plays this much faster than it was
 ## laid out - Lumo, creatures, platforms, vines and jumps alike. On screen Lumo
-## runs PATH_CRUISE * PATH_TIME_SCALE (about 11 m/s) and every jump still lands
+## runs PATH_CRUISE * PATH_TIME_SCALE (about 12.8 m/s) and every jump still lands
 ## where it was built to land.
-const PATH_TIME_SCALE: float = 1.3
+const PATH_TIME_SCALE: float = 1.5
 ## Sonic-like momentum: running on without braking or bumping builds "flow"
 ## over PATH_FLOW_SECONDS, which adds up to PATH_FLOW_BONUS m/s (sprint).
 const PATH_FLOW_BONUS: float = 3.0

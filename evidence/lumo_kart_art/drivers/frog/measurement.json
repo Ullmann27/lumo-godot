@@ -1,0 +1,178 @@
+{
+  "species": "frog",
+  "authoring": "New original tree frog authored with the existing LUMO driver rig. No recovered Frog Blender source or external reference.",
+  "blender": "4.3.2",
+  "runtime_integrated": false,
+  "axes": {
+    "blender": "X right,+Y forward,Z up",
+    "godot": "X right,Y up,-Z forward"
+  },
+  "units": "metres",
+  "rig": "DriverRig",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R"
+  ],
+  "markers": [
+    "Grip_L",
+    "Grip_R",
+    "Foot_L",
+    "Foot_R",
+    "SeatAnchor",
+    "HeadAnchor",
+    "NeckAnchor"
+  ],
+  "animations": {
+    "idle": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    },
+    "kart_seated": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 6.343065695104826e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    },
+    "kart_steer_left": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.9583333333333333,
+      "godot_clip_length_s": 2.0
+    },
+    "kart_steer_right": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.9583333333333333,
+      "godot_clip_length_s": 2.0
+    },
+    "kart_jump": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 5.094802676820385e-07,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 1.4583333333333333,
+      "godot_clip_length_s": 1.5
+    },
+    "celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0,
+      "exported_first_key_s": 0.041666666666666664,
+      "active_key_span_s": 2.9583333333333335,
+      "godot_clip_length_s": 3.0
+    }
+  },
+  "lods": {
+    "lod0": {
+      "vertices": 15585,
+      "triangles": 30846,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 2.9802322387695312e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.656999945640564,
+        1.2325600385665894
+      ],
+      "file": "assets/kart/production/drivers/frog/driver.glb",
+      "sha256": "ac5684af1147fb9937ffe4f242d131ff39210c6136e2b5ad63b7f2667463a983"
+    },
+    "lod1": {
+      "vertices": 8953,
+      "triangles": 17582,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 8.940696716308594e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.656999945640564,
+        1.2325600385665894
+      ],
+      "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
+      "sha256": "908ce2b65bd8d21a2dbc5a39a6bef67fd0ff3bc3a5fde3bcd724490bc528aade"
+    },
+    "lod2": {
+      "vertices": 4634,
+      "triangles": 8944,
+      "materials": 6,
+      "nonmanifold_edges": 0,
+      "zero_weight_vertices": 0,
+      "max_weight_sum_error": 8.940696716308594e-08,
+      "max_influences": 2,
+      "evaluated_dimensions_blender_m": [
+        0.8279998898506165,
+        0.6568284034729004,
+        1.2324600219726562
+      ],
+      "file": "assets/kart/production/drivers/frog/driver_lod2.glb",
+      "sha256": "6d1e045641c383ab7dda06d23d7fc5ac280aa741850ec52b1682c3bbdec0131b"
+    }
+  },
+  "texture_images": [
+    {
+      "name": "LUMO_Fabric_MicroNormal",
+      "width": 512,
+      "height": 512,
+      "packed_bytes": 21018,
+      "sha256": "7a04ba78dd5b94ea489d983e550e555573f272b8e329a2266fd63dcfd0fd5167"
+    },
+    {
+      "name": "LUMO_Organic_MicroNormal",
+      "width": 512,
+      "height": 512,
+      "packed_bytes": 236489,
+      "sha256": "e5999f936c6d2be93f751a91c7feb19223dc16b58b6f9bed6e3c27b5f31656d1"
+    }
+  ],
+  "material_policy": "Six PBR finishes with per-vertex palette colors and two locally authored 512px periodic micro-normal maps, packed in Blender and embedded in GLB.",
+  "reference_paths": [],
+  "eye_scale": {
+    "comment": "Raised tree-frog eye lobes with gold horizontal pupils."
+  },
+  "proof_limit": "Blender render and mesh measurements only. Godot and Android tests must be reported separately.",
+  "head_proportion_scale": 0.84,
+  "head_scale_attachment_blender_m": [
+    0.0,
+    -0.014999999664723873,
+    1.4199999570846558
+  ]
+}

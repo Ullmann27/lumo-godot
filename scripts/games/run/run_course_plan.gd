@@ -78,6 +78,10 @@ func _generate(world, selected: Dictionary) -> void:
 		_adopt_world_features()
 		_place_checkpoints()
 		_place_beats()
+		# The opening stretch is reserved from procedural obstacles. Give both
+		# road courses an immediate, centered speed strip before the first beat.
+		boosts.append({"s0": start_s + 8.0, "s1": start_s + 12.0,
+			"lat": 0.0, "half": 3.0, "seconds": TUNING.PATH_PAD_SECONDS})
 	_sort_all()
 	star_total = 0
 	for value in star_value:

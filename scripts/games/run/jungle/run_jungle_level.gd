@@ -217,7 +217,7 @@ func _intro() -> void:
 	_decor("sign", 4.0, -2.9, {"icon": "run"})
 	# 1. Jump: a small stream, Lumo waits at the edge until SPRINGEN is pressed.
 	var edge: float = _hole(2.8)
-	waits.append({"s": edge - 0.8, "action": "jump", "auto": 4.0})
+	waits.append({"s": edge - 0.8, "action": "jump", "auto": 2.8})
 	coaches.append({"s0": edge - 9.0, "s1": edge + 3.0, "icon": "jump"})
 	_arc(edge - 1.6, edge + 4.4, 0.0, 1.9, 4)
 	_leg(22.0, 12.0, 0.6, 2.4, "dirt")

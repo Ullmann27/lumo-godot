@@ -55,6 +55,7 @@ def setup_materials(species):
         'owl': ('8D6D56', 'F5E4CB', 'B28A64'),
         'squirrel': ('BC632E', 'F5DCB9', 'D48B60'),
         'turtle': ('A2BE69', 'D8DDA0', '638B53'),
+        'frog': ('53A865', 'E3E7A1', '78CF82'),
     }
     fur, cream, inner = palettes[species]
     material('Fur', fur, .82, sheen=.25)
@@ -422,7 +423,9 @@ def head(species):
     global HEAD_PROFILE
     # A single closed head surface supplies jaw, forehead, cheek width and cranium.
     profile=[(1.365,.075,.09,.015),(1.395,.175,.142,.010),(1.46,.258,.184,-.005),(1.54,.316,.217,-.012),(1.64,.295,.238,-.018),(1.75,.269,.234,-.026),(1.84,.227,.198,-.039),(1.91,.145,.137,-.04),(1.94,.06,.058,-.04),(1.945,.008,.008,-.04)]
-    if species=='turtle':
+    if species=='frog':
+        profile=[(z,1.08*x,y,cy) for z,x,y,cy in profile]
+    elif species=='turtle':
         profile=[(z,.94*x,.99*y,cy+.015) for z,x,y,cy in profile]
     profile=smooth_profile(profile)
     HEAD_PROFILE=profile
@@ -444,16 +447,27 @@ def head(species):
     mouth_surfaces.append(ellipsoid('LowerJaw',(0,.184,1.401),(.153,.087,.057),'Cream','Head',28,14))
     if species=='owl':
         mesh('Beak',[(0,.299,1.57),(-.052,.24,1.575),(.052,.24,1.575),(0,.254,1.49),(0,.18,1.56)],[(0,1,3),(0,3,2),(0,2,1),(1,2,4),(1,4,3),(2,3,4)],'Beak','Head')
-    elif species!='turtle':
+    elif species not in ['turtle','frog']:
         ellipsoid('HeartNose',(0,.296,1.535),(.052,.024,.03),'Nose','Head',24,12)
         ellipsoid('NoseTip',(0,.3,1.519),(.022,.018,.016),'Nose','Head',16,10)
         ribbon('Philtrum',[(0,.284,1.511),(0,.275,1.485)],.005,'Nose','Head')
     else:
-        mouth_surfaces.append(ellipsoid('TurtleMuzzle',(0,.245,1.505),(.162,.075,.064),'Cream','Head',28,14))
+        width = .219 if species == 'frog' else .162
+        mouth_surfaces.append(ellipsoid('BroadMuzzle',(0,.245,1.505),(width,.075,.064),'Cream','Head',28,14))
         for s in [-1,1]:
             ellipsoid('Nostril',(s*.051,.3,1.548),(.008,.004,.006),'Nose','Head',12,8)
     carve_smile(mouth_surfaces,species)
     for side,s in [('L',-1),('R',1)]:
+        if species=='frog':
+            # Tree-frog eyes sit above the wide jaw on two raised green lobes.
+            x=s*.202
+            ellipsoid('EyeLobe.'+side,(x,.041,1.891),(.131,.136,.163),'Fur','Head',28,18)
+            ellipsoid('EyeGold.'+side,(x,.142,1.933),(.088,.052,.083),'Iris','Head',24,16)
+            ellipsoid('Pupil.'+side,(x-s*.008,.186,1.930),(.066,.015,.034),'Pupil','Head',24,14)
+            ellipsoid('EyeCatchlight.'+side,(x-.025,.200,1.945),(.014,.004,.010),'EyeWhite','Head',16,10)
+            for index in range(3):
+                ellipsoid('CheekSpot.'+side+str(index),(s*(.156+.038*index),.279-.012*index,1.565+.015*index),(.012,.007,.010),'InnerEar','Head',12,8)
+            continue
         eye_x=s*.129
         eye_z=1.708
         if species=='owl':
@@ -531,7 +545,8 @@ def head(species):
                     lower_back=.225-min(.14,max(0,.95-vertex.co.z))
                     vertex.co.y=-lower_back+(vertex.co.y+.225)*(.10+.90*t)
                 part.data.update()
-    goggles(species)
+    if species!='frog':
+        goggles(species)
 
 
 def goggles(species):
@@ -891,7 +906,7 @@ def render_review(species,evidence,camera):
 def main():
     argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
     parser=argparse.ArgumentParser()
-    parser.add_argument('--species',choices=['rabbit','lion','owl','squirrel','turtle'],default='rabbit')
+    parser.add_argument('--species',choices=['rabbit','lion','owl','squirrel','turtle','frog'],default='rabbit')
     parser.add_argument('--no-render',action='store_true')
     args=parser.parse_args(argv)
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
@@ -914,7 +929,10 @@ def main():
     report['markers'].append('NeckAnchor')
     roster=json.loads((ROOT/'assets/characters/rivals/roster.json').read_text())
     rival=next(entry for entry in roster['opponents'] if entry['id']==species)
-    report['reference_paths']=list(dict.fromkeys('assets/characters/rivals/'+rival[key] for key in ['geometryInput','materialInput']))
+    report['reference_paths']=list(dict.fromkeys('assets/characters/rivals/'+rival[key] for key in ['geometryInput','materialInput'] if key in rival))
+    if species=='frog':
+        report['authoring']='New original tree frog authored with the existing LUMO driver rig. No recovered Frog Blender source or external reference.'
+        report['eye_scale']={'comment':'Raised tree-frog eye lobes with gold horizontal pupils.'}
     for reference in report['reference_paths']:
         if not (ROOT/reference).is_file():raise FileNotFoundError(reference)
     for clip in report['animations'].values():
@@ -923,7 +941,8 @@ def main():
         clip['godot_clip_length_s']=clip['frames']/clip['fps']
     report['head_proportion_scale']=HEAD_SCALE
     report['head_scale_attachment_blender_m']=list(HEAD_ATTACHMENT)
-    report['eye_scale'].update({'sclera_width_m':.128*HEAD_SCALE,'sclera_height_m':.166*HEAD_SCALE,'maximum_local_sclera_protrusion_m':.013*HEAD_SCALE,'head_width_m':max(row[1] for row in HEAD_PROFILE)*2*HEAD_SCALE})
+    if species!='frog':
+        report['eye_scale'].update({'sclera_width_m':.128*HEAD_SCALE,'sclera_height_m':.166*HEAD_SCALE,'maximum_local_sclera_protrusion_m':.013*HEAD_SCALE,'head_width_m':max(row[1] for row in HEAD_PROFILE)*2*HEAD_SCALE})
     (evidence/'measurement.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print('DRIVER_BUILD_COMPLETE',json.dumps({'species':species,'files':metrics,'blend':str(blends/(species+'.blend'))}))
 

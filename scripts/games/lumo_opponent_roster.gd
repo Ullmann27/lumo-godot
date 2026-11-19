@@ -103,7 +103,7 @@ static func racing_model_path(id: String, level: int = 0) -> String:
 
 static func ready_for_race() -> bool:
 	var entries := for_game("kart")
-	if entries.size() != 5:
+	if entries.size() < 5:
 		return false
 	for entry in entries:
 		if not can_use_racing_model(str(entry.id)):

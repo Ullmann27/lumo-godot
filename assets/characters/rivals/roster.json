@@ -107,6 +107,19 @@
         "res://assets/kart/production/drivers/turtle/driver_lod1.glb",
         "res://assets/kart/production/drivers/turtle/driver_lod2.glb"
       ]
+    },
+    {
+      "id": "frog",
+      "name": "Frosch",
+      "color": "#64C987",
+      "games": ["kart"],
+      "godotModel": "res://assets/kart/production/drivers/frog/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/frog/driver.glb",
+        "res://assets/kart/production/drivers/frog/driver_lod1.glb",
+        "res://assets/kart/production/drivers/frog/driver_lod2.glb"
+      ]
     }
   ]
 }

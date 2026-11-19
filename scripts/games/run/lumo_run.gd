@@ -274,7 +274,7 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	actor.name = "Lumo"
 	add_child(actor)
 	actor.setup(reduced_motion)
-	actor.pace_scale = TUNING.PATH_TIME_SCALE if plan.adventure else 1.0
+	actor.pace_scale = TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE
 	camera = CAMERA.new()
 	camera.name = "ChaseCamera"
 	camera.reduced_motion = reduced_motion
@@ -320,7 +320,7 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	hud.set_playing(true)
 	paused = false
 	phase = Phase.COUNTDOWN
-	countdown_left = 1.0 if reduced_motion else 3.0
+	countdown_left = TUNING.START_COUNTDOWN_SECONDS
 	_update_view(0.0, true)
 	if not restored:
 		actor.greet()
@@ -375,9 +375,9 @@ func _step(delta: float) -> void:
 	elapsed += delta
 	if previous_elapsed < 1.0 and elapsed >= 1.0:
 		print("[LumoRun] running %s s=%.2f" % [COURSES.course(course_index).id, player.s])
-	# The adventure path plays PATH_TIME_SCALE times faster than it was laid out
-	# (see run_tuning.gd), in steps that are no longer than before.
-	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else 1.0
+	# Advance course elements and Lumo together, keeping each simulation step
+	# within the same time limit as before.
+	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE
 	var parts: int = maxi(1, ceili(pace - 0.001))
 	for _part in range(parts):
 		_simulate(delta * pace / float(parts))

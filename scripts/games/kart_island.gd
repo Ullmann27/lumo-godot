@@ -589,6 +589,10 @@ func _build_world() -> void:
 	var reference_rivals: bool = OPPONENT_ROSTER.ready_for_race()
 	if reference_rivals:
 		var roster := OPPONENT_ROSTER.for_game("kart")
+		var frog_index := roster.find_custom(func(entry: Dictionary) -> bool: return entry.id == "frog")
+		if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog" and frog_index >= animals.size():
+			# Keep the five starting positions and the cup lineup stable.
+			roster[animals.size() - 1] = roster[frog_index]
 		for index in range(animals.size()):
 			animals[index] = str(roster[index].id)
 			colors[index] = Color(str(roster[index].color))
@@ -5173,7 +5177,7 @@ func _sound_effect(kind: String, pitch: float = 1.0) -> void:
 
 const RIVAL_DISPLAY_NAMES: Dictionary = {
 	"otter": "Otter", "rabbit": "Hase", "badger": "Dachs", "cat": "Katze", "fox": "Fuchs",
-	"lion": "Löwe", "owl": "Eule", "squirrel": "Eichhörnchen", "turtle": "Schildkröte",
+	"lion": "Löwe", "owl": "Eule", "squirrel": "Eichhörnchen", "turtle": "Schildkröte", "frog": "Frosch",
 }
 var player_spin_total: float = 1.0
 var opponent_spin_totals: Array[float] = []

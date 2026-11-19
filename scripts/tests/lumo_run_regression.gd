@@ -311,9 +311,15 @@ func _test_start_screen_and_controls() -> void:
 	_steps(game, 30)
 	_check(game.phase == game.Phase.COUNTDOWN and is_equal_approx(game.player.s, start_s), "Lumo waits during the countdown")
 	_check(game.hud.countdown.visible, "countdown is shown")
-	game.countdown_left = 0.0
-	_steps(game, 1)
+	_steps(game, 32)
 	_check(game.phase == game.Phase.RUNNING and not game.hud.countdown.visible, "run starts after the countdown")
+	var opening_boost_seen: bool = false
+	for tick in range(72):
+		_steps(game, 1)
+		if game.player.boost_time > 0.0:
+			opening_boost_seen = true
+			break
+	_check(opening_boost_seen, "the first road boost is reachable within 1.2 seconds of running")
 	_steps(game, 120)
 	_check(game.player.s > start_s + 12.0, "Lumo runs forward on his own")
 	_check(game.player.speed > TUNING.START_SPEED + 4.0, "Lumo builds up speed")

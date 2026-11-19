@@ -4,7 +4,7 @@ extends SceneTree
 
 const DRIVER = preload("res://scripts/games/kart_production_driver.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
-const SPECIES := ["lion", "owl", "rabbit", "squirrel", "turtle"]
+const SPECIES := ["lion", "owl", "rabbit", "squirrel", "turtle", "frog"]
 const CLIPS := ["idle", "kart_seated", "kart_steer_left", "kart_steer_right", "kart_jump", "celebrate"]
 var checks := 0
 var failures: Array[String] = []
@@ -213,7 +213,7 @@ func _adapter(identity: String) -> void:
 
 
 func _run() -> void:
-	_check(ROSTER.ready_for_race(), "Five production identities have all imported LODs.")
+	_check(ROSTER.ready_for_race(), "Six production identities have all imported LODs.")
 	for identity in SPECIES:
 		for level in range(3):
 			_imported_scene(identity, level)
