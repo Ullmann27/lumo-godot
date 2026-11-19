@@ -52,6 +52,9 @@ var passage_hits: int = 0
 var passage_announced: Dictionary = {}
 var _passage_last_phase: Dictionary = {}
 var _passage_hit_cooldown: float = 0.0
+const MESSAGE_SECONDS: float = 6.0
+var _message_seen: String = ""
+var _message_age: float = 0.0
 var _traffic_player_entry: int = -1
 ## Karts (rivals + child) at the front of the last _rival_traffic list; static obstacles follow.
 var _traffic_kart_entries: int = -1
@@ -1939,6 +1942,7 @@ func _physics_process(delta: float) -> void:
 			_update_gameplay_layer(delta)
 			_track_events()
 			_update_passages(delta)
+			_fade_stale_message(delta)
 			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
 				roadside_lasso.advance(self, delta)
@@ -2559,15 +2563,36 @@ func _passage_steer_assist(axis: float, road: Dictionary) -> float:
 	if difficulty != "gemuetlich" or airborne or not is_instance_valid(world):
 		return axis
 	var d: float = float(road.distance)
-	var entry: Dictionary = PASSAGES.zone_at(world, d)
-	if entry.is_empty() or str(entry.kind) != "bridge":
-		return axis
-	if float(entry.deck_start) - fposmod(d, track_length) > 26.0:
+	var local: float = fposmod(d, track_length)
+	# Die Hilfe beginnt rund 1,7 s vor dem Deck (bei vollem Tempo gut 80 m): Wer weit
+	# außen anfährt, wird rechtzeitig zur Mitte geführt statt erst am Rand der Brücke.
+	var reach: float = maxf(26.0, absf(speed) * 1.7)
+	var entry: Dictionary = {}
+	for candidate in PASSAGES.of(world):
+		if str(candidate.kind) != "bridge":
+			continue
+		if local <= float(candidate.deck_end) and float(candidate.deck_start) - local <= reach:
+			entry = candidate
+			break
+	if entry.is_empty():
 		return axis
 	var correction: float = angle_difference(player_heading, _heading(d + 4.0))
 	if absf(lane) < 0.15 and absf(correction) < 0.03:
 		return axis
 	return clampf(axis - correction * 0.9 - clampf(lane * 0.55, -0.6, 0.6), -1.0, 1.0)
+
+
+## Hinweise bleiben nicht über Runden stehen: Nach MESSAGE_SECONDS blendet die Zeile
+## aus, bis ein neuer Text kommt (Gerätefund 19.11.: Rettungstext stand dauerhaft im Bild).
+func _fade_stale_message(delta: float) -> void:
+	if message.text != _message_seen:
+		_message_seen = message.text
+		_message_age = 0.0
+		message.modulate.a = 1.0
+		return
+	_message_age += delta
+	if _message_age > MESSAGE_SECONDS:
+		message.modulate.a = move_toward(message.modulate.a, 0.0, delta * 2.0)
 
 
 ## Announcements, Kiri's call and the swing hit. Rivals get the same rules.
