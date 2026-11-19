@@ -32,10 +32,20 @@ func _run() -> void:
 				"Non-right-handed road frame on " + track_id)
 			assert((-basis.z).dot(world.forward(d)) > 0.999,
 				"Forward direction must remain -basis.z on " + track_id)
-			for offset in [-4.0, 0.0, 4.0]:
+			# Lanes 4 m left and right of the centre, or the outer lane of a narrower
+			# passage deck (Winter-Sprint ice bridge and other LUMO passages).
+			var half: float = world.road_width_at(d) * 0.5
+			var lane: float = minf(4.0, half - 0.3)
+			assert(lane > 0.5, "Road narrower than one kart on " + track_id)
+			if half < 4.3:
+				# A narrow deck must really end at its edge: just beyond it is off the road.
+				var outside: Dictionary = world.sample_road(world.position_at(d, half + 0.5), d)
+				assert(not outside.on_road, "Narrow deck accepted a lane beyond its edge on " + track_id)
+			for offset in [-lane, 0.0, lane]:
 				var target: Vector3 = world.position_at(d, offset)
 				var result: Dictionary = world.sample_road(target, d)
-				assert(result.on_road, "Road projection falsely rejected a valid lane")
+				assert(result.on_road,
+					"Road projection falsely rejected a valid lane on %s at %.0f m" % [track_id, d])
 				assert(absf(float(result.lateral) - offset) < 0.12,
 					"Road projection lateral drift on " + track_id)
 				assert(absf(float(result.height) - target.y) < 0.08,
