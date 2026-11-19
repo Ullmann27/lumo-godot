@@ -60,6 +60,7 @@ var _paused: bool = false
 var _focused: bool = true
 var _background: bool = false
 var _fade: Tween
+var _fade_paused: bool = false
 var _loops: Dictionary = {}
 ## Driving one-shots have their own voices: they never cut a race cue.
 var _fx_players: Array[AudioStreamPlayer] = []
@@ -170,6 +171,7 @@ func _play_music(track: String, preserve_phase: bool = false) -> void:
 	if previous.playing and is_inside_tree():
 		var transition: float = 1.2 if preserve_phase else 0.45
 		_fade = create_tween().set_parallel(true)
+		_fade_paused = false
 		_fade.tween_property(previous, "volume_db", QUIET_DB, transition)
 		_fade.tween_property(next, "volume_db", music_db(), transition)
 		_fade.chain().tween_callback(previous.stop)
@@ -351,10 +353,14 @@ func _apply_pause() -> void:
 			fx_player.stop()
 		stop_loops()
 	if _track_id == JUNGLE_ID and is_instance_valid(_fade) and _fade.is_valid():
-		if blocked:
+		# Only resume a crossfade this code paused: a finished Tween may still be
+		# valid, and play() on it reports an engine ERROR.
+		if blocked and _fade.is_running():
 			_fade.pause()
-		else:
+			_fade_paused = true
+		elif not blocked and _fade_paused:
 			_fade.play()
+			_fade_paused = false
 	if is_instance_valid(_ambience):
 		_ambience.set_audio_state(blocked, effects_volume)
 
