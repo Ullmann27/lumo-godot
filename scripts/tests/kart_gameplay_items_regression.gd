@@ -5,6 +5,7 @@ extends SceneTree
 const STEP: float = 1.0 / 60.0
 const CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
 const RULES = preload("res://scripts/games/kart_items/kart_race_rules.gd")
+const KART_CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const RUNTIME = preload("res://scripts/games/kart_items/kart_item_runtime.gd")
 const FX = preload("res://scripts/games/kart_items/kart_fx_director.gd")
 var game
@@ -84,7 +85,24 @@ func _test_rules() -> void:
 	_check(RULES.rival_rubber_band(120.0, "gemuetlich") < 0.9, "runaway rivals ease off")
 	for level in ["gemuetlich", "flott", "pro"]:
 		_check(is_equal_approx(RULES.rival_rubber_band(-120.0, level), 1.0), "overtaken rivals get no push (%s)" % level)
-	_check(RULES.rival_rubber_band(120.0, "profi") > RULES.rival_rubber_band(120.0, "gemuetlich"), "less rubber band on harder settings")
+	# Die Regeln hängen an den echten Stufen-Kennungen des Katalogs (früher "normal"/"profi":
+	# Abenteuer und Extrem fielen dadurch auf denselben Ersatzwert).
+	var band: Array[float] = []
+	var help: Array[float] = []
+	var grace: Array[float] = []
+	var lock_rules: Dictionary = (
+		load("res://scripts/games/kart_island.gd").get_script_constant_map().get("LOCK_RULES", {})
+	)
+	for entry in KART_CATALOG.DIFFICULTIES:
+		var level: String = str(entry.id)
+		band.append(RULES.rival_rubber_band(120.0, level))
+		help.append(RULES.player_catch_up(200.0, level))
+		_check(RULES.PLAYER_CATCH_UP_MAX.has(level), "catch-up limit exists for level %s" % level)
+		_check(lock_rules.has(level), "rocket lock rules exist for level %s" % level)
+		grace.append(float(lock_rules.get(level, {}).get("grace", 0.0)))
+	_check(grace[0] > grace[1] and grace[1] > grace[2], "shorter protection on each harder level")
+	_check(band[0] < band[1] and band[1] < band[2], "less rubber band on each harder level")
+	_check(help[0] > help[1] and help[1] > help[2], "less catch-up help on each harder level")
 	_check(RULES.next_combo(1, 1.0) == 2 and RULES.next_combo(4, 9.0) == 1, "combo chains within the window only")
 	_check(RULES.rival_should_use("star_rocket", "homing_projectile", {"ahead_gap": 20.0}), "AI fires rocket at a racer ahead")
 	_check(not RULES.rival_should_use("star_rocket", "homing_projectile", {"ahead_gap": INF}), "AI keeps rocket without target")

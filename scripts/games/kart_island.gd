@@ -5960,8 +5960,8 @@ func _rival_collect_catalog_box(index: int) -> void:
 ## "Entdecken" (gemuetlich) is generous so a child locks on almost at once.
 const LOCK_RULES: Dictionary = {
 	"gemuetlich": {"cone": 38.0, "range": 85.0, "lock": 0.45, "rival_lock": 2.2, "rival_hold": 7.0, "rival_salvo_gap": 7.0, "grace": 3.5},
-	"normal": {"cone": 28.0, "range": 65.0, "lock": 0.7, "rival_lock": 1.5, "rival_hold": 3.5, "rival_salvo_gap": 4.0, "grace": 2.6},
-	"profi": {"cone": 22.0, "range": 55.0, "lock": 0.9, "rival_lock": 1.1, "rival_hold": 1.8, "rival_salvo_gap": 2.5, "grace": 2.0},
+	"flott": {"cone": 28.0, "range": 65.0, "lock": 0.7, "rival_lock": 1.5, "rival_hold": 3.5, "rival_salvo_gap": 4.0, "grace": 2.6},
+	"pro": {"cone": 22.0, "range": 55.0, "lock": 0.9, "rival_lock": 1.1, "rival_hold": 1.8, "rival_salvo_gap": 2.5, "grace": 2.0},
 }
 const ROCKET_ID := "star_rocket"
 const ROULETTE_SECONDS: float = STAR_COMPASS.STANDARD_SECONDS
@@ -6003,7 +6003,7 @@ func _popup(text: String, world: Vector3, color: Color) -> void:
 
 
 func _lock_rules() -> Dictionary:
-	return LOCK_RULES.get(difficulty, LOCK_RULES.normal)
+	return LOCK_RULES.get(difficulty, LOCK_RULES.flott)
 
 
 func _build_item_experience() -> void:
