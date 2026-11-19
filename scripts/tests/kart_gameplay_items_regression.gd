@@ -35,7 +35,10 @@ func _start(mode: String, track: String) -> void:
 
 func _test_catalog() -> void:
 	var items: Array[Dictionary] = CATALOG.all()
-	_check(items.size() == 9, "nine original items in the catalog (%d)" % items.size())
+	_check(items.size() >= 9, "nine original items in the catalog (%d)" % items.size())
+	# Erweiterte Items (items-neu) kommen dazu; die neun ursprünglichen bleiben alle erhalten.
+	for original in ["boost", "triple_boost", "shield", "pulse", "star_rocket", "spark_ball", "bubble_trap", "star_magnet", "aurora"]:
+		_check(CATALOG.has(original), "original item kept: " + original)
 	for forbidden in ["shell", "banana", "panzer", "bob-omb", "blooper", "bullet"]:
 		for row in items:
 			_check(not forbidden in str(row.id).to_lower() and not forbidden in str(row.name).to_lower(), "no borrowed item name: " + forbidden)

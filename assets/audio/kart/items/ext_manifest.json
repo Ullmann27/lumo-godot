@@ -1,0 +1,98 @@
+{
+  "generator": "tools/art/generate_kart_item_ext_audio.py",
+  "seed": 20261119,
+  "original_samples_only": true,
+  "assets": [
+    {
+      "file": "thunder_charge.ogg",
+      "seconds": 0.6,
+      "bytes": 10195,
+      "sha256": "87e25802b2a1a288b04fa608e608b71790cff0283b75c1017eed1c974387a6b1",
+      "description": "Original synthesized thunder_charge cue"
+    },
+    {
+      "file": "thunder_strike.ogg",
+      "seconds": 1.3,
+      "bytes": 19723,
+      "sha256": "9a1626863a61d71f5f666ec4c6f11314f3e62c4cf7c4a870d1ba3b4d80dd6204",
+      "description": "Original synthesized thunder_strike cue"
+    },
+    {
+      "file": "frost_launch.ogg",
+      "seconds": 0.55,
+      "bytes": 9346,
+      "sha256": "746f9455cbe27caf84387e86c08c8c320da7f6d28ff28b2171b8cee2a6843d9e",
+      "description": "Original synthesized frost_launch cue"
+    },
+    {
+      "file": "frost_hit.ogg",
+      "seconds": 1.0,
+      "bytes": 13019,
+      "sha256": "a425b22c3f7037a28a202ec811090ca77d902f7ea84fcb17cf94157a54318fa6",
+      "description": "Original synthesized frost_hit cue"
+    },
+    {
+      "file": "frost_melt.ogg",
+      "seconds": 0.9,
+      "bytes": 12160,
+      "sha256": "71387db20e9ab62ba0a219239d03b5c93dcc73c7e259cd9758e09bb1ea871121",
+      "description": "Original synthesized frost_melt cue"
+    },
+    {
+      "file": "meteor_launch.ogg",
+      "seconds": 0.8,
+      "bytes": 11385,
+      "sha256": "9d5c0021f9f2617d98b0f16a1c94e3b6a5ffb8603992a25ce383cb25fe9cd7b7",
+      "description": "Original synthesized meteor_launch cue"
+    },
+    {
+      "file": "meteor_hit.ogg",
+      "seconds": 1.1,
+      "bytes": 20849,
+      "sha256": "1069b4fe301667f11d16fa34052e3703ba6f3265501c3fce88b36a5d2195a411",
+      "description": "Original synthesized meteor_hit cue"
+    },
+    {
+      "file": "ember_hiss.ogg",
+      "seconds": 0.7,
+      "bytes": 10675,
+      "sha256": "da48daa8dd97f7dae720016f51884d3b32529c37ad6e77d7b5b15dc9384e7c68",
+      "description": "Original synthesized ember_hiss cue"
+    },
+    {
+      "file": "fortress_up.ogg",
+      "seconds": 1.2,
+      "bytes": 12414,
+      "sha256": "95b903d61fffbe68b65965ec9771d2d368a4823d445eee0bbdcc4671fea23e72",
+      "description": "Original synthesized fortress_up cue"
+    },
+    {
+      "file": "fortress_end.ogg",
+      "seconds": 0.7,
+      "bytes": 6994,
+      "sha256": "9610c47920c8664f456b5bbdee0f52c75a2d8a6ce28e8f266b3d353ffebbed7a",
+      "description": "Original synthesized fortress_end cue"
+    },
+    {
+      "file": "whirl_go.ogg",
+      "seconds": 1.0,
+      "bytes": 12696,
+      "sha256": "27dde629f5bd14c38014d857873d408068306fc5b18e2cfb5276b558281fec0b",
+      "description": "Original synthesized whirl_go cue"
+    },
+    {
+      "file": "whirl_hit.ogg",
+      "seconds": 0.8,
+      "bytes": 11172,
+      "sha256": "78cbd0d2756973bbd6cf8e385a26db03ed51e50bdb7e9c7bb42cf86997e2a9cb",
+      "description": "Original synthesized whirl_hit cue"
+    },
+    {
+      "file": "ext_warning.ogg",
+      "seconds": 0.42,
+      "bytes": 6639,
+      "sha256": "c92b17622c0ed328ae556b97a3b60be8a73f01819cc8ed9ecbb6fd054130a218",
+      "description": "Original synthesized ext_warning cue"
+    }
+  ]
+}

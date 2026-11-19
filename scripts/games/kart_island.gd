@@ -75,6 +75,8 @@ const ROCKET_FLIGHT = preload("res://scripts/games/kart_items/kart_rocket_flight
 const FRAME_SMOOTHER = preload("res://scripts/games/kart_items/kart_frame_smoother.gd")
 const ITEM_STATUS_FX = preload("res://scripts/games/kart_items/kart_item_status_fx.gd")
 const SHIELD_DOME = preload("res://scripts/games/kart_items/kart_shield_dome.gd")
+## Hook items-neu: erweiterte Items (Donnerstern, Frostkristall, Feuermeteor, Festung, Wirbelwind).
+const ITEM_EXT = preload("res://scripts/games/kart_items/ext/kart_item_ext.gd")
 const BOOST_RING_SCENE = preload("res://scenes/games/props/kart_boost_ring.tscn")
 const MODAL_STYLE = preload("res://scripts/games/kart_modal_style.gd")
 const TRIGGER_GROUP := "lumo_kart_triggers"
@@ -194,6 +196,7 @@ var slipstream_ready_leader: int = -1
 var combo: int = 0
 var last_boost_source_at: float = -100.0
 var item_runtime: Node3D
+var item_ext: Node3D  # Hook items-neu
 var fx: Node3D
 ## Raketen-Inszenierung (Spur, Einschlag, Wirbel, Trefferbild) und bildweise Glättung.
 var rocket_flight: Node3D
@@ -2111,9 +2114,13 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if landing_settle > 0.0:
 		turn_rate *= lerpf(1.0, 0.62, clampf(landing_settle / 0.32, 0.0, 1.0))
 		landing_settle = maxf(0.0, landing_settle - delta)
+	if is_instance_valid(item_ext):
+		turn_rate *= item_ext.turn_factor(-1)
 	player_heading -= axis * turn_rate * delta
 	var forward := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var grip: float = (3.1 if drifting else 9.0 * _factor("grip")) * POWERTRAIN.PACE_SCALE
+	if is_instance_valid(item_ext):
+		grip *= item_ext.grip_factor(-1)
 	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
 	# Child-friendly precision flight: velocity-only boundary, measured from
 	# the SAME curving road frame as the game's lane value. The lip frame alone
@@ -2956,6 +2963,8 @@ func _drive_opponents(delta: float) -> void:
 		target_lane = RIVAL_RACECRAFT.choose_lane(
 			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
 		)
+		if is_instance_valid(item_ext):
+			target_lane += item_ext.rival_lane_bias(i)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
 		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
@@ -2972,6 +2981,8 @@ func _drive_opponents(delta: float) -> void:
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
 		var turn_cap: float = float(profile.turn_rate) * delta
+		if is_instance_valid(item_ext):
+			turn_cap *= item_ext.turn_factor(i)
 		opponent_headings[i] += clampf(angle, -turn_cap, turn_cap)
 		# Same fleet performance figures as the human kart, without tuning or
 		# a player-gap multiplier. Strong drivers brake for actual upcoming bends.
@@ -4691,7 +4702,10 @@ func _rebuild_graphics() -> void:
 		state[key] = get(key).duplicate()
 	var saved_recording: Array = records.recording.duplicate(true)
 	var saved_replay_index: int = records.replay_index
+	var saved_item_ext: Dictionary = item_ext.save_state() if is_instance_valid(item_ext) else {}
 	_build_world()
+	if is_instance_valid(item_ext):
+		item_ext.restore_state(saved_item_ext)
 	player.transform = saved_transform
 	player_heading = saved_heading
 	for i in range(opponents.size()):
@@ -4807,6 +4821,8 @@ func _save_session() -> void:
 		config.set_value("race", "player_position", player.position)
 	RIVAL_STUNTS.save_positions(self, config)
 	RIVAL_FLIGHT.save_positions(self, config)
+	if is_instance_valid(item_ext):
+		config.set_value("race", "item_ext", item_ext.save_state())
 	var tmp_path: String = SESSION + ".tmp"
 	if config.save(tmp_path) != OK:
 		push_warning("Race checkpoint tmp write failed")
@@ -4975,6 +4991,8 @@ func _restore_item_continuity(config: ConfigFile) -> void:
 	var saved_charges = config.get_value("race", "item_charges", 0)
 	var max_charges: int = maxi(1, int(ITEM_CATALOG.entry(item).get("charges", 1)))
 	item_charges = 0 if item.is_empty() else clampi(int(saved_charges) if typeof(saved_charges) in [TYPE_INT, TYPE_FLOAT] else 1, 1, max_charges)
+	if is_instance_valid(item_ext):
+		item_ext.restore_state(config.get_value("race", "item_ext", {}))
 	# A resumed race never starts armed: pods unfold again and wait for the first tap.
 	rocket_phase = ""
 	item_roulette_time = 0.0
@@ -5276,6 +5294,9 @@ func _build_gameplay_layer() -> void:
 	race_root.add_child(item_runtime)
 	if mode != "arena" and is_instance_valid(world):
 		item_runtime.setup(track_length, WORLD.WALL_LATERAL, _frame_at)
+	item_ext = ITEM_EXT.new()  # Hook items-neu
+	race_root.add_child(item_ext)
+	item_ext.setup(self)
 	_flash_layer = CanvasLayer.new()
 	_flash_layer.name = "KartFlashLayer"
 	_flash_layer.layer = 1
@@ -5352,6 +5373,8 @@ func _reset_gameplay_layer() -> void:
 		opponent_aurora_times[i] = 0.0
 	if is_instance_valid(item_runtime):
 		item_runtime.clear()
+	if is_instance_valid(item_ext):
+		item_ext.clear()
 	if is_instance_valid(rocket_flight):
 		rocket_flight.clear()
 	_reset_item_experience()
@@ -5411,6 +5434,8 @@ func _gameplay_speed_factor() -> float:
 		factor *= 1.06
 	if mode in ["race", "cup"] and not opponents.is_empty():
 		factor *= RACE_RULES.player_catch_up(_leader_progress() - distance, difficulty)
+	if is_instance_valid(item_ext):
+		factor *= item_ext.speed_factor(-1)
 	return factor
 
 
@@ -5422,6 +5447,8 @@ func _rival_gameplay_factor(index: int) -> float:
 		factor *= 1.2
 	if mode in ["race", "cup"] and index < opponent_distances.size():
 		factor *= RACE_RULES.rival_rubber_band(opponent_distances[index] - distance, difficulty)
+	if is_instance_valid(item_ext):
+		factor *= item_ext.speed_factor(index)
 	return factor
 
 
@@ -5455,7 +5482,9 @@ func _neighbour(key: int, ahead: bool) -> Dictionary:
 func _rival_threatened(index: int) -> bool:
 	if not is_instance_valid(item_runtime) or index >= opponent_distances.size():
 		return false
-	return item_runtime.incoming_for(index, opponent_distances[index]) < 1.2
+	return item_runtime.incoming_for(index, opponent_distances[index]) < 1.2 or (
+		is_instance_valid(item_ext) and item_ext.incoming_for(index) < 1.2
+	)
 
 
 func _grant_item(id: String) -> void:
@@ -5517,6 +5546,10 @@ func _use_catalog_item() -> void:
 			boost_time = maxf(boost_time, _boost_for(aurora_time * 0.5))
 			message.text = "Nordlicht-Lauf! Du leuchtest und bist geschützt."
 			_fx("aurora", at)
+		_:
+			# Hook items-neu: neue Verhalten; false = Item bleibt (z. B. kein sicheres Ziel).
+			if not ITEM_EXT.handles(behaviour) or not is_instance_valid(item_ext) or not item_ext.player_use(id, row):
+				return
 	_consume_item()
 
 
@@ -5536,7 +5569,10 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 		"threatened": _rival_threatened(index), "player_near": local_gap.length(),
 		"place": _opponent_place(index),
 	}
-	if not RACE_RULES.rival_should_use(id, behaviour, context):
+	if ITEM_EXT.handles(behaviour):  # Hook items-neu
+		if not is_instance_valid(item_ext) or not item_ext.rival_use(index, id, context):
+			return
+	elif not RACE_RULES.rival_should_use(id, behaviour, context):
 		return
 	var progress: float = opponent_distances[index]
 	var rival_lane: float = opponent_lanes[index]
@@ -5563,7 +5599,8 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 			opponent_aurora_times[index] = seconds
 			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
 		_:
-			return
+			if not ITEM_EXT.handles(behaviour):
+				return
 	opponent_items[index] = ""
 	opponent_item_cooldowns[index] = 1.8
 	_stat("rival_items_used")
@@ -5579,6 +5616,8 @@ func _update_gameplay_layer(delta: float) -> void:
 	if is_instance_valid(item_runtime) and item_runtime.placer.is_valid():
 		for event in item_runtime.step(delta, _racers()):
 			_apply_item_event(event)
+	if is_instance_valid(item_ext):
+		item_ext.tick(delta)
 	if is_instance_valid(rocket_flight):
 		rocket_flight.tick(delta)
 	_update_item_feedback(delta)
@@ -6272,6 +6311,8 @@ func _update_item_experience(delta: float) -> void:
 			locked_on = maxf(locked_on, clampf(opponent_lock_times[i] / maxf(0.1, float(_lock_rules().rival_lock)), 0.25, 1.0))
 	var incoming: bool = is_instance_valid(item_runtime) and item_runtime.incoming_for(-1, distance) < INF
 	player_warning = 1.0 if incoming else locked_on
+	if is_instance_valid(item_ext):
+		player_warning = maxf(player_warning, item_ext.player_warning())
 	if player_warning > 0.0:
 		_warning_tone_timer -= delta
 		if _warning_tone_timer <= 0.0:
@@ -6329,7 +6370,7 @@ func _update_item_hud(delta: float) -> void:
 		"popups": item_popups,
 		"warning": player_warning, "incoming": is_instance_valid(item_runtime) and item_runtime.incoming_for(-1, distance) < INF,
 		"shield_ready": shield_ready,
-		"shield_left": shield_time, "shield_total": 6.0,
+		"shield_left": shield_time, "shield_total": item_ext.shield_total(-1) if is_instance_valid(item_ext) else 6.0,
 		"hint": item_hint if item_roulette_time <= 0.0 else "",
 		"item_rect": item_button.get_global_rect() if is_instance_valid(item_button) and item_button.is_visible_in_tree() else Rect2(),
 	}, delta)
