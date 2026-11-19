@@ -172,6 +172,11 @@ func _run() -> void:
 			== OK
 		)
 	)
+	# Die Pausenliste ist seit den größeren Menüknöpfen länger als das kleine Querformat:
+	# nach dem Blättern zu „Grafik“ steht „Weiterfahren“ oberhalb des Ausschnitts. Ein Kind
+	# blättert zurück – der Tipp selbst bleibt ein echter Tipp in Bildschirm-Pixeln.
+	await _scroll_into_view(_button("Weiterfahren"), game.modal_scroll)
+	_inside(_button("Weiterfahren"), game.modal_scroll.get_global_rect())
 	await _tap(_button("Weiterfahren"))
 	assert(not game.paused, "Actual physical-pixel screen touch must resume the compact pause")
 	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
