@@ -44,6 +44,8 @@ var stats: Dictionary = {
 	"hits": 0, "blocked": 0, "grace": 0, "player_uses": 0, "rival_uses": 0, "unsafe_skips": 0
 }
 var _warning_cooldown: float = 0.0
+## Item -> Zeitpunkt (ms) des letzten Ruf-Schilds (Flächen-Items: nur ein Schild).
+var _popup_at: Dictionary = {}
 
 
 func setup(owner_race) -> void:
@@ -138,6 +140,20 @@ func rival_lane_bias(index: int) -> float:
 	return clampf(bias, -2.5, 2.5)
 
 
+## Reine Anzeige-Anhebung eines Karts (Schwerkraft-Welle), für den Bild-Glätter.
+func offset_for(node: Node3D) -> Variant:
+	var lift: float = 0.0
+	for key in racer_keys():
+		if kart(key) == node:
+			for behaviour in effects:
+				if effects[behaviour].has_method("lift_for"):
+					lift = maxf(lift, float(effects[behaviour].lift_for(key)))
+			break
+	if lift <= 0.001:
+		return null
+	return Transform3D(Basis.IDENTITY, Vector3.UP * lift)
+
+
 func incoming_for(key: int) -> float:
 	var best: float = INF
 	for behaviour in effects:
@@ -147,7 +163,10 @@ func incoming_for(key: int) -> float:
 
 ## 0..1 für die vorhandene Warnanzeige (roter Pfeil + Warnton) des Kindes.
 func player_warning() -> float:
-	var seconds: float = incoming_for(PLAYER)
+	var seconds: float = INF
+	for behaviour in effects:
+		if effects[behaviour].rear_warning:
+			seconds = minf(seconds, float(effects[behaviour].incoming(PLAYER)))
 	if seconds == INF:
 		return 0.0
 	return clampf(1.4 - seconds * 0.5, 0.35, 1.0)
@@ -329,6 +348,13 @@ func _apply_pushes(delta: float) -> void:
 func resolve(
 	target: int, source: int, item_id: String, at: Vector3, block_text: String = "ABGEWEHRT!"
 ) -> String:
+	# Sternen-Duplikat: die Lichtkopie fängt einen Treffer ab (vor dem Schild).
+	for behaviour in effects:
+		if effects[behaviour].has_method("absorb") and effects[behaviour].absorb(target, at):
+			stats.blocked += 1
+			if target == PLAYER:
+				say("Die Lichtkopie hat den Treffer abgefangen!")
+			return "blocked"
 	if protected(target):
 		stats.blocked += 1
 		race._stat("blocked")
@@ -356,7 +382,12 @@ func resolve(
 		race._stat("player_hits_taken")
 	if source == PLAYER and target >= 0:
 		race._stat("player_hits_scored")
-		race._popup("TREFFER!", popup_point(target), Color(CATALOG.color(item_id)).darkened(0.1))
+		var now: int = Time.get_ticks_msec()
+		if now - int(_popup_at.get(item_id, -100000)) > 500:
+			_popup_at[item_id] = now
+			race._popup(
+				"TREFFER!", popup_point(target), Color(CATALOG.color(item_id)).darkened(0.1)
+			)
 		race.player.cheer_in_race(1.2)
 		race._cheer_timer = 1.2
 	elif target == PLAYER and source >= 0 and source < race.opponents.size():

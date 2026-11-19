@@ -19,6 +19,9 @@ var active: Array[Dictionary] = []
 ## Wiederverwendbare Darstellungen (Pool); nie mehr als `pool_cap` gleichzeitig.
 var pool: Array[Node3D] = []
 var pool_cap: int = 3
+## true: Anflug von hinten/oben -> rote Warnanzeige des Kindes; Gefahren, die vorn liegen
+## (Falle, Zeitblüte), sieht das Kind selbst und bekommen nur eine Textwarnung.
+var rear_warning: bool = true
 var stats: Dictionary = {
 	"used": 0, "hits": 0, "blocked": 0, "grace": 0, "fizzled": 0, "safety_skipped": 0
 }

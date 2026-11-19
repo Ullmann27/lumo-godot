@@ -14,6 +14,7 @@ const BEHAVIOURS: Dictionary = {
 	"fire_meteor": "fire_meteor",
 	"fortress": "star_fortress",
 	"whirlwind": "whirlwind",
+	"gravity_wave": "gravity_wave",
 }
 ## Original-Töne (tools/art/generate_kart_item_ext_audio.py) in assets/audio/kart/items/.
 const SOUNDS: Array[String] = [
@@ -30,6 +31,7 @@ const SOUNDS: Array[String] = [
 	"fortress_end",
 	"whirl_go",
 	"whirl_hit",
+	"gravity_wave",
 ]
 const ICON_DIR := "res://assets/kart/hud/items/"
 

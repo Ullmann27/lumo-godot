@@ -35,6 +35,40 @@ const SHOTS: Dictionary = {
 		[11.2, "4_ende_naht"],
 		[12.6, "5_abbau"]
 	],
+	"gravity_wave":
+	[
+		[0.12, "1_ausloesen"],
+		[0.45, "2_welle"],
+		[0.0, "3_erfasst"],
+		[0.42, "4_schweben"],
+		[1.2, "5_landung"]
+	],
+	"star_decoy":
+	[
+		[0.2, "1_kopie"],
+		[0.75, "2_raketen"],
+		[0.0, "3_abgelenkt"],
+		[0.3, "4_zerplatzt"],
+		[1.0, "5_weiter"]
+	],
+	"turbo_xl":
+	[[0.06, "1_zuendung"], [0.35, "2_schub"], [1.0, "3_energielinien"], [1.62, "4_abklingen"]],
+	"arc_trap":
+	[
+		[0.15, "1_setzen"],
+		[0.5, "2_bogen"],
+		[0.0, "3_durchfahrt"],
+		[0.35, "4_bremse"],
+		[0.9, "5_zusammenbruch"]
+	],
+	"time_bloom":
+	[
+		[0.25, "1_wurf"],
+		[0.8, "2_bluete"],
+		[0.0, "3_im_feld"],
+		[0.6, "4_zeitlupe"],
+		[5.0, "5_schliessen"]
+	],
 	"whirlwind":
 	[
 		[0.15, "1_start"],
@@ -78,19 +112,23 @@ func _place() -> void:
 
 ## Die Karts fahren weiter (gleiches Tempo); seitliche Versätze der Items bleiben erhalten.
 func _tick(seconds: float) -> void:
+	# Zwischen den Belegbildern nicht rendern (Simulation läuft gleich weiter): spart bei
+	# 1812x2176 auf der ausgelasteten Maschine den Großteil der Zeit.
+	RenderingServer.render_loop_enabled = false
 	for _frame in range(maxi(1, int(round(seconds / STEP)))):
 		at += pace * STEP
 		var lanes: Array = game.opponent_lanes.duplicate()
 		var player_lane: float = game.lane
 		_place()
 		for i in game.opponents.size():
-			if absf(float(lanes[i]) - float(offsets[i][1])) > 0.01:
+			# Nur seitliche Versätze der Items übernehmen (sonst bleibt die gewählte Spur).
+			if game.item_ext.pushes.has(i) and absf(float(lanes[i]) - float(offsets[i][1])) > 0.01:
 				offsets[i][1] = float(lanes[i])
 				game.opponents[i].transform = game.world.reset_transform(
 					fposmod(game.opponent_distances[i], game.track_length), float(lanes[i])
 				)
 				game.opponent_lanes[i] = float(lanes[i])
-		if absf(player_lane - game.lane) > 0.01:
+		if game.item_ext.pushes.has(-1) and absf(player_lane - game.lane) > 0.01:
 			game.lane = player_lane
 			game.player.transform = game.world.reset_transform(
 				fposmod(at, game.track_length), player_lane
@@ -99,10 +137,26 @@ func _tick(seconds: float) -> void:
 		for i in game.opponent_shield_times.size():
 			game.opponent_shield_times[i] = maxf(0.0, game.opponent_shield_times[i] - STEP)
 		game._update_gameplay_layer(STEP)
+		if not OS.get_environment("LUMO_KART_ITEM_DEBUG").is_empty():
+			for behaviour in game.item_ext.effects:
+				for entry in game.item_ext.effects[behaviour].active:
+					var shown: Dictionary = entry.duplicate()
+					shown.erase("rig")
+					print(
+						(
+							"[dbg] at=%.2f rival=%.2f/%.2f %s"
+							% [at, game.opponent_distances[0], game.opponent_lanes[0], shown]
+						)
+					)
 		game._sync_rival_item_fx_all()
 		game.shield_visual.advance(STEP, game.shield_time)
 		game._update_vehicles(STEP)
 		game._update_camera(STEP)
+		# Anzeige-Anhebung (Schwerkraft-Welle) wie im Rennen über den Bild-Glätter.
+		for kart in [game.player] + Array(game.opponents):
+			var lift: Variant = game.item_ext.offset_for(kart)
+			if lift is Transform3D:
+				kart.global_position += (lift as Transform3D).origin
 		game._update_hud()
 		game._update_item_hud(STEP)
 		for fx in game.opponent_item_fx:
@@ -111,6 +165,8 @@ func _tick(seconds: float) -> void:
 
 
 func _shot(name: String) -> void:
+	RenderingServer.render_loop_enabled = true
+	await process_frame
 	await RenderingServer.frame_post_draw
 	var file := destination.path_join("%s_%s.png" % [item, name])
 	if root.get_texture().get_image().save_png(file) != OK:
@@ -138,6 +194,12 @@ func _impact_seen() -> bool:
 				not str(entry.get("result", "")).is_empty()
 				or str(entry.get("phase", "")) in ["done", "field"]
 			):
+				return true
+			if entry.get("hits") is Dictionary and not (entry.hits as Dictionary).is_empty():
+				return true
+			if entry.get("affected") is Array and not (entry.affected as Array).is_empty():
+				return true
+			if float(entry.get("popped", -1.0)) >= 0.0:
 				return true
 	return false
 
@@ -190,6 +252,11 @@ func _run() -> void:
 	game.countdown = 0.0
 	game.racing = true
 	game.message.text = ""
+	# Die Rennszene setzt beim Start ihre eigene Fenstergröße: Zielgröße danach erneut setzen.
+	DisplayServer.window_set_size(window_size)
+	root.size = window_size
+	await process_frame
+	await process_frame
 	if is_instance_valid(game.kart_audio):
 		game.kart_audio.set_muted(true)
 	# Sichere, gerade Stelle suchen (Ziel vorn ist im Rennbild).
@@ -208,6 +275,14 @@ func _run() -> void:
 		offsets = [[11.5, 0.9], [-50.0, 2.0], [-58.0, -2.0], [-66.0, 1.0], [-74.0, -1.0]]
 	if item == "whirlwind":
 		offsets[0] = [16.0, 0.4]
+	elif item == "gravity_wave":
+		offsets[0] = [7.0, 1.2]
+		offsets[1] = [5.0, -1.6]
+	elif item == "star_decoy":
+		offsets[0] = [-16.0, 0.3]
+	elif item == "arc_trap":
+		rival_attacks = true
+		offsets[0] = [9.0, 0.0]
 	await _tick(1.2)
 	if shield:
 		if rival_attacks:
@@ -221,7 +296,14 @@ func _run() -> void:
 		game._grant_item(item)
 		game.item_roulette_time = 0.0
 		game._use_item()
-	var elapsed: float = 0.0
+	if item == "star_decoy":
+		# Ein Rivale hinter dem Kind feuert ein Raketenpaar auf das Kind (echter Raketenflug).
+		await _tick(0.3)
+		game.item_runtime.fire_pair(
+			"star_rocket", 0, game.opponent_distances[0], game.opponent_lanes[0], -1, [], pace
+		)
+		game.message.text = "Rivale feuert Sternraketen auf dich!"
+	var elapsed: float = 0.3 if item == "star_decoy" else 0.0
 	var impact_at: float = -1.0
 	var tag: String = (
 		("_rival" if rival_attacks else "")

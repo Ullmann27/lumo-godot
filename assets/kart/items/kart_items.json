@@ -309,6 +309,30 @@
         "whirl_hit"
       ],
       "note": "Lenkbarer Luftwirbel; versetzt einen Rivalen bis 2,2 m seitlich, nur im sicheren Korridor."
+    },
+    {
+      "id": "gravity_wave",
+      "name": "Schwerkraft-Welle",
+      "short": "WELLE",
+      "glyph": "◎",
+      "color": "#9a8cff",
+      "behaviour": "gravity_wave",
+      "radius": 13.0,
+      "seconds": 1.1,
+      "role": "area",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "gravity_wave"
+      ],
+      "note": "Ringwelle bis 13 m hebt nahe Gegner 0,9 s an (nur Anzeige, sichere Landung), dann 72 % Tempo 1,1 s."
     }
   ]
 }

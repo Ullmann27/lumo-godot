@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Original Lumo-Kart cues for the extended items (Donnerstern, Frostkristall, Feuermeteor,
-Sternenfestung, Wirbelwind) plus a soft warning tone.
+Sternenfestung, Wirbelwind, Schwerkraft-Welle, Sternen-Duplikat, Turbo-Kette XL,
+Lichtbogen-Falle, Zeitblüte) plus a soft warning tone.
 
 Synthesised from scratch (numpy + ffmpeg/libvorbis), no recordings, no samples. Reuses the
 helpers and the export pipeline of tools/art/generate_kart_item_audio.py so loudness and format
@@ -113,6 +114,43 @@ def cue(name):
         gust = noise(len(t), 200, 3200) * np.exp(-t * 4) * env(t, 0.01, 0.2) * 0.7
         flutter = noise(len(t), 1500, 5000) * (0.5 + 0.5 * np.sin(TAU * 18 * t)) * np.exp(-t * 6) * 0.3
         return gust + flutter
+    if name == "gravity_wave":
+        # Deep "wobbly" whoomp + rising hologram shimmer: space bends, karts float.
+        t = t_axis(1.2)
+        wob = np.sin(TAU * np.cumsum(70 + 25 * np.sin(TAU * 5 * t)) / SR) * env(t, 0.02, 0.6) * np.exp(-t * 2.0) * 0.8
+        shimmer = sum(np.sin(TAU * f * t + i) for i, f in enumerate((880, 1320, 1760))) / 3 * env(t, 0.15, 0.5) * 0.25
+        return wob + shimmer + sweep(t, 200, 900, 0.8) * env(t, 0.1, 0.4) * 0.15
+    if name == "decoy_up":
+        t = t_axis(0.8)
+        chord = (bell(t, 1046, 4) + bell(delayed(t, 0.06), 1568, 4) + bell(delayed(t, 0.12), 2093, 5)) * 0.3
+        return chord + sweep(t, 600, 2400, 0.6) * env(t, 0.02, 0.5) * 0.15
+    if name == "decoy_pop":
+        t = t_axis(0.6)
+        return noise(len(t), 2500, 9000) * np.exp(-t * 14) * 0.4 + sum(bell(delayed(t, d), f, 10) for d, f in ((0.0, 2637), (0.05, 2093), (0.1, 1568))) * 0.25
+    if name == "turbo_xl":
+        # Strong ignition: thump + bright jet roar + rising engine whine.
+        t = t_axis(1.3)
+        thump = np.sin(TAU * (60 * t + 30 * (1 - np.exp(-t * 25)))) * np.exp(-t * 12) * 0.8
+        roar = noise(len(t), 200, 6000) * env(t, 0.02, 0.5) * np.exp(-t * 1.2) * 0.5
+        whine = sweep(t, 300, 1100, 0.6) * env(t, 0.05, 0.4) * 0.25
+        return thump + roar + whine
+    if name == "arc_place":
+        t = t_axis(0.7)
+        clank = sum(np.sin(TAU * f * t) * np.exp(-t * 30) for f in (420, 690)) * 0.3
+        buzz = np.sign(np.sin(TAU * 120 * t)) * env(t, 0.2, 0.2) * 0.12 + crackle(len(t), 50, 400) * 0.3 * (t > 0.25)
+        return clank + buzz
+    if name == "arc_zap":
+        t = t_axis(0.6)
+        return noise(len(t), 1500, 9000) * np.exp(-t * 12) * 0.6 + crackle(len(t), 160, 300) * 0.4 * np.exp(-t * 4)
+    if name == "bloom_open":
+        # Soft blossom: harp-like rising arpeggio, slowed shimmer.
+        t = t_axis(1.4)
+        notes = sum(bell(delayed(t, 0.09 * i), f, 3.5) for i, f in enumerate((523, 659, 784, 988, 1175))) * 0.28
+        return notes + noise(len(t), 3000, 9000) * env(t, 0.4, 0.6) * 0.06
+    if name == "bloom_slow":
+        # Pitch sliding down: "time slows".
+        t = t_axis(0.8)
+        return sweep(t, 900, 300, 0.7) * env(t, 0.03, 0.4) * 0.35 + bell(t, 660, 4) * 0.15
     if name == "ext_warning":
         # Soft two-note "Achtung von oben" (gentler than the rocket alarm).
         t = t_axis(0.42)
@@ -123,6 +161,7 @@ def cue(name):
 CUES = [
     "thunder_charge", "thunder_strike", "frost_launch", "frost_hit", "frost_melt", "meteor_launch",
     "meteor_hit", "ember_hiss", "fortress_up", "fortress_end", "whirl_go", "whirl_hit", "ext_warning",
+    "gravity_wave", "decoy_up", "decoy_pop", "turbo_xl", "arc_place", "arc_zap", "bloom_open", "bloom_slow",
 ]
 
 

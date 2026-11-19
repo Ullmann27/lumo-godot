@@ -1,3 +1,4 @@
+# gdlint: disable=max-file-lines
 extends SceneTree
 ## Erweiterte Lumo-Kart-Items im echten Rennen (headless): Wirkung, Konter (Schild),
 ## Schonzeit, Sturzstellen-Sperre, KI-Einsatz und -Reaktion, Speichern/Fortsetzen.
@@ -8,7 +9,16 @@ const CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
 const REGISTRY = preload("res://scripts/games/kart_items/ext/kart_item_ext_registry.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const ALL_ITEMS: Array[String] = [
-	"thunder_star", "frost_crystal", "fire_meteor", "star_fortress", "whirlwind"
+	"thunder_star",
+	"frost_crystal",
+	"fire_meteor",
+	"star_fortress",
+	"whirlwind",
+	"gravity_wave",
+	"star_decoy",
+	"turbo_xl",
+	"arc_trap",
+	"time_bloom",
 ]
 var game
 var ext
@@ -734,6 +744,339 @@ func _test_whirlwind() -> void:
 	)
 
 
+# --- Schwerkraft-Welle ---------------------------------------------------------------------
+
+
+func _test_gravity() -> void:
+	var at: float = safe_d
+	var near: Array = [[0.0, 0.0, 0.0], [6.0, 1.0], [24.0, -1.0]]
+	var effect = ext.effect("gravity_wave")
+	_fresh()
+	_place(at, near)
+	_player_use("gravity_wave")
+	_check(game.item.is_empty() and effect.active.size() == 1, "Welle startet")
+	var peak: float = 0.0
+	var slowest: float = 1.0
+	var offset_seen: bool = false
+	for _f in range(70):
+		await _tick(STEP, at, near)
+		peak = maxf(peak, effect.lift_for(0))
+		slowest = minf(slowest, ext.speed_factor(0))
+		offset_seen = offset_seen or ext.offset_for(game.opponents[0]) is Transform3D
+	_check(peak > 0.9 and peak <= 1.21, "naher Rivale schwebt an (%.2f m)" % peak)
+	_check(offset_seen, "Anhebung geht als Anzeige-Versatz an den Bild-Glätter")
+	_check(slowest < 0.75, "nach der Landung kurz langsamer (%.2f)" % slowest)
+	_check(
+		is_equal_approx(ext.speed_factor(1), 1.0) and effect.lift_for(1) == 0.0,
+		"Rivale außerhalb von 13 m bleibt unberührt"
+	)
+	_check(
+		absf(game.opponent_lanes[0] - 1.0) < 0.001,
+		"Fahrposition bleibt auf der Fahrbahn (sichere Landung)"
+	)
+	await _tick(1.6, at, near)
+	_check(
+		(
+			effect.lift_for(0) == 0.0
+			and is_equal_approx(ext.speed_factor(0), 1.0)
+			and effect.active.is_empty()
+		),
+		"gelandet, Tempo zurück, Welle weg"
+	)
+	_fresh()
+	game.opponent_shield_times[0] = 5.0
+	_place(at, near)
+	_player_use("gravity_wave")
+	await _tick(1.0, at, near)
+	_check(effect.lift_for(0) == 0.0 and int(effect.stats.blocked) >= 1, "Schild hält die Welle ab")
+	_fresh()
+	game.opponent_grace_times[0] = 3.0
+	_place(at, near)
+	_player_use("gravity_wave")
+	await _tick(1.0, at, near)
+	_check(
+		effect.lift_for(0) == 0.0 and is_equal_approx(ext.speed_factor(0), 1.0), "Schonzeit gilt"
+	)
+	_fresh()
+	var behind: Array = [[0.0, 0.0, 0.0], [-5.0, 0.5]]
+	_place(at, behind)
+	game.opponent_items[0] = "gravity_wave"
+	game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+	_check(game.opponent_items[0].is_empty(), "KI löst die Welle aus, wenn jemand nah ist")
+	var child_slow: float = 1.0
+	for _f in range(60):
+		await _tick(STEP, at, behind)
+		child_slow = minf(child_slow, ext.speed_factor(-1))
+	_check(child_slow < 0.75, "Kind schwebt kurz und wird gedämpft")
+	_fresh()
+	_place(at, near)
+	_player_use("gravity_wave")
+	await _tick(0.3, at, near)
+	await _session_roundtrip("Welle")
+	_check(effect.active.size() == 1, "Welle läuft nach Fortsetzen weiter")
+
+
+# --- Sternen-Duplikat ----------------------------------------------------------------------
+
+
+func _test_decoy() -> void:
+	var at: float = safe_d
+	var behind: Array = [[0.0, 0.0, 0.0], [-20.0, 0.0]]
+	var effect = ext.effect("star_decoy")
+	_fresh()
+	_place(at, behind)
+	_player_use("star_decoy")
+	await _tick(0.4, at, behind)
+	var rig: Node3D = effect.active[0].get("rig") if not effect.active.is_empty() else null
+	_check(
+		is_instance_valid(rig) and int(rig.get_meta("parts", 0)) >= 4,
+		"Kopie aus den echten Kart-Teilen gebaut"
+	)
+	var gap: float = 0.0
+	if is_instance_valid(rig):
+		gap = rig.global_position.distance_to(game.player.global_position)
+	_check(gap > 1.5 and gap < 3.0, "Kopie fährt sichtbar neben dem echten Kart (%.2f m)" % gap)
+	game.item_runtime.fire_pair("star_rocket", 0, game.opponent_distances[0], 0.0, -1, [], 0.0)
+	for _f in range(150):
+		await _tick(STEP, at, behind)
+	_check(
+		int(effect.stats.get("lured", 0)) >= 1,
+		"Raketen verlieren das echte Kart und jagen die Kopie"
+	)
+	_check(
+		game.player_spin_time <= 0.0 and int(game.gameplay_stats.get("player_hits_taken", 0)) == 0,
+		"echtes Kart bleibt unberührt"
+	)
+	_check(int(effect.stats.get("absorbed", 0)) == 1, "Kopie fängt das Raketenpaar ab")
+	# Neue Angriffe treffen die Kopie (eine pro Kopie).
+	_fresh()
+	_place(at, [[0.0, 0.0, 0.0], [-14.0, 0.5]])
+	_player_use("star_decoy")
+	ext.effect("lightning_strike").use(0, "thunder_star", CATALOG.entry("thunder_star"))
+	await _tick(1.6, at, [[0.0, 0.0, 0.0], [-14.0, 0.5]])
+	_check(
+		is_equal_approx(ext.speed_factor(-1), 1.0) and not effect.has_decoy(-1),
+		"Blitz trifft die Kopie, nicht das Kind"
+	)
+	# KI: bedroht -> Duplikat.
+	_fresh()
+	var ahead: Array = [[0.0, 0.0, 0.0], [16.0, 1.0]]
+	_place(at, ahead)
+	game.opponent_items[0] = "star_decoy"
+	_player_use("thunder_star")
+	game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+	_check(
+		game.opponent_items[0].is_empty() and effect.has_decoy(0),
+		"KI wirft das Duplikat gegen den angekündigten Blitz"
+	)
+	await _tick(1.4, at, ahead)
+	_check(is_equal_approx(ext.speed_factor(0), 1.0), "Rivale bleibt dank Kopie ungebremst")
+	_fresh()
+	_place(at, behind)
+	_player_use("star_decoy")
+	await _tick(1.0, at, behind)
+	await _session_roundtrip("Duplikat")
+	_check(effect.has_decoy(-1), "Duplikat nach Fortsetzen aktiv")
+	await _tick(5.5, at, behind)
+	_check(effect.active.is_empty(), "Duplikat endet nach 6 s")
+
+
+# --- Turbo-Kette XL ------------------------------------------------------------------------
+
+
+func _test_turbo() -> void:
+	var at: float = safe_d
+	var free: Array = [[0.0, 0.0, 0.0], [-60.0, 1.0]]
+	var effect = ext.effect("turbo_xl")
+	_fresh()
+	_place(at, free)
+	game._grant_item("turbo_xl")
+	game.item_roulette_time = 0.0
+	_check(game.item_charges == 3, "drei Ladungen")
+	game.boost_time = 0.0
+	game._use_item()
+	_check(game.item_charges == 2 and game.boost_time > 1.0, "Ladung 1 zündet den Kart-Schub")
+	await _tick(0.2, at, free)
+	_check(
+		absf(ext.speed_factor(-1) - 1.08) < 0.01,
+		"XL: +8 %% Höchsttempo (%.3f)" % ext.speed_factor(-1)
+	)
+	var rig: Node3D = effect.active[0].get("rig") if not effect.active.is_empty() else null
+	_check(
+		is_instance_valid(rig) and rig.visible and (rig.get_node("Jet0/Core") as Node3D).visible,
+		"Auspuffstrahlen sichtbar"
+	)
+	game._use_item()
+	game._use_item()
+	_check(
+		game.item.is_empty() and int(effect.stats.bursts) == 3, "drei Ladungen einzeln ausgelöst"
+	)
+	await _tick(2.0, at, free)
+	_check(is_equal_approx(ext.speed_factor(-1), 1.0), "Schub endet")
+	var unsafe: float = _find_unsafe()
+	if unsafe >= 0.0:
+		_fresh()
+		_place(unsafe - 10.0, free)
+		game._grant_item("turbo_xl")
+		game.item_roulette_time = 0.0
+		game._use_item()
+		_check(game.item_charges == 3, "keine Zündung vor Brücke/Kante/Rampe (Ladung bleibt)")
+	_fresh()
+	_place(at, [[0.0, 0.0, 0.0], [-20.0, 1.0]])
+	var bursts_before: int = int(effect.stats.bursts)
+	game.opponent_items[0] = "turbo_xl"
+	game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+	_check(
+		game.opponent_items[0].is_empty() and game.opponent_boost_times[0] > 0.0,
+		"KI zündet die Turbo-Kette"
+	)
+	await _tick(6.5, at, [[0.0, 0.0, 0.0], [-20.0, 1.0]])
+	_check(
+		int(effect.stats.bursts) - bursts_before == 3, "KI zündet alle drei Ladungen nacheinander"
+	)
+	_fresh()
+	_place(at, free)
+	game._grant_item("turbo_xl")
+	game.item_roulette_time = 0.0
+	game._use_item()
+	await _tick(0.5, at, free)
+	await _session_roundtrip("Turbo")
+	_check(
+		game.item == "turbo_xl" and game.item_charges == 2,
+		"restliche Ladungen nach Fortsetzen erhalten"
+	)
+
+
+# --- Lichtbogen-Falle ----------------------------------------------------------------------
+
+
+func _test_arc() -> void:
+	var at: float = safe_d + 30.0
+	var effect = ext.effect("arc_trap")
+	_fresh()
+	var behind: Array = [[0.0, 0.0, 0.0], [-12.0, 0.0]]
+	_place(at, behind)
+	_player_use("arc_trap")
+	_check(game.item.is_empty() and effect.active.size() == 1, "Falle steht")
+	var trap: Dictionary = effect.active[0] if not effect.active.is_empty() else {}
+	if not trap.is_empty():
+		var wall: float = game._wall_lateral_at(fposmod(float(trap.progress), game.track_length))
+		_check(
+			absf(float(trap.lateral)) + 1.3 <= wall - 2.39, "neben dem Bogen bleiben ≥ 2,4 m frei"
+		)
+		_check(absf(float(trap.progress) - (at - 3.0)) < 0.01, "Falle liegt 3 m hinter dem Kart")
+	await _tick(0.5, at, behind)
+	_check(absf(ext.rival_lane_bias(0)) > 0.5, "KI lenkt um die Falle herum")
+	var through: Array = [[0.0, 0.0, 0.0], [float(trap.get("progress", at)) - at, 0.2]]
+	await _tick(0.1, at, through)
+	_check(ext.speed_factor(0) < 0.75 and int(effect.stats.hits) == 1, "Durchfahrt bremst kurz")
+	await _tick(1.6, at, through)
+	_check(
+		effect.active.is_empty() and is_equal_approx(ext.speed_factor(0), 1.0),
+		"Bogen bricht zusammen und verschwindet"
+	)
+	_fresh()
+	_place(at, behind)
+	_player_use("arc_trap")
+	await _tick(8.6, at, behind)
+	_check(effect.active.is_empty(), "Falle verschwindet nach 8 s von selbst")
+	_fresh()
+	game.opponent_shield_times[0] = 5.0
+	_place(at, behind)
+	_player_use("arc_trap")
+	await _tick(0.5, at, behind)
+	await _tick(0.2, at, [[0.0, 0.0, 0.0], [-3.0, 0.2]])
+	_check(
+		is_equal_approx(ext.speed_factor(0), 1.0) and int(effect.stats.blocked) >= 1,
+		"Schild fährt durch"
+	)
+	var unsafe: float = _find_unsafe()
+	if unsafe >= 0.0:
+		_fresh()
+		_place(unsafe + 3.0, behind)
+		game._grant_item("arc_trap")
+		game.item_roulette_time = 0.0
+		game._use_item()
+		_check(game.item == "arc_trap", "keine Falle auf Brücke/Kante/Rampe")
+	# KI: legt die Falle für das Kind dahinter; Kind sieht die Warnung.
+	_fresh()
+	var rival_ahead: Array = [[0.0, 0.0, 0.0], [9.0, 0.0]]
+	_place(at, rival_ahead)
+	game.opponent_items[0] = "arc_trap"
+	game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+	_check(
+		game.opponent_items[0].is_empty() and effect.active.size() == 1,
+		"KI legt die Falle vor das Kind"
+	)
+	await _tick(0.4, at, rival_ahead)
+	_check(
+		ext.incoming_for(-1) < INF and game.message.text.contains("Lichtbogen"),
+		"Kind wird vor der Falle gewarnt (Text, keine Raketen-Warnung)"
+	)
+	_check(game.player_warning < 0.3, "keine „Erfasst“-Warnung für eine Gefahr vorn")
+	await _session_roundtrip("Falle")
+	_check(effect.active.size() == 1, "Falle nach Fortsetzen noch da")
+
+
+# --- Zeitblüte -----------------------------------------------------------------------------
+
+
+func _test_bloom() -> void:
+	var at: float = safe_d
+	var effect = ext.effect("time_bloom")
+	_fresh()
+	var ahead: Array = [[0.0, 0.0, 0.0], [40.0, 0.5], [60.0, -1.0]]
+	_place(at, ahead)
+	_player_use("time_bloom")
+	_check(game.item.is_empty() and effect.active.size() == 1, "Zeitblüte geworfen")
+	var field: Dictionary = effect.active[0] if not effect.active.is_empty() else {}
+	if field.is_empty():
+		return
+	var spacing: float = game.track_length / 8.0
+	var local: float = fposmod(float(field.progress), game.track_length)
+	_check(
+		absf(local - round(local / spacing) * spacing) > 8.0, "nicht über einer Checkpoint-Grenze"
+	)
+	_check(ext.safe_at(float(field.progress)), "auf sicherer Fahrbahn")
+	var inside: Array = [[0.0, 0.0, 0.0], [float(field.progress) - at, 0.5], [60.0, -1.0]]
+	await _tick(1.2, at, inside)
+	_check(
+		absf(ext.speed_factor(0) - 0.55) < 0.05,
+		"Gegner im Feld langsam (%.2f)" % ext.speed_factor(0)
+	)
+	_check(is_equal_approx(ext.speed_factor(1), 1.0), "Gegner außerhalb fährt normal")
+	var own: Array = [[0.0, 0.0, 0.0], [float(field.progress) - at, 0.5]]
+	_place(float(field.progress), [[0.0, 0.0, 0.0], [0.0, 0.5]])
+	await _tick(0.3, float(field.progress), [[0.0, 0.0, 0.0], [0.0, 0.5]])
+	_check(is_equal_approx(ext.speed_factor(-1), 1.0), "eigenes Kart im Feld unbeeinflusst")
+	await _tick(5.5, at, own)
+	_check(
+		effect.active.is_empty() and is_equal_approx(ext.speed_factor(0), 1.0),
+		"Feld schließt sich nach Ablauf"
+	)
+	_fresh()
+	game.opponent_shield_times[0] = 9.0
+	_place(at, ahead)
+	_player_use("time_bloom")
+	field = effect.active[0]
+	await _tick(1.2, at, [[0.0, 0.0, 0.0], [float(field.progress) - at, 0.5]])
+	_check(is_equal_approx(ext.speed_factor(0), 1.0), "Schild: unbeeinflusst durchs Feld")
+	_fresh()
+	_place(at, [[0.0, 0.0, 0.0], [-20.0, 0.0]])
+	game.opponent_items[0] = "time_bloom"
+	game._rival_use_catalog_item(0, game.player.position - game.opponents[0].position)
+	_check(
+		game.opponent_items[0].is_empty() and effect.active.size() == 1,
+		"KI legt die Zeitblüte vor das Kind"
+	)
+	await _tick(0.1, at, [[0.0, 0.0, 0.0], [-20.0, 0.0]])
+	_check(
+		ext.incoming_for(-1) < INF and game.message.text.contains("Zeitblüte"), "Kind wird gewarnt"
+	)
+	await _session_roundtrip("Zeitblüte")
+	_check(effect.active.size() == 1, "Zeitblüte nach Fortsetzen da")
+
+
 func _run() -> void:
 	var tracks: Array[String] = ["sonnenhafen", "winter_sprint", "jungle_emerald_3600"]
 	for id in ALL_ITEMS:
@@ -772,6 +1115,16 @@ func _run() -> void:
 			await _test_fortress()
 		if "whirlwind" in items:
 			await _test_whirlwind()
+		if "gravity_wave" in items:
+			await _test_gravity()
+		if "star_decoy" in items:
+			await _test_decoy()
+		if "turbo_xl" in items:
+			await _test_turbo()
+		if "arc_trap" in items:
+			await _test_arc()
+		if "time_bloom" in items:
+			await _test_bloom()
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	game.abandoned = true
 	game.queue_free()

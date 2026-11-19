@@ -204,7 +204,122 @@ def whirlwind():
     return canvas
 
 
+def kart_shape(draw_fn_mask, cx, cy, w):
+    """Simple kart silhouette (body + two wheels) as mask polygons."""
+    h = w * 0.42
+    return [(cx - w * 0.5, cy), (cx - w * 0.38, cy - h * 0.55), (cx - w * 0.05, cy - h * 0.6), (cx + w * 0.08, cy - h),
+            (cx + w * 0.3, cy - h), (cx + w * 0.36, cy - h * 0.55), (cx + w * 0.5, cy - h * 0.4), (cx + w * 0.5, cy)]
+
+
+def gravity_wave():
+    canvas_layers = []
+    for k, r in enumerate((400, 300, 200)):
+        ring = shape_mask(lambda d, r=r: d.arc((512 - r, 640 - r * 0.45, 512 + r, 640 + r * 0.45), 0, 360, fill=255, width=46))
+        canvas_layers.append((vertical_gradient(ring, mix(rgba("8ff0ff"), rgba("b48cff"), k / 2), rgba("6a5cff")), ring))
+    body = shape_mask(lambda d: d.polygon(kart_shape(None, 512, 470, 380), fill=255))
+    wheels = shape_mask(lambda d: [d.ellipse((x - 62, 430, x + 62, 554), fill=255) for x in (390, 640)])
+    canvas_layers.append((vertical_gradient(body, rgba("ffffff"), rgba("8fe0ff")), body))
+    canvas_layers.append((vertical_gradient(wheels, rgba("4a5a80"), rgba("1d2440")), wheels))
+    canvas = compose(canvas_layers, glow=rgba("9fe8ff", 200))
+    draw = ImageDraw.Draw(canvas)
+    for x in (300, 512, 724):
+        draw.polygon([(x, 150), (x - 46, 230), (x + 46, 230)], fill=rgba("b8f4ff"), outline=INK, width=12)
+    return canvas
+
+
+def star_decoy():
+    real = shape_mask(lambda d: d.polygon(kart_shape(None, 400, 700, 470), fill=255))
+    real_wheels = shape_mask(lambda d: [d.ellipse((x - 70, 650, x + 70, 790), fill=255) for x in (250, 545)])
+    canvas = compose([(vertical_gradient(real, rgba("ffd66b"), rgba("ff8a3c")), real),
+                      (vertical_gradient(real_wheels, rgba("4a5a80"), rgba("1d2440")), real_wheels)], glow=None)
+    holo = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    hmask = shape_mask(lambda d: d.polygon(kart_shape(None, 640, 420, 470), fill=255))
+    hw = shape_mask(lambda d: [d.ellipse((x - 70, 370, x + 70, 510), fill=255) for x in (490, 785)])
+    union = ImageChops.lighter(hmask, hw)
+    lines = Image.new("L", (S, S), 0)
+    ld = ImageDraw.Draw(lines)
+    for y in range(200, 560, 26):
+        ld.rectangle((0, y, S, y + 12), fill=255)
+    fill = Image.new("RGBA", (S, S), rgba("6fe8ff", 230))
+    fill.putalpha(ImageChops.multiply(union, lines.point(lambda v: 150 + v // 3)))
+    rim = Image.new("RGBA", (S, S), rgba("bff6ff"))
+    rim.putalpha(ImageChops.subtract(outline(union, 25), union))
+    holo.alpha_composite(fill)
+    holo.alpha_composite(rim)
+    glow = Image.new("RGBA", (S, S), rgba("6fe8ff"))
+    glow.putalpha(outline(union, 81).filter(ImageFilter.GaussianBlur(30)).point(lambda v: int(v * 0.5)))
+    out = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    out.alpha_composite(glow)
+    out.alpha_composite(holo)
+    out.alpha_composite(canvas)
+    draw = ImageDraw.Draw(out)
+    draw.polygon(star_points(800, 180, 110, 46), fill=rgba("ffffff"), outline=INK, width=12)
+    return out
+
+
+def turbo_xl():
+    layers = []
+    for k in range(3):
+        x = 230 + k * 230
+        pts = [(x - 110, 260), (x + 40, 260), (x + 190, 512), (x + 40, 764), (x - 110, 764), (x + 40, 512)]
+        m = shape_mask(lambda d, pts=pts: d.polygon(pts, fill=255))
+        layers.append((vertical_gradient(m, mix(rgba("aef6ff"), rgba("ff7ad9"), k / 2), mix(rgba("3cc7ff"), rgba("b04cff"), k / 2)), m))
+    canvas = compose(layers, glow=rgba("7fe6ff", 200))
+    draw = ImageDraw.Draw(canvas)
+    draw.rounded_rectangle((640, 760, 950, 950), 40, fill=rgba("ffd23f"), outline=INK, width=16)
+    draw.text((675, 770), "XL", fill=INK, font=_font(150))
+    return canvas
+
+
+def _font(size):
+    try:
+        from PIL import ImageFont
+        return ImageFont.truetype(str(ROOT / "assets/fonts/Nunito-Black.ttf"), size)
+    except OSError:
+        from PIL import ImageFont
+        return ImageFont.load_default()
+
+
+def arc_trap():
+    posts = shape_mask(lambda d: [d.rounded_rectangle((x - 50, 420, x + 50, 900), 30, fill=255) for x in (230, 794)])
+    caps = shape_mask(lambda d: [d.ellipse((x - 85, 330, x + 85, 500), fill=255) for x in (230, 794)])
+    canvas = compose([(vertical_gradient(posts, rgba("7b6aa8"), rgba("3a2d63")), posts),
+                      (radial_gradient(caps, (230, 400), 120, rgba("ffffff"), rgba("b47cff")), caps)], glow=rgba("c08cff", 200))
+    draw = ImageDraw.Draw(canvas)
+    pts = [(230, 410), (330, 250), (410, 360), (512, 200), (614, 360), (694, 250), (794, 410)]
+    draw.line(pts, fill=rgba("b47cff"), width=70, joint="curve")
+    draw.line(pts, fill=rgba("fff4ff"), width=26, joint="curve")
+    draw.line([(150, 930), (874, 930)], fill=rgba("c08cff"), width=30)
+    return canvas
+
+
+def time_bloom():
+    layers = []
+    for k in range(8):
+        a = k * math.pi / 4
+        cx, cy = 512 + math.cos(a) * 230, 512 + math.sin(a) * 230
+        m = shape_mask(lambda d, cx=cx, cy=cy: d.ellipse((cx - 140, cy - 140, cx + 140, cy + 140), fill=255))
+        colour = rgba("7ff0d8") if k % 2 == 0 else rgba("ff9fd2")
+        layers.append((radial_gradient(m, (cx, cy), 160, rgba("ffffff"), colour), m))
+    centre = shape_mask(lambda d: d.ellipse((322, 322, 702, 702), fill=255))
+    layers.append((radial_gradient(centre, (480, 470), 260, rgba("fffbe8"), rgba("ffe08a")), centre))
+    canvas = compose(layers, glow=rgba("9ff5e2", 190))
+    draw = ImageDraw.Draw(canvas)
+    for k in range(12):
+        a = k * math.pi / 6
+        draw.line([(512 + math.cos(a) * 150, 512 + math.sin(a) * 150), (512 + math.cos(a) * 175, 512 + math.sin(a) * 175)], fill=INK, width=14)
+    draw.line([(512, 512), (512, 380)], fill=INK, width=26)
+    draw.line([(512, 512), (610, 560)], fill=INK, width=22)
+    draw.ellipse((488, 488, 536, 536), fill=INK)
+    return canvas
+
+
 ICONS = {
+    "gravity_wave": gravity_wave,
+    "star_decoy": star_decoy,
+    "turbo_xl": turbo_xl,
+    "arc_trap": arc_trap,
+    "time_bloom": time_bloom,
     "thunder_star": thunder_star,
     "frost_crystal": frost_crystal,
     "fire_meteor": fire_meteor,
@@ -215,8 +330,11 @@ ICONS = {
 
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else OUT
+    only = sys.argv[2].split(",") if len(sys.argv) > 2 else None
     out.mkdir(parents=True, exist_ok=True)
     for item_id, painter in ICONS.items():
+        if only and item_id not in only:
+            continue
         image = painter().resize((256, 256), Image.LANCZOS)
         path = out / ("icon_%s.webp" % item_id)
         image.save(path, "WEBP", lossless=True)

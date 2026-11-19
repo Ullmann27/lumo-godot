@@ -5311,7 +5311,7 @@ func _build_gameplay_layer() -> void:
 	rocket_flight.setup(self, graphics_profile, reduced_motion)
 	frame_smoother = FRAME_SMOOTHER.new()
 	frame_smoother.nodes_provider = _smoothed_nodes
-	frame_smoother.offset_provider = rocket_flight.offset_for
+	frame_smoother.offset_provider = _display_offset  # Hook items-neu (vorher rocket_flight.offset_for)
 	race_root.add_child(frame_smoother)
 	item_status_fx = ITEM_STATUS_FX.new()
 	player.add_child(item_status_fx)
@@ -5350,6 +5350,16 @@ func _smoothed_nodes() -> Array:
 			if is_instance_valid(entry.node):
 				nodes.append(entry.node)
 	return nodes
+
+
+## Anzeige-Versatz für den Bild-Glätter: Raketen-Wirbel + Anhebung der Schwerkraft-Welle.
+func _display_offset(node: Node3D) -> Variant:  # Hook items-neu
+	var offset: Variant = rocket_flight.offset_for(node) if is_instance_valid(rocket_flight) else null
+	if is_instance_valid(item_ext):
+		var lift: Variant = item_ext.offset_for(node)
+		if lift is Transform3D:
+			offset = (offset as Transform3D) * lift if offset is Transform3D else lift
+	return offset
 
 
 func _frame_at(progress: float, lateral: float) -> Transform3D:
