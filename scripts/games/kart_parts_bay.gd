@@ -217,6 +217,7 @@ func _on_open() -> void:
 	stats_panel.hide()
 	_on_slot(slot)
 	_sync()
+	menu._apply_responsive_layout.call_deferred()
 
 
 func _on_stats() -> void:
@@ -405,18 +406,26 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	for button in [open_button, stats_button, mount_button, back_button]:
 		button.add_theme_font_size_override("font_size", roundi(17 * ui_scale))
 		button.custom_minimum_size.y = button_height
+	var compact_drawer := drawer.size.x < 320.0 * ui_scale
 	for id in slot_buttons:
-		slot_buttons[id].add_theme_font_size_override("font_size", roundi(16 * ui_scale))
-		slot_buttons[id].custom_minimum_size = Vector2(104 * ui_scale, button_height)
+		var tab: Button = slot_buttons[id]
+		tab.add_theme_font_size_override("font_size", roundi((14 if compact_drawer else 16) * ui_scale))
+		tab.custom_minimum_size = Vector2((78 if compact_drawer else 104) * ui_scale, button_height)
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab.clip_text = true
+	title_label.visible = not compact_drawer
 	title_label.add_theme_font_size_override("font_size", roundi(20 * ui_scale))
 	stats_title.add_theme_font_size_override("font_size", roundi(18 * ui_scale))
 	stats_bars.row_height = 26.0 * ui_scale
 	stats_bars.font_scale = ui_scale
-	var open_width: float = 230.0 * ui_scale
-	var stats_width: float = 110.0 * ui_scale
-	# Die Bühne für die Kamera endet über den Knöpfen; sie liegen direkt darunter.
-	# Direkt über der Kartauswahl, ganz in der Bühne (nicht auf dem Rand der Auswahl).
-	var y: float = minf(stage.end.y + gap * 0.5, drawer.position.y - button_height - gap * 0.6)
+	var stats_width := clampf(stage.size.x * 0.30, 64.0 * ui_scale, 110.0 * ui_scale)
+	var open_width := clampf(stage.size.x - stats_width - gap, 48.0 * ui_scale, 230.0 * ui_scale)
+	open_button.clip_text = true
+	stats_button.clip_text = true
+	var y := stage.end.y + gap * 0.5
+	# In portrait the list sits below the camera. In landscape it sits beside it.
+	if drawer.end.x > stage.position.x:
+		y = minf(y, drawer.position.y - button_height - gap * 0.6)
 	var x: float = stage.get_center().x - (open_width + stats_width + gap) * 0.5
 	open_button.position = Vector2(x, y)
 	open_button.size = Vector2(open_width, button_height)
