@@ -466,7 +466,9 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(workshop_button, Vector2(0, 48), scale_factor)
 	_set_physical_font(workshop_button, 15, scale_factor)
 	for child in choices.get_children():
-		if child is GridContainer:
+		# Die Rennarten-Karten ordnet allein SECTIONS.layout (weiter unten): ein
+		# Zwischenwert hier ließ das Raster auf der Höhe der einspaltigen Liste stehen.
+		if child is GridContainer and child.name != "ModeCards":
 			child.columns = 2 if portrait and not narrow and step == 2 else 1
 		var cards: Array = child.get_children() if child is GridContainer else [child]
 		for card in cards:

@@ -173,12 +173,21 @@ static func layout(menu: Control, area_dp: Vector2, scale_factor: float, short_v
 		card.apply_size(scale_factor)
 
 
-## Fünf Rennarten: drei bzw. zwei Spalten; alle passen ohne Blättern, solange 64 dp reichen.
+## Fünf Rennarten: so viele Spalten, wie mit mindestens MODE_CARD_MIN_DP je Karte Platz
+## haben (sonst passt „Einzelrennen“ auf schmalen Handys nicht in lesbarer Größe);
+## alle passen ohne Blättern, solange 64 dp reichen.
+const MODE_CARD_MIN_DP: float = 190.0
+
+
 static func _layout_modes(grid: GridContainer, area_dp: Vector2, scale_factor: float) -> void:
 	var count := grid.get_child_count()
-	var columns := 3 if area_dp.x >= 420.0 else (2 if area_dp.x >= 260.0 else 1)
-	grid.columns = columns
 	var gap := 8.0
+	var columns := 1
+	for wanted in [3, 2]:
+		if (area_dp.x - gap * (wanted - 1)) / wanted >= MODE_CARD_MIN_DP:
+			columns = wanted
+			break
+	grid.columns = columns
 	grid.add_theme_constant_override("h_separation", roundi(gap * scale_factor))
 	grid.add_theme_constant_override("v_separation", roundi(gap * scale_factor))
 	var rows := ceili(float(count) / columns)
