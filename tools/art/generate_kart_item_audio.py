@@ -110,11 +110,19 @@ def cue(name):
         gate = ((t % 0.25) < 0.2).astype(float)
         return tone * gate * env(t, 0.005, 0.05) * 0.6
     if name == "roulette_tick":
-        t = t_axis(0.05)
-        return np.sin(TAU * 1900 * t) * np.exp(-t * 90) * 0.7
+        # Sternenkompass (19.11.2026): weicher Glas-Ton je Symbolwechsel; das Rennen
+        # spielt ihn mit fallender Tonhöhe (Dur-Pentatonik abwärts), leise und kurz.
+        t = t_axis(0.11)
+        attack = np.minimum(t / 0.004, 1)
+        glass = np.sin(TAU * 1568 * t) * np.exp(-t * 38) + 0.45 * np.sin(TAU * 2349 * t) * np.exp(-t * 55)
+        return glass * attack * 0.42
     if name == "roulette_done":
-        t = t_axis(0.6)
-        return sum(bell(np.maximum(t - d, 0), f, 7) * (t > d) for d, f in ((0, 1046), (0.07, 1318), (0.14, 1568))) * 0.5
+        # Sternenkompass-Abschluss: warmes C-Dur-Arpeggio mit leisem Glanz, kein Knall.
+        t = t_axis(0.95)
+        notes = ((0, 523), (0.06, 659), (0.12, 784), (0.2, 1046))
+        chord = sum(bell(np.maximum(t - d, 0), f, 4.5) * (t > d) for d, f in notes) * 0.42
+        shimmer = np.sin(TAU * 2093 * t) * np.exp(-np.maximum(t - 0.2, 0) * 6) * (t > 0.2) * 0.12
+        return chord + shimmer
     raise ValueError(name)
 
 
@@ -148,8 +156,19 @@ def export(name, audio):
 
 
 def main():
+    import sys
     OUT.mkdir(parents=True, exist_ok=True)
-    manifest = [export(name, cue(name)) for name in CUES]
+    only = [arg.split("=", 1)[1].split(",") for arg in sys.argv[1:] if arg.startswith("--only=")]
+    if only:
+        # Nur einzelne Töne neu erzeugen (z. B. --only=roulette_tick,roulette_done), die
+        # übrigen Dateien und ihre Manifest-Einträge bleiben unverändert.
+        previous = json.loads((OUT / "manifest.json").read_text())
+        by_file = {row["file"]: row for row in previous["assets"]}
+        for name in only[0]:
+            by_file[name + ".ogg"] = export(name, cue(name))
+        manifest = [by_file[name + ".ogg"] for name in CUES if name + ".ogg" in by_file]
+    else:
+        manifest = [export(name, cue(name)) for name in CUES]
     (OUT / "manifest.json").write_text(json.dumps({"generator": "tools/art/generate_kart_item_audio.py", "seed": 20261118,
                                                    "original_samples_only": True, "assets": manifest}, indent=2) + "\n")
     print(json.dumps({"files": len(manifest), "total_bytes": sum(m["bytes"] for m in manifest)}))

@@ -36,9 +36,10 @@ func _ready() -> void:
 		star.name = "SurpriseStar"
 		star.text = "★"
 		star.font_size = 120
-		star.pixel_size = 0.0062
+		star.pixel_size = 0.008
+		# Sternenkern: goldener Stern mit violettem Rand, mitten im Prisma.
 		star.modulate = Color("fff1a8")
-		star.outline_modulate = Color("ff7ad9")
+		star.outline_modulate = Color("8a5cff")
 		star.outline_size = 18
 		star.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		star.no_depth_test = false
@@ -75,16 +76,7 @@ func _process(delta: float) -> void:
 	rotation.y += delta * spin_speed
 
 
-## Race-managed boxes are animated by the race (spin and a gentle bob).
+## Race-managed boxes are animated by the race (Hüllen, Lichtbahnen, Sternenkern).
 func advance_managed(delta: float, reduced_motion: bool) -> void:
 	_age += delta
-	if reduced_motion:
-		return
-	# Spin the prism around its own up axis (the root keeps the track frame).
-	for child in get_children():
-		if child is MeshInstance3D:
-			(child as Node3D).rotation.y += delta * spin_speed
-	var star := get_node_or_null("SurpriseStar") as Node3D
-	if star != null:
-		star.position.y = sin(_age * 2.4) * 0.06
-		star.scale = Vector3.ONE * (1.0 + sin(_age * 3.1) * 0.08)
+	PRISM.animate(self, delta, _age, spin_speed, reduced_motion)

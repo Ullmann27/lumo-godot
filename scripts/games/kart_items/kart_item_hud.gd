@@ -19,6 +19,7 @@ const SHIELD_CYAN := Color("66e8ff")
 const INK := Color("071428")
 const ITEM_ART := "res://assets/kart/hud/items/"
 const FLASH_SECONDS: float = 0.32
+const STAR_COMPASS = preload("res://scripts/games/kart_items/kart_star_compass.gd")
 const ICON_ORDER: Array[String] = ["star_rocket", "shield", "boost", "spark_ball", "bubble_trap", "pulse", "star_magnet", "aurora", "triple_boost"]
 
 var reduced_motion: bool = false
@@ -113,6 +114,8 @@ func _draw() -> void:
 	if not str(state.get("hint", "")).is_empty():
 		_draw_hint(s)
 	_draw_popups(s)
+	# Sternenkompass (Ziehung) und Energiebahn vom Prisma: kart_star_compass.gd.
+	STAR_COMPASS.draw_on(self, state.get("compass", {}), state.get("item_rect", Rect2()), s)
 
 
 func _draw_popups(s: float) -> void:
@@ -373,6 +376,13 @@ func _draw_item_slot(s: float) -> void:
 	var item_id: String = str(state.get("item", ""))
 	var phase: String = str(state.get("phase", ""))
 	var roulette: float = float(state.get("roulette", 0.0))
+	if roulette > 0.0 and not (state.get("compass", {}) as Dictionary).is_empty():
+		# Der große Sternenkompass zeigt die Ziehung; das Feld wartet ruhig darauf.
+		draw_circle(centre, radius * 0.86, Color("0d2440"))
+		var sweep: float = -PI * 0.5 + TAU * (1.0 - roulette)
+		draw_arc(centre, radius * 0.9, -PI * 0.5, sweep, 48, LOCK_GOLD, 5.0 * s, true)
+		_label("?", centre, 44.0 * s, LOCK_GOLD)
+		return
 	if roulette > 0.0:
 		# Short slot-machine wheel: icons tick past, slowing down, then the result pops.
 		var ticks: float = pow(roulette, 1.6) * 14.0

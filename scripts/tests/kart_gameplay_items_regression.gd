@@ -46,7 +46,10 @@ func _test_catalog() -> void:
 		for value in CATALOG.odds(place).values():
 			total += value
 		_check(absf(total - 1.0) < 0.001, "odds at place %d sum to 1" % place)
-	_check(CATALOG.odds(1)["star_rocket"] == 0.0, "the leader never draws a homing rocket")
+	# Auftrag 19.11.2026: Platz 1 selten, aber nicht unmöglich; hinten deutlich häufiger.
+	var leader_rockets: float = CATALOG.odds(1)["star_rocket"]
+	_check(leader_rockets > 0.0 and leader_rockets < 0.08, "the leader rarely draws homing rockets")
+	_check(CATALOG.odds(4)["star_rocket"] > leader_rockets * 3.0, "chasers draw rockets far more often")
 	_check(CATALOG.odds(1)["aurora"] == 0.0 and CATALOG.odds(6)["aurora"] > 0.15, "Nordlicht is a comeback item")
 	_check(CATALOG.odds(6)["shield"] < CATALOG.odds(1)["shield"], "leaders defend, chasers attack")
 	var rng := RandomNumberGenerator.new()
@@ -152,7 +155,14 @@ func _test_props() -> void:
 	_check(not ring.crossed(Vector3(4, 1, 1), Vector3(4, 1, -1)), "passing beside the ring does not")
 	var box: Node3D = load("res://scenes/games/props/kart_item_box.tscn").instantiate()
 	root.add_child(box)
-	_check(box.get_node_or_null("MysteryPrismCore") != null and box.get_node_or_null("SurpriseStar") is Label3D and box.get_child_count() == 3, "item box scene reuses the two-surface prism plus a star emblem")
+	var layered: bool = (
+		box.get_node_or_null("MysteryPrismCore") != null
+		and box.get_node_or_null("SurpriseStar") is Label3D
+		and box.get_node_or_null("MysteryPrismInner") != null
+		and box.get_node_or_null("PrismRail1/Rail") != null
+		and box.get_child_count() == 7
+	)
+	_check(layered, "item box: layered star prism (shells, edges, two light rails, beacon) + star core")
 	_check(box.contains(Vector3(0, 0, 1.0)), "item box pickup radius")
 	box.pop()
 	_check(not box.contains(Vector3.ZERO), "popped box waits for respawn")
@@ -183,7 +193,10 @@ func _test_fx() -> void:
 func _test_race_integration() -> void:
 	await _start("race", "sonnenhafen")
 	# HEAD keeps its skill resonance rings in item_boxes; the surprise boxes are an own row.
-	_check(game.catalog_boxes.size() == 6 and game.catalog_boxes[0] is LumoKartItemBox, "race uses the reusable item box scene")
+	_check(
+		game.catalog_boxes.size() >= 15 and game.catalog_boxes[0] is LumoKartItemBox,
+		"race uses the reusable item box scene (5–8 Sammelzonen × 2–3 Prismen)"
+	)
 	_check(not game.item_boxes.is_empty() and str(game.item_boxes[0].name).begins_with("SkillResonanceRing"), "skill resonance rings stay")
 	_check(game.track_triggers.size() == 2, "two built-in boost rings")
 	_check(is_instance_valid(game.item_runtime) and is_instance_valid(game.fx), "item runtime and fx director live")
@@ -241,6 +254,8 @@ func _test_race_integration() -> void:
 	_check(game.item.is_empty(), "all charges used")
 	# Rival AI locks onto the player ahead (warning first), then fires; a shield blocks it.
 	game.item_runtime.clear()
+	# Mitten im Rennen an ruhiger Stelle (Startschutz/Sturzstellen: kart_rocket_fairness.gd).
+	game.elapsed = maxf(game.elapsed, 40.0)
 	game.distance = 200.0
 	game.opponent_distances[0] = 175.0
 	game.opponent_lanes[0] = game.lane
