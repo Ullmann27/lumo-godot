@@ -400,6 +400,8 @@ var pedal_pad: Control
 var top_menu_button: Button
 var top_reset_button: Button
 var top_pause_button: Button
+## Erste Einführung dieses Kindes (CanvasLayer) oder null, wenn sie nicht eingehängt wird.
+var first_run_guide: CanvasLayer
 var saved_session_available: bool = false
 var session_config := ConfigFile.new()
 var graphics_profile: String = "high"
@@ -441,7 +443,14 @@ func _ready() -> void:
 		get_window().size = Vector2i(1280, 720)
 	_build_ui()
 	# Erste Einführung je Kind (zeigt sich erst im Rennen): scripts/games/guides/kart_guide.gd
-	load("res://scripts/games/guides/kart_guide.gd").attach(self)
+	first_run_guide = load("res://scripts/games/guides/kart_guide.gd").attach(self)
+	if is_instance_valid(first_run_guide):
+		# Streckenkarte und Meldung weichen Lumos Sprechblase aus.
+		for changed: Signal in [
+			first_run_guide.bubble.item_rect_changed, first_run_guide.bubble.visibility_changed
+		]:
+			changed.connect(_sync_guide_notice)
+			changed.connect(_queue_minimap_layout)
 	_build_engine_sound()
 	saved_session_available = (
 		session_config.load(SESSION) == OK
@@ -1605,6 +1614,21 @@ func _apply_responsive_layout() -> void:
 	_queue_minimap_layout()
 
 
+## Liegt die Meldung des Rennens unter Lumos Sprechblase (flaches Querformat am Handy), zeigt
+## die Einführung sie direkt unter der Blase; das Original bleibt so lange unsichtbar. Das
+## übrige Layout (Leiste, Stick, Pedale) bleibt unberührt.
+func _sync_guide_notice() -> void:
+	if not is_instance_valid(first_run_guide) or not is_instance_valid(message):
+		return
+	var covered: bool = (
+		first_run_guide.bubble.is_visible_in_tree()
+		and not message.text.strip_edges().is_empty()
+		and first_run_guide.bubble.get_global_rect().intersects(message.get_global_rect())
+	)
+	message.self_modulate.a = 0.0 if covered else 1.0
+	first_run_guide.show_notice(message.text if covered else "", message.modulate.a)
+
+
 func _queue_minimap_layout() -> void:
 	if _minimap_layout_pending or not is_inside_tree():
 		return
@@ -1639,6 +1663,8 @@ func _apply_minimap_layout() -> void:
 	for notice in [message, jump_hint]:
 		if notice.is_visible_in_tree():
 			top = maxf(top, notice.get_global_rect().end.y + gap)
+	if is_instance_valid(first_run_guide) and first_run_guide.bubble.is_visible_in_tree():
+		top = maxf(top, first_run_guide.occupied_rect().end.y + gap)
 	var padding: Vector2 = map_panel.get_theme_stylebox("panel").get_minimum_size()
 	var preferred_content: Vector2 = Vector2(160.0, 128.0) * ui_scale
 	var occupied_rects: Array[Rect2] = []
@@ -1956,6 +1982,7 @@ func _physics_process(delta: float) -> void:
 			_track_events()
 			_update_passages(delta)
 			_fade_stale_message(delta)
+			_sync_guide_notice()
 			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
 				roadside_lasso.advance(self, delta)
