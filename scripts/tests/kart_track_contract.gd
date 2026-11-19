@@ -46,12 +46,20 @@ func _run() -> void:
 			var d: float=float(i)*world.length/300.0
 			var bend: float=world.forward(d).angle_to(world.forward(d+2.0))
 			if bend>0.001: min_radius=minf(min_radius,2.0/bend)
-			for lateral in [-4.0,0.0,4.0]:
+			# +/-4 m lanes, or the outer lanes of a narrower passage deck (Kronenbrücke
+			# in Dschungelherz: 3.6 m); just beyond such a deck edge is not road.
+			var half: float=world.road_width_at(d)*0.5
+			var lane: float=minf(4.0,half-0.3)
+			assert(lane>0.5, "%s: road narrower than one kart at %.0f m" % [id,d])
+			if half<4.3:
+				assert(not world.sample_road(world.position_at(d,half+0.5),d).on_road,
+					"%s: narrow deck accepts a lane beyond its edge at %.0f m" % [id,d])
+			for lateral in [-lane,0.0,lane]:
 				var p: Vector3=world.position_at(d,lateral)
 				var sample: Dictionary=world.sample_road(p,d)
 				assert(absf(sample.lateral-lateral)<0.12)
 				assert(absf(sample.height-p.y)<0.08)
-				assert(sample.on_road)
+				assert(sample.on_road, "%s: valid lane %.1f m rejected at %.0f m" % [id,lateral,d])
 				assert(sample.basis.y.y>0.9)
 				assert(sample.distance>=0.0 and sample.distance<world.length)
 		var clearance: float=INF
