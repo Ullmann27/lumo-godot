@@ -35,6 +35,7 @@ func _run() -> void:
 	_test_ledger()
 	_test_room_full()
 	_test_session_race()
+	_test_dedicated()
 	if failures.is_empty():
 		print("[LumoNet] PASS: %d Prüfungen" % checks)
 		quit(0)
@@ -461,6 +462,60 @@ func _test_session_race() -> void:
 		var p95: float = smooth[int(smooth.size() * 0.95)]
 		print("[LumoNet] Gast sieht Autorität: 95 %% ≤ %.1f m/s (echt 20)" % p95)
 		_check(p95 <= 22.5, "Autorität auf Gast flüssig (%.1f)" % p95)
+	for node in all:
+		node.close("")
+		node.queue_free()
+
+
+## Autorität ohne eigenen Platz (Server-Fall): zwei Gäste + zwei KI, Ergebnis bei beiden gleich.
+func _test_dedicated() -> void:
+	var hub: RefCounted = TRANSPORT.MemoryHub.new()
+	var make := func() -> RefCounted: return TRANSPORT.MemoryTransport.new(hub)
+	var server: Node = SESSION.new()
+	server.auto_poll = false
+	root.add_child(server)
+	var config := {"laps": 1, "cps": 4, "zones": 0, "min_gap": 0.5, "countdown": 0.5}
+	config["ai_cp_seconds"] = [1.5, 1.5, 1.5, 1.5]
+	_check(server.host_room({}, config, 9200, make), "Server-Raum ohne eigenen Platz")
+	var guests: Array = []
+	var results: Array = [[], []]
+	for i in range(2):
+		var guest: Node = SESSION.new()
+		guest.auto_poll = false
+		root.add_child(guest)
+		guest.join_room("mem", {"ps": "Heller Falke %d" % (i + 1)}, 9200, make)
+		var index: int = i
+		guest.result_confirmed.connect(
+			func(eid: String, place: int, _t: float): results[index].append([eid, place])
+		)
+		guests.append(guest)
+	var all: Array = [server] + guests
+	_steps(all, hub, 30)
+	_check(
+		server.my_seat == -1 and server.match_state.human_count() == 2, "zwei Gäste, Server frei"
+	)
+	server.start_race()
+	var cp: Array = [0, 0]
+	for step in range(60 * 30):
+		hub.step += 1
+		for i in range(2):
+			var rt: float = guests[i].race_time()
+			if cp[i] < 4 and rt >= 1.1 * float(cp[i] + 1) + 0.05 * i:
+				guests[i].claim_checkpoint(0, cp[i], 1.1 * float(cp[i] + 1) + 0.05 * i)
+				cp[i] += 1
+		for node in all:
+			node.poll(STEP)
+		if guests[0].state == "done" and guests[1].state == "done":
+			break
+	_check(server.state == "done", "Server: Ergebnis")
+	_check(
+		results[0].size() == 1 and results[1].size() == 1 and results[0][0][0] == results[1][0][0],
+		"beide Gäste buchen dasselbe Ergebnis genau einmal"
+	)
+	_check(
+		results[0].size() == 1 and int(results[0][0][1]) == 1 and int(results[1][0][1]) == 2,
+		"Plätze nach Zielzeit (Gast 1 vor Gast 2)"
+	)
 	for node in all:
 		node.close("")
 		node.queue_free()

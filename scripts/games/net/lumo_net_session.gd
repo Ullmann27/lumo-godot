@@ -78,23 +78,26 @@ var _last_heard: Dictionary = {}
 
 
 ## Autorität: Raum öffnen. `config` siehe lumo_net_match.gd; `info` = {ps, drv, kart}.
+## `info` leer ({}) = Autorität ohne eigenen Platz (späterer Server); dann bis zu 4 Gäste.
 func host_room(
 	info: Dictionary, config: Dictionary, port: int = PORT, make_transport: Callable = Callable()
 ) -> bool:
 	close("")
 	_make_transport = make_transport
 	transport = _new_transport()
-	if not transport.listen(port, WIRE.MAX_SEATS - 1):
+	if not transport.listen(port, WIRE.MAX_SEATS - (0 if info.is_empty() else 1)):
 		transport = null
 		_set_state("closed", "Der Raum konnte nicht geöffnet werden. Bitte noch einmal versuchen.")
 		return false
 	role = "authority"
 	_port = port
 	match_state = MATCH.new(config)
-	me = _clean_me(info)
-	var joined: Dictionary = match_state.join(me, "", clock)
-	my_seat = int(joined.seat)
-	token = str(joined.tok)
+	my_seat = -1
+	if not info.is_empty():
+		me = _clean_me(info)
+		var joined: Dictionary = match_state.join(me, "", clock)
+		my_seat = int(joined.seat)
+		token = str(joined.tok)
 	room = match_state.room()
 	seats = match_state.roster()
 	_set_state("lobby", "Raum offen. Warte auf Mitspieler …")
