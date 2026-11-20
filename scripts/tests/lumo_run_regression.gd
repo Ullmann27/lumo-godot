@@ -200,6 +200,7 @@ func _clean() -> void:
 	var scope: String = CHILD.sha256_text()
 	for index in range(COURSES.count()):
 		var id: String = str(COURSES.course(index).id)
+		SESSION.erase(SESSION.replay_path(scope, id))
 		for subject in ["Deutsch", "Mathematik"]:
 			SESSION.erase(SESSION.path_for(scope, 2, subject, id))
 	var records: ConfigFile = SESSION.read_sealed(SESSION.RECORDS)
@@ -215,6 +216,10 @@ func _run() -> void:
 	_clean()
 	# LUMO_RUN_FOCUS=adventure runs only the Dschungelherz adventure checks.
 	var focus: String = OS.get_environment("LUMO_RUN_FOCUS")
+	if focus == "replay":
+		await _test_replay_and_medal()
+		_finish_run()
+		return
 	if focus == "adventure" or focus == "saves":
 		if focus == "adventure":
 			await _test_adventure_path()
@@ -230,6 +235,7 @@ func _run() -> void:
 	await _test_corrupt_saves()
 	await _test_host_contract()
 	await _test_all_courses()
+	await _test_replay_and_medal()
 	await _test_adventure_path()
 	await _test_adventure_saves()
 	await _test_adventure_bots()
@@ -980,6 +986,41 @@ func _test_all_courses() -> void:
 		print("[LumoRun] %s no input: %.0f s, %d/%d stars, %d stumbles, rating %d" % [id, seconds, game.track.kept, game.plan.star_total, game.track.stumbles, int(game.result_payload.rating)])
 		await _free_game(game)
 	bridge.reward_reported.disconnect(counter)
+
+
+# ------------------------------------------------------------------ replay and medals
+
+func _test_replay_and_medal() -> void:
+	var course: int = COURSES.index_of("dschungelherz")
+	var game = await _open(course)
+	var path: String = game.replay_path
+	SESSION.erase(path)
+	var signature: String = game.plan.signature
+	_complete(game, JUNGLE_BOT.new())
+	var time_ms: int = int(game.result_payload.get("timeMs", 0))
+	var rating: int = int(game.result_payload.get("rating", 1))
+	var replay: Dictionary = SESSION.replay(path, signature)
+	_check(time_ms > 0 and replay.get("time_ms") == time_ms, "the actual finish writes a sealed replay of this run")
+	_check(game.menus.data.get("medal") == TUNING.MEDAL_NAMES[rating - 1], "result uses the medal earned by the star rating")
+	_check(["Bestzeitgeist", "Neuer Rekord!"] in game.menus.data.facts, "result announces the first saved personal replay")
+	_check(SESSION.replay(path, "other-course-layout").is_empty(), "a changed course layout rejects the previous replay")
+	_check(SESSION.replay(SESSION.replay_path("other-child", "dschungelherz"), signature).is_empty(), "the replay is private to this child and course")
+	if not replay.is_empty():
+		_check(not SESSION.store_replay(path, signature, time_ms, replay.samples), "a tied run leaves the replay untouched")
+	await _free_game(game)
+	game = await _open(course)
+	_check(game.ghost.best_time_ms() == time_ms and game.hud.ghost_progress >= 0.0, "starting again loads the replay onto the race HUD")
+	_steps(game, 5 * 60)
+	var progress: float = game.hud.ghost_progress
+	_check(progress > 0.0, "the replay advances with active running time")
+	game.pause()
+	_steps(game, 60)
+	_check(is_equal_approx(progress, float(game.hud.ghost_progress)), "time and replay freeze while paused")
+	game.resume()
+	game.skip_intro()
+	_check(game.hud.ghost_progress < 0.0 and not game.ghost.visible, "skipping the intro ends the personal race")
+	_check(game.ghost.recording(5000, Vector3.ZERO).is_empty(), "a skipped run cannot replace a complete replay")
+	await _free_game(game)
 
 
 # ------------------------------------------------------------------ window sizes, calm mode

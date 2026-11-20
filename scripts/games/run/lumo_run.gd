@@ -25,6 +25,7 @@ const FX = preload("res://scripts/games/run/run_fx.gd")
 const MOMENTS = preload("res://scripts/games/run/run_moments.gd")
 const MOMENT_PROPS = preload("res://scripts/games/run/run_moment_props.gd")
 const HUD = preload("res://scripts/games/run/run_hud.gd")
+const GHOST = preload("res://scripts/games/run/run_ghost.gd")
 const MENUS = preload("res://scripts/games/run/run_menus.gd")
 const STAGE = preload("res://scripts/games/run/run_menu_stage.gd")
 const SESSION = preload("res://scripts/games/run/run_session.gd")
@@ -83,6 +84,8 @@ var _trail_left: float = 0.0
 var _trail_tick: float = 0.0
 var _trail_colour := Color.WHITE
 var hud
+var ghost
+var replay_path: String = ""
 var menus
 var stage
 var audio
@@ -200,7 +203,7 @@ func _show_start() -> void:
 		var best: Dictionary = SESSION.record(child_scope, str(course.id))
 		var best_text: String = "Noch kein Lauf"
 		if not best.is_empty():
-			best_text = "Bestwert: %s · %s" % ["★".repeat(int(best.rating)), UI.clock(int(best.time_ms))]
+			best_text = "%s · %s" % [TUNING.MEDAL_NAMES[int(best.rating) - 1], UI.clock(int(best.time_ms))]
 		cards.append(
 			{
 				"index": index,
@@ -361,6 +364,11 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	var restored: bool = with_save and _restore()
 	if not restored:
 		SESSION.erase(session_path)
+	replay_path = SESSION.replay_path(child_scope, str(course.id))
+	ghost = GHOST.new()
+	ghost.name = "Bestzeitgeist"
+	add_child(ghost)
+	ghost.setup({} if restored else SESSION.replay(replay_path, plan.signature), feet_transform().origin, not restored)
 	var shares := PackedFloat32Array()
 	var flags := PackedByteArray()
 	for checkpoint in plan.checkpoints:
@@ -380,6 +388,8 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	_update_view(0.0, true)
 	if not restored:
 		actor.greet()
+		if ghost.best_time_ms() > 0:
+			hud.say("Bestzeitgeist · %s" % UI.clock(ghost.best_time_ms()), 4.5)
 	elif with_save:
 		hud.say("Weiter ab Kontrollpunkt %d." % (track.checkpoint + 1), 3.0)
 	if with_save and not restored:
@@ -524,6 +534,7 @@ func skip_intro() -> void:
 		return
 	for index in range(plan.waits.size()):
 		track.waits_done[index] = true
+	ghost.stop()
 	player.place(plan.intro_end, 0.0, player.cruise * 0.6)
 	track.rescue = plan.respawn_index(player.s)
 	hud.set_skip_visible(false)
@@ -552,6 +563,11 @@ func _update_view(delta: float, snap: bool) -> void:
 	actor.apply(feet, ground, player, maxf(delta, 0.0001), paused or question_open or phase == Phase.COUNTDOWN)
 	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
+	var time_ms: int = int(elapsed * 1000.0)
+	if phase == Phase.RUNNING and not paused and not question_open:
+		ghost.sample(time_ms, feet.origin, _share(player.s))
+	if phase != Phase.FINISHED:
+		hud.set_ghost_progress(ghost.show_at(time_ms, feet.origin, camera))
 	fx.set_speed(camera.pace_now if phase == Phase.RUNNING else 0.0, camera.global_transform)
 	if is_instance_valid(moment_props):
 		moment_props.advance(delta, player.s)
@@ -982,7 +998,12 @@ func _finish() -> void:
 	var reward: int = TUNING.reward(solved, stars_rating)
 	var time_ms: int = int(elapsed * 1000.0)
 	ProgressStore.add_stars(reward)
-	var best: Dictionary = SESSION.record(child_scope, str(course.id))
+	var medal_colour: Color = TUNING.MEDAL_COLOURS[stars_rating - 1]
+	var ghost_time_ms: int = ghost.best_time_ms()
+	var new_ghost: bool = false
+	if player.s >= plan.finish_s:
+		new_ghost = SESSION.store_replay(replay_path, plan.signature, time_ms, ghost.recording(time_ms, feet_transform().origin))
+	ghost.hide()
 	result_payload = {
 		"game": "run",
 		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
@@ -1010,13 +1031,15 @@ func _finish() -> void:
 	if is_instance_valid(audio):
 		audio.finish()
 	_sound("finish", "celebrate")
-	fx.play("burst", feet_transform().origin + Vector3.UP * 2.2, Color("ffe27a"))
+	fx.play("burst", feet_transform().origin + Vector3.UP * 2.2, medal_colour)
 	actor.celebrate()
 	camera.show_front()
 	var content: Dictionary = {
 		"course": course.name,
 		"accent": course.accent,
 		"rating": stars_rating,
+		"medal": TUNING.MEDAL_NAMES[stars_rating - 1],
+		"medal_colour": medal_colour,
 		"facts": [
 			["Sterne", "%d von %d" % [track.kept, plan.star_total]],
 			["Zeit", UI.clock(time_ms)],
@@ -1031,12 +1054,13 @@ func _finish() -> void:
 	if plan.adventure:
 		content.facts.insert(2, ["Buchstaben", "%d von %d" % [track.letter_count(), plan.letters.size()]])
 		content.facts.insert(3, ["Schatzhalle", "gefunden" if track.bonus_found else "noch geheim"])
-		var record_text: String = "neue Bestzeit!" if best.is_empty() or time_ms < int(best.time_ms) else UI.clock(int(best.time_ms))
-		content.facts.append(["Bestzeit", record_text])
 		var word: String = ""
 		for index in range(plan.letters.size()):
 			word += str(plan.letters[index].char) if track.letters & (1 << index) else "·"
 		content["letters"] = word
+	if new_ghost or ghost_time_ms > 0:
+		var record_text: String = "Neuer Rekord!" if new_ghost else UI.clock(ghost_time_ms)
+		content.facts.append(["Bestzeitgeist", record_text])
 	if HostBridge.is_embedded() and not accepted:
 		content["notice"] = HostBridge.SAVE_FAILURE
 	menus.open("result", content)
