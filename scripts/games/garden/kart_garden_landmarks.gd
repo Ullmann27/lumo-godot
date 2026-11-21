@@ -183,7 +183,7 @@ static func _garden_wall(root: Node3D, world: Node3D) -> void:
 			while row < top - 0.05:
 				var row_top: float = minf(row + 1.1, top)
 				var colour: Color = stones[(int(d) + int(row * 3.0) + int(side + 1.0)) % stones.size()]
-				var normal := Vector3((b - a).z, 0.0, -(b - a).x).normalized() * -side
+				var normal: Vector3 = Vector3((b - a).z, 0.0, -(b - a).x).normalized() * -side
 				st.set_color(colour)
 				st.set_normal(normal)
 				for v in [
@@ -769,7 +769,7 @@ static func _meadow(root: Node3D, world: Node3D, low: bool, parts: Dictionary) -
 		leaf.roughness = 0.55
 		leaf.cull_mode = BaseMaterial3D.CULL_DISABLED
 		_mesh_node(root, "LeafRamp", st.commit(), leaf)
-		var vein := world.position_at(start - 6.0, 0.0)
+		var vein: Vector3 = world.position_at(start - 6.0, 0.0)
 		MODELS.place(
 			root,
 			"gartenblatt",

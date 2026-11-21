@@ -64,7 +64,7 @@ func _lighting() -> void:
 	# Runde 1 Morgentau: etwas dichter; in Runde 2 lichtet er sich (Ereignisse).
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("e3eedb")
-	environment.fog_density = EVENTS.FOG_MORNING
+	environment.fog_density = 0.012  # Morgentau (Ereignisse für Runde 2 noch nicht gebaut)
 	environment.fog_aerial_perspective = 0.35
 	environment.fog_sky_affect = 0.2
 	var world_environment := WorldEnvironment.new()
