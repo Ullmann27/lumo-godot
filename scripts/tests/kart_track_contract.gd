@@ -69,8 +69,11 @@ func _run() -> void:
 				if separation<25.0: continue
 				var pa: Vector3=world.position_at(float(a)*world.length/100.0)
 				var pb: Vector3=world.position_at(float(b)*world.length/100.0)
+				# Gewollte Überführungen (z. B. Blumentopf-Spirale im Riesengarten) liegen
+				# mindestens 6 m übereinander und berühren sich nicht.
+				if absf(pa.y-pb.y)>6.0: continue
 				clearance=minf(clearance,Vector2(pa.x-pb.x,pa.z-pb.z).length())
-		assert(clearance>world.WIDTH+2.0)
+		assert(clearance>world.WIDTH+2.0, "%s: track crosses itself (clearance %.1f m)" % [id,clearance])
 		assert(min_radius>18.0)
 		print("[TrackContract] ",id," length=",snappedf(world.length,0.1)," minimum_curve_radius=",snappedf(min_radius,0.1)," PASS")
 		world.free()
