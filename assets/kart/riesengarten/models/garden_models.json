@@ -1,0 +1,170 @@
+{
+ "biene": {
+  "triangles": [
+   424,
+   190,
+   66
+  ],
+  "bytes": 22732
+ },
+ "blumentopf": {
+  "triangles": [
+   1152,
+   518,
+   294
+  ],
+  "bytes": 48504
+ },
+ "gartenbahn_bahnhof": {
+  "triangles": [
+   648,
+   290,
+   102
+  ],
+  "bytes": 71816
+ },
+ "gartenbahn_lok": {
+  "triangles": [
+   4804,
+   2160,
+   768
+  ],
+  "bytes": 305392
+ },
+ "gartenbahn_wagen": {
+  "triangles": [
+   2036,
+   916,
+   315
+  ],
+  "bytes": 110504
+ },
+ "gartenblatt": {
+  "triangles": [
+   192,
+   86,
+   28
+  ],
+  "bytes": 9584
+ },
+ "giesskanne": {
+  "triangles": [
+   3881,
+   1746,
+   617
+  ],
+  "bytes": 167936
+ },
+ "grashalme": {
+  "triangles": [
+   140,
+   62,
+   22
+  ],
+  "bytes": 10700
+ },
+ "kuerbis": {
+  "triangles": [
+   2188,
+   984,
+   393
+  ],
+  "bytes": 74244
+ },
+ "libelle": {
+  "triangles": [
+   192,
+   86,
+   30
+  ],
+  "bytes": 12736
+ },
+ "marienkaefer": {
+  "triangles": [
+   768,
+   344,
+   122
+  ],
+  "bytes": 27644
+ },
+ "pflanztisch": {
+  "triangles": [
+   2484,
+   1117,
+   507
+  ],
+  "bytes": 171560
+ },
+ "pusteblume": {
+  "triangles": [
+   464,
+   206,
+   72
+  ],
+  "bytes": 53288
+ },
+ "rosenbogen": {
+  "triangles": [
+   3836,
+   1726,
+   604
+  ],
+  "bytes": 150728
+ },
+ "schirmchen": {
+  "triangles": [
+   32,
+   13,
+   4
+  ],
+  "bytes": 7404
+ },
+ "schlauchkupplung": {
+  "triangles": [
+   960,
+   432,
+   153
+  ],
+  "bytes": 34436
+ },
+ "schmetterling": {
+  "triangles": [
+   92,
+   40,
+   13
+  ],
+  "bytes": 9032
+ },
+ "seerose_blatt": {
+  "triangles": [
+   1400,
+   630,
+   224
+  ],
+  "bytes": 52544
+ },
+ "seerose_bluete": {
+  "triangles": [
+   1344,
+   604,
+   215
+  ],
+  "bytes": 60740
+ },
+ "sonnenblume": {
+  "triangles": [
+   18104,
+   8146,
+   2838
+  ],
+  "bytes": 645576
+ },
+ "tomatenbogen": {
+  "triangles": [
+   3552,
+   1598,
+   567
+  ],
+  "bytes": 129432
+ }
+}
