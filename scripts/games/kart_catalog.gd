@@ -19,6 +19,11 @@ static func _all_tracks() -> Array[Dictionary]:
 		"tag": "EXPEDITION SMARAGD · 3,6 KM", "color": Color("9dcb6b"),
 		"description": "Zwölf Dschungelwelten: Flusshafen, Wasserfall, Wurzelgrotte und Kronenbrücke."
 	})
+	result.append({
+		"id": "riesengarten_2400", "name": "Riesengarten",
+		"tag": "LUMOS SOMMERGARTEN · 2,4 KM", "color": Color("ffcf3a"),
+		"description": "Winzig im Riesengarten: Gießkannen-Schanze, Gartenschlauch und Gewächshaus."
+	})
 	result.make_read_only()
 	return result
 
