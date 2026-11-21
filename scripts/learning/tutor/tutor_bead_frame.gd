@@ -155,6 +155,12 @@ func row_anchor(row: int) -> Vector3:
 	return to_global(Vector3(LEFT + SLOT * 4.5, ROD_Y[row], 0))
 
 
+## Mitte der links gezählten Perlen einer Reihe (dorthin zeigt Lumo).
+func counted_anchor(row: int) -> Vector3:
+	var count := maxi(1, counts[row])
+	return to_global(Vector3(LEFT + SLOT * (count - 1) * 0.5, ROD_Y[row], 0))
+
+
 func _process(delta: float) -> void:
 	if _settled:
 		return
@@ -213,6 +219,15 @@ func count_at(camera: Camera3D, row: int, screen_x: float) -> int:
 	if right - left < 1.0:
 		return counts[row - 1]
 	return clampi(roundi((screen_x - left) / (right - left) * 10.0), 0, 10)
+
+
+## Bildschirmpunkt, an dem ein Finger in Reihe [row] [count] Perlen links hält
+## (Umkehrung von count_at; für Bildbelege und Tests).
+func count_point(camera: Camera3D, row: int, count: int) -> Vector2:
+	var y_value := ROD_Y[row - 1]
+	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, y_value, 0)))
+	var right := camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, y_value, 0)))
+	return left.lerp(right, clampf(count / 10.0, 0.0, 1.0))
 
 
 func row_at(camera: Camera3D, screen: Vector2, tolerance: float) -> int:

@@ -52,9 +52,10 @@ func _rebuild() -> void:
 	_cubes.clear()
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3.ONE * CUBE
+	var step := CUBE + 0.06
 	var gap := 0.5 if _first > 0 else 0.0
-	var width := _whole * (CUBE + 0.06) + gap
-	var x := -width * 0.5
+	# Linksbündig: der erste Würfel liegt am linken Rahmenende, wo Lumo zeigt.
+	var x := 0.0
 	for index in range(_whole):
 		if index == _first and _first > 0:
 			x += gap
@@ -64,16 +65,33 @@ func _rebuild() -> void:
 		cube.position = Vector3(x + CUBE * 0.5, CUBE * 0.5, 0)
 		add_child(cube)
 		_cubes.append(cube)
-		x += CUBE + 0.06
-	_labels[0].visible = _first > 0
+		x += step
+	var width := _whole * step + gap
+	_labels[0].visible = _whole > 0
 	_labels[1].visible = _first > 0 and _first < _whole
 	if _first > 0:
 		_labels[0].text = str(_first)
-		_labels[0].position = Vector3(-width * 0.5 + _first * (CUBE + 0.06) * 0.5, CUBE + 0.45, 0)
+		_labels[0].position = Vector3(_first * step * 0.5, CUBE + 0.45, 0)
 		_labels[1].text = str(_whole - _first)
-		_labels[1].position = Vector3(
-			width * 0.5 - (_whole - _first) * (CUBE + 0.06) * 0.5, CUBE + 0.45, 0
-		)
+		_labels[1].position = Vector3(width - (_whole - _first) * step * 0.5, CUBE + 0.45, 0)
+	else:
+		# Vor dem Zerlegen steht die ganze Zahl über dem Zahlenhaus.
+		_labels[0].text = str(_whole)
+		_labels[0].position = Vector3(width * 0.5, CUBE + 0.45, 0)
+
+
+## Mitte des ersten Teils (vor dem Zerlegen: Mitte der ganzen Zahl).
+func first_part_position() -> Vector3:
+	var count := _first if _first > 0 else _whole
+	return to_global(Vector3(count * (CUBE + 0.06) * 0.5, CUBE * 0.5, 0))
+
+
+func whole_width() -> float:
+	return _whole * (CUBE + 0.06) + 0.5
+
+
+func split_count() -> int:
+	return _first
 
 
 func cube_count() -> int:

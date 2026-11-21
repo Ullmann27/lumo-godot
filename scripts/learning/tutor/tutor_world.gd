@@ -1,9 +1,13 @@
+# gdlint: disable=max-file-lines,max-public-methods,max-returns
 extends Node3D
 ## Lumo-Nachhilfe in 3D. Lumo zeigt jeden Schritt am Material vor, das Kind
 ## macht ihn selbst: Perlen am Rechenrahmen schieben, auf dem Zahlenstrahl
-## springen, die zweite Zahl zerlegen. Die Szene bewertet nur Handgriffe an
-## Übungs- und Zwillingsaufgaben; die Originalaufgabe beantwortet das Kind
-## danach in der App. Keine Sterne, kein Fortschritt, keine Speicherung.
+## springen, die zweite Zahl zerlegen. Lumo geht dafür zum Rahmen oder zur
+## Zahl, zeigt und tritt danach wieder aus der Mitte. Die Szene bewertet nur
+## Handgriffe an Übungs- und Zwillingsaufgaben; die Originalaufgabe
+## beantwortet das Kind danach in der App. Keine Sterne, kein Fortschritt,
+## keine Speicherung: Zurück geht genau einmal eine kurze Zusammenfassung an
+## die App, die nach ihren bestehenden Regeln bucht.
 
 const PLAN = preload("res://scripts/learning/tutor/tutor_plan.gd")
 const FRAME = preload("res://scripts/learning/tutor/tutor_bead_frame.gd")
@@ -13,11 +17,10 @@ const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const COMPANION_SCOPE = preload("res://scripts/learning/learning_companion_scope.gd")
+## Die Reihenfolge der Knöpfe zeigt die Stufe; kurze Titel passen auch im
+## schmalen Hochformat in eine Zeile.
 const STUFEN_TITEL := {
-	"hinweis": "1 Tipp",
-	"teilschritt": "2 Gemeinsam",
-	"vorzeigen": "3 Lumo zeigt",
-	"ueben": "4 Selbst üben"
+	"hinweis": "Tipp", "teilschritt": "Gemeinsam", "vorzeigen": "Lumo zeigt", "ueben": "Selbst üben"
 }
 const WEGE_TITEL := {
 	"rechenrahmen": "Rechenrahmen",
@@ -29,6 +32,19 @@ const WEGE_TITEL := {
 const HOP_SECONDS := 0.42
 const FOX_FRAME_HEIGHT := 3.0
 const FOX_PATH_HEIGHT := 1.7
+## Lumos Platz neben dem Rahmen (aus der Mitte) und sein Zeigeplatz direkt am
+## linken Rahmenende, wo die gezählten Perlen liegen. Beide verdecken keine Perle.
+const FOX_HOME := Vector3(-6.75, 0, 0.45)
+const FOX_SHOW := Vector3(-5.4, 0, 1.45)
+const FOX_HOME_FACING := 0.55
+const FOX_SHOW_FACING := 1.05
+## Auf dem Zahlenstrahl tritt Lumo nach dem Springen hinter den Steinweg,
+## damit die Zahl, auf der er gelandet ist, lesbar bleibt.
+const PATH_STEP_BACK := 1.0
+const WALK_SPEED := 2.4
+const TURN_SPEED := 7.0
+const SPLIT_ORIGIN := Vector3(-4.3, 0.0, 2.2)
+const CAMERA_DIRECTION := Vector3(0, 0.62, 0.78)
 
 var capture_options: Dictionary = {}
 var tutor = PLAN.new()
@@ -44,6 +60,7 @@ var wonder: Node3D
 var ui: Control
 var header: PanelContainer
 var title: Label
+var task_label: Label
 var stufen_row: HFlowContainer
 var wege_row: HFlowContainer
 var bubble: PanelContainer
@@ -61,24 +78,58 @@ var anders_button: Button
 var zurueck_button: Button
 var voice_button: Button
 var companion_scope = COMPANION_SCOPE.new()
+## Beobachtbarer Ablauf (für Tests und Bildbelege), keine Kinderdaten.
+var events: Array[String] = []
+## "home" | "show" | "behind" | "stone" | "walking"
+var fox_spot := ""
+var fox_point_target := Vector3.INF
+var return_count := 0
+var last_return: Dictionary = {}
+## Höchste geöffnete Hilfestufe (0 Tipp … 3 Selbst üben).
+var hint_level := 0
+## Die Zwillingsaufgabe der Stufe „Selbst üben“ ganz ohne Vorzeigen gelöst.
+var twin_solved := false
+var twin_attempts := 0
+var twin_prompt := ""
+var twin_way := ""
+## Freie Bildschirmfläche (Pixel) zwischen den Tafeln für die 3D-Bühne.
+var free_rect := Rect2()
+var _run_misses := 0
+var _run_shown := false
 var _fox_unit_height := 1.0
 var _fox_low := 0.0
+var _fox_base := Vector3.ZERO
+var _fox_height := FOX_FRAME_HEIGHT
+var _fox_turn_goal := 0.0
+var _walk_time := -1.0
+var _walk_duration := 0.0
+var _walk_from := Vector3.ZERO
+var _walk_goal := Vector3.ZERO
+var _walk_spot := ""
+var _walk_facing := 0.0
+var _pending_reaction := ""
+var _pending_target := Vector3.ZERO
 var _hop_queue: Array[Vector2i] = []
 var _hop_time := -1.0
 var _hop_from := Vector3.ZERO
 var _hop_to := Vector3.ZERO
+var _hop_reaction := ""
 var _drag_row := 0
 var _drag_index := -1
 var _drag_finger := -1
 var _drag_start := Vector2.ZERO
 var _drag_moved := false
-var _cam_goal := Vector3.ZERO
-var _cam_distance := 14.0
+var _cam_goal_position := Vector3.ZERO
+var _cam_goal_target := Vector3.ZERO
+var _cam_target := Vector3.ZERO
+var _camera_placed := false
+var _layout_frames := 0
 var _original_auto_quit := true
 var _original_back_quit := true
 var _original_scale_mode: Window.ContentScaleMode
 var _speech_host: Object
 var _speech_enabled := false
+var _auto_read := false
 var _speech_rate := 1.0
 var _speech_id := 0
 var _speech_state := "idle"
@@ -103,6 +154,7 @@ func _ready() -> void:
 		options.get("learningVoiceEnabled", false) == true
 		and options.get("localVoiceLicenseAccepted", false) == true
 	)
+	_auto_read = _speech_enabled and options.get("learningAutoRead", false) == true
 	var rate: Variant = options.get("learningVoiceRate", 1.0)
 	if (rate is float or rate is int) and is_finite(float(rate)):
 		_speech_rate = clampf(float(rate), 0.70, 1.60)
@@ -186,7 +238,7 @@ func _build_stage() -> void:
 	path.position = Vector3(0, 0, 1.2)
 	split_blocks = SPLIT.new()
 	add_child(split_blocks)
-	split_blocks.position = Vector3(1.0, 0.0, 2.2)
+	split_blocks.position = SPLIT_ORIGIN
 	fox = FOX.new()
 	fox.name = "NachhilfeLumo"
 	add_child(fox)
@@ -217,6 +269,9 @@ func _build_stage() -> void:
 
 
 func _place_fox(at: Vector3, height: float, facing: float) -> void:
+	_fox_base = at
+	_fox_height = height
+	_fox_turn_goal = facing
 	if not is_instance_valid(fox) or not fox.is_usable():
 		return
 	var fitted := height / _fox_unit_height
@@ -225,10 +280,104 @@ func _place_fox(at: Vector3, height: float, facing: float) -> void:
 	fox.rotation.y = facing
 
 
+## Lumo reagiert (zeigen, nicken, jubeln). Läuft er gerade, folgt die Geste
+## erst am Ziel – Gehen und Zeigen teilen sich das Skelett nicht.
 func _teacher(reaction: String, target: Vector3) -> void:
+	if _walk_time >= 0.0:
+		_pending_reaction = reaction
+		_pending_target = target
+		return
+	fox_point_target = target
+	events.append("lumo:%s" % reaction)
 	if is_instance_valid(fox) and fox.is_usable() and not suspended:
 		fox.set_teaching_target(target)
 		fox.teacher_react(reaction)
+
+
+## Lumo geht an einen Platz (oder steht mit „Animationen reduzieren“ sofort
+## dort). [reaction] folgt, sobald er angekommen ist.
+func _walk_to(
+	goal: Vector3, spot: String, facing: float, reaction: String, target: Vector3
+) -> void:
+	_pending_reaction = ""
+	if _walk_time >= 0.0 and _walk_spot == spot:
+		_pending_reaction = reaction
+		_pending_target = target
+		return
+	if fox_spot == spot and _walk_time < 0.0 and _fox_base.distance_to(goal) < 0.05:
+		_fox_turn_goal = facing
+		if not reaction.is_empty():
+			_teacher(reaction, target)
+		return
+	events.append("walk:" + spot)
+	var usable: bool = is_instance_valid(fox) and fox.is_usable()
+	if reduced_motion or not usable or _fox_base.distance_to(goal) < 0.05:
+		_finish_walk_now(goal, spot, facing)
+		if not reaction.is_empty():
+			_teacher(reaction, target)
+		return
+	_walk_from = _fox_base
+	_walk_goal = goal
+	_walk_spot = spot
+	_walk_facing = facing
+	_walk_duration = _fox_base.distance_to(goal) / WALK_SPEED
+	_walk_time = 0.0
+	_pending_reaction = reaction
+	_pending_target = target
+	fox_spot = "walking"
+	fox.set_locomotion_speed(WALK_SPEED / maxf(0.05, fox.scale.x))
+
+
+func _finish_walk_now(goal: Vector3, spot: String, facing: float) -> void:
+	_walk_time = -1.0
+	_place_fox(goal, _fox_height, facing)
+	fox_spot = spot
+
+
+func _tick_walk(delta: float) -> void:
+	if _walk_time < 0.0:
+		if is_instance_valid(fox) and fox.is_usable() and _hop_queue.is_empty():
+			fox.rotation.y = lerp_angle(
+				fox.rotation.y,
+				_fox_turn_goal,
+				1.0 if reduced_motion else minf(1.0, delta * TURN_SPEED)
+			)
+		return
+	_walk_time += delta
+	var t := clampf(_walk_time / maxf(0.01, _walk_duration), 0.0, 1.0)
+	var heading := atan2(_walk_goal.x - _walk_from.x, _walk_goal.z - _walk_from.z)
+	var facing: float = lerp_angle(fox.rotation.y, heading, minf(1.0, delta * TURN_SPEED * 1.5))
+	_place_fox(_walk_from.lerp(_walk_goal, t), _fox_height, facing)
+	if t < 1.0:
+		return
+	_walk_time = -1.0
+	fox.set_locomotion_speed(0.0)
+	_fox_turn_goal = _walk_facing
+	fox_spot = _walk_spot
+	if not _pending_reaction.is_empty():
+		var reaction := _pending_reaction
+		_pending_reaction = ""
+		_teacher(reaction, _pending_target)
+
+
+## Am Rahmen: Lumo geht zum linken Rahmenende und zeigt auf [target].
+func _show_at_frame(reaction: String, target: Vector3) -> void:
+	_walk_to(FOX_SHOW, "show", FOX_SHOW_FACING, reaction, target)
+
+
+## Am Rahmen: Lumo tritt aus der Mitte zurück an seinen Platz.
+func _step_back(reaction: String, target: Vector3) -> void:
+	if not _hop_queue.is_empty():
+		# Lumo springt noch: nach dem letzten Sprung tritt er ohnehin zurück.
+		_hop_reaction = reaction
+		return
+	if _material_kind == "huepfen":
+		var behind: Vector3 = (
+			path.stone_position(tutor.position) + Vector3(0, 0.06, -PATH_STEP_BACK)
+		)
+		_walk_to(behind, "behind", 0.0, reaction, target)
+	else:
+		_walk_to(FOX_HOME, "home", FOX_HOME_FACING, reaction, target)
 
 
 # ---------------------------------------------------------------- Oberfläche
@@ -242,22 +391,33 @@ func _build_ui() -> void:
 	ui.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(ui)
 	header = _panel(Color("0b1d32", 0.92))
+	header.name = "NachhilfeKopf"
 	ui.add_child(header)
 	var top := VBoxContainer.new()
 	top.add_theme_constant_override("separation", 8)
 	header.add_child(top)
 	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 8)
 	top.add_child(title_row)
-	zurueck_button = _button("‹ Zur Aufgabe", _return_to_lesson, title_row)
+	zurueck_button = _button("‹ Zur Aufgabe", return_to_lesson, title_row)
 	zurueck_button.name = "NachhilfeZurueck"
+	var titles := VBoxContainer.new()
+	titles.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	titles.add_theme_constant_override("separation", 0)
+	title_row.add_child(titles)
 	title = Label.new()
-	title.add_theme_font_size_override("font_size", 24)
+	title.add_theme_font_size_override("font_size", 22)
 	title.add_theme_color_override("font_color", Color("fff6d8"))
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title_row.add_child(title)
+	titles.add_child(title)
+	task_label = Label.new()
+	task_label.name = "Rechnung"
+	task_label.add_theme_font_size_override("font_size", 18)
+	task_label.add_theme_color_override("font_color", Color("9fe7f7"))
+	task_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	task_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	titles.add_child(task_label)
 	stufen_row = HFlowContainer.new()
 	stufen_row.name = "Hilfestufen"
 	stufen_row.add_theme_constant_override("h_separation", 6)
@@ -276,11 +436,12 @@ func _build_ui() -> void:
 	var role_row := HBoxContainer.new()
 	bubble_box.add_child(role_row)
 	bubble_role = Label.new()
-	bubble_role.add_theme_font_size_override("font_size", 15)
+	bubble_role.add_theme_font_size_override("font_size", 16)
 	bubble_role.add_theme_color_override("font_color", Color("187cad"))
 	bubble_role.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	role_row.add_child(bubble_role)
-	voice_button = _button("🔊 Vorlesen", _voice_action, role_row)
+	voice_button = _button("Vorlesen", _voice_action, role_row)
+	voice_button.name = "Vorlesen"
 	voice_button.visible = _speech_enabled
 	bubble_text = Label.new()
 	bubble_text.name = "LumoText"
@@ -289,6 +450,7 @@ func _build_ui() -> void:
 	bubble_text.add_theme_color_override("font_color", Color("12366a"))
 	bubble_box.add_child(bubble_text)
 	footer = _panel(Color("0b1d32", 0.92))
+	footer.name = "NachhilfeFuss"
 	ui.add_child(footer)
 	var bottom := VBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 8)
@@ -373,25 +535,30 @@ func _style_button(button: Button, primary: bool, selected: bool) -> void:
 
 func _rebuild_selectors() -> void:
 	for child in stufen_row.get_children():
+		stufen_row.remove_child(child)
 		child.queue_free()
 	for child in wege_row.get_children():
+		wege_row.remove_child(child)
 		child.queue_free()
 	stufe_buttons.clear()
 	weg_buttons.clear()
 	for stufe: String in PLAN.STUFEN:
 		var button := _button(STUFEN_TITEL[stufe], select_stufe.bind(stufe), stufen_row)
 		button.name = "Stufe_" + stufe
+		button.add_theme_font_size_override("font_size", 16)
 		_style_button(button, false, stufe == tutor.stufe)
 		stufe_buttons[stufe] = button
 	for weg: String in tutor.wege:
 		var button := _button(WEGE_TITEL[weg], select_weg.bind(weg), wege_row)
 		button.name = "Weg_" + weg
+		button.add_theme_font_size_override("font_size", 16)
 		_style_button(button, false, weg == tutor.weg)
 		weg_buttons[weg] = button
 
 
 func _show_unavailable() -> void:
 	title.text = "Nachhilfe mit Lumo"
+	task_label.text = ""
 	bubble_role.text = "Lumo"
 	bubble_text.text = (
 		"Diese Nachhilfe ist gerade nicht verfügbar. "
@@ -402,8 +569,8 @@ func _show_unavailable() -> void:
 	frame.hide()
 	path.hide()
 	split_blocks.hide()
-	_place_fox(Vector3(-2.0, 0, 0.8), FOX_FRAME_HEIGHT, 0.3)
-	_frame_camera(Vector3(0, 1.4, 0), 12.0)
+	_place_fox(FOX_HOME + Vector3(4.6, 0, 0.3), FOX_FRAME_HEIGHT, 0.3)
+	fox_spot = "home"
 
 
 # ---------------------------------------------------------------- Ablauf
@@ -414,7 +581,16 @@ func _restart() -> void:
 	_hop_time = -1.0
 	path.clear_hops()
 	var plan: Dictionary = tutor.plan()
+	hint_level = maxi(hint_level, PLAN.STUFEN.find(tutor.stufe))
+	_run_misses = 0
+	_run_shown = false
+	events.append("plan:%s/%s" % [tutor.weg, tutor.stufe])
 	title.text = "Nachhilfe · %s" % tutor.prompt
+	task_label.text = (
+		"Übungsaufgabe: %d + %d" % [plan.a, plan.b]
+		if plan.zwilling
+		else "Wir schauen uns %d + %d an." % [plan.a, plan.b]
+	)
 	_material_kind = ""
 	split_blocks.visible = false
 	for step: Dictionary in plan.schritte:
@@ -435,9 +611,10 @@ func _enter_step(first: bool = false) -> void:
 		var plan: Dictionary = tutor.plan()
 		bubble_role.text = "Geschafft!"
 		bubble_text.text = "%s\n%s" % [plan.lob, plan.abschluss]
-		_teacher("celebrate", camera.global_position)
+		_finish_run()
+		_step_back("celebrate", camera.global_position)
 		wonder.celebrate(_material_focus())
-		_speak(bubble_text.text)
+		_auto_speak(bubble_text.text)
 		_update_actions()
 		return
 	var intro: String = tutor.plan().einleitung + "\n" if tutor.schritt == 0 else ""
@@ -447,26 +624,45 @@ func _enter_step(first: bool = false) -> void:
 		_perform(tutor.demonstrate())
 	else:
 		bubble_role.text = "Du bist dran"
-		_teacher("encourage", _material_focus())
-	_speak(bubble_text.text)
+		_step_back("encourage", _material_focus())
+	_auto_speak(bubble_text.text)
 	_update_actions()
+
+
+## Ende eines Ablaufs: Bei „Selbst üben“ zählt die Zwillingsaufgabe als allein
+## gelöst, wenn Lumo keinen Schritt vorzeigen musste.
+func _finish_run() -> void:
+	var plan: Dictionary = tutor.plan()
+	events.append("done:%s/%s" % [tutor.weg, tutor.stufe])
+	if tutor.stufe != "ueben" or _run_shown or twin_solved:
+		return
+	twin_solved = true
+	twin_attempts = 1 + _run_misses
+	twin_prompt = "%d + %d = ?" % [plan.a, plan.b]
+	twin_way = tutor.weg
 
 
 func _perform(action: Dictionary) -> void:
 	match str(action.get("art", "")):
 		"perlen":
 			frame.set_counts(tutor.reihe1, tutor.reihe2)
-			_teacher("explain", frame.row_anchor(1 if tutor.reihe2 > 0 else 0))
+			var row := 1 if tutor.reihe2 > 0 else 0
+			_show_at_frame("explain", frame.counted_anchor(row))
 		"huepfen":
-			_queue_hops(int(action.von), int(action.nach))
-			_teacher("explain", path.stone_position(int(action.nach)))
+			_queue_hops(int(action.von), int(action.nach), "explain")
 		"zerlegen":
 			split_blocks.split(int(action.teil1))
-			_teacher("explain", split_blocks.global_position)
+			_show_at_frame("explain", split_blocks.first_part_position())
 		"ergebnis":
-			_teacher("correct", _material_focus())
+			if _material_kind == "huepfen":
+				_teacher("correct", path.stone_position(tutor.position))
+			else:
+				_show_at_frame("correct", _material_focus())
 		"zeigen":
-			_teacher("explain", _material_focus())
+			if _material_kind == "huepfen":
+				_teacher("explain", _material_focus())
+			else:
+				_show_at_frame("explain", _material_focus())
 	_rebuild_choices()
 
 
@@ -477,21 +673,32 @@ func _update_material() -> void:
 	_material_kind = kind
 	frame.visible = kind == "perlen"
 	path.visible = kind == "huepfen"
+	_walk_time = -1.0
+	_pending_reaction = ""
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_locomotion_speed(0.0)
 	if kind == "perlen":
-		_place_fox(Vector3(-6.2, 0, 1.2), FOX_FRAME_HEIGHT, 0.55)
+		_place_fox(FOX_HOME, FOX_FRAME_HEIGHT, FOX_HOME_FACING)
+		fox_spot = "home"
 	else:
-		_place_fox(path.stone_position(tutor.position) + Vector3(0, 0.06, 0), FOX_PATH_HEIGHT, 0.0)
+		_place_fox(
+			path.stone_position(tutor.position) + Vector3(0, 0.06, -PATH_STEP_BACK),
+			FOX_PATH_HEIGHT,
+			0.0
+		)
+		fox_spot = "behind"
 	_layout()
 
 
 func _material_focus() -> Vector3:
 	if _material_kind == "huepfen":
 		return path.stone_position(tutor.position)
-	return frame.row_anchor(0)
+	return frame.counted_anchor(0)
 
 
 func _rebuild_choices() -> void:
 	for child in choice_bar.get_children():
+		choice_bar.remove_child(child)
 		child.queue_free()
 	var step: Dictionary = tutor.current()
 	if step.is_empty():
@@ -527,13 +734,18 @@ func _update_actions() -> void:
 	var next: String = tutor.next_stufe()
 	mehr_button.visible = not next.is_empty()
 	if not next.is_empty():
-		mehr_button.text = "Mehr Hilfe: " + str(STUFEN_TITEL[next]).substr(2)
+		mehr_button.text = "Mehr Hilfe: " + str(STUFEN_TITEL[next])
 	anders_button.visible = tutor.wege.size() > 1
 	zurueck_button.text = "‹ Zur Aufgabe"
 	_style_button(zurueck_button, step.is_empty(), false)
+	_layout()
+	_layout_frames = 2
 
 
-func _result(outcome: String, focus: Vector3) -> void:
+func _result(outcome: String, focus: Vector3, hint: String = "") -> void:
+	if outcome in ["zu_viel", "falsch", "gezeigt"]:
+		_run_misses += 1
+		events.append("miss:" + outcome)
 	match outcome:
 		"ok":
 			feedback.text = "Genau!"
@@ -544,18 +756,48 @@ func _result(outcome: String, focus: Vector3) -> void:
 			if feedback.text.is_empty():
 				feedback.text = "Genau!"
 		"gezeigt":
+			_run_shown = true
 			feedback.text = "Ich zeige es dir einmal. Danach machst du weiter."
 			_perform(tutor.current().aktion)
-			_speak(feedback.text)
+			_auto_speak(feedback.text)
 			_update_actions()
-		"zu_viel":
-			feedback.text = "Das sind zu viele. Schieb eine Perle zurück."
+		"zu_viel", "falsch":
+			feedback.text = hint
 			_teacher("encourage", focus)
-		"falsch":
-			feedback.text = "Noch nicht ganz. Schau noch einmal genau hin."
-			_teacher("encourage", focus)
+			_auto_speak(feedback.text)
 		"noch":
 			feedback.text = ""
+
+
+## Konkrete, ruhige Hilfe zum ersten Fehlgriff – ohne das Ergebnis zu verraten.
+func _hint_for(outcome: String, value: int, second: int = 0) -> String:
+	var step: Dictionary = tutor.current()
+	if step.is_empty():
+		return ""
+	var action: Dictionary = step.aktion
+	match str(action.art):
+		"perlen":
+			var row := "oberen" if tutor.reihe1 > int(action.reihe1) else "unteren"
+			return "In der %s Reihe sind es zu viele. Schieb eine Perle zurück." % row
+		"huepfen":
+			if value <= int(action.von):
+				return "Lumo springt nach vorne, zu den größeren Zahlen."
+			if value < int(action.nach):
+				return (
+					"Noch nicht ganz: Lumo muss weiter springen. Zähl die Sprünge ab %d."
+					% int(action.von)
+				)
+			return "Zu weit. Zähl die Sprünge ab %d noch einmal." % int(action.von)
+		"zerlegen":
+			return (
+				"%d und %d: Mit %d wird die %d nicht genau 10. Probier eine andere Zerlegung."
+				% [value, second, value, int(tutor.plan().a)]
+			)
+		"ergebnis":
+			if _material_kind == "huepfen":
+				return "Schau, auf welcher Zahl Lumo gelandet ist."
+			return "Schau aufs Material: die volle Zehnerreihe und die Einer dazu."
+	return "Noch nicht ganz. Schau noch einmal genau hin." if outcome == "falsch" else ""
 
 
 ## Öffentliche Handgriffe (auch für Tests und Captures).
@@ -567,37 +809,41 @@ func tap_bead(row: int, index: int) -> String:
 func set_bead_count(row: int, count: int) -> String:
 	var outcome: String = tutor.try_beads(row, count)
 	if outcome != "ignoriert":
+		var hint := _hint_for(outcome, count)
 		frame.set_counts(tutor.reihe1, tutor.reihe2)
-		_result(outcome, frame.row_anchor(row - 1))
+		_result(outcome, frame.counted_anchor(row - 1), hint)
 	return outcome
 
 
 func tap_stone(number: int) -> String:
 	var step: Dictionary = tutor.current()
 	var from: int = tutor.position
+	var hint := _hint_for("falsch", number)
 	var outcome: String = tutor.try_stone(number)
 	if outcome == "ok":
-		_queue_hops(int(step.aktion.von) if not step.is_empty() else from, tutor.position)
+		_queue_hops(int(step.aktion.von) if not step.is_empty() else from, tutor.position, "")
 	elif outcome == "falsch":
 		path.highlight(number)
 	if outcome != "ignoriert":
-		_result(outcome, path.stone_position(number))
+		_result(outcome, path.stone_position(number), hint)
 	return outcome
 
 
 func choose_split(first: int, second: int) -> String:
+	var hint := _hint_for("falsch", first, second)
 	var outcome: String = tutor.try_split(first, second)
 	if outcome == "ok" or outcome == "gezeigt":
 		split_blocks.split(tutor.zerlegung[0])
 	if outcome != "ignoriert":
-		_result(outcome, split_blocks.global_position)
+		_result(outcome, split_blocks.first_part_position(), hint)
 	return outcome
 
 
 func choose_result(value: int) -> String:
+	var hint := _hint_for("falsch", value)
 	var outcome: String = tutor.try_result(value)
 	if outcome != "ignoriert":
-		_result(outcome, _material_focus())
+		_result(outcome, _material_focus(), hint)
 	return outcome
 
 
@@ -634,28 +880,53 @@ func _other_way() -> void:
 # ---------------------------------------------------------------- Lumo springt
 
 
-func _queue_hops(from: int, to: int) -> void:
-	_place_fox(path.stone_position(from) + Vector3(0, 0.06, 0), FOX_PATH_HEIGHT, 0.0)
+## Lumo springt Einerschritt für Einerschritt. Danach tritt er hinter den
+## Steinweg, damit die Zielzahl frei liegt, und zeigt darauf ([reaction]).
+func _queue_hops(from: int, to: int, reaction: String) -> void:
+	_walk_time = -1.0
+	_pending_reaction = ""
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.set_locomotion_speed(0.0)
+	var resting: bool = _hop_queue.is_empty()
+	if resting and _fox_base.distance_to(path.stone_position(from)) > PATH_STEP_BACK + 0.3:
+		_place_fox(
+			path.stone_position(from) + Vector3(0, 0.06, -PATH_STEP_BACK), FOX_PATH_HEIGHT, 0.0
+		)
 	for value in range(from, to):
 		_hop_queue.append(Vector2i(value, value + 1))
+	_hop_reaction = reaction
+	fox_spot = "stone"
+	events.append("hop:%d-%d" % [from, to])
 	if reduced_motion:
 		for hop in _hop_queue:
 			path.add_hop(hop.x, hop.y)
 		_hop_queue.clear()
 		_place_fox(path.stone_position(to) + Vector3(0, 0.06, 0), FOX_PATH_HEIGHT, 0.0)
-	_frame_for_material()
+		_after_hops(to)
+	_fit_camera()
+
+
+func _after_hops(landed: int) -> void:
+	var reaction := _hop_reaction if not _hop_reaction.is_empty() else "correct"
+	_hop_reaction = ""
+	var behind: Vector3 = path.stone_position(landed) + Vector3(0, 0.06, -PATH_STEP_BACK)
+	_walk_to(behind, "behind", 0.0, reaction, path.stone_position(landed))
 
 
 func _process(delta: float) -> void:
 	if suspended:
 		return
 	_tick_hops(delta)
+	_tick_walk(delta)
 	_tick_speech(delta)
-	if is_instance_valid(camera):
-		var goal := _cam_goal + Vector3(0, _cam_distance * 0.62, _cam_distance * 0.78)
+	if _layout_frames > 0:
+		_layout_frames -= 1
+		_layout()
+	if is_instance_valid(camera) and _camera_placed:
 		var weight := 1.0 if reduced_motion else minf(1.0, delta * 3.0)
-		camera.position = camera.position.lerp(goal, weight)
-		camera.look_at(_cam_goal)
+		camera.global_position = camera.global_position.lerp(_cam_goal_position, weight)
+		_cam_target = _cam_target.lerp(_cam_goal_target, weight)
+		camera.look_at(_cam_target)
 
 
 func _tick_hops(delta: float) -> void:
@@ -663,7 +934,7 @@ func _tick_hops(delta: float) -> void:
 		return
 	if _hop_time < 0.0:
 		var hop: Vector2i = _hop_queue[0]
-		_hop_from = path.stone_position(hop.x) + Vector3(0, 0.06, 0)
+		_hop_from = _fox_base
 		_hop_to = path.stone_position(hop.y) + Vector3(0, 0.06, 0)
 		_hop_time = 0.0
 	_hop_time += delta
@@ -673,43 +944,38 @@ func _tick_hops(delta: float) -> void:
 	_place_fox(point, FOX_PATH_HEIGHT * (1.0 - 0.08 * sin(t * PI * 2.0)), 0.0)
 	if t >= 1.0:
 		var hop: Vector2i = _hop_queue.pop_front()
+		_place_fox(_hop_to, FOX_PATH_HEIGHT, 0.0)
 		path.add_hop(hop.x, hop.y)
 		_hop_time = -1.0
-		_cam_goal.x = lerpf(_cam_goal.x, path.stone_position(hop.y).x, 0.5)
+		if _hop_queue.is_empty():
+			_after_hops(hop.y)
+
+
+func is_settled() -> bool:
+	return _hop_queue.is_empty() and _walk_time < 0.0 and frame.is_settled()
 
 
 # ---------------------------------------------------------------- Kamera & Layout
 
 
-func _frame_camera(target: Vector3, width: float) -> void:
-	var size := get_viewport().get_visible_rect().size
-	var aspect := maxf(0.3, size.x / maxf(1.0, size.y))
-	var half_v := deg_to_rad(camera.fov * 0.5)
-	var half_h := atan(tan(half_v) * aspect)
-	_cam_goal = target
-	_cam_distance = clampf((width * 0.5) / tan(half_h) * 0.9, 7.0, 46.0)
-	if reduced_motion or camera.position == Vector3.ZERO:
-		camera.position = target + Vector3(0, _cam_distance * 0.62, _cam_distance * 0.78)
-		camera.look_at(target)
+## Feste Breite zuerst: umbrechende Texte und Knopfzeilen berechnen ihre
+## Höhe aus ihr. Die Container werden sofort sortiert, damit die Tafel schon
+## im selben Bild die richtige Höhe hat.
+func _fit(panel: PanelContainer, at: Vector2, width: float) -> void:
+	panel.custom_minimum_size = Vector2(width, 0)
+	panel.size = Vector2(width, 0)
+	for attempt in range(2):
+		_sort_now(panel)
+		panel.size = Vector2(width, panel.get_combined_minimum_size().y)
+	panel.position = at
 
 
-func _frame_for_material() -> void:
-	if not valid:
-		return
-	if _material_kind == "huepfen":
-		var step: Dictionary = tutor.current()
-		var low: int = tutor.position
-		var high: int = tutor.position
-		if not step.is_empty() and step.aktion.art == "huepfen":
-			low = mini(low, int(step.aktion.von))
-			high = maxi(high, int(step.aktion.nach))
-		low = maxi(0, low - 1)
-		high = mini(20, maxi(high + 1, low + 6))
-		var center: Vector3 = (path.stone_position(low) + path.stone_position(high)) * 0.5
-		_frame_camera(center + Vector3(0, 0.5, 0.4), float(high - low) + 3.0)
-	else:
-		var width := 12.6 if split_blocks.visible else 11.8
-		_frame_camera(Vector3(-0.6, 1.1, 0.9), width)
+func _sort_now(node: Node) -> void:
+	if node is Container:
+		node.notification(Container.NOTIFICATION_SORT_CHILDREN)
+	for child in node.get_children():
+		if child is Control and child.visible:
+			_sort_now(child)
 
 
 func _layout() -> void:
@@ -717,7 +983,7 @@ func _layout() -> void:
 		return
 	var dimensions := get_viewport().get_visible_rect().size
 	var density: float = MobileRuntime.get_ui_density()
-	var scale_value := minf(density, maxf(1.0, dimensions.x / 360.0))
+	var scale_value := minf(density, maxf(1.0, minf(dimensions.x, dimensions.y) / 360.0))
 	ui.scale = Vector2.ONE * scale_value
 	var logical := dimensions / scale_value
 	ui.visible = MobileRuntime.safe_area_is_ready()
@@ -728,26 +994,117 @@ func _layout() -> void:
 	)
 	var origin := insets.position / scale_value + Vector2(10, 10)
 	var available := logical - (insets.position + insets.size) / scale_value - Vector2(20, 20)
-	var wide := available.x > available.y
-	var panel_width := minf(available.x, 760.0) if not wide else minf(available.x * 0.46, 620.0)
-	header.position = origin
-	header.size = Vector2(panel_width, 0)
-	header.reset_size()
-	header.size.x = panel_width
-	bubble.position = origin + Vector2(0, header.get_combined_minimum_size().y + 8)
-	bubble.size = Vector2(panel_width, 0)
-	bubble.reset_size()
-	bubble.size.x = panel_width
-	var footer_width := minf(available.x, 760.0)
-	footer.size = Vector2(footer_width, 0)
-	footer.reset_size()
-	footer.size.x = footer_width
-	var footer_height := footer.get_combined_minimum_size().y
-	footer.position = Vector2(
-		origin.x + (available.x - footer_width) * (1.0 if wide else 0.5),
-		origin.y + available.y - footer_height
-	)
-	_frame_for_material()
+	var wide := available.x > available.y * 1.1
+	var column := minf(available.x * 0.44, 520.0) if wide else minf(available.x, 760.0)
+	# Hochformat: Sprechblase mit fester Mindesthöhe, damit die Bühne nicht
+	# bei jedem kürzeren Satz springt.
+	var lines := 0.0 if wide else (4.0 if column < 500.0 else 3.0)
+	bubble_text.custom_minimum_size.y = lines * bubble_text.get_line_height()
+	var left := origin.x if wide else origin.x + (available.x - column) * 0.5
+	_fit(header, Vector2(left, origin.y), column)
+	_fit(bubble, Vector2(left, origin.y + header.size.y + 6), column)
+	if wide:
+		# Querformat: links Aufgabe und Lumos Text, rechts die Bühne über der
+		# Knopfleiste.
+		var right := left + column + 10
+		var right_width := origin.x + available.x - right
+		var footer_width := minf(right_width, 760.0)
+		_fit(footer, Vector2(right + (right_width - footer_width) * 0.5, 0), footer_width)
+		footer.position.y = origin.y + available.y - footer.size.y
+		free_rect = Rect2(
+			right * scale_value,
+			origin.y * scale_value,
+			right_width * scale_value,
+			maxf(40.0, (footer.position.y - 6 - origin.y) * scale_value)
+		)
+	else:
+		_fit(footer, Vector2(left, 0), column)
+		footer.position.y = origin.y + available.y - footer.size.y
+		var top := (bubble.position.y + bubble.size.y + 6) * scale_value
+		var bottom := (footer.position.y - 6) * scale_value
+		free_rect = Rect2(
+			6 * scale_value, top, dimensions.x - 12 * scale_value, maxf(40.0, bottom - top)
+		)
+	_fit_camera()
+
+
+## Inhalt der Bühne als Kästen: Rahmen samt Lumos Plätzen und Zahlenhaus,
+## oder der Ausschnitt des Steinwegs, den der aktuelle Schritt braucht.
+func _content_boxes() -> Array[AABB]:
+	var boxes: Array[AABB] = []
+	if not valid:
+		boxes.append(AABB(Vector3(-3.5, 0, -0.5), Vector3(7, 3.2, 2.5)))
+	elif _material_kind == "huepfen":
+		var step: Dictionary = tutor.current()
+		var low: int = tutor.position
+		var high: int = tutor.position
+		if not step.is_empty() and step.aktion.art == "huepfen":
+			low = mini(low, int(step.aktion.von))
+			high = maxi(high, int(step.aktion.nach))
+		low = maxi(0, low - 1)
+		high = mini(20, maxi(high + 1, low + 6))
+		var first: Vector3 = path.stone_position(low)
+		var last: Vector3 = path.stone_position(high)
+		boxes.append(
+			AABB(
+				Vector3(first.x - 0.7, 0, first.z - PATH_STEP_BACK - 0.5),
+				Vector3(last.x - first.x + 1.4, 2.7, PATH_STEP_BACK + 1.1)
+			)
+		)
+	else:
+		boxes.append(AABB(Vector3(-7.6, 0, -0.5), Vector3(13.8, 3.4, 2.5)))
+		if split_blocks.visible:
+			boxes.append(
+				AABB(
+					SPLIT_ORIGIN + Vector3(-0.1, 0, -0.3),
+					Vector3(split_blocks.whole_width() + 0.2, 1.3, 0.6)
+				)
+			)
+	return boxes
+
+
+## Kamera so stellen, dass die Bühne genau in die freie Fläche zwischen den
+## Tafeln passt (seitlich verschoben, gleiche Blickrichtung).
+func _fit_camera() -> void:
+	if not is_instance_valid(camera) or free_rect.size.x < 10 or free_rect.size.y < 10:
+		return
+	var parts := _content_boxes()
+	var box: AABB = parts[0]
+	for part in parts:
+		box = box.merge(part)
+	var target := box.get_center()
+	var direction := CAMERA_DIRECTION.normalized()
+	var distance := 18.0
+	var shift := Vector2.ZERO
+	var view := get_viewport().get_visible_rect().size
+	var probe := Camera3D.new()
+	probe.fov = camera.fov
+	add_child(probe)
+	var goal := free_rect.grow(-maxf(10.0, free_rect.size.x * 0.02))
+	for iteration in range(10):
+		probe.global_transform = Transform3D(Basis.IDENTITY, target + direction * distance)
+		probe.look_at(target)
+		probe.global_position += probe.global_basis.x * shift.x + probe.global_basis.y * shift.y
+		var rect := Rect2(probe.unproject_position(target), Vector2.ZERO)
+		for part in parts:
+			for corner in range(8):
+				rect = rect.expand(probe.unproject_position(part.get_endpoint(corner)))
+		var ratio := maxf(rect.size.x / goal.size.x, rect.size.y / goal.size.y)
+		distance = clampf(distance * lerpf(1.0, ratio, 0.85), 5.0, 80.0)
+		var world_per_px := 2.0 * distance * tan(deg_to_rad(probe.fov * 0.5)) / view.y
+		var delta_px := rect.get_center() - goal.get_center()
+		shift += Vector2(delta_px.x, -delta_px.y) * world_per_px * 0.9
+	remove_child(probe)
+	probe.free()
+	var position_value := target + direction * distance
+	var basis_value := Transform3D(Basis.IDENTITY, position_value).looking_at(target).basis
+	_cam_goal_position = position_value + basis_value.x * shift.x + basis_value.y * shift.y
+	_cam_goal_target = target + basis_value.x * shift.x + basis_value.y * shift.y
+	if reduced_motion or not _camera_placed:
+		_camera_placed = true
+		camera.global_position = _cam_goal_position
+		camera.look_at(_cam_goal_target)
+		_cam_target = _cam_goal_target
 
 
 # ---------------------------------------------------------------- Sprache
@@ -758,6 +1115,18 @@ func _voice_action() -> void:
 		_stop_speech()
 	else:
 		_speak(bubble_text.text)
+
+
+func _auto_speak(words: String) -> void:
+	if _auto_read:
+		_speak(words)
+
+
+func _update_voice_button() -> void:
+	if not is_instance_valid(voice_button):
+		return
+	voice_button.visible = _speech_enabled
+	voice_button.text = "Stopp" if _speech_state in ["preparing", "playing"] else "Vorlesen"
 
 
 func _speak(words: String) -> void:
@@ -798,6 +1167,7 @@ func _start_segment() -> void:
 	)
 	var accepted: Variant = _speech_host.call("speakLearning", JSON.stringify(request))
 	_speech_state = "preparing" if HostBridge.durable_ack(accepted) else "unavailable"
+	_update_voice_button()
 
 
 func _stop_speech() -> void:
@@ -813,6 +1183,7 @@ func _stop_speech() -> void:
 	if is_instance_valid(fox) and fox.is_usable():
 		fox.set_teacher_speaking(false)
 		fox.apply_speech_sample(0.0, 0.0, false)
+	_update_voice_button()
 
 
 func _tick_speech(delta: float) -> void:
@@ -856,6 +1227,9 @@ func _tick_speech(delta: float) -> void:
 		elif is_instance_valid(fox) and fox.is_usable():
 			fox.set_teacher_speaking(false)
 			fox.apply_speech_sample(0.0, 0.0, false)
+	if _speech_segments.is_empty() and state == "completed":
+		_speech_state = "idle"
+	_update_voice_button()
 
 
 # ---------------------------------------------------------------- Eingabe
@@ -927,18 +1301,47 @@ func _unhandled_input(event: InputEvent) -> void:
 # ---------------------------------------------------------------- Rückkehr
 
 
-func _return_to_lesson() -> void:
+## Kurze Zusammenfassung für die App: Hilfestufe, Weg, Zwillingsaufgabe. Die
+## Originalaufgabe wird hier nie beantwortet, daher kein Ergebnis und keine
+## Sterne – die App bucht den Lernnachweis nach ihren eigenen Regeln.
+func summary(result_id: String) -> Dictionary:
+	return {
+		"resultId": result_id,
+		"taskId": companion_scope.task_id,
+		"kind": "tutor",
+		"mode": twin_way if twin_solved else tutor.weg,
+		"originalAnswer": "",
+		"originalCorrect": false,
+		"originalAttempts": 0,
+		"hintLevel": hint_level,
+		"twinSolved": twin_solved,
+		"twinAttempts": twin_attempts if twin_solved else 0,
+		"twinPrompt": twin_prompt,
+	}
+
+
+## Genau eine Rückgabe je Besuch (auch über die Android-Zurück-Taste).
+func return_to_lesson() -> void:
 	_stop_speech()
+	if return_count > 0:
+		return
+	var payload := {"status": "illustrated", "game": "learning"}
+	if valid:
+		payload["holo"] = summary(HostBridge.new_result_id())
 	if HostBridge.is_embedded():
-		if not HostBridge.return_to_app("learn", {"status": "illustrated", "game": "learning"}):
+		if not HostBridge.return_to_app("learn", payload):
 			feedback.text = HostBridge.SAVE_FAILURE
-	else:
+			return
+	return_count += 1
+	last_return = payload
+	events.append("return")
+	if not HostBridge.is_embedded() and capture_options.is_empty():
 		SceneRouter.goto("learn")
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_return_to_lesson()
+		return_to_lesson()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT]:
 		suspended = true
 		_stop_speech()
