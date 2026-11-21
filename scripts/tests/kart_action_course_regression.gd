@@ -21,6 +21,13 @@ func _settle() -> void:
 	await process_frame
 
 
+## Elemente aus dem Aktionsplan (ohne die von Höhepunkten oder dem Garten ergänzten).
+func _planned(items: Array) -> int:
+	return items.filter(
+		func(item): return not (item.has("thrill") or item.has("highlight") or item.has("garden"))
+	).size()
+
+
 func _check_plans() -> void:
 	for track in ACTION.COURSES:
 		var world = WORLD.new()
@@ -40,15 +47,14 @@ func _check_plans() -> void:
 		# LUMO passages add one reward pad behind a bridge (kart_passages.extend_action).
 		var passage_pads: int = course.pads.filter(func(pad): return pad.has("passage")).size()
 		assert(bridge_pads <= passage_pads, "%s: jede Brücke hat ihr Turbo-Feld" % track)
-		# Höhepunkte (kart_track_thrills.gd) bringen eigene Turbo-Felder und Kuppensprünge mit.
-		var thrill_pads: int = course.pads.filter(func(pad): return pad.has("thrill")).size()
-		var thrill_kickers: int = course.kickers.filter(func(kick): return kick.has("thrill")).size()
-		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + passage_pads + thrill_pads, "%s: alle Turbo-Felder haben Platz" % track)
-		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
+		# Höhepunkte (kart_track_thrills.gd, kart_track_highlights.gd, Garten) bringen eigene
+		# Elemente mit; verglichen werden nur die im Plan konfigurierten.
+		assert(_planned(course.pads) == config.get("pads", []).size() + stunt_pads + passage_pads, "%s: alle Turbo-Felder haben Platz" % track)
+		assert(_planned(course.gates) == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
-		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size() + thrill_kickers, "%s: Sprungschanze" % track)
-		assert(course.dives.size() == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
-		assert(course.edges.size() == config.get("edges", []).size(), "%s: offene Kanten" % track)
+		assert(_planned(course.kickers) == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
+		assert(_planned(course.dives) == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
+		assert(_planned(course.edges) == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
 		for pad in course.pads:
 			spans.append(Vector2(pad.start, pad.end))
