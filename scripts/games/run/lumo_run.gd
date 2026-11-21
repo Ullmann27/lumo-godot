@@ -31,9 +31,6 @@ const SESSION = preload("res://scripts/games/run/run_session.gd")
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 const UI = preload("res://scripts/games/run/run_ui.gd")
 const QUESTIONS = preload("res://scripts/games/kart_questions.gd")
-const RIVAL = preload("res://scripts/games/run/run_rival.gd")
-const RIVAL_VIEW = preload("res://scripts/games/run/run_rival_view.gd")
-const MEDALS = preload("res://scripts/games/run/run_medals.gd")
 
 enum Phase { MENU, LOADING, COUNTDOWN, RUNNING, FINISHED }
 
@@ -89,12 +86,6 @@ var hud
 var menus
 var stage
 var audio
-## Fips the squirrel, who races Lumo in every world (run_rival.gd), and his look.
-var rival
-var rival_view
-## Medal of the finished run (run_medals.gd) and whether Lumo beat Fips.
-var medal: int = 0
-var beat_rival: bool = false
 var session_path: String = ""
 var result_id: String = ""
 var result_payload: Dictionary = {}
@@ -210,8 +201,6 @@ func _show_start() -> void:
 		var best_text: String = "Noch kein Lauf"
 		if not best.is_empty():
 			best_text = "Bestwert: %s · %s" % ["★".repeat(int(best.rating)), UI.clock(int(best.time_ms))]
-			if int(best.medal) > 0:
-				best_text += " · %s" % MEDALS.title(int(best.medal))
 		cards.append(
 			{
 				"index": index,
@@ -223,7 +212,6 @@ func _show_start() -> void:
 				"emblem": course.emblem,
 				"best": "Gespeichert: Kontrollpunkt %d" % (saved + 1) if saved >= 0 else best_text,
 				"resume": saved >= 0,
-				"medal": int(best.get("medal", 0)),
 				"resume_text": "Weiterlaufen",
 			}
 		)
@@ -349,7 +337,6 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	camera.far = 900.0
 	add_child(camera)
 	camera.current = true
-	_setup_rival(course)
 	fx = FX.new()
 	fx.name = "RunFx"
 	add_child(fx)
@@ -371,8 +358,6 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	run_clock = 0.0
 	_hinted.clear()
 	_hint_cursor = 0
-	medal = 0
-	beat_rival = false
 	var restored: bool = with_save and _restore()
 	if not restored:
 		SESSION.erase(session_path)
@@ -429,10 +414,6 @@ func advance(delta: float) -> void:
 		if countdown_left <= 0.0:
 			phase = Phase.RUNNING
 			player.speed = TUNING.START_SPEED
-			if rival.enabled() and not rival.started:
-				rival.start_road_race(run_clock)
-				if rival.started:
-					_rival_say("rival_start")
 			if not _reopen_question() and not plan.adventure:
 				hud.say("Lenke mit dem Stick. SPRINGEN tippen oder halten!", 3.5)
 	elif phase == Phase.RUNNING and not paused and not question_open:
@@ -442,8 +423,6 @@ func advance(delta: float) -> void:
 		player.previous_s = player.s
 		player.s += _coast * delta
 		player.speed = _coast
-	if phase == Phase.FINISHED and rival != null and rival.enabled():
-		rival.coast(delta * (TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE))
 	_update_view(delta, false)
 
 
@@ -480,9 +459,6 @@ func _simulate(delta: float) -> void:
 		_on_track_event(event)
 	if phase != Phase.RUNNING:
 		return
-	if rival.enabled():
-		for event in rival.step(delta, player, run_clock):
-			_rival_say(str(event.type))
 	for step in moments.step(player, events, happened):
 		_on_moment(step)
 	if _trail_left > 0.0:
@@ -507,8 +483,6 @@ func _simulate(delta: float) -> void:
 	if is_instance_valid(audio):
 		audio.update(delta, player, track)
 	hud.set_state(track.kept, _share(player.s), solved_count(), track.checkpoint)
-	if rival.enabled():
-		hud.set_rival(_share(rival.s) if rival.started or not plan.adventure else -1.0)
 	hud.set_dash_cooldown(player.dash_cooldown / TUNING.DASH_COOLDOWN)
 
 
@@ -578,8 +552,6 @@ func _update_view(delta: float, snap: bool) -> void:
 	actor.apply(feet, ground, player, maxf(delta, 0.0001), paused or question_open or phase == Phase.COUNTDOWN)
 	camera.chase_view = plan.adventure and track.chase_active
 	camera.follow(world, player, feet.origin, maxf(delta, 0.0001), snap)
-	if is_instance_valid(rival_view):
-		rival_view.follow(maxf(delta, 0.0001), snap)
 	fx.set_speed(camera.pace_now if phase == Phase.RUNNING else 0.0, camera.global_transform)
 	if is_instance_valid(moment_props):
 		moment_props.advance(delta, player.s)
@@ -767,53 +739,10 @@ func _on_track_event(event: Dictionary) -> void:
 			_finish()
 
 
-# ------------------------------------------------------------------ Fips, the rival
-
-func _setup_rival(course: Dictionary) -> void:
-	rival = RIVAL.new()
-	rival.setup(plan, world, track, course)
-	rival_view = null
-	if not rival.enabled():
-		return
-	var view = RIVAL_VIEW.new()
-	view.name = "Rival"
-	add_child(view)
-	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE
-	if view.setup(world, rival, lightweight, reduced_motion, pace):
-		rival_view = view
-	else:
-		view.queue_free()
-
-
-## What the child hears of the race. Fips never talks over a highlight or a
-## hint: his words only come when the hint bubble is free.
-func _rival_say(kind: String) -> void:
-	var fips: String = rival.display_name
-	moment.emit(kind, {"s": rival.s})
-	match kind:
-		"rival_start":
-			hud.say_if_quiet("%s: „Wer ist zuerst im Ziel?“" % fips, 2.6)
-		"rival_passed":
-			if rival.passes == 1:
-				hud.say_if_quiet("Du hast %s überholt!" % fips, 2.0)
-		"rival_ahead":
-			if rival.overtakes == 1:
-				hud.say_if_quiet("%s ist vorn – hol ihn ein!" % fips, 2.0)
-		"rival_finish":
-			hud.say_if_quiet("%s ist im Ziel!" % fips, 2.0)
-
-
-## The last stretch of a world: ENDSPURT, its name and how the race stands.
+## The last stretch of a world: ENDSPURT and the finale's own sentence.
 func _finale_cue(spot: Dictionary) -> void:
 	hud.banner("ENDSPURT!", -1)
-	var line: String = str(spot.say)
-	if rival.enabled() and rival.started and not rival.finished:
-		var gap: float = rival.gap_to(player.s)
-		if gap > 1.0:
-			line += " %s ist %d m vor dir!" % [rival.display_name, roundi(gap)]
-		elif gap < -1.0:
-			line += " %s ist dicht hinter dir!" % rival.display_name if gap > -25.0 else " Du führst!"
-	hud.say(line, 3.2)
+	hud.say(str(spot.say), 3.2)
 	if is_instance_valid(audio):
 		audio.stinger("bonus")
 
@@ -856,8 +785,6 @@ func _take_snapshot() -> void:
 	snapshot = track.snapshot()
 	snapshot["elapsed_ms"] = int(elapsed * 1000.0)
 	snapshot["questions"] = questions.duplicate(true)
-	if rival != null and rival.enabled():
-		snapshot.merge(rival.snapshot(), true)
 
 
 func _open_question(index: int, saved: Dictionary) -> void:
@@ -1026,7 +953,6 @@ func _restore() -> bool:
 	props.sync(track)
 	for index in questions:
 		props.open_gate(int(index))
-	rival.restore(state, run_clock)
 	_take_snapshot()
 	return true
 
@@ -1068,9 +994,6 @@ func _finish() -> void:
 	var time_ms: int = int(elapsed * 1000.0)
 	ProgressStore.add_stars(reward)
 	var best: Dictionary = SESSION.record(child_scope, str(course.id))
-	var race: Dictionary = _race_result()
-	beat_rival = bool(race.get("won", false))
-	medal = MEDALS.medal_for(true, beat_rival, track.stumbles)
 	result_payload = {
 		"game": "run",
 		"sessionId": str(SceneRouter.launch_options.get("sessionId", "")),
@@ -1087,17 +1010,14 @@ func _finish() -> void:
 		"timeMs": time_ms,
 		"firstTry": first_try_count(),
 		"stumbles": track.stumbles,
-		"medal": MEDALS.id_of(medal),
 	}
-	if rival.enabled():
-		result_payload["rival"] = {"name": rival.display_name, "won": beat_rival}
 	if plan.adventure:
 		result_payload["letters"] = track.letter_count()
 		result_payload["bonusRoom"] = track.bonus_found
 	var accepted: bool = HostBridge.reward(result_payload)
 	if HostBridge.reward_is_recoverable(result_id):
 		SESSION.erase(session_path)
-	SESSION.store_record(child_scope, str(course.id), stars_rating, time_ms, medal)
+	SESSION.store_record(child_scope, str(course.id), stars_rating, time_ms)
 	if is_instance_valid(audio):
 		audio.finish()
 	_sound("finish", "celebrate")
@@ -1116,10 +1036,6 @@ func _finish() -> void:
 			["Belohnung", "+%d Sterne" % reward],
 		],
 		"letters": "",
-		"medal": medal,
-		"medal_name": MEDALS.title(medal),
-		"medal_rule": MEDALS.rule_text(rival.display_name if rival.enabled() else ""),
-		"race": str(race.get("text", "")),
 		"thresholds": "★ Ziel · ★★ ab %d %% · ★★★ ab %d %% der Sterne" % [
 			roundi(TUNING.RATING_TWO * 100.0), roundi(TUNING.RATING_THREE * 100.0)
 		],
@@ -1136,47 +1052,23 @@ func _finish() -> void:
 	if HostBridge.is_embedded() and not accepted:
 		content["notice"] = HostBridge.SAVE_FAILURE
 	menus.open("result", content)
-	print("[LumoRun] finished: course=%s reward=%d rating=%d kept=%d/%d solved=%d time=%s medal=%s race=%s" % [
-		course.id, reward, stars_rating, track.kept, plan.star_total, solved, UI.clock(time_ms),
-		MEDALS.id_of(medal), str(race.get("text", "-"))
+	print("[LumoRun] finished: course=%s reward=%d rating=%d kept=%d/%d solved=%d time=%s" % [
+		course.id, reward, stars_rating, track.kept, plan.star_total, solved, UI.clock(time_ms)
 	])
 
 
-## Fips against Lumo at the finish: who was first and by how many seconds.
-func _race_result() -> Dictionary:
-	if rival == null or not rival.enabled():
-		return {}
-	var pace: float = TUNING.PATH_TIME_SCALE if plan.adventure else TUNING.ROAD_TIME_SCALE
-	var arrival: float = rival.arrival_clock(run_clock)
-	var won: bool = not rival.finished and arrival > run_clock
-	var seconds: float = absf(arrival - run_clock) / pace
-	var text: String
-	if not rival.started:
-		text = "%s war nicht am Start" % rival.display_name
-		won = false
-	elif won:
-		text = "Vor %s! (%s s Vorsprung)" % [rival.display_name, MEDALS.seconds_text(seconds)]
-	else:
-		text = "%s war %s s schneller" % [rival.display_name, MEDALS.seconds_text(seconds)]
-	if is_instance_valid(rival_view):
-		rival_view.finish(not won)
-	return {"won": won, "seconds": seconds, "text": text}
-
-
-## The finish line: a short slow motion, gold sparkles across the gate and the
-## medal said out loud, so the end of the race is a moment of its own.
+## The finish line: a short slow motion and gold sparkles across the gate, so
+## the end of the race is a moment of its own.
 func _finish_moment() -> void:
 	var gate: Vector3 = props.point(plan.finish_s, 0.0, 2.6)
 	for lat in [-2.2, 0.0, 2.2]:
-		fx.play("burst", props.point(plan.finish_s, lat, 2.4), MEDALS.colour(maxi(medal, 1)))
+		fx.play("burst", props.point(plan.finish_s, lat, 2.4), Color("ffe27a"))
 	fx.play("sparkle", gate)
 	if not reduced_motion:
 		_slowmo_left = 0.6
 		camera.kick(0.4)
-	hud.banner("%s!" % MEDALS.title(medal), -1)
-	if rival.enabled():
-		hud.say(("Du hast %s geschlagen!" if beat_rival else "%s war diesmal schneller.") % rival.display_name, 3.0)
-	moment.emit("finish_line", {"medal": medal, "won": beat_rival})
+	hud.banner("ZIEL!", -1)
+	moment.emit("finish_line", {})
 
 
 ## Leaves to the app. A finished run reports its reward (once, by result id); a

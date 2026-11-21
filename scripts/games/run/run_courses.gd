@@ -16,8 +16,6 @@ const COURSES: Array[Dictionary] = [
 		"emblem": "leaf",
 		"theme": "jungle",
 		"seed": 71103,
-		## Fips races Lumo at this steady pace (course m/s, see run_rival.gd).
-		"rival": {"name": "Fips", "pace": 9.0},
 	},
 	{
 		"id": "zauberwald",
@@ -31,8 +29,6 @@ const COURSES: Array[Dictionary] = [
 		"emblem": "tree",
 		"theme": "forest",
 		"seed": 24611,
-		## Fips races Lumo at this steady pace (course m/s, see run_rival.gd).
-		"rival": {"name": "Fips", "pace": 11.5},
 	},
 	{
 		"id": "sonnenhafen",
@@ -46,8 +42,6 @@ const COURSES: Array[Dictionary] = [
 		"emblem": "sun",
 		"theme": "harbour",
 		"seed": 55027,
-		## Fips races Lumo at this steady pace (course m/s, see run_rival.gd).
-		"rival": {"name": "Fips", "pace": 11.5},
 	},
 ]
 

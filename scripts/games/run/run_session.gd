@@ -193,24 +193,13 @@ static func load_valid(path: String, identity: Dictionary, plan) -> Dictionary:
 		return {}
 	if not pending.is_empty() and not _valid_question(pending):
 		return {}
-	# Where Fips was at the checkpoint (run_rival.gd); absent in older saves.
-	var rival: Dictionary = {}
-	var rival_s: Variant = config.get_value(SECTION, "rival_s", null)
-	if rival_s != null:
-		var rival_started: Variant = config.get_value(SECTION, "rival_started", false)
-		var rival_behind: Variant = config.get_value(SECTION, "rival_behind", false)
-		if typeof(rival_s) != TYPE_FLOAT or rival_s < -1.0 or rival_s > plan.finish_s:
-			return {}
-		if typeof(rival_started) != TYPE_BOOL or typeof(rival_behind) != TYPE_BOOL:
-			return {}
-		rival = {"rival_s": rival_s, "rival_started": rival_started, "rival_behind": rival_behind}
 	var recent: Array[String] = []
 	var stored_recent: Variant = config.get_value(SECTION, "recent_questions", [])
 	if typeof(stored_recent) == TYPE_ARRAY:
 		for prompt in stored_recent:
 			if typeof(prompt) == TYPE_STRING and recent.size() < 40:
 				recent.append(prompt)
-	var valid: Dictionary = {
+	return {
 		"checkpoint": checkpoint,
 		"result_id": result_id,
 		"elapsed_ms": elapsed,
@@ -226,8 +215,6 @@ static func load_valid(path: String, identity: Dictionary, plan) -> Dictionary:
 		"letters": letters,
 		"bonus": bonus,
 	}
-	valid.merge(rival)
-	return valid
 
 
 static func _valid_question(question: Dictionary) -> bool:
@@ -257,32 +244,19 @@ static func record(child_scope: String, course_id: String) -> Dictionary:
 		return {}
 	if typeof(time_ms) != TYPE_INT or time_ms <= 0 or time_ms > MAX_ELAPSED_MS:
 		return {}
-	# Medals came later (run_medals.gd): older entries simply have none yet.
-	var medal: Variant = entry.get("medal", TUNING.MEDAL_NONE)
-	if typeof(medal) != TYPE_INT or medal < TUNING.MEDAL_NONE or medal > TUNING.MEDAL_GOLD:
-		medal = TUNING.MEDAL_NONE
-	return {"rating": rating, "time_ms": time_ms, "medal": medal}
+	return {"rating": rating, "time_ms": time_ms}
 
 
-## Keeps the best stars rating (then the best time) and, on its own, the best
-## medal ever won on this course by this child.
-static func store_record(
-	child_scope: String, course_id: String, rating: int, time_ms: int, medal: int = TUNING.MEDAL_NONE
-) -> void:
+static func store_record(child_scope: String, course_id: String, rating: int, time_ms: int) -> void:
 	var best: Dictionary = record(child_scope, course_id)
-	var entry: Dictionary = {"rating": rating, "time_ms": time_ms, "medal": medal}
 	if not best.is_empty():
 		var better: bool = rating > int(best.rating) or (rating == int(best.rating) and time_ms < int(best.time_ms))
 		if not better:
-			entry.rating = int(best.rating)
-			entry.time_ms = int(best.time_ms)
-		entry.medal = maxi(medal, int(best.medal))
-		if entry == best:
 			return
 	var config: ConfigFile = read_sealed(RECORDS)
 	if config == null:
 		config = ConfigFile.new()
-	config.set_value(_record_section(child_scope), course_id, entry)
+	config.set_value(_record_section(child_scope), course_id, {"rating": rating, "time_ms": time_ms})
 	write_sealed(RECORDS, config)
 
 

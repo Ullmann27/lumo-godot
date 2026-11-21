@@ -161,27 +161,3 @@ const RIDE_GRAB_RADIUS: float = 1.35
 const VINE_HIGH_HANDLE: float = 2.8
 ## Push forward (seconds of a speed pad) after a highlight was mastered.
 const MOMENT_BOOST_SECONDS: float = 0.8
-
-# ------------------------------------------------------------------ the rival (run_rival.gd)
-
-## Fips' run-up from standing (m/s² in course time); his pace is per course.
-const RIVAL_ACCELERATION: float = 7.0
-## His own lane (metres from the middle); he takes the other side near Lumo.
-const RIVAL_LANE: float = 2.0
-## Closer than this (metres along the way) he keeps to the other side of Lumo.
-const RIVAL_KEEP_AWAY: float = 14.0
-## On an adventure path he starts when Lumo is this close to his place.
-const RIVAL_PATH_CALL: float = 4.0
-## Seconds between two "overtaken" calls (side by side counts once).
-const RIVAL_SWAP_COOLDOWN: float = 2.5
-## Where he stops after the finish line (metres behind it).
-const RIVAL_FINISH_SPOT: float = 5.0
-
-# ------------------------------------------------------------------ medals (run_medals.gd)
-
-## Bronze: reached the finish. Silver: before Fips. Gold: before Fips and
-## without a single fall or bump (track.stumbles == 0).
-const MEDAL_NONE: int = 0
-const MEDAL_BRONZE: int = 1
-const MEDAL_SILVER: int = 2
-const MEDAL_GOLD: int = 3
