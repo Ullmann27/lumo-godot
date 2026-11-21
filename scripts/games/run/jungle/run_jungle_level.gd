@@ -600,9 +600,40 @@ func _mine_ride() -> void:
 	var out: float = _leg(10.0, 0.0, 0.0, 1.3, "rail", -2.0)
 	_safe(out + 1.0, 0.0, true)
 	cart["s1"] = out + 9.0
-	var last: float = _leg(40.0, 0.0, 0.0, 3.0, "stone")
-	_line(last + 3.0, last + 20.0, 0.0, 0.0)
-	finish_s = last + 26.0
+	_finale()
+
+
+## The finale "Tempeltor" (a run_moments.gd moment flagged `finale`): out of the
+## mine Lumo sprints over the temple stones to a row of three golden mushrooms
+## across the whole way, which throw him over the last gorge (LAUNCH_SPEED: 1.1 s
+## in the air, 9.5 m at 8.5 m/s and more with flow; the gorge is 6 m and begins
+## 1.2 m behind the caps) onto the landing stones right before the temple gate.
+## It replaces the plain 40 m home straight and is only 8 m longer, so the whole
+## run keeps its 100-second target. A fall is caught at the start of the sprint.
+func _finale() -> void:
+	var sprint: float = _leg(18.0, 0.0, 0.0, 3.0, "stone")
+	_safe(sprint + 2.0)
+	_line(sprint + 3.0, sprint + 13.0, 0.0, 0.0)
+	var launch: float = s - 1.2
+	for lane in [-1.8, 0.0, 1.8]:
+		_mushroom(launch, lane, TUNING.LAUNCH_SPEED)
+		bounces[bounces.size() - 1]["look"] = "gold"
+	var gorge: float = _hole(6.0)
+	_arc(launch + 0.8, gorge + 8.5, 0.0, 5.2, 6, 1.2)
+	_gold(gorge + 3.5, 0.0, 5.6)
+	var last: float = _leg(24.0, 0.0, 0.0, 3.0, "stone")
+	_safe(last + 4.0)
+	_line(last + 6.0, last + 14.0, 0.0, 0.0)
+	finish_s = last + 18.0
+	coaches.append({"s0": sprint, "s1": gorge, "icon": "bounce"})
+	moments.append({
+		"id": "tempeltor", "name": "Tempeltor", "finale": true, "need": "clear", "look": "",
+		"cue": sprint - 4.0, "go": launch - 10.0, "s0": launch - 1.0, "s1": gorge + 6.0,
+		"lat": 0.0, "arch_s": launch - 3.0, "colour": "ffd75e", "coach": "bounce",
+		"land_s": gorge + 9.5, "land_lat": 0.0, "boost": 0.8, "lane_to": finish_s,
+		"say": "Über die Goldpilze zum Tempeltor!",
+		"done_say": "Was für ein Zielsprung!", "miss_say": "Hoppla! Noch einmal über die Goldpilze.",
+	})
 	_decor("finish_temple", finish_s + 6.0, 0.0)
 
 

@@ -13,6 +13,8 @@ const START_S: float = 14.0
 const FINISH_MARGIN: float = 12.0
 const STAR_HEIGHT: float = 1.0
 const STAR_SPACING: float = 3.0
+## Metres of the last stretch of a road course that belong to its finale.
+const FINALE_LENGTH: float = 130.0
 ## Covered stretches of Dschungelherz (waterfall cave and root grotto): no high flights.
 const JUNGLE_COVERED: Array[Vector2] = [Vector2(920.0, 1520.0)]
 
@@ -79,6 +81,7 @@ func _generate(world, selected: Dictionary) -> void:
 	else:
 		_reserve(finish_s - 38.0, length)
 		_adopt_world_features()
+		_place_finale(str(selected.get("theme", "")))
 		var opening_end: float = _place_opening(str(selected.get("theme", "")))
 		_reserve(0.0, opening_end)
 		_place_checkpoints()
@@ -88,6 +91,7 @@ func _generate(world, selected: Dictionary) -> void:
 		boosts.append({"s0": start_s + 8.0, "s1": start_s + 12.0,
 			"lat": 0.0, "half": 3.0, "seconds": TUNING.PATH_PAD_SECONDS})
 	_sort_all()
+	moments.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a.cue) < float(b.cue))
 	star_total = 0
 	for value in star_value:
 		star_total += value
@@ -442,6 +446,81 @@ func _wave_jump(edge: float, lane: float) -> float:
 		"done_say": "Toller Wellensprung!", "miss_say": "Platsch! Nochmal – am Ring springen.",
 	})
 	return land + 14.0
+
+
+# ------------------------------------------------------------------ finale
+
+## The last stretch of a road course, its own moment (run_moments.gd, flagged
+## `finale`): ENDSPURT is called, a full-width turbo strip, then the world's
+## last jump over water onto a landing target and a gold star line through
+## the finish gate. Light posts in the world colour line the whole stretch.
+##   Zauberwald "Sternentor": a row of three glowing mushrooms across the way
+##     throws Lumo over the star brook (BOUNCE_SPEED: 13 m at 13 m/s, the
+##     brook is 6 m and begins 2 m behind the caps).
+##   Sonnenhafen "Leuchtturm-Sprung": the launch band across the pier throws
+##     him over the harbour basin (LAUNCH_SPEED: 14.5 m at 13 m/s, the basin
+##     is 8 m and begins 1.5 m behind the band).
+## Running over the caps or the band is all it takes; a splash is caught a
+## few metres back and the moment stays armed for the next try.
+func _place_finale(look: String) -> void:
+	if look != "forest" and look != "harbour":
+		return
+	var length_m: float = FINALE_LENGTH
+	var start: float = finish_s - length_m
+	for attempt in range(8):
+		if _free(start - 6.0, finish_s - 38.0):
+			break
+		start -= 12.0
+	if not _free(start - 6.0, finish_s - 38.0):
+		return
+	_reserve(start - 6.0, finish_s)
+	var forest: bool = look == "forest"
+	var edge: float = start + 52.0
+	var gap: float = 6.0 if forest else 8.0
+	var launch: float = edge - (2.0 if forest else 1.5)
+	boosts.append({"s0": start + 12.0, "s1": start + 18.0, "lat": 0.0, "half": 20.0})
+	_trail(start + 2.0, start + 11.0, 0.0, 0.0)
+	_trail(start + 20.0, launch - 3.0, 0.0, 0.0)
+	if forest:
+		for lane in [-2.2, 0.0, 2.2]:
+			bounces.append(
+				{"s": launch, "lat": lane, "radius": 1.3, "half": 1.3, "power": TUNING.BOUNCE_SPEED, "look": "glow_mushroom"}
+			)
+	else:
+		bounces.append(
+			{"s": launch, "lat": 0.0, "radius": 1.3, "half": 20.0, "power": TUNING.LAUNCH_SPEED, "band": true}
+		)
+	channels.append(
+		{
+			"s0": edge, "s1": edge + gap, "real": false, "respawn": start + 22.0, "exit": edge + gap + 3.0,
+			"look": "" if forest else "wave",
+		}
+	)
+	var power: float = TUNING.BOUNCE_SPEED if forest else TUNING.LAUNCH_SPEED
+	var flight: float = TUNING.flight_seconds(power)
+	var land: float = launch + TUNING.CRUISE * flight
+	for step in range(7):
+		var u: float = (float(step) + 0.5) / 7.0
+		var value: int = TUNING.GOLD_STAR_VALUE if step == 3 else 1
+		_star(launch + TUNING.CRUISE * flight * u, 0.0, STAR_HEIGHT + TUNING.flight_height(power, flight * u), value)
+	_trail(land + 4.0, finish_s - 4.0, 0.0, 0.0)
+	_star(finish_s - 1.5, 0.0, STAR_HEIGHT + 0.6, TUNING.GOLD_STAR_VALUE)
+	moments.append(
+		{
+			"id": "sternentor" if forest else "leuchtturm",
+			"name": "Sternentor" if forest else "Leuchtturm-Sprung",
+			"finale": true, "need": "clear", "look": "" if forest else "wave",
+			"cue": start, "go": launch - 12.0, "s0": launch - 2.0, "s1": edge + gap,
+			"lat": 0.0, "arch_s": launch - 4.0, "colour": "b9a6ff" if forest else "ffd23a",
+			"coach": "bounce", "land_s": land, "land_lat": 0.0, "boost": 1.0, "lane_to": finish_s,
+			"say": (
+				"Über die Leuchtpilze ins Sternentor!" if forest
+				else "Über das Sprungband zum Leuchtturm!"
+			),
+			"done_say": "Was für ein Zielsprung!",
+			"miss_say": "Platsch! Noch einmal – lauf über die Pilze." if forest else "Platsch! Noch einmal – lauf übers Sprungband.",
+		}
+	)
 
 
 # ------------------------------------------------------------------ beats

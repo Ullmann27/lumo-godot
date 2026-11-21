@@ -29,6 +29,8 @@ var progress: float = 0.0
 var marks := PackedFloat32Array()
 var mark_is_question := PackedByteArray()
 var reached: int = -1
+## Where Fips, the rival, is on the course (0..1), -1 while he is not racing.
+var rival_share: float = -1.0
 var _toast_left: float = 0.0
 ## The text of the hint bubble as given (the bubble shows it broken into lines).
 var _toast_text: String = ""
@@ -148,6 +150,14 @@ func set_state(star_count: int, share: float, solved_count: int, checkpoint: int
 	top.queue_redraw()
 
 
+func set_rival(share: float) -> void:
+	if absf(share - rival_share) < 0.002:
+		return
+	rival_share = share
+	if is_instance_valid(top):
+		top.queue_redraw()
+
+
 func set_letters(chars: Array, mask: int) -> void:
 	letter_chars = chars
 	letter_mask = mask
@@ -183,6 +193,15 @@ func say(text: String, seconds: float = 2.4) -> void:
 	toast.visible = not text.is_empty()
 	_toast_left = seconds
 	_place_toast()
+
+
+## A line that may wait: shown only when no other hint is on screen (the
+## rival's words never cover a highlight or an obstacle hint). True if shown.
+func say_if_quiet(text: String, seconds: float = 2.4) -> bool:
+	if _toast_left > 0.0 and toast.visible:
+		return false
+	say(text, seconds)
+	return true
 
 
 func show_countdown(text: String) -> void:
@@ -433,6 +452,31 @@ func _draw_top() -> void:
 	var goal := Vector2(_bar.end.x, _bar.position.y + _bar.size.y * 0.5)
 	top.draw_rect(Rect2(goal + Vector2(-2.0 * u, -15.0 * u), Vector2(3.0 * u, 24.0 * u)), UI.WHITE)
 	top.draw_rect(Rect2(goal + Vector2(1.0 * u, -15.0 * u), Vector2(13.0 * u, 10.0 * u)), UI.GOLD)
+	if rival_share >= 0.0:
+		# Fips: a chestnut squirrel head below the bar, with his bushy tail.
+		var fips := Vector2(
+			_bar.position.x + _bar.size.x * clampf(rival_share, 0.0, 1.0), _bar.end.y + 7.0 * u
+		)
+		var tail := PackedVector2Array()
+		for k in range(12):
+			var angle: float = PI * 0.15 + PI * 1.2 * float(k) / 11.0
+			tail.append(fips + Vector2(-8.0 * u, -2.0 * u) + Vector2(cos(angle), -sin(angle)) * 7.5 * u)
+		tail.append(fips + Vector2(-4.0 * u, 2.0 * u))
+		top.draw_colored_polygon(tail, Color("c46a2c"))
+		top.draw_circle(fips, 8.0 * u, UI.WHITE)
+		top.draw_circle(fips, 6.3 * u, Color("a4521f"))
+		for side in [-1.0, 1.0]:
+			top.draw_colored_polygon(
+				PackedVector2Array(
+					[
+						fips + Vector2(side * 1.5 * u, -5.0 * u),
+						fips + Vector2(side * 5.5 * u, -11.5 * u),
+						fips + Vector2(side * 6.5 * u, -3.5 * u),
+					]
+				),
+				Color("a4521f")
+			)
+		top.draw_circle(fips + Vector2(0, 2.0 * u), 2.8 * u, Color("ffe1c4"))
 	var marker := Vector2(_bar.position.x + _bar.size.x * progress, _bar.position.y + _bar.size.y * 0.5)
 	top.draw_circle(marker, 11.0 * u, UI.WHITE)
 	top.draw_circle(marker, 8.5 * u, Color("ff8a2a"))

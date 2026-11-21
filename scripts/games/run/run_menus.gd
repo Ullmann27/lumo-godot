@@ -12,6 +12,7 @@ signal again_pressed
 signal leave_pressed(destination: String)
 
 const UI = preload("res://scripts/games/run/run_ui.gd")
+const MEDALS = preload("res://scripts/games/run/run_medals.gd")
 
 var screen: String = ""
 var data: Dictionary = {}
@@ -253,7 +254,27 @@ func _add_card(card: Dictionary, rect: Rect2, tall: bool) -> void:
 		kicker_text = str(card.length)
 	var kicker: Label = UI.label(kicker_text, 14.0, u, accent.lightened(0.25))
 	var description: Label = UI.label(str(card.description), 14.0 if narrow else 15.0, u, UI.MUTED)
-	var best: Label = UI.label(str(card.best), 14.0, u, UI.GOLD)
+	var best_text: Label = UI.label(str(card.best), 14.0, u, UI.GOLD)
+	best_text.name = "Best"
+	# The best result with the best medal of this child, when there is one.
+	var best := HBoxContainer.new()
+	best.name = "BestRow"
+	best.add_theme_constant_override("separation", roundi(6.0 * u))
+	var medal: int = int(card.get("medal", 0))
+	if medal > 0:
+		var disc := Control.new()
+		disc.name = "Medal"
+		disc.custom_minimum_size = Vector2(22.0, 26.0) * u
+		disc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		disc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		disc.draw.connect(
+			func() -> void:
+				var radius: float = disc.size.y * 0.32
+				MEDALS.draw(disc, Vector2(disc.size.x * 0.5, disc.size.y - radius - 1.0), radius, medal)
+		)
+		best.add_child(disc)
+	best_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	best.add_child(best_text)
 	if tall and _short:
 		name_label.add_theme_font_size_override("font_size", roundi(21.0 * u))
 		description.add_theme_font_size_override("font_size", roundi(13.0 * u))
@@ -262,8 +283,11 @@ func _add_card(card: Dictionary, rect: Rect2, tall: bool) -> void:
 		description.max_lines_visible = 2
 		description.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		description.visible = not bool(card.resume)
-	for label in [name_label, kicker, description, best]:
+	for label in [name_label, kicker, description, best_text]:
 		label.horizontal_alignment = align
+	if tall:
+		best.alignment = BoxContainer.ALIGNMENT_CENTER
+		best_text.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	description.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var buttons := BoxContainer.new()
 	buttons.name = "Buttons"
@@ -467,6 +491,8 @@ func _build_result() -> void:
 	rating.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	rating.draw.connect(_draw_rating.bind(rating, int(data.rating)))
 	column.add_child(rating)
+	if data.has("medal"):
+		column.add_child(_medal_row(int(data.medal), str(data.medal_name), str(data.get("race", "")), short))
 	var facts := GridContainer.new()
 	facts.name = "Facts"
 	facts.columns = 4 if short else 2
@@ -485,6 +511,10 @@ func _build_result() -> void:
 		facts.add_child(value)
 	column.add_child(facts)
 	column.add_child(UI.label(str(data.thresholds), 12.0, u, UI.MUTED))
+	if data.has("medal_rule"):
+		var rule: Label = UI.label(str(data.medal_rule), 12.0, u, UI.MUTED)
+		rule.name = "MedalRule"
+		column.add_child(rule)
 	if data.has("notice"):
 		var notice: Label = UI.label(str(data.notice), 16.0, u, Color("ffb3a1"))
 		notice.name = "Notice"
@@ -510,6 +540,38 @@ func _build_result() -> void:
 		grid.columns = 4
 		for button in buttons:
 			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+## The medal of the race with its name and how the race against Fips went.
+func _medal_row(medal: int, title: String, race: String, short: bool) -> Control:
+	var u: float = _unit
+	var row := HBoxContainer.new()
+	row.name = "Medal"
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", roundi(10.0 * u))
+	var disc := Control.new()
+	disc.name = "Disc"
+	disc.custom_minimum_size = Vector2(40.0, (38.0 if short else 46.0)) * u
+	disc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	disc.draw.connect(
+		func() -> void:
+			var radius: float = disc.size.y * 0.34
+			MEDALS.draw(disc, Vector2(disc.size.x * 0.5, disc.size.y - radius - 1.0), radius, medal)
+	)
+	row.add_child(disc)
+	var texts := VBoxContainer.new()
+	texts.add_theme_constant_override("separation", 0)
+	var name_label: Label = UI.label(
+		"%s-Medaille" % title if medal > 0 else title, 18.0 if short else 20.0, u, MEDALS.colour(medal), true
+	)
+	name_label.name = "MedalName"
+	texts.add_child(name_label)
+	if not race.is_empty():
+		var race_label: Label = UI.label(race, 14.0 if short else 15.0, u, UI.WHITE)
+		race_label.name = "Race"
+		texts.add_child(race_label)
+	row.add_child(texts)
+	return row
 
 
 func _draw_rating(canvas: Control, rating: int) -> void:

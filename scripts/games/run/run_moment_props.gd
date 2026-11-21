@@ -31,6 +31,8 @@ func build(race_world, course_plan, accent: Color, calm: bool) -> void:
 			_build_target(float(moment.land_s), float(moment.get("land_lat", 0.0)), colour)
 		if str(moment.get("look", "")) == "wave":
 			_build_wave(moment)
+		if bool(moment.get("finale", false)):
+			_build_finale_lane(moment, colour)
 
 
 func set_calling(index: int, value: bool) -> void:
@@ -202,3 +204,41 @@ func _build_wave(moment: Dictionary) -> void:
 		Vector3(0, 0, PI * 0.5)
 	)
 	_waves.append(holder)
+
+
+## The finale stretch: glowing posts in the world colour on both sides, every
+## 10 m from the ENDSPURT call to the finish gate, so the last part of a world
+## is recognisable at a glance. One mesh for all posts (MultiMesh), unshaded.
+func _build_finale_lane(moment: Dictionary, colour: Color) -> void:
+	var from: float = float(moment.cue) + 4.0
+	var to: float = float(moment.get("lane_to", moment.s1))
+	var places: Array[Transform3D] = []
+	var at: float = from
+	while at <= to + 0.01:
+		var half: float = float(world.wall_lateral_at(at)) + 0.45
+		for side in [-1.0, 1.0]:
+			places.append(_frame_at(at, side * half, 0.0))
+		at += 10.0
+	var post := CylinderMesh.new()
+	post.top_radius = 0.07
+	post.bottom_radius = 0.1
+	post.height = 1.6
+	post.radial_segments = 6
+	var lamp := SphereMesh.new()
+	lamp.radius = 0.24
+	lamp.height = 0.48
+	lamp.radial_segments = 10
+	lamp.rings = 6
+	for part in [[post, Vector3(0, 0.8, 0), Color("f4f1e8")], [lamp, Vector3(0, 1.75, 0), colour]]:
+		var multi := MultiMesh.new()
+		multi.transform_format = MultiMesh.TRANSFORM_3D
+		multi.mesh = part[0]
+		multi.instance_count = places.size()
+		for index in range(places.size()):
+			multi.set_instance_transform(index, places[index] * Transform3D(Basis.IDENTITY, part[1]))
+		var drawn := MultiMeshInstance3D.new()
+		drawn.name = "FinaleLane"
+		drawn.multimesh = multi
+		drawn.material_override = _glow(part[2], 1.6 if part[2] == colour else 0.4)
+		drawn.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(drawn)
