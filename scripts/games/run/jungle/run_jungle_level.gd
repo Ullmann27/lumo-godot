@@ -13,6 +13,8 @@ const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 
 ## Where the bonus room lies in road space: before the start, never on the way.
 const BONUS_S0: float = -300.0
+## Metres from the golden mushrooms of the finale to where Lumo comes down.
+const FINALE_FLIGHT: float = 17.0
 const SECTION_NAMES: Array[String] = [
 	"Lichtung", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt"
 ]
@@ -603,34 +605,39 @@ func _mine_ride() -> void:
 	_finale()
 
 
-## The finale "Tempeltor" (a run_moments.gd moment flagged `finale`): out of the
-## mine Lumo sprints over the temple stones to a row of three golden mushrooms
-## across the whole way, which throw him over the last gorge (LAUNCH_SPEED: 1.1 s
-## in the air, 9.5 m at 8.5 m/s and more with flow; the gorge is 6 m and begins
-## 1.2 m behind the caps) onto the landing stones right before the temple gate.
-## It replaces the plain 40 m home straight and is only 8 m longer, so the whole
-## run keeps its 100-second target. A fall is caught at the start of the sprint.
+## The finale "Tempeltor" (a run_moments.gd moment flagged `finale`, see
+## run_course_plan.gd for the road worlds): out of the mine, ENDSPURT is called
+## on the temple stones; Lumo sprints along a star line to a row of golden
+## mushrooms over the whole way, which throw him high over the last gorge
+## (LAUNCH_SPEED: 1.1 s in the air; the launch also carries him forward and
+## takes an early jump, so nobody falls in right before the finish) along a star
+## arc onto a landing target and through the temple gate. The stone way runs on
+## past the gate, so Lumo has room to slow down. A fall is caught at the start
+## of the sprint. About 40 m longer than the old plain home straight.
 func _finale() -> void:
-	var sprint: float = _leg(18.0, 0.0, 0.0, 3.0, "stone")
+	var sprint: float = _leg(36.0, 0.0, 0.0, 3.0, "stone")
 	_safe(sprint + 2.0)
-	_line(sprint + 3.0, sprint + 13.0, 0.0, 0.0)
+	_line(sprint + 4.0, sprint + 30.0, 0.0, 0.0)
 	var launch: float = s - 1.2
 	for lane in [-1.8, 0.0, 1.8]:
 		_mushroom(launch, lane, TUNING.LAUNCH_SPEED)
-		bounces[bounces.size() - 1]["look"] = "gold"
+		var pad: Dictionary = bounces[bounces.size() - 1]
+		pad["look"] = "gold"
+		pad["catch"] = true
+		pad["carry"] = true
 	var gorge: float = _hole(6.0)
-	_arc(launch + 0.8, gorge + 8.5, 0.0, 5.2, 6, 1.2)
-	_gold(gorge + 3.5, 0.0, 5.6)
-	var last: float = _leg(24.0, 0.0, 0.0, 3.0, "stone")
-	_safe(last + 4.0)
-	_line(last + 6.0, last + 14.0, 0.0, 0.0)
-	finish_s = last + 18.0
-	coaches.append({"s0": sprint, "s1": gorge, "icon": "bounce"})
+	var land: float = launch + FINALE_FLIGHT
+	_arc(launch + 1.5, land - 1.5, 0.0, 5.6, 8, 1.4)
+	_gold((launch + land) * 0.5, 0.0, 6.0)
+	var last: float = _leg(60.0, 0.0, 0.0, 3.0, "stone")
+	_safe(last + 6.0)
+	finish_s = land + 22.0
+	_line(land + 3.0, finish_s - 3.0, 0.0, 0.0)
 	moments.append({
 		"id": "tempeltor", "name": "Tempeltor", "finale": true, "need": "clear", "look": "",
-		"cue": sprint - 4.0, "go": launch - 10.0, "s0": launch - 1.0, "s1": gorge + 6.0,
-		"lat": 0.0, "arch_s": launch - 3.0, "colour": "ffd75e", "coach": "bounce",
-		"land_s": gorge + 9.5, "land_lat": 0.0, "boost": 0.8, "lane_to": finish_s,
+		"cue": sprint + 1.0, "go": launch - 10.0, "s0": launch - 1.0, "s1": gorge + 6.0,
+		"lat": 0.0, "arch_s": launch - 3.0, "colour": "ffd75e", "coach": "",
+		"land_s": land, "land_lat": 0.0, "boost": 0.8, "lane_to": finish_s,
 		"say": "Über die Goldpilze zum Tempeltor!",
 		"done_say": "Was für ein Zielsprung!", "miss_say": "Hoppla! Noch einmal über die Goldpilze.",
 	})

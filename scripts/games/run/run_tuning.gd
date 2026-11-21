@@ -163,3 +163,8 @@ const RIDE_GRAB_RADIUS: float = 1.35
 const VINE_HIGH_HANDLE: float = 2.8
 ## Push forward (seconds of a speed pad) after a highlight was mastered.
 const MOMENT_BOOST_SECONDS: float = 0.8
+## A finale launch still takes Lumo when he jumped early and is at most this
+## high above it (metres; a tapped jump peaks at about 1.7 m).
+const FINALE_CATCH_HEIGHT: float = 2.6
+## Seconds of turbo a finale launch gives along the way (it throws forward).
+const FINALE_CARRY_SECONDS: float = 1.2

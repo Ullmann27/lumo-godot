@@ -229,16 +229,19 @@ func _build_finale_lane(moment: Dictionary, colour: Color) -> void:
 	lamp.height = 0.48
 	lamp.radial_segments = 10
 	lamp.rings = 6
-	for part in [[post, Vector3(0, 0.8, 0), Color("f4f1e8")], [lamp, Vector3(0, 1.75, 0), colour]]:
+	for part in [
+		["FinaleLanePosts", post, Vector3(0, 0.8, 0), Color("f4f1e8")],
+		["FinaleLaneLamps", lamp, Vector3(0, 1.75, 0), colour],
+	]:
 		var multi := MultiMesh.new()
 		multi.transform_format = MultiMesh.TRANSFORM_3D
-		multi.mesh = part[0]
+		multi.mesh = part[1]
 		multi.instance_count = places.size()
 		for index in range(places.size()):
-			multi.set_instance_transform(index, places[index] * Transform3D(Basis.IDENTITY, part[1]))
+			multi.set_instance_transform(index, places[index] * Transform3D(Basis.IDENTITY, part[2]))
 		var drawn := MultiMeshInstance3D.new()
-		drawn.name = "FinaleLane"
+		drawn.name = str(part[0])
 		drawn.multimesh = multi
-		drawn.material_override = _glow(part[2], 1.6 if part[2] == colour else 0.4)
+		drawn.material_override = _glow(part[3], 1.6 if part[3] == colour else 0.4)
 		drawn.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(drawn)

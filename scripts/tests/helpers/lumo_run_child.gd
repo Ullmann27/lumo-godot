@@ -46,9 +46,6 @@ func drive(game, delta: float) -> void:
 	game.touch_steer = Vector2(clampf((target - player.lat) * 1.5, -1.0, 1.0), 0.0)
 	if refuse or player.is_riding():
 		return
-	if str(spot.get("coach", "")) == "bounce":
-		# "Lauf drauf": a mushroom or launch band does the jump by itself.
-		return
 	if _held >= 0.0:
 		_held += delta
 		if _held >= hold:
