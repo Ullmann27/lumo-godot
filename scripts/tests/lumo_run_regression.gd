@@ -922,6 +922,9 @@ func _test_host_contract() -> void:
 	_check(facts.contains("Sterne") and facts.contains("Zeit") and facts.contains("Aufgaben"), "result screen shows stars, time and tasks")
 	game._finish()
 	game._finish()
+	# Der Ziel-Moment sperrt die Ergebnisknöpfe kurz (RESULT_HOLD), damit niemand
+	# versehentlich weitertippt, während Lumo durchs Ziel läuft.
+	game.menus.wait(game.RESULT_HOLD + 0.1)
 	await _tap(_find(game.menus, "LeaveLearn") as Button)
 	_check(fake.rewards.size() == 1, "the reward is reported to the host exactly once")
 	_check(fake.rewards[0].resultId == id and fake.rewards[0].game == "run", "the reported reward is this run")
