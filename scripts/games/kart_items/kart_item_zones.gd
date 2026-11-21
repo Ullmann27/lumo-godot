@@ -6,8 +6,10 @@ extends RefCounted
 ## zur Mitte) und die Passagenverträge:
 ##  - Sperrbereiche mit Anlauf: Rennstart, Ziellinie, Checkpoint-Grenzen (Länge/8),
 ##    Rampen (kickers), Looping, Sprung-/Lückenstücke, Tunnel, Abtauch-Stücke (dives),
-##    offene Kanten (edges), Slalom-Tore (gates), Turbofelder (pads), Hindernisse und
-##    alle LUMO-Passagen (Eisbrücke, Lianenaffe, Lavapuls, Tore, Kurven, Aussicht);
+##    offene Kanten (edges), Slalom-Tore (gates), Turbofelder (pads), Hindernisse,
+##    alle LUMO-Passagen (Eisbrücke, Lianenaffe, Lavapuls, Tore, Kurven, Aussicht),
+##    die Spannungsstellen (kart_track_thrills.gd: Spalt-Schanze, Kuppe, Steilkurve,
+##    Turbo-Bahn) und die Fahrspaß-Höhepunkte (kart_track_highlights.gd) samt Anlauf;
 ##  - enge Kuppen (Höhenprofil), scharfe Kurven (Richtungswechsel), zu schmale Fahrbahn;
 ##  - Sichtweite aus der Fahrerkamera (gerade Sichtlinie über der Fahrbahn).
 ## Je Zone liegen 2 oder 3 Prismen quer zur Fahrbahn – nach der echten Breite; schmale
@@ -16,6 +18,14 @@ extends RefCounted
 
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
+## Plan der Fahrspaß-Höhepunkte (kart_track_highlights.gd META) – nur gelesen, damit dieser
+## Planer nicht den ganzen Höhepunkte-Baukasten lädt.
+const HIGHLIGHT_META: String = "highlight_plan"
+## Anlauf vor einer Spalt-Schanze: dort reiht sich das Feld auf die mutige oder sichere Linie.
+const LEAP_LEAD_M: float = 60.0
+## Anlauf vor den übrigen Spannungsstellen/Höhepunkten (Leuchttor, Spurwahl vor der Kante).
+const ELEMENT_LEAD_M: float = 30.0
 
 const MIN_ZONES: int = 5
 const MAX_ZONES: int = 8
@@ -111,6 +121,34 @@ static func hazards(world, occupied: Array = []) -> Array[Dictionary]:
 					"start": float(entry.zone_start) - (50.0 if interactive else 15.0),
 					"end": float(entry.zone_end) + (15.0 if interactive else 10.0),
 					"kind": "passage_" + str(entry.kind),
+				}
+			)
+		)
+	# Spannungsstellen: Spalt-Schanze = Sturzstelle ("leap"), sonst "thrill_<art>".
+	for thrill in THRILLS.of(world):
+		var leap: bool = str(thrill.kind) == "leap"
+		(
+			result
+			. append(
+				{
+					"start": float(thrill.start) - (LEAP_LEAD_M if leap else ELEMENT_LEAD_M),
+					"end": float(thrill.end) + 12.0,
+					"kind": "leap" if leap else "thrill_" + str(thrill.kind),
+				}
+			)
+		)
+	# Fahrspaß-Höhepunkte (Schanze, Höhepunkt, Risiko-Kante, Turbo-Bahn, Furt) samt Leuchttor.
+	var highlights: Array = (
+		world.get_meta(HIGHLIGHT_META, []) if world.has_meta(HIGHLIGHT_META) else []
+	)
+	for entry in highlights:
+		(
+			result
+			. append(
+				{
+					"start": float(entry.start) - ELEMENT_LEAD_M,
+					"end": float(entry.end) + 12.0,
+					"kind": "highlight_" + str(entry.kind),
 				}
 			)
 		)
@@ -235,10 +273,15 @@ static func plan(world, occupied: Array = []) -> Array[Dictionary]:
 		d += CANDIDATE_STEP
 	if free.is_empty():
 		return zones
+	# Erst die Wunschzahl, dann weniger. Gelingt keine Zahl genau, gilt die größte gefundene
+	# Verteilung (vorher die der letzten, kleinsten Zahl – auf dicht bebauten Strecken wie dem
+	# Zauberwald fielen so mögliche fünf Zonen auf vier zurück).
 	var picks: Array[float] = []
 	for count in range(target_count(length), MIN_ZONES - 2, -1):
-		picks = _best_spread(free, count, length)
-		if picks.size() == count:
+		var trial: Array[float] = _best_spread(free, count, length)
+		if trial.size() > picks.size() or (trial.size() == count and trial.size() == picks.size()):
+			picks = trial
+		if picks.size() >= count:
 			break
 	for i in range(picks.size()):
 		var at: float = picks[i]

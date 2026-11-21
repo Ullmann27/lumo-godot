@@ -38,6 +38,8 @@ const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const HIGHLIGHTS = preload("res://scripts/games/kart_track_highlights.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
+const THRILL_ART = preload("res://scripts/games/kart_track_thrill_art.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
 var _piece_markers: Array = []
@@ -75,6 +77,8 @@ var jump: Dictionary = {}
 var action: Dictionary = {}
 ## Planned from authored curve anchors, before action placement or geometry is built.
 var adventure_tunnel: Dictionary = {}
+## Strecken 2.0 Steilkurven: Überhöhungsgewicht je 2 m (leer = keine Steilkurve).
+var thrill_bank := PackedFloat32Array()
 ## Streckenhimmel werden einmal je Strecke angelegt und wiederverwendet (siehe _sky_for): Wird ein
 ## schon gezeichneter Himmel im Kompatibilitäts-Renderer von Godot 4.6.3 freigegeben, bleiben seine
 ## zwei 256er-Spiegelungstexturen bis zum Beenden liegen („Texture … leaked“).
@@ -107,6 +111,11 @@ func build(
 	if has_meta("adventure_tunnel"):
 		remove_meta("adventure_tunnel")
 	action_obstacles.clear()
+	thrill_bank = PackedFloat32Array()
+	if has_meta(THRILLS.META):
+		remove_meta(THRILLS.META)
+	if has_meta(HIGHLIGHTS.META):
+		remove_meta(HIGHLIGHTS.META)
 	scenery_plants = {}
 	decoration_count = 0
 	low_detail = lightweight
@@ -125,12 +134,15 @@ func build(
 	loop_layout={}
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
-		if HIGHLIGHTS.has(track_id):
-			# Fahrspaß-Audit 19.11.: Dschungelherz bekommt echte Schanzen und ein Turbo-Finale
-			# aus dem Action-Baukasten (vorher ohne einen einzigen Sprung).
+		# Strecken 2.0 (kart_track_thrills.gd) und Fahrspaß-Höhepunkte (kart_track_highlights.gd):
+		# Dschungelherz hatte vorher keinen einzigen Sprung; beide Pläne nutzen den Action-Baukasten.
+		THRILLS.plan(self)
+		if THRILLS.has(track_id) or HIGHLIGHTS.has(track_id):
 			action = ACTION.plan(self)
+			THRILLS.extend_action(self)
 			HIGHLIGHTS.extend_action(self)
 			ACTION.build(self)
+			THRILL_ART.build(self)
 			HIGHLIGHTS.build(self)
 		PASSAGE_ART.build(self)
 		if not geometry_only:
@@ -318,7 +330,14 @@ func frame(distance: float) -> Basis:
 	var right: Vector3 = raw_right.normalized()
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(forward(distance + 5.0) - ahead)
-	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * 0.68, -0.14, 0.14))
+	var gain: float = 0.68
+	var limit: float = 0.14
+	if not thrill_bank.is_empty():
+		var slot: int = int(fposmod(distance, length) / THRILLS.BANK_STEP)
+		var w: float = thrill_bank[slot % thrill_bank.size()]
+		gain = lerpf(gain, THRILLS.BANK_GAIN, w)
+		limit = lerpf(limit, THRILLS.BANK_LIMIT, w)
+	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * gain, -limit, limit))
 
 func position_at(distance: float, lateral: float = 0.0) -> Vector3:
 	return curve.sample_baked(fposmod(distance, length), true) + frame(distance).x * lateral
@@ -392,13 +411,13 @@ func dive_factor(distance: float) -> float:
 ## Raised optional lane on Himmelsinseln. Other tracks stay unchanged.
 func alternate_route_height(distance: float, lateral: float) -> float:
 	if track_id != "bergwelt":
-		return 0.0
+		return THRILLS.lane_height(self, distance, lateral)
 	return SKY_ISLANDS.split_route_height(length, distance, lateral)
 
 
 func alternate_route_pitch(distance: float, lateral: float) -> float:
 	if track_id != "bergwelt":
-		return 0.0
+		return THRILLS.lane_pitch(self, distance, lateral)
 	return SKY_ISLANDS.split_route_pitch(length, distance, lateral)
 
 
@@ -435,6 +454,9 @@ func _precision_rival_arc(d: float) -> float:
 ## Also covers a kart that hit the far edge just behind the gap.
 func gap_exit_distance(distance: float) -> float:
 	var d: float=fposmod(distance,length)
+	var leap_exit: float = THRILLS.gap_exit(self, distance)
+	if leap_exit >= 0.0:
+		return leap_exit
 	for kicker in action.get("kickers", []):
 		if bool(kicker.get("precision_jump", false)) and d>=float(kicker.take_off) and d<float(kicker.gap_end)+6.0:
 			return distance-d+float(kicker.gap_end)+3.0
@@ -451,6 +473,9 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	if passage_point >= 0.0:
 		var lap_start: float = safe - fposmod(safe, length)
 		return clampf(lap_start + passage_point, lower, upper)
+	var leap_safe: float = THRILLS.safe_respawn(self, safe)
+	if leap_safe >= 0.0:
+		return clampf(leap_safe, lower, upper)
 	if jump.is_empty():
 		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
 		if stunt_gap.is_empty():
@@ -973,10 +998,15 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 		var d: float=float(i)*length/count
 		var next: float=float(i+1)*length/count
 		if in_gap((d+next)*0.5) or PASSAGES.void_at(self,(d+next)*0.5): continue
-		var vertices: Array[Vector3]=[position_at(d,left)+frame(d).y*height,position_at(d,right)+frame(d).y*(height-down),position_at(next,left)+frame(next).y*height,position_at(next,right)+frame(next).y*(height-down)]
-		for index in ([0,2,1,1,2,3] if left < right else [0,1,2,1,3,2]):
-			surface.set_uv(Vector2(left if index%2==0 else right,d if index<2 else next))
-			surface.add_vertex(vertices[index])
+		for span in _ribbon_spans(left, right, THRILLS.cut_span(self, (d+next)*0.5)):
+			var l: float = span.x
+			var r: float = span.y
+			var hl: float = height - down * (l - left) / (right - left)
+			var hr: float = height - down * (r - left) / (right - left)
+			var vertices: Array[Vector3]=[position_at(d,l)+frame(d).y*hl,position_at(d,r)+frame(d).y*hr,position_at(next,l)+frame(next).y*hl,position_at(next,r)+frame(next).y*hr]
+			for index in ([0,2,1,1,2,3] if l < r else [0,1,2,1,3,2]):
+				surface.set_uv(Vector2(l if index%2==0 else r,d if index<2 else next))
+				surface.add_vertex(vertices[index])
 	surface.generate_normals()
 	if not low_detail and not _only_geometry:
 		surface.generate_tangents()
@@ -987,9 +1017,28 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 	add_child(node)
 	return node
 
+## Ribbon pieces left after removing a leap gap (lateral interval) from [left, right].
+static func _ribbon_spans(left: float, right: float, cut: Vector2) -> Array:
+	if cut.x == INF:
+		return [Vector2(left, right)]
+	var lo: float = minf(left, right)
+	var hi: float = maxf(left, right)
+	var pieces: Array = []
+	if cut.x > lo:
+		pieces.append(Vector2(lo, minf(hi, cut.x)))
+	if cut.y < hi:
+		pieces.append(Vector2(maxf(lo, cut.y), hi))
+	var result: Array = []
+	for piece in pieces:
+		if piece.y - piece.x > 0.001:
+			result.append(piece if left < right else Vector2(piece.y, piece.x))
+	return result
+
 func _road() -> void:
+	THRILLS.plan(self)
 	action = ACTION.plan(self)
 	PASSAGES.extend_action(self)
+	THRILLS.extend_action(self)
 	HIGHLIGHTS.extend_action(self)
 	TRACK_PIECES.plan(self, _piece_markers)
 	_install_production_tunnel()
@@ -1040,7 +1089,7 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		var open_side: float=ACTION.open_side(action,d)
 		for side in [-1.0,1.0]:
-			if side==open_side: continue
+			if side==open_side or THRILLS.cuts_side(self, d, side): continue
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
 			if track_id in ["sonnenhafen", "candy_cloud"]:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
@@ -1065,6 +1114,7 @@ func _road() -> void:
 	HIGHLIGHTS.build(self)
 	TRACK_PIECES.build(self)
 	PASSAGE_ART.build(self)
+	THRILL_ART.build(self)
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)

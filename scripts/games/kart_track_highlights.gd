@@ -16,9 +16,13 @@ extends RefCounted
 ##   turbobahn  Finale: drei mittige Turbo-Felder im Abstand von 22 m unter Leuchtbögen.
 ##   furt       Wasserfurt: vorhandene Tauchstrecke (Tempo × 0,9, Wasserwände).
 ##
-## Alles wird in world.action eingetragen (nach kart_action_course.plan und
-## kart_passages.extend_action). Spieler, Rivalen (kart_rival_flight), Rücksetzer, Lasso-Posten,
-## Dramaturgie-Hindernisse und Sammelzonen lesen dieselben Daten und weichen ihnen aus.
+## Alles wird in world.action eingetragen (nach kart_action_course.plan, kart_passages und
+## kart_track_thrills.extend_action). Spieler, Rivalen (kart_rival_flight), Rücksetzer,
+## Lasso-Posten und Dramaturgie-Hindernisse lesen dieselben Daten und weichen ihnen aus; die
+## Sammelzonen (kart_item_zones.hazards) und die Treffer-Fairness kennen zusätzlich den ganzen
+## Plan (META „highlight_plan“) samt Leuchttor als Sperrbereich.
+## Die Planung läuft nach den Spannungsstellen (kart_track_thrills.gd) und sucht nur noch
+## freie Abschnitte; sie ergänzt dort, was jener Baukasten nicht hat (Risiko-Kante).
 ## Ein Bauteil-Platzhalter der Dramaturgie (Schild „SPRUNG!“ / „ABKÜRZUNG ➜“ ohne Funktion),
 ## den ein Element hier verwirklicht, entfällt dort (realises()).
 
@@ -61,23 +65,14 @@ const KICKERS: Dictionary = {
 ## Je Strecke: Wunschlage in Metern (negativ = vor dem Ziel). Die Planung rückt jedes
 ## Element auf den nächsten freien, passenden Abschnitt (± SEARCH_M).
 const SPECS: Dictionary = {
-	# Funkel-Labor: 860–1620 m ohne markante Stelle (14,8 s). Versuchsreihe im Labor.
+	# Funkel-Labor (Spannungsstellen aus kart_track_thrills.gd): dazu die Funken-Kante als
+	# Risiko-Wahl in einer echten Kurve – außen offene Kante mit zwei Turbo-Feldern, innen
+	# sicher. Vorher gab es hier keine offene Kante.
 	"learning_lab":
 	[
-		{"kind": "hoehepunkt", "id": "raketenversuch", "at": 1100.0, "name": "Raketen-Versuch"},
 		{"kind": "risiko", "id": "funkenkante", "at": 1420.0, "name": "Funken-Kante"},
-		{"kind": "turbobahn", "id": "funkenfinale", "at": -170.0, "name": "Funken-Finale"},
-	],
-	# Dschungelherz: 3600 m ohne einen Sprung, drei Lücken über 12 s.
-	"jungle_emerald_3600":
-	[
-		{"kind": "schanze", "id": "wurzelsprung", "at": 640.0, "name": "Wurzel-Sprung"},
-		{"kind": "hoehepunkt", "id": "tempelflug", "at": 1470.0, "name": "Tempel-Flug"},
-		{"kind": "schanze", "id": "lianenschanze", "at": 2250.0, "name": "Lianen-Schanze"},
-		{"kind": "turbobahn", "id": "smaragdfinale", "at": -230.0, "name": "Smaragd-Finale"},
 	],
 }
-
 
 ## Nur für Vorher/Nachher-Messungen (kart_track_fun_survey --highlights-off).
 static var enabled: bool = true
@@ -273,8 +268,10 @@ static func _place(
 		entry["start"] = start
 		entry["end"] = span.y
 		if kind == "risiko":
+			# _turn > 0: Linkskurve (Vorwärtsvektor dreht gegen den Uhrzeigersinn); außen
+			# liegt dann rechts (+Querlage, world.frame().x).
 			var bend: float = _turn(world, span.x, span.y)
-			entry["side"] = -1.0 if bend > 0.0 else 1.0
+			entry["side"] = 1.0 if bend > 0.0 else -1.0
 		return entry
 	return {}
 

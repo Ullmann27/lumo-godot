@@ -7,10 +7,16 @@ extends SceneTree
 ##  - innerhalb der Planke, auf Kart-Höhe, keine scharfe Kurve, keine Kuppe;
 ##  - Sichtweite aus der Fahrerkamera ≥ 45 m;
 ##  - Abstände zwischen Zonen ≥ halber Idealabstand (auch über die Rundengrenze);
-##  - in Runde 2 wieder einsammelbar (Schlüssel je Runde), Rivalen können sammeln.
+##  - in Runde 2 wieder einsammelbar (Schlüssel je Runde), Rivalen können sammeln;
+##  - Spannungsstellen (kart_track_thrills.gd) und Fahrspaß-Höhepunkte
+##    (kart_track_highlights.gd) sind Sperrbereiche: keine Zone im Element samt Anlauf,
+##    über einem Spalt und an einer Risiko-Kante kein Treffer (Raketen-Fairness).
 ## `--tracks=a,b` grenzt ein, `--report=<json>` schreibt die Tabelle.
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const ZONES = preload("res://scripts/games/kart_items/kart_item_zones.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
+## Anlauf vor einem Element, in dem keine Zone liegen darf (Meter).
+const ELEMENT_LEAD_M: float = 25.0
 
 var game
 var checks := 0
@@ -123,6 +129,7 @@ func _course(track: String) -> void:
 		min_gap >= length / float(ZONES.target_count(length)) * ZONES.MIN_GAP_FRACTION - 0.1,
 		"Zonenabstand ≥ halber Idealabstand (%.0f m)" % min_gap
 	)
+	_elements(world, zones, areas, length, row)
 	row["kleinster_abstand_m"] = roundi(min_gap)
 	row["kleinste_sicht_m"] = roundi(min_sight)
 	row["kleinste_halbbreite_m"] = snappedf(min_half, 0.1)
@@ -148,6 +155,47 @@ func _course(track: String) -> void:
 			_check(not str(game.opponent_items[0]).is_empty(), "Rivale sammelt ein Prisma")
 	table.append(row)
 	print("[KartItemZones] ", JSON.stringify(row))
+
+
+## Spannungsstellen und Höhepunkte: Sperrbereich, keine Zone darin, Sturzstellen trefferfrei.
+func _elements(
+	world, zones: Array[Dictionary], areas: Array[Dictionary], length: float, row: Dictionary
+) -> void:
+	var elements: Array = []
+	for thrill in THRILLS.of(world):
+		elements.append({"source": "spannung", "entry": thrill})
+	for entry in world.get_meta("highlight_plan", []):
+		elements.append({"source": "hoehepunkt", "entry": entry})
+	var names: Array = []
+	for item in elements:
+		var entry: Dictionary = item.entry
+		var label: String = "%s %s:%s" % [item.source, entry.kind, entry.id]
+		names.append("%s:%s" % [entry.kind, entry.id])
+		var start: float = float(entry.start)
+		var end: float = float(entry.end)
+		_check(
+			not ZONES.blocked_by(world, (start + end) * 0.5, areas).is_empty(),
+			"%s ist Sperrbereich der Sammelzonen" % label
+		)
+		for z in range(zones.size()):
+			var d: float = float(zones[z].distance)
+			var inside: bool = false
+			for shift in [-length, 0.0, length]:
+				if d + shift >= start - ELEMENT_LEAD_M and d + shift <= end:
+					inside = true
+			_check(not inside, "Zone %d bei %.0f m nicht in %s" % [z, d, label])
+		if str(entry.kind) == "leap":
+			var over_gap: float = (float(entry.take_off) + float(entry.gap_end)) * 0.5
+			_check(
+				not str(game.rocket_fairness.danger_at(world, over_gap)).is_empty(),
+				"%s: über dem Spalt kein Treffer" % label
+			)
+		if str(entry.kind) == "risiko":
+			_check(
+				not str(game.rocket_fairness.danger_at(world, (start + end) * 0.5)).is_empty(),
+				"%s: an der offenen Kante kein Treffer" % label
+			)
+	row["elemente"] = names
 
 
 func _run() -> void:
