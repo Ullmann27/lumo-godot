@@ -732,6 +732,179 @@ def dragonfly():
     return finish(obj_from_bmesh("libelle", bm, [teal, wing]))
 
 
+def pumpkin_tunnel():
+    """Hohler Riesenkürbis mit Fahrtunnel entlang Y (Einheitsradius 1, Höhe 0,9).
+    Aufstandsfläche Radius 0,64 (= Schale/Wand am Boden), Bauch Radius 1 auf Höhe 0,38,
+    Tunnel unten 1,2 breit, Bogen 0,72 hoch. Innen helles Fruchtfleisch, Kerne an der Decke,
+    eine Laterne hängt im Scheitel."""
+    orange = material("pumpkin_orange", (0.95, 0.46, 0.06), 0.55)
+    flesh = material("pumpkin_flesh", (1.0, 0.70, 0.22), 0.7, 0.0, (1.0, 0.55, 0.12), 0.35)
+    stalk = material("pumpkin_stalk", (0.42, 0.40, 0.16), 0.7)
+    seedm = material("pumpkin_seed", (0.98, 0.90, 0.62), 0.5)
+    lamp = material("lantern_glow", (1.0, 0.85, 0.45), 0.3, 0.0, (1.0, 0.72, 0.30), 6.0)
+    bm = bmesh.new()
+    prof = []
+    for i in range(17):
+        t = i / 16
+        if t < 0.4:
+            r = 0.64 + 0.36 * math.sin(math.pi * 0.5 * t / 0.4)
+            z = 0.38 * (1.0 - math.cos(math.pi * 0.5 * t / 0.4))
+        else:
+            u = (t - 0.4) / 0.6
+            r = 1.0 - 0.9 * u ** 1.6
+            z = 0.38 + 0.52 * math.sin(math.pi * 0.5 * u)
+        prof.append((r, z))
+    lathe(bm, prof, 64, 0, cap_top=True, cap_bottom=True, ribs=12, rib_depth=0.08)
+    stem = [Vector((0.03 * math.sin(t * 3), 0.06 * t * t, 0.86 + 0.18 * t)) for t in [i / 8 for i in range(9)]]
+    tube(bm, stem, [0.07 - 0.025 * (i / 8) for i in range(9)], 8, 2)
+    o = obj_from_bmesh("kuerbis_tunnel", bm, [orange, flesh, stalk, seedm, lamp])
+    sol = o.modifiers.new("Schale", "SOLIDIFY")
+    sol.thickness = 0.06
+    sol.offset = -1.0
+    sol.material_offset = 1
+    bpy.context.view_layer.objects.active = o
+    bpy.ops.object.modifier_apply(modifier=sol.name)
+    # Tunnel: Bogenprisma entlang Y (unten 1,2 breit, Scheitel 0,72).
+    cut = bmesh.new()
+    arch = []
+    for i in range(25):
+        a = math.pi * i / 24
+        arch.append((0.6 * math.cos(a), 0.12 + 0.6 * math.sin(a) ** 0.9))
+    shape = [(0.6, -0.2)] + arch + [(-0.6, -0.2)]
+    front = [cut.verts.new((x, -1.6, z)) for (x, z) in shape]
+    back = [cut.verts.new((x, 1.6, z)) for (x, z) in shape]
+    n = len(shape)
+    for i in range(n):
+        j = (i + 1) % n
+        cut.faces.new((front[i], front[j], back[j], back[i]))
+    cut.faces.new(list(reversed(front)))
+    cut.faces.new(back)
+    bmesh.ops.recalc_face_normals(cut, faces=cut.faces)
+    cutter = obj_from_bmesh("cutter", cut, [orange])
+    mod = o.modifiers.new("Tunnel", "BOOLEAN")
+    mod.operation = "DIFFERENCE"
+    mod.object = cutter
+    mod.solver = "EXACT"
+    bpy.context.view_layer.objects.active = o
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.data.objects.remove(cutter, do_unlink=True)
+    # Kerne an der Tunneldecke und Laterne im Scheitel (eigenes Mesh, dann verbunden).
+    extra = bmesh.new()
+    rnd = random.Random(21)
+    for k in range(26):
+        y = rnd.uniform(-0.6, 0.6)
+        a = rnd.uniform(0.35, 2.8)
+        p = Vector((0.58 * math.cos(a), y, 0.12 + 0.58 * math.sin(a)))
+        sphere(extra, p, 0.035, 3, 6, 4, (1.0, 1.6, 0.5))
+    tube(extra, [Vector((0, 0, 0.72)), Vector((0, 0, 0.6))], [0.008, 0.008], 6, 2)
+    lathe(extra, [(0.0, 0.5), (0.05, 0.51), (0.07, 0.55), (0.06, 0.6), (0.0, 0.61)], 12, 4)
+    o2 = obj_from_bmesh("kuerbis_extra", extra, [orange, flesh, stalk, seedm, lamp])
+    return finish(join([o, o2]))
+
+
+def greenhouse_arch():
+    """Gewächshaus-Spant (Spannweite 22 m, Firsthöhe 14 m): weiße Stahlrahmen, Traufrinne,
+    Firstlüftung und ein Bewässerungsrohr mit Düsen unter dem First (Y = Fahrtrichtung)."""
+    white = material("gh_white", (0.93, 0.95, 0.94), 0.35, 0.4)
+    pipe = material("gh_pipe", (0.25, 0.55, 0.35), 0.4, 0.2)
+    brass = material("can_brass", (0.90, 0.66, 0.24), 0.28, 0.9)
+    bm = bmesh.new()
+    half = 11.0
+    eave = 8.5
+    ridge = 14.0
+    for x in (-half, half):
+        box(bm, (x, 0, eave * 0.5), (0.45, 0.45, eave), 0)
+        box(bm, (x * 0.98, 0, eave + 0.2), (0.8, 0.6, 0.35), 0)
+    for side in (-1, 1):
+        a = Vector((side * half, 0, eave))
+        b = Vector((0, 0, ridge))
+        d = (b - a)
+        length = d.length
+        rot = Matrix.Rotation(math.atan2(-d.z, d.x), 3, "Y")
+        box(bm, (a + b) * 0.5, (length, 0.4, 0.4), 0, rot)
+        for k in range(1, 4):
+            p = a + d * (k / 4)
+            box(bm, (p.x, 0, p.z - 0.9), (0.18, 0.18, 1.8), 0)
+    box(bm, (0, 0, eave + 0.05), (2 * half, 0.25, 0.22), 0)
+    box(bm, (0, 0, ridge + 0.3), (1.2, 0.5, 0.5), 0)
+    # Bewässerungsrohr (läuft in Godot zwischen den Spanten weiter) und Düsen.
+    tube(bm, [Vector((0, -0.6, ridge - 1.6)), Vector((0, 0.6, ridge - 1.6))], [0.22, 0.22], 10, 1)
+    for x in (-3.0, 3.0):
+        tube(bm, [Vector((x * 0.3, 0, ridge - 1.6)), Vector((x, 0, eave + 1.6))], [0.12, 0.12], 8, 1)
+        tube(bm, [Vector((x, 0, eave + 1.6)), Vector((x, 0, eave + 1.1))], [0.2, 0.12], 8, 2)
+    return finish(obj_from_bmesh("gewaechshaus_bogen", bm, [white, pipe, brass]), 0.03)
+
+
+def greenhouse_gable():
+    """Giebelwand mit großem Tor (Öffnung 15 m breit, 9,6 m hoch), Glasfeldern und Schild."""
+    white = material("gh_white", (0.93, 0.95, 0.94), 0.35, 0.4)
+    glass = material("gh_glass", (0.70, 0.88, 0.86), 0.05, 0.0)
+    sign = material("gh_sign", (0.98, 0.80, 0.22), 0.5)
+    bm = bmesh.new()
+    half = 11.0
+    eave = 8.5
+    ridge = 14.0
+    for x in (-half, -7.6, 7.6, half):
+        box(bm, (x, 0, eave * 0.5), (0.5, 0.5, eave), 0)
+    box(bm, (0, 0, 9.8), (2 * half, 0.5, 0.45), 0)
+    for side in (-1, 1):
+        a = Vector((side * half, 0, eave))
+        b = Vector((0, 0, ridge))
+        d = b - a
+        rot = Matrix.Rotation(math.atan2(-d.z, d.x), 3, "Y")
+        box(bm, (a + b) * 0.5, (d.length, 0.5, 0.5), 0, rot)
+        # Seitliche Glasfelder neben dem Tor.
+        box(bm, (side * 9.3, 0, eave * 0.5), (3.2, 0.08, eave - 0.2), 1)
+    # Giebeldreieck aus Glas.
+    v = [bm.verts.new(p) for p in ((-half + 0.3, 0, 10.1), (half - 0.3, 0, 10.1), (0, 0, ridge - 0.3))]
+    bm.faces.new(v).material_index = 1
+    box(bm, (0, -0.35, 11.6), (7.0, 0.2, 1.6), 2)
+    return finish(obj_from_bmesh("gewaechshaus_giebel", bm, [white, glass, sign]), 0.03)
+
+
+def sprinkler():
+    """Rasensprenger auf Erdspieß (6,5 m hoch): Fuß, Drehkopf, Düsenarm mit Ablenker."""
+    green = material("spr_green", (0.12, 0.55, 0.30), 0.35, 0.1)
+    grey = material("coupling_grey", (0.30, 0.33, 0.36), 0.35, 0.2)
+    yellow = material("spr_yellow", (0.98, 0.78, 0.15), 0.4)
+    bm = bmesh.new()
+    lathe(bm, [(0.0, -1.5), (0.12, -1.2), (0.25, 0.0), (1.3, 0.05), (1.35, 0.4), (0.4, 0.6), (0.3, 3.8), (0.0, 3.8)], 20, 0)
+    lathe(bm, [(0.0, 3.7), (0.55, 3.75), (0.6, 4.4), (0.45, 4.6), (0.0, 4.6)], 20, 2)
+    arm = [Vector((0, 0, 4.4)), Vector((0, 0.6, 5.2)), Vector((0, 1.6, 5.7)), Vector((0, 2.6, 5.9))]
+    tube(bm, arm, [0.18, 0.16, 0.15, 0.14], 10, 1)
+    box(bm, (0, 2.85, 6.0), (0.5, 0.25, 0.5), 2)
+    box(bm, (0, -0.9, 4.9), (0.3, 1.2, 0.3), 1)
+    lathe(bm, [(0.0, 0.0), (0.35, 0.05), (0.35, 0.5), (0.0, 0.55)], 12, 0, offset=(0, -1.5, 4.6))
+    return finish(obj_from_bmesh("rasensprenger", bm, [green, grey, yellow]), 0.02)
+
+
+def flower_bush():
+    """Blühender Busch (Höhe 1): Blätterkugeln und rote/gelbe Blüten (Topfturm, Beete)."""
+    leafm = material("leaf_green", (0.20, 0.52, 0.16), 0.5)
+    red = material("bloom_red", (0.92, 0.18, 0.22), 0.45)
+    yellow = material("bloom_yellow", (1.0, 0.78, 0.18), 0.45)
+    bm = bmesh.new()
+    rnd = random.Random(31)
+    for k in range(9):
+        a = k * 2.4
+        r = 0.25 + 0.1 * (k % 3)
+        base = Vector((math.cos(a) * r * 0.4, math.sin(a) * r * 0.4, 0.15))
+        d = Vector((math.cos(a), math.sin(a), 0.9)).normalized()
+        leaf(bm, base, d, Vector((-math.sin(a), math.cos(a), 0)), 0.55, 0.32, 0, droop=0.35, curl=0.15, rows=5, cols=3, heart=True)
+    for k in range(14):
+        a = rnd.uniform(0, 2 * math.pi)
+        r = rnd.uniform(0.05, 0.42)
+        p = Vector((math.cos(a) * r, math.sin(a) * r, 0.55 + rnd.uniform(0.0, 0.35)))
+        mat = 1 if k % 3 else 2
+        for j in range(5):
+            b = 2 * math.pi * j / 5
+            d = Vector((math.cos(b), math.sin(b), 0.5)).normalized()
+            leaf(bm, p, d, Vector((-math.sin(b), math.cos(b), 0)), 0.11, 0.09, mat, droop=0.0, curl=0.05, rows=2, cols=2)
+        sphere(bm, p + Vector((0, 0, 0.02)), 0.03, 2 if mat == 1 else 1, 6, 4)
+        tube(bm, [Vector((p.x * 0.3, p.y * 0.3, 0.1)), Vector((p.x * 0.8, p.y * 0.8, p.z * 0.6)), p], [0.012, 0.01, 0.008], 5, 0, cap=False)
+    return finish(obj_from_bmesh("blumenbusch", bm, [leafm, red, yellow]))
+
+
 MODELS = {
     "sonnenblume": sunflower,
     "giesskanne": watering_can,
@@ -754,6 +927,11 @@ MODELS = {
     "biene": bee,
     "schmetterling": butterfly,
     "libelle": dragonfly,
+    "kuerbis_tunnel": pumpkin_tunnel,
+    "gewaechshaus_bogen": greenhouse_arch,
+    "gewaechshaus_giebel": greenhouse_gable,
+    "rasensprenger": sprinkler,
+    "blumenbusch": flower_bush,
 }
 
 

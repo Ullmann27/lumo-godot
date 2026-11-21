@@ -7,6 +7,14 @@
   ],
   "bytes": 22732
  },
+ "blumenbusch": {
+  "triangles": [
+   1614,
+   726,
+   244
+  ],
+  "bytes": 80736
+ },
  "blumentopf": {
   "triangles": [
    1152,
@@ -47,6 +55,22 @@
   ],
   "bytes": 9584
  },
+ "gewaechshaus_bogen": {
+  "triangles": [
+   2508,
+   1128,
+   400
+  ],
+  "bytes": 224520
+ },
+ "gewaechshaus_giebel": {
+  "triangles": [
+   1081,
+   485,
+   171
+  ],
+  "bytes": 115712
+ },
  "giesskanne": {
   "triangles": [
    3881,
@@ -70,6 +94,14 @@
    393
   ],
   "bytes": 74244
+ },
+ "kuerbis_tunnel": {
+  "triangles": [
+   4792,
+   2156,
+   765
+  ],
+  "bytes": 180780
  },
  "libelle": {
   "triangles": [
@@ -102,6 +134,14 @@
    72
   ],
   "bytes": 53288
+ },
+ "rasensprenger": {
+  "triangles": [
+   1620,
+   728,
+   349
+  ],
+  "bytes": 84556
  },
  "rosenbogen": {
   "triangles": [
