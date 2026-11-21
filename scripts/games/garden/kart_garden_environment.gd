@@ -6,7 +6,6 @@ extends Node3D
 const COURSE = preload("res://scripts/games/garden/kart_garden_course.gd")
 const MODELS = preload("res://scripts/games/garden/kart_garden_models.gd")
 const LANDMARKS = preload("res://scripts/games/garden/kart_garden_landmarks.gd")
-const EVENTS = preload("res://scripts/games/garden/kart_garden_events.gd")
 const LAWN = preload("res://assets/shaders/garden/kart_garden_lawn.gdshader")
 ## Sichtweite im Garten: die Sonnenblume und die großen Wahrzeichen bleiben über die
 ## ganze Runde sichtbar (Pflanzen und Kleinteile haben eigene, kürzere Sichtweiten).
@@ -32,10 +31,8 @@ func build(world: Node3D) -> void:
 	parts = LANDMARKS.build(self, world, tier == "low")
 	_flora()
 	_mist()
-	events = EVENTS.new()
-	events.name = "GardenEvents"
-	add_child(events)
-	events.setup(world, self, parts, tier)
+	# Rundenwechsel-Ereignisse (kart_garden_events.gd) sind noch nicht gebaut.
+	events = null
 	world.set_meta("garden_quality", tier)
 	world.set_meta("garden_plants", placed_plants)
 
