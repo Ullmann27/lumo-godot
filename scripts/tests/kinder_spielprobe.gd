@@ -121,6 +121,13 @@ func _run() -> void:
 			print("[Kinderprobe] FAIL: Kachel %s nicht gefunden" % wanted_id)
 			quit(1)
 			return
+		# Wie ein Kind: erst bis zur Kachel blättern, dann tippen.
+		var scroller: Node = tile.get_parent()
+		while scroller != null and not (scroller is ScrollContainer):
+			scroller = scroller.get_parent()
+		if scroller != null:
+			(scroller as ScrollContainer).ensure_control_visible(tile)
+			await _frames(4)
 		var tile_started: int = Time.get_ticks_msec()
 		await _tap(_screen_center(tile))
 		game = await _wait_for_scene(router, wanted_id, 90000)
@@ -496,6 +503,8 @@ func _play(game: Node) -> void:
 			await _hook_rhythm(current_scene)
 		"world":
 			await _hook_world_taps()
+		"stars":
+			await _hook_stars(current_scene)
 	var picked: int = await _tap_pickables(int(options.get("picks", "6")))
 	if picked > 0:
 		await _seconds(1.5)
@@ -583,3 +592,33 @@ func _hook_world_taps() -> void:
 		await _tap(size * point)
 		await _seconds(0.8)
 	await _shot("welt_getippt")
+
+
+## Sternenjagd: Sterne antippen, Funkenregen und Wellen ansehen, bis zum Ziel.
+func _hook_stars(game: Node) -> void:
+	if game == null or not ("stars" in game):
+		notes.append("Sternenjagd ohne Sterne")
+		return
+	var xform: Transform2D = root.get_final_transform()
+	var shots_taken: Dictionary = {}
+	var guard: int = 0
+	while is_instance_valid(game) and not game.result_panel.visible and guard < 80:
+		guard += 1
+		if game.stars.is_empty():
+			await _seconds(0.3)
+			continue
+		var star: Node3D = game.stars[0]
+		await _tap(xform * game.camera.unproject_position(star.global_position), 0.05)
+		await _frames(2)
+		var key: String = "w%d_%d" % [game.wave + 1, game.caught_in_wave]
+		if key in ["w1_2", "w2_3", "w3_4"] and not shots_taken.has(key):
+			shots_taken[key] = true
+			await _shot("sterne_" + key)
+		if is_instance_valid(game.shooting_star) and not game.bonus_caught:
+			var at: Vector2 = game.camera.unproject_position(game.shooting_star.global_position)
+			await _tap(xform * at, 0.05)
+	await _seconds(0.8)
+	await _shot("sterne_ergebnis")
+	print(
+		"[Kinderprobe] sterne: %d gefangen, Bonus %s" % [game.caught_total, str(game.bonus_caught)]
+	)

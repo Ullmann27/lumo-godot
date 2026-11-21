@@ -73,6 +73,7 @@ func _run() -> void:
 	)
 	_check_visible(game, "Hochformat")
 	_check(game.hint.visible, "Tipp-Hinweis über dem ersten Stern sichtbar")
+	_check_dusk_sky(game)
 	for button in [game.back_button]:
 		var px: Vector2 = _button_px(button)
 		_check(minf(px.x, px.y) >= MIN_TOUCH_PX, "Zurück-Knopf ≥ 48 dp (%s)" % str(px))
@@ -187,3 +188,21 @@ func _catch_all(game: Node) -> void:
 		var star: Node3D = game.stars[0]
 		await _tap(game.camera.unproject_position(star.global_position))
 		await _frames(2)
+
+
+## Abendhimmel: kein grauer Standardnebel (den der PerformanceManager am Handy
+## einschaltet) und keine Wolkenbank zwischen Kamera und Sternenhimmel.
+func _check_dusk_sky(game: Node) -> void:
+	var world := game.get_node("WorldEnvironment") as WorldEnvironment
+	var env: Environment = world.environment
+	var sky_mat := env.sky.sky_material as ProceduralSkyMaterial
+	_check(sky_mat.sky_top_color.get_luminance() < 0.2, "dunkler Abendhimmel oben")
+	_check(env.fog_sky_affect <= 0.01, "Nebel verschleiert den Himmel nicht")
+	_check(env.fog_light_color.is_equal_approx(Color("7d4f86")), "Nebel in Abendfarbe statt Grau")
+	var clouds := game.get_node("CloudSea") as MultiMeshInstance3D
+	var blocking: int = 0
+	for i in range(clouds.multimesh.instance_count):
+		var xform: Transform3D = clouds.multimesh.get_instance_transform(i)
+		if xform.origin.y > -2.0 and xform.origin.z > -30.0 and xform.basis.get_scale().x > 0.01:
+			blocking += 1
+	_check(blocking == 0, "keine Wolke vor dem Sternenhimmel (%d)" % blocking)

@@ -98,7 +98,13 @@ func _notification(what: int) -> void:
 
 
 func _build_world() -> void:
-	LumoEnvironment.apply(self, "creative_night")
+	var lighting: Dictionary = LumoEnvironment.apply(self, "creative_night")
+	_dusk_sky(lighting.get("environment") as Environment)
+	var sun := lighting.get("sun") as DirectionalLight3D
+	if sun != null:
+		# Tiefe Abendsonne: warmes Licht, die Wiese leuchtet nicht mehr mittagshell.
+		sun.light_color = Color("ffc7a6")
+		sun.light_energy = 0.62
 	var art := JumpSkyIslandsArt.new()
 	var island_root := Node3D.new()
 	island_root.name = "StarIsland"
@@ -110,6 +116,7 @@ func _build_world() -> void:
 		art.tree(island_root, at)
 	art.finish(self)
 	art.clouds(self, 40.0)
+	_clear_sky_above(get_node_or_null("CloudSea") as MultiMeshInstance3D)
 	art.backdrop(self, 60.0)
 	_build_sky_stars()
 	var warm := OmniLight3D.new()
@@ -124,7 +131,7 @@ func _build_world() -> void:
 	_star_material.albedo_color = STAR_GOLD
 	_star_material.emission_enabled = true
 	_star_material.emission = STAR_GLOW
-	_star_material.emission_energy_multiplier = 2.2
+	_star_material.emission_energy_multiplier = 1.6
 	_star_material.metallic = 0.35
 	_star_material.roughness = 0.25
 	_halo_material = StandardMaterial3D.new()
@@ -132,7 +139,7 @@ func _build_world() -> void:
 	_halo_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_halo_material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	_halo_material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
-	_halo_material.albedo_texture = _radial_texture(Color(1.0, 0.82, 0.35, 0.9))
+	_halo_material.albedo_texture = _radial_texture(Color(1.0, 0.78, 0.3, 0.55))
 	_halo_material.no_depth_test = false
 	_spark_material = _star_material.duplicate()
 	_spark_material.emission_energy_multiplier = 3.0
@@ -140,6 +147,42 @@ func _build_world() -> void:
 		camera.position = Vector3(0, 1.6, 7.4)
 		camera.look_at(Vector3(0, 2.3, 0))
 		camera.fov = 58.0
+
+
+## Abendhimmel für die Sternenjagd: tiefes Violett oben, warmes Rosa am
+## Horizont – die goldenen Sterne leuchten davor deutlich.
+func _dusk_sky(env: Environment) -> void:
+	if env == null or env.sky == null:
+		return
+	var sky_mat := env.sky.sky_material as ProceduralSkyMaterial
+	if sky_mat == null:
+		return
+	sky_mat.sky_top_color = Color("1b1648")
+	sky_mat.sky_horizon_color = Color("b0628f")
+	sky_mat.sky_curve = 0.22
+	sky_mat.ground_horizon_color = Color("6c4a8c")
+	sky_mat.ground_bottom_color = Color("1d1a46")
+	env.ambient_light_color = Color("c9c2ff")
+	env.ambient_light_energy = 0.5
+	# Der PerformanceManager schaltet auf MEDIUM/HIGH (Handy) Nebel ein; ohne
+	# eigene Werte legte der graue Standardnebel einen Schleier über den Himmel.
+	env.fog_light_color = Color("7d4f86")
+	env.fog_density = 0.006
+	env.fog_sky_affect = 0.0
+	env.fog_aerial_perspective = 0.25
+
+
+## Wolkenbänke vor und über der Kamera verdecken sonst den ganzen Himmel
+## (grauer Schleier hinter den Sternen): nur das Wolkenmeer unter der Insel
+## und ferne Wolken bleiben.
+func _clear_sky_above(clouds: MultiMeshInstance3D) -> void:
+	if clouds == null or clouds.multimesh == null:
+		return
+	var multi := clouds.multimesh
+	for i in range(multi.instance_count):
+		var xform: Transform3D = multi.get_instance_transform(i)
+		if xform.origin.y > -2.0 and xform.origin.z > -30.0:
+			multi.set_instance_transform(i, Transform3D(Basis().scaled(Vector3.ZERO), xform.origin))
 
 
 ## Ferne, funkelnde Hintergrundsterne in einem einzigen Zeichenaufruf.

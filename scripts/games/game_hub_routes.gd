@@ -10,7 +10,7 @@ const ENTRIES: Array[Dictionary] = [
 	{"destination": "treasure", "title": "SCHATZSUCHE", "subtitle": "Das Inselgeheimnis", "accent": "ffd18d", "featured": false},
 	{"destination": "rhythm", "title": "RHYTHM PARTY", "subtitle": "Spielen zum Beat", "accent": "ff9fd2", "featured": false},
 	{"destination": "build", "title": "BAUWELT", "subtitle": "Bauen & Gestalten", "accent": "88eeb2", "featured": false},
-	{"destination": "stars", "title": "STERNENJAGD", "subtitle": "Sterne entdecken", "accent": "b99bff", "featured": false},
+	{"destination": "stars", "title": "STERNENJAGD", "subtitle": "Sterne fangen mit Lumo", "accent": "b99bff", "featured": false},
 ]
 
 
