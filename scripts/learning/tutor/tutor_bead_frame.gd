@@ -230,9 +230,28 @@ func count_point(camera: Camera3D, row: int, count: int) -> Vector2:
 	return left.lerp(right, clampf(count / 10.0, 0.0, 1.0))
 
 
-func row_at(camera: Camera3D, screen: Vector2, tolerance: float) -> int:
+## Reihe unter dem Finger: die nähere der beiden Stangen, wenn der Finger
+## höchstens [band] Pixel davon und über dem Rahmen liegt. Zwischen den Stangen
+## entscheidet die Mitte, so ist jede Reihe ein breiter Streifen (Fingerziel),
+## auch wenn die Perlen im schmalen Hochformat klein sind.
+func row_at(camera: Camera3D, screen: Vector2, band: float) -> int:
+	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT, ROD_Y[0], 0))).x
+	var right := camera.unproject_position(to_global(Vector3(RIGHT + SLOT, ROD_Y[0], 0))).x
+	if screen.x < left - band * 0.5 or screen.x > right + band * 0.5:
+		return 0
+	var best := 0
+	var best_distance := band
 	for row in range(2):
-		var y := camera.unproject_position(row_anchor(row)).y
-		if absf(screen.y - y) < tolerance:
-			return row + 1
-	return 0
+		var distance := absf(screen.y - camera.unproject_position(row_anchor(row)).y)
+		if distance < best_distance:
+			best_distance = distance
+			best = row + 1
+	return best
+
+
+## Höhe des Fingerstreifens einer Reihe in Pixeln (für Tests und Belege).
+func row_band(camera: Camera3D, band: float) -> float:
+	var gap := absf(
+		camera.unproject_position(row_anchor(1)).y - camera.unproject_position(row_anchor(0)).y
+	)
+	return band + minf(band, gap * 0.5)

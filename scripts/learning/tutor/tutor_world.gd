@@ -45,6 +45,12 @@ const WALK_SPEED := 2.4
 const TURN_SPEED := 7.0
 const SPLIT_ORIGIN := Vector3(-4.3, 0.0, 2.2)
 const CAMERA_DIRECTION := Vector3(0, 0.62, 0.78)
+## Am Rahmen blickt die Kamera flacher: die beiden Perlenreihen liegen auf dem
+## Bildschirm weiter auseinander. Die Zahlen des Steinwegs liegen flach und
+## brauchen den steileren Blick.
+const FRAME_CAMERA_DIRECTION := Vector3(0, 0.48, 0.88)
+## Mindesthöhe eines Fingerziels (48 dp).
+const TOUCH_DP := 48.0
 
 var capture_options: Dictionary = {}
 var tutor = PLAN.new()
@@ -951,6 +957,11 @@ func _tick_hops(delta: float) -> void:
 			_after_hops(hop.y)
 
 
+## Fingerziel in Pixeln: 48 dp bei der Bildschirmdichte des Geräts.
+func touch_band() -> float:
+	return TOUCH_DP * maxf(1.0, MobileRuntime.get_ui_density())
+
+
 func is_settled() -> bool:
 	return _hop_queue.is_empty() and _walk_time < 0.0 and frame.is_settled()
 
@@ -1073,7 +1084,10 @@ func _fit_camera() -> void:
 	for part in parts:
 		box = box.merge(part)
 	var target := box.get_center()
-	var direction := CAMERA_DIRECTION.normalized()
+	var direction := (
+		(CAMERA_DIRECTION if _material_kind == "huepfen" or not valid else FRAME_CAMERA_DIRECTION)
+		. normalized()
+	)
 	var distance := 18.0
 	var shift := Vector2.ZERO
 	var view := get_viewport().get_visible_rect().size
@@ -1269,12 +1283,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		_drag_row = 0
 		_drag_index = -1
 		if _material_kind == "perlen" and frame.visible:
+			# Die Reihe ist ein Streifen von mindestens 48 dp; getippt wird
+			# die nächste Perle in genau dieser Reihe.
+			_drag_row = frame.row_at(camera, point, touch_band())
 			var hit: Vector2i = frame.pick(camera, point, tolerance)
-			if hit.x > 0:
-				_drag_row = hit.x
+			if _drag_row > 0 and hit.x == _drag_row:
 				_drag_index = hit.y
-			else:
-				_drag_row = frame.row_at(camera, point, tolerance)
 	elif moved and finger == _drag_finger and _drag_row > 0:
 		if point.distance_to(_drag_start) > 14.0:
 			_drag_moved = true

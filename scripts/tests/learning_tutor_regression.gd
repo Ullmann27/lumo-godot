@@ -259,6 +259,8 @@ func _run() -> void:
 		await _mistakes_get_concrete_help()
 	if _wants("return"):
 		await _show_then_practice_and_return()
+	if _wants("bands"):
+		await _row_bands()
 	if _wants("walk"):
 		await _lumo_walks_and_steps_back()
 	if _wants("path"):
@@ -622,6 +624,58 @@ func _show_then_practice_and_return() -> void:
 	await _close(game)
 
 
+## Jede Perlenreihe ist ein Fingerstreifen von mindestens 48 dp: Ein Finger
+## über Reihe 1 oder unter Reihe 2 (abseits der Perlen) greift die richtige Reihe.
+func _row_bands() -> void:
+	var minimum := 48.0 * DENSITY
+	var game := await _open(_learning("acht_plus_fuenf", "rechenrahmen", "ueben"))
+	var band_px: float = game.touch_band()
+	var band: float = game.frame.row_band(game.camera, band_px)
+	_check(band >= minimum, "Perlenreihe als Fingerziel %.0f px ≥ 48 dp" % band)
+	var top: float = game.camera.unproject_position(game.frame.row_anchor(0)).y
+	var bottom: float = game.camera.unproject_position(game.frame.row_anchor(1)).y
+	var footer: Rect2 = game.footer.get_global_rect()
+	var bubble: Rect2 = game.bubble.get_global_rect()
+	# Reihe 1: Finger deutlich über der Stange, rechts bei den freien Perlen.
+	var goal: Vector2 = game.frame.count_point(game.camera, 1, 8)
+	var right: Vector2 = game.frame.count_point(game.camera, 1, 10)
+	var above := Vector2(right.x, top - band_px * 0.7)
+	_check(not bubble.has_point(above), "Fingerpunkt über Reihe 1 liegt auf der Bühne")
+	await _drag(above, Vector2(goal.x, above.y))
+	_check(
+		game.tutor.reihe1 == 8 and game.tutor.schritt == 1,
+		"Reihe 1 über der Stange gegriffen (%d)" % game.tutor.reihe1
+	)
+	await _settle(game)
+	await _drag_beads(game, 1, 10)
+	await _settle(game)
+	_check(game.tutor.schritt == 2, "Reihe 1 voll")
+	# Reihe 2: Finger unter der Stange.
+	goal = game.frame.count_point(game.camera, 2, 2)
+	right = game.frame.count_point(game.camera, 2, 10)
+	var below := Vector2(right.x, bottom + band_px * 0.7)
+	_check(not footer.has_point(below), "Fingerpunkt unter Reihe 2 liegt auf der Bühne")
+	await _drag(below, Vector2(goal.x, below.y))
+	_check(
+		game.tutor.reihe2 == 2 and game.tutor.reihe1 == 10 and game.tutor.schritt == 3,
+		"Reihe 2 unter der Stange gegriffen (%d/%d)" % [game.tutor.reihe1, game.tutor.reihe2]
+	)
+	# Zwischen den Stangen entscheidet die nähere Reihe (Kamera steht nach
+	# dem Schrittwechsel neu: Lage frisch messen).
+	await _settle(game)
+	top = game.camera.unproject_position(game.frame.row_anchor(0)).y
+	bottom = game.camera.unproject_position(game.frame.row_anchor(1)).y
+	right = game.frame.count_point(game.camera, 2, 10)
+	var middle := (top + bottom) * 0.5
+	var probe := Vector2(right.x, middle - 2)
+	_check(game.frame.row_at(game.camera, probe, band_px) == 1, "knapp über der Mitte: Reihe 1")
+	probe.y = middle + 2
+	_check(game.frame.row_at(game.camera, probe, band_px) == 2, "knapp unter der Mitte: Reihe 2")
+	probe.y = top - band_px * 1.2
+	_check(game.frame.row_at(game.camera, probe, band_px) == 0, "weit über dem Rahmen: keine Reihe")
+	await _close(game)
+
+
 ## Am Rahmen geht Lumo zum linken Rahmenende, zeigt und tritt wieder zurück.
 func _lumo_walks_and_steps_back() -> void:
 	var game := await _open(_learning("acht_plus_fuenf", "rechenrahmen", "teilschritt"), false)
@@ -792,6 +846,9 @@ func _layouts() -> void:
 					label + ": %s ≥ 48 dp (%s)" % [button.text, rect.size]
 				)
 				_check(screen.encloses(rect), label + ": %s im Bild" % button.text)
+			if weg != "zahlenstrahl":
+				var band: float = game.frame.row_band(game.camera, game.touch_band())
+				_check(band >= minimum, label + ": Perlenreihe ≥ 48 dp (%.0f px)" % band)
 			var font_px: float = game.bubble_text.get_theme_font_size("font_size") * game.ui.scale.x
 			_check(font_px >= 16.0 * DENSITY, label + ": Lumos Text lesbar (%.0f px)" % font_px)
 			var points: Array[Vector3] = []
