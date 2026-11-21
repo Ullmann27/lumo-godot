@@ -18,6 +18,8 @@ var checks := 0
 var failures := 0
 var cases: Dictionary = {}
 var bridge: Node
+## Teilläufe für gezielte Prüfungen: -- --part=every,voice (Standard: alle).
+var parts: Array[String] = []
 
 
 class HostFixture:
@@ -205,7 +207,25 @@ func _play_through(game: Node3D, label: String) -> int:
 		else:
 			_check(not game.weiter_button.visible, label + ": kein Weiter vor dem Handgriff")
 			var art: String = game.tutor.current().aktion.art
-			_check(await _solve_step(game), "%s: Handgriff %s erfüllt den Schritt" % [label, art])
+			var step_text := str(game.tutor.current().aktion)
+			var solved: bool = await _solve_step(game)
+			_check(
+				solved,
+				(
+					"%s: Handgriff %s erfüllt den Schritt %d %s (Rahmen %d/%d, '%s')"
+					% [
+						label,
+						art,
+						game.tutor.schritt,
+						step_text,
+						game.tutor.reihe1,
+						game.tutor.reihe2,
+						game.feedback.text
+					]
+				)
+			)
+			if not solved:
+				return by_child
 			by_child += 1
 		await _settle(game)
 	_check(game.tutor.fertig, label + ": Ablauf fertig")
@@ -225,24 +245,44 @@ func _run() -> void:
 	for entry: Dictionary in doc.cases:
 		cases[entry.name] = entry.learning
 	_check(cases.size() == 3, "drei App-Fixtures (8+5, 6+7, 3+9)")
-	_validation()
-	await _invalid_scene()
-	await _every_way_and_stage()
-	await _mistakes_get_concrete_help()
-	await _show_then_practice_and_return()
-	await _lumo_walks_and_steps_back()
-	await _path_steps_back()
-	await _pause_and_back()
-	await _voice()
-	await _layouts()
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--part="):
+			for part in argument.trim_prefix("--part=").split(","):
+				parts.append(part)
+	if _wants("validation"):
+		_validation()
+	if _wants("invalid"):
+		await _invalid_scene()
+	if _wants("every"):
+		await _every_way_and_stage()
+	if _wants("mistakes"):
+		await _mistakes_get_concrete_help()
+	if _wants("return"):
+		await _show_then_practice_and_return()
+	if _wants("walk"):
+		await _lumo_walks_and_steps_back()
+	if _wants("path"):
+		await _path_steps_back()
+	if _wants("pause"):
+		await _pause_and_back()
+	if _wants("voice"):
+		await _voice()
+	if _wants("layouts"):
+		await _layouts()
 	bridge._host = null
 	bridge._return_pending = false
-	print("[Tutor] checks=%d failures=%d" % [checks, failures])
+	print(
+		"[Tutor] %s checks=%d failures=%d" % ["PASS" if failures == 0 else "FAIL", checks, failures]
+	)
 	var sound := root.get_node_or_null("GameSoundscape")
 	if sound != null and sound.has_method("release_audio"):
 		sound.release_audio()
 	await create_timer(0.4).timeout
 	quit(0 if failures == 0 else 1)
+
+
+func _wants(part: String) -> bool:
+	return parts.is_empty() or parts.has(part)
 
 
 ## Die Prüfung lehnt jede Abweichung vom App-Vertrag ab (fail-closed).
