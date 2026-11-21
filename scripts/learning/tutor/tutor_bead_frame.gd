@@ -28,7 +28,9 @@ func _ready() -> void:
 	_apply()
 
 
-func _material(color: Color, rough: float, metal: float = 0.0, glow: float = 0.0) -> StandardMaterial3D:
+func _material(
+	color: Color, rough: float, metal: float = 0.0, glow: float = 0.0
+) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = rough
@@ -202,8 +204,12 @@ func pick(camera: Camera3D, screen: Vector2, tolerance: float) -> Vector2i:
 
 ## Anzahl links, wenn ein Finger in Reihe [row] bei screen.x steht (Ziehen).
 func count_at(camera: Camera3D, row: int, screen_x: float) -> int:
-	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, ROD_Y[row - 1], 0))).x
-	var right := camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, ROD_Y[row - 1], 0))).x
+	var left := (
+		camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, ROD_Y[row - 1], 0))).x
+	)
+	var right := (
+		camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, ROD_Y[row - 1], 0))).x
+	)
 	if right - left < 1.0:
 		return counts[row - 1]
 	return clampi(roundi((screen_x - left) / (right - left) * 10.0), 0, 10)

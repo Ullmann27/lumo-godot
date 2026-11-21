@@ -71,7 +71,9 @@ func _rebuild() -> void:
 		_labels[0].text = str(_first)
 		_labels[0].position = Vector3(-width * 0.5 + _first * (CUBE + 0.06) * 0.5, CUBE + 0.45, 0)
 		_labels[1].text = str(_whole - _first)
-		_labels[1].position = Vector3(width * 0.5 - (_whole - _first) * (CUBE + 0.06) * 0.5, CUBE + 0.45, 0)
+		_labels[1].position = Vector3(
+			width * 0.5 - (_whole - _first) * (CUBE + 0.06) * 0.5, CUBE + 0.45, 0
+		)
 
 
 func cube_count() -> int:

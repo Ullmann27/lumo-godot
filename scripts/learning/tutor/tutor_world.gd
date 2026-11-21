@@ -14,11 +14,17 @@ const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const COMPANION_SCOPE = preload("res://scripts/learning/learning_companion_scope.gd")
 const STUFEN_TITEL := {
-	"hinweis": "1 Tipp", "teilschritt": "2 Gemeinsam", "vorzeigen": "3 Lumo zeigt", "ueben": "4 Selbst üben"
+	"hinweis": "1 Tipp",
+	"teilschritt": "2 Gemeinsam",
+	"vorzeigen": "3 Lumo zeigt",
+	"ueben": "4 Selbst üben"
 }
 const WEGE_TITEL := {
-	"rechenrahmen": "Rechenrahmen", "zahlenstrahl": "Zahlenstrahl", "zerlegen": "Zerlegen",
-	"verdoppeln": "Verdoppeln", "tauschen": "Tauschen"
+	"rechenrahmen": "Rechenrahmen",
+	"zahlenstrahl": "Zahlenstrahl",
+	"zerlegen": "Zerlegen",
+	"verdoppeln": "Verdoppeln",
+	"tauschen": "Tauschen"
 }
 const HOP_SECONDS := 0.42
 const FOX_FRAME_HEIGHT := 3.0
@@ -128,6 +134,7 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- Bühne
 
+
 func _build_stage() -> void:
 	var environment := WorldEnvironment.new()
 	var settings := Environment.new()
@@ -225,6 +232,7 @@ func _teacher(reaction: String, target: Vector3) -> void:
 
 
 # ---------------------------------------------------------------- Oberfläche
+
 
 func _build_ui() -> void:
 	var layer := CanvasLayer.new()
@@ -340,7 +348,9 @@ func _button(caption: String, action: Callable, parent: Control, primary: bool =
 
 func _style_button(button: Button, primary: bool, selected: bool) -> void:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("ffc94a") if primary else (Color("73d4ed") if selected else Color("1d415b"))
+	style.bg_color = (
+		Color("ffc94a") if primary else (Color("73d4ed") if selected else Color("1d415b"))
+	)
 	style.border_color = Color("fff1b8") if primary or selected else Color("4f9bb8")
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(14)
@@ -351,7 +361,13 @@ func _style_button(button: Button, primary: bool, selected: bool) -> void:
 	pressed.bg_color = style.bg_color.darkened(0.15)
 	button.add_theme_stylebox_override("pressed", pressed)
 	var ink := Color("10243a") if primary or selected else Color("e4f7ff")
-	for state in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+	for state in [
+		"font_color",
+		"font_hover_color",
+		"font_focus_color",
+		"font_pressed_color",
+		"font_hover_pressed_color"
+	]:
 		button.add_theme_color_override(state, ink)
 
 
@@ -377,7 +393,10 @@ func _rebuild_selectors() -> void:
 func _show_unavailable() -> void:
 	title.text = "Nachhilfe mit Lumo"
 	bubble_role.text = "Lumo"
-	bubble_text.text = "Diese Nachhilfe ist gerade nicht verfügbar. Du findest sie auch direkt in der Aufgabe."
+	bubble_text.text = (
+		"Diese Nachhilfe ist gerade nicht verfügbar. "
+		+ "Du findest sie auch direkt in der Aufgabe."
+	)
 	for button in [weiter_button, mehr_button, anders_button]:
 		button.hide()
 	frame.hide()
@@ -388,6 +407,7 @@ func _show_unavailable() -> void:
 
 
 # ---------------------------------------------------------------- Ablauf
+
 
 func _restart() -> void:
 	_hop_queue.clear()
@@ -479,8 +499,16 @@ func _rebuild_choices() -> void:
 	var action: Dictionary = step.aktion
 	if action.art == "zerlegen":
 		for pair: Array in action.zerlegungen:
-			var selected: bool = tutor.zerlegung.size() == 2 and tutor.zerlegung[0] == pair[0] and tutor.zerlegung[1] == pair[1]
-			var button := _button("%d und %d" % [pair[0], pair[1]], choose_split.bind(int(pair[0]), int(pair[1])), choice_bar)
+			var selected: bool = (
+				tutor.zerlegung.size() == 2
+				and tutor.zerlegung[0] == pair[0]
+				and tutor.zerlegung[1] == pair[1]
+			)
+			var button := _button(
+				"%d und %d" % [pair[0], pair[1]],
+				choose_split.bind(int(pair[0]), int(pair[1])),
+				choice_bar
+			)
 			button.name = "Zerlegung_%d_%d" % [pair[0], pair[1]]
 			button.custom_minimum_size = Vector2(120, 60)
 			_style_button(button, false, selected)
@@ -605,6 +633,7 @@ func _other_way() -> void:
 
 # ---------------------------------------------------------------- Lumo springt
 
+
 func _queue_hops(from: int, to: int) -> void:
 	_place_fox(path.stone_position(from) + Vector3(0, 0.06, 0), FOX_PATH_HEIGHT, 0.0)
 	for value in range(from, to):
@@ -650,6 +679,7 @@ func _tick_hops(delta: float) -> void:
 
 
 # ---------------------------------------------------------------- Kamera & Layout
+
 
 func _frame_camera(target: Vector3, width: float) -> void:
 	var size := get_viewport().get_visible_rect().size
@@ -722,6 +752,7 @@ func _layout() -> void:
 
 # ---------------------------------------------------------------- Sprache
 
+
 func _voice_action() -> void:
 	if _speech_state in ["preparing", "playing"]:
 		_stop_speech()
@@ -754,10 +785,17 @@ func _start_segment() -> void:
 	_speech_id += 1
 	_audio_scope = companion_scope.envelope(0, "nachhilfe-%d" % _speech_id)
 	var request := _audio_scope.duplicate(true)
-	request.merge({
-		"id": _speech_id, "text": _speech_segments[0], "rate": _speech_rate,
-		"style": "celebrate" if tutor.fertig else "explain",
-	})
+	(
+		request
+		. merge(
+			{
+				"id": _speech_id,
+				"text": _speech_segments[0],
+				"rate": _speech_rate,
+				"style": "celebrate" if tutor.fertig else "explain",
+			}
+		)
+	)
 	var accepted: Variant = _speech_host.call("speakLearning", JSON.stringify(request))
 	_speech_state = "preparing" if HostBridge.durable_ack(accepted) else "unavailable"
 
@@ -767,7 +805,10 @@ func _stop_speech() -> void:
 	_speech_state = "idle"
 	_speech_segments.clear()
 	_audio_scope.clear()
-	if is_instance_valid(_speech_host) and HostBridge.supports_method(_speech_host, "stopLearningSpeech"):
+	if (
+		is_instance_valid(_speech_host)
+		and HostBridge.supports_method(_speech_host, "stopLearningSpeech")
+	):
 		_speech_host.call("stopLearningSpeech")
 	if is_instance_valid(fox) and fox.is_usable():
 		fox.set_teacher_speaking(false)
@@ -784,7 +825,10 @@ func _tick_speech(delta: float) -> void:
 	if not HostBridge.supports_method(_speech_host, "getLearningSpeechStatus"):
 		return
 	var received: Variant = JSON.parse_string(str(_speech_host.call("getLearningSpeechStatus")))
-	if not received is Dictionary or not COMPANION_SCOPE._integer(received.get("id"), _speech_id, _speech_id):
+	if (
+		not received is Dictionary
+		or not COMPANION_SCOPE._integer(received.get("id"), _speech_id, _speech_id)
+	):
 		return
 	if received.has("protocolVersion") and not companion_scope.matches(received):
 		return
@@ -796,11 +840,15 @@ func _tick_speech(delta: float) -> void:
 	var envelope: Variant = received.get("envelope", 0.0)
 	var audible: bool = state == "playing" and received.get("audible", false) == true
 	if (
-		is_instance_valid(fox) and fox.is_usable()
-		and typeof(position) in [TYPE_INT, TYPE_FLOAT] and typeof(envelope) in [TYPE_INT, TYPE_FLOAT]
+		is_instance_valid(fox)
+		and fox.is_usable()
+		and typeof(position) in [TYPE_INT, TYPE_FLOAT]
+		and typeof(envelope) in [TYPE_INT, TYPE_FLOAT]
 	):
 		fox.set_teacher_speaking(audible)
-		fox.apply_speech_sample(float(position) / 1000.0, clampf(float(envelope), 0.0, 1.0), audible)
+		fox.apply_speech_sample(
+			float(position) / 1000.0, clampf(float(envelope), 0.0, 1.0), audible
+		)
 	if state == "completed":
 		_speech_segments.pop_front()
 		if not _speech_segments.is_empty():
@@ -811,6 +859,7 @@ func _tick_speech(delta: float) -> void:
 
 
 # ---------------------------------------------------------------- Eingabe
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not valid or suspended:
@@ -856,7 +905,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if point.distance_to(_drag_start) > 14.0:
 			_drag_moved = true
 			var preview: int = frame.count_at(camera, _drag_row, point.x)
-			frame.set_counts(preview if _drag_row == 1 else tutor.reihe1, preview if _drag_row == 2 else tutor.reihe2)
+			frame.set_counts(
+				preview if _drag_row == 1 else tutor.reihe1,
+				preview if _drag_row == 2 else tutor.reihe2
+			)
 	elif released and finger == _drag_finger:
 		if _material_kind == "perlen" and _drag_row > 0:
 			if _drag_moved:
@@ -873,6 +925,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 # ---------------------------------------------------------------- Rückkehr
+
 
 func _return_to_lesson() -> void:
 	_stop_speech()
