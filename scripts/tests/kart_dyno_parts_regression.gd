@@ -42,7 +42,7 @@ func _run() -> void:
 	print("[KartDynoParts] serie ", _fmt(before))
 	for slot in CATALOG.SLOTS:
 		var options: Array[Dictionary] = CATALOG.options(slot)
-		_check(options.size() >= 3 and options.size() <= 4, "%s: Serie + 2–3 Varianten" % slot)
+		_check(options.size() >= 6, "%s: Serie + mindestens fünf Varianten" % slot)
 		var free := 0
 		for entry in options:
 			if int(entry.cost) == 0:
@@ -53,18 +53,25 @@ func _run() -> void:
 			var plus := 0
 			var minus := 0
 			var shown_plus := 0
+			var shown_minus := 0
+			var shown: Array[String] = DYNO.display_metrics(
+				CATALOG.SLOT_METRICS[slot], before, after
+			)
 			for metric in DYNO.METRICS:
 				var v: int = DYNO.verdict(metric, float(before[metric]), float(after[metric]))
 				plus += 1 if v > 0 else 0
 				minus += 1 if v < 0 else 0
-				if v > 0 and CATALOG.SLOT_METRICS[slot].has(metric):
+				if v > 0 and shown.has(metric):
 					shown_plus += 1
+				if v < 0 and shown.has(metric):
+					shown_minus += 1
 			print("[KartDynoParts] %s/%s %s" % [slot, entry.id, _fmt(after)])
 			_check(
 				plus >= 1 and minus >= 1, "%s/%s: Vorteil und Nachteil gemessen" % [slot, entry.id]
 			)
 			_check(
-				shown_plus >= 1, "%s/%s: Vorteil steht in der Prüfstand-Anzeige" % [slot, entry.id]
+				shown_plus >= 1 and shown_minus >= 1,
+				"%s/%s: Vorteil und Nachteil stehen in der Prüfstand-Anzeige" % [slot, entry.id]
 			)
 		_check(free == 2, "%s: Serie und genau eine Variante frei" % slot)
 	_finish()

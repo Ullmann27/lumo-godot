@@ -61,9 +61,11 @@ const EXHAUSTS: Array[Dictionary] = [
 	{"id": "rakete", "name": "Raketendüse", "cost": 0, "node": "ExhaustTip_Rocket"},
 	{"id": "doppel", "name": "Doppelrohr", "cost": 0, "node": "ExhaustTip_Twin"},
 ]
-## Alle Steckplätze der Garage: zuerst die fünf Leistungsteile, dann die zwei Optik-Teile.
+## Alle Steckplätze der Garage: zuerst die neun Leistungsteile (kart_part_catalog.SLOTS),
+## dann die zwei Optik-Teile.
 const PART_SLOTS: Array[String] = [
-	"engine", "tires", "wing", "booster", "suspension", "wheel_cover", "exhaust"
+	"engine", "tires", "wing", "booster", "suspension", "steering", "brakes", "gearbox",
+	"ballast", "wheel_cover", "exhaust"
 ]
 ## Reine Optik („Aussehen“), ohne Einfluss aufs Fahren.
 const LOOK_SLOTS: Array[String] = ["wheel_cover", "exhaust"]
@@ -73,9 +75,57 @@ const SLOT_NAMES: Dictionary = {
 	"wing": "Flügel",
 	"booster": "Turbo",
 	"suspension": "Fahrwerk",
+	"steering": "Lenkung",
+	"brakes": "Bremse",
+	"gearbox": "Getriebe",
+	"ballast": "Gewicht",
 	"wheel_cover": "Radkappe",
 	"exhaust": "Auspuff",
 }
+## Feineinstellung (Reifendruck, Fahrwerkshärte, Flügelwinkel, Übersetzung, Lenkung).
+const FINE = preload("res://scripts/games/kart_fine_tuning.gd")
+## Erweiterte Optik je Kart (Garage, Bereich „Optik“), sichtbar in Garage und Rennen:
+## Lackart, Zweitfarbe (Zierteile), Aufkleber-Satz, Startnummer, Cockpit-Farbe (Sitzbezug).
+## Lumo selbst bleibt unverändert (Originalmodell, kein Helm).
+const FINISH_TYPES: Array[Dictionary] = [
+	{"id": "werk", "name": "Wie ab Werk", "cost": 0},
+	{"id": "matte", "name": "Matt", "cost": 0},
+	{"id": "metallic", "name": "Metallic", "cost": 0},
+	{"id": "pearl", "name": "Perlmutt", "cost": 4},
+	{"id": "glitter", "name": "Glitzer", "cost": 6},
+]
+const TWO_TONES: Array[Dictionary] = [
+	{"id": "aus", "name": "Einfarbig", "cost": 0},
+	{"id": "weiss", "name": "Weiß", "cost": 0, "color": Color("f2f5fa")},
+	{"id": "schwarz", "name": "Schwarz", "cost": 0, "color": Color("1b1f27")},
+	{"id": "gold", "name": "Gold", "cost": 4, "color": Color("e2b13c")},
+	{"id": "tuerkis", "name": "Türkis", "cost": 4, "color": Color("27c2c8")},
+	{"id": "orange", "name": "Orange", "cost": 4, "color": Color("ff8a2c")},
+	{"id": "pink", "name": "Pink", "cost": 4, "color": Color("ff5ca8")},
+]
+## Aufkleber aus kart_sticker_atlas.png (Fantasie-Marken, keine echten): vorn und hinten.
+const STICKER_SETS: Array[Dictionary] = [
+	{"id": "werk", "name": "Wie ab Werk", "cost": 0},
+	{"id": "fuchs", "name": "Fuchsstern", "cost": 0, "stickers": ["fuchsstern", "pfotenpower"]},
+	{"id": "blitz", "name": "Blitzbox", "cost": 0, "stickers": ["blitzbox", "turbotee"]},
+	{"id": "zahlen", "name": "Zahlenzauber", "cost": 3, "stickers": ["zahlenzauber", "lerncrew"]},
+	{"id": "polar", "name": "Polarlicht", "cost": 3, "stickers": ["polarlicht", "kometen"]},
+	{"id": "rallye", "name": "Rallye", "cost": 3, "stickers": ["checker", "mondreifen"]},
+	{"id": "hafen", "name": "Sonnenhafen", "cost": 3, "stickers": ["sonnenhafen", "wolkenwerk"]},
+]
+const COCKPITS: Array[Dictionary] = [
+	{"id": "werk", "name": "Wie ab Werk", "cost": 0},
+	{"id": "rot", "name": "Rennrot", "cost": 0, "color": Color("c4303a")},
+	{"id": "blau", "name": "Tiefblau", "cost": 0, "color": Color("2448a8")},
+	{"id": "gruen", "name": "Grün", "cost": 3, "color": Color("2f9a52")},
+	{"id": "gelb", "name": "Sonnengelb", "cost": 3, "color": Color("e9b72c")},
+	{"id": "lila", "name": "Lila", "cost": 3, "color": Color("7a46c8")},
+]
+## Startnummer: 0 = wie ab Werk (Platz in der Flotte), sonst 1 bis 99, kostenlos.
+const MAX_NUMBER: int = 99
+## Optik-Arten, die gespeichert werden (zusätzlich zu Lack, Felgen, Neon).
+const LOOK_KINDS: Array[String] = ["finish_type", "two_tone", "stickers", "number", "cockpit"]
+static var _numbers: Array[Dictionary] = []
 
 var child_key: String = "standalone"
 ## Alle je verdienten Fortschrittssterne (von der App gemeldet, nie kleiner als der Stand beim Laden).
@@ -83,6 +133,7 @@ var lifetime_stars: int = 0
 var levels: Dictionary = {}  # kart_id -> {part_id: int}
 var looks: Dictionary = {}  # kart_id -> {paint: id, rims: id, neon: id}
 var owned: Array[String] = []  # "paint:feuer", "rims:gold" …
+var tunes: Dictionary = {}  # kart_id -> {setting_id: -2..2} (Feineinstellung, 0 fehlt)
 var save_enabled: bool = true
 
 
@@ -124,6 +175,16 @@ static func options(kind: String) -> Array[Dictionary]:
 			return WHEEL_COVERS
 		"exhaust":
 			return EXHAUSTS
+		"finish_type":
+			return FINISH_TYPES
+		"two_tone":
+			return TWO_TONES
+		"stickers":
+			return STICKER_SETS
+		"cockpit":
+			return COCKPITS
+		"number":
+			return numbers()
 	if PART_CATALOG.is_slot(kind):
 		return PART_CATALOG.options(kind)
 	return []
@@ -135,6 +196,15 @@ static func option(kind: String, id: String) -> Dictionary:
 			return item
 	var list: Array[Dictionary] = options(kind)
 	return list[0] if not list.is_empty() else {}
+
+
+## Startnummern als Auswahl: „werk“ und 1 bis 99 (alle kostenlos).
+static func numbers() -> Array[Dictionary]:
+	if _numbers.is_empty():
+		_numbers.append({"id": "werk", "name": "Wie ab Werk", "cost": 0})
+		for number in range(1, MAX_NUMBER + 1):
+			_numbers.append({"id": str(number), "name": "Nr. %d" % number, "cost": 0, "number": number})
+	return _numbers
 
 
 static func cost_of_level(level: int) -> int:
@@ -243,21 +313,73 @@ func stats(kart_id: String) -> Dictionary:
 	return result
 
 
-## Fahrfaktoren mit Tuning-Stufen und montierten Leistungsteilen (so fährt das Rennen).
+## Fahrfaktoren mit Tuning-Stufen, montierten Leistungsteilen und Feineinstellung
+## (so fährt das Rennen).
 func multipliers(kart_id: String) -> Dictionary:
 	return PART_CATALOG.apply(
-		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), mounted(kart_id)
+		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), mounted(kart_id),
+		FINE.changes(tune(kart_id))
 	)
 
 
-## Faktoren mit einer anderen Teile-Auswahl (Prüfstand: „nachher“ vor dem Montieren).
-func multipliers_with(kart_id: String, parts: Dictionary) -> Dictionary:
+## Faktoren mit einer anderen Teile-Auswahl bzw. Feineinstellung (Prüfstand: „nachher“ vor
+## dem Montieren). tune_values = null: gespeicherte Feineinstellung.
+func multipliers_with(kart_id: String, parts: Dictionary, tune_values: Variant = null) -> Dictionary:
 	var chosen_parts: Dictionary = mounted(kart_id)
 	for key in parts:
-		chosen_parts[key] = parts[key]
+		if PART_CATALOG.is_slot(str(key)):
+			chosen_parts[key] = parts[key]
+	var values: Dictionary = tune(kart_id) if not (tune_values is Dictionary) else tune_values
 	return PART_CATALOG.apply(
-		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), chosen_parts
+		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), chosen_parts,
+		FINE.changes(values)
 	)
+
+
+## Faktoren des Karts ganz ohne Teile und Feineinstellung (Vergleich „Serie“ im Prüfstand).
+func multipliers_stock(kart_id: String) -> Dictionary:
+	return FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits)
+
+
+# ------------------------------------------------------------------ Feineinstellung
+
+## Gespeicherte Feineinstellung eines Karts ({setting: -2..2}, fehlende = 0).
+func tune(kart_id: String) -> Dictionary:
+	return FINE.sanitize(tunes.get(kart_id, {}))
+
+
+func tune_value(kart_id: String, setting_id: String) -> int:
+	return int(tune(kart_id).get(setting_id, 0))
+
+
+## Speichert eine ganze Feineinstellung (kostenlos, jederzeit änderbar).
+func set_tune(kart_id: String, values: Dictionary) -> void:
+	var clean: Dictionary = FINE.sanitize(values)
+	if clean.is_empty():
+		tunes.erase(kart_id)
+	else:
+		tunes[kart_id] = clean
+	save()
+
+
+func set_tune_value(kart_id: String, setting_id: String, value: int) -> void:
+	var values: Dictionary = tune(kart_id)
+	values[setting_id] = value
+	set_tune(kart_id, values)
+
+
+## Voreinstellung („kurve“, „sprint“, „allround“) übernehmen.
+func apply_preset(kart_id: String, preset_id: String) -> bool:
+	var entry: Dictionary = FINE.preset(preset_id)
+	if entry.is_empty():
+		return false
+	set_tune(kart_id, entry["values"])
+	return true
+
+
+## Feineinstellung auf Werk zurücksetzen.
+func reset_tune(kart_id: String) -> void:
+	set_tune(kart_id, {})
 
 
 ## Montierte Leistungsteile eines Karts: {slot: id}.
@@ -343,16 +465,36 @@ func look(kart_id: String) -> Dictionary:
 		"rim_neon": str(rims.id) == "neon",
 		"wheel_cover": chosen(kart_id, "wheel_cover"),
 		"exhaust": chosen(kart_id, "exhaust"),
-		"engine": chosen(kart_id, "engine"),
-		"tires": chosen(kart_id, "tires"),
-		"wing": chosen(kart_id, "wing"),
-		"booster": chosen(kart_id, "booster"),
-		"suspension": chosen(kart_id, "suspension"),
 		"levels": {},
 		"underglow": str(neon.id) != "werk" or total_level(kart_id) >= 8,
 	}
+	for slot in PART_CATALOG.SLOTS:
+		result[slot] = chosen(kart_id, slot)
 	for item in PARTS:
 		result.levels[str(item.id)] = level(kart_id, str(item.id))
+	return result.merged(look_extras(kart_id, {}), true)
+
+
+## Erweiterte Optik als Look-Schlüssel für den Fahrzeugbau (kart_production_vehicle.gd).
+## override: {kind: id} offene Vorschau (Garage), sonst gespeicherte Wahl.
+func look_extras(kart_id: String, override: Dictionary) -> Dictionary:
+	var pick := func(kind: String) -> Dictionary:
+		var id: String = str(override.get(kind, chosen(kart_id, kind)))
+		return option(kind, id)
+	var result: Dictionary = {}
+	var finish: Dictionary = pick.call("finish_type")
+	result["finish_type"] = str(finish.get("id", "werk"))
+	var two: Dictionary = pick.call("two_tone")
+	if two.has("color"):
+		result["two_tone"] = two.color
+	var stickers: Dictionary = pick.call("stickers")
+	if stickers.has("stickers"):
+		result["stickers"] = (stickers.stickers as Array).duplicate()
+	var number: Dictionary = pick.call("number")
+	result["number"] = int(number.get("number", 0))
+	var cockpit: Dictionary = pick.call("cockpit")
+	if cockpit.has("color"):
+		result["cockpit"] = cockpit.color
 	return result
 
 
@@ -362,6 +504,7 @@ func load_from_disk() -> void:
 	levels.clear()
 	looks.clear()
 	owned.clear()
+	tunes.clear()
 	var config := ConfigFile.new()
 	if config.load(path()) != OK:
 		return
@@ -375,12 +518,18 @@ func load_from_disk() -> void:
 		if not kart.is_empty():
 			levels[kart_id] = kart
 		var look: Dictionary = {}
-		for kind in KINDS + PART_SLOTS:
+		for kind in KINDS + PART_SLOTS + LOOK_KINDS:
 			var id: String = str(config.get_value(section, kind, ""))
 			if not id.is_empty():
 				look[kind] = id
 		if not look.is_empty():
 			looks[kart_id] = look
+		var tune_values: Dictionary = {}
+		for setting_id in FINE.ids():
+			tune_values[setting_id] = int(config.get_value(section, "tune_" + setting_id, 0))
+		tune_values = FINE.sanitize(tune_values)
+		if not tune_values.is_empty():
+			tunes[kart_id] = tune_values
 	var raw: Variant = config.get_value("owned", "items", [])
 	if raw is Array or raw is PackedStringArray:
 		for entry in raw:
@@ -404,6 +553,10 @@ func save() -> bool:
 	for kart_id in looks:
 		for kind in looks[kart_id]:
 			config.set_value("kart_" + str(kart_id), str(kind), str(looks[kart_id][kind]))
+	for kart_id in tunes:
+		var clean: Dictionary = FINE.sanitize(tunes[kart_id])
+		for setting_id in clean:
+			config.set_value("kart_" + str(kart_id), "tune_" + str(setting_id), int(clean[setting_id]))
 	config.set_value("owned", "items", owned)
 	var target: String = path()
 	var temporary: String = target + ".tmp"
