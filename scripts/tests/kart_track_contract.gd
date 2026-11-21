@@ -60,7 +60,7 @@ func _run() -> void:
 				assert(absf(sample.lateral-lateral)<0.12)
 				assert(absf(sample.height-p.y)<0.08)
 				assert(sample.on_road, "%s: valid lane %.1f m rejected at %.0f m" % [id,lateral,d])
-				assert(sample.basis.y.y>0.9)
+				assert(sample.basis.y.y>0.9, "%s: road tilt %.2f at %.0f m lane %.1f" % [id,sample.basis.y.y,d,lateral])
 				assert(sample.distance>=0.0 and sample.distance<world.length)
 		var clearance: float=INF
 		for a in range(100):
