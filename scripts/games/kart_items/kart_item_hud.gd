@@ -550,7 +550,9 @@ func _icon(id: String, centre: Vector2, radius: float, alpha: float) -> void:
 					band.append(centre + Vector2(x * radius, (k - 1) * radius * 0.42 + sin(x * 3.0 + k) * radius * 0.18))
 				draw_polyline(band, Color(["8affd8", "66e8ff", "c58cff"][k], alpha), radius * 0.18, true)
 		_:
-			draw_circle(centre, radius * 0.6, Color(1, 1, 1, alpha))
+			# Hook items-neu: gerendertes Symbol (assets/kart/hud/items/icon_<id>.webp).
+			if not _draw_tex_centered("icon_" + id, centre, radius * 2.3, 0.0, Color(1, 1, 1, alpha)):
+				draw_circle(centre, radius * 0.6, Color(1, 1, 1, alpha))
 
 
 func _rocket_icon(centre: Vector2, length: float, alpha: float) -> void:

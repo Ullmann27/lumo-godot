@@ -2,15 +2,32 @@
 # Strenge Prüfungen kehren bei jedem ungültigen Feld sofort zurück.
 extends RefCounted
 ## Geprüfter Ablauf der Holo-Lernräume (Textaufgabe mit Zehnerübergang,
-## Tunwort im Satz, Satzbau, Namenwort im Satz). Flutter liefert Aufgabe und Zwillingsaufgabe aus
+## Tunwort im Satz, Satzbau, Namenwort und Wiewort im Satz, Silben klatschen,
+## Satz lesen und passende Szene wählen). Flutter liefert Aufgabe und Zwillingsaufgabe aus
 ## dem Aufgabenkatalog; diese Klasse prüft die Daten streng, hält den Zustand
 ## und bewertet nur Eingaben des Kindes. Sie vergibt nichts und speichert nichts:
 ## Das Ergebnis geht einmal als Zusammenfassung an die App zurück.
 
-const MODELS = preload("res://scripts/learning/holo/holo_models.gd")
+const FIGURES = preload("res://scripts/learning/holo/holo_figures.gd")
 const KINDS: Array[String] = ["holo_word_problem", "holo_sentence"]
-## verb = Tunwort finden, order = Satz bauen, noun = Namenwort finden.
-const MODES: Array[String] = ["verb", "order", "noun"]
+## verb = Tunwort finden, order = Satz bauen, noun = Namenwort finden,
+## adjective = Wiewort finden, syllables = Silben klatschen, reading = Satz
+## lesen und die passende Szene antippen.
+const MODES: Array[String] = ["verb", "order", "noun", "adjective", "syllables", "reading"]
+## Lesen: Wo ist etwas? Antwort (Szene) → entscheidendes Wort im Satz.
+const RELATIONS := {
+	"darauf": "auf", "darunter": "unter", "daneben": "neben", "darin": "in", "davor": "vor"
+}
+## Welche Lagen zu welchem Möbel passen (unter einer Kiste liegt nichts, und
+## auf einer offenen Kiste bleibt nichts liegen).
+const PLACE_RELATIONS := {
+	"tisch": ["darauf", "darunter", "daneben"],
+	"stuhl": ["darauf", "darunter", "daneben"],
+	"kiste": ["darin", "daneben", "davor"],
+}
+const READING_OBJECTS: Array[String] = ["ball", "apfel", "katze", "hund"]
+const ADJECTIVE_CONTRASTS: Array[String] = ["size", "color"]
+const MAX_CLAPS := 6
 const DEMOS: Array[String] = ["jump", "wave", "nod", "none"]
 const TEXT_LIMIT := 240
 const WORD_LIMIT := 18
@@ -40,6 +57,8 @@ var counted: Array[int] = []
 ## Satzbau: Kartenreihenfolge (gemischt) und gelegte Karten.
 var shuffled: Array[int] = []
 var placed: Array[int] = []
+## Silben: so oft hat das Kind geklatscht (vor dem Prüfen).
+var claps := 0
 
 
 func configure(raw: Dictionary) -> bool:
@@ -67,10 +86,10 @@ func configure(raw: Dictionary) -> bool:
 		mode = str(raw.get("mode", ""))
 		if mode not in MODES:
 			return false
-		first = _check_sentence(raw)
+		first = _check_task(raw)
 		var twin_sentence: Variant = raw.get("twin")
-		second = _check_sentence(twin_sentence) if twin_sentence is Dictionary else {}
-		if first.is_empty() or second.is_empty() or first.sentence == second.sentence:
+		second = _check_task(twin_sentence) if twin_sentence is Dictionary else {}
+		if first.is_empty() or second.is_empty() or first.prompt == second.prompt:
 			return false
 	tasks.append(first)
 	tasks.append(second)
@@ -103,6 +122,110 @@ func _check_math(raw: Dictionary) -> Dictionary:
 	if not choices.has(a + b):
 		return {}
 	return {"a": a, "b": b, "sum": a + b, "story": story, "prompt": prompt, "choices": choices}
+
+
+func _check_task(raw: Dictionary) -> Dictionary:
+	var checked: Dictionary
+	match mode:
+		"syllables":
+			checked = _check_syllables(raw)
+		"reading":
+			checked = _check_reading(raw)
+		_:
+			checked = _check_sentence(raw)
+			if not checked.is_empty():
+				checked["prompt"] = checked.sentence
+	return checked
+
+
+## Silben klatschen: ein Namenwort, seine Sprechsilben (1–4) und die Frage.
+func _check_syllables(raw: Dictionary) -> Dictionary:
+	var word := _text(raw.get("word", ""))
+	var raw_parts: Variant = raw.get("syllables")
+	if word.is_empty() or word.length() > WORD_LIMIT or not raw_parts is Array:
+		return {}
+	if raw_parts.size() < 1 or raw_parts.size() > 4:
+		return {}
+	var parts: Array[String] = []
+	for item: Variant in raw_parts:
+		if not item is String or str(item).is_empty() or not _has_vowel(str(item)):
+			return {}
+		parts.append(str(item))
+	if "".join(parts) != word or word.contains(" ") or word.contains("-"):
+		return {}
+	if word.left(1) != word.left(1).to_upper() or word.substr(1) != word.substr(1).to_lower():
+		return {}
+	var picture := str(raw.get("picture", ""))
+	if not picture.is_empty() and picture not in FIGURES.PICTURES:
+		return {}
+	var prompt := _text(raw.get("prompt", ""))
+	if prompt != "Wie viele Silben hat %s?" % word:
+		return {}
+	return {"word": word, "syllables": parts, "picture": picture, "prompt": prompt}
+
+
+## Lesen: Satz mit genau einem Lagewort, drei Szenen mit demselben Ding und
+## Möbel, nur die Lage unterscheidet sich.
+func _check_reading(raw: Dictionary) -> Dictionary:
+	var sentence := _text(raw.get("sentence", ""))
+	var raw_words: Variant = raw.get("words")
+	if sentence.is_empty() or not raw_words is Array or raw_words.size() < 4:
+		return {}
+	if raw_words.size() > 7:
+		return {}
+	var words: Array[String] = []
+	for item: Variant in raw_words:
+		if not item is String or str(item).is_empty() or str(item).length() > WORD_LIMIT:
+			return {}
+		words.append(str(item))
+	if " ".join(words) + "." != sentence:
+		return {}
+	var thing := str(raw.get("object", ""))
+	var place := str(raw.get("place", ""))
+	if thing not in READING_OBJECTS or place not in PLACE_RELATIONS:
+		return {}
+	var raw_scenes: Variant = raw.get("scenes")
+	if not raw_scenes is Array or raw_scenes.size() != 3:
+		return {}
+	var scenes: Array[String] = []
+	for item: Variant in raw_scenes:
+		var scene := str(item)
+		if scene not in PLACE_RELATIONS[place] or scenes.has(scene):
+			return {}
+		scenes.append(scene)
+	var answer := str(raw.get("answer", ""))
+	if answer not in scenes:
+		return {}
+	if not _int_in(raw.get("keyIndex"), 0, words.size() - 1):
+		return {}
+	var key := int(raw.keyIndex)
+	if words[key] != RELATIONS[answer]:
+		return {}
+	# Genau ein Lagewort im Satz: sonst wäre die Lösung nicht eindeutig.
+	for index in range(words.size()):
+		if index != key and words[index] in RELATIONS.values():
+			return {}
+	var question := _text(raw.get("question", ""))
+	if not question.begins_with("Wo ") or not question.ends_with("?"):
+		return {}
+	return {
+		"sentence": sentence,
+		"words": words,
+		"keyIndex": key,
+		"object": thing,
+		"place": place,
+		"scenes": scenes,
+		"answer": answer,
+		"question": question,
+		"prompt": sentence,
+	}
+
+
+static func _has_vowel(part: String) -> bool:
+	for letter in part.to_lower():
+		if letter in "aeiouäöüy":
+			return true
+	return false
 
 
 func _check_sentence(raw: Dictionary) -> Dictionary:
@@ -153,10 +276,33 @@ func _check_sentence(raw: Dictionary) -> Dictionary:
 		if int(raw.nounIndex) == int(raw.verbIndex):
 			return {}
 		var picture := str(raw.get("picture", ""))
-		if picture not in MODELS.PICTURES:
+		if picture not in FIGURES.PICTURES:
 			return {}
 		checked["nounIndex"] = int(raw.nounIndex)
 		checked["picture"] = picture
+	if mode == "adjective":
+		# Wiewort finden: genau ein gesuchtes Wort, ein Bild für die Hilfe
+		# „zwei Figuren“ und die Art des Unterschieds (Größe oder Farbe).
+		if not _int_in(raw.get("adjIndex"), 0, words.size() - 1):
+			return {}
+		if int(raw.adjIndex) == int(raw.verbIndex):
+			return {}
+		var figure := str(raw.get("picture", ""))
+		var contrast := str(raw.get("contrast", ""))
+		if figure not in FIGURES.PICTURES or contrast not in ADJECTIVE_CONTRASTS:
+			return {}
+		# Wie die Figur aussieht: Größe (klein/groß) oder Farbwort.
+		var look := str(raw.get("look", ""))
+		if contrast == "size" and look not in ["klein", "groß"]:
+			return {}
+		if contrast == "color" and look not in FIGURES.COLOR_WORDS:
+			return {}
+		if not question.begins_with("Welches Wort sagt, wie "):
+			return {}
+		checked["adjIndex"] = int(raw.adjIndex)
+		checked["picture"] = figure
+		checked["contrast"] = contrast
+		checked["look"] = look
 	return checked
 
 
@@ -169,6 +315,10 @@ func current() -> Dictionary:
 func choices() -> Array:
 	if kind == "holo_word_problem":
 		return current().choices
+	if mode == "reading":
+		return current().scenes
+	if mode == "syllables":
+		return current().syllables
 	return current().words
 
 
@@ -182,11 +332,12 @@ func _reset_phase(next_phase: String) -> void:
 	counted.clear()
 	shuffled.clear()
 	placed.clear()
+	claps = 0
 	if kind == "holo_word_problem":
 		for index in range(int(task.sum)):
 			slot_of.append(-1)
 			counted.append(0)
-	else:
+	elif task.has("words"):
 		for index in range(task.words.size()):
 			shuffled.append(index)
 		_shuffle_cards(task.sentence.hash())
@@ -238,6 +389,18 @@ func answer(value: String) -> String:
 				if not task.words.has(value):
 					return "ignored"
 				right = value == task.words[task.nounIndex]
+			elif mode == "adjective":
+				if not task.words.has(value):
+					return "ignored"
+				right = value == task.words[task.adjIndex]
+			elif mode == "syllables":
+				if not value.is_valid_int() or int(value) < 1 or int(value) > MAX_CLAPS:
+					return "ignored"
+				right = int(value) == task.syllables.size()
+			elif mode == "reading":
+				if value not in task.scenes:
+					return "ignored"
+				right = value == task.answer
 			else:
 				right = value == task.sentence
 	attempts += 1
@@ -257,6 +420,18 @@ func answer(value: String) -> String:
 		twin_attempts = attempts
 		phase = "done"
 	return "correct"
+
+
+## Silben: einmal klatschen (höchstens MAX_CLAPS). Liefert die neue Zahl.
+func clap() -> int:
+	if mode != "syllables" or phase == "done":
+		return claps
+	claps = mini(MAX_CLAPS, claps + 1)
+	return claps
+
+
+func clear_claps() -> void:
+	claps = 0
 
 
 ## Nach der Originalaufgabe: dieselbe Struktur mit anderen Zahlen/Wörtern.
@@ -384,7 +559,7 @@ func summary(result_id: String) -> Dictionary:
 		"hintLevel": original_hint if original_correct else hint_level,
 		"twinSolved": twin_solved,
 		"twinAttempts": twin_attempts,
-		"twinPrompt": str(tasks[1].get("prompt", tasks[1].get("sentence", ""))),
+		"twinPrompt": str(tasks[1].get("prompt", "")),
 	}
 
 

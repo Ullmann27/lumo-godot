@@ -111,11 +111,21 @@ func child_block_reason(game, shooter: int) -> String:
 	return reason
 
 
+## Treffer der erweiterten Items (Blitz, Frost, Meteor …) drehen das Kind nicht: sie starten
+## die Trefferpause ausdrücklich (Hook items-neu, gleiche Regel wie für Raketen).
+func note_child_hit(elapsed: float) -> void:
+	_hit_protect_until = maxf(_hit_protect_until, elapsed + AFTER_HIT_PROTECT_S)
+
+
 ## Wie viele Salven (Paare je Schütze) gerade auf das Kind fliegen.
 static func incoming_salvos_on_child(game) -> int:
 	if not is_instance_valid(game.item_runtime):
 		return 0
 	var owners: Dictionary = {}
+	# Hook items-neu: ein laufender Angriff eines erweiterten Items zählt wie eine Salve.
+	var ext = game.get("item_ext")
+	if is_instance_valid(ext) and float(ext.incoming_for(-1)) < INF:
+		owners["item_ext"] = true
 	for entry in game.item_runtime.projectiles:
 		if int(entry.get("target", -99)) == -1 and int(entry.get("owner", -99)) != -1:
 			owners["%d_%d" % [int(entry.owner), int(entry.get("pair", 0))]] = true

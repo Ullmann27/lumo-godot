@@ -62,6 +62,55 @@ func _wait(seconds: float) -> void:
 	await create_timer(seconds).timeout
 
 
+## Lumos Sprechblase verdeckt weder die Renn-Leiste (Runde, Platz, Tempo, Sterne) noch
+## eine sichtbare Meldung noch die Streckenkarte (Emulator-Befund am Handy quer, 19.11.2026).
+func _check_bubble_clear(guide) -> void:
+	var bubble: Rect2 = guide.bubble.get_global_rect()
+	var bar: Control = game.top_pause_button.get_parent()
+	kit.check(bar.is_visible_in_tree(), "Renn-Leiste ist sichtbar")
+	kit.check(
+		not bubble.intersects(bar.get_global_rect()),
+		(
+			"Sprechblase liegt unter der Renn-Leiste (Blase ab %.0f, Leiste bis %.0f)"
+			% [bubble.position.y, bar.get_global_rect().end.y]
+		)
+	)
+	# Eine Meldung, die unter der Blase läge, zeigt die Einführung direkt unter der Blase.
+	game.message.text = "Achtung, Brücke!"
+	game.message.modulate.a = 1.0
+	game._sync_guide_notice()
+	var covered: bool = bubble.intersects(game.message.get_global_rect())
+	if covered:
+		kit.check(
+			is_zero_approx(game.message.self_modulate.a), "verdeckte Meldung ist ausgeblendet"
+		)
+		kit.check(
+			guide.notice_label.visible and guide.notice_label.text == "Achtung, Brücke!",
+			"die Meldung steht unter der Sprechblase"
+		)
+		var notice: Rect2 = guide.notice_label.get_global_rect()
+		kit.check(not notice.intersects(bubble), "Meldung und Sprechblase überlappen nicht")
+		kit.check(
+			not notice.intersects(game.joystick.get_global_rect()),
+			"Meldung unter der Blase verdeckt den Lenkstick nicht"
+		)
+	else:
+		kit.check(
+			is_equal_approx(game.message.self_modulate.a, 1.0), "freie Meldung bleibt sichtbar"
+		)
+		kit.check(not guide.notice_label.visible, "ohne Überdeckung keine zweite Meldung")
+	game.message.text = ""
+	game._sync_guide_notice()
+	kit.check(not guide.notice_label.visible, "ohne Meldung ist der Platz unter der Blase leer")
+	if game.map_panel.is_visible_in_tree():
+		kit.check(
+			not guide.occupied_rect().intersects(game.map_panel.get_global_rect()),
+			"Streckenkarte weicht der Sprechblase aus"
+		)
+	var view: Rect2 = Rect2(Vector2.ZERO, root.get_visible_rect().size)
+	kit.check(view.encloses(bubble), "Sprechblase liegt ganz im Bild")
+
+
 func _run() -> void:
 	kit_script = load("res://scripts/tests/first_run_guide_kit.gd")
 	kit = kit_script.new(self, "KartGuide")
@@ -74,6 +123,7 @@ func _run() -> void:
 	kit.check(guide.root.visible and guide.bubble.visible, "erstes Rennen zeigt Lumos Sprechblase")
 	kit.check(guide.current_step_id() == "steer", "Schritt 1 ist Lenken")
 	kit.check(guide.portrait.texture != null, "Lumos Bild ist geladen")
+	_check_bubble_clear(guide)
 	kit.check_target(guide, game.joystick, "Lenken")
 	await kit.snap("kart-schritt1")
 	kit.check_touch_size(guide, guide.skip_button, "Überspringen")

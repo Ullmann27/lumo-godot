@@ -73,17 +73,20 @@ func _place_racers() -> void:
 
 func _clear_items() -> void:
 	game.item_runtime.clear()
+	game.item_ext.clear()
 	game.item = ""
 	game.item_charges = 0
 	game.item_roulette_time = 0.0
 	game._sync_player_rocket_phase()
 	game.shield_time = 0.0
+	game.aurora_time = 0.0
 	game.player_grace_time = 0.0
 	game.player_spin_time = 0.0
 	for i in range(game.opponents.size()):
 		game.opponent_spin_times[i] = 0.0
 		game.opponent_grace_times[i] = 0.0
 		game.opponent_shield_times[i] = 0.0
+		game.opponent_aurora_times[i] = 0.0
 		game.opponent_items[i] = ""
 
 
@@ -311,6 +314,7 @@ func _drive_effects(row: Dictionary, base: float) -> void:
 func _course_run(track: String) -> void:
 	course = track
 	var row := {"strecke": track}
+	game.race_seed = 4242
 	game._start_selected_race(
 		{"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "gemuetlich"}
 	)

@@ -141,7 +141,9 @@ func _run() -> void:
 		_check(menu.brand_wordmark.get_script().resource_path == "res://scripts/games/kart_wordmark.gd",
 			"Reference wordmark uses native sharp lettering and flags, not emoji text")
 		var cards: GridContainer = menu.choices.get_child(0)
-		_check(cards.get_child_count() == 5, "Five real modes")
+		# Rennarten aus dem Katalog (seit dem Abenteuer-Parcours sechs).
+		var mode_count: int = load("res://scripts/games/kart_catalog.gd").MODES.size()
+		_check(cards.get_child_count() == mode_count, "Every real mode has a card (%d)" % mode_count)
 		var scroll: ScrollContainer = menu.choices.get_parent()
 		scroll.scroll_vertical = 0
 		await _settle()

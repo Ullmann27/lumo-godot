@@ -56,6 +56,8 @@ var portrait: TextureRect
 var text_label: Label
 var dots_label: Label
 var skip_button: Button
+## Kurze Meldung des Spiels, die sonst unter der Sprechblase läge (siehe show_notice).
+var notice_label: Label
 var row: HBoxContainer
 var column: VBoxContainer
 var replay_button: Button
@@ -344,6 +346,47 @@ func touch_size() -> float:
 	return maxf(48.0 * unit(), TOUCH_PX / pixels_per_unit())
 
 
+## Ein Spiel zeigt hier eine eigene kurze Meldung (z. B. „Achtung, Eisbrücke!“), die an ihrem
+## normalen Platz unter der Sprechblase läge. Sie erscheint direkt unter der Blase; leerer Text
+## blendet sie aus.
+func show_notice(text: String, alpha: float = 1.0) -> void:
+	if not is_instance_valid(notice_label):
+		return
+	var clean: String = text.strip_edges()
+	if notice_label.text != clean:
+		notice_label.text = clean
+	notice_label.modulate.a = clampf(alpha, 0.0, 1.0)
+	_layout_notice()
+
+
+## Fläche, die die Einführung gerade belegt: Sprechblase samt Meldung darunter.
+func occupied_rect() -> Rect2:
+	if not is_instance_valid(bubble) or not bubble.is_visible_in_tree():
+		return Rect2()
+	var rect: Rect2 = bubble.get_global_rect()
+	if notice_label.visible:
+		rect = rect.merge(notice_label.get_global_rect())
+	return rect
+
+
+func _layout_notice() -> void:
+	var shown: bool = (
+		is_instance_valid(bubble)
+		and bubble.is_visible_in_tree()
+		and not notice_label.text.is_empty()
+	)
+	notice_label.visible = shown
+	if not shown:
+		return
+	var u: float = unit()
+	notice_label.add_theme_font_size_override("font_size", roundi(20.0 * u))
+	notice_label.add_theme_constant_override("outline_size", maxi(4, roundi(5.0 * u)))
+	notice_label.custom_minimum_size = Vector2(bubble.size.x, 0.0)
+	notice_label.size = Vector2(bubble.size.x, 0.0)
+	notice_label.reset_size()
+	notice_label.position = Vector2(bubble.position.x, bubble.position.y + bubble.size.y + 6.0 * u)
+
+
 func target_rect() -> Rect2:
 	if state != "running" or index >= steps.size():
 		return Rect2()
@@ -374,6 +417,16 @@ func _build() -> void:
 	bubble.name = "GuideBubble"
 	bubble.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(bubble)
+	notice_label = Label.new()
+	notice_label.name = "GuideNotice"
+	notice_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	notice_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	notice_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	notice_label.add_theme_font_override("font", BODY_FONT)
+	notice_label.add_theme_color_override("font_color", WHITE)
+	notice_label.add_theme_color_override("font_outline_color", INK)
+	notice_label.visible = false
+	root.add_child(notice_label)
 	row = HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bubble.add_child(row)
@@ -459,6 +512,7 @@ func _refresh() -> void:
 	if talking:
 		_layout_bubble(view, u, touch)
 	else:
+		notice_label.visible = false
 		replay_button.custom_minimum_size = Vector2.ONE * touch
 		replay_button.size = Vector2.ONE * touch
 		var spot: Vector2 = Vector2(view.x - touch - 16.0 * u, view.y * 0.22)
@@ -527,6 +581,7 @@ func _layout_bubble(view: Vector2, u: float, touch: float) -> void:
 	# Nie über dem Ziel: notfalls an den oberen Rand.
 	if target.has_area() and bubble.get_global_rect().intersects(target.grow(8.0 * u)):
 		bubble.position.y = maxf(12.0, target.position.y - bubble.size.y - 40.0 * u)
+	_layout_notice()
 
 
 func _draw_pointer() -> void:

@@ -28,6 +28,7 @@ const SCENES: Dictionary = {
 	"rhythm": "res://scenes/creative/rhythm_world.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",
 	"kart": "res://scenes/games/kart_island.tscn",
+	"kart_parcours": "res://scenes/games/kart_parcours.tscn",
 	"jump": "res://scenes/games/jump_islands.tscn",
 	"run": "res://scenes/games/lumo_run.tscn",
 	"learning": "res://scenes/learning/learning_world.tscn",
