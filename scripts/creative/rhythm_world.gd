@@ -669,10 +669,28 @@ func _layout() -> void:
 		camera.look_at(CAMERA_TARGET)
 	menu.size = Vector2(minf(580, available.x - 28), maxf(180, minf(590, available.y - 170)))
 	menu.position = (available - menu.size) * 0.5
+	_fit_menu_height.call_deferred()
+	# Tastenkürzel nur, wo es eine Tastatur gibt – am Handy zählen die Ziffern.
+	var key_hints: bool = available.x >= 650 and not OS.has_feature("mobile")
 	for lane in range(lane_buttons.size()):
-		lane_buttons[lane].text = str(lane + 1) if available.x < 650 else ["1 / D", "2 / F", "3 / G", "4 / H"][lane]
+		lane_buttons[lane].text = (
+			["1 / D", "2 / F", "3 / G", "4 / H"][lane] if key_hints else str(lane + 1)
+		)
 	feedback.add_theme_font_size_override("font_size", 18 if available.y < 500 else 22)
 	goal_banner.visible = round_stage >= 0 and running and not menu.visible
+
+
+## Das Menü ist so hoch wie sein Inhalt (kein leerer Kasten über der Bühne).
+func _fit_menu_height() -> void:
+	await get_tree().process_frame
+	if not is_inside_tree() or not is_instance_valid(menu) or not menu.visible:
+		return
+	var available := safe_ui.size
+	var style := menu.get_theme_stylebox("panel")
+	var chrome: float = style.get_minimum_size().y if style != null else 24.0
+	var wanted: float = menu_box.get_combined_minimum_size().y + chrome
+	menu.size.y = clampf(wanted, 180.0, maxf(180.0, minf(590.0, available.y - 170.0)))
+	menu.position = (available - menu.size) * 0.5
 
 
 func _return_to_map() -> void:
