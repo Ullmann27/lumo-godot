@@ -68,6 +68,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 			"kart",
 			"jump",
 			"run",
+			"skypost",
 			"puzzle",
 			"build",
 			"rhythm",

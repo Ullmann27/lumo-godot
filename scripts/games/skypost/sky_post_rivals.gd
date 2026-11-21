@@ -26,7 +26,14 @@ var reduced_motion: bool = false
 var profile: String = "medium"
 
 
-func setup(world_layout, stage_id: String, lap_count: int, calm: bool, world_profile: String, round_index: int) -> void:
+func setup(
+	world_layout,
+	stage_id: String,
+	lap_count: int,
+	calm: bool,
+	world_profile: String,
+	round_index: int
+) -> void:
 	layout = world_layout
 	stage = stage_id
 	laps = lap_count
@@ -44,7 +51,11 @@ func setup(world_layout, stage_id: String, lap_count: int, calm: bool, world_pro
 	var roster: Array[Dictionary] = ROSTER.rotation("kart", round_index)
 	var deck: Vector3 = layout.start_at
 	for index in range(3):
-		var entry: Dictionary = roster[index % roster.size()] if not roster.is_empty() else {"id": "owl", "name": "Eule", "color": "#C7A585"}
+		var entry: Dictionary = (
+			roster[index % roster.size()]
+			if not roster.is_empty()
+			else {"id": "owl", "name": "Eule", "color": "#C7A585"}
+		)
 		var colour := Color(str(entry.get("color", "#9fb4d0")))
 		var glider = GLIDER.new()
 		glider.name = "Rival_" + str(entry.id)
@@ -64,17 +75,40 @@ func setup(world_layout, stage_id: String, lap_count: int, calm: bool, world_pro
 		label.no_depth_test = true
 		label.fixed_size = false
 		glider.add_child(label)
-		var start := deck + Vector3(LANES[index] * 2.6, 3.0 + float(index) * 1.4, -6.0 - float(index) * 3.0)
+		var start := (
+			deck + Vector3(LANES[index] * 2.6, 3.0 + float(index) * 1.4, -6.0 - float(index) * 3.0)
+		)
 		var approach: float = start.distance_to(layout.GATES[0])
-		rivals.append(
-			{
-				"id": str(entry.id), "name": str(entry.name), "colour": colour, "glider": glider, "seated": seated,
-				"start": start, "approach": approach, "d": -approach, "speed": 0.0,
-				"pace": float(TUNING.CRUISE.get(stage, 15.0)) * float(TUNING.RIVAL_PACE.get(stage, 0.95))
-				* TUNING.RIVAL_SPREAD[index],
-				"lane": LANES[index], "phase": float(index) * 2.1, "boost": 0.0, "finished": false,
-				"finish_time": 0.0, "gates": 0, "next_gate": 0, "bank": 0.0, "stuck": 0.0,
-			}
+		(
+			rivals
+			. append(
+				{
+					"id": str(entry.id),
+					"name": str(entry.name),
+					"colour": colour,
+					"glider": glider,
+					"seated": seated,
+					"start": start,
+					"approach": approach,
+					"d": -approach,
+					"speed": 0.0,
+					"pace":
+					(
+						float(TUNING.CRUISE.get(stage, 15.0))
+						* float(TUNING.RIVAL_PACE.get(stage, 0.95))
+						* TUNING.RIVAL_SPREAD[index]
+					),
+					"lane": LANES[index],
+					"phase": float(index) * 2.1,
+					"boost": 0.0,
+					"finished": false,
+					"finish_time": 0.0,
+					"gates": 0,
+					"next_gate": 0,
+					"bank": 0.0,
+					"stuck": 0.0,
+				}
+			)
 		)
 	place_all(0.0)
 
@@ -127,10 +161,10 @@ func advance(delta: float, player_d: float, player_pos: Vector3) -> void:
 		var pace: float = float(rival.pace)
 		var gap: float = d - player_d
 		if not bool(rival.finished):
-			if gap > 45.0:
-				pace *= 0.9
-			elif gap < -70.0:
-				pace *= 1.1
+			# Fair, close races: a rival far ahead eases off, one far behind catches up a little.
+			var ease: float = float(TUNING.RIVAL_EASE.get(stage, 0.86))
+			pace *= lerpf(1.0, ease, clampf((gap - 15.0) / 45.0, 0.0, 1.0))
+			pace *= lerpf(1.0, 1.08, clampf((-gap - 50.0) / 40.0, 0.0, 1.0))
 		else:
 			pace *= 0.75
 		# Slow down in tight bends.
@@ -146,7 +180,7 @@ func advance(delta: float, player_d: float, player_pos: Vector3) -> void:
 		rival.d = d
 		rival.stuck = 0.0 if d > before + 0.01 else float(rival.stuck) + delta
 		# Gates passed (course distance crossing a gate's distance).
-		while not bool(rival.finished) and d >= _gate_distance(int(rival.gates)):
+		while not bool(rival.finished) and d >= gate_distance(int(rival.gates)):
 			var gate: int = int(rival.gates) % layout.GATES.size()
 			rival.gates = int(rival.gates) + 1
 			if gate == 0 and int(rival.gates) > laps * layout.GATES.size():
@@ -160,12 +194,14 @@ func advance(delta: float, player_d: float, player_pos: Vector3) -> void:
 		var p: Vector3 = sample(d, rival)
 		if p.distance_to(player_pos) < 4.0:
 			lane += signf(lane + 0.01) * 2.0
-		rival["current_lane"] = lerpf(float(rival.get("current_lane", lane)), lane, 1.0 - exp(-1.5 * delta))
+		rival["current_lane"] = lerpf(
+			float(rival.get("current_lane", lane)), lane, 1.0 - exp(-1.5 * delta)
+		)
 		_place(rival, delta)
 
 
 ## Course distance at which gate number [param passed] (0-based count) is reached.
-func _gate_distance(passed: int) -> float:
+func gate_distance(passed: int) -> float:
 	var count: int = layout.GATES.size()
 	return float(passed / count) * length + gate_s[passed % count]
 
@@ -198,7 +234,9 @@ func _place(rival: Dictionary, delta: float) -> void:
 	var basis := Basis.looking_at(forward, Vector3.UP) * Basis(Vector3.BACK, float(rival.bank))
 	var glider: Node3D = rival.glider
 	glider.global_transform = Transform3D(basis, p)
-	var stick := Vector2(clampf(-float(rival.bank) / 0.55, -1.0, 1.0), clampf(forward.y * 2.0, -1.0, 1.0))
+	var stick := Vector2(
+		clampf(-float(rival.bank) / 0.55, -1.0, 1.0), clampf(forward.y * 2.0, -1.0, 1.0)
+	)
 	glider.animate(maxf(delta, 0.0), stick, float(rival.speed), float(rival.boost) > 0.0)
 
 
@@ -207,7 +245,12 @@ func standings() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for rival in rivals:
 		result.append(
-			{"name": rival.name, "d": rival.d, "finished": rival.finished, "finish_time": rival.finish_time}
+			{
+				"name": rival.name,
+				"d": rival.d,
+				"finished": rival.finished,
+				"finish_time": rival.finish_time
+			}
 		)
 	return result
 

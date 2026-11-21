@@ -49,7 +49,9 @@ const LETTER_GRAVITY: float = 9.8
 ## Race.
 const LAPS := {"entdecken": 2, "abenteuer": 2, "extrem": 3}
 ## Rival pace relative to the stage cruise speed.
-const RIVAL_PACE := {"entdecken": 0.84, "abenteuer": 0.96, "extrem": 1.05}
+const RIVAL_PACE := {"entdecken": 0.84, "abenteuer": 0.93, "extrem": 1.0}
+## Pace of a rival far ahead of Lumo (it waits a little, so races stay close).
+const RIVAL_EASE := {"entdecken": 0.74, "abenteuer": 0.84, "extrem": 0.93}
 const RIVAL_SPREAD: Array[float] = [0.97, 1.0, 1.03]
 const GATE_ZONE := {"entdecken": 16.0, "abenteuer": 13.0, "extrem": 10.5}
 const GATE_RADIUS: float = 4.6

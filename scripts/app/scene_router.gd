@@ -31,6 +31,7 @@ const SCENES: Dictionary = {
 	"kart_parcours": "res://scenes/games/kart_parcours.tscn",
 	"jump": "res://scenes/games/jump_islands.tscn",
 	"run": "res://scenes/games/lumo_run.tscn",
+	"skypost": "res://scenes/games/sky_post.tscn",
 	"learning": "res://scenes/learning/learning_world.tscn",
 	"tutor": "res://scenes/learning/tutor_world.tscn",
 	"holo": "res://scenes/learning/holo_lesson.tscn",

@@ -116,17 +116,26 @@ func _update_wind(delta: float, flight, fast: float, eye: Vector3) -> void:
 	var length: float = 2.5 + flight.speed * 0.18
 	for index in range(_wind_pos.size()):
 		var p: Vector3 = _wind_pos[index]
-		var local := Vector3((p - flight.pos).dot(right), (p - flight.pos).dot(up), (p - flight.pos).dot(heading))
+		var local := Vector3(
+			(p - flight.pos).dot(right), (p - flight.pos).dot(up), (p - flight.pos).dot(heading)
+		)
 		if p == Vector3.ZERO or local.z < -14.0 or absf(local.x) > 14.0 or absf(local.y) > 9.0:
 			var around := Vector2(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0))
 			if around.length() < 0.35:
 				around = around.normalized() * 0.35
-			p = flight.pos + right * around.x * 12.0 + up * around.y * 7.0 + heading * _rng.randf_range(8.0, 34.0)
+			p = (
+				flight.pos
+				+ right * around.x * 12.0
+				+ up * around.y * 7.0
+				+ heading * _rng.randf_range(8.0, 34.0)
+			)
 		p -= flight.velocity * delta * 0.35
 		_wind_pos[index] = p
 		var to_eye: Vector3 = (eye - p).normalized()
 		var side: Vector3 = heading.cross(to_eye).normalized()
-		multi.set_instance_transform(index, Transform3D(Basis(side * 0.07, heading * length, to_eye * 0.07), p))
+		multi.set_instance_transform(
+			index, Transform3D(Basis(side * 0.07, heading * length, to_eye * 0.07), p)
+		)
 
 
 func _draw_trail(side: int, camera: Camera3D) -> void:
@@ -141,7 +150,9 @@ func _draw_trail(side: int, camera: Camera3D) -> void:
 		var p: Vector3 = points[index][0]
 		var strength: float = float(points[index][1])
 		var next: Vector3 = points[mini(index + 1, points.size() - 1)][0]
-		var along: Vector3 = (p - next).normalized() if p.distance_squared_to(next) > 0.0001 else Vector3.FORWARD
+		var along: Vector3 = (
+			(p - next).normalized() if p.distance_squared_to(next) > 0.0001 else Vector3.FORWARD
+		)
 		var across: Vector3 = along.cross((eye - p).normalized()).normalized()
 		var fade: float = (1.0 - float(index) / float(points.size())) * strength * 0.55
 		var width: float = 0.06 + 0.12 * float(index) / float(points.size())

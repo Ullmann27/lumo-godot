@@ -116,8 +116,10 @@ const GATES: Array[Vector3] = [
 	Vector3(-4, 22, 92),
 	Vector3(-52, 18, 82),
 	Vector3(-98, 26, 22),
-	Vector3(-86, 32, -70),
-	Vector3(-40, 22, -100),
+	# Back over the harbour island, so the finish line is flown straight on
+	# (no hairpin at the start ring next to the post office deck).
+	Vector3(-70, 22, -6),
+	Vector3(-18, 16, 4),
 ]
 
 ## Photo spots of the free flight: frame position and what it looks at.

@@ -208,8 +208,8 @@ static func _word(grade: int, rng: RandomNumberGenerator) -> Dictionary:
 	var others: Array[String] = ["verb", "noun", "adjective"]
 	others.erase(target)
 	if grade < 2:
-		others = ["noun"] if target == "verb" else ["verb"]
-		others.append(others[0])
+		var other: String = "noun" if target == "verb" else "verb"
+		others.assign([other, other])
 	var right: String = pools[target][rng.randi_range(0, pools[target].size() - 1)]
 	var wrong: Array[String] = []
 	for other in others:

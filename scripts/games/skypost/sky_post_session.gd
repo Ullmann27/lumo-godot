@@ -79,7 +79,11 @@ static func load_delivery(path: String, identity: Dictionary, spark_total: int) 
 	var done: Variant = config.get_value(SECTION, "done", null)
 	var tries: Variant = config.get_value(SECTION, "tries", null)
 	var taken: Variant = config.get_value(SECTION, "taken", null)
-	if typeof(result_id) != TYPE_STRING or str(result_id).is_empty() or str(result_id).length() > 200:
+	if (
+		typeof(result_id) != TYPE_STRING
+		or str(result_id).is_empty()
+		or str(result_id).length() > 200
+	):
 		return {}
 	if typeof(elapsed) != TYPE_INT or elapsed < 0 or elapsed > MAX_ELAPSED_MS:
 		return {}
@@ -96,10 +100,18 @@ static func load_delivery(path: String, identity: Dictionary, spark_total: int) 
 		if typeof(job) != TYPE_DICTIONARY:
 			return {}
 		var district: Variant = job.get("district")
-		if typeof(district) != TYPE_INT or district < 0 or district >= LAYOUT.DISTRICTS.size() or districts.has(district):
+		if (
+			typeof(district) != TYPE_INT
+			or district < 0
+			or district >= LAYOUT.DISTRICTS.size()
+			or districts.has(district)
+		):
 			return {}
 		districts[district] = true
-		if str(job.get("item", "")) not in ["Brief", "Paket"] or typeof(job.get("recipient")) != TYPE_STRING:
+		if (
+			str(job.get("item", "")) not in ["Brief", "Paket"]
+			or typeof(job.get("recipient")) != TYPE_STRING
+		):
 			return {}
 		if typeof(job.get("riddle")) != TYPE_DICTIONARY or not ADDRESSES.valid(job.riddle):
 			return {}
@@ -109,7 +121,14 @@ static func load_delivery(path: String, identity: Dictionary, spark_total: int) 
 	for flag in taken:
 		if flag > 1:
 			return {}
-	return {"result_id": result_id, "elapsed_ms": elapsed, "jobs": jobs, "done": done, "tries": tries, "taken": taken}
+	return {
+		"result_id": result_id,
+		"elapsed_ms": elapsed,
+		"jobs": jobs,
+		"done": done,
+		"tries": tries,
+		"taken": taken
+	}
 
 
 static func load_free(path: String, identity: Dictionary, spark_total: int) -> Dictionary:
@@ -121,7 +140,11 @@ static func load_free(path: String, identity: Dictionary, spark_total: int) -> D
 	var secrets: Variant = config.get_value(SECTION, "secrets", null)
 	var photos: Variant = config.get_value(SECTION, "photos", null)
 	var taken: Variant = config.get_value(SECTION, "taken", null)
-	if typeof(result_id) != TYPE_STRING or str(result_id).is_empty() or str(result_id).length() > 200:
+	if (
+		typeof(result_id) != TYPE_STRING
+		or str(result_id).is_empty()
+		or str(result_id).length() > 200
+	):
 		return {}
 	if typeof(elapsed) != TYPE_INT or elapsed < 0 or elapsed > MAX_ELAPSED_MS:
 		return {}
@@ -131,7 +154,13 @@ static func load_free(path: String, identity: Dictionary, spark_total: int) -> D
 		return {}
 	if typeof(taken) != TYPE_PACKED_BYTE_ARRAY or taken.size() != spark_total:
 		return {}
-	return {"result_id": result_id, "elapsed_ms": elapsed, "secrets": secrets, "photos": photos, "taken": taken}
+	return {
+		"result_id": result_id,
+		"elapsed_ms": elapsed,
+		"secrets": secrets,
+		"photos": photos,
+		"taken": taken
+	}
 
 
 # ------------------------------------------------------------------ records, album, choices
@@ -153,7 +182,9 @@ static func _section(child_scope: String) -> String:
 
 ## Best result of [param mode] on [param stage]: {rating, time_ms, place} or {}.
 static func record(child_scope: String, mode: String, stage: String) -> Dictionary:
-	var entry: Variant = _records().get_value(_section(child_scope), "best_%s_%s" % [mode, stage], {})
+	var entry: Variant = _records().get_value(
+		_section(child_scope), "best_%s_%s" % [mode, stage], {}
+	)
 	if typeof(entry) != TYPE_DICTIONARY:
 		return {}
 	var rating: Variant = entry.get("rating")
@@ -169,7 +200,9 @@ static func record(child_scope: String, mode: String, stage: String) -> Dictiona
 
 
 ## Keeps the better result (higher seal; a better place in a race; then the faster time).
-static func store_record(child_scope: String, mode: String, stage: String, rating: int, time_ms: int, place: int = 0) -> bool:
+static func store_record(
+	child_scope: String, mode: String, stage: String, rating: int, time_ms: int, place: int = 0
+) -> bool:
 	var best: Dictionary = record(child_scope, mode, stage)
 	if not best.is_empty():
 		var old_place: int = int(best.place) if int(best.place) > 0 else 9
@@ -177,12 +210,20 @@ static func store_record(child_scope: String, mode: String, stage: String, ratin
 		var better: bool = (
 			rating > int(best.rating)
 			or (rating == int(best.rating) and new_place < old_place)
-			or (rating == int(best.rating) and new_place == old_place and time_ms < int(best.time_ms))
+			or (
+				rating == int(best.rating)
+				and new_place == old_place
+				and time_ms < int(best.time_ms)
+			)
 		)
 		if not better:
 			return false
 	var config: ConfigFile = _records()
-	config.set_value(_section(child_scope), "best_%s_%s" % [mode, stage], {"rating": rating, "time_ms": time_ms, "place": place})
+	config.set_value(
+		_section(child_scope),
+		"best_%s_%s" % [mode, stage],
+		{"rating": rating, "time_ms": time_ms, "place": place}
+	)
 	_write_records(config)
 	return true
 
@@ -216,9 +257,19 @@ static func choices(child_scope: String) -> Dictionary:
 	var mode: Variant = config.get_value(section, "mode", "delivery")
 	return {
 		"colour": colour if typeof(colour) == TYPE_STRING else "sternblau",
-		"stage": stage if typeof(stage) == TYPE_STRING and stage in ["entdecken", "abenteuer", "extrem"] else "entdecken",
+		"stage":
+		(
+			stage
+			if typeof(stage) == TYPE_STRING and stage in ["entdecken", "abenteuer", "extrem"]
+			else "entdecken"
+		),
 		"riddles": riddles if typeof(riddles) == TYPE_BOOL else true,
-		"mode": mode if typeof(mode) == TYPE_STRING and mode in ["delivery", "race", "free"] else "delivery",
+		"mode":
+		(
+			mode
+			if typeof(mode) == TYPE_STRING and mode in ["delivery", "race", "free"]
+			else "delivery"
+		),
 	}
 
 

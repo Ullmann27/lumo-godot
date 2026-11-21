@@ -67,7 +67,11 @@ func refresh() -> void:
 		remove_child(child)
 		child.queue_free()
 	_unit = UI.unit(self)
-	mouse_filter = Control.MOUSE_FILTER_IGNORE if screen.is_empty() or screen == "start" else Control.MOUSE_FILTER_STOP
+	mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+		if screen.is_empty() or screen == "start"
+		else Control.MOUSE_FILTER_STOP
+	)
 	match screen:
 		"start":
 			_build_start()
@@ -82,6 +86,7 @@ func refresh() -> void:
 
 
 # ------------------------------------------------------------------ shared pieces
+
 
 func _veil(alpha: float) -> void:
 	var veil := ColorRect.new()
@@ -118,12 +123,16 @@ func _dialog(accent: Color, width_dp: float) -> VBoxContainer:
 
 func _fit_dialog(panel: PanelContainer, column: VBoxContainer) -> void:
 	for _pass in range(2):
+		if not is_inside_tree():
+			return
 		await get_tree().process_frame
-		if not is_instance_valid(panel) or not is_instance_valid(column):
+		if not is_inside_tree() or not is_instance_valid(panel) or not is_instance_valid(column):
 			return
 		var view: Vector2 = get_viewport().get_visible_rect().size
 		var m: Vector4 = UI.margins(self, 12.0)
-		var height: float = minf(column.get_combined_minimum_size().y + 36.0 * _unit, view.y - m.y - m.w)
+		var height: float = minf(
+			column.get_combined_minimum_size().y + 36.0 * _unit, view.y - m.y - m.w
+		)
 		panel.size = Vector2(panel.size.x, height)
 		panel.position = Vector2((view.x - panel.size.x) * 0.5, maxf(m.y, (view.y - height) * 0.5))
 	panel.modulate.a = 1.0
@@ -134,7 +143,14 @@ func dialog_rect() -> Rect2:
 	return panel.get_global_rect() if panel != null else Rect2()
 
 
-func _button(text: String, node_name: String, action: Callable, primary: bool = false, accent: Color = UI.CYAN, height: float = 56.0) -> Button:
+func _button(
+	text: String,
+	node_name: String,
+	action: Callable,
+	primary: bool = false,
+	accent: Color = UI.CYAN,
+	height: float = 56.0
+) -> Button:
 	var button: Button = UI.button(text, _unit, accent, primary, height)
 	button.name = node_name
 	button.pressed.connect(action)
@@ -153,19 +169,24 @@ func _row(buttons: Array, columns: int) -> GridContainer:
 
 # ------------------------------------------------------------------ start
 
+
 func _build_start() -> void:
 	var u: float = _unit
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	var m: Vector4 = UI.margins(self, 14.0)
 	var wide: bool = view.x > view.y * 1.12
 	var inner := Rect2(m.x, m.y, view.x - m.x - m.z, view.y - m.y - m.w)
-	var back: Button = _button("‹ Spiele", "BackToGames", func() -> void: leave_pressed.emit("games"), false, UI.CYAN, 48.0)
+	var back: Button = _button(
+		"‹ Spiele", "BackToGames", func() -> void: leave_pressed.emit("games"), false, UI.CYAN, 48.0
+	)
 	back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	back.position = inner.position
 	back.size = Vector2(118.0, 48.0) * u
 	back.custom_minimum_size = Vector2(118.0, 48.0) * u
 	add_child(back)
-	var help: Button = _button("? So geht's", "HelpButton", func() -> void: help_pressed.emit(), false, UI.CYAN, 48.0)
+	var help: Button = _button(
+		"? So geht's", "HelpButton", func() -> void: help_pressed.emit(), false, UI.CYAN, 48.0
+	)
 	help.size = Vector2(130.0, 48.0) * u
 	help.custom_minimum_size = Vector2(130.0, 48.0) * u
 	help.position = Vector2(inner.end.x - help.size.x, inner.position.y)
@@ -174,14 +195,26 @@ func _build_start() -> void:
 	var title_area: Rect2
 	if wide:
 		var hero_width: float = inner.size.x * 0.44
-		hero_rect = Rect2(inner.position.x, inner.position.y + 120.0 * u, hero_width, inner.size.y - 120.0 * u)
+		hero_rect = Rect2(
+			inner.position.x, inner.position.y + 120.0 * u, hero_width, inner.size.y - 120.0 * u
+		)
 		title_area = Rect2(inner.position.x, inner.position.y + 52.0 * u, hero_width, 70.0 * u)
-		panel_area = Rect2(inner.position.x + hero_width + 16.0 * u, inner.position.y + 56.0 * u, inner.size.x - hero_width - 16.0 * u, inner.size.y - 56.0 * u)
+		panel_area = Rect2(
+			inner.position.x + hero_width + 16.0 * u,
+			inner.position.y + 56.0 * u,
+			inner.size.x - hero_width - 16.0 * u,
+			inner.size.y - 56.0 * u
+		)
 	else:
 		title_area = Rect2(inner.position.x, inner.position.y + 52.0 * u, inner.size.x, 92.0 * u)
 		var hero_height: float = clampf(inner.size.y * 0.3, 170.0 * u, 360.0 * u)
 		hero_rect = Rect2(inner.position.x, title_area.end.y, inner.size.x, hero_height)
-		panel_area = Rect2(inner.position.x, hero_rect.end.y + 6.0 * u, inner.size.x, inner.end.y - hero_rect.end.y - 6.0 * u)
+		panel_area = Rect2(
+			inner.position.x,
+			hero_rect.end.y + 6.0 * u,
+			inner.size.x,
+			inner.end.y - hero_rect.end.y - 6.0 * u
+		)
 	var title: Label = UI.label("LUMOS STERNENPOST", 40.0 if not wide else 38.0, u, UI.GOLD, true)
 	title.name = "Title"
 	title.add_theme_color_override("font_outline_color", UI.INK)
@@ -229,7 +262,12 @@ func _build_start() -> void:
 	var stages: Array = []
 	for id in TUNING.STAGES:
 		var button: Button = _button(
-			TUNING.STAGE_NAMES[id], "Stage_" + id, func() -> void: stage_selected.emit(id), id == stage, UI.CYAN, 50.0
+			TUNING.STAGE_NAMES[id],
+			"Stage_" + id,
+			func() -> void: stage_selected.emit(id),
+			id == stage,
+			UI.CYAN,
+			50.0
 		)
 		stages.append(button)
 	column.add_child(_row(stages, 3))
@@ -245,21 +283,48 @@ func _build_start() -> void:
 	if mode == "delivery":
 		var riddles: bool = bool(data.get("riddles", true))
 		var toggle: Button = _button(
-			"Rätsel: AN" if riddles else "Rätsel: AUS", "Riddles", func() -> void: riddles_toggled.emit(not riddles), false,
-			UI.GOLD if riddles else UI.MUTED, 50.0
+			"Rätsel: AN" if riddles else "Rätsel: AUS",
+			"Riddles",
+			func() -> void: riddles_toggled.emit(not riddles),
+			false,
+			UI.GOLD if riddles else UI.MUTED,
+			50.0
 		)
-		toggle.tooltip_text = "Adressen als Rechnung, Wortart oder Uhrzeit (%d. Klasse, %s)" % [int(data.get("grade", 1)), str(data.get("subject", "Mathematik"))]
+		toggle.tooltip_text = (
+			"Adressen als Rechnung, Wortart oder Uhrzeit (%d. Klasse, %s)"
+			% [int(data.get("grade", 1)), str(data.get("subject", "Mathematik"))]
+		)
 		row.add_child(toggle)
-	column.add_child(_caption("Flieger-Farbe" + ("  ·  Adress-Rätsel" if mode == "delivery" else "")))
+	column.add_child(
+		_caption("Flieger-Farbe" + ("  ·  Adress-Rätsel" if mode == "delivery" else ""))
+	)
 	column.add_child(row)
 	var save_text: String = str(data.get("save", ""))
-	var go: Button = _button("LOSFLIEGEN!", "StartFlight", func() -> void: start_pressed.emit(false), true, UI.GOLD, 62.0)
+	var go: Button = _button(
+		"LOSFLIEGEN!", "StartFlight", func() -> void: start_pressed.emit(false), true, UI.GOLD, 62.0
+	)
 	if save_text.is_empty():
 		column.add_child(go)
 	else:
-		var resume: Button = _button("Weiterfliegen · %s" % save_text, "ResumeFlight", func() -> void: start_pressed.emit(true), true, UI.GOLD, 62.0)
-		var fresh: Button = _button("Neu beginnen", "StartFlight", func() -> void: start_pressed.emit(false), false, UI.CYAN, 62.0)
-		column.add_child(_row([resume, fresh], 2 if not wide or panel_area.size.x / u > 420.0 else 1))
+		var resume: Button = _button(
+			"Weiterfliegen · %s" % save_text,
+			"ResumeFlight",
+			func() -> void: start_pressed.emit(true),
+			true,
+			UI.GOLD,
+			62.0
+		)
+		var fresh: Button = _button(
+			"Neu beginnen",
+			"StartFlight",
+			func() -> void: start_pressed.emit(false),
+			false,
+			UI.CYAN,
+			62.0
+		)
+		column.add_child(
+			_row([resume, fresh], 2 if not wide or panel_area.size.x / u > 420.0 else 1)
+		)
 	var line: String = str(data.get("best", {}).get("_line", ""))
 	if not line.is_empty():
 		column.add_child(UI.label(line, 14.0, u, UI.MUTED))
@@ -320,6 +385,7 @@ func _swatch(id: String, selected: bool) -> Button:
 
 # ------------------------------------------------------------------ help, loading
 
+
 func _build_help() -> void:
 	_veil(0.55)
 	var column: VBoxContainer = _dialog(UI.GOLD, 470.0)
@@ -340,7 +406,9 @@ func _build_help() -> void:
 		var label: Label = UI.label("• " + text, 17.0, u, UI.WHITE)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		column.add_child(label)
-	column.add_child(_button("Alles klar!", "CloseHelp", func() -> void: help_closed.emit(), true, UI.GOLD))
+	column.add_child(
+		_button("Alles klar!", "CloseHelp", func() -> void: help_closed.emit(), true, UI.GOLD)
+	)
 
 
 func _build_loading() -> void:
@@ -348,10 +416,13 @@ func _build_loading() -> void:
 	var column: VBoxContainer = _dialog(UI.CYAN, 360.0)
 	var u: float = _unit
 	column.add_child(UI.label(str(data.get("title", "Wolkenhafen")), 28.0, u, UI.GOLD, true))
-	column.add_child(UI.label(str(data.get("text", "Lumo macht den Sternsegler startklar …")), 17.0, u, UI.WHITE))
+	column.add_child(
+		UI.label(str(data.get("text", "Lumo macht den Sternsegler startklar …")), 17.0, u, UI.WHITE)
+	)
 
 
 # ------------------------------------------------------------------ pause and result
+
 
 func _build_pause() -> void:
 	_veil(0.6)
@@ -361,15 +432,31 @@ func _build_pause() -> void:
 	column.add_child(UI.label(str(data.get("summary", "")), 17.0, u, UI.WHITE))
 	if not str(data.get("save_note", "")).is_empty():
 		column.add_child(UI.label(str(data.get("save_note", "")), 14.0, u, UI.MUTED))
-	column.add_child(_button("Weiterfliegen", "Resume", func() -> void: resume_pressed.emit(), true, UI.GOLD))
+	column.add_child(
+		_button("Weiterfliegen", "Resume", func() -> void: resume_pressed.emit(), true, UI.GOLD)
+	)
 	var others: Array = [
 		_button("Neu starten", "Restart", func() -> void: restart_pressed.emit()),
 		_button("Zum Menü", "Menu", func() -> void: menu_pressed.emit()),
 	]
 	if bool(data.get("free", false)):
-		others.insert(0, _button("Freiflug beenden", "EndFree", func() -> void: again_pressed.emit(), false, UI.GOLD))
+		others.insert(
+			0,
+			_button(
+				"Freiflug beenden", "EndFree", func() -> void: again_pressed.emit(), false, UI.GOLD
+			)
+		)
 	column.add_child(_row(others, 2))
-	column.add_child(_button("Zur Spielewelt", "Leave", func() -> void: leave_pressed.emit("games"), false, UI.CYAN, 50.0))
+	column.add_child(
+		_button(
+			"Zur Spielewelt",
+			"Leave",
+			func() -> void: leave_pressed.emit("games"),
+			false,
+			UI.CYAN,
+			50.0
+		)
+	)
 	if not str(data.get("notice", "")).is_empty():
 		column.add_child(UI.label(str(data.notice), 15.0, u, Color("ffb0a0")))
 
@@ -390,7 +477,9 @@ func _build_result() -> void:
 			for index in range(3):
 				var centre := Vector2(w * 0.5 + (float(index) - 1.0) * 62.0 * u, 32.0 * u)
 				var lit: bool = index < rating
-				stars.draw_colored_polygon(UI.star_points(centre, 27.0 * u), UI.GOLD if lit else Color(0.3, 0.38, 0.5, 0.8))
+				stars.draw_colored_polygon(
+					UI.star_points(centre, 27.0 * u), UI.GOLD if lit else Color(0.3, 0.38, 0.5, 0.8)
+				)
 	)
 	column.add_child(stars)
 	column.add_child(UI.label(str(data.get("medal", "")), 20.0, u, accent, true))
@@ -413,7 +502,20 @@ func _build_result() -> void:
 		column.add_child(UI.label(str(data.note), 15.0, u, UI.WHITE))
 	if not str(data.get("notice", "")).is_empty():
 		column.add_child(UI.label(str(data.notice), 15.0, u, Color("ffb0a0")))
-	var again: Button = _button("Nochmal fliegen", "Again", func() -> void: again_pressed.emit(), true, UI.GOLD, 64.0)
-	var menu: Button = _button("Zum Menü", "Menu", func() -> void: menu_pressed.emit(), false, UI.CYAN, 64.0)
+	var again: Button = _button(
+		"Nochmal fliegen", "Again", func() -> void: again_pressed.emit(), true, UI.GOLD, 64.0
+	)
+	var menu: Button = _button(
+		"Zum Menü", "Menu", func() -> void: menu_pressed.emit(), false, UI.CYAN, 64.0
+	)
 	column.add_child(_row([again, menu], 2))
-	column.add_child(_button("Zur Spielewelt", "Leave", func() -> void: leave_pressed.emit("games"), false, UI.CYAN, 50.0))
+	column.add_child(
+		_button(
+			"Zur Spielewelt",
+			"Leave",
+			func() -> void: leave_pressed.emit("games"),
+			false,
+			UI.CYAN,
+			50.0
+		)
+	)

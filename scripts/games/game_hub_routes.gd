@@ -6,6 +6,7 @@ const ENTRIES: Array[Dictionary] = [
 	{"destination": "settlement", "title": "DORF & WIRTSCHAFT", "subtitle": "Dein lebendiges Dorf", "accent": "91efbd", "featured": false},
 	{"destination": "jump", "title": "WOLKENINSELN", "subtitle": "Hüpfen & Entdecken", "accent": "53ddfd", "featured": false},
 	{"destination": "run", "title": "LUMO LAUF", "subtitle": "Rennen, Springen, Sterne", "accent": "ffb648", "featured": false},
+	{"destination": "skypost", "title": "STERNENPOST", "subtitle": "Fliegen, Liefern, Rätseln", "accent": "7fd8ff", "featured": false},
 	{"destination": "puzzle", "title": "PUZZLE-ATELIER", "subtitle": "Bilder zum Leben erwecken", "accent": "c4a7ff", "featured": false},
 	{"destination": "treasure", "title": "SCHATZSUCHE", "subtitle": "Das Inselgeheimnis", "accent": "ffd18d", "featured": false},
 	{"destination": "rhythm", "title": "RHYTHM PARTY", "subtitle": "Spielen zum Beat", "accent": "ff9fd2", "featured": false},

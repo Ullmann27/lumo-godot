@@ -101,7 +101,9 @@ func _ready() -> void:
 	add_child(boost_button)
 	drop_button = BUTTON.new()
 	drop_button.name = "DropButton"
-	drop_button.configure("drop", "ABWERFEN", "Abwerfen: Brief oder Paket fällt am Sternschirm hinunter.")
+	drop_button.configure(
+		"drop", "ABWERFEN", "Abwerfen: Brief oder Paket fällt am Sternschirm hinunter."
+	)
 	drop_button.pressed_now.connect(func() -> void: drop_pressed.emit())
 	add_child(drop_button)
 	get_viewport().size_changed.connect(layout)
@@ -152,7 +154,9 @@ func set_stats(spark_count: int, total: int, elapsed_ms: int) -> void:
 	top.queue_redraw()
 
 
-func set_card(item: String, recipient: String, address: String, district: String, step: String) -> void:
+func set_card(
+	item: String, recipient: String, address: String, district: String, step: String
+) -> void:
 	card_item = item
 	card_to = recipient
 	card_address = address
@@ -169,7 +173,13 @@ func set_info(text: String, current_place: int = 0) -> void:
 	card.queue_redraw()
 
 
-func set_goal(screen: Vector2, on_screen: bool, distance: float, visible_now: bool, colour: Color = Color("ffd75e")) -> void:
+func set_goal(
+	screen: Vector2,
+	on_screen: bool,
+	distance: float,
+	visible_now: bool,
+	colour: Color = Color("ffd75e")
+) -> void:
 	goal_screen = screen
 	goal_on_screen = on_screen
 	goal_distance = distance
@@ -244,9 +254,13 @@ func layout() -> void:
 	boost_button.position = Vector2(view.x - m.z - 6.0 * u - boost_side, bottom - boost_side)
 	drop_button.size = Vector2.ONE * drop_side
 	if view.x / u < 520.0:
-		drop_button.position = Vector2(view.x - m.z - 6.0 * u - drop_side, boost_button.position.y - drop_side - 14.0 * u)
+		drop_button.position = Vector2(
+			view.x - m.z - 6.0 * u - drop_side, boost_button.position.y - drop_side - 14.0 * u
+		)
 	else:
-		drop_button.position = Vector2(boost_button.position.x - drop_side - 16.0 * u, bottom - drop_side - 30.0 * u)
+		drop_button.position = Vector2(
+			boost_button.position.x - drop_side - 16.0 * u, bottom - drop_side - 30.0 * u
+		)
 	toast.add_theme_font_size_override("font_size", roundi(17.0 * u))
 	toast.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var pill := StyleBoxFlat.new()
@@ -276,11 +290,14 @@ func _place_toast() -> void:
 	toast.size = Vector2(width, 0)
 	toast.custom_minimum_size = Vector2(width, 0)
 	toast.reset_size()
-	var controls_top: float = minf(stick.position.y, drop_button.position.y if drop_button.visible else boost_button.position.y)
+	var controls_top: float = minf(
+		stick.position.y, drop_button.position.y if drop_button.visible else boost_button.position.y
+	)
 	toast.position = Vector2((view.x - width) * 0.5, controls_top - toast.size.y - 14.0 * u)
 
 
 # ------------------------------------------------------------------ drawing
+
 
 func _draw_pause() -> void:
 	var s: Vector2 = pause_button.size
@@ -301,10 +318,26 @@ func _draw_top() -> void:
 	var star_centre := Vector2(26.0 * u, s.y * 0.5)
 	top.draw_colored_polygon(UI.star_points(star_centre, 13.0 * u), UI.GOLD)
 	var counter: String = "%d / %d" % [sparks, spark_total] if spark_total > 0 else str(sparks)
-	top.draw_string(font, Vector2(46.0 * u, s.y * 0.5 + size * 0.36), counter, HORIZONTAL_ALIGNMENT_LEFT, -1, size, UI.WHITE)
+	top.draw_string(
+		font,
+		Vector2(46.0 * u, s.y * 0.5 + size * 0.36),
+		counter,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		size,
+		UI.WHITE
+	)
 	var clock: String = UI.clock(time_ms)
 	var clock_width: float = font.get_string_size(clock, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	top.draw_string(font, Vector2(s.x - clock_width - 16.0 * u, s.y * 0.5 + size * 0.36), clock, HORIZONTAL_ALIGNMENT_LEFT, -1, size, UI.MUTED)
+	top.draw_string(
+		font,
+		Vector2(s.x - clock_width - 16.0 * u, s.y * 0.5 + size * 0.36),
+		clock,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		size,
+		UI.MUTED
+	)
 
 
 func _draw_card() -> void:
@@ -320,24 +353,75 @@ func _draw_card() -> void:
 		var icon := Rect2(Vector2(14.0 * u, 18.0 * u), Vector2(56.0, 40.0) * u)
 		if card_item == "Paket":
 			card.draw_rect(icon, Color("c89458"))
-			card.draw_rect(Rect2(icon.position + Vector2(icon.size.x * 0.44, 0), Vector2(icon.size.x * 0.12, icon.size.y)), Color("d9443b"))
+			card.draw_rect(
+				Rect2(
+					icon.position + Vector2(icon.size.x * 0.44, 0),
+					Vector2(icon.size.x * 0.12, icon.size.y)
+				),
+				Color("d9443b")
+			)
 		else:
 			card.draw_rect(icon, Color("fbf6e8"))
 			card.draw_polyline(
-				PackedVector2Array([icon.position, icon.position + Vector2(icon.size.x * 0.5, icon.size.y * 0.55), icon.position + Vector2(icon.size.x, 0)]),
-				Color("8a6a4a"), 2.0 * u, true
+				PackedVector2Array(
+					[
+						icon.position,
+						icon.position + Vector2(icon.size.x * 0.5, icon.size.y * 0.55),
+						icon.position + Vector2(icon.size.x, 0)
+					]
+				),
+				Color("8a6a4a"),
+				2.0 * u,
+				true
 			)
-			card.draw_circle(icon.position + icon.size * Vector2(0.5, 0.62), 6.0 * u, Color("d9443b"))
+			card.draw_circle(
+				icon.position + icon.size * Vector2(0.5, 0.62), 6.0 * u, Color("d9443b")
+			)
 		if not card_step.is_empty():
-			card.draw_string(body, Vector2(14.0 * u, s.y - 12.0 * u), card_step, HORIZONTAL_ALIGNMENT_LEFT, 64.0 * u, roundi(13.0 * u), UI.MUTED)
+			card.draw_string(
+				body,
+				Vector2(14.0 * u, s.y - 12.0 * u),
+				card_step,
+				HORIZONTAL_ALIGNMENT_LEFT,
+				64.0 * u,
+				roundi(13.0 * u),
+				UI.MUTED
+			)
 		var x: float = 84.0 * u
 		var width: float = s.x - x - 12.0 * u
-		card.draw_string(body, Vector2(x, 26.0 * u), "%s für %s" % [card_item, card_to], HORIZONTAL_ALIGNMENT_LEFT, width, roundi(15.0 * u), UI.MUTED)
+		card.draw_string(
+			body,
+			Vector2(x, 26.0 * u),
+			"%s für %s" % [card_item, card_to],
+			HORIZONTAL_ALIGNMENT_LEFT,
+			width,
+			roundi(15.0 * u),
+			UI.MUTED
+		)
 		var size: int = roundi(26.0 * u)
-		while size > 14 and heading.get_string_size(card_address, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width:
+		while (
+			size > 14
+			and heading.get_string_size(card_address, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width
+		):
 			size -= 1
-		card.draw_string(heading, Vector2(x, 58.0 * u), card_address, HORIZONTAL_ALIGNMENT_LEFT, width, size, UI.GOLD)
-		card.draw_string(body, Vector2(x, 82.0 * u), card_place, HORIZONTAL_ALIGNMENT_LEFT, width, roundi(15.0 * u), UI.WHITE)
+		card.draw_string(
+			heading,
+			Vector2(x, 58.0 * u),
+			card_address,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			width,
+			size,
+			UI.GOLD
+		)
+		card.draw_string(
+			body,
+			Vector2(x, 82.0 * u),
+			card_place,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			width,
+			roundi(15.0 * u),
+			UI.WHITE
+		)
 	elif not info_line.is_empty():
 		var h: float = 52.0 * u
 		var rect := Rect2(Vector2(0, 0), Vector2(s.x, h))
@@ -345,14 +429,34 @@ func _draw_card() -> void:
 		var x: float = 16.0 * u
 		if place > 0:
 			var badge := Rect2(Vector2(8.0 * u, 6.0 * u), Vector2(h - 12.0 * u, h - 12.0 * u))
-			var colours: Array[Color] = [Color("ffd75e"), Color("dfe8f2"), Color("e0a06a"), Color("8fa6c4")]
-			card.draw_circle(badge.get_center(), badge.size.x * 0.5, colours[clampi(place - 1, 0, 3)])
+			var colours: Array[Color] = [
+				Color("ffd75e"), Color("dfe8f2"), Color("e0a06a"), Color("8fa6c4")
+			]
+			card.draw_circle(
+				badge.get_center(), badge.size.x * 0.5, colours[clampi(place - 1, 0, 3)]
+			)
 			var text: String = str(place)
 			var size: int = roundi(24.0 * u)
 			var w: float = heading.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-			card.draw_string(heading, badge.get_center() + Vector2(-w * 0.5, size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, UI.INK)
+			card.draw_string(
+				heading,
+				badge.get_center() + Vector2(-w * 0.5, size * 0.36),
+				text,
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				size,
+				UI.INK
+			)
 			x = badge.end.x + 12.0 * u
-		card.draw_string(heading, Vector2(x, h * 0.5 + 7.0 * u), info_line, HORIZONTAL_ALIGNMENT_LEFT, s.x - x - 12.0 * u, roundi(19.0 * u), UI.WHITE)
+		card.draw_string(
+			heading,
+			Vector2(x, h * 0.5 + 7.0 * u),
+			info_line,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			s.x - x - 12.0 * u,
+			roundi(19.0 * u),
+			UI.WHITE
+		)
 
 
 func _draw_pointer() -> void:
@@ -370,7 +474,15 @@ func _draw_pointer() -> void:
 		pointer.draw_arc(p, r, 0.0, TAU, 40, goal_colour, 4.0 * u, true)
 		pointer.draw_arc(p, r * 0.55, 0.0, TAU, 32, Color(goal_colour, 0.6), 3.0 * u, true)
 		var w: float = heading.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-		pointer.draw_string(heading, p + Vector2(-w * 0.5, r + size * 1.2), label, HORIZONTAL_ALIGNMENT_LEFT, -1, size, UI.WHITE)
+		pointer.draw_string(
+			heading,
+			p + Vector2(-w * 0.5, r + size * 1.2),
+			label,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			size,
+			UI.WHITE
+		)
 		return
 	# Off screen: an arrow at the edge of a safe ellipse pointing to the goal.
 	var centre: Vector2 = view * Vector2(0.5, 0.45)
@@ -382,8 +494,23 @@ func _draw_pointer() -> void:
 	var side := Vector2(-direction.y, direction.x)
 	var length: float = 30.0 * u * pulse
 	var tip: Vector2 = p + direction * length * 0.6
-	var points := PackedVector2Array([tip, p - direction * length * 0.4 + side * length * 0.55, p - direction * length * 0.15, p - direction * length * 0.4 - side * length * 0.55])
+	var points := PackedVector2Array(
+		[
+			tip,
+			p - direction * length * 0.4 + side * length * 0.55,
+			p - direction * length * 0.15,
+			p - direction * length * 0.4 - side * length * 0.55
+		]
+	)
 	pointer.draw_colored_polygon(points, goal_colour)
 	pointer.draw_polyline(points + PackedVector2Array([tip]), UI.INK, 2.5 * u, true)
 	var w2: float = heading.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	pointer.draw_string(heading, p - direction * length * 1.1 + Vector2(-w2 * 0.5, size * 0.4), label, HORIZONTAL_ALIGNMENT_LEFT, -1, size, UI.WHITE)
+	pointer.draw_string(
+		heading,
+		p - direction * length * 1.1 + Vector2(-w2 * 0.5, size * 0.4),
+		label,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		size,
+		UI.WHITE
+	)

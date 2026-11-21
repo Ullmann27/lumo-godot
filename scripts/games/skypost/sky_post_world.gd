@@ -630,7 +630,7 @@ func show_next_gate(next: int, flash: int = -1) -> void:
 		material.set_shader_parameter("pulse", 0.6 if index == flash else 0.0)
 
 
-func make_sparks(positions: PackedVector3Array) -> void:
+func make_sparks(positions: PackedVector3Array, tint: Color = Color("ffdc52")) -> void:
 	spark_positions = positions
 	spark_taken.resize(positions.size())
 	spark_taken.fill(0)
@@ -649,7 +649,7 @@ func make_sparks(positions: PackedVector3Array) -> void:
 		)
 		multi.set_instance_custom_data(index, Color(fmod(float(index) * 0.137, 1.0), 1.0, 0, 0))
 	sparks.multimesh = multi
-	sparks.material_override = SHADERS.material("SPARK")
+	sparks.material_override = SHADERS.material("SPARK", {"tint": tint})
 	sparks.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	sparks.custom_aabb = AABB(Vector3(-400, -80, -400), Vector3(800, 220, 800))
 	add_child(sparks)
