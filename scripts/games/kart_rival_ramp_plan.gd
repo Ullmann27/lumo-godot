@@ -14,9 +14,11 @@ static func target_speed(
 	current_speed: float,
 	fallback: float,
 	boosted: bool,
-	delta: float
+	delta: float,
+	index: int = -1,
+	difficulty: String = ""
 ) -> float:
-	var factors: Dictionary = CRAFT.factors(kart_id)
+	var factors: Dictionary = CRAFT.factors(kart_id, index, difficulty)
 	var physical_top: float = POWERTRAIN.top_speed(factors, difficulty_speed)
 	if boosted:
 		physical_top *= 1.32
@@ -32,7 +34,9 @@ static func target_speed(
 		# Plan with actual stopping distance rather than cruising at ramp speed
 		# for hundreds of metres. The final margin leaves time to settle on the
 		# ramp; the same envelope also permits a slow racer to accelerate early.
-		var change_distance: float = absf(current_speed * current_speed - desired * desired) / (2.0 * acceleration)
+		var change_distance: float = (
+			absf(current_speed * current_speed - desired * desired) / (2.0 * acceleration)
+		)
 		var approach: float = maxf(30.0, change_distance + current_speed * 0.35 + 6.0)
 		if remaining > approach:
 			continue

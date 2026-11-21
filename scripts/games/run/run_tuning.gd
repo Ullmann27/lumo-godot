@@ -62,6 +62,8 @@ const CRATE_STARS: int = 2
 ## Rating thresholds on the share of all course stars that Lumo kept.
 const RATING_TWO: float = 0.5
 const RATING_THREE: float = 0.8
+const MEDAL_NAMES: Array[String] = ["Bronze", "Silber", "Gold"]
+const MEDAL_COLOURS: Array[Color] = [Color("e9a271"), Color("deedfa"), Color("ffd46b")]
 
 
 ## Height above the take-off point after `t` seconds of an unheld flight.
@@ -161,3 +163,8 @@ const RIDE_GRAB_RADIUS: float = 1.35
 const VINE_HIGH_HANDLE: float = 2.8
 ## Push forward (seconds of a speed pad) after a highlight was mastered.
 const MOMENT_BOOST_SECONDS: float = 0.8
+## A finale launch still takes Lumo when he jumped early and is at most this
+## high above it (metres; a tapped jump peaks at about 1.7 m).
+const FINALE_CATCH_HEIGHT: float = 2.6
+## Seconds of turbo a finale launch gives along the way (it throws forward).
+const FINALE_CARRY_SECONDS: float = 1.2

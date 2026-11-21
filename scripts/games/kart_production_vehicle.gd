@@ -7,10 +7,20 @@ const VARIANTS: Array[String] = ["comet", "glider", "turbo"]
 ## driver always sits in a real cockpit. Paint, trim, accent and neon come
 ## from the kart's own look.
 const BODY_OF: Dictionary = {
-	"comet": "comet", "boru_rally": "comet", "nala_comet": "comet", "zuri_volt": "comet",
-	"terra": "comet", "koloss": "comet",
-	"glider": "glider", "gecko_velo": "glider", "noa_tide": "glider", "iva_aurora": "glider",
-	"turbo": "turbo", "blitz": "turbo", "phantom": "turbo", "stella": "turbo",
+	"comet": "comet",
+	"boru_rally": "comet",
+	"nala_comet": "comet",
+	"zuri_volt": "comet",
+	"terra": "comet",
+	"koloss": "comet",
+	"glider": "glider",
+	"gecko_velo": "glider",
+	"noa_tide": "glider",
+	"iva_aurora": "glider",
+	"turbo": "turbo",
+	"blitz": "turbo",
+	"phantom": "turbo",
+	"stella": "turbo",
 }
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
@@ -54,10 +64,31 @@ const DUST_PATH := "res://assets/kart/production/details/kart_dust_film.png"
 ## tools/lumo_kart_art/karts/build_parts.py. Wurzel jedes Teils = sein Montagepunkt.
 const PARTS_PATH := "res://assets/kart/production/parts/kart_parts.glb"
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
+## Montagepunkte der Leistungsteile je Karosserie: Heckdeck hinter dem Sitz (Motor), Fuß des
+## Heckflügels (bei Glider und Turbo auf dem Serienflügel) und rechte Deckseite (Turbo).
+const PART_MOUNTS: Dictionary = {
+	"comet":
+	{
+		"engine": Vector3(0, 0.64, 0.70),
+		"wing": Vector3(0, 0.66, 1.00),
+		"booster": Vector3(0.29, 0.68, 0.86)
+	},
+	"glider":
+	{
+		"engine": Vector3(0, 0.64, 0.70),
+		"wing": Vector3(0, 1.02, 1.02),
+		"booster": Vector3(0.27, 0.68, 0.86)
+	},
+	"turbo":
+	{
+		"engine": Vector3(0, 0.64, 0.70),
+		"wing": Vector3(0, 0.95, 1.02),
+		"booster": Vector3(0.31, 0.68, 0.86)
+	},
+}
 ## Montierte Teile je Steckplatz ("wheel_cover"/"exhaust" -> id); Tests lesen das.
 var mounted_parts: Dictionary = {}
 var _part_nodes: Array[Node3D] = []
-
 
 ## The sculpted in-code karts remain the fallback for a body that cannot be
 ## loaded. Tests set this to keep that fallback path exercised.
@@ -166,8 +197,9 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 	for channel in ["paint", "trim", "accent"]:
 		if look.has(channel) and look.get(channel) != stock.get(channel):
 			custom_paint = true
-	var custom_neon: bool = bool(look.get("neon_custom", false)) or (
-		look.has("neon") and look.get("neon") != stock.get("neon")
+	var custom_neon: bool = (
+		bool(look.get("neon_custom", false))
+		or (look.has("neon") and look.get("neon") != stock.get("neon"))
 	)
 	for surface in range(mesh.mesh.get_surface_count()):
 		var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
@@ -185,7 +217,11 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 			finish = original.duplicate() as StandardMaterial3D
 			# Serienlack kommt aus der Flotte (Comet: kräftiges Kometenblau statt Nachtblau,
 			# damit Lack und Glanz im Schauraum und auf der Strecke lesbar sind).
-			finish.albedo_color = look.get("paint", original.albedo_color) if custom_paint else stock.get("paint", original.albedo_color)
+			finish.albedo_color = (
+				look.get("paint", original.albedo_color)
+				if custom_paint
+				else stock.get("paint", original.albedo_color)
+			)
 			_paints.append(finish)
 		elif material_name == "CeramicPearl" and custom_paint:
 			finish = original.duplicate() as StandardMaterial3D
@@ -193,9 +229,13 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 		elif material_name == "SatinAccent" and custom_paint:
 			finish = original.duplicate() as StandardMaterial3D
 			finish.albedo_color = look.get("accent", original.albedo_color)
-		elif material_name == "BrushedAluminium" and wheel_part and (
-			bool(look.get("rim_neon", false))
-			or look.get("rim", Color("c9d6e6")) != Color("c9d6e6")
+		elif (
+			material_name == "BrushedAluminium"
+			and wheel_part
+			and (
+				bool(look.get("rim_neon", false))
+				or look.get("rim", Color("c9d6e6")) != Color("c9d6e6")
+			)
 		):
 			finish = original.duplicate() as StandardMaterial3D
 			finish.albedo_color = look.get("rim", original.albedo_color)
@@ -220,10 +260,18 @@ func apply_motion(spin_phase: float, steer: float) -> void:
 	for index in range(wheel_rotors.size()):
 		# Forward is -Z. A negative X angular velocity cancels the forward
 		# velocity at the tyre's bottom contact; reverse reverses this rotation.
-		wheel_rotors[index].basis = _rotor_bases[index] * Basis(Quaternion(Vector3.RIGHT, -spin_phase))
-		wheel_pivots[index].basis = _pivot_bases[index] * Basis(Quaternion(
-			Vector3.UP, -steering * 0.34 if bool(wheel_pivots[index].get_meta("front")) else 0.0
-		))
+		wheel_rotors[index].basis = (
+			_rotor_bases[index] * Basis(Quaternion(Vector3.RIGHT, -spin_phase))
+		)
+		wheel_pivots[index].basis = (
+			_pivot_bases[index]
+			* Basis(
+				Quaternion(
+					Vector3.UP,
+					-steering * 0.34 if bool(wheel_pivots[index].get_meta("front")) else 0.0
+				)
+			)
+		)
 	steering_wheel.basis = _steering_basis * Basis(Quaternion(Vector3.BACK, -steering * 0.40))
 
 
@@ -328,9 +376,17 @@ func update_distance(distance_squared: float) -> void:
 	if lod_level == 0:
 		requested = 2 if distance > _far_distance else (1 if distance > _near_distance else 0)
 	elif lod_level == 1:
-		requested = 0 if distance < _near_distance - LOD_HYSTERESIS else (2 if distance > _far_distance else 1)
+		requested = (
+			0
+			if distance < _near_distance - LOD_HYSTERESIS
+			else (2 if distance > _far_distance else 1)
+		)
 	else:
-		requested = 0 if distance < _near_distance - LOD_HYSTERESIS else (1 if distance < _far_distance - LOD_HYSTERESIS else 2)
+		requested = (
+			0
+			if distance < _near_distance - LOD_HYSTERESIS
+			else (1 if distance < _far_distance - LOD_HYSTERESIS else 2)
+		)
 	set_lod(requested)
 
 
@@ -374,31 +430,71 @@ func apply_parts(look: Dictionary) -> void:
 		var node_name: String = str(entry.get("node", ""))
 		if node_name.is_empty() or packed == null:
 			continue
-		if slot == "wheel_cover":
-			for rotor in wheel_rotors:
-				var cover := _part_instance(packed, node_name, paint)
-				if cover == null:
-					continue
-				rotor.add_child(cover)
-				# Aufsätze schauen nach +X (rechte Seite); links um die Hochachse gedreht.
-				if rotor.get_parent().position.x < 0.0:
-					cover.basis = Basis(Vector3.UP, PI)
-				_part_nodes.append(cover)
-		else:
-			for side in ["L", "R"]:
-				var marker := asset_root.find_child("Boost_" + side, true, false) as Node3D
-				var tip := _part_instance(packed, node_name, paint)
-				if marker == null or tip == null:
-					if tip != null:
-						tip.free()
-					continue
-				marker.add_child(tip)
-				# Etwas größer als modelliert: im Rennen sieht man das Heck nur klein von hinten.
-				tip.scale = Vector3.ONE * 1.5
-				_part_nodes.append(tip)
+		match slot:
+			"wheel_cover", "tires":
+				for rotor in wheel_rotors:
+					# Aufsätze schauen nach +X (rechte Seite); links um die Hochachse gedreht.
+					var turn: Basis = (
+						Basis(Vector3.UP, PI) if rotor.get_parent().position.x < 0.0 else Basis()
+					)
+					_mount(packed, node_name, paint, rotor, Transform3D(turn, Vector3.ZERO))
+			"exhaust":
+				for side in ["L", "R"]:
+					var marker := asset_root.find_child("Boost_" + side, true, false) as Node3D
+					# Etwas größer als modelliert: im Rennen sieht man das Heck nur klein von hinten.
+					_mount(
+						packed,
+						node_name,
+						paint,
+						marker,
+						Transform3D(Basis().scaled(Vector3.ONE * 1.5), Vector3.ZERO)
+					)
+			"suspension":
+				for pivot in wheel_pivots:
+					_mount(packed, node_name, paint, pivot, _mirror(pivot.position.x < 0.0))
+			"engine", "wing":
+				_mount(packed, node_name, paint, asset_root, Transform3D(Basis(), _anchor(slot)))
+			"booster":
+				var at: Vector3 = _anchor(slot)
+				_mount(packed, node_name, paint, asset_root, Transform3D(Basis(), at))
+				_mount(
+					packed,
+					node_name,
+					paint,
+					asset_root,
+					_mirror(true).translated(Vector3(-at.x, at.y, at.z))
+				)
 	for node in _part_nodes:
 		node.visible = lod_level == 0
 		_dressing.append(node)
+
+
+## Montagepunkt eines Leistungsteils am Kart (Godot-Koordinaten des Karts). Dieselben Werte
+## nutzt tools/lumo_kart_art/karts/render_parts_fit.py für die Passprobe in Blender.
+func _anchor(slot: String) -> Vector3:
+	return (PART_MOUNTS.get(variant, PART_MOUNTS.comet) as Dictionary).get(slot, Vector3.ZERO)
+
+
+static func _mirror(left: bool) -> Transform3D:
+	return Transform3D(Basis().scaled(Vector3(-1, 1, 1)) if left else Basis(), Vector3.ZERO)
+
+
+## Hängt ein Teil als benannten Montagepunkt „Mount_<Teil>“ an den Träger.
+func _mount(
+	packed: PackedScene, node_name: String, paint: Color, carrier: Node3D, at: Transform3D
+) -> void:
+	if carrier == null:
+		return
+	var part := _part_instance(packed, node_name, paint)
+	if part == null:
+		return
+	var mount := Node3D.new()
+	# Links gespiegelte Teile am selben Träger bekommen „_L“ (Namen müssen eindeutig sein).
+	mount.name = "Mount_" + node_name + ("_L" if at.basis.determinant() < 0.0 else "")
+	carrier.add_child(mount)
+	mount.transform = at
+	mount.add_child(part)
+	_part_nodes.append(mount)
 
 
 func _part_instance(packed: PackedScene, node_name: String, paint: Color) -> Node3D:

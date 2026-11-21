@@ -135,6 +135,9 @@ func _run() -> void:
 	await process_frame
 	DirAccess.remove_absolute(first_path)
 	DirAccess.remove_absolute(second_path)
+	# Der Kurswechsel startet die Szenenmusik; vor dem Ende freigeben (CI-Lecks).
+	root.get_node("GameSoundscape").release_audio()
+	await create_timer(0.4).timeout
 	if failures.is_empty():
 		print(
 			(

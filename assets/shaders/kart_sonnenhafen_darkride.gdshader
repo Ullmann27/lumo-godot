@@ -12,6 +12,8 @@ uniform vec4 violet_light : source_color = vec4(0.62, 0.28, 0.94, 1.0);
 uniform float light_intensity : hint_range(0.0, 2.0) = 1.10;
 uniform float rock_detail_strength : hint_range(0.0, 1.0) = 1.0;
 uniform bool mobile_detail = false;
+// Static shoulder guides: cyan left, amber right. Shader-only, no geometry.
+uniform float wayfinding_strength : hint_range(0.0, 1.0) = 1.0;
 varying float inner_fade;
 varying vec3 rock_normal;
 varying vec3 material_tag;
@@ -67,8 +69,13 @@ void fragment() {
     float dash = smoothstep(0.6 - dash_aa, 0.6 + dash_aa, dash_phase)
         * (1.0 - smoothstep(0.96 - dash_aa, 0.96, dash_phase));
     float road_dash = (1.0 - smoothstep(0.015, 0.035, abs(UV.x))) * dash;
-    vec3 base_road = road_color.rgb * (0.86 + grain * 0.04) + cold_light.rgb * lane_edge * 0.045;
-    vec3 glow_road = cold_light.rgb * (lane_edge * 0.36 + road_dash * 0.17);
+    float guide_lateral = smoothstep(0.69, 0.77, abs(UV.x)) * (1.0 - smoothstep(0.90, 0.98, abs(UV.x)));
+    float guide_phase = fract(UV.y * 4.2);
+    float guide_segment = smoothstep(0.05, 0.13, guide_phase) * (1.0 - smoothstep(0.60, 0.68, guide_phase));
+    vec3 guide_color = mix(cold_light.rgb, vec3(1.0, 0.66, 0.25), step(0.0, UV.x));
+    vec3 guide_mark = guide_color * guide_lateral * guide_segment * wayfinding_strength;
+    vec3 base_road = road_color.rgb * (0.86 + grain * 0.04) + cold_light.rgb * lane_edge * 0.045 + guide_mark * 0.15;
+    vec3 glow_road = cold_light.rgb * (lane_edge * 0.36 + road_dash * 0.17) + guide_mark * 1.25;
     float edge_fade = max(inner_fade, 0.12);
     ALBEDO = mix(base_rock, base_road, road_factor) * (0.80 + 0.20 * edge_fade);
     EMISSION = mix(glow_rock, glow_road, road_factor) * light_intensity * edge_fade;

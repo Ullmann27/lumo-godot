@@ -3,7 +3,9 @@ extends RefCounted
 ## enters the speed policy: rivals win by road awareness and their actual kart.
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const LANES: Array[float] = [-3.4, -2.55, -1.7, -0.85, 0.0, 0.85, 1.7, 2.55, 3.4]
+const STATIC_LOOK_AHEAD: float = 45.0
 const STYLES: Array[Dictionary] = [
 	{"id": "precise", "clearance": 1.85, "line": 0.65, "corner": 1.02},
 	{"id": "attacker", "clearance": 1.65, "line": 0.85, "corner": 1.05},
@@ -18,16 +20,34 @@ static func style(index: int) -> Dictionary:
 	return STYLES[posmod(index, STYLES.size())]
 
 
-static func factors(kart_id: String) -> Dictionary:
-	if not _kart_factors.has(kart_id):
-		_kart_factors[kart_id] = FLEET.multipliers(
-			FLEET.base_stats(kart_id), FLEET.entry(kart_id).traits
+## Fahrfaktoren eines Rivalen: Grundwerte seines Karts plus seine Leistungsteile
+## (kart_part_catalog.rival_parts, ab „Abenteuer“). index < 0: nur Grundwerte.
+static func factors(kart_id: String, index: int = -1, difficulty: String = "") -> Dictionary:
+	var key: String = "%s|%d|%s" % [kart_id, index, difficulty]
+	if not _kart_factors.has(key):
+		_kart_factors[key] = PART_CATALOG.apply(
+			FLEET.multipliers(FLEET.base_stats(kart_id), FLEET.entry(kart_id).traits),
+			PART_CATALOG.rival_parts(index, difficulty)
 		)
-	return _kart_factors[kart_id]
+	return _kart_factors[key]
 
 
-static func cruise_speed(kart_id: String, rules: Dictionary) -> float:
-	return POWERTRAIN.top_speed(factors(kart_id), float(rules.speed)) * float(rules.rival)
+## Turbo-Wirkung der Rivalen-Teile relativ zum Grundkart (ohne Teile genau 1,0):
+## {"power": Faktor auf den Turbo-Aufschlag, "time": Faktor auf die Turbo-Dauer}.
+static func part_boost(kart_id: String, index: int, difficulty: String) -> Dictionary:
+	var base: Dictionary = factors(kart_id)
+	var tuned: Dictionary = factors(kart_id, index, difficulty)
+	return {
+		"power": float(tuned.boost_power) / maxf(0.01, float(base.boost_power)),
+		"time": float(tuned.boost_time) / maxf(0.01, float(base.boost_time)),
+	}
+
+
+static func cruise_speed(kart_id: String, rules: Dictionary, index: int = -1) -> float:
+	return (
+		POWERTRAIN.top_speed(factors(kart_id, index, str(rules.get("id", ""))), float(rules.speed))
+		* float(rules.rival)
+	)
 
 
 ## Signed horizontal curvature over several real road samples, in radians/m.
@@ -54,7 +74,7 @@ static func corner_speed(bend: float, difficulty: String, kart_id: String, index
 		return INF
 	var grip: float = 17.0 if difficulty == "pro" else 12.5 if difficulty == "flott" else 8.0
 	grip *= POWERTRAIN.DYNAMICS_SCALE
-	grip *= float(factors(kart_id).grip) * float(style(index).corner)
+	grip *= float(factors(kart_id, index, difficulty).grip) * float(style(index).corner)
 	return maxf(7.0, sqrt(grip / absf(bend)))
 
 
@@ -85,7 +105,10 @@ static func _lane_cost(
 	var cost: float = absf(candidate - preferred) * 0.26 + absf(candidate - current) * 0.12
 	var clearance: float = float(style(index).clearance)
 	for obstacle in traffic:
-		if obstacle.x < -4.0 or obstacle.x > look_ahead:
+		# Standing obstacles (slalom pylons, rocks, a parked kart) are planned for from
+		# further away: a rival that reached a pylon on the rail side had no free lane left.
+		var reach: float = maxf(look_ahead, STATIC_LOOK_AHEAD) if obstacle.z <= 0.1 else look_ahead
+		if obstacle.x < -4.0 or obstacle.x > reach:
 			continue
 		# Account for the lane-change path, not just its final lane. A rival at
 		# our shoulder cannot be crossed while targeting an apparently free lane.

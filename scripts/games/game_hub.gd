@@ -7,6 +7,8 @@ const MENU_ART = preload("res://scripts/games/kart_menu_art.gd")
 const COMPANION = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const PORTALS = preload("res://scripts/games/game_hub_routes.gd")
 const DREAM_STAGE = preload("res://scripts/games/game_hub_magic_stage.gd")
+## Kachelbilder je Spiel: verkleinerte Aufnahmen der echten Spielszenen.
+const PICTURES := "res://assets/games/hub/%s.webp"
 
 var _safe: MarginContainer
 var _button_row: GridContainer
@@ -223,6 +225,7 @@ func _build_controls() -> void:
 		_grade.add_item("%d. Klasse" % value, value)
 	_grade.selected = clampi(int(SceneRouter.launch_options.get("grade", 1)) - 1, 0, 3)
 	_grade.add_theme_stylebox_override("normal", UI.premium_panel(UI.CYAN))
+	_touch_friendly_popup(_grade)
 	options.add_child(_grade)
 	_subject = OptionButton.new()
 	_subject.name = "SubjectChoice"
@@ -232,6 +235,7 @@ func _build_controls() -> void:
 	_subject.add_item("Deutsch")
 	_subject.selected = 1 if SceneRouter.launch_options.get("subject", "") == "Deutsch" else 0
 	_subject.add_theme_stylebox_override("normal", UI.premium_panel(UI.CYAN))
+	_touch_friendly_popup(_subject)
 	options.add_child(_subject)
 	_button_row = GridContainer.new()
 	_button_row.name = "LiveGameRoutes"
@@ -258,21 +262,49 @@ func _make_route(
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.custom_minimum_size = Vector2(240, 96)
 	_button_row.add_child(button)
+	var row := HBoxContainer.new()
+	row.name = "PortalRow"
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = 8
+	row.offset_right = -12
+	row.offset_top = 8
+	row.offset_bottom = -8
+	row.add_theme_constant_override("separation", 14)
+	button.add_child(row)
+	var picture_path := PICTURES % destination
+	if ResourceLoader.exists(picture_path):
+		# Ein Bild aus dem echten Spiel: Kinder erkennen ihr Spiel, bevor sie lesen.
+		var frame := PanelContainer.new()
+		frame.name = "PortalFrame"
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var frame_style := StyleBoxFlat.new()
+		frame_style.bg_color = color.darkened(0.55)
+		frame_style.border_color = color.lightened(0.15)
+		frame_style.set_border_width_all(2)
+		frame_style.set_corner_radius_all(10)
+		frame_style.set_content_margin_all(2)
+		frame.add_theme_stylebox_override("panel", frame_style)
+		row.add_child(frame)
+		var picture := TextureRect.new()
+		picture.name = "PortalPicture"
+		picture.texture = load(picture_path) as Texture2D
+		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		picture.clip_contents = true
+		frame.add_child(picture)
 	var label_stack := VBoxContainer.new()
 	label_stack.name = "PortalText"
 	label_stack.alignment = BoxContainer.ALIGNMENT_CENTER
 	label_stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label_stack.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	label_stack.offset_left = 16
-	label_stack.offset_right = -12
-	label_stack.offset_top = 8
-	label_stack.offset_bottom = -8
-	button.add_child(label_stack)
-	var heading := _heading(title_text, 19, UI.NAVY if primary else UI.WHITE)
+	label_stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label_stack)
+	var heading := _heading(title_text, 22, UI.NAVY if primary else UI.WHITE)
 	heading.name = "PortalTitle"
 	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label_stack.add_child(heading)
-	var hint := _heading(hint_text, 14, UI.NAVY if primary else UI.MUTED)
+	var hint := _heading(hint_text, 16, UI.NAVY if primary else UI.MUTED)
 	hint.name = "PortalHint"
 	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label_stack.add_child(hint)
@@ -315,11 +347,21 @@ func _action(value: String, accent: Color, callback: Callable, is_gold: bool = f
 
 
 func _columns_for_width(width_dp: float) -> int:
-	if width_dp >= 1120:
+	if width_dp >= 1000:
 		return 3
-	if width_dp >= 650:
+	if width_dp >= 520:
 		return 2
 	return 1
+
+
+## Klassen- und Fachauswahl: Listeneinträge so groß wie ein Fingertipp.
+func _touch_friendly_popup(choice: OptionButton) -> void:
+	var popup := choice.get_popup()
+	popup.add_theme_font_override("font", UI.HEADING)
+	popup.add_theme_font_size_override("font_size", 26)
+	popup.add_theme_constant_override("v_separation", 22)
+	popup.add_theme_constant_override("item_start_padding", 18)
+	popup.add_theme_constant_override("item_end_padding", 18)
 
 
 func _layout() -> void:
@@ -337,12 +379,16 @@ func _layout() -> void:
 	_hero_gap.custom_minimum_size.y = 8 if compact else (44 if landscape else 90)
 	_section_title.add_theme_font_size_override("font_size", 22 if compact else 29)
 	_subtitle.visible = not compact
+	var tile_height: float = 82.0 if compact else 112.0
 	for button in _choice_buttons:
-		button.custom_minimum_size.y = 78 if compact else 96
+		button.custom_minimum_size.y = tile_height
 		var heading := button.find_child("PortalTitle", true, false) as Label
 		var hint := button.find_child("PortalHint", true, false) as Label
+		var frame := button.find_child("PortalFrame", true, false) as Control
 		if heading != null:
-			heading.add_theme_font_size_override("font_size", 16 if compact else 19)
+			heading.add_theme_font_size_override("font_size", 18 if compact else 22)
 		if hint != null:
-			hint.add_theme_font_size_override("font_size", 12 if compact else 14)
+			hint.add_theme_font_size_override("font_size", 13 if compact else 16)
+		if frame != null:
+			frame.custom_minimum_size = Vector2((tile_height - 16.0) * 1.6, tile_height - 16.0)
 	_frame_original_lumo.call_deferred()

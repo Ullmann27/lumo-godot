@@ -17,6 +17,7 @@ const JUMP_BUFFER_SECONDS: float = 0.15
 const COYOTE_SECONDS: float = 0.12
 const ISLAND_COUNT: int = 12
 const SESSION: String = "user://jump_session.cfg"
+const RESTORED_TEXT: String = "Dein Abenteuer wartet am letzten Kontrollpunkt."
 var actor: CharacterBody3D
 var gait: LumoGait
 var original_lumo
@@ -75,6 +76,7 @@ var bonus_stars: Array[Node3D] = []
 var stars_gathered: Dictionary = {}
 var extra_island: Vector3 = Vector3.ZERO
 var checkpoint_flags: Dictionary = {}
+var _modal_fit_queued: bool = false
 
 
 func _ready() -> void:
@@ -102,7 +104,7 @@ func _ready() -> void:
 	message.text = "%s · Halten = höher springen" % EXPEDITIONS.COURSES[course_index].name
 	if _restore_session():
 		_pause()
-		message.text = "Dein Abenteuer wartet am letzten Kontrollpunkt."
+		message.text = RESTORED_TEXT
 	print("[Jump] ready: true 3D, grade=%d, subject=%s" % [grade, subject])
 
 
@@ -291,7 +293,11 @@ func _build_ui() -> void:
 	right.add_child(jump_hint)
 	control_hints.append(jump_hint)
 	modal = PanelContainer.new()
+	modal.name = "JumpModal"
 	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	# Lange Knopftexte dürfen das Fenster nicht nach rechts aus dem Bild schieben.
+	modal.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	modal.grow_vertical = Control.GROW_DIRECTION_BOTH
 	modal.offset_left = -minf(300, get_viewport().get_visible_rect().size.x * 0.44)
 	modal.offset_right = -modal.offset_left
 	modal.offset_top = -245
@@ -310,6 +316,8 @@ func _build_ui() -> void:
 	modal_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(modal_column)
 	modal.hide()
+	modal_column.sort_children.connect(_queue_modal_fit)
+	modal.visibility_changed.connect(_queue_modal_fit)
 	get_viewport().size_changed.connect(_layout_ui)
 	MobileRuntime.safe_area_changed.connect(_layout_ui)
 	_layout_ui()
@@ -349,13 +357,42 @@ func _layout_ui() -> void:
 			item.custom_minimum_size = Vector2(80, 52) * unit
 			item.add_theme_font_size_override("font_size", roundi(20 * unit))
 			_size_button_margins(item, unit)
+		elif item is Label:
+			item.add_theme_font_size_override(
+				"font_size", roundi(int(item.get_meta("base_size", 20)) * unit)
+			)
 	ui_column.add_theme_constant_override("separation", roundi(8 * unit))
 	var half_width: float = minf(300 * unit, view.x * 0.44)
-	var half_height: float = minf(245 * unit, view.y * 0.38)
+	if view.x > view.y:
+		# Quer: das Fenster endet vor Stick und Sprungknopf.
+		var thumb_edge: float = ui_safe.get_theme_constant("margin_left") + stick_side
+		half_width = minf(half_width, view.x * 0.5 - thumb_edge - 12.0 * unit)
 	modal.offset_left = -half_width
 	modal.offset_right = half_width
-	modal.offset_top = -half_height
-	modal.offset_bottom = half_height
+	modal_column.add_theme_constant_override("separation", roundi(10 * unit))
+	_queue_modal_fit()
+
+
+func _queue_modal_fit() -> void:
+	if not _modal_fit_queued:
+		_modal_fit_queued = true
+		_fit_modal.call_deferred()
+
+
+## Das Fenster ist so hoch wie sein Inhalt (höchstens 84 % des Bildes, dann
+## blättert es) und bleibt mittig – kein leerer Kasten über dem Stick.
+func _fit_modal() -> void:
+	_modal_fit_queued = false
+	if not is_instance_valid(modal) or not modal.visible:
+		return
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	var style := modal.get_theme_stylebox("panel")
+	var chrome: float = style.get_minimum_size().y if style != null else 44.0
+	var content: float = modal_column.get_combined_minimum_size().y + chrome
+	var half_height: float = minf(content * 0.5, view.y * 0.42)
+	if not is_equal_approx(modal.offset_bottom, half_height):
+		modal.offset_top = -half_height
+		modal.offset_bottom = half_height
 
 
 func _label(text: String, size: int) -> Label:
@@ -363,7 +400,8 @@ func _label(text: String, size: int) -> Label:
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.add_theme_font_size_override("font_size", size)
+	label.set_meta("base_size", size)
+	label.add_theme_font_size_override("font_size", roundi(size * _ui_unit()))
 	label.add_theme_color_override("font_color", Color("343457"))
 	return label
 
@@ -371,12 +409,8 @@ func _label(text: String, size: int) -> Label:
 func _button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
-	var view: Vector2 = get_viewport().get_visible_rect().size
-	var window_pixels: Vector2 = Vector2(get_window().size)
-	if window_pixels.x <= 0.0 or window_pixels.y <= 0.0:
-		window_pixels = view
-	var pixel_scale: float = maxf(0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1)))
-	var unit: float = MobileRuntime.get_ui_density() / pixel_scale
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var unit: float = _ui_unit()
 	button.custom_minimum_size = Vector2(80, 52) * unit
 	button.add_theme_font_size_override("font_size", roundi(20 * unit))
 	var style := StyleBoxFlat.new()
@@ -390,6 +424,18 @@ func _button(text: String, callback: Callable) -> Button:
 	button.add_theme_stylebox_override("hover", pressed)
 	button.pressed.connect(callback)
 	return button
+
+
+## Ansichtspunkte je Gerätepunkt (dp) bei der gemeldeten Bildschirmdichte.
+func _ui_unit() -> float:
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	var window_pixels: Vector2 = Vector2(get_window().size)
+	if window_pixels.x <= 0.0 or window_pixels.y <= 0.0:
+		window_pixels = view
+	var pixel_scale: float = maxf(
+		0.1, minf(window_pixels.x / maxf(view.x, 1), window_pixels.y / maxf(view.y, 1))
+	)
+	return MobileRuntime.get_ui_density() / pixel_scale
 
 
 func _size_button_margins(button: Button, unit: float) -> void:
@@ -646,6 +692,8 @@ func _pause() -> void:
 
 func _resume() -> void:
 	paused = false
+	if message.text == RESTORED_TEXT:
+		message.text = "Weiter geht's! %s" % EXPEDITIONS.COURSES[course_index].name
 	_set_controls_enabled(not question_open and not finished)
 	if question_open:
 		_show_question()

@@ -95,6 +95,7 @@ check_probe learning_world_regression '[LearningWorld] PASS' headless
 check_probe learning_sharing_regression '[LearningSharing] PASS' headless
 check_probe learning_studio_regression '[LearningStudio] PASS' headless
 check_probe learning_host_payload_regression '[LearningHostPayload] PASS' headless
+check_probe learning_tutor_regression '[Tutor] PASS' headless
 check_probe puzzle_rotation_regression '[PuzzleRotation] PASS' headless
 check_probe puzzle_menu_lifecycle_regression '[PuzzleMenuLifecycle] PASS' headless
 check_probe treasure_exploration_regression '[TreasureExploration] PASS' headless

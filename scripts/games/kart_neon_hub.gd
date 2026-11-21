@@ -24,7 +24,7 @@ const ICONS = preload("res://scripts/games/kart_neon_icons.gd")
 const OVERLAYS = preload("res://scripts/games/kart_neon_overlays.gd")
 ## Kit-Icon je Rennart des Katalogs (Overlay "Rennarten").
 const RACE_KIND_ICONS := {"race": "icon_flag", "cup": "icon_trophy", "time_trial": "icon_stopwatch",
-	"training": "icon_route", "arena": "icon_star_crystal"}
+	"training": "icon_route", "arena": "icon_star_crystal", "parcours": "icon_chevrons"}
 const NEON := Color("21ccff")
 const AMBER := Color("ffa91f")
 const VIOLET := Color("8a5cff")
@@ -619,11 +619,14 @@ func _skin_race_kinds() -> void:
 		kind.add_theme_constant_override("h_separation", roundi(8 * k))
 
 
-## Querformat: drei Spalten nur mit Namen, damit alle fünf Rennarten und START
-## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung.
+## Querformat: drei Spalten nur mit Namen, damit alle Rennarten und START
+## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung, ab sechs
+## Rennarten (mit dem Abenteuer-Parcours) zwei Spalten.
 func set_race_kind_layout(landscape: bool, short: bool) -> void:
-	_race_kinds.columns = 3 if landscape else 1
-	_race_kinds_compact = landscape and short
+	var many: bool = _race_kind_buttons.size() > 5
+	_race_kinds.columns = 3 if landscape else (2 if many else 1)
+	# Hochformat mit sechs Rennarten: zwei Spalten nur mit Namen (Beschreibung als Tooltip).
+	_race_kinds_compact = (landscape and short) or (not landscape and many)
 	_refresh_race_kinds()
 
 

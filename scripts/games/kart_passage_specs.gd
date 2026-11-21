@@ -245,6 +245,57 @@ const SPECS: Dictionary = {
 			"hit_text": "Zu heiß! Die Lumo-Wolke holt dich vor den Lavastrom zurück.",
 		},
 	],
+	# Lumos Riesengarten: Gartenbahn (Schranke, Bahnsteig in der Mitte, rechts immer frei)
+	# und Kürbis-Abkürzung (enger Innenweg durch den hohlen Kürbis, breite Außenkurve).
+	# Wartezone, Rettungspunkt und Gleis im selben Streckenabschnitt (1205,6 – 1507,2 m).
+	"riesengarten_2400":
+	[
+		{
+			"kind": "gate",
+			"id": "gartenbahn",
+			"name": "Gartenbahn-Kreuzung",
+			"theme": "garden",
+			"object": "barrier",
+			"cue": "gate_bell",
+			"effect": "bump",
+			"wait_start": 1334.0,
+			"wait_line": 1366.0,
+			"plane": 1374.0,
+			"respawn": 1342.0,
+			"lat_min": -5.0,
+			"lat_max": -0.8,
+			"open": 4.2,
+			"warn": 1.6,
+			"closed": 2.2,
+			"band": 2.5,
+			"offset": 0.8,
+			"sign": "GARTENBAHN\nLinks warten – rechts vorbei",
+			"approach_text":
+			"Die Gartenbahn! Bimmelt die Glocke: links warten oder rechts am Bahnsteig vorbei.",
+			"warn_text": "Bimm-bimm! Die Schranke geht zu – links warten oder rechts vorbei.",
+			"hit_text": "Huch, die Gartenbahn! Bei Rot links kurz warten.",
+		},
+		{
+			"kind": "flow",
+			"id": "kuerbis",
+			"name": "Kürbis-Abkürzung",
+			"theme": "garden",
+			"zone_start": 1522.0,
+			"zone_end": 1652.0,
+			"narrow_width": 7.0,
+			"arches":
+			[
+				[1536.0, -1.0],
+				[1558.0, -1.0],
+				[1580.0, -1.0],
+				[1602.0, -1.0],
+				[1624.0, -1.0],
+				[1644.0, -1.0],
+			],
+			"sign": "KÜRBIS\nInnen durch – außen herum",
+			"approach_text": "Der Riesenkürbis! Links mitten durch – oder rechts außen herum.",
+		},
+	],
 	"jungle_emerald_3600":
 	[
 		{

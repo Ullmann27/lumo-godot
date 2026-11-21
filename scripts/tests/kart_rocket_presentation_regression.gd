@@ -228,6 +228,7 @@ func _test_flight_and_hit() -> void:
 	_check(trail_seen and light_seen, "Rauchspur und Eigenlicht während des Flugs")
 	_check(int(flight.stats.muzzles) >= 2, "Mündungsblitz an beiden Halterdüsen")
 	_check(int(flight.stats.impacts) >= 1, "Einschlag mit Blitz, Rauchwolke und Funken")
+	_check_mild_impact(flight)
 	_check(
 		game.kart_audio != null and game.kart_audio._loop_fed.has("rocket_fly"),
 		"Fluggeräusch wird während des Flugs gespeist"
@@ -503,3 +504,36 @@ func _finish() -> void:
 			)
 		)
 		quit(1)
+
+
+## Milder Einschlag (Kind getroffen, Stärke 0,4): Rauch und Funken kleiner als beim
+## vollen Treffer, danach wieder volle Größe.
+func _check_mild_impact(flight: Node) -> void:
+	var at := Vector3(0.0, 1.0, 0.0)
+	flight.impact(at, 1.0)
+	var full: CPUParticles3D = (
+		flight
+		. _impacts[(flight._impact_cursor + flight._impacts.size() - 1) % flight._impacts.size()]
+		. smoke
+	)
+	var full_max := full.scale_amount_max
+	flight.impact(at, 0.4)
+	var mild: CPUParticles3D = (
+		flight
+		. _impacts[(flight._impact_cursor + flight._impacts.size() - 1) % flight._impacts.size()]
+		. smoke
+	)
+	_check(
+		mild.scale_amount_max < full_max * 0.6,
+		"milder Einschlag: Rauch kleiner (%.2f statt %.2f)" % [mild.scale_amount_max, full_max]
+	)
+	flight.impact(at, 1.0)
+	var again: CPUParticles3D = (
+		flight
+		. _impacts[(flight._impact_cursor + flight._impacts.size() - 1) % flight._impacts.size()]
+		. smoke
+	)
+	_check(
+		is_equal_approx(again.scale_amount_max, full_max),
+		"voller Einschlag danach wieder volle Größe"
+	)

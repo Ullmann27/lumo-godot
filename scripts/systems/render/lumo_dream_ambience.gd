@@ -17,6 +17,8 @@ var quality_tier: String = "medium"
 var animation_time: float = 0.0
 var reduced_motion: bool = false
 var _follow_quality: bool = true
+var _motion_override: bool = false
+var _application_paused: bool = false
 var _profile: Dictionary = {}
 var _motes: MultiMeshInstance3D
 var _butterflies: MultiMeshInstance3D
@@ -46,7 +48,7 @@ func configure(preset: String, tier: String = "") -> void:
 	var next_profile: Dictionary = _profile_for(preset)
 	if next_profile.is_empty():
 		return
-	_follow_quality = tier.is_empty()
+	_follow_quality = tier not in TIER_DENSITY
 	var rebuild_layout: bool = preset_id != preset or _motes == null
 	preset_id = preset
 	_profile = next_profile
@@ -61,13 +63,15 @@ func configure(preset: String, tier: String = "") -> void:
 
 func _ready() -> void:
 	var router := get_node_or_null("/root/SceneRouter")
-	if router != null:
+	if router != null and not _motion_override:
 		var options: Variant = router.get("launch_options")
 		if options is Dictionary:
 			set_reduced_motion(bool(options.get("reduceAnimations", false)))
 	var events := get_node_or_null("/root/EventBus")
 	if events != null and events.has_signal("quality_profile_changed"):
 		events.connect("quality_profile_changed", _on_quality_profile_changed)
+	visibility_changed.connect(_update_processing)
+	_update_processing()
 
 
 func _on_quality_profile_changed(tier: String) -> void:
@@ -85,8 +89,27 @@ func set_quality_tier(tier: String) -> void:
 
 
 func set_reduced_motion(value: bool) -> void:
+	_motion_override = true
 	reduced_motion = value
-	set_process(not reduced_motion)
+	_update_processing()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_PAUSED:
+		_application_paused = true
+		_update_processing()
+	elif what == NOTIFICATION_APPLICATION_RESUMED:
+		_application_paused = false
+		_update_processing()
+
+
+func _update_processing() -> void:
+	set_process(
+		is_inside_tree()
+		and is_visible_in_tree()
+		and not reduced_motion
+		and not _application_paused
+	)
 
 
 func _process(delta: float) -> void:

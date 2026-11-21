@@ -8,6 +8,7 @@ extends RefCounted
 const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
 const RAMP = preload("res://scripts/games/track_pieces/kart_ramp_piece.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
 const PAD_BOOST_SECONDS: float = 1.0
@@ -121,7 +122,14 @@ static func plan(world) -> Dictionary:
 		var range_fractions: Array = course.dive
 		var dive_start: float = float(range_fractions[0]) * length
 		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
-		var start: float = _free_start(dive_start, dive_length, length, blocked, taken)
+		# Höhepunkte (kart_track_thrills.gd) belegen viel Strecke: findet der Tunnel in voller
+		# Länge keinen Platz, wird er kürzer statt ganz zu entfallen.
+		var start: float = -1.0
+		for share in [1.0, 0.8, 0.65, 0.5]:
+			start = _free_start(dive_start, dive_length * share, length, blocked, taken)
+			if start >= 0.0:
+				dive_length *= share
+				break
 		if start >= 0.0:
 			result.dives.append({"start": start, "end": start + dive_length})
 			taken.append(Vector2(start, start + dive_length))
@@ -171,6 +179,7 @@ static func _blocked_ranges(world, length: float) -> Array:
 	if not loop.is_empty():
 		blocked.append(Vector2(float(loop.start) - CLEARANCE, float(loop.start) + 70.0))
 	blocked.append_array(PASSAGES.blocked_ranges(world))
+	blocked.append_array(THRILLS.blocked_ranges(world))
 	return blocked
 
 
@@ -199,13 +208,19 @@ static func _free_start(wish: float, span: float, length: float, blocked: Array,
 static func kicker_height(course: Dictionary, distance: float) -> float:
 	for kicker in course.get("kickers", []):
 		if distance >= float(kicker.start) and distance < float(kicker.take_off):
-			return (distance - float(kicker.start)) / float(kicker.length) * float(kicker.height)
+			var t: float = (distance - float(kicker.start)) / float(kicker.length)
+			if str(kicker.get("profile", "")) == "ease_in":
+				return t * t * float(kicker.height)
+			return t * float(kicker.height)
 	return 0.0
 
 
 static func kicker_pitch(course: Dictionary, distance: float) -> float:
 	for kicker in course.get("kickers", []):
 		if distance >= float(kicker.start) and distance < float(kicker.take_off):
+			if str(kicker.get("profile", "")) == "ease_in":
+				var t: float = (distance - float(kicker.start)) / float(kicker.length)
+				return atan(2.0 * float(kicker.height) * t / float(kicker.length))
 			return float(kicker.angle)
 	return 0.0
 
@@ -333,14 +348,18 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 	if bool(kicker.get("precision_jump", false)):
 		STUNT.build_precision_ramp(world, kicker)
 		return
+	if kicker.has("thrill"):
+		return  # Kuppensprung: kart_track_thrill_art.gd zeichnet den Hügel.
 	# One smooth swept wedge (was a stack of 1 m boxes with visible steps).
+	# Breitere Fahrbahn (Dschungelherz) bekommt eine ebenso breite Rampe.
+	var half: float = maxf(4.6, float(world.road_width_at(float(kicker.start))) * 0.5 - 0.8)
 	RAMP.build(
-		world, float(kicker.start), float(kicker.length), float(kicker.height), 4.6,
+		world, float(kicker.start), float(kicker.length), float(kicker.height), half,
 		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a")}
 	)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
-	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(9.4, 0.08, 0.3), accent, lip_basis, true)
+	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(half * 2.0 + 0.2, 0.08, 0.3), accent, lip_basis, true)
 	if bool(kicker.get("hero_flight", false)):
 		# Cyan landing markers sit outside the driving corridor.
 		for marker in range(3):
@@ -358,7 +377,7 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 			var d: float = float(kicker.take_off) + 6.0 + float(marker) * 10.0
 			var frame: Basis = world.frame(d)
 			for side in [-1.0, 1.0]:
-				var foot: Vector3 = world.position_at(d, side * 6.4)
+				var foot: Vector3 = world.position_at(d, side * (half + 1.8))
 				world._prop("box", foot + frame.y * 1.8, Vector3(0.18, 3.6, 0.18), Color("15375a"), frame)
 				world._prop("box", foot + frame.y * 3.3, Vector3(0.75, 0.5, 0.1), accent, frame, true)
 

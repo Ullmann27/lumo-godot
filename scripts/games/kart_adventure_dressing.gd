@@ -14,6 +14,7 @@ const CURVE_THRESHOLD := 0.26
 const CLEARANCE := 16.0
 
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const HIGHLIGHTS = preload("res://scripts/games/kart_track_highlights.gd")
 
 
 static func build(world) -> void:
@@ -58,6 +59,11 @@ static func build(world) -> void:
 	for beat in profile.get("beats", []):
 		var kind: String = str(beat[1])
 		var side: float = float(beat[2])
+		# Von kart_track_highlights.gd als echtes Element gebaut: kein Platzhalter-Schild mehr.
+		if kind == "bauteil" and HIGHLIGHTS.realises(track_id, str(beat[3])):
+			report.skipped.append({"beat": index, "kind": kind, "realised": str(beat[3])})
+			index += 1
+			continue
 		var span := 28.0 if kind == "slalom" else 14.0
 		# A beat next to a LUMO passage moves behind it: the passage is the moment there.
 		var wish: float = PASSAGES.after_zone(world, float(beat[0]) * length, 70.0)

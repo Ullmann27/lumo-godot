@@ -92,17 +92,10 @@
       "spin_seconds": 1.1,
       "range": 70.0,
       "role": "attack",
-      "weights": [
-        0,
-        3,
-        5,
-        5,
-        4,
-        3
-      ],
+      "weights": [1.8, 8.2, 11.5, 12.4, 12.0, 9.3],
       "sound": "item",
       "charges": 2,
-      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer."
+      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer. Gewichte 19.11.2026 (Monte-Carlo-Beleg scripts/tests/kart_rocket_odds_montecarlo.gd): Platz 1 selten (~5 %), Plätze 2-6 ~20-27 %; Ketten verhindert kart_rocket_fairness.gd."
     },
     {
       "id": "spark_ball",
@@ -183,6 +176,254 @@
         5
       ],
       "sound": "boost"
+    },
+    {
+      "id": "thunder_star",
+      "name": "Donnerstern",
+      "short": "DONNER",
+      "glyph": "ϟ",
+      "color": "#ffd23f",
+      "behaviour": "lightning_strike",
+      "range": 48.0,
+      "seconds": 1.15,
+      "slow": 0.68,
+      "role": "attack",
+      "weights": [
+        0,
+        1,
+        1,
+        2,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "thunder_charge",
+        "thunder_strike"
+      ],
+      "note": "Laden am eigenen Kart, Stern fliegt über das Ziel, Wolke + Bodenring warnen, Blitz von oben. Schild wehrt ab, Schonzeit gilt."
+    },
+    {
+      "id": "frost_crystal",
+      "name": "Frostkristall",
+      "short": "FROST",
+      "glyph": "❄",
+      "color": "#8fe3ff",
+      "behaviour": "frost_capsule",
+      "range": 50.0,
+      "seconds": 1.6,
+      "role": "attack",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "frost_launch",
+        "frost_hit",
+        "frost_melt"
+      ],
+      "note": "Eiskapsel im Bogen, Eis an den Rädern 1,6 s (Lenkung 58 %, nie blockiert), taut sichtbar. Nie an Brücke/Kante/Rampe."
+    },
+    {
+      "id": "fire_meteor",
+      "name": "Feuermeteor",
+      "short": "METEOR",
+      "glyph": "☄",
+      "color": "#ff7a2f",
+      "behaviour": "fire_meteor",
+      "seconds": 1.2,
+      "life": 1.7,
+      "role": "attack",
+      "weights": [
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "meteor_launch",
+        "meteor_hit",
+        "ember_hiss"
+      ],
+      "note": "Glühende Kugel nach vorn; Treffer = kurz 62 % Tempo + Rußwolke, sonst Glutfeld 3,5 s auf sicherer Fahrbahn."
+    },
+    {
+      "id": "star_fortress",
+      "name": "Sternenfestung",
+      "short": "FESTUNG",
+      "glyph": "⛨",
+      "color": "#ffcf4a",
+      "behaviour": "fortress",
+      "seconds": 12.0,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "fortress_up",
+        "fortress_end"
+      ],
+      "note": "12 s Doppelkuppel (gold außen, cyan innen) mit Restzeit-Ring. Obergrenze 12 s, frischt auf statt zu stapeln."
+    },
+    {
+      "id": "whirlwind",
+      "name": "Wirbelwind",
+      "short": "WIRBEL",
+      "glyph": "࿋",
+      "color": "#7ff0dc",
+      "behaviour": "whirlwind",
+      "life": 3.0,
+      "role": "attack",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sound": "item",
+      "sounds": [
+        "whirl_go",
+        "whirl_hit"
+      ],
+      "note": "Lenkbarer Luftwirbel; versetzt einen Rivalen bis 2,2 m seitlich, nur im sicheren Korridor."
+    },
+    {
+      "id": "gravity_wave",
+      "name": "Schwerkraft-Welle",
+      "short": "WELLE",
+      "glyph": "◎",
+      "color": "#9a8cff",
+      "behaviour": "gravity_wave",
+      "radius": 13.0,
+      "seconds": 1.1,
+      "role": "area",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "gravity_wave"
+      ],
+      "note": "Ringwelle bis 13 m hebt nahe Gegner 0,9 s an (nur Anzeige, sichere Landung), dann 72 % Tempo 1,1 s."
+    },
+    {
+      "id": "star_decoy",
+      "name": "Sternen-Duplikat",
+      "short": "DUPLIKAT",
+      "glyph": "✦",
+      "color": "#6fe8ff",
+      "behaviour": "star_decoy",
+      "seconds": 6.0,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "decoy_up",
+        "decoy_pop"
+      ],
+      "note": "Holografische Kopie 6 s: Raketen biegen zur Kopie ab, neue Angriffe treffen die Kopie (ein Treffer)."
+    },
+    {
+      "id": "turbo_xl",
+      "name": "Turbo-Kette XL",
+      "short": "TURBO XL",
+      "glyph": "➜",
+      "color": "#7fdcff",
+      "behaviour": "turbo_xl",
+      "seconds": 1.5,
+      "charges": 3,
+      "role": "speed",
+      "weights": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        1
+      ],
+      "sound": "boost",
+      "sounds": [
+        "turbo_xl"
+      ],
+      "note": "Drei Ladungen je 1,5 s Schub + 8 %; keine Zündung vor Brücke/Kante/Rampe."
+    },
+    {
+      "id": "arc_trap",
+      "name": "Lichtbogen-Falle",
+      "short": "BOGEN",
+      "glyph": "∩",
+      "color": "#c08cff",
+      "behaviour": "arc_trap",
+      "life": 8.0,
+      "seconds": 0.9,
+      "role": "defence",
+      "weights": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "arc_place",
+        "arc_zap"
+      ],
+      "note": "Energiebogen 2,6 m breit hinter dem Kart, 8 s; Durchfahrt 70 % Tempo 0,9 s; immer umfahrbar."
+    },
+    {
+      "id": "time_bloom",
+      "name": "Zeitblüte",
+      "short": "ZEIT",
+      "glyph": "✿",
+      "color": "#ff9fd2",
+      "behaviour": "time_bloom",
+      "radius": 4.5,
+      "seconds": 5.0,
+      "role": "area",
+      "weights": [
+        0,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      "sound": "item",
+      "sounds": [
+        "bloom_open",
+        "bloom_slow"
+      ],
+      "note": "Zeitfeld Ø 9 m 18 m voraus, ~5 s; Gegner darin 55 % Tempo; nicht an Brücke/Kante/Checkpoint."
     }
   ]
 }

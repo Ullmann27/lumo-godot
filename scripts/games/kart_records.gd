@@ -25,7 +25,10 @@ func update_unlocks(stars: int, drivers: Array[Dictionary], karts: Array[Diction
 func begin(track: String, kart: String, difficulty: String) -> void:
 	# Tracks with a rebuilt LUMO passage get a fresh ghost: old ghosts drove another road.
 	var passages: Script = load("res://scripts/games/kart_passages.gd")
-	record_key = "%s%s_%s_%s_v3" % [track, passages.ghost_suffix(track), kart, difficulty]
+	# Strecken 2.0: jumps and gaps changed the drivable road again ("_s2").
+	var thrills: Script = load("res://scripts/games/kart_track_thrills.gd")
+	var suffix: String = passages.ghost_suffix(track) + ("_s2" if thrills.has(track) else "")
+	record_key = "%s%s_%s_%s_v3" % [track, suffix, kart, difficulty]
 	previous_best = float(config.get_value("times", record_key, 0.0))
 	recording.clear()
 	replay.clear()

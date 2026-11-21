@@ -5,6 +5,8 @@ const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
+## Lumos Riesengarten: eigene Strecke mit eigenem Aufbau (scripts/games/garden/).
+const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
 const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
@@ -36,7 +38,10 @@ const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces
 const DETAIL_LAYER = preload("res://scripts/games/visual/kart_detail_layer.gd")
 const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const HIGHLIGHTS = preload("res://scripts/games/kart_track_highlights.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
+const THRILL_ART = preload("res://scripts/games/kart_track_thrill_art.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
 var _piece_markers: Array = []
@@ -74,6 +79,8 @@ var jump: Dictionary = {}
 var action: Dictionary = {}
 ## Planned from authored curve anchors, before action placement or geometry is built.
 var adventure_tunnel: Dictionary = {}
+## Strecken 2.0 Steilkurven: Überhöhungsgewicht je 2 m (leer = keine Steilkurve).
+var thrill_bank := PackedFloat32Array()
 ## Streckenhimmel werden einmal je Strecke angelegt und wiederverwendet (siehe _sky_for): Wird ein
 ## schon gezeichneter Himmel im Kompatibilitäts-Renderer von Godot 4.6.3 freigegeben, bleiben seine
 ## zwei 256er-Spiegelungstexturen bis zum Beenden liegen („Texture … leaked“).
@@ -106,6 +113,11 @@ func build(
 	if has_meta("adventure_tunnel"):
 		remove_meta("adventure_tunnel")
 	action_obstacles.clear()
+	thrill_bank = PackedFloat32Array()
+	if has_meta(THRILLS.META):
+		remove_meta(THRILLS.META)
+	if has_meta(HIGHLIGHTS.META):
+		remove_meta(HIGHLIGHTS.META)
 	scenery_plants = {}
 	decoration_count = 0
 	low_detail = lightweight
@@ -122,8 +134,21 @@ func build(
 	_make_curve()
 	jump={}
 	loop_layout={}
+	if track_id == GARDEN.ID:
+		load("res://scripts/games/garden/kart_garden_world.gd").build(self, geometry_only)
+		return
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
+		# Strecken 2.0 (kart_track_thrills.gd) und Fahrspaß-Höhepunkte (kart_track_highlights.gd):
+		# Dschungelherz hatte vorher keinen einzigen Sprung; beide Pläne nutzen den Action-Baukasten.
+		THRILLS.plan(self)
+		if THRILLS.has(track_id) or HIGHLIGHTS.has(track_id):
+			action = ACTION.plan(self)
+			THRILLS.extend_action(self)
+			HIGHLIGHTS.extend_action(self)
+			ACTION.build(self)
+			THRILL_ART.build(self)
+			HIGHLIGHTS.build(self)
 		PASSAGE_ART.build(self)
 		if not geometry_only:
 			# Without its own sky and sun the course fell back to the project's
@@ -232,11 +257,13 @@ func build(
 func _make_curve() -> void:
 	if track_id == JUNGLE.ID:
 		curve = JUNGLE.make_curve()
+	elif track_id == GARDEN.ID:
+		curve = GARDEN.make_curve()
 	else:
 		_make_legacy_curve()
 	length = curve.get_baked_length()
 	PASSAGES.plan(self)
-	adventure_tunnel = {} if track_id == JUNGLE.ID else ADVENTURE_TUNNELS.layout(self)
+	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID] else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
@@ -286,6 +313,8 @@ func road_width_at(distance: float) -> float:
 	var deck: float = PASSAGES.deck_half(self, distance)
 	if deck > 0.0:
 		return deck * 2.0
+	if track_id == GARDEN.ID:
+		return GARDEN.width_at(distance)
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
@@ -294,6 +323,8 @@ func wall_lateral_at(distance: float) -> float:
 		return deck_wall
 	if track_id == JUNGLE.ID:
 		return JUNGLE.wall_at(distance)
+	if track_id == GARDEN.ID:
+		return GARDEN.wall_at(distance)
 	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), WALL_LATERAL)
 
 
@@ -301,6 +332,8 @@ func forward(distance: float) -> Vector3:
 	return (curve.sample_baked(fposmod(distance + 0.5, length), true) - curve.sample_baked(fposmod(distance, length), true)).normalized()
 
 func frame(distance: float) -> Basis:
+	if track_id == GARDEN.ID:
+		return GARDEN.frame(self, distance)
 	var ahead: Vector3 = forward(distance)
 	var raw_right: Vector3 = ahead.cross(Vector3.UP)
 	# A truly vertical centreline has no horizontal cross-product with UP.
@@ -310,7 +343,14 @@ func frame(distance: float) -> Basis:
 	var right: Vector3 = raw_right.normalized()
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(forward(distance + 5.0) - ahead)
-	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * 0.68, -0.14, 0.14))
+	var gain: float = 0.68
+	var limit: float = 0.14
+	if not thrill_bank.is_empty():
+		var slot: int = int(fposmod(distance, length) / THRILLS.BANK_STEP)
+		var w: float = thrill_bank[slot % thrill_bank.size()]
+		gain = lerpf(gain, THRILLS.BANK_GAIN, w)
+		limit = lerpf(limit, THRILLS.BANK_LIMIT, w)
+	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * gain, -limit, limit))
 
 func position_at(distance: float, lateral: float = 0.0) -> Vector3:
 	return curve.sample_baked(fposmod(distance, length), true) + frame(distance).x * lateral
@@ -384,13 +424,13 @@ func dive_factor(distance: float) -> float:
 ## Raised optional lane on Himmelsinseln. Other tracks stay unchanged.
 func alternate_route_height(distance: float, lateral: float) -> float:
 	if track_id != "bergwelt":
-		return 0.0
+		return THRILLS.lane_height(self, distance, lateral)
 	return SKY_ISLANDS.split_route_height(length, distance, lateral)
 
 
 func alternate_route_pitch(distance: float, lateral: float) -> float:
 	if track_id != "bergwelt":
-		return 0.0
+		return THRILLS.lane_pitch(self, distance, lateral)
 	return SKY_ISLANDS.split_route_pitch(length, distance, lateral)
 
 
@@ -427,6 +467,9 @@ func _precision_rival_arc(d: float) -> float:
 ## Also covers a kart that hit the far edge just behind the gap.
 func gap_exit_distance(distance: float) -> float:
 	var d: float=fposmod(distance,length)
+	var leap_exit: float = THRILLS.gap_exit(self, distance)
+	if leap_exit >= 0.0:
+		return leap_exit
 	for kicker in action.get("kickers", []):
 		if bool(kicker.get("precision_jump", false)) and d>=float(kicker.take_off) and d<float(kicker.gap_end)+6.0:
 			return distance-d+float(kicker.gap_end)+3.0
@@ -443,6 +486,9 @@ func safe_respawn_distance(candidate: float, floor_distance: float, ceiling_dist
 	if passage_point >= 0.0:
 		var lap_start: float = safe - fposmod(safe, length)
 		return clampf(lap_start + passage_point, lower, upper)
+	var leap_safe: float = THRILLS.safe_respawn(self, safe)
+	if leap_safe >= 0.0:
+		return clampf(leap_safe, lower, upper)
 	if jump.is_empty():
 		var stunt_gap: Dictionary = ACTION.precision_gap_at(action, fposmod(safe, length))
 		if stunt_gap.is_empty():
@@ -476,6 +522,8 @@ func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 ## Query the real hollow tunnel proxy using the race's existing road coordinate space.
 ## Player origin is at the feet: radius 0.85 m, total capsule height 2.0 m, centre +1 m.
 func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
+	if track_id == GARDEN.ID:
+		return GARDEN.resolve_motion(self, from, desired)
 	if not is_instance_valid(production_tunnels):
 		return {"position": desired, "normal": Vector3.ZERO, "collided": false}
 	return production_tunnels.resolve_motion(from, desired)
@@ -484,6 +532,8 @@ func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
 func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
 	if track_id == JUNGLE.ID:
 		return JUNGLE.clip_camera(self, anchor, desired)
+	if track_id == GARDEN.ID:
+		return GARDEN.clip_camera(self, anchor, desired)
 	if not is_instance_valid(production_tunnels):
 		return desired
 	return production_tunnels.clip_camera(anchor, desired)
@@ -965,10 +1015,15 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 		var d: float=float(i)*length/count
 		var next: float=float(i+1)*length/count
 		if in_gap((d+next)*0.5) or PASSAGES.void_at(self,(d+next)*0.5): continue
-		var vertices: Array[Vector3]=[position_at(d,left)+frame(d).y*height,position_at(d,right)+frame(d).y*(height-down),position_at(next,left)+frame(next).y*height,position_at(next,right)+frame(next).y*(height-down)]
-		for index in ([0,2,1,1,2,3] if left < right else [0,1,2,1,3,2]):
-			surface.set_uv(Vector2(left if index%2==0 else right,d if index<2 else next))
-			surface.add_vertex(vertices[index])
+		for span in _ribbon_spans(left, right, THRILLS.cut_span(self, (d+next)*0.5)):
+			var l: float = span.x
+			var r: float = span.y
+			var hl: float = height - down * (l - left) / (right - left)
+			var hr: float = height - down * (r - left) / (right - left)
+			var vertices: Array[Vector3]=[position_at(d,l)+frame(d).y*hl,position_at(d,r)+frame(d).y*hr,position_at(next,l)+frame(next).y*hl,position_at(next,r)+frame(next).y*hr]
+			for index in ([0,2,1,1,2,3] if l < r else [0,1,2,1,3,2]):
+				surface.set_uv(Vector2(l if index%2==0 else r,d if index<2 else next))
+				surface.add_vertex(vertices[index])
 	surface.generate_normals()
 	if not low_detail and not _only_geometry:
 		surface.generate_tangents()
@@ -979,9 +1034,29 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 	add_child(node)
 	return node
 
+## Ribbon pieces left after removing a leap gap (lateral interval) from [left, right].
+static func _ribbon_spans(left: float, right: float, cut: Vector2) -> Array:
+	if cut.x == INF:
+		return [Vector2(left, right)]
+	var lo: float = minf(left, right)
+	var hi: float = maxf(left, right)
+	var pieces: Array = []
+	if cut.x > lo:
+		pieces.append(Vector2(lo, minf(hi, cut.x)))
+	if cut.y < hi:
+		pieces.append(Vector2(maxf(lo, cut.y), hi))
+	var result: Array = []
+	for piece in pieces:
+		if piece.y - piece.x > 0.001:
+			result.append(piece if left < right else Vector2(piece.y, piece.x))
+	return result
+
 func _road() -> void:
+	THRILLS.plan(self)
 	action = ACTION.plan(self)
 	PASSAGES.extend_action(self)
+	THRILLS.extend_action(self)
+	HIGHLIGHTS.extend_action(self)
 	TRACK_PIECES.plan(self, _piece_markers)
 	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
@@ -1031,7 +1106,7 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		var open_side: float=ACTION.open_side(action,d)
 		for side in [-1.0,1.0]:
-			if side==open_side: continue
+			if side==open_side or THRILLS.cuts_side(self, d, side): continue
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
 			if track_id in ["sonnenhafen", "candy_cloud"]:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")
@@ -1053,8 +1128,10 @@ func _road() -> void:
 		for column in range(16):
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
 	ACTION.build(self)
+	HIGHLIGHTS.build(self)
 	TRACK_PIECES.build(self)
 	PASSAGE_ART.build(self)
+	THRILL_ART.build(self)
 	if track_id=="bergwelt":
 		SKY_ISLANDS.start_gate(self)
 		SKY_ISLANDS.road_lights(self)
@@ -1427,25 +1504,42 @@ func _start_grandstand(distance: float, side: float) -> void:
 	_sign(sign_at+basis.x*side*0.11,face,"LUMO  GRAND  PRIX",0.013)
 
 
+## Construct a real V-shaped arrow pointing towards the bend, not two
+## parallel bars. Signed curve direction, not placement side, owns the tip.
+static func chevron_stroke_local(turn: float, top_arm: bool) -> Dictionary:
+	assert(absf(turn) == 1.0)
+	var tail_point := Vector3(-turn * 0.55, 0.43 if top_arm else -0.43, 0.0)
+	var tip_point := Vector3(turn * 0.33, 0.0, 0.0)
+	var vector: Vector3 = tip_point - tail_point
+	return {
+		"tail": tail_point,
+		"tip": tip_point,
+		"centre": (tail_point + tip_point) * 0.5,
+		"length": vector.length(),
+		"angle": atan2(vector.y, vector.x)
+	}
+
+
 func _roadside_chevrons() -> void:
 	for fraction in [0.14,0.25,0.39,0.52,0.70,0.84]:
 		var d: float=length*fraction
 		var bend: float=forward(d).cross(forward(d+9.0)).y
 		var outer: float=-1.0 if bend>0.0 else 1.0
+		# A curve's actual travel-side bend is independent of the shoulder.
+		var direction_sign: float=1.0 if bend>0.0 else -1.0
 		for board in range(3):
 			var bd: float=d+(float(board)-1.0)*3.0
 			var basis: Basis=frame(bd)
 			var at: Vector3=position_at(bd,outer*7.15)+Vector3.UP*1.65
 			_prop("box",at,Vector3(1.65,1.45,0.14),Color("ffd449"),basis)
-			# Two dark diagonal strokes form an original Lumo circuit chevron.
-			var turn: float=1.0 if outer>0.0 else -1.0
-			for stripe in [-0.30,0.30]:
+			for upper in [false,true]:
+				var stroke: Dictionary=chevron_stroke_local(direction_sign,upper)
 				_prop(
 					"box",
-					at+basis.x*stripe+basis.z*0.09,
-					Vector3(0.72,0.18,0.06),
+					at+basis*stroke.centre+basis.z*0.095,
+					Vector3(float(stroke.length),0.18,0.06),
 					Color("1b2835"),
-					basis.rotated(basis.z,turn*0.72)
+					basis*Basis(Vector3.BACK,float(stroke.angle))
 				)
 
 

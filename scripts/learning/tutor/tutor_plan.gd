@@ -1,3 +1,4 @@
+# gdlint: disable=max-returns
 extends RefCounted
 ## Lumo-Nachhilfe: geprüfte Abspiel-Logik für die von Flutter berechneten Pläne.
 ## Flutter entscheidet Pädagogik (Stufen, Wege, Zwillingsaufgaben). Diese Klasse
@@ -114,8 +115,15 @@ func _check_plan(entry: Variant) -> Dictionary:
 	if einleitung.is_empty() or lob.is_empty() or abschluss.is_empty():
 		return {}
 	return {
-		"weg": w, "stufe": s, "a": pa, "b": pb, "zwilling": zwilling,
-		"einleitung": einleitung, "lob": lob, "abschluss": abschluss, "schritte": steps,
+		"weg": w,
+		"stufe": s,
+		"a": pa,
+		"b": pb,
+		"zwilling": zwilling,
+		"einleitung": einleitung,
+		"lob": lob,
+		"abschluss": abschluss,
+		"schritte": steps,
 	}
 
 
@@ -168,14 +176,17 @@ func _check_step(raw: Variant, ergebnis: int, original: bool) -> Dictionary:
 			var has_correct := false
 			for pair: Variant in options:
 				if (
-					not pair is Array or pair.size() != 2
-					or not _int_in(pair[0], 1, 18) or not _int_in(pair[1], 1, 18)
+					not pair is Array
+					or pair.size() != 2
+					or not _int_in(pair[0], 1, 18)
+					or not _int_in(pair[1], 1, 18)
 					or int(pair[0]) + int(pair[1]) != checked.ganz
 				):
 					return {}
 				list.append([int(pair[0]), int(pair[1])])
-				has_correct = has_correct or (
-					int(pair[0]) == checked.teil1 and int(pair[1]) == checked.teil2)
+				has_correct = (
+					has_correct or (int(pair[0]) == checked.teil1 and int(pair[1]) == checked.teil2)
+				)
 			if not has_correct:
 				return {}
 			checked.zerlegungen = list

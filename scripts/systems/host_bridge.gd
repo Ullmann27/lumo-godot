@@ -68,6 +68,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 			"kart",
 			"jump",
 			"run",
+			"skypost",
 			"puzzle",
 			"build",
 			"rhythm",
@@ -200,3 +201,16 @@ func return_to_app(destination: String, payload: Dictionary = {}) -> bool:
 	returned.emit(target, result)
 	print("[LumoHost] return: %s" % target)
 	return true
+
+
+## Öffnet das Android-Teilen-Menü für eine kleine Datei (z. B. einen Lumo-Geist).
+## false ohne Android-Host oder bei älterem Host: dann legt der Aufrufer die Datei selbst ab.
+func share_file(base64: String, file_name: String, title: String) -> bool:
+	if not can_share_file():
+		return false
+	return durable_ack(_host.call("shareKartGhost", base64, file_name, title))
+
+
+## true, wenn der App-Rahmen das Teilen-Menü für Geist-Dateien anbietet.
+func can_share_file() -> bool:
+	return is_embedded() and supports_method(_host, &"shareKartGhost")
