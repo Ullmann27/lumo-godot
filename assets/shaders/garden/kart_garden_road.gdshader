@@ -6,6 +6,9 @@ shader_type spatial;
 render_mode cull_disabled;
 
 uniform float wet = 0.0;
+// Nasse Stellen der zweiten Runde (Rasensprenger, Gewächshaus): x = von, y = bis (Meter
+// auf der Strecke), z = Stärke 0..1. Nass heißt nur glänzender und dunkler – nie glatter.
+uniform vec4 wet_zones[6];
 
 float hash_value(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -88,6 +91,9 @@ void fragment() {
 		float ripple = sin(along * 3.1) * 0.04 * fine;
 		colour = vec3(0.24, 0.62, 0.30) * (0.95 + ripple + grain * 0.05);
 		colour = mix(colour, vec3(0.98, 0.84, 0.22), stripe * 0.85);
+		// Grünes Licht bricht durch die Schlauchwand: wandernde Lichtadern am Boden.
+		float caustic = abs(sin(along * 0.7 + lat * 1.3 + TIME * 1.5) * sin(along * 0.45 - lat * 0.9 - TIME * 1.1));
+		colour += pow(caustic, 3.0) * vec3(0.20, 0.36, 0.16) * fine;
 		rough = 0.30;
 	} else if (surface == 6) {
 		float band = seam(along, 6.0, 0.05) * 0.5;
@@ -107,8 +113,17 @@ void fragment() {
 		float grout = max(seam(lat + half_width, 1.25, 0.03), seam(along, 1.25, 0.03));
 		float tint = hash_value(tile) * 0.10;
 		colour = vec3(0.80, 0.77, 0.70) * (0.92 + tint) - grout * 0.22;
-		rough = mix(0.55, 0.25, wet);
+		rough = 0.55;
 	}
+	float wetness = wet;
+	for (int i = 0; i < 6; i++) {
+		vec4 zone = wet_zones[i];
+		float inside = smoothstep(zone.x - 6.0, zone.x, along) * (1.0 - smoothstep(zone.y, zone.y + 6.0, along));
+		wetness = max(wetness, inside * zone.z);
+	}
+	float puddle = smoothstep(0.55, 0.75, soft_noise(vec2(lat * 0.35, along * 0.22))) * wetness;
+	colour *= 1.0 - wetness * 0.22 - puddle * 0.12;
+	rough = mix(rough, 0.08, max(wetness * 0.7, puddle));
 	// Helle Ränder: die Fahrbahn bleibt auf jedem Belag und kleinem Bildschirm lesbar.
 	float edge = abs(lat) - (half_width - 0.55);
 	float band = 1.0 - smoothstep(0.0, 0.08 + footprint, abs(edge));

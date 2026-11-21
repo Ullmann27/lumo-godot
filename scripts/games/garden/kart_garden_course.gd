@@ -86,10 +86,13 @@ const RAILS: Vector2 = Vector2(1290.0, 1352.0)
 ## Kürbis: Trennwand (Schale) zwischen Innenweg (durch den Kürbis) und breiter Außenkurve.
 const PUMPKIN: Vector2 = Vector2(1530.0, 1648.0)
 const PUMPKIN_SIDE: float = -1.0
-const PUMPKIN_WALL_LATERAL: float = -6.0
+## Schale am Boden (Aufstandskreis des Tunnel-Kürbisses): Innenweg links davon 6,5 m breit.
+const PUMPKIN_WALL_LATERAL: float = -4.5
 const PUMPKIN_WALL_HALF: float = 0.55
 const PUMPKIN_WEDGE: float = 7.0
 const DANDELION_RAMP: Vector2 = Vector2(1752.0, 1764.0)
+## Schirmchen-Ring: Innenradius (Durchflug zählt bis RING_RADIUS + 0,6 m um die Mitte).
+const RING_RADIUS: float = 3.6
 const GREENHOUSE: Vector2 = Vector2(1958.0, 2312.0)
 ## Röhre: Innenradius des Schlauchs über der Fahrbahnmitte (Kamera bleibt darin).
 const HOSE_RADIUS: float = 7.6

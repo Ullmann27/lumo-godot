@@ -82,6 +82,9 @@ const RUNS: Array = [
 	[2321.0, 2411.2, "brett"],
 ]
 
+## Lücken im Rand: [von, bis, Seite]. Das Pendelgleis der Gartenbahn kreuzt links.
+const GAPS: Array = [[1370.5, 1380.5, -1.0]]
+
 
 static func build(world: Node3D, _geometry_only: bool) -> void:
 	var root := Node3D.new()
@@ -126,6 +129,8 @@ static func _profile_mesh(
 		for row in range(rows):
 			var d0: float = lerpf(start, end, float(row) / float(rows))
 			var d1: float = lerpf(start, end, float(row + 1) / float(rows))
+			if _in_gap(d0, d1, side):
+				continue
 			for k in range(points.size() - 1):
 				var top: bool = k > 0 and k < points.size() - 2
 				var colour: Color = profile.cap if top else profile.color
@@ -139,6 +144,13 @@ static func _profile_mesh(
 					st.set_normal(normal)
 					st.add_vertex(v)
 	return st.commit()
+
+
+static func _in_gap(d0: float, d1: float, side: float) -> bool:
+	for gap in GAPS:
+		if side == float(gap[2]) and d1 > float(gap[0]) and d0 < float(gap[1]):
+			return true
+	return false
 
 
 static func _at(world: Node3D, d: float, side: float, point: Array) -> Vector3:

@@ -282,7 +282,7 @@ const SPECS: Dictionary = {
 			"theme": "garden",
 			"zone_start": 1522.0,
 			"zone_end": 1652.0,
-			"narrow_width": 5.5,
+			"narrow_width": 7.0,
 			"arches":
 			[
 				[1536.0, -1.0],
