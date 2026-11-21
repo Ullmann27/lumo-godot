@@ -36,6 +36,7 @@ const TRACK_PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces
 const DETAIL_LAYER = preload("res://scripts/games/visual/kart_detail_layer.gd")
 const SCENERY = preload("res://scripts/games/visual/kart_scenery.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const HIGHLIGHTS = preload("res://scripts/games/kart_track_highlights.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
@@ -124,6 +125,13 @@ func build(
 	loop_layout={}
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
+		if HIGHLIGHTS.has(track_id):
+			# Fahrspaß-Audit 19.11.: Dschungelherz bekommt echte Schanzen und ein Turbo-Finale
+			# aus dem Action-Baukasten (vorher ohne einen einzigen Sprung).
+			action = ACTION.plan(self)
+			HIGHLIGHTS.extend_action(self)
+			ACTION.build(self)
+			HIGHLIGHTS.build(self)
 		PASSAGE_ART.build(self)
 		if not geometry_only:
 			# Without its own sky and sun the course fell back to the project's
@@ -982,6 +990,7 @@ func _ribbon(mesh_name: String, left: float, right: float, height: float, materi
 func _road() -> void:
 	action = ACTION.plan(self)
 	PASSAGES.extend_action(self)
+	HIGHLIGHTS.extend_action(self)
 	TRACK_PIECES.plan(self, _piece_markers)
 	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
@@ -1053,6 +1062,7 @@ func _road() -> void:
 		for column in range(16):
 			_prop("box",position_at(row*0.64+1.0,(column-7.5)*0.65)+frame(0).y*0.035,Vector3(0.65,0.035,0.64),Color("f6fbfa") if (row+column)%2==0 else Color("162940"),frame(0))
 	ACTION.build(self)
+	HIGHLIGHTS.build(self)
 	TRACK_PIECES.build(self)
 	PASSAGE_ART.build(self)
 	if track_id=="bergwelt":
