@@ -22,10 +22,14 @@ func _settle() -> void:
 
 
 ## Elemente aus dem Aktionsplan (ohne die von Höhepunkten oder dem Garten ergänzten).
-func _planned(items: Array) -> int:
+func _plan_items(items: Array) -> Array:
 	return items.filter(
 		func(item): return not (item.has("thrill") or item.has("highlight") or item.has("garden"))
-	).size()
+	)
+
+
+func _planned(items: Array) -> int:
+	return _plan_items(items).size()
 
 
 func _check_plans() -> void:
@@ -56,15 +60,15 @@ func _check_plans() -> void:
 		assert(_planned(course.dives) == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
 		assert(_planned(course.edges) == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
-		for pad in course.pads:
+		for pad in _plan_items(course.pads):
 			spans.append(Vector2(pad.start, pad.end))
 		if not course.gates.is_empty():
 			spans.append(Vector2(course.gates[0].distance - 6.0, course.gates[-1].distance + 6.0))
-		for kicker in course.kickers:
+		for kicker in _plan_items(course.kickers):
 			spans.append(Vector2(kicker.start, kicker.take_off + 10.0))
-		for dive in course.dives:
+		for dive in _plan_items(course.dives):
 			spans.append(Vector2(dive.start, dive.end))
-		for edge in course.edges:
+		for edge in _plan_items(course.edges):
 			spans.append(Vector2(edge.start, edge.end))
 			assert(absf(float(edge.side)) == 1.0)
 		for span in spans:
