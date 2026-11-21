@@ -84,6 +84,7 @@ var overlay: PanelContainer
 var overlay_box: VBoxContainer
 var buttons: Dictionary = {}
 var _generation := 0
+var _overlay_retired: Control
 var _press_square := -1
 var _press_point := Vector2.ZERO
 var _dragging := false
@@ -337,6 +338,11 @@ func _build_ui() -> void:
 	overlay_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	overlay_box.add_theme_constant_override("separation", int(10 * _density))
 	scroll.add_child(overlay_box)
+	_overlay_retired = Control.new()
+	_overlay_retired.name = "RetiredOverlay"
+	_overlay_retired.visible = false
+	_overlay_retired.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ui.add_child(_overlay_retired)
 
 
 func _button(text: String, callback: Callable, icon_key: String = "") -> Button:
@@ -609,7 +615,12 @@ func _fits(points: Array[Vector3], area: Rect2) -> bool:
 
 func _clear_overlay() -> void:
 	for child: Node in overlay_box.get_children():
+		# Der getippte Knopf wird noch nach „pressed“ vom Viewport geprüft: im
+		# Baum lassen (versteckt, außerhalb des Menüs), bis er gelöscht wird.
+		if child is Control:
+			(child as Control).hide()
 		overlay_box.remove_child(child)
+		_overlay_retired.add_child(child)
 		child.queue_free()
 	for key: String in buttons.keys():
 		if str(key).begins_with("o_"):
