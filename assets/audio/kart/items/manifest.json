@@ -61,16 +61,16 @@
     },
     {
       "file": "roulette_tick.ogg",
-      "seconds": 0.05,
-      "bytes": 4376,
-      "sha256": "f409182d9b4ac30e61b7e9875e00a651a2ce0e6ba5dfbd2582895e2d9aae8e7a",
+      "seconds": 0.11,
+      "bytes": 4873,
+      "sha256": "ff2a1d683ce9d73b2c99a88c17350b854aad904ab9d91c9e70e69e916a195458",
       "description": "Original synthesized roulette_tick cue"
     },
     {
       "file": "roulette_done.ogg",
-      "seconds": 0.6,
-      "bytes": 8899,
-      "sha256": "55350884f13f44259df1d8fb36d840376ea29bc5419b51af0213ad5167452abe",
+      "seconds": 0.95,
+      "bytes": 11164,
+      "sha256": "e1c63c7d3a3de4c54db2f1aec5bd67011cbbdeae034e600e2a0f0be367dfc3a1",
       "description": "Original synthesized roulette_done cue"
     }
   ]

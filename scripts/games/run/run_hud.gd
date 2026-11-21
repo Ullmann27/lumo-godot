@@ -12,6 +12,7 @@ signal skip_pressed
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/run/run_touch_button.gd")
 const UI = preload("res://scripts/games/run/run_ui.gd")
+const GHOST = preload("res://scripts/games/run/run_ghost.gd")
 const THEME = preload("res://scripts/games/kart_ui_theme.gd")
 
 var stick
@@ -26,6 +27,7 @@ var star_total: int = 0
 var solved: int = 0
 var question_total: int = 3
 var progress: float = 0.0
+var ghost_progress: float = -1.0
 var marks := PackedFloat32Array()
 var mark_is_question := PackedByteArray()
 var reached: int = -1
@@ -133,6 +135,7 @@ func set_course(shares: PackedFloat32Array, questions: PackedByteArray, total: i
 	mark_is_question = questions
 	star_total = total
 	question_total = 0
+	ghost_progress = -1.0
 	for flag in questions:
 		question_total += int(flag)
 	top.queue_redraw()
@@ -151,6 +154,13 @@ func set_state(star_count: int, share: float, solved_count: int, checkpoint: int
 func set_letters(chars: Array, mask: int) -> void:
 	letter_chars = chars
 	letter_mask = mask
+	top.queue_redraw()
+
+
+func set_ghost_progress(value: float) -> void:
+	if absf(value - ghost_progress) < 0.002:
+		return
+	ghost_progress = value
 	top.queue_redraw()
 
 
@@ -447,6 +457,11 @@ func _draw_top() -> void:
 			),
 			Color("ff8a2a")
 		)
+	if ghost_progress >= 0.0:
+		var ghost_at := Vector2(_bar.position.x + _bar.size.x * ghost_progress, _bar.end.y + 4.0 * u)
+		var diamond := PackedVector2Array([Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT])
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 8.0 * u, 0.0, ghost_at) * diamond, UI.INK)
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 5.5 * u, 0.0, ghost_at) * diamond, GHOST.COLOUR)
 
 
 func _pill(rect: Rect2, accent: Color) -> void:

@@ -62,6 +62,8 @@ const CRATE_STARS: int = 2
 ## Rating thresholds on the share of all course stars that Lumo kept.
 const RATING_TWO: float = 0.5
 const RATING_THREE: float = 0.8
+const MEDAL_NAMES: Array[String] = ["Bronze", "Silber", "Gold"]
+const MEDAL_COLOURS: Array[Color] = [Color("e9a271"), Color("deedfa"), Color("ffd46b")]
 
 
 ## Height above the take-off point after `t` seconds of an unheld flight.

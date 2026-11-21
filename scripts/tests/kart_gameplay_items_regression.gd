@@ -5,6 +5,7 @@ extends SceneTree
 const STEP: float = 1.0 / 60.0
 const CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
 const RULES = preload("res://scripts/games/kart_items/kart_race_rules.gd")
+const KART_CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const RUNTIME = preload("res://scripts/games/kart_items/kart_item_runtime.gd")
 const FX = preload("res://scripts/games/kart_items/kart_fx_director.gd")
 var game
@@ -35,7 +36,10 @@ func _start(mode: String, track: String) -> void:
 
 func _test_catalog() -> void:
 	var items: Array[Dictionary] = CATALOG.all()
-	_check(items.size() == 9, "nine original items in the catalog (%d)" % items.size())
+	_check(items.size() >= 9, "nine original items in the catalog (%d)" % items.size())
+	# Erweiterte Items (items-neu) kommen dazu; die neun ursprünglichen bleiben alle erhalten.
+	for original in ["boost", "triple_boost", "shield", "pulse", "star_rocket", "spark_ball", "bubble_trap", "star_magnet", "aurora"]:
+		_check(CATALOG.has(original), "original item kept: " + original)
 	for forbidden in ["shell", "banana", "panzer", "bob-omb", "blooper", "bullet"]:
 		for row in items:
 			_check(not forbidden in str(row.id).to_lower() and not forbidden in str(row.name).to_lower(), "no borrowed item name: " + forbidden)
@@ -46,7 +50,10 @@ func _test_catalog() -> void:
 		for value in CATALOG.odds(place).values():
 			total += value
 		_check(absf(total - 1.0) < 0.001, "odds at place %d sum to 1" % place)
-	_check(CATALOG.odds(1)["star_rocket"] == 0.0, "the leader never draws a homing rocket")
+	# Auftrag 19.11.2026: Platz 1 selten, aber nicht unmöglich; hinten deutlich häufiger.
+	var leader_rockets: float = CATALOG.odds(1)["star_rocket"]
+	_check(leader_rockets > 0.0 and leader_rockets < 0.08, "the leader rarely draws homing rockets")
+	_check(CATALOG.odds(4)["star_rocket"] > leader_rockets * 3.0, "chasers draw rockets far more often")
 	_check(CATALOG.odds(1)["aurora"] == 0.0 and CATALOG.odds(6)["aurora"] > 0.15, "Nordlicht is a comeback item")
 	_check(CATALOG.odds(6)["shield"] < CATALOG.odds(1)["shield"], "leaders defend, chasers attack")
 	var rng := RandomNumberGenerator.new()
@@ -81,7 +88,24 @@ func _test_rules() -> void:
 	_check(RULES.rival_rubber_band(120.0, "gemuetlich") < 0.9, "runaway rivals ease off")
 	for level in ["gemuetlich", "flott", "pro"]:
 		_check(is_equal_approx(RULES.rival_rubber_band(-120.0, level), 1.0), "overtaken rivals get no push (%s)" % level)
-	_check(RULES.rival_rubber_band(120.0, "profi") > RULES.rival_rubber_band(120.0, "gemuetlich"), "less rubber band on harder settings")
+	# Die Regeln hängen an den echten Stufen-Kennungen des Katalogs (früher "normal"/"profi":
+	# Abenteuer und Extrem fielen dadurch auf denselben Ersatzwert).
+	var band: Array[float] = []
+	var help: Array[float] = []
+	var grace: Array[float] = []
+	var lock_rules: Dictionary = (
+		load("res://scripts/games/kart_island.gd").get_script_constant_map().get("LOCK_RULES", {})
+	)
+	for entry in KART_CATALOG.DIFFICULTIES:
+		var level: String = str(entry.id)
+		band.append(RULES.rival_rubber_band(120.0, level))
+		help.append(RULES.player_catch_up(200.0, level))
+		_check(RULES.PLAYER_CATCH_UP_MAX.has(level), "catch-up limit exists for level %s" % level)
+		_check(lock_rules.has(level), "rocket lock rules exist for level %s" % level)
+		grace.append(float(lock_rules.get(level, {}).get("grace", 0.0)))
+	_check(grace[0] > grace[1] and grace[1] > grace[2], "shorter protection on each harder level")
+	_check(band[0] < band[1] and band[1] < band[2], "less rubber band on each harder level")
+	_check(help[0] > help[1] and help[1] > help[2], "less catch-up help on each harder level")
 	_check(RULES.next_combo(1, 1.0) == 2 and RULES.next_combo(4, 9.0) == 1, "combo chains within the window only")
 	_check(RULES.rival_should_use("star_rocket", "homing_projectile", {"ahead_gap": 20.0}), "AI fires rocket at a racer ahead")
 	_check(not RULES.rival_should_use("star_rocket", "homing_projectile", {"ahead_gap": INF}), "AI keeps rocket without target")
@@ -152,7 +176,14 @@ func _test_props() -> void:
 	_check(not ring.crossed(Vector3(4, 1, 1), Vector3(4, 1, -1)), "passing beside the ring does not")
 	var box: Node3D = load("res://scenes/games/props/kart_item_box.tscn").instantiate()
 	root.add_child(box)
-	_check(box.get_node_or_null("MysteryPrismCore") != null and box.get_node_or_null("SurpriseStar") is Label3D and box.get_child_count() == 3, "item box scene reuses the two-surface prism plus a star emblem")
+	var layered: bool = (
+		box.get_node_or_null("MysteryPrismCore") != null
+		and box.get_node_or_null("SurpriseStar") is Label3D
+		and box.get_node_or_null("MysteryPrismInner") != null
+		and box.get_node_or_null("PrismRail1/Rail") != null
+		and box.get_child_count() == 7
+	)
+	_check(layered, "item box: layered star prism (shells, edges, two light rails, beacon) + star core")
 	_check(box.contains(Vector3(0, 0, 1.0)), "item box pickup radius")
 	box.pop()
 	_check(not box.contains(Vector3.ZERO), "popped box waits for respawn")
@@ -183,7 +214,10 @@ func _test_fx() -> void:
 func _test_race_integration() -> void:
 	await _start("race", "sonnenhafen")
 	# HEAD keeps its skill resonance rings in item_boxes; the surprise boxes are an own row.
-	_check(game.catalog_boxes.size() == 6 and game.catalog_boxes[0] is LumoKartItemBox, "race uses the reusable item box scene")
+	_check(
+		game.catalog_boxes.size() >= 15 and game.catalog_boxes[0] is LumoKartItemBox,
+		"race uses the reusable item box scene (5–8 Sammelzonen × 2–3 Prismen)"
+	)
 	_check(not game.item_boxes.is_empty() and str(game.item_boxes[0].name).begins_with("SkillResonanceRing"), "skill resonance rings stay")
 	_check(game.track_triggers.size() == 2, "two built-in boost rings")
 	_check(is_instance_valid(game.item_runtime) and is_instance_valid(game.fx), "item runtime and fx director live")
@@ -241,6 +275,8 @@ func _test_race_integration() -> void:
 	_check(game.item.is_empty(), "all charges used")
 	# Rival AI locks onto the player ahead (warning first), then fires; a shield blocks it.
 	game.item_runtime.clear()
+	# Mitten im Rennen an ruhiger Stelle (Startschutz/Sturzstellen: kart_rocket_fairness.gd).
+	game.elapsed = maxf(game.elapsed, 40.0)
 	game.distance = 200.0
 	game.opponent_distances[0] = 175.0
 	game.opponent_lanes[0] = game.lane

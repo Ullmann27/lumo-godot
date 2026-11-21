@@ -4,6 +4,8 @@ extends RefCounted
 ## JSON row plus, if needed, a new behaviour in kart_item_runtime.gd.
 
 const PATH := "res://assets/kart/items/kart_items.json"
+## Hook items-neu: weitere Verhalten aus dem Erweiterungsverzeichnis.
+const EXT_REGISTRY = preload("res://scripts/games/kart_items/ext/kart_item_ext_registry.gd")
 const BEHAVIOURS: Array[String] = [
 	"boost", "shield", "pulse", "homing_projectile", "bouncing_projectile",
 	"dropped_trap", "magnet", "aurora",
@@ -40,7 +42,7 @@ static func validate(row: Variant) -> String:
 	for key in ["id", "name", "short", "behaviour", "weights", "color"]:
 		if not row.has(key):
 			return "missing " + key
-	if str(row.behaviour) not in BEHAVIOURS:
+	if str(row.behaviour) not in BEHAVIOURS and not EXT_REGISTRY.has_behaviour(str(row.behaviour)):
 		return "unknown behaviour " + str(row.behaviour)
 	if not row.weights is Array or row.weights.size() != PLACES:
 		return "weights need %d places" % PLACES

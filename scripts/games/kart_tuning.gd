@@ -9,6 +9,8 @@ extends RefCounted
 ## „ausgegeben“ wird immer aus den Stufen neu gerechnet, nie blind übernommen.
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+## Leistungsteile (Motor, Reifen, Flügel, Turbo, Fahrwerk) mit echter Wirkung aufs Fahren.
+const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const MAX_LEVEL: int = 5
 ## Preis der Stufe 1 bis 5 (einzeln, nicht kumuliert). Ein Teil kostet bis zur Höchststufe 68 Sterne.
 const LEVEL_COSTS: Array[int] = [4, 8, 12, 18, 26]
@@ -59,8 +61,21 @@ const EXHAUSTS: Array[Dictionary] = [
 	{"id": "rakete", "name": "Raketendüse", "cost": 0, "node": "ExhaustTip_Rocket"},
 	{"id": "doppel", "name": "Doppelrohr", "cost": 0, "node": "ExhaustTip_Twin"},
 ]
-const PART_SLOTS: Array[String] = ["wheel_cover", "exhaust"]
-const SLOT_NAMES: Dictionary = {"wheel_cover": "Räder", "exhaust": "Auspuff"}
+## Alle Steckplätze der Garage: zuerst die fünf Leistungsteile, dann die zwei Optik-Teile.
+const PART_SLOTS: Array[String] = [
+	"engine", "tires", "wing", "booster", "suspension", "wheel_cover", "exhaust"
+]
+## Reine Optik („Aussehen“), ohne Einfluss aufs Fahren.
+const LOOK_SLOTS: Array[String] = ["wheel_cover", "exhaust"]
+const SLOT_NAMES: Dictionary = {
+	"engine": "Motor",
+	"tires": "Reifen",
+	"wing": "Flügel",
+	"booster": "Turbo",
+	"suspension": "Fahrwerk",
+	"wheel_cover": "Radkappe",
+	"exhaust": "Auspuff",
+}
 
 var child_key: String = "standalone"
 ## Alle je verdienten Fortschrittssterne (von der App gemeldet, nie kleiner als der Stand beim Laden).
@@ -109,6 +124,8 @@ static func options(kind: String) -> Array[Dictionary]:
 			return WHEEL_COVERS
 		"exhaust":
 			return EXHAUSTS
+	if PART_CATALOG.is_slot(kind):
+		return PART_CATALOG.options(kind)
 	return []
 
 
@@ -226,8 +243,29 @@ func stats(kart_id: String) -> Dictionary:
 	return result
 
 
+## Fahrfaktoren mit Tuning-Stufen und montierten Leistungsteilen (so fährt das Rennen).
 func multipliers(kart_id: String) -> Dictionary:
-	return FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits)
+	return PART_CATALOG.apply(
+		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), mounted(kart_id)
+	)
+
+
+## Faktoren mit einer anderen Teile-Auswahl (Prüfstand: „nachher“ vor dem Montieren).
+func multipliers_with(kart_id: String, parts: Dictionary) -> Dictionary:
+	var chosen_parts: Dictionary = mounted(kart_id)
+	for key in parts:
+		chosen_parts[key] = parts[key]
+	return PART_CATALOG.apply(
+		FLEET.multipliers(stats(kart_id), FLEET.entry(kart_id).traits), chosen_parts
+	)
+
+
+## Montierte Leistungsteile eines Karts: {slot: id}.
+func mounted(kart_id: String) -> Dictionary:
+	var result: Dictionary = {}
+	for slot in PART_CATALOG.SLOTS:
+		result[slot] = chosen(kart_id, slot)
+	return result
 
 
 ## Fahrwerte aus demselben Antrieb wie die Fahrphysik (kart_powertrain.gd, kart_island._drive_player).
@@ -305,6 +343,11 @@ func look(kart_id: String) -> Dictionary:
 		"rim_neon": str(rims.id) == "neon",
 		"wheel_cover": chosen(kart_id, "wheel_cover"),
 		"exhaust": chosen(kart_id, "exhaust"),
+		"engine": chosen(kart_id, "engine"),
+		"tires": chosen(kart_id, "tires"),
+		"wing": chosen(kart_id, "wing"),
+		"booster": chosen(kart_id, "booster"),
+		"suspension": chosen(kart_id, "suspension"),
 		"levels": {},
 		"underglow": str(neon.id) != "werk" or total_level(kart_id) >= 8,
 	}

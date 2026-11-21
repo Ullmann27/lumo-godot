@@ -1437,25 +1437,42 @@ func _start_grandstand(distance: float, side: float) -> void:
 	_sign(sign_at+basis.x*side*0.11,face,"LUMO  GRAND  PRIX",0.013)
 
 
+## Construct a real V-shaped arrow pointing towards the bend, not two
+## parallel bars. Signed curve direction, not placement side, owns the tip.
+static func chevron_stroke_local(turn: float, top_arm: bool) -> Dictionary:
+	assert(absf(turn) == 1.0)
+	var tail_point := Vector3(-turn * 0.55, 0.43 if top_arm else -0.43, 0.0)
+	var tip_point := Vector3(turn * 0.33, 0.0, 0.0)
+	var vector: Vector3 = tip_point - tail_point
+	return {
+		"tail": tail_point,
+		"tip": tip_point,
+		"centre": (tail_point + tip_point) * 0.5,
+		"length": vector.length(),
+		"angle": atan2(vector.y, vector.x)
+	}
+
+
 func _roadside_chevrons() -> void:
 	for fraction in [0.14,0.25,0.39,0.52,0.70,0.84]:
 		var d: float=length*fraction
 		var bend: float=forward(d).cross(forward(d+9.0)).y
 		var outer: float=-1.0 if bend>0.0 else 1.0
+		# A curve's actual travel-side bend is independent of the shoulder.
+		var direction_sign: float=1.0 if bend>0.0 else -1.0
 		for board in range(3):
 			var bd: float=d+(float(board)-1.0)*3.0
 			var basis: Basis=frame(bd)
 			var at: Vector3=position_at(bd,outer*7.15)+Vector3.UP*1.65
 			_prop("box",at,Vector3(1.65,1.45,0.14),Color("ffd449"),basis)
-			# Two dark diagonal strokes form an original Lumo circuit chevron.
-			var turn: float=1.0 if outer>0.0 else -1.0
-			for stripe in [-0.30,0.30]:
+			for upper in [false,true]:
+				var stroke: Dictionary=chevron_stroke_local(direction_sign,upper)
 				_prop(
 					"box",
-					at+basis.x*stripe+basis.z*0.09,
-					Vector3(0.72,0.18,0.06),
+					at+basis*stroke.centre+basis.z*0.095,
+					Vector3(float(stroke.length),0.18,0.06),
 					Color("1b2835"),
-					basis.rotated(basis.z,turn*0.72)
+					basis*Basis(Vector3.BACK,float(stroke.angle))
 				)
 
 

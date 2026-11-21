@@ -6,6 +6,8 @@ extends Node
 const MUSIC_PATH := "res://assets/audio/kart/%s.ogg"
 const JUNGLE_ID := "jungle_emerald_3600"
 const JUNGLE_AMBIENCE = preload("res://scripts/games/kart_jungle_audio.gd")
+## Hook items-neu: Töne der erweiterten Items (gleicher Ordner items/).
+const ITEM_EXT_REGISTRY = preload("res://scripts/games/kart_items/ext/kart_item_ext_registry.gd")
 const TRACKS := ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
 const EFFECTS := ["start", "boost", "drift", "item", "finish", "countdown", "collision"]
 ## Item cues (tools/art/generate_kart_item_audio.py) in assets/audio/kart/items/.
@@ -215,7 +217,7 @@ func _jungle_music(variation: String) -> String:
 
 
 func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
-	var item_cue: bool = ITEM_EFFECTS.has(kind)
+	var item_cue: bool = ITEM_EFFECTS.has(kind) or ITEM_EXT_REGISTRY.has_sound(kind)
 	var fx_cue: bool = FX_EFFECTS.has(kind)
 	if fx_cue:
 		fx_requests[kind] = int(fx_requests.get(kind, 0)) + 1
