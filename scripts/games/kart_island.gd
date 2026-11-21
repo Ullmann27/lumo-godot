@@ -45,6 +45,7 @@ const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const AIR_TRICK = preload("res://scripts/games/kart_air_trick.gd")
 const JUMP_HINT = preload("res://scripts/games/visual/kart_jump_speed_hint.gd")
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
 ## LUMO-Passagen (Eisbrücke, Kronenbrücke, Lianenaffe): Zähler für Tests und Ergebnis.
 var passage_falls: int = 0
@@ -581,12 +582,12 @@ func _build_world() -> void:
 		# (kart_adventure_drama.gd); Strecken ohne eigene Dramaturgie behalten die alten Werte.
 		# LUMO passages: no pad, ring or box on a narrow deck, a plaza or at Kiri's line.
 		for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
-			_turbo_pad(PASSAGES.clear_distance(world, float(fraction) * track_length))
+			_turbo_pad(_clear_at(float(fraction) * track_length))
 		var item_layout: Array = ADVENTURE_DRAMA.item_layout(track_id)
 		for entry in item_layout:
-			_item_box(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
+			_item_box(_clear_at(float(entry[0]) * track_length), float(entry[1]))
 		for entry in BOOST_RING_LAYOUT:
-			_boost_ring(PASSAGES.clear_distance(world, float(entry[0]) * track_length), float(entry[1]))
+			_boost_ring(_clear_at(float(entry[0]) * track_length), float(entry[1]))
 		# Sammelzonen für Zufallsprismen: 5–8 je Runde (kart_items/kart_item_zones.gd).
 		for zone in ITEM_ZONES.plan(world, _catalog_zone_occupied()):
 			for lateral in zone.laterals:
@@ -2371,7 +2372,10 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 				float(jump.get("max_lift", JUMP_MAX_LIFT))
 			)
 			message.text = "Sprung!"
-	if not airborne and world.in_gap(road_distance):
+	var leap_gap: bool = mode != "arena" and THRILLS.lane_gap(world, road_distance, lane)
+	if not airborne:
+		_leap_take_off(road, road_distance)
+	if not airborne and (world.in_gap(road_distance) or leap_gap):
 		# Rolled or reversed into a gap without take-off: there is no road here.
 		airborne = true
 		air_trick = {}
@@ -2408,12 +2412,19 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	player.position.y += vertical_speed * delta
 	air_time += delta
 	_update_air_trick(delta)
-	if world.in_gap(road_distance):
+	if world.in_gap(road_distance) or leap_gap:
 		if player.position.y < float(road.height) - 2.5:
 			_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
 			_rescue_from_gap()
 			return false
-	elif not precision_kicker.is_empty() and player.position.y < ground - 0.5:
+	elif (
+		(
+			not precision_kicker.is_empty()
+			or (mode != "arena" and THRILLS.far_edge(world, road_distance, lane))
+		)
+		and player.position.y < ground - 0.5
+	):
+		# Strecken 2.0: also too short over a leap gap (meets the far wall below the road).
 		# Too short: the kart meets the far edge of the gap below the road.
 		# It is not lifted onto the road; it falls and the cloud takes over.
 		_record_precision_landing(PRECISION.LANDING_SHORT, road_distance)
@@ -2475,6 +2486,28 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			physical_velocity -= sideways * 0.42
 		air_time = 0.0
 		vertical_speed = 0.0
+	return true
+
+
+## Strecken 2.0 Spalt-Schanze: real take-off from the brave half of the road.
+func _leap_take_off(road: Dictionary, road_distance: float) -> bool:
+	if mode == "arena" or speed <= 6.0:
+		return false
+	var leap: Dictionary = THRILLS.leap_crossed(
+		world, previous_road_distance, road_distance, lane
+	)
+	if leap.is_empty():
+		return false
+	airborne = true
+	air_trick = {}
+	action_kicker_jumps += 1
+	air_time = 0.0
+	player.position.y = float(road.height) + 0.035 + float(leap.height)
+	current_jump_gravity = float(leap.flight_gravity)
+	vertical_speed = minf(
+		speed * sin(float(leap.angle)) + float(leap.lift_bonus), float(leap.max_lift)
+	)
+	message.text = "%s! Flieg!" % str(leap.get("name", "Sprung"))
 	return true
 
 
@@ -2677,6 +2710,16 @@ func _update_passages(delta: float) -> void:
 	_passage_hit_cooldown = maxf(0.0, _passage_hit_cooldown - delta)
 	var local: float = fposmod(previous_road_distance, track_length)
 	var lap: int = int(distance / maxf(track_length, 1.0))
+	# Only the next spoken Strecken-2.0 element is announced, so a jump hint is never
+	# overwritten by the curve or hill right behind it.
+	var thrill: Dictionary = THRILLS.next_announced(world, local)
+	if not thrill.is_empty():
+		var thrill_key: String = "%s:%d" % [str(thrill.id), lap]
+		var ahead: float = float(thrill.start) - local
+		var lead: float = maxf(70.0, absf(speed) * 3.0)
+		if ahead < lead and not passage_announced.has(thrill_key):
+			passage_announced[thrill_key] = true
+			message.text = THRILLS.approach_text(thrill)
 	for entry in PASSAGES.of(world):
 		var key: String = "%s:%d" % [str(entry.id), lap]
 		var before: float = float(entry.zone_start) - local
@@ -3040,6 +3083,13 @@ func _drive_opponents(delta: float) -> void:
 			)
 			if prism_lane < INF:
 				target_lane = prism_lane
+		# Strecken 2.0: brave rivals line up for a leap ramp, the others keep the safe line;
+		# traffic and rocks are still avoided by choose_lane below.
+		var thrill_lane: float = THRILLS.rival_lane(
+			world, float(sampled.distance), absf(rival.motion_speed), i
+		)
+		if thrill_lane < INF:
+			target_lane = thrill_lane
 		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
 		target_lane = RIVAL_RACECRAFT.choose_lane(
 			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
@@ -3055,6 +3105,7 @@ func _drive_opponents(delta: float) -> void:
 		)
 		if float(passage_rule.lane) < INF:
 			target_lane = float(passage_rule.lane)
+		target_lane = THRILLS.rival_gap_guard(world, float(sampled.distance), target_lane, i)
 		var look_ahead: float = float(profile.look_ahead)
 		if absf(rival.motion_speed) < 4.0 and absf(target_lane - float(sampled.lateral)) > 0.6:
 			look_ahead = 1.5
@@ -3107,6 +3158,10 @@ func _drive_opponents(delta: float) -> void:
 		opponent_distances[i] += travel
 		opponent_lanes[i] = float(next.lateral)
 		if RIVAL_FLIGHT.try_launch(self, i, sampled, next, target_speed):
+			continue
+		if THRILLS.lane_gap(world, float(next.distance), float(next.lateral)):
+			# Rolled into a leap gap without take-off: the cloud carries it past the gap.
+			RIVAL_FLIGHT.rescue_to(self, i, float(next.distance))
 			continue
 		var rival_lateral: float = float(next.lateral)
 		if absf(rival_lateral) > _wall_lateral_at(float(next.distance)) and absf(rival_lateral) <= _road_width_at(float(next.distance)) * 0.5 + 1:
@@ -3364,7 +3419,7 @@ func _track_events() -> void:
 			_sound_effect("item")
 	_collect_catalog_boxes(lap)
 	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
-		var pad_at: float = PASSAGES.clear_distance(world, float(fraction) * track_length)
+		var pad_at: float = _clear_at(float(fraction) * track_length)
 		if absf(fposmod(distance, track_length) - pad_at - 1.1) < 1.2 and absf(lane) < 2.1:
 			_trigger_once("pad_%d" % int(float(fraction) * 1000.0), "boost_pad")
 			boost_time = maxf(boost_time, _boost_for(1.0))
@@ -5210,6 +5265,11 @@ static func _chevron_arm_geometry(track_basis: Basis, side: float) -> Dictionary
 
 ## Turbo pad (reference k03): dark plate, three glowing chevrons, orange side lights.
 ## It covers exactly the boost zone checked in _track_events.
+## Fraction-placed elements avoid LUMO passages and Strecken-2.0 jumps (ramps, gaps).
+func _clear_at(distance_on_track: float) -> float:
+	return THRILLS.clear_distance(world, PASSAGES.clear_distance(world, distance_on_track))
+
+
 func _turbo_pad(distance_on_track: float) -> void:
 	var basis: Basis = world.frame(distance_on_track + 1.1)
 	var centre: Vector3 = _track_position(distance_on_track + 1.1, 0) + basis.y * 0.035
@@ -6016,9 +6076,9 @@ func _catalog_box_fractions() -> Array[float]:
 func _catalog_zone_occupied() -> Array:
 	var occupied: Array = item_box_distances.duplicate()
 	for entry in BOOST_RING_LAYOUT:
-		occupied.append(PASSAGES.clear_distance(world, float(entry[0]) * track_length))
+		occupied.append(_clear_at(float(entry[0]) * track_length))
 	for fraction in ADVENTURE_DRAMA.turbo_fractions(track_id):
-		occupied.append(PASSAGES.clear_distance(world, float(fraction) * track_length))
+		occupied.append(_clear_at(float(fraction) * track_length))
 	return occupied
 
 

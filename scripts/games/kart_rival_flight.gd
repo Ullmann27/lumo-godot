@@ -3,6 +3,7 @@ extends RefCounted
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const STATE_KEY: StringName = &"lumo_ballistic_flight"
 const CONTACT_KEY: StringName = &"lumo_last_road_contact"
 var active: bool = true
@@ -59,6 +60,17 @@ static func try_launch(
 			"flight_gravity": game.JUMP_GRAVITY,
 			"max_lift": float(jump.get("max_lift", game.JUMP_MAX_LIFT))
 		}
+	if ramp.is_empty():
+		# Strecken 2.0 Spalt-Schanze: only a rival on the brave half takes off.
+		var leap: Dictionary = THRILLS.leap_crossed(
+			game.world, previous_contact, float(after.distance), float(after.lateral)
+		)
+		if leap.is_empty():
+			leap = THRILLS.leap_crossed(
+				game.world, float(before.distance), float(after.distance), float(after.lateral)
+			)
+		if not leap.is_empty():
+			ramp = leap
 	if ramp.is_empty():
 		return false
 	var state = load("res://scripts/games/kart_rival_flight.gd").new()
@@ -117,9 +129,16 @@ static func update(game, index: int, delta: float) -> bool:
 	game.opponent_distances[index] += travel
 	game.opponent_lanes[index] = float(road.lateral)
 	var ground: float = float(road.height) + 0.035 + game.world.ramp_height(float(road.distance))
-	var in_gap: bool = game.world.in_gap(float(road.distance))
+	var in_gap: bool = (
+		game.world.in_gap(float(road.distance))
+		or THRILLS.lane_gap(game.world, float(road.distance), float(road.lateral))
+	)
 	var precision: bool = bool(state.kicker.get("precision_jump", false))
-	var missed_edge: bool = precision and not in_gap and rival.position.y < ground - 0.5
+	var missed_edge: bool = (
+		(precision or THRILLS.far_edge(game.world, float(road.distance), float(road.lateral)))
+		and not in_gap
+		and rival.position.y < ground - 0.5
+	)
 	if (in_gap and rival.position.y < ground - 2.5) or missed_edge:
 		rival.set_meta(
 			&"lumo_flight_distance",
@@ -161,6 +180,19 @@ static func update(game, index: int, delta: float) -> bool:
 	rival.set_motion(state.speed, 0.0, false, false)
 	_set_pitch(rival, road, state.vertical_speed)
 	return true
+
+
+## A grounded rival that rolled into a leap gap: the cloud sets it down behind the gap.
+static func rescue_to(game, index: int, road_distance: float) -> void:
+	var rival = game.opponents[index]
+	var recovery: float = game.world.gap_exit_distance(road_distance)
+	game.opponent_distances[index] += fposmod(recovery - road_distance, game.track_length)
+	game.opponent_headings[index] = game._heading(recovery)
+	game.opponent_lanes[index] = 0.0
+	rival.transform = game.world.reset_transform(recovery)
+	game.opponent_stuns[index] = maxf(game.opponent_stuns[index], 1.0)
+	rival.set_meta(&"lumo_flight_rescues", int(rival.get_meta(&"lumo_flight_rescues", 0)) + 1)
+	rival.set_motion(8.0, 0.0, false, false)
 
 
 static func _set_pitch(rival, road: Dictionary, vertical: float) -> void:

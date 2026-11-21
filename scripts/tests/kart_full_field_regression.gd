@@ -10,6 +10,8 @@ var failed: bool = false
 var selected_level: String = ""
 var stopped_player: bool = false
 var selected_scenario: String = ""
+## --track=<id>: dieselbe Fahrt auf einer anderen Strecke (Standard Sonnenhafen).
+var selected_track: String = "sonnenhafen"
 
 
 func _initialize() -> void:
@@ -18,6 +20,8 @@ func _initialize() -> void:
 			selected_scenario = "stopped"
 		if arg == "--clear-player":
 			selected_scenario = "clear"
+		if arg.begins_with("--track="):
+			selected_track = arg.trim_prefix("--track=")
 		if arg.begins_with("--level="):
 			selected_level = arg.trim_prefix("--level=")
 	call_deferred("_run")
@@ -59,7 +63,7 @@ func _drive(level: String) -> Dictionary:
 			"mode": "race",
 			"driver": "fox",
 			"kart": "comet",
-			"track": "sonnenhafen",
+			"track": selected_track,
 			"difficulty": level
 		}
 	)
@@ -274,7 +278,8 @@ func _drive(level: String) -> Dictionary:
 		var lasso_state: Dictionary = game.roadside_lasso.rules.racers.get("rival_%d" % i, {})
 		_check(not lasso_state.is_empty(), "Rival must pass through the live lasso state machine")
 		_check(lasso_crossings[i].size() == 4, "Each rival must physically cross both crews on both laps")
-		if level != "gemuetlich" and i % 2 == 1:
+		# Nur auf Strecken mit Looping (Sonnenhafen): mutige Rivalen nehmen ihn jede Runde.
+		if level != "gemuetlich" and i % 2 == 1 and not game.world.loop_layout.is_empty():
 			_check(
 				loops >= 2,
 				"%s adventurous rival%d missed the loop on a lap (%d completed)" % [level, i, loops]

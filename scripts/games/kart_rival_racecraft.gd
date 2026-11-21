@@ -5,6 +5,7 @@ const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const LANES: Array[float] = [-3.4, -2.55, -1.7, -0.85, 0.0, 0.85, 1.7, 2.55, 3.4]
+const STATIC_LOOK_AHEAD: float = 45.0
 const STYLES: Array[Dictionary] = [
 	{"id": "precise", "clearance": 1.85, "line": 0.65, "corner": 1.02},
 	{"id": "attacker", "clearance": 1.65, "line": 0.85, "corner": 1.05},
@@ -104,7 +105,10 @@ static func _lane_cost(
 	var cost: float = absf(candidate - preferred) * 0.26 + absf(candidate - current) * 0.12
 	var clearance: float = float(style(index).clearance)
 	for obstacle in traffic:
-		if obstacle.x < -4.0 or obstacle.x > look_ahead:
+		# Standing obstacles (slalom pylons, rocks, a parked kart) are planned for from
+		# further away: a rival that reached a pylon on the rail side had no free lane left.
+		var reach: float = maxf(look_ahead, STATIC_LOOK_AHEAD) if obstacle.z <= 0.1 else look_ahead
+		if obstacle.x < -4.0 or obstacle.x > reach:
 			continue
 		# Account for the lane-change path, not just its final lane. A rival at
 		# our shoulder cannot be crossed while targeting an apparently free lane.

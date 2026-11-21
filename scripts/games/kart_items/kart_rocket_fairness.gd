@@ -8,7 +8,8 @@ extends RefCounted
 ##  - Verfolger-Limit: höchstens MAX_CHASERS_ON_CHILD Salve(n) gleichzeitig auf dem Weg
 ##    zum Kind, und nur ein Rivale erfasst das Kind zur selben Zeit;
 ##  - keine Treffer an Sturzstellen: Rampen, Looping, Sprunglücken, offene Kanten,
-##    Eisbrücke/Lianenaffe/Lavapuls-Passagen – dort zerplatzt ein Geschoss harmlos.
+##    Spalt-Schanzen (kart_track_thrills.gd), Eisbrücke/Lianenaffe/Lavapuls-Passagen –
+##    dort zerplatzt ein Geschoss harmlos.
 ## Gilt für Treffer auf das Kind und auf Rivalen gleichermaßen (Sturzstellen).
 
 const ZONES = preload("res://scripts/games/kart_items/kart_item_zones.gd")
@@ -22,6 +23,7 @@ const DANGER_KINDS: Array[String] = [
 	"ramp",
 	"loop",
 	"jump",
+	"leap",
 	"open_edge",
 	"passage_bridge",
 	"passage_swing",
