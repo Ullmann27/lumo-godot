@@ -13,8 +13,13 @@ const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 
 ## Where the bonus room lies in road space: before the start, never on the way.
 const BONUS_S0: float = -300.0
-## Metres from the golden mushrooms of the finale to where Lumo comes down.
-const FINALE_FLIGHT: float = 17.0
+## Metres of temple stones from the mine exit (ENDSPURT) to the golden
+## mushrooms of the finale: at full flow about 2.5 s, time to read the call.
+const FINALE_SPRINT: float = 52.0
+## Metres from the golden mushrooms of the finale to the landing target: a
+## child at full flow comes down about 20 m behind them, a slow runner (carried
+## by the mushrooms) about 14 m; the gorge ends 7.2 m behind them.
+const FINALE_FLIGHT: float = 18.5
 const SECTION_NAMES: Array[String] = [
 	"Lichtung", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt"
 ]
@@ -613,11 +618,11 @@ func _mine_ride() -> void:
 ## takes an early jump, so nobody falls in right before the finish) along a star
 ## arc onto a landing target and through the temple gate. The stone way runs on
 ## past the gate, so Lumo has room to slow down. A fall is caught at the start
-## of the sprint. About 40 m longer than the old plain home straight.
+## of the sprint. About 60 m longer than the old plain home straight.
 func _finale() -> void:
-	var sprint: float = _leg(36.0, 0.0, 0.0, 3.0, "stone")
+	var sprint: float = _leg(FINALE_SPRINT, 0.0, 0.0, 3.0, "stone")
 	_safe(sprint + 2.0)
-	_line(sprint + 4.0, sprint + 30.0, 0.0, 0.0)
+	_line(sprint + 4.0, sprint + FINALE_SPRINT - 6.0, 0.0, 0.0)
 	var launch: float = s - 1.2
 	for lane in [-1.8, 0.0, 1.8]:
 		_mushroom(launch, lane, TUNING.LAUNCH_SPEED)

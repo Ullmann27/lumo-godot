@@ -40,7 +40,9 @@ var happenings: Array[Dictionary] = []
 
 ## Plays like the child player, but at the finale does one thing on purpose:
 ## "edge" keeps to the very edge of the way, "early" presses SPRINGEN a few
-## metres before the launch, "slow" holds the stick back the whole time.
+## metres before the launch, "slow" holds the stick back the whole time (on
+## the path only part way: pulled right back Lumo stands still there; 0.66 is
+## the really slow runner of 40 % the jumps are built for).
 class FinaleRunner:
 	extends RefCounted
 	var child
@@ -48,9 +50,11 @@ class FinaleRunner:
 	var launch_s: float = 0.0
 	var mode: String = ""
 	var jumped: bool = false
+	var hold_back: float = 1.0
 
 	func _init(path: bool, finale: Dictionary, launch: float, how: String) -> void:
 		child = CHILD_PLAYER.new(path, 2)
+		hold_back = 0.66 if path else 1.0
 		spot = finale
 		launch_s = launch
 		mode = how
@@ -71,7 +75,7 @@ class FinaleRunner:
 					player.press_jump()
 			"slow":
 				child.drive(game, delta)
-				game.touch_steer.y = 1.0
+				game.touch_steer.y = hold_back
 
 
 func _initialize() -> void:
@@ -153,6 +157,10 @@ func _play(game, driver, limit_s: float, done: Callable = Callable()) -> Diction
 	var flying: bool = false
 	var finale: int = _finale_index(game.plan)
 	var spot: Dictionary = game.plan.moments[finale] if finale >= 0 else {}
+	# Watched from the call until a little behind the landing target.
+	var watch_to: float = 0.0
+	if not spot.is_empty():
+		watch_to = maxf(float(spot.s1), float(spot.get("land_s", spot.s1))) + 6.0
 	while game.phase != game.Phase.FINISHED and steps < int(limit_s * 60.0):
 		if game.question_open:
 			game.answer(str(game.active_question.answer))
@@ -163,7 +171,7 @@ func _play(game, driver, limit_s: float, done: Callable = Callable()) -> Diction
 		if game.hud.banner_label.visible and game.hud.banner_label.text == "ENDSPURT!":
 			facts.endspurt = true
 		var player = game.player
-		if not spot.is_empty() and player.s >= float(spot.cue) and player.s <= float(spot.s1) + 2.0:
+		if not spot.is_empty() and player.s >= float(spot.cue) and player.s <= watch_to:
 			facts.coach = bool(facts.coach) or not game.hud.coach_icon.is_empty()
 			if not player.grounded and player.h > 2.0:
 				flying = true
