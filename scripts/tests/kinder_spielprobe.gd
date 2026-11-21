@@ -74,7 +74,8 @@ func _run() -> void:
 	var router: Node = root.get_node("SceneRouter")
 	var wanted_id: String = scene_id
 	var boot_id: String = scene_id
-	if scene_id in HUB_TILES or scene_id not in BOOT_TARGETS:
+	var via_hub: bool = scene_id in HUB_TILES or str(options.get("via", "")) == "hub"
+	if via_hub or scene_id not in BOOT_TARGETS:
 		boot_id = "games"
 	# Die Boot-Szene liest ihre Optionen aus den Kommandozeilen-Argumenten;
 	# für Kacheln der Spielewelt startet sie in der Spielewelt.
@@ -104,7 +105,7 @@ func _run() -> void:
 			% [boot_id, Time.get_ticks_msec() - started]
 		)
 	)
-	if boot_id != wanted_id and wanted_id not in HUB_TILES:
+	if boot_id != wanted_id and not via_hub:
 		print("[Kinderprobe] Direktsprung %s (kein Boot-Ziel)" % wanted_id)
 		router.goto(wanted_id)
 		game = await _wait_for_scene(router, wanted_id, 90000)
@@ -327,8 +328,11 @@ func _find_button(scene: Node, words: Array) -> BaseButton:
 func _is_exit(button: BaseButton) -> bool:
 	var label: String = _button_label(button).to_lower()
 	for word in [
+		"‹",
 		"zurück",
+		"zuruck",
 		"spielewelt",
+		"spieleauswahl",
 		"beenden",
 		"verlassen",
 		"home",
@@ -354,12 +358,20 @@ func _poke_buttons(rounds: int, pause: float, shots_every: int) -> void:
 		var scene: Node = current_scene
 		var candidates: Array[BaseButton] = []
 		for button in _visible_buttons(scene):
-			if not _is_exit(button) and not tapped.has(button.get_instance_id()):
+			if not _is_exit(button) and not tapped.has(_button_label(button)):
 				candidates.append(button)
 		if candidates.is_empty():
 			break
 		var button: BaseButton = candidates[0]
-		tapped[button.get_instance_id()] = true
+		# Wunschknöpfe zuerst (z. B. „Los“), sonst von oben nach unten.
+		for word in str(options.get("first", "")).split(",", false):
+			for candidate in candidates:
+				if _button_label(candidate).to_lower().contains(word.to_lower()):
+					button = candidate
+					break
+			if button != candidates[0]:
+				break
+		tapped[_button_label(button)] = true
 		print("[Kinderprobe] tippe: " + _button_label(button))
 		await _tap(_screen_center(button))
 		await _seconds(pause)
@@ -477,9 +489,97 @@ func _play(game: Node) -> void:
 		for direction in [Vector2.UP, Vector2(1, -0.4), Vector2.UP, Vector2(-1, -0.3), Vector2.UP]:
 			await _stick_hold(stick, direction, 1.6, jump)
 		await _shot("gelaufen")
+	match str(options.get("hook", "")):
+		"puzzle":
+			await _hook_puzzle(current_scene)
+		"rhythm":
+			await _hook_rhythm(current_scene)
+		"world":
+			await _hook_world_taps()
 	var picked: int = await _tap_pickables(int(options.get("picks", "6")))
 	if picked > 0:
 		await _seconds(1.5)
 		await _shot("angetippt")
 	if game != null and not is_instance_valid(game):
 		notes.append("Spielszene wurde während des Spielens verlassen")
+
+
+## Puzzle: drei Teile mit dem Finger auf ihren Platz ziehen (ein Kind, das
+## die Stelle gefunden hat), dazwischen einmal daneben.
+func _hook_puzzle(game: Node) -> void:
+	if game == null or not ("model" in game) or game.get("paused"):
+		notes.append("Puzzle nicht gestartet – kein Ziehen möglich")
+		return
+	var camera: Camera3D = game.get("camera")
+	var moved: int = 0
+	for id in range(game.model.pieces.size()):
+		if moved >= 3:
+			break
+		if game.model.pieces[id].locked:
+			continue
+		var piece: Node3D = game.nodes[id]
+		var target: Vector2 = game.model.target(id)
+		var from: Vector2 = camera.unproject_position(piece.global_position)
+		var to: Vector2 = camera.unproject_position(Vector3(target.x, 0.35, target.y))
+		var xform: Transform2D = root.get_final_transform()
+		if moved == 1:
+			await _drag(xform * from, xform * (from.lerp(to, 0.5)), 0.6)
+			await _seconds(0.6)
+			await _shot("puzzle_daneben")
+			from = camera.unproject_position(piece.global_position)
+		await _drag(xform * from, xform * to, 0.8)
+		await _seconds(0.5)
+		moved += 1
+	await _seconds(0.6)
+	await _shot("puzzle_gelegt")
+	print("[Kinderprobe] puzzle: %d Teile gezogen, fertig=%s" % [moved, str(game.model.complete())])
+
+
+## Rhythmus: auf die Spur tippen, wenn eine Note an der Linie ist (mit
+## kindlicher Ungenauigkeit durch die Bildrate des Containers).
+func _hook_rhythm(game: Node) -> void:
+	if game == null or not ("model" in game) or not game.get("running"):
+		notes.append("Rhythmus-Lied läuft nicht")
+		return
+	var lanes: Array = game.get("lane_buttons")
+	var until: int = Time.get_ticks_msec() + int(float(options.get("song", "14")) * 1000.0)
+	var shot_at: int = Time.get_ticks_msec() + 6000
+	var taps: int = 0
+	while Time.get_ticks_msec() < until and is_instance_valid(game) and game.get("running"):
+		await process_frame
+		for note in game.model.notes:
+			if int(note.state) != 0 or absf(float(note.time) - game.model.time) > 0.1:
+				continue
+			var button: Control = lanes[int(note.lane)]
+			var at: Vector2 = _screen_center(button)
+			var down := InputEventScreenTouch.new()
+			down.index = 2
+			down.position = at
+			down.pressed = true
+			Input.parse_input_event(down)
+			await _seconds(maxf(0.08, float(note.length)))
+			var up := InputEventScreenTouch.new()
+			up.index = 2
+			up.position = at
+			up.pressed = false
+			Input.parse_input_event(up)
+			taps += 1
+			break
+		if Time.get_ticks_msec() > shot_at:
+			shot_at = until + 1
+			await _shot("rhythmus")
+	print(
+		(
+			"[Kinderprobe] rhythmus: %d Tipps, Treffer %d, daneben %d"
+			% [taps, int(game.model.hits), int(game.model.misses)]
+		)
+	)
+
+
+## Bauwelt/Dorf: in die Welt tippen (Bauen/Auswählen) an mehreren Stellen.
+func _hook_world_taps() -> void:
+	var size := Vector2(root.size)
+	for point in [Vector2(0.5, 0.55), Vector2(0.42, 0.6), Vector2(0.58, 0.5), Vector2(0.5, 0.45)]:
+		await _tap(size * point)
+		await _seconds(0.8)
+	await _shot("welt_getippt")
