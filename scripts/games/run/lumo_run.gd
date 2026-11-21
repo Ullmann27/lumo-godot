@@ -52,6 +52,9 @@ const SECTION_SAYINGS: Array[String] = [
 	"", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt!"
 ]
 
+## Screen seconds the result card waits while Lumo crosses the finish line.
+const RESULT_HOLD: float = 1.4
+
 ## Longest piece of building work per frame while loading, in milliseconds.
 const PREPARE_SLICE_MS: int = 40
 
@@ -418,6 +421,7 @@ func _process(delta: float) -> void:
 
 ## One simulation step. Called per frame; tests call it directly.
 func advance(delta: float) -> void:
+	menus.wait(delta)
 	if phase == Phase.COUNTDOWN and not paused:
 		countdown_left -= delta
 		hud.show_countdown(str(ceili(countdown_left)) if countdown_left > 0.0 else "")
@@ -586,8 +590,11 @@ func _on_moment(step: Dictionary) -> void:
 	match str(step.type):
 		"cue":
 			moment_props.set_calling(index, true)
-			hud.banner(str(spot.name) + "!", -1)
-			hud.say(str(spot.say), 3.2)
+			if bool(spot.get("finale", false)):
+				_finale_cue(spot)
+			else:
+				hud.banner(str(spot.name) + "!", -1)
+				hud.say(str(spot.say), 3.2)
 			_sound("gate", "ui_confirm")
 		"done":
 			moment_props.set_calling(index, false)
@@ -750,6 +757,14 @@ func _on_track_event(event: Dictionary) -> void:
 			_sound("checkpoint", "")
 		"finish":
 			_finish()
+
+
+## The last stretch of a world: ENDSPURT and the finale's own sentence.
+func _finale_cue(spot: Dictionary) -> void:
+	hud.banner("ENDSPURT!", -1)
+	hud.say(str(spot.say), 3.2)
+	if is_instance_valid(audio):
+		audio.stinger("bonus")
 
 
 ## Effect from the run's own sound set, or the shared fallback when there is none.
@@ -1034,6 +1049,7 @@ func _finish() -> void:
 	fx.play("burst", feet_transform().origin + Vector3.UP * 2.2, medal_colour)
 	actor.celebrate()
 	camera.show_front()
+	_finish_moment(medal_colour)
 	var content: Dictionary = {
 		"course": course.name,
 		"accent": course.accent,
@@ -1063,10 +1079,25 @@ func _finish() -> void:
 		content.facts.append(["Bestzeitgeist", record_text])
 	if HostBridge.is_embedded() and not accepted:
 		content["notice"] = HostBridge.SAVE_FAILURE
-	menus.open("result", content)
+	menus.open("result", content, RESULT_HOLD)
 	print("[LumoRun] finished: course=%s reward=%d rating=%d kept=%d/%d solved=%d time=%s" % [
 		course.id, reward, stars_rating, track.kept, plan.star_total, solved, UI.clock(time_ms)
 	])
+
+
+## The finish line is a moment of its own: ZIEL!, a short slow motion and
+## sparkles in the colour of the medal at both posts of the gate. The result
+## card waits (RESULT_HOLD) until Lumo is through.
+func _finish_moment(medal_colour: Color) -> void:
+	var half: float = minf(float(world.wall_lateral_at(plan.finish_s)), 4.0)
+	for side in [-1.0, 1.0]:
+		fx.play("burst", props.point(plan.finish_s, side * half, 2.4), medal_colour)
+	fx.play("sparkle", props.point(plan.finish_s, 0.0, 2.6))
+	if not reduced_motion:
+		_slowmo_left = 0.6
+		camera.kick(0.4)
+	hud.banner("ZIEL!", -1)
+	moment.emit("finish_line", {})
 
 
 ## Leaves to the app. A finished run reports its reward (once, by result id); a

@@ -12,9 +12,15 @@ signal again_pressed
 signal leave_pressed(destination: String)
 
 const UI = preload("res://scripts/games/run/run_ui.gd")
+## Seconds the result card takes to fade in once its hold is over.
+const FADE_SECONDS: float = 0.25
 
 var screen: String = ""
 var data: Dictionary = {}
+## Screen seconds the opened screen still waits before it shows (the result
+## card waits while Lumo crosses the finish line). While it waits it is
+## invisible and swallows taps, so a thumb still on SPRINGEN presses nothing.
+var hold_left: float = 0.0
 ## Screen rectangle left free for the live Lumo on the start screen.
 var hero_rect := Rect2()
 var _unit: float = 1.0
@@ -35,16 +41,35 @@ func _exit_tree() -> void:
 		MobileRuntime.safe_area_changed.disconnect(refresh)
 
 
-func open(kind: String, content: Dictionary = {}) -> void:
+func open(kind: String, content: Dictionary = {}, hold: float = 0.0) -> void:
 	screen = kind
 	data = content
+	hold_left = maxf(hold, 0.0)
+	modulate.a = 0.0 if hold_left > 0.0 else 1.0
 	refresh()
 
 
 func close() -> void:
 	screen = ""
 	data = {}
+	hold_left = 0.0
+	modulate.a = 1.0
 	refresh()
+
+
+## Counts a hold down in the game's own screen time, then fades the screen in.
+func wait(delta: float) -> void:
+	if hold_left > 0.0:
+		hold_left -= delta
+		if hold_left > 0.0:
+			return
+		hold_left = 0.0
+		var shield: Node = get_node_or_null("Hold")
+		if shield != null:
+			remove_child(shield)
+			shield.queue_free()
+	if modulate.a < 1.0:
+		modulate.a = minf(1.0, modulate.a + delta / FADE_SECONDS)
 
 
 func refresh() -> void:
@@ -66,6 +91,12 @@ func refresh() -> void:
 			_build_pause()
 		"result":
 			_build_result()
+	if hold_left > 0.0:
+		var shield := Control.new()
+		shield.name = "Hold"
+		shield.mouse_filter = Control.MOUSE_FILTER_STOP
+		shield.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(shield)
 
 
 # ------------------------------------------------------------------ shared pieces
