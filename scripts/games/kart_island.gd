@@ -1955,10 +1955,20 @@ func _advance_jungle_world(delta: float) -> void:
 		jungle_environment.advance(delta, player.global_position, not paused, reduced_motion)
 
 
+## Lumos Riesengarten: Rennereignisse der Strecke (Ringe, Tropfen, Gartenbahn, Sprenger).
+func _advance_garden_world(delta: float) -> void:
+	if track_id != "riesengarten_2400" or not is_instance_valid(world):
+		return
+	var garden = world.get_node_or_null("RiesengartenEnvironment")
+	if garden != null:
+		garden.advance_race(self, delta)
+
+
 func _physics_process(delta: float) -> void:
 	if menu_active or not is_instance_valid(player):
 		return
 	_advance_jungle_world(delta)
+	_advance_garden_world(delta)
 	if finished and finish_cine_left > 0.0:
 		if not paused:
 			_update_finish_cine(delta)
@@ -4268,6 +4278,10 @@ func _finish(cinematic: bool = true) -> void:
 		var jungle_environment = world.get_node_or_null("DschungelherzEnvironment")
 		if jungle_environment != null and jungle_environment.has_method("celebrate_finish"):
 			jungle_environment.celebrate_finish()
+	if track_id == "riesengarten_2400" and is_instance_valid(world):
+		var garden = world.get_node_or_null("RiesengartenEnvironment")
+		if garden != null:
+			garden.celebrate_finish()
 	var place: int = _place()
 	var earned: int = 3
 	if mode == "training":

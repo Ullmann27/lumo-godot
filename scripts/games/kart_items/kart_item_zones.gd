@@ -121,6 +121,11 @@ static func hazards(world, occupied: Array = []) -> Array[Dictionary]:
 			result.append({"start": at - 18.0, "end": at + 18.0, "kind": "obstacle"})
 	for at in occupied:
 		result.append({"start": float(at) - 18.0, "end": float(at) + 14.0, "kind": "occupied"})
+	# Streckeneigene Höhepunkte (z. B. Riesengarten: Schlauch, Topfspirale, Rasensprenger),
+	# je Strecken-ID abgelegt, damit eine wiederverwendete Welt nichts mitschleppt.
+	var own: Dictionary = world.get_meta("item_zone_hazards", {})
+	for area in own.get(str(world.track_id), []):
+		result.append(area)
 	return result
 
 
@@ -217,7 +222,10 @@ static func laterals_for(world, d: float, zone_index: int) -> Array[float]:
 		return [-reach, 0.0, reach]
 	# Schmal: zwei Prismen, abwechselnd links+Mitte und Mitte+rechts.
 	var side: float = -1.0 if zone_index % 2 == 0 else 1.0
-	return [0.0, side * reach] if side > 0.0 else [side * reach, 0.0]
+	# Zwei getrennte Rückgaben: ein Bedingungsausdruck liefert ein untypisiertes Array.
+	if side > 0.0:
+		return [0.0, side * reach]
+	return [side * reach, 0.0]
 
 
 ## Die Zonen einer Runde: [{distance, laterals, sight, half, turn}], nach Distanz sortiert.

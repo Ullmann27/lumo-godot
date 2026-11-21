@@ -257,6 +257,8 @@ static func _build_canopy_bridge(world, _root: Node3D, entry: Dictionary) -> voi
 ## Allee der Riesenwurzeln: root arches frame each apex, glowing apex stones show the line.
 static func _build_flow(world, entry: Dictionary) -> void:
 	match str(entry.theme):
+		"garden":
+			return  # Riesengarten baut seinen Kürbis selbst (garden/kart_garden_landmarks.gd).
 		"forest":
 			_build_root_chicane(world, entry)
 			return

@@ -5,6 +5,8 @@ const LANDMARKS = preload("res://scripts/games/kart_landmarks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
+## Lumos Riesengarten: eigene Strecke mit eigenem Aufbau (scripts/games/garden/).
+const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
 const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
@@ -122,6 +124,9 @@ func build(
 	_make_curve()
 	jump={}
 	loop_layout={}
+	if track_id == GARDEN.ID:
+		load("res://scripts/games/garden/kart_garden_world.gd").build(self, geometry_only)
+		return
 	if track_id == JUNGLE.ID:
 		JUNGLE.build_road(self)
 		PASSAGE_ART.build(self)
@@ -232,11 +237,13 @@ func build(
 func _make_curve() -> void:
 	if track_id == JUNGLE.ID:
 		curve = JUNGLE.make_curve()
+	elif track_id == GARDEN.ID:
+		curve = GARDEN.make_curve()
 	else:
 		_make_legacy_curve()
 	length = curve.get_baked_length()
 	PASSAGES.plan(self)
-	adventure_tunnel = {} if track_id == JUNGLE.ID else ADVENTURE_TUNNELS.layout(self)
+	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID] else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
@@ -286,6 +293,8 @@ func road_width_at(distance: float) -> float:
 	var deck: float = PASSAGES.deck_half(self, distance)
 	if deck > 0.0:
 		return deck * 2.0
+	if track_id == GARDEN.ID:
+		return GARDEN.width_at(distance)
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
@@ -294,6 +303,8 @@ func wall_lateral_at(distance: float) -> float:
 		return deck_wall
 	if track_id == JUNGLE.ID:
 		return JUNGLE.wall_at(distance)
+	if track_id == GARDEN.ID:
+		return GARDEN.wall_at(distance)
 	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), WALL_LATERAL)
 
 
@@ -301,6 +312,8 @@ func forward(distance: float) -> Vector3:
 	return (curve.sample_baked(fposmod(distance + 0.5, length), true) - curve.sample_baked(fposmod(distance, length), true)).normalized()
 
 func frame(distance: float) -> Basis:
+	if track_id == GARDEN.ID:
+		return GARDEN.frame(self, distance)
 	var ahead: Vector3 = forward(distance)
 	var raw_right: Vector3 = ahead.cross(Vector3.UP)
 	# A truly vertical centreline has no horizontal cross-product with UP.
@@ -476,6 +489,8 @@ func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 ## Query the real hollow tunnel proxy using the race's existing road coordinate space.
 ## Player origin is at the feet: radius 0.85 m, total capsule height 2.0 m, centre +1 m.
 func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
+	if track_id == GARDEN.ID:
+		return GARDEN.resolve_motion(self, from, desired)
 	if not is_instance_valid(production_tunnels):
 		return {"position": desired, "normal": Vector3.ZERO, "collided": false}
 	return production_tunnels.resolve_motion(from, desired)
@@ -484,6 +499,8 @@ func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
 func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
 	if track_id == JUNGLE.ID:
 		return JUNGLE.clip_camera(self, anchor, desired)
+	if track_id == GARDEN.ID:
+		return GARDEN.clip_camera(self, anchor, desired)
 	if not is_instance_valid(production_tunnels):
 		return desired
 	return production_tunnels.clip_camera(anchor, desired)
