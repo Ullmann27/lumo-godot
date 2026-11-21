@@ -15,6 +15,8 @@
 !assets/games/run/jungle/models/textures/*.import
 # Lumos Riesengarten: explizite LOD-Stufen (_lod0/_lod1/_lod2) statt automatischer LODs.
 !assets/kart/riesengarten/models/*.glb.import
+# Lumos Sternenpost: explicit _lod models, no automatic LODs.
+!assets/skypost/models/*.glb.import
 # Die Bildliste ist keine Übersetzung. Als CSV-Übersetzung importiert löst sie
 # im Importer TRANSLATION_CHANGED aus einem Arbeits-Thread aus (Absturz im CI).
 !assets/characters/lumo/reference/lumo_reference_manifest.csv.import
