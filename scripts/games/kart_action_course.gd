@@ -122,7 +122,14 @@ static func plan(world) -> Dictionary:
 		var range_fractions: Array = course.dive
 		var dive_start: float = float(range_fractions[0]) * length
 		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
-		var start: float = _free_start(dive_start, dive_length, length, blocked, taken)
+		# Höhepunkte (kart_track_thrills.gd) belegen viel Strecke: findet der Tunnel in voller
+		# Länge keinen Platz, wird er kürzer statt ganz zu entfallen.
+		var start: float = -1.0
+		for share in [1.0, 0.8, 0.65, 0.5]:
+			start = _free_start(dive_start, dive_length * share, length, blocked, taken)
+			if start >= 0.0:
+				dive_length *= share
+				break
 		if start >= 0.0:
 			result.dives.append({"start": start, "end": start + dive_length})
 			taken.append(Vector2(start, start + dive_length))
