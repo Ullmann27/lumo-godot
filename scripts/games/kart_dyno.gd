@@ -175,3 +175,42 @@ static func verdict(metric: String, before: float, after: float) -> int:
 		return 0
 	var better: bool = delta > 0.0 if bool(info.get("higher", true)) else delta < 0.0
 	return 1 if better else -1
+
+
+## Werte für die Anzeige eines Teilewechsels: zuerst die geänderten Werte des Steckplatzes,
+## dann weitere geänderte Werte, höchstens limit. Gibt es einen gemessenen Vorteil und einen
+## Nachteil, stehen beide in der Liste. Ohne Änderung: die Steckplatz-Werte.
+static func display_metrics(
+	defaults: Array, before: Dictionary, after: Dictionary, limit: int = 4
+) -> Array[String]:
+	var changed: Array[String] = []
+	for metric in defaults + METRICS:
+		var key: String = str(metric)
+		if changed.has(key) or not before.has(key) or not after.has(key):
+			continue
+		if verdict(key, float(before[key]), float(after[key])) != 0:
+			changed.append(key)
+	var result: Array[String] = []
+	for key in changed:
+		if result.size() < limit:
+			result.append(key)
+	# Vorteil und Nachteil müssen beide sichtbar sein (kein Teil ist nur „besser“).
+	for wanted in [1, -1]:
+		var shown := false
+		for key in result:
+			shown = shown or verdict(key, float(before[key]), float(after[key])) == wanted
+		if shown:
+			continue
+		for key in changed:
+			if (
+				not result.has(key)
+				and verdict(key, float(before[key]), float(after[key])) == wanted
+			):
+				result[result.size() - 1] = key
+				break
+	for metric in defaults:
+		if result.size() >= mini(limit, 2):
+			break
+		if not result.has(str(metric)):
+			result.append(str(metric))
+	return result
