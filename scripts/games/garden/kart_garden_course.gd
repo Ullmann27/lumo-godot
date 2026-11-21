@@ -283,7 +283,8 @@ static func bank_profile(distance: float) -> Vector2:
 		_blend(d, SPIRAL.x, SPIRAL.x + 20.0) * (1.0 - _blend(d, SPIRAL.y - 20.0, SPIRAL.y))
 	)
 	var gain: float = 0.68 + hose * (4.6 - 0.68) + spiral * (1.7 - 0.68)
-	var limit: float = 0.14 + hose * (0.46 - 0.14) + spiral * (0.22 - 0.14)
+	# Röhre höchstens 23° (0,40 rad): Strecken-Vertrag verlangt Fahrbahn-Normale y > 0,9.
+	var limit: float = 0.14 + hose * (0.40 - 0.14) + spiral * (0.22 - 0.14)
 	return Vector2(gain, limit)
 
 
