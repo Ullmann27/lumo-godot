@@ -9,8 +9,15 @@ const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 const PARTS_BAY = preload("res://scripts/games/kart_parts_bay.gd")
 ## Große Karten für „Fahrer“ und „Tempo & Gegner“ (Auftrag 18.11., Abschnitt 4).
 const SECTIONS = preload("res://scripts/games/kart_menu_sections.gd")
+## Wächter der 3D-Vorschau (siehe _watch_preview).
+const PREVIEW_WATCH_SECONDS: float = 5.0
+const PREVIEW_PIXEL_SECONDS: float = 20.0
+const PREVIEW_REPAIR_GAP: float = 30.0
+const PREVIEW_REPAIR_LIMIT: int = 6
 ## „Teile wechseln“ + „Werte“ beim gewählten Kart (Garage), siehe kart_parts_bay.gd.
 var parts_bay
+## Gründe der Reparaturen durch den Vorschau-Wächter (für Tests und Protokoll).
+var preview_repairs: Array[String] = []
 var service_station
 var home_promenade
 var track_stage
@@ -34,6 +41,9 @@ var _home_environment: Environment
 var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
 var _studio_sky: Sky
+var _preview_watch_time := 0.0
+var _preview_pixel_time := 0.0
+var _preview_since_repair := PREVIEW_REPAIR_GAP
 
 
 func _ready() -> void:
@@ -307,6 +317,9 @@ func _notification(what: int) -> void:
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_APPLICATION_RESUMED]:
 		_application_active = true
 		_sync_home_stage()
+		# Nach der Rückkehr in die App sofort prüfen, ob die Vorschau noch zeichnet.
+		_preview_watch_time = PREVIEW_WATCH_SECONDS
+		_preview_pixel_time = PREVIEW_PIXEL_SECONDS
 
 
 func _next() -> void:
@@ -765,6 +778,7 @@ func _process(delta: float) -> void:
 		if is_instance_valid(preview_kart.lumo_animation):
 			preview_kart.lumo_animation.play_menu_behavior("agree_nod")
 	_advance_home_camera(delta)
+	_watch_preview(delta)
 	if step == 3:
 		if not rotate_drag:
 			preview_angle = previous_angle
@@ -784,3 +798,108 @@ func handle_back() -> bool:
 	if parts_bay != null and parts_bay.handle_back():
 		return true
 	return super.handle_back()
+
+
+## Wächter der 3D-Vorschau im Kart-Menü. Gerätefehler vom 21.11.2026: „Im Hauptmenü
+## verschwindet nach einer Zeit Lumo mit dem Kart und man sieht nichts mehr.“ Im Container
+## (Ersatz-Renderer) ließ sich das weder durch langen Leerlauf noch durch Fokus-, Pause- oder
+## Größenwechsel nachstellen. Darum prüft die Vorschau sich selbst: alle 5 s ihren Zustand,
+## alle 20 s zusätzlich das tatsächlich gezeichnete Bild. Fehlt etwas, wird sie neu aufgebaut
+## und der Grund ins Protokoll (logcat) geschrieben, damit ein Gerätelauf die Ursache zeigt.
+func _watch_preview(delta: float) -> void:
+	_preview_since_repair += delta
+	if not visible or not _application_active or step == 3 or is_instance_valid(workshop_view):
+		_preview_watch_time = 0.0
+		return
+	_preview_watch_time += delta
+	_preview_pixel_time += delta
+	if _preview_watch_time < PREVIEW_WATCH_SECONDS:
+		return
+	_preview_watch_time = 0.0
+	var reason := preview_problem()
+	if reason.is_empty() and _preview_pixel_time >= PREVIEW_PIXEL_SECONDS:
+		_preview_pixel_time = 0.0
+		reason = preview_pixels_problem()
+	if not reason.is_empty():
+		repair_preview(reason)
+
+
+## Leerer Text = Vorschau in Ordnung; sonst ein kurzer Grund.
+func preview_problem() -> String:
+	if not is_instance_valid(preview_viewport) or not is_instance_valid(preview_camera):
+		return "vorschau_fehlt"
+	if preview_viewport.size.x < 16 or preview_viewport.size.y < 16:
+		return "vorschau_ohne_flaeche"
+	if preview_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
+		return "vorschau_angehalten"
+	if not preview_camera.is_current():
+		return "kamera_nicht_aktiv"
+	return _preview_kart_problem()
+
+
+func _preview_kart_problem() -> String:
+	if not is_instance_valid(preview_kart) or not preview_kart.is_inside_tree():
+		return "kart_fehlt"
+	if not preview_kart.is_visible_in_tree():
+		return "kart_unsichtbar"
+	var where: Vector3 = preview_kart.global_position
+	if not (is_finite(where.x) and is_finite(where.y) and is_finite(where.z)):
+		return "kart_position_ungueltig"
+	if preview_kart.global_transform.basis.get_scale().length() < 0.3:
+		return "kart_winzig"
+	if not preview_camera.is_position_in_frustum(where + Vector3.UP * 0.5):
+		return "kart_ausserhalb_bild"
+	return ""
+
+
+## Prüft das gezeichnete Bild: Ist es (fast) einfarbig, zeichnet die Vorschau nichts mehr.
+## Ohne echten Renderer (Tests ohne Bildschirm) wird nichts geprüft.
+func preview_pixels_problem() -> String:
+	if DisplayServer.get_name() == "headless" or not is_instance_valid(preview_viewport):
+		return ""
+	var texture: ViewportTexture = preview_viewport.get_texture()
+	if texture == null:
+		return "bild_fehlt"
+	var image: Image = texture.get_image()
+	if image == null or image.is_empty():
+		return "bild_leer"
+	var low := 1.0
+	var high := 0.0
+	for gx in range(1, 10):
+		for gy in range(1, 10):
+			var color: Color = image.get_pixel(
+				mini(image.get_width() - 1, int(image.get_width() * gx / 10.0)),
+				mini(image.get_height() - 1, int(image.get_height() * gy / 10.0))
+			)
+			var light: float = color.get_luminance() * color.a
+			low = minf(low, light)
+			high = maxf(high, light)
+	return "bild_einfarbig" if high - low < 0.02 else ""
+
+
+## Baut die Vorschau neu auf (höchstens alle 30 s, höchstens sechsmal je Besuch).
+func repair_preview(reason: String) -> bool:
+	var limited: bool = preview_repairs.size() >= PREVIEW_REPAIR_LIMIT
+	if _preview_since_repair < PREVIEW_REPAIR_GAP or limited:
+		return false
+	_preview_since_repair = 0.0
+	preview_repairs.append(reason)
+	push_warning("[KartMenu] preview_repair:%s (%d)" % [reason, preview_repairs.size()])
+	print("[KartMenu] preview_repair:%s count=%d" % [reason, preview_repairs.size()])
+	if is_instance_valid(preview_viewport):
+		preview_viewport.render_target_update_mode = (
+			SubViewport.UPDATE_WHEN_VISIBLE if _landing_active else SubViewport.UPDATE_ALWAYS
+		)
+	# Der Drehpunkt der Vorschau steht immer im Ursprung (nur seine Drehung wird animiert).
+	if is_instance_valid(preview_pivot):
+		preview_pivot.position = Vector3.ZERO
+		preview_pivot.scale = Vector3.ONE
+		preview_pivot.visible = true
+	preview_signature = ""
+	_refresh_preview()
+	if is_instance_valid(preview_camera):
+		preview_camera.make_current()
+	if _landing_active:
+		_fit_welcome_camera()
+	return true
+
