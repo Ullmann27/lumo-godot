@@ -6,6 +6,7 @@ const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const RULES = preload("res://scripts/games/kart_lasso_rules.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const SPEED_META: StringName = &"roadside_speed_factor"
 const GOLD := Color("ffb735")
 const NAVY := Color("15375a")
@@ -30,7 +31,9 @@ static func plan(race_world) -> Array[Dictionary]:
 	var track_length: float = float(race_world.length)
 	if track_length < 250.0:
 		return result
-	var blocked: Array = [Vector2(0.0, 90.0), Vector2(track_length - 70.0, track_length)]
+	# Passagenregel: kein Halt in den ersten ~350 m einer Rennstrecke (das Feld ist dort dicht).
+	var opening: float = 350.0 if track_length > 900.0 else 90.0
+	var blocked: Array = [Vector2(0.0, opening), Vector2(track_length - 70.0, track_length)]
 	var jump: Dictionary = race_world.jump
 	if not jump.is_empty():
 		blocked.append(Vector2(float(jump.ramp_start) - 100.0, float(jump.gap_end) + 80.0))
@@ -48,6 +51,11 @@ static func plan(race_world) -> Array[Dictionary]:
 	# LUMO passages (bridge plaza, waiting line, calm view) never share space with a lasso.
 	for passage in PASSAGES.blocked_ranges(race_world):
 		blocked.append(Vector2(passage.x - 60.0, passage.y + 40.0))
+	# Strecken 2.0: Spannungsstellen samt Anlauf und Landung (kart_track_thrills.gd). Ein Lasso
+	# vor einer Spalt-Schanze bremst das Kart unter das nötige Absprungtempo; in der Steilkurve
+	# und auf der Turbo-Bahn soll das Kind nur die Linie wählen, nicht zusätzlich ausweichen.
+	for thrill in THRILLS.blocked_ranges(race_world):
+		blocked.append(Vector2(thrill.x - 60.0, thrill.y + 30.0))
 	var taken: Array = []
 	var fractions: Array = [0.28, 0.87] if track_length > 900.0 else [0.51]
 	for fraction in fractions:
