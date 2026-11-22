@@ -4,6 +4,7 @@ extends Node3D
 ## sieht, und die Ereignisse (kart_garden_events.gd), die im Rennen laufen (advance_race).
 ## Profile: LOW = keine Schatten/Glow, weniger Pflanzen, LOD ab Stufe 1; MEDIUM/HIGH voll.
 const COURSE = preload("res://scripts/games/garden/kart_garden_course.gd")
+const EVENTS = preload("res://scripts/games/garden/kart_garden_events.gd")
 const MODELS = preload("res://scripts/games/garden/kart_garden_models.gd")
 const LANDMARKS = preload("res://scripts/games/garden/kart_garden_landmarks.gd")
 const LAWN = preload("res://assets/shaders/garden/kart_garden_lawn.gdshader")
@@ -13,7 +14,7 @@ const FAR_BY_TIER: Dictionary = {"low": 420.0, "medium": 560.0, "high": 700.0}
 
 var tier: String = "medium"
 var parts: Dictionary = {}
-var events: Node3D
+var events: EVENTS
 var environment: Environment
 var placed_plants: int = 0
 var _world: Node3D
@@ -31,8 +32,7 @@ func build(world: Node3D) -> void:
 	parts = LANDMARKS.build(self, world, tier == "low")
 	_flora()
 	_mist()
-	# Rundenwechsel-Ereignisse (kart_garden_events.gd) sind noch nicht gebaut.
-	events = null
+	events = EVENTS.new(environment, parts, low())
 	world.set_meta("garden_quality", tier)
 	world.set_meta("garden_plants", placed_plants)
 
@@ -51,11 +51,12 @@ func _lighting() -> void:
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("e6f0d6")
 	environment.ambient_light_energy = 0.44 if low() else 0.36
-	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	environment.tonemap_exposure = 1.02
+	environment.tonemap_mode = Environment.TONE_MAPPER_ACES
+	environment.tonemap_exposure = 0.83
+	environment.tonemap_white = 4.5
 	environment.glow_enabled = not low()
 	environment.glow_intensity = 0.55
-	environment.glow_bloom = 0.06
+	environment.glow_bloom = 0.0
 	environment.glow_hdr_threshold = 1.1
 	environment.adjustment_enabled = not low()
 	environment.adjustment_saturation = 1.12
@@ -64,8 +65,9 @@ func _lighting() -> void:
 	# Runde 1 Morgentau: etwas dichter; in Runde 2 lichtet er sich (Ereignisse).
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("e3eedb")
-	environment.fog_density = 0.012  # Morgentau (Ereignisse für Runde 2 noch nicht gebaut)
-	environment.fog_aerial_perspective = 0.35
+	environment.fog_density = EVENTS.MORNING_DENSITY
+	environment.fog_light_energy = 0.58
+	environment.fog_aerial_perspective = 0.23
 	environment.fog_sky_affect = 0.2
 	var world_environment := WorldEnvironment.new()
 	world_environment.name = "GardenEnvironment"
@@ -75,7 +77,7 @@ func _lighting() -> void:
 	_sun.name = "GardenSun"
 	_sun.rotation_degrees = Vector3(-46, -38, 0)
 	_sun.light_color = Color("fff1cf")
-	_sun.light_energy = 1.1
+	_sun.light_energy = 0.86
 	_sun.shadow_enabled = not low()
 	_sun.directional_shadow_max_distance = 80.0 if tier == "high" else 55.0
 	_sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
@@ -99,7 +101,7 @@ func _garden_sky() -> Sky:
 	material.ground_horizon_color = Color("cfe3c4")
 	material.ground_bottom_color = Color("5f8f45")
 	material.sky_curve = 0.2
-	material.sun_angle_max = 18.0
+	material.sun_angle_max = 3.0
 	material.sun_curve = 0.08
 	sky.sky_material = material
 	return sky
@@ -287,10 +289,10 @@ func _mist() -> void:
 
 ## Ein Takt im Rennen (aus kart_island._advance_garden_world).
 func advance_race(game: Node, delta: float) -> void:
-	if events != null:
-		events.advance(game, delta)
+	if events != null and not game.paused and game.countdown <= 0.0 and not game.finished:
+		events.advance(game.distance >= game.track_length, delta)
 
 
 func celebrate_finish() -> void:
 	if events != null:
-		events.celebrate_finish()
+		events.advance(true, EVENTS.CLEAR_SECONDS)
