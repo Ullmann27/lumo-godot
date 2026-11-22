@@ -50,6 +50,27 @@ func _count_mounts(vehicle, node_name: String) -> int:
 	return vehicle.find_children("Mount_" + node_name + "*", "Node3D", true, false).size()
 
 
+func _check_preview_fit(garage, bay) -> void:
+	var stage: Rect2 = garage._visible_stage_region()
+	var viewport := Vector2(garage.preview_viewport.size)
+	var pixels := Rect2(stage.position * viewport, stage.size * viewport).grow(1.0)
+	var full: Rect2 = garage.preview_container.get_global_rect()
+	var visible := Rect2(full.position + stage.position * full.size, stage.size * full.size)
+	_check(not visible.intersects(bay.panel.get_global_rect()), "Kartbühne bleibt neben dem Teileschubfach")
+	var enclosed := true
+	var vehicle = _vehicle(garage.preview_kart)
+	_check(is_instance_valid(vehicle), "Vorschau besitzt ein echtes Kartmodell")
+	if not is_instance_valid(vehicle):
+		return
+	for mesh in vehicle.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree():
+			continue
+		for i in 8:
+			var point: Vector3 = mesh.to_global(mesh.get_aabb().get_endpoint(i))
+			enclosed = enclosed and pixels.has_point(garage.preview_camera.unproject_position(point))
+	_check(enclosed, "Alle sichtbaren Kartteile liegen vollständig in der freien Bühne")
+
+
 func _performance_parts(garage, bay) -> void:
 	var workshop = garage.workshop
 	var base_factors: Dictionary = workshop.multipliers("comet")
@@ -83,16 +104,11 @@ func _performance_parts(garage, bay) -> void:
 		"→" in bay.dyno_title.text and not bay.dyno_text.text.is_empty(),
 		"Prüfstand nennt vorher → nachher und einen Satz"
 	)
-	_check(
-		bay.panel.get_global_rect().end.y <= garage.footer.get_global_rect().position.y + 1.0,
-		"Konfigurator mit Prüfstand bleibt über der Fußleiste"
-	)
-	for button in bay.slot_buttons.values():
-		var rect: Rect2 = button.get_global_rect()
-		_check(
-			rect.size.y >= 48.0 * _dp - 0.5 and bay.panel.get_global_rect().encloses(rect),
-			"Steckplatz %s ≥ 48 dp und ganz im Konfigurator" % button.text
-		)
+	_check_preview_fit(garage, bay)
+	_check(bay.category.item_count == TUNING.PART_SLOTS.size(), "Jeder Steckplatz ist im Kategorienmenü erreichbar")
+	var rect: Rect2 = bay.category.get_global_rect()
+	_check(rect.size.y >= 48.0 * _dp - 0.5 and bay.panel.get_global_rect().encloses(rect),
+		"Kategorienwahl ist sichtbar und mindestens 48 dp hoch")
 	bay._on_mount()
 	await _frames(4)
 	var factors: Dictionary = workshop.multipliers("comet")
@@ -162,6 +178,25 @@ func _performance_parts(garage, bay) -> void:
 			"%s in der Garage montiert" % variant[2])
 		bay._on_back()
 		await _frames(3)
+
+	# Retain both previews when changing slots; charge their combined price atomically.
+	bay._on_open()
+	bay._on_slot("tires")
+	bay._on_tile("regen")
+	bay._on_slot("wing")
+	bay._on_tile("tandem")
+	var dyno = preload("res://scripts/games/kart_dyno.gd")
+	var measured: Dictionary = dyno.measure(workshop.multipliers_with("comet", {"tires":"regen", "wing":"tandem"}))
+	for metric in bay.dyno_values:
+		_check(is_equal_approx(measured[metric], bay.dyno_values[metric][1]), "Beide Vorschauen im Prüfstand: " + metric)
+	_check(bay.mount_button.text.contains("20"), "Gesamtpreis beider Freischaltungen")
+	workshop.report_lifetime(100)
+	bay._refresh_dyno()
+	var balance: int = workshop.available()
+	bay._on_mount()
+	_check(workshop.available() == balance - 20 and bay.is_open(), "Beide Teile gemeinsam freigeschaltet")
+	bay._on_back()
+	_check(workshop.chosen("comet","tires") == "haft" and workshop.chosen("comet","wing") == "gross", "Zurück behält vorher montierte Teile")
 
 
 func _run() -> void:
@@ -250,10 +285,10 @@ func _run() -> void:
 			pictures += 1
 	_check(pictures == bay.tiles.size(), "jedes Rad-Teil hat ein gerendertes Teilebild")
 	_check(
-		bay.panel.get_global_rect().end.y <= garage.footer.get_global_rect().position.y + 1.0,
-		"Konfigurator bleibt über der Fußleiste"
+		garage.get_global_rect().grow(1).encloses(bay.panel.get_global_rect()),
+		"Konfigurator bleibt in der sicheren Anzeige"
 	)
-	var before_camera: Vector3 = garage.preview_camera.global_position
+	_check_preview_fit(garage, bay)
 	bay._on_tile("turbine")
 	await _frames(30)
 	var vehicle = _vehicle(garage.preview_kart)
@@ -262,10 +297,7 @@ func _run() -> void:
 		"Turbinenrad sofort am Kart (Vorschau)"
 	)
 	_check(_count_parts(vehicle, "WheelCover_Turbine") == 4, "Turbinenrad an allen vier Rädern")
-	_check(
-		garage.preview_camera.global_position.distance_to(before_camera) > 0.3,
-		"Kamera fährt ans Rad"
-	)
+	_check_preview_fit(garage, bay)
 	_check(
 		garage.workshop.chosen("comet", "wheel_cover") == "serie",
 		"Vorschau ist noch nicht gespeichert"
@@ -361,6 +393,52 @@ func _run() -> void:
 		),
 		"Rennen fährt mit den Faktoren der montierten Teile"
 	)
+	# Directly exercise the real on-track physics after loading each equipped setup.
+	var samples := {}
+	for engine in ["serie", "sprint"]:
+		game.workshop.choose("comet", "engine", engine)
+		game._refresh_kart_factors()
+		game.distance = 12.0
+		game.previous_road_distance = 12.0
+		game.player.transform = game.world.reset_transform(12.0)
+		game.player_heading = game._heading(12.0)
+		game.speed = 0.0
+		game.physical_velocity = Vector3.ZERO
+		game.auto_gas = true
+		game.airborne = false
+		game.boost_time = 0.0
+		for tick in 18:
+			game._drive_player(1.0 / 60, 0, 0)
+		samples[engine] = game.speed
+	_check(samples.sprint > samples.serie * 1.05, "Rennsteuerung: Sprintmotor nach 18 echten Fahr-Ticks schneller %s" % samples)
+	print("[KartPartsFlow] Anfahrt 0,3 s in m/s: ", samples)
+	game.workshop.choose("comet", "engine", "dauer")
+	var dyno = preload("res://scripts/games/kart_dyno.gd")
+	var previous_mode: String = game.mode
+	game.mode = "time_trial"
+	game.workshop.buy_option("suspension", "panzer")
+	var contact_speeds := {}
+	for suspension in ["serie", "panzer"]:
+		game.workshop.choose("comet", "suspension", suspension)
+		game._refresh_kart_factors()
+		var top := dyno.race_top(game.kart_factors)
+		game.distance = 12.0
+		game.previous_road_distance = 12.0
+		game.player.transform = game.world.reset_transform(12.0)
+		game.player_heading = game._heading(12.0)
+		game.speed = top
+		game.physical_velocity = game.world.forward(12.0) * top
+		game.hit_timer = 0.25
+		for tick in 15:
+			game._drive_player(1.0 / 60, 0, 0)
+		var retained: float = game.speed * 100.0 / top
+		var measured := dyno.measure(game.kart_factors)
+		_check(absf(retained - float(measured.bump_pct)) < 0.1, "Rennkontakt und Prüfstand stimmen überein: %s" % suspension)
+		contact_speeds[suspension] = retained
+	_check(contact_speeds.panzer > contact_speeds.serie, "Schwerfahrwerk hält Tempo beim echten Rennkontakt")
+	print("[KartPartsFlow] Resttempo nach 15 Kontakt-Ticks in Prozent: ", contact_speeds)
+	game.workshop.choose("comet", "suspension", "sprung")
+	game.mode = previous_mode
 	if game.has_method("_leave_race_for_menu"):
 		game._leave_race_for_menu()
 		await _frames(8)

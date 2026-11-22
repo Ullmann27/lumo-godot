@@ -438,6 +438,50 @@ func buy_option(kind: String, id: String) -> bool:
 	return true
 
 
+## A build can include locked parts from several slots. Validate the whole basket
+## before spending stars and persist it once, including when storage is unavailable.
+func unlock_parts(parts: Dictionary) -> bool:
+	var purchases: Array[String] = []
+	var price := 0
+	for slot in parts:
+		var id := str(parts[slot])
+		var entry := option(slot, id)
+		if not PART_SLOTS.has(slot) or str(entry.get("id", "")) != id:
+			return false
+		if not has_option(slot, id):
+			purchases.append("%s:%s" % [slot, id])
+			price += int(entry.cost)
+	if price > available():
+		return false
+	owned.append_array(purchases)
+	if save():
+		return true
+	for key in purchases:
+		owned.erase(key)
+	return false
+
+
+func mount_parts(kart_id: String, parts: Dictionary) -> bool:
+	var previous: Dictionary = looks.get(kart_id, {})
+	var equipped := previous.duplicate()
+	for slot in parts:
+		var id := str(parts[slot])
+		if not PART_SLOTS.has(slot) or str(option(slot, id).get("id", "")) != id or not has_option(slot, id):
+			return false
+		equipped[slot] = id
+	if equipped == previous:
+		return true
+	var existed := looks.has(kart_id)
+	looks[kart_id] = equipped
+	if save():
+		return true
+	if existed:
+		looks[kart_id] = previous
+	else:
+		looks.erase(kart_id)
+	return false
+
+
 ## Wählt ein besessenes Aussehen für ein Kart.
 func choose(kart_id: String, kind: String, id: String) -> bool:
 	if str(option(kind, id).get("id", "")) != id or not has_option(kind, id):

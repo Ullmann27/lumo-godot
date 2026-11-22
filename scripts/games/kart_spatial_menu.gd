@@ -474,6 +474,15 @@ func _apply_responsive_layout() -> void:
 		choices_rect.position.y += 56.0
 		choices_rect.size.y = maxf(48.0, choices_rect.size.y - 56.0)
 		parts_rect.size.y = available.y - margin - top
+	if parts_open:
+		# The parts editor owns its drawer. Its measured outer edge defines the camera stage.
+		if portrait:
+			var height := clampf(available.y * 0.49, 225.0, 482.0)
+			parts_rect = Rect2(margin, available.y - margin - height, available.x - 2 * margin, height)
+		else:
+			parts_rect = Rect2(margin, margin, minf(available.x * 0.43, 530), available.y - 2 * margin)
+		parts_bay.panel.position = parts_rect.position * scale_factor
+		parts_bay.panel.size = parts_rect.size * scale_factor
 	var stage_mode: bool = track_stage.wanted()
 	if stage_mode:
 		choices_rect = track_stage.layout(available, top, footer_y, margin, portrait, scale_factor)
@@ -552,8 +561,9 @@ func _apply_responsive_layout() -> void:
 	for control in _stage_controls:
 		control.visible = not _landing_active
 	setup_left.visible = not _landing_active and not parts_open
-	footer.visible = not _landing_active and not (landscape_workshop and parts_open)
-	_stage_header.visible = not _landing_active and not ultra_short
+	footer.visible = not _landing_active and not parts_open
+	step_strip.visible = not _landing_active and not parts_open
+	_stage_header.visible = not _landing_active and not ultra_short and not parts_open
 	_selection_surface.visible = not _landing_active and not stage_mode and not parts_open
 	call_deferred("_fit_welcome_camera")
 
@@ -597,8 +607,10 @@ func _fit_welcome_camera() -> void:
 		preview_camera.h_offset = 0.0
 		preview_camera.v_offset = 0.0
 		return
-	# Teile-Konfigurator offen: die Kamera steht am Rad bzw. am Heck, keine Gesamtansicht.
 	if parts_bay != null and parts_bay.is_open() and step == 2:
+		parts_bay.fit_camera(_visible_stage_region())
+		_camera_progress = 1.0
+		_set_camera_veil(0.0)
 		return
 	# Fit the actual chassis, seated rig and light rings to the unoccluded
 	# part of the live stage. Portrait width cannot reuse a landscape frustum.
@@ -713,6 +725,15 @@ func _visible_stage_region() -> Rect2:
 			return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
 	var inset := 8.0 * _preview_dp_scale()
 	var clear := stage.grow(-inset)
+	if step == 2 and parts_bay != null and parts_bay.is_open() and stage.has_area():
+		var drawer: Rect2 = parts_bay.panel.get_global_rect()
+		if size.x < size.y:
+			clear.end.y = minf(clear.end.y, drawer.position.y - inset)
+		else:
+			var right := clear.end.x
+			clear.position.x = maxf(clear.position.x, drawer.end.x + inset)
+			clear.end.x = right
+		return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
 	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
 	clear.end.y = footer.global_position.y - inset
 	if stage.size.x < stage.size.y:

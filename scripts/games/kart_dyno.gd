@@ -4,7 +4,7 @@ extends RefCounted
 ## Rennttempo „Abenteuer“, ebener Asphalt, keine Items, keine Rivalen, keine Aufholhilfe.
 ## Gemessen wird, nicht geschätzt: jede Zahl ist das Ergebnis einer Schritt-für-Schritt-Fahrt.
 ##   top_kmh      Endtempo auf der Geraden
-##   sprint_s     Zeit von 0 auf 95 % des Endtempos
+##   sprint_s     Zeit von 0 auf 100 km/h
 ##   brake_m      Bremsweg aus 72 km/h
 ##   radius_m     Kurvenradius bei voller Lenkung und Endtempo (nach 2 s Kreisfahrt)
 ##   slide_m      seitliches Rutschen in der ersten Sekunde eines vollen Einlenkens
@@ -35,7 +35,7 @@ const METRICS: Array[String] = [
 ## Kindgerechte Namen, Einheit und ob „mehr“ besser ist (für Pfeil und Farbe).
 const LABELS: Dictionary = {
 	"top_kmh": {"name": "Endtempo", "unit": "km/h", "digits": 0, "higher": true},
-	"sprint_s": {"name": "Anfahren", "unit": "s", "digits": 2, "higher": false},
+	"sprint_s": {"name": "0–100 km/h", "unit": "s", "digits": 2, "higher": false},
 	"brake_m": {"name": "Bremsweg", "unit": "m", "digits": 1, "higher": false},
 	"radius_m": {"name": "Kurvenradius", "unit": "m", "digits": 1, "higher": false},
 	"slide_m": {"name": "Rutschen", "unit": "m", "digits": 2, "higher": false},
@@ -53,12 +53,12 @@ static func race_top(factors: Dictionary) -> float:
 	return POWERTRAIN.top_speed(factors, POWERTRAIN.race_pace())
 
 
-## 0 auf 95 % Endtempo: gleiche Rampe wie im Rennen (move_toward mit acceleration()).
+## Fixed finish speed: a lower top speed alone cannot earn a quicker sprint.
 static func sprint_seconds(factors: Dictionary) -> float:
 	var top: float = race_top(factors)
 	var speed: float = 0.0
 	var time: float = 0.0
-	while speed < top * 0.95 and time < 30.0:
+	while speed < 100.0 / 3.6 and time < 30.0:
 		speed = move_toward(speed, top, STEP * POWERTRAIN.acceleration(factors, false))
 		time += STEP
 	return time
@@ -150,8 +150,19 @@ static func measure(factors: Dictionary) -> Dictionary:
 		"offroad_kmh": race_top(factors) * float(factors.get("offroad", 0.54)) * 3.6,
 		"air_deg": air_degrees(factors),
 		"landing_s": POWERTRAIN.landing_settle(factors, 9.0),
-		"bump_pct": float(factors.get("stability", 0.45)) * 100.0,
+		"bump_pct": _rival_contact_speed(factors),
 	}
+
+
+## A rival contact in _track_events limits the target for 0.25 seconds.
+## Integrate those race ticks: the kart does not instantly reach that limit.
+static func _rival_contact_speed(factors: Dictionary) -> float:
+	var top := race_top(factors)
+	var speed := top
+	var target := top * float(factors.get("stability", 0.45))
+	for tick in 15:
+		speed = move_toward(speed, target, STEP * POWERTRAIN.contact_deceleration(factors))
+	return 100.0 * speed / top
 
 
 static func format_value(metric: String, value: float) -> String:
@@ -175,6 +186,23 @@ static func verdict(metric: String, before: float, after: float) -> int:
 		return 0
 	var better: bool = delta > 0.0 if bool(info.get("higher", true)) else delta < 0.0
 	return 1 if better else -1
+
+
+## Describe the physical direction; colour separately conveys the advantage/trade-off.
+static func change_word(metric: String, before: float, after: float) -> String:
+	if verdict(metric, before, after) == 0:
+		return "gleich"
+	var more := after > before
+	match metric:
+		"top_kmh", "boost_kmh", "offroad_kmh":
+			return "schneller" if more else "langsamer"
+		"sprint_s", "drift_s":
+			return "später" if more else "früher"
+		"brake_m", "boost_s", "landing_s":
+			return "länger" if more else "kürzer"
+		"radius_m":
+			return "weiter" if more else "enger"
+	return "mehr" if more else "weniger"
 
 
 ## Werte für die Anzeige eines Teilewechsels: zuerst die geänderten Werte des Steckplatzes,

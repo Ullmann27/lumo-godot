@@ -2212,6 +2212,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 		axis = _passage_steer_assist(axis, road)
 	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
+	if hit_timer > 0.0 and braking <= 0.1 and target >= 0.0 and target < speed:
+		acceleration = POWERTRAIN.contact_deceleration(kart_factors)
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
 	if not airborne or boost_active:

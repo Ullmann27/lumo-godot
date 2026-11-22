@@ -1,16 +1,6 @@
 extends Control
-## „Teile wechseln“ direkt beim gewählten Kart (Garage, Schritt „Karts“) – schon bei 0 Sternen.
-##
-## Ablauf wie ein kindgerechter Fahrzeugkonfigurator:
-##   „Teile wechseln“ → Steckplatz (Motor, Reifen, Flügel, Turbo, Fahrwerk, Radkappe,
-##   Auspuff) → Kamera fährt kurz ans Teil → gerenderte Teilebilder (Serie immer dabei) →
-##   Antippen zeigt die Variante sofort am Kart und auf dem Prüfstand den gemessenen
-##   Unterschied (vorher → nachher, kart_dyno.gd) → „Montieren“ speichert (pro Kinderprofil
-##   und Kart, kart_tuning.gd), „Zurück“ verwirft die offene Vorschau. Gesperrte Teile zeigen
-##   ihren Sternpreis und lassen sich mit verdienten Sternen freischalten (kein Kauf).
-##   Radkappe und Auspuff sind reine Optik: „Aussehen“.
-## Dazu „Werte“: die fünf vollständigen, beschrifteten Fahrwerte des gewählten Karts.
-## Die Knöpfe sind mindestens 48 dp groß; nichts blinkt.
+## Parts are previewed together on the selected kart and compared to its installed build.
+## The configurator and the live product view use separate, measured layout rectangles.
 
 signal parts_mounted(kart_id: String)
 
@@ -23,10 +13,7 @@ const PART_CATALOG = preload("res://scripts/games/kart_part_catalog.gd")
 const BETTER := Color("7dff9a")
 const WORSE := Color("ffb26b")
 const SAME := Color("c9d6e6")
-## Breite eines Steckplatz-Knopfs in dp (Höhe 52 dp).
-const SLOT_WIDTH := 92.0
 const THUMBS := "res://assets/kart/production/parts/thumbs/%s.png"
-const ACCENT := Color("ff9a3c")
 
 var menu
 var open_button: Button
@@ -36,8 +23,8 @@ var stats_panel: PanelContainer
 var stats_bars
 var stats_title: Label
 var title_label: Label
-var slot_buttons: Dictionary = {}
-var slot_row: HFlowContainer
+var category: OptionButton
+var tile_scroll: ScrollContainer
 var body_scroll: ScrollContainer
 var tile_row: HBoxContainer
 ## Prüfstand: gemessene Werte vorher → nachher für das angetippte Teil.
@@ -57,7 +44,7 @@ var _open := false
 var _scale := 1.0
 var _inspection: Node3D
 var _drawer := Rect2()
-var _stage := Rect2()
+var _angle_before := 0.0
 
 
 func setup(owner_menu) -> void:
@@ -96,7 +83,7 @@ func _style(fill: Color, border: Color, radius: int = 22) -> StyleBoxFlat:
 func _action(text: String, callback: Callable, fill: Color, ink: Color) -> Button:
 	var button := Button.new()
 	button.text = text
-	button.focus_mode = Control.FOCUS_NONE
+	button.focus_mode = Control.FOCUS_ALL
 	button.add_theme_font_override("font", UI.HEADING)
 	button.add_theme_color_override("font_color", ink)
 	button.add_theme_color_override("font_hover_color", ink)
@@ -106,8 +93,9 @@ func _action(text: String, callback: Callable, fill: Color, ink: Color) -> Butto
 	button.add_theme_stylebox_override("normal", normal)
 	button.add_theme_stylebox_override("hover", hover)
 	button.add_theme_stylebox_override("pressed", hover)
-	button.add_theme_stylebox_override("focus", normal)
-	button.add_theme_stylebox_override("disabled", normal)
+	button.add_theme_stylebox_override("focus", hover)
+	button.add_theme_stylebox_override("disabled", _style(Color("24394f"), Color("58738c")))
+	button.add_theme_color_override("font_disabled_color", Color("cfdae4"))
 	button.pressed.connect(callback)
 	return button
 
@@ -170,9 +158,21 @@ func _build_panel() -> void:
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 8)
 	column.add_child(head)
-	title_label = _label("Teile wechseln", 20, Color("ffe7a8"))
+	title_label = _label("Teilewerkstatt", 20, Color("f2f7ff"))
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title_label)
+	category = OptionButton.new()
+	category.name = "PartsCategory"
+	category.tooltip_text = "Teile-Kategorie wählen"
+	category.fit_to_longest_item = false
+	category.add_theme_font_override("font", UI.HEADING)
+	category.add_theme_stylebox_override("normal", _style(Color("143f57"), Color("63d9ed"), 12))
+	category.add_theme_stylebox_override("hover", _style(Color("20576b"), Color("aeffff"), 12))
+	category.add_theme_stylebox_override("pressed", _style(Color("20576b"), Color("aeffff"), 12))
+	for id in TUNING.PART_SLOTS:
+		category.add_item(TUNING.SLOT_NAMES[id])
+	category.item_selected.connect(func(index: int): _on_slot(TUNING.PART_SLOTS[index]))
+	head.add_child(category)
 	# Steckplätze, Teilebilder und Prüfstand rollen senkrecht, wenn der Konfigurator flach ist
 	# (Querformat: linke Spalte); „Zurück“ und „Montieren“ bleiben immer unten sichtbar.
 	body_scroll = ScrollContainer.new()
@@ -185,32 +185,17 @@ func _build_panel() -> void:
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body_scroll.add_child(body)
 	column = body
-	# Sieben Steckplätze; sie brechen in eine zweite Reihe um, statt abgeschnitten zu werden.
-	slot_row = HFlowContainer.new()
-	slot_row.name = "PartsSlotRow"
-	slot_row.add_theme_constant_override("h_separation", 8)
-	slot_row.add_theme_constant_override("v_separation", 8)
-	column.add_child(slot_row)
-	for id in TUNING.PART_SLOTS:
-		var button := _action(
-			str(TUNING.SLOT_NAMES[id]),
-			_on_slot.bind(id),
-			Color(0.05, 0.25, 0.45, 0.95),
-			Color.WHITE
-		)
-		button.name = "PartsSlot_" + id
-		button.toggle_mode = true
-		slot_row.add_child(button)
-		slot_buttons[id] = button
-	var scroll := ScrollContainer.new()
-	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(scroll)
+	tile_scroll = ScrollContainer.new()
+	tile_scroll.name = "PartVariants"
+	tile_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	tile_scroll.follow_focus = true
+	column.add_child(tile_scroll)
 	tile_row = HBoxContainer.new()
 	tile_row.add_theme_constant_override("separation", 10)
 	tile_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.add_child(tile_row)
+	tile_scroll.add_child(tile_row)
+	tile_row.sort_children.connect(_reveal_current_tile, CONNECT_DEFERRED)
 	_build_dyno(column)
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
@@ -242,8 +227,8 @@ func _build_dyno(column: VBoxContainer) -> void:
 	dyno_box.add_child(dyno_title)
 	dyno_grid = GridContainer.new()
 	dyno_grid.name = "PartsDynoGrid"
-	dyno_grid.columns = 5
-	dyno_grid.add_theme_constant_override("h_separation", 10)
+	dyno_grid.columns = 3
+	dyno_grid.add_theme_constant_override("h_separation", 6)
 	dyno_grid.add_theme_constant_override("v_separation", 2)
 	dyno_box.add_child(dyno_grid)
 	dyno_text = _label("", 15, Color.WHITE)
@@ -278,6 +263,8 @@ func preview_look() -> Dictionary:
 func _on_open() -> void:
 	if _open:
 		return
+	_angle_before = menu.preview_angle
+	menu._choose_preview_view(0, false)
 	_open = true
 	pending = {}
 	stats_panel.hide()
@@ -296,8 +283,9 @@ func _on_stats() -> void:
 
 func _on_slot(slot_id: String) -> void:
 	slot = slot_id
-	for id in slot_buttons:
-		slot_buttons[id].set_pressed_no_signal(id == slot)
+	category.select(TUNING.PART_SLOTS.find(slot))
+	tile_scroll.scroll_horizontal = 0
+	body_scroll.scroll_vertical = 0
 	_build_tiles()
 	_focus_camera()
 
@@ -313,9 +301,8 @@ func _build_tiles() -> void:
 		var tile := Button.new()
 		tile.name = "PartTile_%s_%s" % [slot, id]
 		tile.toggle_mode = true
-		tile.focus_mode = Control.FOCUS_NONE
+		tile.focus_mode = Control.FOCUS_ALL
 		tile.set_pressed_no_signal(id == current)
-		var chosen := id == current
 		tile.add_theme_stylebox_override(
 			"normal", _style(Color(0.05, 0.13, 0.27, 0.95), Color(0.4, 0.7, 0.95, 0.5), 18)
 		)
@@ -347,16 +334,26 @@ func _build_tiles() -> void:
 			picture.texture = load(path)
 		box.add_child(picture)
 		var name_label := _label(str(option.name), 14, Color.WHITE)
+		name_label.clip_text = true
+		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		tile.tooltip_text = str(option.name)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(name_label)
-		var tag := _label(_tag_text(option, id), 11, _tag_colour(id))
+		var tag := _label(_tag_text(option, id), 12, _tag_colour(id))
 		tag.name = "PartTag"
 		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		box.add_child(tag)
 		tile_row.add_child(tile)
 		tiles[id] = tile
 	_apply_tile_size()
+	_reveal_current_tile.call_deferred()
 	_refresh_dyno()
+
+
+func _reveal_current_tile() -> void:
+	var tile: Button = tiles.get(_current(slot))
+	if _open and is_instance_valid(tile) and tile.is_visible_in_tree():
+		tile_scroll.ensure_control_visible(tile)
 
 
 func _is_look_slot(slot_id: String) -> bool:
@@ -376,8 +373,7 @@ func _tag_text(option: Dictionary, id: String) -> String:
 	var mounted: bool = id == _saved(slot)
 	if not _owned(slot, id):
 		return "★ %d" % int(option.get("cost", 0))
-	var text: String = "Aussehen" if _is_look_slot(slot) else str(option.get("short", ""))
-	return text + ("  ✓" if mounted else "")
+	return "Montiert" if mounted else "Verfügbar"
 
 
 func _tag_colour(id: String) -> Color:
@@ -390,10 +386,15 @@ func _current(slot_id: String) -> String:
 
 func _on_tile(id: String) -> void:
 	if id == _current(slot):
+		tiles[id].set_pressed_no_signal(true)
 		return
-	pending[slot] = id
+	if id == _saved(slot):
+		pending.erase(slot)
+	else:
+		pending[slot] = id
 	for key in tiles:
 		tiles[key].set_pressed_no_signal(key == id)
+	_reveal_current_tile.call_deferred()
 	var vehicle = _vehicle()
 	if vehicle != null:
 		vehicle.apply_parts(preview_look(), "" if menu.reduced_motion else slot)
@@ -413,111 +414,83 @@ func _refresh_dyno() -> void:
 	var id: String = _current(slot)
 	var option: Dictionary = TUNING.option(slot, id)
 	var workshop = _workshop()
-	if _is_look_slot(slot) or workshop == null:
-		dyno_title.text = "Aussehen"
-		dyno_text.text = "Nur fürs Aussehen – fährt genau wie vorher."
+	var defaults: Array = PART_CATALOG.SLOT_METRICS.get(slot, [])
+	var has_performance_change := false
+	for key in pending:
+		has_performance_change = has_performance_change or PART_CATALOG.is_slot(key)
+	if workshop == null or (defaults.is_empty() and not has_performance_change):
+		dyno_title.text = str(option.name)
+		dyno_text.text = "Ändert das Aussehen. Die Fahrwerte bleiben gleich."
 		_sync_action()
 		return
-	var saved_id: String = _saved(slot)
 	var before: Dictionary = DYNO.measure(workshop.multipliers(_kart_id()))
-	var after: Dictionary = DYNO.measure(workshop.multipliers_with(_kart_id(), {slot: id}))
-	dyno_title.text = (
-		"Prüfstand: %s → %s" % [str(TUNING.option(slot, saved_id).name), str(option.name)]
-		if id != saved_id
-		else "Prüfstand: %s (montiert)" % str(option.name)
-	)
-	for metric in PART_CATALOG.SLOT_METRICS[slot]:
-		var old_value: float = float(before[metric])
-		var new_value: float = float(after[metric])
+	var after: Dictionary = DYNO.measure(workshop.multipliers_with(_kart_id(), pending))
+	dyno_title.text = "Prüfstand · Montiert → Vorschau" if has_performance_change else "Prüfstand · Montiert"
+	for metric in DYNO.display_metrics(defaults, before, after):
+		var old_value := float(before[metric])
+		var new_value := float(after[metric])
 		dyno_values[metric] = [old_value, new_value]
-		var verdict: int = DYNO.verdict(metric, old_value, new_value)
-		var colour: Color = BETTER if verdict > 0 else (WORSE if verdict < 0 else SAME)
-		var name_label := _label(str(DYNO.LABELS[metric].name), 14, Color("d8ecff"))
-		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		dyno_grid.add_child(name_label)
-		var before_label := _label(DYNO.format_value(metric, old_value), 14, SAME)
-		before_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		dyno_grid.add_child(before_label)
-		dyno_grid.add_child(_label("→", 14, SAME))
-		var after_label := _label(DYNO.format_value(metric, new_value), 15, colour)
-		after_label.name = "DynoAfter_" + metric
-		after_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		dyno_grid.add_child(after_label)
-		var word := _label(
-			"besser" if verdict > 0 else ("weniger" if verdict < 0 else "gleich"), 12, colour
-		)
-		dyno_grid.add_child(word)
-	dyno_text.text = str(option.get("text", ""))
+		var verdict := DYNO.verdict(metric, old_value, new_value)
+		var colour := BETTER if verdict > 0 else (WORSE if verdict < 0 else SAME)
+		var metric_name := _label(DYNO.LABELS[metric].name, 14, Color("d8ecff"))
+		metric_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		metric_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		dyno_grid.add_child(metric_name)
+		var reading := DYNO.format_value(metric, new_value)
+		if verdict != 0:
+			reading = DYNO.format_value(metric, old_value).get_slice(" ", 0) + " → " + reading
+		var value_label := _label(reading, 14, colour)
+		value_label.name = "DynoAfter_" + metric
+		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		dyno_grid.add_child(value_label)
+		dyno_grid.add_child(_label(DYNO.change_word(metric, old_value, new_value), 13, colour))
+	dyno_text.text = str(option.name) + " · " + str(option.get("text", "Ändert nur das Aussehen."))
 	_apply_dyno_font()
 	_sync_action()
 
 
-## „Montieren“ wird zu „Freischalten · n ★“, wenn das angetippte Teil noch gesperrt ist.
+func _pending_price() -> int:
+	var price := 0
+	for key in pending:
+		if not _owned(key, pending[key]):
+			price += int(TUNING.option(key, pending[key]).cost)
+	return price
+
+
 func _sync_action() -> void:
-	if mount_button == null:
-		return
-	var id: String = _current(slot)
+	title_label.text = "%d Teile gewählt" % pending.size() if pending.size() > 1 else "Teilewerkstatt"
+	var price := _pending_price()
 	var workshop = _workshop()
+	mount_button.text = "Montieren"
 	mount_button.disabled = false
-	if _owned(slot, id) or workshop == null:
-		mount_button.text = "Montieren"
+	if price <= 0 or workshop == null:
 		return
-	var price: int = int(TUNING.option(slot, id).get("cost", 0))
-	if workshop.can_buy_option(slot, id):
+	if price <= workshop.available():
 		mount_button.text = "Freischalten · %d ★" % price
 	else:
-		mount_button.text = "Noch %d ★ sammeln" % maxi(1, price - int(workshop.available()))
+		mount_button.text = "Noch %d ★ sammeln" % (price - workshop.available())
 		mount_button.disabled = true
 
 
 func _apply_dyno_font() -> void:
-	if dyno_grid == null:
-		return
-	_set_dyno_font(1.0)
-	var width: float = panel.size.x
-	if _drawer.has_area():
-		# Querformat (Konfigurator in der linken Spalte): für eine lesbare Prüfstand-Tabelle darf
-		# er etwas in die Bühne wachsen (höchstens ein Viertel ihrer Breite).
-		width = _drawer.size.x
-		var beside: bool = _stage.has_area() and _drawer.position.y <= _stage.get_center().y
-		if beside:
-			var want: float = dyno_grid.get_combined_minimum_size().x + 56.0 * _scale
-			width = clampf(want, _drawer.size.x, _drawer.size.x + _stage.size.x * 0.25)
-		panel.size.x = width
-	# Umbrechender Satz braucht eine feste Breite, sonst rechnet er sich unendlich hoch.
-	dyno_text.custom_minimum_size = Vector2(maxf(80.0, width - 60.0 * _scale), 0)
-	# Reicht auch das nicht, wird die Tabelle kleiner gesetzt, statt den Konfigurator weiter zu
-	# verbreitern. Innenbreite: Rand des Konfigurators, Rahmen des Prüfstands, Rollbalken.
-	var room: float = width - 56.0 * _scale
-	var need: float = dyno_grid.get_combined_minimum_size().x
-	if need > room:
-		_set_dyno_font(maxf(0.6, room / need))
-
-
-func _set_dyno_font(factor: float) -> void:
 	for label in dyno_grid.get_children():
-		var size: int = 15 if str(label.name).begins_with("DynoAfter") else 14
-		if label.get_index() % 5 == 4:
-			size = 12
-		label.add_theme_font_size_override("font_size", roundi(size * _scale * factor))
+		label.add_theme_font_size_override("font_size", roundi((13 if label.get_index() % 3 == 2 else 14) * _scale))
 	dyno_title.add_theme_font_size_override("font_size", roundi(15 * _scale))
-	dyno_text.add_theme_font_size_override("font_size", roundi(15 * _scale))
+	dyno_text.add_theme_font_size_override("font_size", roundi(14 * _scale))
 
 
 func _on_mount() -> void:
 	var workshop = _workshop()
-	var id: String = _current(slot)
-	if workshop != null and not workshop.has_option(slot, id):
-		# Erst freischalten (verdiente Sterne, kein Kauf), dann bleibt der Konfigurator offen.
-		if workshop.buy_option(slot, id):
+	if workshop == null:
+		return
+	if _pending_price() > 0:
+		if workshop.unlock_parts(pending):
 			_build_tiles()
 			if menu.has_method("_refresh_star_label"):
 				menu._refresh_star_label()
 		return
-	if workshop != null:
-		for key in pending:
-			# Gesperrte Vorschauen anderer Steckplätze werden nicht gespeichert.
-			workshop.choose(_kart_id(), key, str(pending[key]))
+	if not workshop.mount_parts(_kart_id(), pending):
+		return
 	pending = {}
 	_close()
 	parts_mounted.emit(_kart_id())
@@ -534,6 +507,8 @@ func _on_back() -> void:
 func _close() -> void:
 	_clear_inspection()
 	_open = false
+	menu.preview_angle = _angle_before
+	menu.preview_pivot.rotation.y = _angle_before
 	_sync()
 	if menu.has_method("_choose_preview_view"):
 		menu._choose_preview_view(0)
@@ -585,75 +560,75 @@ func _inspect_internal(vehicle, kart: Node3D) -> bool:
 	if not bounds.has_surface():
 		_clear_inspection()
 		return false
-	var target := kart.to_global(Vector3(1.95, 1.2, -1.55))
+	var target := kart.to_global(Vector3(1.78, 0.73, -1.12))
 	_inspection.global_position += target - bounds.get_center()
-	var outward := (kart.global_basis * Vector3(1.0, 0.55, -0.82)).normalized()
-	var aspect: float = menu.preview_camera.get_viewport().get_visible_rect().size.aspect()
-	var distance := maxf(0.8, bounds.size.length() * 2.15) * clampf(1.0 / aspect, 1.0, 1.6)
-	menu.preview_camera.h_offset = 0
-	menu.preview_camera.v_offset = 0
-	menu._move_preview_camera(target + outward * distance, target - Vector3.UP * distance * .07,
-		Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE)
 	return true
 
 
-## Kurze Kamerafahrt an den ausgewählten Steckplatz des echten Karts.
 func _focus_camera() -> void:
 	_clear_inspection()
 	var vehicle = _vehicle()
-	if vehicle == null or not menu.has_method("_move_preview_camera"):
+	if vehicle == null:
 		return
+	# Turn the kart on its plinth. The camera always stays inside the studio.
+	var rear := slot in ["engine", "wing", "booster", "exhaust"]
+	menu.preview_angle = PI * 0.86 if rear else -0.25
+	menu.preview_pivot.rotation.y = menu.preview_angle
+	menu._camera_zoom = 1.0
+	if slot in ["steering", "brakes", "gearbox", "ballast"]:
+		_inspect_internal(vehicle, menu.preview_kart)
+	menu._fit_welcome_camera.call_deferred()
+
+
+## A product camera can frame the silhouette exactly without moving behind a studio wall
+## on a narrow Fold screen. Include the exploded component when present.
+func fit_camera(region: Rect2) -> void:
 	var kart: Node3D = menu.preview_kart
-	if slot in ["steering", "brakes", "gearbox", "ballast"] and _inspect_internal(vehicle, kart):
+	if not is_instance_valid(kart) or not region.has_area():
 		return
-	var centre: Vector3 = kart.global_position + Vector3(0, 0.45, 0)
-	var target: Vector3
-	var outward: Vector3
-	var at_wheel: bool = slot in ["wheel_cover", "tires", "suspension"]
-	if at_wheel and not vehicle.wheel_rotors.is_empty():
-		var wheel: Node3D = vehicle.wheel_rotors[0]
-		var eye: Vector3 = menu.preview_camera.global_position
-		for rotor in vehicle.wheel_rotors:
-			# Vorderrad auf der Kameraseite (das der Kamera nächste der beiden vorderen Räder).
-			var front := str(rotor.name).ends_with("FL") or str(rotor.name).ends_with("FR")
-			if (
-				front
-				and (
-					not str(wheel.name).ends_with("FL") and not str(wheel.name).ends_with("FR")
-					or (
-						rotor.global_position.distance_to(eye)
-						< wheel.global_position.distance_to(eye)
-					)
-				)
-			):
-				wheel = rotor
-		target = wheel.global_position
-		outward = (target - centre)
-		outward.y = 0.0
-		outward = outward.normalized() * 1.7 + kart.global_basis.z * -0.75 + Vector3(0, 0.42, 0)
-	else:
-		var marker := vehicle.asset_root.find_child("Boost_R", true, false) as Node3D
-		target = marker.global_position if marker != null else centre
-		if slot in ["engine", "wing", "booster"] and vehicle.has_method("_anchor"):
-			target = vehicle.asset_root.to_global(vehicle._anchor(slot))
-		if slot in ["engine", "wing", "booster"]:
-			# Schräg von hinten oben: Heckdeck, Flügel und Turbo über dem Sitz sichtbar.
-			outward = kart.global_basis.z * 2.1 + kart.global_basis.x * 1.2 + Vector3(0, 1.25, 0)
-		else:
-			outward = kart.global_basis.z * 1.25 + kart.global_basis.x * 0.6 + Vector3(0, 0.38, 0)
-	menu.preview_camera.h_offset = 0.0
-	menu.preview_camera.v_offset = 0.0
-	# Blickpunkt etwas unter dem Teil: es steht dann in der freien Bühne über dem Konfigurator.
-	var look_at: Vector3 = target - Vector3(0, 0.24 if at_wheel else 0.12, 0)
-	menu._move_preview_camera(
-		target + outward, look_at, Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE
-	)
+	var camera: Camera3D = menu.preview_camera
+	var aspect := Vector2(menu.preview_viewport.size).aspect()
+	var direction := Vector3(-2.45, 1.65, -3.8).normalized()
+	var basis := Basis.looking_at(-direction)
+	var bounds := AABB()
+	var found := false
+	for mesh in kart.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == kart.far_mesh:
+			continue
+		var box: AABB = Transform3D(basis.inverse(), Vector3.ZERO) * mesh.global_transform * mesh.get_aabb()
+		bounds = bounds.merge(box) if found else box
+		found = true
+	if not found:
+		return
+	var seated = kart.get("lumo_animation")
+	if is_instance_valid(seated) and seated.is_visible_in_tree():
+		var skeleton: Skeleton3D = seated.actor.skeleton
+		var head := skeleton.to_global(skeleton.get_bone_global_pose(skeleton.find_bone("Head")).origin)
+		for side in [-0.5, 0.5]:
+			bounds = bounds.expand(basis.inverse() * (head + Vector3(side, 0.50, 0)))
+	var centre := bounds.get_center()
+	var span := maxf(bounds.size.y / region.size.y, bounds.size.x / (region.size.x * aspect)) * 1.12
+	camera.keep_aspect = Camera3D.KEEP_HEIGHT
+	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	camera.size = span * clampf(menu._camera_zoom, 1.0, 1.25)
+	var optical_centre := Vector3(
+		centre.x - (region.get_center().x - 0.5) * camera.size * aspect,
+		centre.y + (region.get_center().y - 0.5) * camera.size,
+		bounds.end.z + 1.0)
+	camera.h_offset = 0.0
+	camera.v_offset = 0.0
+	camera.global_transform = Transform3D(basis, basis * optical_centre)
+	menu._camera_focus = basis * centre
 
 
 func _sync() -> void:
 	var garage_page: bool = (
 		menu != null and int(menu.step) == 2 and not bool(menu.get("_landing_active"))
 	)
+	if not garage_page and _open:
+		_clear_inspection()
+		pending.clear()
+		_open = false
 	open_button.visible = garage_page and not _open
 	stats_button.visible = garage_page and not _open
 	panel.visible = garage_page and _open
@@ -674,17 +649,19 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	for button in [open_button, stats_button, mount_button, back_button]:
 		button.add_theme_font_size_override("font_size", roundi(17 * ui_scale))
 		button.custom_minimum_size.y = button_height
-	var compact_drawer := drawer.size.x < 320.0 * ui_scale
-	for id in slot_buttons:
-		var tab: Button = slot_buttons[id]
-		tab.add_theme_font_size_override(
-			"font_size", roundi((14 if compact_drawer else 16) * ui_scale)
-		)
-		tab.custom_minimum_size = Vector2((78 if compact_drawer else 104) * ui_scale, button_height)
-		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		tab.clip_text = true
-	title_label.visible = not compact_drawer
-	title_label.add_theme_font_size_override("font_size", roundi(20 * ui_scale))
+	var compact := drawer.size.x < 380.0 * ui_scale
+	category.custom_minimum_size = Vector2((108 if compact else 150) * ui_scale, 48 * ui_scale)
+	category.add_theme_font_size_override("font_size", roundi(16 * ui_scale))
+	var popup := category.get_popup()
+	popup.add_theme_constant_override("v_separation", roundi(16 * ui_scale))
+	popup.add_theme_font_size_override("font_size", roundi(17 * ui_scale))
+	title_label.add_theme_font_size_override("font_size", roundi((18 if compact else 21) * ui_scale))
+	title_label.clip_text = true
+	back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	back_button.text = "Zurück"
+	back_button.custom_minimum_size.x = 65 * ui_scale
+	for action in [back_button, mount_button]:
+		action.add_theme_font_size_override("font_size", roundi((14 if compact else 16) * ui_scale))
 	stats_title.add_theme_font_size_override("font_size", roundi(18 * ui_scale))
 	stats_bars.row_height = 26.0 * ui_scale
 	stats_bars.font_scale = ui_scale
@@ -729,46 +706,20 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	)
 	stats_panel.size = stats_size
 	_drawer = drawer
-	_stage = stage
 	_apply_tile_size()
 	_sync()
 
 
-## Reihen der Steckplatz-Knöpfe bei der Breite des Konfigurators.
-func _slot_rows(width: float) -> int:
-	var inner: float = width - 20.0 * _scale
-	# Gleiche Knopfbreite wie in relayout() (schmaler Konfigurator: 78, sonst 104).
-	var slot_w: float = SLOT_WIDTH * _scale
-	if not slot_buttons.is_empty():
-		slot_w = maxf(1.0, (slot_buttons.values()[0] as Button).custom_minimum_size.x)
-	var per_row: int = maxi(1, floori((inner + 8.0 * _scale) / (slot_w + 8.0 * _scale)))
-	return ceili(float(slot_buttons.size()) / float(per_row))
-
-
-## Konfigurator: liegt auf der Auswahl-Fläche und wächst, wo nötig, in die Bühne hinein
-## (höchstens bis 40 % ihrer Höhe), damit Teilebilder, Prüfstand und Knöpfe Platz haben.
-## Die Teilebilder bekommen, was übrig bleibt; nichts ragt über die Fußleiste.
 func _apply_tile_size() -> void:
-	var drawer: Rect2 = _drawer if _drawer.has_area() else Rect2(panel.position, panel.size)
-	var gap: float = 8.0 * _scale
-	var slots_h: float = _slot_rows(drawer.size.x) * (52.0 + 8.0) * _scale - gap
-	var dyno_h: float = 4.0 * 24.0 * _scale + 50.0 * _scale
-	var fixed: float = 20.0 * _scale + 30.0 * _scale + slots_h + 52.0 * _scale + dyno_h + gap * 4.0
-	var wanted_edge: float = 150.0 * _scale
-	var top: float = drawer.position.y
-	var below_stage: bool = _stage.has_area() and drawer.position.y > _stage.get_center().y
-	if below_stage:
-		top = minf(top, drawer.end.y - fixed - wanted_edge)
-		top = maxf(top, _stage.position.y + _stage.size.y * 0.4)
-	var rect := Rect2(drawer.position.x, top, drawer.size.x, drawer.end.y - top)
-	var edge: float = clampf(rect.size.y - fixed, 64.0 * _scale, 170.0 * _scale)
-	for id in tiles:
-		tiles[id].custom_minimum_size = Vector2(edge * 0.95, edge)
-		for label in tiles[id].find_children("*", "Label", true, false):
-			label.add_theme_font_size_override(
-				"font_size", roundi((14 if label.get_index() == 1 else 11) * _scale)
-			)
-	panel.reset_size()
-	panel.position = rect.position
-	panel.size = rect.size
+	if not _drawer.has_area():
+		return
+	var tile_width := clampf(_drawer.size.x / _scale * 0.29, 108.0, 152.0)
+	var tile_height := clampf(_drawer.size.y / _scale * 0.27, 84.0, 132.0)
+	for tile in tiles.values():
+		tile.custom_minimum_size = Vector2(tile_width, tile_height) * _scale
+		for label in tile.find_children("*", "Label", true, false):
+			label.add_theme_font_size_override("font_size", roundi((14 if label.get_index() == 1 else 12) * _scale))
+	tile_scroll.custom_minimum_size.y = tile_height * _scale + tile_scroll.get_h_scroll_bar().get_combined_minimum_size().y
+	panel.position = _drawer.position
+	panel.size = _drawer.size
 	_apply_dyno_font()

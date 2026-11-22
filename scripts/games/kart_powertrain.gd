@@ -33,6 +33,12 @@ static func acceleration(factors: Dictionary, braking: bool) -> float:
 	)
 
 
+## A stable kart sheds speed more slowly during the short rival-contact window.
+## The stock Comet retains the existing deceleration.
+static func contact_deceleration(factors: Dictionary) -> float:
+	return acceleration(factors, false) * (1.0 - float(factors.get("stability", 0.45))) / 0.55
+
+
 ## Straight asphalt stop using the same 60 Hz velocity response as _drive_player.
 ## The old workshop added a fixed 1.5 m lag, which became wrong at the new pace.
 static func stopping_distance(factors: Dictionary, initial_speed: float = 20.0) -> float:

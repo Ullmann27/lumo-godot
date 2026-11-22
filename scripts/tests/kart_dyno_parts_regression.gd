@@ -74,6 +74,20 @@ func _run() -> void:
 				"%s/%s: Vorteil und Nachteil stehen in der Prüfstand-Anzeige" % [slot, entry.id]
 			)
 		_check(free == 2, "%s: Serie und genau eine Variante frei" % slot)
+	# Rounding and physical limits can differ between chassis. Check every
+	# purchasable mechanical part against its own stock vehicle.
+	for kart_id in FLEET.ids():
+		var factory: Dictionary = FLEET.multipliers(FLEET.base_stats(kart_id), FLEET.entry(kart_id).traits)
+		var stock := DYNO.measure(factory)
+		for slot in CATALOG.SLOTS:
+			for part in CATALOG.options(slot):
+				if part.id == "serie":
+					continue
+				var proposed := DYNO.measure(CATALOG.apply(factory, {slot: part.id}))
+				var gain := false
+				for metric in DYNO.display_metrics(CATALOG.SLOT_METRICS[slot], stock, proposed):
+					gain = gain or DYNO.verdict(metric, stock[metric], proposed[metric]) > 0
+				_check(gain, "%s/%s/%s: sichtbarer Fahrvorteil zur Serie" % [kart_id, slot, part.id])
 	_finish()
 
 
