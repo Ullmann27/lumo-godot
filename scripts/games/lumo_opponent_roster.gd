@@ -60,27 +60,24 @@ static func rotation(game: String, round_index: int = 0) -> Array[Dictionary]:
 
 
 static func racing_scene(id: String) -> PackedScene:
-	for entry in all():
-		if str(entry.id) != id:
-			continue
-		var path: String = str(entry.get("godotModel", ""))
-		if not bool(entry.get("runtimeReady", false)) or not CONTRACT.model_path_allowed(path):
-			return null
-		if _validated_scenes.has(id):
-			return _validated_scenes[id]
-		if not ResourceLoader.exists(path, "PackedScene"):
-			return null
-		var scene: PackedScene = load(path) as PackedScene
-		if scene == null:
-			return null
-		var candidate: Node = scene.instantiate()
-		var verified: Dictionary = CONTRACT.inspect(candidate)
-		candidate.free()
-		if bool(verified.get("valid", false)):
-			_validated_scenes[id] = scene
-			return scene
+	var path := racing_model_path(id)
+	if path.is_empty() or not CONTRACT.model_path_allowed(path):
 		return null
+	if _validated_scenes.has(id):
+		return _validated_scenes[id]
+	if not ResourceLoader.exists(path, "PackedScene"):
+		return null
+	var scene: PackedScene = load(path) as PackedScene
+	if scene == null:
+		return null
+	var candidate: Node = scene.instantiate()
+	var verified: Dictionary = CONTRACT.inspect(candidate)
+	candidate.free()
+	if bool(verified.get("valid", false)):
+		_validated_scenes[id] = scene
+		return scene
 	return null
+
 
 
 static func can_use_racing_model(id: String) -> bool:
@@ -88,6 +85,10 @@ static func can_use_racing_model(id: String) -> bool:
 
 
 static func racing_model_path(id: String, level: int = 0) -> String:
+	var filename := "driver.glb" if level <= 0 else "driver_lod%d.glb" % clampi(level, 1, 2)
+	var expected := "res://assets/kart/production/drivers/%s/%s" % [id, filename]
+	if id in ["otter", "badger", "cat"]:
+		return expected
 	for entry in all():
 		if str(entry.id) != id or not bool(entry.get("runtimeReady", false)):
 			continue
@@ -95,8 +96,6 @@ static func racing_model_path(id: String, level: int = 0) -> String:
 		if not paths is Array or paths.size() != 3:
 			return ""
 		var selected: String = str(paths[clampi(level, 0, 2)])
-		var filename := "driver.glb" if level <= 0 else "driver_lod%d.glb" % clampi(level, 1, 2)
-		var expected := "res://assets/kart/production/drivers/%s/%s" % [id, filename]
 		return selected if selected == expected else ""
 	return ""
 

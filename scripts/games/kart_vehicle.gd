@@ -1904,7 +1904,7 @@ func _make_racing_sleeve(limb: Node3D, side: float, is_lumo: bool) -> void:
 
 
 func _build_production_driver() -> bool:
-	if companion_mode or animal not in ["rabbit", "lion", "squirrel", "owl", "turtle", "frog"]:
+	if companion_mode or PRODUCTION_DRIVER.ROSTER.racing_model_path(animal).is_empty():
 		return false
 	wheel_rest_grips.clear()
 	if is_instance_valid(production_vehicle):
