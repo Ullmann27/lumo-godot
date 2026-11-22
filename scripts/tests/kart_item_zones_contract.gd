@@ -159,6 +159,11 @@ func _course(track: String) -> void:
 	# Runde 2: der Rundenschlüssel gibt jedes Prisma wieder frei.
 	if not zones.is_empty():
 		var first: int = zones[0].boxes[0]
+		game.item = "shield"
+		game.player.position = game.catalog_boxes[first].position
+		game._collect_catalog_boxes(0)
+		_check(game.item == "shield" and game.catalog_boxes[first].visible, "Ein voller Taktikplatz lässt den Vorrat auf der Strecke liegen")
+		game.item = ""
 		game.catalog_box_collected[0 * game.catalog_boxes.size() + first] = true
 		game.distance = length + 5.0
 		game._sync_item_box_visibility()

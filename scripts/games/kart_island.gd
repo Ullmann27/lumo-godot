@@ -6187,17 +6187,21 @@ func _collect_catalog_boxes(lap: int) -> void:
 			continue
 		if player.position.distance_to(catalog_boxes[i].position) > CATALOG_BOX_RADIUS:
 			continue
+		var box: Node3D = catalog_boxes[i]
+		if not item.is_empty():
+			# Like rivals, a child keeps the current item and may come back for the prism.
+			if int(box.get_meta("last_full_lap", -1)) != lap:
+				box.set_meta("last_full_lap", lap)
+				item_telemetry.note_full(-1, lap, elapsed)
+			continue
 		catalog_box_collected[key] = true
-		catalog_boxes[i].visible = false
-		_fx("item_box", catalog_boxes[i].global_position)
-		if item.is_empty():
-			var prism_at: Vector3 = catalog_boxes[i].global_position
-			_grant_item_with_roulette(_roll_catalog_item(_place()), prism_at)
-			MYSTERY_PRISM.shatter(race_root, catalog_boxes[i].global_position, reduced_motion)
-			item_telemetry.note_draw(-1, _place(), item, lap, elapsed)
-			message.text = "Überraschung!"
-		else:
-			item_telemetry.note_full(-1, lap, elapsed)
+		box.visible = false
+		var prism_at := box.global_position
+		_fx("item_box", prism_at)
+		_grant_item_with_roulette(_roll_catalog_item(_place()), prism_at)
+		MYSTERY_PRISM.shatter(race_root, prism_at, reduced_motion)
+		item_telemetry.note_draw(-1, _place(), item, lap, elapsed)
+		message.text = "Überraschung!"
 
 
 func _rival_collect_catalog_box(index: int) -> void:
