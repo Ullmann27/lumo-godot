@@ -300,11 +300,10 @@ func _build_start() -> void:
 	)
 	column.add_child(row)
 	var save_text: String = str(data.get("save", ""))
-	var go: Button = _button(
-		"LOSFLIEGEN!", "StartFlight", func() -> void: start_pressed.emit(false), true, UI.GOLD, 62.0
-	)
 	if save_text.is_empty():
-		column.add_child(go)
+		column.add_child(_button(
+			"LOSFLIEGEN!", "StartFlight", func() -> void: start_pressed.emit(false), true, UI.GOLD, 62.0
+		))
 	else:
 		var resume: Button = _button(
 			"Weiterfliegen · %s" % save_text,
