@@ -217,6 +217,12 @@ func _build_start() -> void:
 		)
 	var title: Label = UI.label("LUMOS STERNENPOST", 40.0 if not wide else 38.0, u, UI.GOLD, true)
 	title.name = "Title"
+	title.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var font := title.get_theme_font("font")
+	var heading_size := title.get_theme_font_size("font_size")
+	var text_width := font.get_string_size(title.text, HORIZONTAL_ALIGNMENT_LEFT, -1, heading_size).x
+	var available_width := maxf(1.0, title_area.size.x - 12.0 * u)
+	title.add_theme_font_size_override("font_size", maxi(1, floori(heading_size * minf(1.0, available_width / text_width))))
 	title.add_theme_color_override("font_outline_color", UI.INK)
 	title.add_theme_constant_override("outline_size", roundi(10.0 * u))
 	title.position = title_area.position
