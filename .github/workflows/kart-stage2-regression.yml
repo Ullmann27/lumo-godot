@@ -30,7 +30,8 @@ permissions:
 jobs:
   kart-stage2:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Die vollständigen Prüfungen mit Software-Renderer benötigen bis zu 25 Minuten.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
