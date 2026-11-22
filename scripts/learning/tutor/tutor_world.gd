@@ -93,6 +93,7 @@ var return_count := 0
 var last_return: Dictionary = {}
 ## Höchste geöffnete Hilfestufe (0 Tipp … 3 Selbst üben).
 var hint_level := 0
+var _grade := 1
 ## Die Zwillingsaufgabe der Stufe „Selbst üben“ ganz ohne Vorzeigen gelöst.
 var twin_solved := false
 var twin_attempts := 0
@@ -156,6 +157,7 @@ func _ready() -> void:
 		capture_options if not capture_options.is_empty() else SceneRouter.launch_options
 	)
 	reduced_motion = bool(options.get("reduceAnimations", false))
+	_grade = clampi(int(options.get("grade", 1)), 1, 4)
 	_speech_enabled = (
 		options.get("learningVoiceEnabled", false) == true
 		and options.get("localVoiceLicenseAccepted", false) == true
@@ -608,7 +610,7 @@ func _restart() -> void:
 	_enter_step(true)
 
 
-func _enter_step(first: bool = false) -> void:
+func _enter_step(first: bool = false, acknowledged: Vector3 = Vector3.INF) -> void:
 	feedback.text = "" if not first else tutor.rueckmeldung
 	_update_material()
 	var step: Dictionary = tutor.current()
@@ -630,7 +632,10 @@ func _enter_step(first: bool = false) -> void:
 		_perform(tutor.demonstrate())
 	else:
 		bubble_role.text = "Du bist dran"
-		_step_back("encourage", _material_focus())
+		if acknowledged.is_finite():
+			_step_back("correct", acknowledged)
+		else:
+			_step_back("encourage", _material_focus())
 	_auto_speak(bubble_text.text)
 	_update_actions()
 
@@ -754,18 +759,19 @@ func _result(outcome: String, focus: Vector3, hint: String = "") -> void:
 		events.append("miss:" + outcome)
 	match outcome:
 		"ok":
-			feedback.text = "Genau!"
+			var observation := _observed_action(tutor.current().aktion)
 			wonder.celebrate(focus)
-			_teacher("correct", focus)
 			tutor.advance()
-			_enter_step()
+			_enter_step(false, focus)
 			if feedback.text.is_empty():
-				feedback.text = "Genau!"
+				feedback.text = observation
 		"gezeigt":
 			_run_shown = true
-			feedback.text = "Ich zeige es dir einmal. Danach machst du weiter."
+			bubble_role.text = "Lumo zeigt"
+			bubble_text.text = _observed_action(tutor.current().aktion)
+			feedback.text = "Ich zeige es dir einmal. Mit „Weiter“ bist du wieder dran."
 			_perform(tutor.current().aktion)
-			_auto_speak(feedback.text)
+			_auto_speak(bubble_text.text + " " + feedback.text)
 			_update_actions()
 		"zu_viel", "falsch":
 			feedback.text = hint
@@ -773,6 +779,32 @@ func _result(outcome: String, focus: Vector3, hint: String = "") -> void:
 			_auto_speak(feedback.text)
 		"noch":
 			feedback.text = ""
+
+
+## Read back the operation that was actually shown or completed, before the
+## next step changes the bead counts or the number-line position.
+func _observed_action(action: Dictionary) -> String:
+	match str(action.art):
+		"perlen":
+			var upper := int(action.reihe1)
+			var lower := int(action.reihe2)
+			if upper == 10:
+				return "Alle zehn Plätze oben sind voll. In der unteren Reihe siehst du %d Perlen." % lower if lower != 1 else "Oben sind zehn Perlen und unten eine."
+			return "Ich zähle oben %d und unten %d Perlen." % [upper, lower]
+		"huepfen":
+			var hops := int(action.nach) - int(action.von)
+			if hops == 1:
+				return "Von %d bis %d ist es genau ein Schritt." % [action.von, action.nach]
+			if _grade <= 2:
+				return "Von %d bis %d sind es %d Schritte." % [action.von, action.nach, hops]
+			return "Zur Startzahl kommt die Sprungweite. %d + %d = %d." % [action.von, hops, action.nach]
+		"zerlegen":
+			if _grade <= 2:
+				return "%d hier, %d dort. Zusammen sind es wieder %d." % [action.teil1, action.teil2, action.ganz]
+			return "Die beiden Teile ergeben wieder das Ganze. %d + %d = %d." % [action.teil1, action.teil2, action.ganz]
+		"ergebnis":
+			return "Das Material zeigt das Ergebnis %d." % int(action.richtig)
+	return str(tutor.current().text)
 
 
 ## Konkrete, ruhige Hilfe zum ersten Fehlgriff – ohne das Ergebnis zu verraten.

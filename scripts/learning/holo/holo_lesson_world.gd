@@ -1037,7 +1037,7 @@ func _after_correct() -> void:
 		focus = reading_room.plates[task.scenes.find(task.answer)].global_position
 	else:
 		feedback.text = "Richtig! „%s“" % task.sentence
-	_teacher("celebrate", camera.global_position)
+	_teacher("celebrate", focus)
 	if not low_effects:
 		wonder.celebrate(focus)
 	events.append("celebrate:%s" % plan.phase)
@@ -1104,6 +1104,7 @@ func _show_math_solution(serial: int) -> void:
 	await _wait(0.4, serial)
 	math_room.show_ten(true)
 	math_room.show_parts(0, 0, int(task.sum) - 10)
+	_teacher("explain", math_room.slot_position(int(task.sum) - 1))
 	events.append("solution_shown")
 
 
@@ -1320,7 +1321,8 @@ func confirm() -> String:
 	var outcome: String = plan.answer(value)
 	events.append("answer:%s=%s" % [value, outcome])
 	if outcome == "wrong":
-		_teacher("encourage", camera.global_position)
+		var touched: Vector3 = word_room.cards[chosen].global_position if chosen >= 0 else word_room.field_spot()
+		_teacher("encourage", touched)
 		if plan.mode != "order":
 			var kind_of: String = task.get("types", _types)[chosen]
 			var help_table: Dictionary = (

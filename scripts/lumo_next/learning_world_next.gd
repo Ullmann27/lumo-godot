@@ -378,6 +378,13 @@ func _update_director_view() -> void:
 	)
 
 
+func _demonstrate_token(index: int) -> void:
+	if is_instance_valid(fox) and fox.is_usable():
+		# The target registry follows the animated mesh all the way to its slot.
+		fox.set_teaching_target_id(str(tokens[index].get_meta("lumo_object_id")))
+		fox.teacher_react("demonstrate")
+
+
 func _teacher(reaction: String, at: Vector3) -> void:
 	if not is_instance_valid(fox) or not fox.is_usable():
 		return
