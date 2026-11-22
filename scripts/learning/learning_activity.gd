@@ -150,6 +150,12 @@ func configure(raw: Dictionary) -> bool:
 				kind = "invalid"
 		_:
 			kind = "invalid"
+	if kind in ["addition", "subtract_ten"] and raw.has("storyPrompt"):
+		var story: Variant = raw.storyPrompt
+		if not story is String or story.length() > 240 or story.strip_edges().is_empty():
+			kind = "invalid"
+		else:
+			task_prompt = story
 	return kind != "invalid"
 
 
@@ -437,6 +443,8 @@ func _pattern_hint_text() -> String:
 
 
 func explanation() -> String:
+	if kind in ["addition", "subtract_ten"] and not task_prompt.is_empty() and placed.is_empty():
+		return task_prompt + " Lege die Geschichte mit Würfeln nach."
 	match kind:
 		"task_card", "clock":
 			if task_choice >= 0:
