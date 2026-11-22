@@ -375,7 +375,7 @@ func _build_landscape() -> void:
 		_build_village_story_beacon()
 		village_residents = RESIDENTS.new()
 		add_child(village_residents)
-		village_residents.configure()
+		village_residents.configure(quality)
 		village_life = LIFE.new()
 		add_child(village_life)
 		village_life.configure(quality)

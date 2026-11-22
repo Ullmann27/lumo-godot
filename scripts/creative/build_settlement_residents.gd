@@ -17,6 +17,7 @@ const FOUNDER_SCENES := [
 const ROLES := ["Nelli · Gärtnerin", "Bruno · Baumeister", "Tilda · Händlerin", "Mara · Zimmerin", "Ari · Löwe"]
 const MAX_VISIBLE_RESIDENTS := 18
 const VISIBLE_RADIUS := 72.0
+var _limit := MAX_VISIBLE_RESIDENTS
 var _kit := KIT.new()
 var _town: Dictionary = {}
 var _opponent := false
@@ -32,9 +33,10 @@ var _cart_moving := false
 var _crowd: Node3D
 
 
-func configure() -> void:
+func configure(quality := "high") -> void:
 	if _crowd != null:
 		return
+	_limit = {"low": 8, "medium": 12, "high": MAX_VISIBLE_RESIDENTS}.get(quality, 12)
 	_crowd = Node3D.new()
 	_crowd.name = "VillageFamilies"
 	add_child(_crowd)
@@ -101,7 +103,7 @@ func _refresh() -> void:
 	var represented := 0
 	var population := maxi(0, int(_town.get("population", 2)))
 	for house in houses:
-		if represented >= mini(MAX_VISIBLE_RESIDENTS, population):
+		if represented >= mini(_limit, population):
 			break
 		var home := YARDS.building_at(house, _opponent)
 		var adults := 1
@@ -115,7 +117,7 @@ func _refresh() -> void:
 				children = clampi(int(household.get("children", 0)), 0, 3)
 				break
 		for member in range(adults + children):
-			if represented >= mini(MAX_VISIBLE_RESIDENTS, population):
+			if represented >= mini(_limit, population):
 				break
 			var identity := posmod(int(str(house.id).trim_prefix("b")) - 1 + member, ROLES.size())
 			_add_resident(home, identity, member >= adults, represented)
@@ -123,7 +125,7 @@ func _refresh() -> void:
 	# The two founders still live at camp while the households occupy their own homes.
 	var center := Vector3(REGION.TOWN_CENTER if _opponent else -REGION.TOWN_CENTER, 0, 5.3)
 	if center.distance_squared_to(_focus) < VISIBLE_RADIUS * VISIBLE_RADIUS:
-		for member in range(mini(2, mini(population, MAX_VISIBLE_RESIDENTS) - represented)):
+		for member in range(mini(2, mini(population, _limit) - represented)):
 			_add_resident(center, 3 + member, false, represented + member)
 	if market_plot >= 0:
 		_cart_home = (
@@ -256,7 +258,7 @@ func advance(delta: float, paused := false) -> void:
 func debug_snapshot() -> Dictionary:
 	return {
 		"visible_residents": _actors.size(),
-		"resident_limit": MAX_VISIBLE_RESIDENTS,
+		"resident_limit": _limit,
 		"has_delivery_cart": _cart != null,
 		"clock": _time
 	}
