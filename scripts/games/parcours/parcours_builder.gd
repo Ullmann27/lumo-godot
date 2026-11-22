@@ -8,6 +8,7 @@ const MESHES = preload("res://scripts/games/parcours/parcours_meshes.gd")
 const SURFACE_SHADER = preload("res://assets/shaders/parcours_surface.gdshader")
 const GLASS_SHADER = preload("res://assets/shaders/parcours_glass.gdshader")
 const KIT = preload("res://scripts/games/parcours/parcours_kit.gd")
+const LANDMARKS = preload("res://scripts/games/parcours/parcours_landmarks.gd")
 const SCENERY = preload("res://scripts/games/parcours/parcours_scenery.gd")
 
 ## Oberflächenstil je Plattenstil: [Shaderstil, Grundfarbe-Schlüssel, Linienfarbe, Leuchtfarbe]
@@ -58,6 +59,7 @@ func build(target_course, light: bool, calm: bool) -> void:
 	_gates()
 	_signs()
 	SCENERY.scenery(self, course, lightweight)
+	LANDMARKS.populate(self, course, lightweight)
 	_count()
 
 
@@ -75,14 +77,15 @@ func _environment() -> void:
 	sky_material.sky_horizon_color = color("sky_horizon")
 	sky_material.ground_horizon_color = color("sky_horizon")
 	sky_material.ground_bottom_color = color("ground")
-	sky_material.sun_angle_max = 18.0
-	sky_material.sky_curve = 0.12
+	sky_material.sky_curve = 0.25
+	sky_material.ground_curve = 0.38
+	sky_material.sun_angle_max = 4.0
 	sky.sky_material = sky_material
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = color("ambient")
-	env.ambient_light_sky_contribution = 0.55
+	env.ambient_light_sky_contribution = 0.24
 	env.ambient_light_energy = float(course.theme.get("ambient_energy", 0.6))
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = float(course.theme.get("exposure", 1.0))
@@ -93,7 +96,7 @@ func _environment() -> void:
 	env.glow_enabled = not lightweight
 	env.glow_intensity = 0.55
 	env.glow_bloom = 0.08
-	env.glow_hdr_threshold = 1.05
+	env.glow_hdr_threshold = 1.45
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 1.12
 	env.adjustment_contrast = 1.06
@@ -155,7 +158,7 @@ func _materials() -> void:
 	for style_id in STYLE_TABLE:
 		materials["surface:" + style_id] = _surface_material(style_id)
 	materials["body"] = lit(color("deck"), 0.55, 0.25)
-	materials["trim"] = glow(color("trim", color("edge")), 0.9)
+	materials["trim"] = glow(color("trim", color("edge")), 0.35)
 	materials["rail"] = lit(color("rail"), 0.35, 0.6)
 	materials["rail_post"] = lit(color("rail_post", color("metal")), 0.4, 0.6)
 	materials["support"] = lit(color("support", color("metal")), 0.6, 0.35)
@@ -165,13 +168,15 @@ func _materials() -> void:
 	materials["solid"] = lit(color("deck").darkened(0.1), 0.7, 0.1)
 	var glass := ShaderMaterial.new()
 	glass.shader = GLASS_SHADER
+	glass.set_shader_parameter("glow_strength", 0.42)
 	glass.set_shader_parameter("base_color", color("glass", Color("9fdcff")))
 	glass.set_shader_parameter("glow_color", color("ice_glow", Color("8ff0ff")))
 	materials["surface:glass"] = glass
 	var glass_body := ShaderMaterial.new()
 	glass_body.shader = GLASS_SHADER
 	glass_body.set_shader_parameter("base_color", color("glass", Color("9fdcff")).darkened(0.2))
-	glass_body.set_shader_parameter("opacity", 0.6)
+	glass_body.set_shader_parameter("opacity", 0.62)
+	glass_body.set_shader_parameter("glow_strength", 0.21)
 	materials["glass_body"] = glass_body
 
 

@@ -4,6 +4,13 @@ extends RefCounted
 ## Wenige zusammengefasste Flächen bzw. MultiMesh, ohne Schatten, nie auf der Fahrbahn.
 
 const KIT = preload("res://scripts/games/parcours/parcours_kit.gd")
+const CLOUD_BANK = preload("res://assets/shaders/parcours_cloudbank.gdshader")
+const TREES = [
+	"res://assets/games/run/jungle/models/palm_a_lod.glb",
+	"res://assets/games/run/jungle/models/tree_fig_lod.glb",
+	"res://assets/games/run/jungle/models/palm_b_lod.glb",
+]
+
 const MESHES = preload("res://scripts/games/parcours/parcours_meshes.gd")
 
 
@@ -72,6 +79,14 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 			"floe":
 				floes.append(item)
 	if not clouds.is_empty():
+		var cloud_sheet := PlaneMesh.new()
+		cloud_sheet.size = Vector2(1700, 1700)
+		var cloud_material := ShaderMaterial.new()
+		cloud_material.shader = CLOUD_BANK
+		var deck := KIT.mesh_node(cloud_sheet, cloud_material, Vector3(0, 12.0, -100))
+		deck.name = "Wolkenmeer"
+		deck.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(deck)
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		var sphere := KIT.sphere_mesh()
@@ -88,12 +103,12 @@ static func scenery(parent: Node3D, course, lightweight: bool) -> void:
 		m.albedo_color = Color(course.theme.get("cloud", Color.WHITE))
 		m.roughness = 1.0
 		m.emission_enabled = true
-		m.emission = Color(course.theme.get("cloud", Color.WHITE)) * 0.35
+		m.emission = Color(course.theme.get("cloud", Color.WHITE)) * 0.08
 		node.material_override = m
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		parent.add_child(node)
 	_far_items(parent, course, far_items)
-	_jungle_trees(parent, course, trees, lightweight)
+	_jungle_trees(parent, trees, lightweight)
 	if not floes.is_empty():
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -292,9 +307,9 @@ static func _water(parent: Node3D, course, item: Dictionary) -> void:
 	plane.size = Vector2.ONE * float(item.size)
 	var m := StandardMaterial3D.new()
 	m.albedo_color = Color(course.theme.get("water", Color("0f3f6b")))
-	m.roughness = 0.12
+	m.roughness = 0.43
 	m.metallic = 0.25
-	m.metallic_specular = 0.8
+	m.metallic_specular = 0.30
 	var node := KIT.mesh_node(plane, m, item.pos)
 	node.name = "Water"
 	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -311,15 +326,28 @@ static func _far_items(parent: Node3D, course, items: Array[Dictionary]) -> void
 		var size: float = float(item.size)
 		match str(item.kind):
 			"mountain":
-				parts.cylinder("rock", p, p + Vector3.UP * size * 1.1, size, size * 0.32, 10)
-				parts.cylinder(
-					"snow",
-					p + Vector3.UP * size * 1.1,
-					p + Vector3.UP * size * 1.55,
-					size * 0.32,
-					0.5,
-					10
-				)
+				# Asymmetric ridges and snow lines break up the silhouettes behind the course.
+				var ridge: Array[Vector3] = []
+				var snowline: Array[Vector3] = []
+				var base: Array[Vector3] = []
+				var seed_angle := size * 0.16
+				var peak := p + Vector3(size * 0.29, size * 1.47, -size * 0.14)
+				for k in 11:
+					var a := TAU * k / 11.0 + seed_angle
+					var radius := size * (0.96 + 0.16 * sin(k * 2.21 + seed_angle))
+					var dir := Vector3(cos(a), 0, sin(a))
+					base.append(p + dir * radius * 1.15)
+					ridge.append(p + dir * radius * 0.66 + Vector3.UP * size * (0.50 + 0.21 * cos(a * 3.0)))
+					snowline.append(p + dir * radius * 0.34 + Vector3.UP * size * (0.92 + 0.16 * sin(a * 3.0 + 0.54)))
+				for k in 11:
+					var n := (k + 1) % 11
+					var outward := (ridge[k] - p).normalized()
+					var normal := (snowline[n] - snowline[k]).cross(peak - snowline[k]).normalized()
+					if normal.y < 0:
+						normal = -normal
+					parts.quad("rock", base[k], base[n], ridge[n], ridge[k], Color.BLACK, [], [], outward)
+					parts.quad("rock", ridge[k], ridge[n], snowline[n], snowline[k], Color.BLACK, [], [], outward)
+					parts.tri("snow", snowline[k], snowline[n], peak, normal)
 			"pine_isle":
 				parts.cylinder(
 					"snow", p + Vector3.DOWN * 1.0, p + Vector3.UP * 1.2, size, size * 0.9, 10
@@ -447,55 +475,32 @@ static func _far_items(parent: Node3D, course, items: Array[Dictionary]) -> void
 	parent.add_child(node)
 
 
-## Urwaldbäume: Stamm, Brettwurzeln und drei Kronenballen; Kronen als MultiMesh.
-static func _jungle_trees(
-	parent: Node3D, course, items: Array[Dictionary], lightweight: bool
-) -> void:
+## Original palm fronds and branching fig canopies batched by species.
+static func _jungle_trees(parent: Node3D, items: Array[Dictionary], lightweight: bool) -> void:
 	if items.is_empty():
 		return
-	var parts = MESHES.new()
-	var crowns: Array[Transform3D] = []
-	var count: int = items.size() if not lightweight else items.size() / 2
-	for i in range(count):
-		var item: Dictionary = items[i]
-		var p: Vector3 = item.pos
-		var size: float = float(item.size)
-		var height: float = size * 3.2
-		parts.cylinder(
-			"trunk", p + Vector3.DOWN * 2.0, p + Vector3.UP * height, size * 0.22, size * 0.12, 8
-		)
-		for k in range(3):
-			var a: float = TAU * k / 3.0 + size
-			var r := Vector3(cos(a), 0, sin(a))
-			parts.cylinder(
-				"trunk",
-				p + r * size * 0.55 + Vector3.DOWN,
-				p + Vector3.UP * size * 0.9,
-				size * 0.08,
-				size * 0.05,
-				5
-			)
-		for k in range(3):
-			var a: float = TAU * k / 3.0 + size * 0.7
-			var offset := Vector3(
-				cos(a) * size * 0.55, height - k * size * 0.25, sin(a) * size * 0.55
-			)
-			var s: float = size * (1.15 - k * 0.12)
-			crowns.append(Transform3D(Basis().scaled(Vector3(s, s * 0.62, s)), p + offset))
-	var node := MeshInstance3D.new()
-	node.name = "JungleTrunks"
-	node.mesh = parts.commit({"trunk": KIT.lit(Color("5b4632"), 0.9)})
-	node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	parent.add_child(node)
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = KIT.sphere_mesh(1.0, 10)
-	mm.instance_count = crowns.size()
-	for i in range(crowns.size()):
-		mm.set_instance_transform(i, crowns[i])
-	var canopy := MultiMeshInstance3D.new()
-	canopy.name = "JungleCanopy"
-	canopy.multimesh = mm
-	canopy.material_override = KIT.lit(Color(course.theme.get("tree", Color("2f7a3a"))), 0.85)
-	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	parent.add_child(canopy)
+	var count := items.size() if not lightweight else ceili(items.size() * 0.65)
+	for species in TREES.size():
+		var instances: Array[Transform3D] = []
+		var source := (load(TREES[species]) as PackedScene).instantiate()
+		var meshes := source.find_children("*", "MeshInstance3D", true, false)
+		var mesh := (source as MeshInstance3D).mesh if source is MeshInstance3D else (meshes[0] as MeshInstance3D).mesh
+		for i in range(species, count, TREES.size()):
+			var item: Dictionary = items[i]
+			var scale_factor := float(item.size) * 3.3 / mesh.get_aabb().size.y
+			var basis := Basis(Vector3.UP, i * 2.399).scaled(Vector3.ONE * scale_factor)
+			instances.append(Transform3D(basis, item.pos + Vector3.DOWN * 0.7))
+		source.free()
+		if instances.is_empty():
+			continue
+		var batch := MultiMesh.new()
+		batch.transform_format = MultiMesh.TRANSFORM_3D
+		batch.mesh = mesh
+		batch.instance_count = instances.size()
+		for i in instances.size():
+			batch.set_instance_transform(i, instances[i])
+		var forest := MultiMeshInstance3D.new()
+		forest.name = "JungleCanopy%d" % species
+		forest.multimesh = batch
+		forest.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(forest)
