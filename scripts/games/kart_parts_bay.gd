@@ -640,9 +640,9 @@ func _sync() -> void:
 		menu.setup_left.visible = not _open
 
 
-## Lage aus dem Garage-Layout: Knöpfe unten in der freien Bühne, der Konfigurator über der
-## Auswahl-Fläche (dort, wo sonst die Kartkarten liegen).
-func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
+## Im Querformat teilen sich die Aktionen eine Werkzeugleiste mit der Ansicht.
+## Auf schmalen Bildschirmen sitzen sie zwischen freier Bühne und Kartauswahl.
+func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> void:
 	_scale = ui_scale
 	var button_height: float = 52.0 * ui_scale
 	var gap: float = 10.0 * ui_scale
@@ -667,32 +667,31 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2) -> void:
 	stats_bars.font_scale = ui_scale
 	var open_width: float = 230.0 * ui_scale
 	var stats_width: float = 110.0 * ui_scale
-	# Die Bühne für die Kamera endet über den Knöpfen; sie liegen direkt darunter.
-	# Direkt über der Kartauswahl, ganz in der Bühne (nicht auf dem Rand der Auswahl).
-	var y: float = stage.end.y + gap * 0.5
-	# Hochformat: Auswahl liegt unter der Bühne, die Knöpfe bleiben darüber. Quer liegt die
-	# Auswahl links neben der Bühne (oben bündig); ihre Oberkante darf die Knöpfe nicht über
-	# die Abschnitts-Reiter schieben (800×480: „Werte“ lag auf dem Reiter „Strecke“).
-	if drawer.position.y > stage.get_center().y:
-		y = minf(y, drawer.position.y - button_height - gap * 0.6)
-	else:
-		# Querformat: Die Auswahl steht neben der Bühne. Die Knöpfe sitzen unten IN der
-		# Bühne – darunter beginnt die Fußleiste („Rennen starten“ lag sonst verdeckt).
-		y = stage.end.y - button_height - gap
-	# Die Knopfzeile bleibt in der Bühne: auf sehr flachen Querformaten (640×320) war sie
-	# breiter als die Bühne und lag über den Kartkarten links daneben.
-	var row_width: float = open_width + stats_width + gap
-	if stage.size.x > 0.0 and row_width > stage.size.x:
-		var fit: float = stage.size.x / row_width
+	# Without a side toolbar the measured camera stage already ends above the action row.
+	var y := stage.end.y + gap * 0.5
+	var row := stage
+	if actions.has_area():
+		row = actions
+		y = actions.position.y
+		button_height = actions.size.y
+		gap = 4.0 * ui_scale
+		stats_width = 56.0 * ui_scale
+		open_width = actions.size.x - stats_width - gap
+		for button in [open_button, stats_button]:
+			button.custom_minimum_size.y = button_height
+			button.add_theme_font_size_override("font_size", roundi(14.0 * ui_scale))
+	var row_width := open_width + stats_width + gap
+	if row.size.x > 0.0 and row_width > row.size.x:
+		var fit := row.size.x / row_width
 		open_width *= fit
 		stats_width *= fit
 		gap *= fit
-		row_width = stage.size.x
+		row_width = row.size.x
 	for button in [open_button, stats_button]:
 		# Schmaler als ihr Text: kürzen statt über die Nachbarn hinauswachsen.
 		button.clip_text = true
 		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	var x: float = maxf(stage.position.x, stage.get_center().x - row_width * 0.5)
+	var x: float = maxf(row.position.x, row.get_center().x - row_width * 0.5)
 	open_button.position = Vector2(x, y)
 	open_button.size = Vector2(open_width, button_height)
 	stats_button.position = Vector2(x + open_width + gap, y)

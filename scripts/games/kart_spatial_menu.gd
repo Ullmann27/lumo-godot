@@ -411,6 +411,7 @@ func _apply_responsive_layout() -> void:
 	var available := size / scale_factor
 	var portrait := available.x < available.y
 	var landscape_workshop := step == 2 and not portrait
+	var side_toolbar := landscape_workshop and available.x >= 590.0
 	var parts_open: bool = step == 2 and parts_bay != null and parts_bay.is_open()
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
@@ -467,10 +468,12 @@ func _apply_responsive_layout() -> void:
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
 		var drawer_width := clampf(available.x * (0.40 if step in [0, 1, 4] else 0.31), 208, 420 if step in [0, 1, 4] else 360)
+		if side_toolbar:
+			drawer_width = clampf(available.x * 0.36, 306.0, 390.0)
 		choices_rect = Rect2(margin, top, drawer_width, maxf(72, footer_y - top - 12))
 	var parts_rect := choices_rect
 	if landscape_workshop:
-		# The view selector belongs above the kart list, outside the camera stage.
+		# Reserve the toolbar above the list without reducing the height of the photo.
 		choices_rect.position.y += 56.0
 		choices_rect.size.y = maxf(48.0, choices_rect.size.y - 56.0)
 		parts_rect.size.y = available.y - margin - top
@@ -540,8 +543,16 @@ func _apply_responsive_layout() -> void:
 	next_button.text = "START" if narrow or ultra_short else "Rennen starten"
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
+	view_choice.fit_to_longest_item = not side_toolbar
+	view_choice.clip_text = side_toolbar
+	view_choice.set_item_text(0, "Rundum" if side_toolbar or narrow else "Rundum ansehen")
+	var actions := Rect2()
 	if landscape_workshop:
-		_stage_rect(view_choice, Rect2(margin, top, choices_rect.size.x, 48.0), scale_factor)
+		var view_width := choices_rect.size.x
+		if side_toolbar:
+			view_width = roundf(choices_rect.size.x * 0.42)
+			actions = Rect2(margin + view_width + 4.0, top, choices_rect.size.x - view_width - 4.0, 48.0)
+		_stage_rect(view_choice, Rect2(margin, top, view_width, 48.0), scale_factor)
 	else:
 		view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 		view_choice.offset_left = -256 * scale_factor
@@ -550,13 +561,14 @@ func _apply_responsive_layout() -> void:
 		view_choice.offset_bottom = (top + 48) * scale_factor
 	view_choice.visible = not _landing_active and step in [1, 2] and not parts_open
 	if parts_bay != null:
-		# Knöpfe in der freien Bühne über der Kartauswahl, Konfigurator über der Auswahl-Fläche.
+		# Projektion und Bedienelemente verwenden dieselben gemessenen Bildschirmflächen.
 		var stage_px := _visible_stage_region()
 		var full := preview_container.get_global_rect()
 		var stage_rect := Rect2(full.position + stage_px.position * full.size, stage_px.size * full.size)
 		var config_area := Rect2(parts_rect.position * scale_factor, parts_rect.size * scale_factor)
 		parts_bay.relayout(
-			scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size), config_area
+			scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size), config_area,
+			Rect2(actions.position * scale_factor, actions.size * scale_factor)
 		)
 	for control in _stage_controls:
 		control.visible = not _landing_active
@@ -668,9 +680,14 @@ func _fit_welcome_camera() -> void:
 				for y in [0.95, 2.02]:
 					for z in [-0.55, 0.4]:
 						points.append(preview_kart.to_global(Vector3(x, y, z)))
+		if garage_stage and aspect >= 1.0:
+			var plinth: MeshInstance3D = garage_interior.turntable.get_parent().get_node("GarageTurntablePlinth")
+			var base := plinth.mesh as CylinderMesh
+			for i in range(48):
+				var angle := TAU * i / 48.0
+				points.append(plinth.to_global(Vector3(cos(angle) * base.bottom_radius, -base.height * 0.5, sin(angle) * base.bottom_radius)))
 		if garage_stage and not points.is_empty():
-			# Bildmitte = Mitte aus Kart, Lumo und Werkbank (nicht der Drehteller allein),
-			# damit die Gruppe das schmale Bild füllt.
+			# Kart und stehender Lumo bestimmen gemeinsam die Bildmitte.
 			var group := AABB(points[0], Vector3.ZERO)
 			for point in points:
 				group = group.expand(point)
@@ -734,22 +751,22 @@ func _visible_stage_region() -> Rect2:
 			clear.position.x = maxf(clear.position.x, drawer.end.x + inset)
 			clear.end.x = right
 		return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
-	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
-	clear.end.y = footer.global_position.y - inset
-	if stage.size.x < stage.size.y:
-		clear.end.y = _selection_surface.global_position.y - inset
-		if view_choice.is_visible_in_tree():
-			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
+	var top := maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
+	var bottom := footer.global_position.y - inset
+	var left := clear.position.x
+	var right := clear.end.x
+	var portrait := size.x < size.y
+	var side_toolbar := step == 2 and not portrait and size.x / _preview_dp_scale() >= 590.0
+	if portrait:
+		bottom = _selection_surface.global_position.y - inset
 	else:
-		clear.position.x = _selection_surface.get_global_rect().end.x + inset
-		clear.end.x = stage.end.x - inset
-		# „Rundum ansehen“ belegt oben rechts nur einen Streifen. Früher schnitt er die ganze
-		# rechte Bühnenseite ab: Kamera weit weg, hinter der Studiowand, Knöpfe über der Auswahl.
-		if view_choice.is_visible_in_tree():
-			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
-	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
-	if step == 2 and parts_bay != null and not _landing_active:
-		clear.end.y -= 62.0 * _preview_dp_scale()
+		left = _selection_surface.get_global_rect().end.x + inset
+	# In the landscape garage all three controls share the kart list's toolbar.
+	if view_choice.is_visible_in_tree() and (portrait or step != 2):
+		top = maxf(top, view_choice.get_global_rect().end.y + inset)
+	if step == 2 and parts_bay != null and not side_toolbar:
+		bottom -= 62.0 * _preview_dp_scale()
+	clear = Rect2(Vector2(left, top), Vector2(right - left, bottom - top))
 	if not clear.has_area():
 		return Rect2(0.36, 0.19, 0.61, 0.60)
 	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
