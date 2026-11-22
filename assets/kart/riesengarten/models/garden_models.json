@@ -33,11 +33,11 @@
  },
  "gartenbahn_lok": {
   "triangles": [
-   4804,
-   2160,
-   768
+   5948,
+   2676,
+   950
   ],
-  "bytes": 305392
+  "bytes": 370224
  },
  "gartenbahn_wagen": {
   "triangles": [
@@ -57,11 +57,11 @@
  },
  "gewaechshaus_bogen": {
   "triangles": [
-   2508,
-   1128,
-   400
+   3980,
+   1790,
+   636
   ],
-  "bytes": 224520
+  "bytes": 308600
  },
  "gewaechshaus_giebel": {
   "triangles": [
@@ -73,11 +73,11 @@
  },
  "giesskanne": {
   "triangles": [
-   3881,
-   1746,
-   617
+   6185,
+   2782,
+   941
   ],
-  "bytes": 167936
+  "bytes": 244676
  },
  "grashalme": {
   "triangles": [
@@ -89,11 +89,11 @@
  },
  "kuerbis": {
   "triangles": [
-   2188,
-   984,
-   393
+   2628,
+   1181,
+   418
   ],
-  "bytes": 74244
+  "bytes": 89492
  },
  "kuerbis_tunnel": {
   "triangles": [
@@ -193,11 +193,11 @@
  },
  "sonnenblume": {
   "triangles": [
-   18104,
-   8146,
-   2838
+   19464,
+   8758,
+   3062
   ],
-  "bytes": 645576
+  "bytes": 702992
  },
  "tomatenbogen": {
   "triangles": [

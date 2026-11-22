@@ -284,6 +284,13 @@ def sunflower():
             base = Vector((math.cos(a) * 7.2, math.sin(a) * 7.2, 0.2 + ring * 0.3))
             leaf(bm2, base, d, Vector((-math.sin(a), math.cos(a), 0)), length + rnd.uniform(-0.5, 0.5), width, mat,
                  droop=-0.06 - 0.04 * ring, curl=0.10, rows=6, cols=4)
+    # Ein dritter, kurzer Kranz eingerollter Blütenblätter fasst die Samenscheibe ein.
+    for i in range(34):
+        angle = math.tau * (i + 0.25) / 34
+        ray = Vector((math.cos(angle), math.sin(angle), 0.65)).normalized()
+        tangent = Vector((-math.sin(angle), math.cos(angle), 0))
+        leaf(bm2, Vector((ray.x * 7.8, ray.y * 7.8, 0.6)), ray, tangent,
+             2.5, 1.05, 5, droop=-0.14, curl=0.15, rows=5, cols=4)
     for i in range(22):
         a = 2 * math.pi * i / 22
         d = Vector((math.cos(a), math.sin(a), -0.5)).normalized()
@@ -355,6 +362,12 @@ def watering_can():
             v.co = (rot @ v.co.to_4d()).to_3d() + Vector((0, y, axis_z))
         for f in {f for v in band["verts"] for f in v.link_faces}:
             f.material_index = 2
+    # Messingnieten auf den beiden gerollten Bändern.
+    for y in (3.0, 44.0):
+        for i in range(24):
+            angle = math.tau * (i + 0.5) / 24
+            sphere(body, (11.25 * math.cos(angle), y, axis_z + 11.25 * math.sin(angle)),
+                   0.26, 2, 8, 4)
     o = obj_from_bmesh("giesskanne", body, [paint, inside, brass])
     bm.free()
     # Loch im Kannenboden für den Ausguss.
@@ -475,6 +488,14 @@ def locomotive():
         for y in (-2.6, 0.4, 3.2):
             tube(bm, [Vector((x, y, 1.15)), Vector((x * 1.12, y, 1.15))], [1.1, 1.1], 18, 0)
             tube(bm, [Vector((x * 1.12, y, 1.15)), Vector((x * 1.16, y, 1.15))], [0.35, 0.35], 10, 3)
+    # Frei liegende Kuppelstangen mit versetzten Kurbelzapfen und Trittstufen.
+    for side in (-1, 1):
+        x = side * 2.08
+        tube(bm, [Vector((x, -2.6, 0.78)), Vector((x, 3.2, 0.78))], [0.16, 0.16], 10, 3)
+        for y in (-2.6, 0.4, 3.2):
+            sphere(bm, (x, y, 0.78), 0.24, 1, 10, 5)
+        for i in range(2):
+            box(bm, (side * (2.1 + 0.18 * i), -3.8, 1.55 - i * 0.42), (0.62, 1.5, 0.12), 3)
     box(bm, (0, 6.1, 1.3), (4.2, 0.4, 0.9), 0)
     for x in (-1.4, 1.4):
         tube(bm, [Vector((x, 6.2, 1.4)), Vector((x, 6.9, 1.4))], [0.35, 0.35], 10, 3)
@@ -538,7 +559,14 @@ def pumpkin():
     lathe(bm, prof, 64, 0, ribs=12, rib_depth=0.09)
     stem = [Vector((0.02 * math.sin(t * 3), 0.05 * t * t, 0.66 + 0.2 * t)) for t in [i / 8 for i in range(9)]]
     tube(bm, stem, [0.085 - 0.03 * (i / 8) for i in range(9)], 8, 1)
-    return finish(obj_from_bmesh("kuerbis", bm, [orange, stalk]))
+    # Die Ranke entspringt am Stiel. Ein eingerolltes Ende ist auch von der Seite lesbar.
+    vine = material("pumpkin_leaf", (0.15, 0.38, 0.065), 0.6)
+    points = [Vector((0.035 + 0.026 * i, 0.08 + 0.055 * math.sin(i * 0.52),
+                      0.77 + 0.05 * math.cos(i * 0.52) - 0.004 * i)) for i in range(21)]
+    tube(bm, points, [0.018 - 0.00055 * i for i in range(len(points))], 8, 2)
+    leaf(bm, points[4], Vector((0.8, 0.5, -0.15)), Vector((-0.5, 0.8, 0)),
+         0.40, 0.30, 2, rows=9, cols=6, heart=True, lobes=2)
+    return finish(obj_from_bmesh("kuerbis", bm, [orange, stalk, vine]))
 
 
 def big_leaf():
@@ -825,6 +853,14 @@ def greenhouse_arch():
         for k in range(1, 4):
             p = a + d * (k / 4)
             box(bm, (p.x, 0, p.z - 0.9), (0.18, 0.18, 1.8), 0)
+    # Diagonalstreben und verschraubte Knotenbleche an den beiden Traufen.
+    for side in (-1, 1):
+        knee = Vector((side * half, 0, eave - 2.2))
+        bracket = Vector((side * (half - 2.4), 0, eave + 1.2))
+        tube(bm, [knee, bracket], [0.15, 0.15], 8, 0)
+        box(bm, (knee.x, 0, knee.z), (0.7, 0.53, 0.88), 1)
+        for dz in (-0.23, 0.23):
+            sphere(bm, (knee.x, -0.27, knee.z + dz), 0.09, 2, 6, 4)
     box(bm, (0, 0, eave + 0.05), (2 * half, 0.25, 0.22), 0)
     box(bm, (0, 0, ridge + 0.3), (1.2, 0.5, 0.5), 0)
     # Bewässerungsrohr (läuft in Godot zwischen den Spanten weiter) und Düsen.
