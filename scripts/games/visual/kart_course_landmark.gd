@@ -1,5 +1,5 @@
 extends RefCounted
-## Ein eigenes Blender-Wahrzeichen steht außen an jeder ausgewiesenen Steilkurve.
+## Eigene Blender-Wahrzeichen an gut sichtbaren Stellen entlang der Steilkurven.
 const PATH := "res://assets/kart/scenery/landmarks/%s.glb"
 
 
@@ -8,12 +8,19 @@ static func place(world, parent: Node3D, low: bool) -> void:
 		if entry.kind != "bank":
 			continue
 		var distance: float = (entry.start + entry.end) * 0.5
+		var approach_site: bool = world.track_id in ["candy_cloud", "volcano_night"]
+		if approach_site:
+			distance += 55.0 if world.track_id == "volcano_night" else -55.0
 		var frame: Basis = world.frame(distance)
 		var outside := -1.0 if frame.x.y < 0.0 else 1.0
+		if approach_site:
+			outside = 1.0
+		elif world.track_id == "crystal_canyon":
+			outside *= -1.0
 		var right := Vector3(frame.x.x, 0, frame.x.z).normalized()
 		var forward: Vector3 = right.cross(Vector3.UP)
 		var center: Vector3 = world.position_at(distance)
-		var offset: float = world.road_width_at(distance) * 0.5 + 12.5
+		var offset: float = world.road_width_at(distance) * 0.5 + (10.0 if approach_site else 12.5)
 		var resource_path := PATH % world.track_id
 		var model := load(resource_path) as PackedScene
 		if model == null:
@@ -22,9 +29,11 @@ static func place(world, parent: Node3D, low: bool) -> void:
 		var landmark := model.instantiate() as Node3D
 		landmark.name = "Kurvenwahrzeichen"
 		parent.add_child(landmark)
-		landmark.position = center + right * outside * offset - Vector3.UP * 1.35
-		landmark.look_at(landmark.global_position - right * outside + forward * .32, Vector3.UP)
-		landmark.scale = Vector3.ONE * 1.8
+		landmark.position = center + right * outside * offset - Vector3.UP * (1.0 if approach_site else 1.35)
+		landmark.look_at(landmark.global_position - right * outside + forward * (0.0 if approach_site else .32), Vector3.UP)
+		landmark.scale = Vector3.ONE * (2.25 if world.track_id == "zauberwald" else 1.8)
+		if approach_site:
+			landmark.scale = Vector3.ONE * (2.4 if world.track_id == "volcano_night" else 2.0)
 		landmark.set_meta("distance", distance)
 		landmark.set_meta("section", entry.id)
 		for level in 3:

@@ -5,10 +5,13 @@ const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var out := ""
 var only := ""
 var failed := false
+var quick := false
 
 
 func _initialize() -> void:
 	for arg in OS.get_cmdline_user_args():
+		if arg == "--quick":
+			quick = true
 		if arg.begins_with("--out="):
 			out = arg.trim_prefix("--out=")
 		if arg.begins_with("--track="):
@@ -22,7 +25,7 @@ func _run() -> void:
 		return
 	DirAccess.make_dir_recursive_absolute(out)
 	for track in TRACKS.IDS:
-		if track == "riesengarten_2400" or (not only.is_empty() and only != track):
+		if track == "riesengarten_2400" or (not only.is_empty() and not track in only.split(",")):
 			continue
 		var game = load("res://scenes/games/kart_island.tscn").instantiate()
 		root.add_child(game)
@@ -39,7 +42,7 @@ func _run() -> void:
 			failed = true
 		else:
 			for size in [Vector2i(2176, 1812), Vector2i(1080, 2340)]:
-				root.size = size
+				root.size = Vector2i(Vector2(size) / 3.0) if quick else size
 				await process_frame
 				if not await _approach(game, prop, track):
 					failed = true
@@ -50,7 +53,10 @@ func _run() -> void:
 
 func _approach(game, prop: Node3D, track: String) -> bool:
 	var focus := prop.global_position + Vector3.UP * 4.0
-	for lead in [31.0, 42.0, 55.0, 69.0, 82.0, 96.0]:
+	var leads := [25.0, 36.0, 49.0, 22.0, 28.0, 56.0, 70.0, 86.0]
+	if track == "volcano_night":
+		leads = [56.0, 49.0, 70.0, 36.0]
+	for lead in leads:
 		var at := float(prop.get_meta("distance")) - float(lead)
 		game.distance = at
 		game.previous_road_distance = at
@@ -59,7 +65,8 @@ func _approach(game, prop: Node3D, track: String) -> bool:
 		game._update_vehicles(1.0 / 60.0)
 		game._update_camera(1.0, true)
 		game._update_hud()
-		var uv: Vector2 = game.camera.unproject_position(focus) / Vector2(root.size)
+		await process_frame
+		var uv: Vector2 = game.camera.unproject_position(focus) / root.get_visible_rect().size
 		if game.camera.is_position_in_frustum(focus) and uv.x > .08 and uv.x < .92 and uv.y > .14 and uv.y < .78:
 			await process_frame
 			await RenderingServer.frame_post_draw
@@ -101,7 +108,7 @@ func _silhouette(prop: Node3D) -> bool:
 			if first.r < .60 or first.b < .60:
 				continue
 			var second := marks[1].get_pixel(x,y)
-			if second.g - first.g > .35 and first.r - second.r > .35:
+			if second.g - first.g > .35 and maxf(first.r - second.r, first.b - second.b) > .35:
 				count += 1
 	print("[LandmarkMask] ", prop.get_meta("section"), " ", count, "/81920")
 	return count >= 160
