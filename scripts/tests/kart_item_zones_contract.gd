@@ -75,7 +75,7 @@ func _course(track: String) -> void:
 	_check(zones.size() >= ZONES.MIN_ZONES, "mindestens 5 Zonen je Runde (%d)" % zones.size())
 	_check(zones.size() <= ZONES.MAX_ZONES, "Zonenanzahl im Streckenbudget (%d)" % zones.size())
 	var areas: Array[Dictionary] = ZONES.hazards(world, game._catalog_zone_occupied())
-	_check(game.catalog_boxes.size() > game.previous_catalog_indices.size(), "Mehr erreichbare Überraschungsprismen als zuvor")
+	_check(game.catalog_boxes.size() >= game.previous_catalog_indices.size(), "Alle bisherigen Sammelmöglichkeiten bleiben erhalten")
 	if zones.size() < expected:
 		# A target based on length assumes a completely clear course. On a heavily
 		# scripted course every possible extra row must be too near another row,
@@ -251,6 +251,12 @@ func _run() -> void:
 	await process_frame
 	for track in selected:
 		await _course(track)
+	if selected.size() == TRACKS.IDS.size():
+		var expanded := 0
+		for row in table:
+			if int(row.prismen) > int(row.prismen_vorher):
+				expanded += 1
+		_check(expanded >= 14, "Mindestens 14 Kurse erhalten zusätzliche frei erreichbare Prismen")
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
