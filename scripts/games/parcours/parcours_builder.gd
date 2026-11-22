@@ -294,6 +294,12 @@ func _gates() -> void:
 
 
 func _signs() -> void:
+	if not course.race_branch.is_empty():
+		var fork: Dictionary = course.race_branch
+		var marker: Node3D = KIT.skill_sign(fork.name, color("accent"))
+		marker.position = fork.sign_pos
+		marker.rotation.y = fork.heading
+		add_child(marker)
 	for skill in course.skills:
 		var sign: Node3D = KIT.skill_sign(str(skill.name), color("accent"))
 		var ahead: Vector3 = Vector3(-sin(float(skill.heading)), 0, -cos(float(skill.heading)))

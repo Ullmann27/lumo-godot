@@ -6,6 +6,7 @@ extends RefCounted
 ## mit Schwungband und Sprung bis zum Flusstor.
 
 const COURSE = preload("res://scripts/games/parcours/parcours_course.gd")
+const FORKS = preload("res://scripts/games/parcours/parcours_forks.gd")
 const PEN = preload("res://scripts/games/parcours/parcours_pen.gd")
 const BASE_Y: float = 6.0
 const WATER_Y: float = 0.0
@@ -81,6 +82,8 @@ static func build():
 	)
 	pen.style = "wood"
 	pen.width = 5.4
+	var fork_entry: int = course.route.size()
+	var fork_from: float = pen.travelled
 	pen.star_line(3, 22.0)
 	pen.straight(22.0, 0.0, false, false, {"cap": 11.0})
 	pen.turn(24.0, -35.0, 0.0, false, false, {"cap": 10.0})
@@ -91,6 +94,9 @@ static func build():
 	pen.style = "stone"
 	pen.width = 12.0
 	pen.straight(10.0)
+	FORKS.connect_route(
+		course, fork_entry, course.route.size() - 1, "Terrassenweg", "moss", 14.0, 2.6, 8.0, 15.0, fork_from
+	)
 	# 2) Lianenhalle: Sonnenplatte öffnet das Lianentor.
 	pen.checkpoint("lianenhalle")
 	pen.skill(

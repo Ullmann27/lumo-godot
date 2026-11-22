@@ -5,6 +5,7 @@ extends RefCounted
 ## Kristalltor) und die lange Abfahrt über die Eisspirale ins Ziel.
 
 const COURSE = preload("res://scripts/games/parcours/parcours_course.gd")
+const FORKS = preload("res://scripts/games/parcours/parcours_forks.gd")
 const PEN = preload("res://scripts/games/parcours/parcours_pen.gd")
 const BASE_Y: float = 10.0
 const WATER_Y: float = 3.0
@@ -126,6 +127,8 @@ static func build():
 	)
 	pen.style = "glass"
 	pen.width = 5.6
+	var fork_entry: int = course.route.size()
+	var fork_from: float = pen.travelled
 	var bridge_start: Vector3 = pen.pos
 	var bridge_heading: float = pen.heading
 	pen.star_line(4, 56.0)
@@ -149,6 +152,9 @@ static func build():
 	pen.style = "ice"
 	pen.width = 14.0
 	pen.straight(14.0)
+	FORKS.connect_route(
+		course, fork_entry, course.route.size() - 1, "Kristallgrat", "ice", -14.0, 2.4, 6.0, 14.0, fork_from
+	)
 	pen.checkpoint("eisaufzug")
 	pen.skill(
 		"eisaufzug",

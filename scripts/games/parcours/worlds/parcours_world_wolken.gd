@@ -5,6 +5,7 @@ extends RefCounted
 ## Alle Maße sind echte Fahrbahn (parcours_course.gd); die Optik baut parcours_builder.gd.
 
 const COURSE = preload("res://scripts/games/parcours/parcours_course.gd")
+const FORKS = preload("res://scripts/games/parcours/parcours_forks.gd")
 const PEN = preload("res://scripts/games/parcours/parcours_pen.gd")
 const BASE_Y: float = 40.0
 
@@ -90,11 +91,16 @@ static func build():
 	)
 	pen.style = "bridge"
 	pen.width = 4.8
+	var fork_entry: int = course.route.size()
+	var fork_from: float = pen.travelled
 	pen.star_line(5, 52.0)
 	pen.straight(52.0, 0.0, false, false, {"cap": 12.0})
 	pen.style = "deck"
 	pen.width = 11.0
 	pen.straight(14.0)
+	FORKS.connect_route(
+		course, fork_entry, course.route.size() - 1, "Panoramasteg", "deck", 11.5, 1.8, 7.6, 15.0, fork_from
+	)
 	pen.star_line(2, 22.0, -2.0)
 	pen.turn(14.0, 90.0)
 	pen.straight(14.0)
