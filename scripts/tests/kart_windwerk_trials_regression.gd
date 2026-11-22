@@ -36,10 +36,15 @@ func run() -> void:
 			verify(model.speed_factor(driver, 4.1) < 1 and model.speed_factor(driver, 5) == 1, "Kurzer Kontakt löst sich")
 			verify(sweep(model, driver, 910 + offset, TRIALS.LANE, 0.57) == "draft", "Freies Turbofenster")
 			for i in TRIALS.GATES.size():
-				verify(sweep(model, driver, TRIALS.GATES[i] + offset, TRIALS.TARGETS[i], 5 + i) == ("combo" if i == 2 else "gate"), "Windzeichenfolge")
-			verify(sweep(model, driver, 2420 + offset, TRIALS.TARGETS[2], 8).is_empty(), "Kein doppelter Torbonus")
+				verify(sweep(model, driver, TRIALS.GATES[i] + offset, TRIALS.target_lane(i, lap), 5 + i) == ("combo" if i == 2 else "gate"), "Windzeichenfolge")
+			verify(sweep(model, driver, 2420 + offset, TRIALS.target_lane(2, lap), 8).is_empty(), "Kein doppelter Torbonus")
 	verify(sweep(model, 7, 2205, 0, 1) == "neutral", "Mitte bleibt ohne Aufgabe befahrbar")
 	verify(sweep(model, 8, 2205, 3.8, 1) == "neutral", "Anderes Zeichen nimmt keinen Turbo")
+	for i in TRIALS.GATES.size():
+		verify(TRIALS.target_lane(i, 1) == -TRIALS.target_lane(i, 0), "Zweite Runde verlangt die andere Torhälfte")
+		var line := model.rival_lane(3000 + TRIALS.GATES[i] - 35, 35.0, 4.0, 1, 0.0)
+		verify(line == TRIALS.target_lane(i, 1), "KI liest die zweite Runde")
+	verify(sweep(model, 9, 5205, TRIALS.TARGETS[0], 3) == "neutral", "Das alte Zeichen bleibt in Runde zwei neutral")
 	model.free()
 	if "--rules-only" in OS.get_cmdline_user_args():
 		finish()
@@ -59,6 +64,10 @@ func run() -> void:
 	var trials = game.windwerk_trials
 	verify(is_instance_valid(trials) and trials.sliders.size() == 3, "Normaler Rennstart erzeugt drei Schieber")
 	if is_instance_valid(trials):
+		trials.set_sign_lap(1)
+		for i in TRIALS.GATES.size():
+			verify(trials.gate_signs[i].text == TRIALS.SYMBOLS[(i + 1) % 3], "Sichtbares Zeichen folgt zweiter Runde")
+		trials.set_sign_lap(0)
 		var placed: Array = game.catalog_box_distances.duplicate()
 		placed.append_array(game.item_box_distances)
 		for crew: Dictionary in game.roadside_lasso.layout:

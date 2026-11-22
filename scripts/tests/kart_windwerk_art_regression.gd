@@ -1,7 +1,7 @@
 extends SceneTree
 ## Every modular prop contains three separately modeled render distances.
 const ART = preload("res://scripts/games/kart_windwerk_art.gd")
-const MODELS := ["station", "mill", "turbine", "bridge", "signal_gate", "slider", "workshop", "orchard"]
+const MODELS := ["station", "mill", "turbine", "bridge", "signal_gate", "slider", "workshop", "orchard", "wind_whale"]
 
 
 func _initialize() -> void:
@@ -33,7 +33,7 @@ func _run() -> void:
 				errors.append(id + " incomplete rotor")
 		part.free()
 	if errors.is_empty():
-		print("[WindwerkArt] PASS 8 imported modules, decreasing triangle counts, three camera ranges and two mechanical rotors")
+		print("[WindwerkArt] PASS 9 imported modules, decreasing triangle counts, three camera ranges and two mechanical rotors")
 	else:
 		for error in errors:
 			push_error(error)

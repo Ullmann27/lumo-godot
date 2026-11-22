@@ -12,6 +12,11 @@ const SAFE := -4.3
 
 var length := 3000.0
 var sliders: Array[Node3D] = []
+var gate_signs: Array[Label3D] = []
+var lap_sign: Label3D
+var shown_lap := -1
+var scenery: Node3D
+var whale_celebration_until := 0.0
 var racers: Dictionary = {}
 var player_reset := -1
 
@@ -31,8 +36,26 @@ static func clear_distance(at: float, trials: Array) -> float:
 	return at
 
 
+## In lap two the route marshal calls for the other painted symbol. Every
+## racer follows their own lap; signs facing the local camera follow the child.
+static func target_lane(index: int, lap: int) -> float:
+	return float(TARGETS[index]) if lap % 2 == 0 else -float(TARGETS[index])
+
+
+func set_sign_lap(lap: int) -> void:
+	if lap == shown_lap:
+		return
+	shown_lap = lap
+	lap_sign.text = "FOLGE DEM ZEICHEN" if lap % 2 == 0 else "NEUE WINDZEICHEN"
+	for i in gate_signs.size():
+		var symbol := (i + lap % 2) % SYMBOLS.size()
+		gate_signs[i].text = SYMBOLS[symbol]
+		gate_signs[i].modulate = COLORS[symbol]
+
+
 func setup(world) -> void:
 	length = world.length
+	scenery = world.get_node_or_null("WindwerkKulissen")
 	var art = load(ART_PATH)
 	for i in SLIDERS.size():
 		var line := _anchor(world, SLIDERS[i], "Schieber%d" % i)
@@ -48,11 +71,11 @@ func setup(world) -> void:
 	_mark(sign, Vector3(3.75, 6.8, 0.45), "TURBO", Color("ffd065"))
 	var instruction := _anchor(world, 2090, "Windzeichen")
 	instruction.add_child(art.module("signal_gate"))
-	_mark(instruction, Vector3(0, 6.9, .5), "FOLGE DEM ZEICHEN", Color("ffeada"))
+	lap_sign = _mark(instruction, Vector3(0, 6.9, .5), "FOLGE DEM ZEICHEN", Color("ffeada"))
 	for i in GATES.size():
 		var gate := _anchor(world, GATES[i], "Windtor%d" % i)
 		gate.add_child(art.module("signal_gate"))
-		_mark(gate, Vector3(0, 7.0, 0.6), SYMBOLS[i], COLORS[i])
+		gate_signs.append(_mark(gate, Vector3(0, 7.0, 0.6), SYMBOLS[i], COLORS[i]))
 		for side: float in [-LANE, LANE]:
 			var symbol := i if is_equal_approx(side, TARGETS[i]) else (i + 1) % SYMBOLS.size()
 			for offset: float in [0.0, 16.0, 33.0]:
@@ -68,7 +91,7 @@ func _anchor(world, at: float, title: String) -> Node3D:
 	return node
 
 
-func _mark(parent: Node3D, at: Vector3, text: String, color: Color, flat: bool = false) -> void:
+func _mark(parent: Node3D, at: Vector3, text: String, color: Color, flat: bool = false) -> Label3D:
 	var label := Label3D.new()
 	label.text = text
 	label.font_size = 108
@@ -82,6 +105,7 @@ func _mark(parent: Node3D, at: Vector3, text: String, color: Color, flat: bool =
 	if flat:
 		label.rotation.x = -PI * 0.5
 	parent.add_child(label)
+	return label
 
 
 ## Verkehr und Kurvenplanung dürfen diese Wunschlinie weiterhin anpassen.
@@ -95,7 +119,7 @@ func rival_lane(distance: float, speed: float, seconds: float, driver: int, pref
 	for i in GATES.size():
 		var ahead: float = GATES[i] - d
 		if ahead >= 0 and ahead <= 73:
-			return 0.0 if driver % 4 == 0 else TARGETS[i]
+			return 0.0 if driver % 4 == 0 else target_lane(i, floori(distance / length))
 	return preferred
 
 
@@ -130,7 +154,7 @@ func cross(driver: int, distance: float, lane: float, seconds: float, dt: float,
 				state.slow_until = seconds + 0.60
 				return "bump"
 			return "draft" if absf(x - LANE) <= 1.7 else "safe"
-		if absf(x - float(TARGETS[j])) <= 1.72:
+		if absf(x - target_lane(j, lap)) <= 1.72:
 			state.combo = int(state.combo) + 1
 			return "combo" if int(state.combo) == GATES.size() else "gate"
 		state.combo = 0
@@ -145,6 +169,9 @@ func speed_factor(driver: int, seconds: float) -> float:
 
 
 func advance(game, dt: float) -> void:
+	set_sign_lap(maxi(0, floori(game.distance / length)))
+	if is_instance_valid(scenery):
+		scenery.update_wind_whales(game.elapsed, whale_celebration_until - game.elapsed, game.reduced_motion)
 	for i in sliders.size():
 		sliders[i].position.x = slider_lane(i, game.elapsed)
 	if player_reset != game.reset_count:
@@ -182,6 +209,8 @@ func advance(game, dt: float) -> void:
 			"combo":
 				boost = 1.65
 				message = "Drei Windzeichen · großer Windschub!"
+				if child:
+					whale_celebration_until = game.elapsed + 2.1
 		if child and not message.is_empty():
 			game.message.text = message
 		if boost > 0.0:

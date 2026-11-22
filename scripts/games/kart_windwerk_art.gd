@@ -9,6 +9,8 @@ static var _models: Dictionary = {}
 
 var _rotors: Array[Node3D] = []
 var _rotor_rates: Array[float] = []
+var _whales: Array[Node3D] = []
+var _whale_rest: Array[Transform3D] = []
 
 
 static func module(id: String, lightweight: bool = false) -> Node3D:
@@ -104,6 +106,13 @@ func _arrange(world) -> void:
 			Vector3(2048,17,1.31),Vector3(2170,-19,1.22),Vector3(2473,17,1.30),
 			Vector3(2870,-18,1.20)]:
 		_place(world,"workshop",station.x,station.y,station.z,-signf(station.y)*.98,"wharf",ground)
+	# Tethered festival balloons beside the three approaches, at driver's eye
+	# level on the viaduct. The camera can see the last one after the third gate.
+	for site in [Vector3(750, -17, 5), Vector3(1525, 21, 7), Vector3(2485, -16, 5)]:
+		var whale := _place(world, "wind_whale", site.x, site.y, 1.60, -signf(site.y) * .86, "road", ground)
+		whale.position.y += site.z
+		_whales.append(whale)
+		_whale_rest.append(whale.transform)
 	for district: float in [245.0,1690.0]:
 		for i in range(7):
 			var at := district + 48.0 * i
@@ -127,3 +136,16 @@ func _arrange(world) -> void:
 func _process(delta: float) -> void:
 	for i in _rotors.size():
 		_rotors[i].rotate_z(_rotor_rates[i] * delta)
+
+
+## A gentle bob at the side of the course. Each balloon tips its nose after
+## the child's three-signal combo, watching the same race clock as the gates.
+func update_wind_whales(seconds: float, celebration: float, reduced_motion: bool) -> void:
+	for i in _whales.size():
+		var rest := _whale_rest[i]
+		if not reduced_motion:
+			var wave := sin(seconds * .82 + i * 2.4)
+			rest.origin.y += wave * .42
+			var nod := sin(clampf(celebration / 2.1, 0.0, 1.0) * PI) * .28
+			rest.basis = rest.basis.rotated(rest.basis.z.normalized(), wave * .035 + nod)
+		_whales[i].transform = rest

@@ -13,8 +13,11 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/"tools/lumo_kart_art/karts"))
 import build_karts as k
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wind_whale import whale
 
 COLORS={
+    "lagoon":("258da3",.09,.45), "coral":("ea785f",.06,.49),
     "cast":("305e64",.48,.36), "dark":("243d42",.27,.46),
     "cream":("f2d997",.09,.53), "red":("c45c3c",.21,.43),
     "wood":("975737",.04,.62), "gold":("e9ab4d",.57,.32),
@@ -293,7 +296,7 @@ def orchard(b):
 
 # The optional rotor has its own persistent pivot in all three camera ranges.
 MODULES={
-    "station":(station,22.4,None), "turbine":(turbine,17.3,(0,9.48,2.03)),
+    "wind_whale":(whale,12.3,None), "station":(station,22.4,None), "turbine":(turbine,17.3,(0,9.48,2.03)),
     "mill":(mill,12.7,(0,4.83,3.59)), "bridge":(bridge,24.4,None),
     "signal_gate":(signal_gate,23.6,None), "slider":(slider,3.65,None),
     "workshop":(workshop,7.62,None), "orchard":(orchard,7.9,None),
@@ -312,7 +315,13 @@ def build(name,args):
         group=k.empty("Static"+str(level),parent=root)
         builder=Builder(group,level,mats)
         src(builder)
-        near.append((builder.finish("LOD"+str(level)),level))
+        static_mesh = builder.finish("LOD"+str(level))
+        if name=="wind_whale":
+            for polygon in static_mesh.data.polygons:
+                mat = static_mesh.data.materials[polygon.material_index]
+                if mat in (mats["lagoon"], mats["cream"], mats["dark"]):
+                    polygon.use_smooth = True
+        near.append((static_mesh,level))
         if rotor:
             spin_group=k.empty("Spinning"+str(level),parent=rotor)
             moving=Builder(spin_group,level,mats)
@@ -330,12 +339,12 @@ def build(name,args):
     bpy.data.objects["StudioGround"].hide_render=True
     scene=bpy.context.scene
     scene.render.film_transparent=True
-    scene.cycles.samples=12
+    scene.cycles.samples=48 if name=="wind_whale" else 12
     scene.cycles.max_bounces=3
     scene.cycles.use_denoising=False
     scene.render.threads=2
-    scene.render.resolution_x=380
-    scene.render.resolution_y=308
+    scene.render.resolution_x=760 if name=="wind_whale" else 380
+    scene.render.resolution_y=616 if name=="wind_whale" else 308
     scene.render.image_settings.file_format="WEBP"
     scene.render.image_settings.color_mode="RGBA"
     scene.render.image_settings.quality=90
@@ -346,7 +355,7 @@ def build(name,args):
             o.location*=span/2.6
             o.data.size*=span/2.6
             o.data.energy*=(span/2.6)**2
-    heights={"turbine":7.2,"station":5.6,"mill":4.95,"bridge":3.58,"signal_gate":3.6,
+    heights={"wind_whale":3.2,"turbine":7.2,"station":5.6,"mill":4.95,"bridge":3.58,"signal_gate":3.6,
              "slider":.62,"workshop":2.60,"orchard":2.30}
     target=(0,heights[name],0)
     k.render_view(camera,asset/(name+".webp"),(.58*span,heights[name]+.47*span,1.6*span),target)
