@@ -8,6 +8,10 @@ Der Godot-Stand der APK ist `d513e805a256ac4d2234b329a30b2b25536766bf`. Die drei
 - [Sechs Teile im geöffneten Konfigurator](Werkstatt_2064.webp). Regenreifen und Tandemflügel sitzen am Kart. Lenkung, Bremse, Getriebe und Ballast zeigt die Werkstatt zur Inspektion neben dem Fahrzeug.
 - [Riesengarten, Mitspieler, Sternenpost und fünf weitere Spiele](SPIELBILDER_2063.md)
 
+## Veröffentlichtes Android-Paket
+
+Die direkt aus dem öffentlichen Release heruntergeladene ARM64-Datei hat 506.214.708 Byte. Der lokal neu erstellte APK-Prüfbericht stimmt mit dem veröffentlichten Bericht überein. Godot 4.6.3 hat aus dem eingebetteten Spielpaket alle 13 Kurvenwahrzeichen mit je drei Detailstufen und Farb- und Normaltexturen geladen. [Test-APK 0.13.52+2064 und Prüfsummen](https://github.com/Ullmann27/lumo-lernen/releases/tag/lumo-test-0.13.52-2064-45038346436)
+
 ## Rennprüfung
 
 In einem lokalen Lauf über zwei Runden mit Startwert 7 erreichten das Spieler-Kart und fünf Gegner auf jeder der 14 Strecken das Ziel. Die Rettungswolke setzte das Spieler-Kart auf Winter-Sprint und Dschungelherz je zweimal auf den Vorplatz der schmalen Brücke zurück. Auf den Steilkurven gab es in diesem Lauf keine Rücksetzung.
