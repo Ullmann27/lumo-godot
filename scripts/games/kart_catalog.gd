@@ -45,7 +45,27 @@ const DRIVERS: Array[Dictionary] = [
 	{"id": "fox", "name": "Lumo", "tag": "DEIN MUTIGER FUCHS", "color": Color("76d9ff"), "unlock": 0},
 	{"id": "rabbit", "name": "Nova", "tag": "NEUGIERIG UND FLINK", "color": Color("c0abff"), "unlock": 6},
 	{"id": "otter", "name": "Milo", "tag": "ENTSPANNT INS ABENTEUER", "color": Color("75e6ce"), "unlock": 12},
-	{"id": "frog", "name": "Frosch", "tag": "AUS DEM DSCHUNGEL", "color": Color("64c987"), "unlock": 0}
+	{
+		"id": "frog",
+		"name": "Frosch",
+		"tag": "AUS DEM DSCHUNGEL",
+		"color": Color("64c987"),
+		"unlock": 0
+	},
+	{
+		"id": "badger",
+		"name": "Borin",
+		"tag": "DEIN STARKER DACHS",
+		"color": Color("83dab9"),
+		"unlock": 0
+	},
+	{
+		"id": "cat",
+		"name": "Yuki",
+		"tag": "DEINE FLINKE KATZE",
+		"color": Color("c8d8ef"),
+		"unlock": 0
+	}
 ]
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
 static var KARTS: Array[Dictionary] = FLEET.KARTS

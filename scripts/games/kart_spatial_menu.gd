@@ -232,9 +232,10 @@ func _play_driver_signature() -> void:
 		actor.play_menu_behavior("greeting_wave")
 		return
 	preview_kart.cheer_in_race(1.4)
-	var kart: Node3D = preview_kart
+	var kart_reference: WeakRef = weakref(preview_kart)
 	get_tree().create_timer(1.6).timeout.connect(func():
-		if is_instance_valid(kart):
+		var kart := kart_reference.get_ref() as Node3D
+		if kart != null:
 			kart.end_in_race_cheer())
 
 

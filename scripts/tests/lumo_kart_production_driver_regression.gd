@@ -4,7 +4,7 @@ extends SceneTree
 
 const DRIVER = preload("res://scripts/games/kart_production_driver.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
-const SPECIES := ["lion", "owl", "rabbit", "squirrel", "turtle", "frog"]
+const SPECIES := ["lion", "owl", "rabbit", "squirrel", "turtle", "frog", "otter", "badger", "cat"]
 const CLIPS := ["idle", "kart_seated", "kart_steer_left", "kart_steer_right", "kart_jump", "celebrate"]
 var checks := 0
 var failures: Array[String] = []

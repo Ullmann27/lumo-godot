@@ -3,7 +3,7 @@
   "repository": "Ullmann27/lumo-godot",
   "baseline": "25fc4ff1f43c0adeb2c56b67ad4a9611922aac8a",
   "checked_at_utc": "2026-11-22",
-  "source": "GitHub branches REST, four pages; GitHub commit compares for unique heads",
+  "source": "GitHub branches REST (four pages) and unique-head compares; all exact heads then cross-checked against fetched local Git objects and relevant source paths.",
   "branches": [
     {
       "name": "agent/feinschliff",
@@ -5218,7 +5218,7 @@
   ],
   "limitations": [
     "Ancestry compares were refreshed for every listed branch head. Content decisions reuse the explicit 2026-11-19 review and are cross-checked with local source where stated; ancestry alone does not establish gameplay quality.",
-    "GitHub compare file arrays can stop at 300 entries; those rows are flagged for local history verification.",
+    "Three GitHub compare arrays reached the 300-file display limit; local --no-renames path comparisons verified every diverged branch without that limit.",
     "The gh-pages comparison error is expected: website branch with no common game-source ancestor.",
     "This inventory neither deletes branches nor replaces the original Lumo model."
   ],
@@ -5539,5 +5539,32 @@
       "tools/lumo_nextgen_chat3/validate_glb.py",
       "tools/validate_live_connections.sh"
     ]
-  }
+  },
+  "snapshot_scope": "301 branches that existed when this integration inventory began. The subsequently created integration/lumo-complete-20261122 delivery branch is not included in its own source inventory.",
+  "integration_changes": [
+    {
+      "change": "Expose already shipped badger and cat as selectable Borin and Yuki",
+      "files": [
+        "scripts/games/kart_catalog.gd"
+      ],
+      "reason": "Production GLBs, portrait images and adapter support existed at baseline, but the driver catalog omitted both IDs. No historical catalog unlock values were found. Both are available without a new star requirement; original four entries and existing unlocks retain their values.",
+      "verification": "kart_extra_drivers_regression: 79 checks, selection through save/recreated-scene resume"
+    },
+    {
+      "change": "Fix delayed preview celebration callback after race start",
+      "files": [
+        "scripts/games/kart_spatial_menu.gd"
+      ],
+      "reason": "The real selection-to-race regression exposed a lambda retaining a freed preview kart. A typed WeakRef safely checks the preview lifetime before ending the celebration.",
+      "verification": "Both new drivers reach a real race and resumed race without the freed-lambda capture error."
+    },
+    {
+      "change": "Extend imported driver regression to all additional selectable production species",
+      "files": [
+        "scripts/tests/lumo_kart_production_driver_regression.gd",
+        "scripts/tests/kart_extra_drivers_regression.gd"
+      ],
+      "reason": "The original model regression covered the six opponent species but omitted playable otter, badger and cat; the new flow test covers real menu and persistence integration."
+    }
+  ]
 }

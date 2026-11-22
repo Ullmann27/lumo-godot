@@ -1,0 +1,11 @@
+[KartLan:host] Raumcode 0019
+[KartLan:host] eigene Zeit 13.00 s, Freund 11.82 s, Posen 776, schnellste gezeigte Bewegung 22.2 m/s
+[KartLan:host] PASS: 13 Prüfungen
+[KartLan:client] eigene Zeit 11.82 s, Freund 13.00 s, Posen 778, schnellste gezeigte Bewegung 20.2 m/s
+[KartLan:client] PASS: 13 Prüfungen
+[KartLan:host] Raumcode 0019
+[KartLan:host] eigene Zeit 13.00 s, Freund -1.00 s, Posen 297, schnellste gezeigte Bewegung 22.1 m/s
+[KartLan:host] PASS: 9 Prüfungen
+[KartLan:client_drop] verlässt das Rennen nach 5.0 s
+[KartLan:client_drop] PASS: 7 Prüfungen
+[KartLan] PASS: zwei Prozesse, Rennen + Abbruch

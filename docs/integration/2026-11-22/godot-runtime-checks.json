@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-22",
+  "repository": "Ullmann27/lumo-godot",
+  "baseline": "25fc4ff1f43c0adeb2c56b67ad4a9611922aac8a",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "working_file_sha256": {
+    "scripts/games/kart_catalog.gd": "121c18f608769f49d97a5192d859fcd71c6387aabb8dc80f3898bc29cec47c75",
+    "scripts/games/kart_spatial_menu.gd": "9024594e9f8e4ea185c1d3a59009a97ace6f493be53863a6309efac54373614f",
+    "scripts/tests/lumo_kart_production_driver_regression.gd": "ff9dc31bf05d3086a5e0c8f61ad29ef8abe31383589e31a91894f1adc96a2745",
+    "scripts/tests/kart_extra_drivers_regression.gd": "ca47b57d6e8f35331e8b500a3f6db74949d05f497a13ed9acc7966b3f978bfc3"
+  },
+  "checks": [
+    {
+      "test": "kart_arena_battle_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 4.677,
+      "log_path": "logs/kart_arena_battle_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/kart_arena_battle_regression.gd"
+      ],
+      "status": "PASS",
+      "assertions": 16,
+      "scope": "Baseline before additional driver catalog entries; arena scene, score, end and lifecycle.",
+      "log_sha256": "4509f7267ba662ee11c788e7c4f766efe4708f2028882ad13792690fee28aa2d"
+    },
+    {
+      "test": "parcours_race_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 9.494,
+      "log_path": "logs/parcours_race_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/parcours_race_regression.gd"
+      ],
+      "status": "PASS",
+      "assertions": null,
+      "scope": "Baseline before additional driver catalog entries; all three worlds with Nova and Milo finishing.",
+      "log_sha256": "8fba15c2bf71d2d67107552bf706469cf8226dc306eb534afd0398a9a26fab53"
+    },
+    {
+      "test": "kart_precision_jump_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 2.069,
+      "log_path": "logs/kart_precision_jump_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/kart_precision_jump_regression.gd"
+      ],
+      "status": "PASS",
+      "assertions": 55,
+      "scope": "Baseline before additional driver catalog entries; precision-jump calculations and integration contracts.",
+      "log_sha256": "a31e553f58061b5492dc91c9b96cd833f5fd9439ce4029cde09f96fb2ceb790c"
+    },
+    {
+      "test": "kart_windwerk_trials_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 4.428,
+      "log_path": "logs/kart_windwerk_trials_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/kart_windwerk_trials_regression.gd"
+      ],
+      "status": "PASS",
+      "assertions": 106,
+      "scope": "Baseline before additional driver catalog entries; serial retry after an earlier process was killed without assertion failure.",
+      "log_sha256": "2a4673adfd2a17266237a83f82e66da827fed6c86bda5dd36fe003a795ee0236"
+    },
+    {
+      "test": "kart_lan_two_process",
+      "exit_code": 0,
+      "elapsed_seconds": 29.049,
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless two processes over localhost",
+      "log_path": "logs/kart_lan_two_process.log",
+      "status": "PASS",
+      "assertions": 42,
+      "scope": "Baseline before additional driver catalog entries; real host/client ENet processes on localhost, race and disconnect. No physical Android/WLAN test.",
+      "log_sha256": "446ff3d9b722ea16fb39286a6f7a1eb7b1152ac612d2f31ccecf7d8e863ed4e2",
+      "command": [
+        "env",
+        "GODOT_BIN=/path/to/Godot_v4.6.3-stable_linux.x86_64",
+        "bash",
+        "scripts/tests/kart_lan_two_process.sh"
+      ]
+    },
+    {
+      "test": "kart_lan_race_regression",
+      "exit_code": -9,
+      "elapsed_seconds": 3.922,
+      "log_path": "logs/kart_lan_race_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/kart_lan_race_regression.gd"
+      ],
+      "status": "INCOMPLETE",
+      "assertions": null,
+      "scope": "Process terminated by signal 9 before test result; no failed assertion was logged. Heavy single-scene LAN UI regression is not claimed as passed.",
+      "log_sha256": "e9e10be9d9184e505dadca12761e78be553b5cc2c95fc26f81644e2f4486b2f2"
+    },
+    {
+      "test": "kart_extra_drivers_regression",
+      "exit_code": 0,
+      "elapsed_seconds": 8.188,
+      "log_path": "logs/kart_extra_drivers_regression.log",
+      "engine": "4.6.3.stable.official.7d41c59c4",
+      "mode": "headless gl_compatibility",
+      "command": [
+        "godot-4.6.3",
+        "--headless",
+        "--path",
+        ".",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://scripts/tests/kart_extra_drivers_regression.gd"
+      ],
+      "status": "PASS",
+      "assertions": 79,
+      "scope": "After driver catalog and WeakRef fix; real menu selection, portrait, race, visible imported model, save, scene recreation and resume for both drivers.",
+      "log_sha256": "23aabf68c06abc60df988aeb2e13a5fe334288281f4a7785610f394cc82141b7"
+    }
+  ],
+  "additional_checks": [
+    {
+      "check": "Godot editor headless import",
+      "status": "PASS",
+      "exit_code": 0,
+      "scope": "Complete baseline project import with Godot 4.6.3, Compatibility renderer."
+    },
+    {
+      "check": "python3 tools/validate_project.py",
+      "status": "PASS",
+      "passed": 120,
+      "warnings": 0,
+      "failed": 0,
+      "scope": "Project structure after runtime driver/lifecycle changes."
+    },
+    {
+      "check": "gdlint scripts/tests/kart_extra_drivers_regression.gd",
+      "status": "PASS"
+    },
+    {
+      "check": "gdformat --check scripts/tests/kart_extra_drivers_regression.gd",
+      "status": "PASS"
+    },
+    {
+      "check": "gdlint legacy comparison against baseline",
+      "status": "UNCHANGED_BASELINE_FINDINGS",
+      "files": {
+        "scripts/games/kart_catalog.gd": {
+          "baseline": 22,
+          "working": 22
+        },
+        "scripts/games/kart_spatial_menu.gd": {
+          "baseline": 21,
+          "working": 21
+        },
+        "scripts/tests/lumo_kart_production_driver_regression.gd": {
+          "baseline": 21,
+          "working": 21
+        }
+      },
+      "scope": "Compared message categories and counts, not only exit status. The working files have no additional findings."
+    }
+  ],
+  "limits": [
+    "Existing legacy files have pre-existing gdlint/gdformat findings; this integration introduces no additional lint category/count and does not globally reformat them.",
+    "The expanded nine-species production-driver regression has not yet been rerun in this evidence snapshot; the APK gate must run it.",
+    "The extra-driver regression tests visible scene-tree nodes and menu geometry headlessly. It does not provide pixel-render, physical-device touch, sound or frame-time evidence.",
+    "LAN evidence covers two local processes, not two physical phones or internet multiplayer.",
+    "Earlier interrupted or killed attempts are not counted as passed."
+  ]
+}
