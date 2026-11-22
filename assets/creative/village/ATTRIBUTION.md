@@ -9,3 +9,5 @@ Original geometry authored for this project with `tools/art/build_village_friend
 These are additional villagers. The original Lumo character, model, and animation rig are unchanged. Child residents reuse the corresponding family geometry at a smaller scale. Rendering represents large populations with a bounded nearby crowd rather than one animated model for every simulated resident.
 
 The models have one vertex-colour material each. `manifest.json` records mesh counts and file sizes. The original Blender authoring source is included for reproducibility.
+
+Mara, the village carpenter, and Ari, the lion, are original rigid-part models. Rebuild their GLB files with `blender -b -P tools/lumo_village_art/build_village_founders.py`. Each uses one vertex-colour material. Godot turns the limbs around authored shoulder and hip pivots as the residents walk.

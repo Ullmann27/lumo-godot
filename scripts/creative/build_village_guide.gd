@@ -8,6 +8,7 @@ extends Control
 ##    zur Familie im Wohnhaus – mit den echten Zahlen des Tages.
 ## Verändert nur Kamera und Lumos Standort, nie den Spielstand.
 signal landed
+const YARDS = preload("res://scripts/creative/build_village_yards.gd")
 const VHUD = preload("res://scripts/creative/build_village_hud.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const FLIGHT_SECONDS := 4.2
@@ -147,7 +148,7 @@ func screen_of(where: Vector3) -> Vector2:
 func building_point(kind: String) -> Vector2:
 	for building in world.model.player().buildings:
 		if str(building.kind) == kind:
-			return screen_of(world._plot_world(int(building.plot)) + Vector3.UP * 1.6)
+			return screen_of(YARDS.building_at(building) + Vector3.UP * 1.6)
 	return Vector2.INF
 
 

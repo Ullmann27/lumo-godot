@@ -9,6 +9,12 @@ const FRIENDS := [
 	preload("res://assets/creative/village/bruno_beaver.glb"),
 	preload("res://assets/creative/village/tilda_duck.glb")
 ]
+const YARDS = preload("res://scripts/creative/build_village_yards.gd")
+const FOUNDER_SCENES := [
+	preload("res://assets/creative/village/carpenter_village.glb"),
+	preload("res://assets/creative/village/lion_village.glb"),
+]
+const ROLES := ["Nelli · Gärtnerin", "Bruno · Baumeister", "Tilda · Händlerin", "Mara · Zimmerin", "Ari · Löwe"]
 const MAX_VISIBLE_RESIDENTS := 18
 const VISIBLE_RADIUS := 72.0
 var _kit := KIT.new()
@@ -16,6 +22,7 @@ var _town: Dictionary = {}
 var _opponent := false
 var _focus := Vector3(-100, 0, 0)
 var _actors: Array[Dictionary] = []
+var _crossed_yards := {}
 var _signature := ""
 var _time := 0.0
 var _cart: Node3D
@@ -59,7 +66,7 @@ func _refresh() -> void:
 			market_plot = int(value.get("plot", 4))
 		if str(value.get("kind", "")) != "house":
 			continue
-		var home := REGION.plot_position(int(value.get("plot", 4)), _opponent)
+		var home := YARDS.building_at(value, _opponent)
 		if (
 			Vector2(home.x - _focus.x, home.z - _focus.z).length_squared()
 			<= VISIBLE_RADIUS * VISIBLE_RADIUS
@@ -68,14 +75,15 @@ func _refresh() -> void:
 	houses.sort_custom(
 		func(a: Dictionary, b: Dictionary) -> bool:
 			return (
-				REGION.plot_position(int(a.plot), _opponent).distance_squared_to(_focus)
-				< REGION.plot_position(int(b.plot), _opponent).distance_squared_to(_focus)
+				YARDS.building_at(a, _opponent).distance_squared_to(_focus)
+				< YARDS.building_at(b, _opponent).distance_squared_to(_focus)
 			)
 	)
 	var signature := (
 		str(houses)
 		+ str(_town.get("households", []))
 		+ str(_town.get("population", 2))
+		+ str(_town.get("yards", []))
 		+ str(market_plot)
 		+ str(_opponent)
 	)
@@ -87,6 +95,7 @@ func _refresh() -> void:
 		_crowd.remove_child(child)
 		child.queue_free()
 	_actors.clear()
+	_crossed_yards.clear()
 	_wheels.clear()
 	_cart = null
 	var represented := 0
@@ -94,7 +103,7 @@ func _refresh() -> void:
 	for house in houses:
 		if represented >= mini(MAX_VISIBLE_RESIDENTS, population):
 			break
-		var home := REGION.plot_position(int(house.plot), _opponent)
+		var home := YARDS.building_at(house, _opponent)
 		var adults := 1
 		var children := 0
 		for household in _town.get("households", []):
@@ -108,13 +117,14 @@ func _refresh() -> void:
 		for member in range(adults + children):
 			if represented >= mini(MAX_VISIBLE_RESIDENTS, population):
 				break
-			_add_resident(home, represented % 2, member >= adults, represented)
+			var identity := posmod(int(str(house.id).trim_prefix("b")) - 1 + member, ROLES.size())
+			_add_resident(home, identity, member >= adults, represented)
 			represented += 1
-	# The founders have a visible camp before their first completed home.
+	# The two founders still live at camp while the households occupy their own homes.
 	var center := Vector3(REGION.TOWN_CENTER if _opponent else -REGION.TOWN_CENTER, 0, 5.3)
-	if houses.is_empty() and center.distance_squared_to(_focus) < VISIBLE_RADIUS * VISIBLE_RADIUS:
-		for member in range(mini(2, population)):
-			_add_resident(center, member, false, member)
+	if center.distance_squared_to(_focus) < VISIBLE_RADIUS * VISIBLE_RADIUS:
+		for member in range(mini(2, mini(population, MAX_VISIBLE_RESIDENTS) - represented)):
+			_add_resident(center, 3 + member, false, represented + member)
 	if market_plot >= 0:
 		_cart_home = (
 			REGION.plot_position(market_plot, _opponent) + Vector3(0, 0.08, REGION.SPACING * 0.5)
@@ -130,9 +140,10 @@ func _add_resident(home: Vector3, friend_index: int, child: bool, index: int) ->
 	var holder := Node3D.new()
 	holder.name = ("Child_" if child else "Resident_") + str(index)
 	_crowd.add_child(holder)
-	var actor := FRIENDS[friend_index].instantiate() as Node3D
+	var scene: PackedScene = FRIENDS[friend_index] if friend_index < 3 else FOUNDER_SCENES[friend_index - 3]
+	var actor := scene.instantiate() as Node3D
 	holder.add_child(actor)
-	actor.scale = Vector3.ONE * (0.52 if child else 0.79)
+	actor.scale = Vector3.ONE * ((0.65 if child else 1.0) if friend_index >= 3 else (0.52 if child else 0.79))
 	var animation := actor.find_child("AnimationPlayer", true, false) as AnimationPlayer
 	if animation != null:
 		animation.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
@@ -143,15 +154,42 @@ func _add_resident(home: Vector3, friend_index: int, child: bool, index: int) ->
 				animation.play(animation_name)
 				animation.advance(float(index % 8) * 0.11)
 				break
-	var base := home + Vector3(-1.5 + float(index % 3) * 0.75, 0.06, REGION.SPACING * 0.5)
+	var base := home + Vector3(-1.3 + float(index % 3) * 0.95, 0.06, REGION.SPACING * 0.5)
+	var axis := Vector3.RIGHT
+	for yard in _town.get("yards", []):
+		var enclosure := YARDS.bounds(yard)
+		if enclosure.grow(0.5).has_point(Vector2(base.x, base.z)) or enclosure.has_point(Vector2(home.x, home.z)):
+			var door := YARDS.gate(yard)
+			var camp := Vector2(-REGION.TOWN_CENTER, 5.3)
+			var key := int(yard.a)
+			if not _crossed_yards.has(key) and (friend_index == 4 or not enclosure.has_point(camp)):
+				base = Vector3(door.x, 0, door.y)
+				axis = Vector3.BACK
+				_crossed_yards[key] = true
+			else:
+				# Interior lanes leave the entrance to the resident who is passing through.
+				var lane := enclosure.grow(-.48)
+				base.x = clampf(base.x, lane.position.x + 1.3, lane.end.x - 1.3)
+				base.z = clampf(base.z, lane.position.y, lane.end.y)
+				if Vector2(base.x, base.z).distance_to(door) < 2.4:
+					base.x = lane.end.x - 1.3 if door.x < lane.get_center().x else lane.position.x + 1.3
+			break
+	base.y = REGION.ground(base.x, base.z)
+	var limbs: Array[Node3D] = []
+	for limb_name in ["ForeL", "ForeR", "HindL", "HindR", "Tail"]:
+		var limb := actor.find_child(limb_name, true, false) as Node3D
+		if limb != null:
+			limbs.append(limb)
 	holder.position = base
-	holder.set_meta("village_role", "Nelli · Anbauen" if friend_index == 0 else "Bruno · Bauen")
+	holder.set_meta("village_role", ROLES[friend_index])
 	holder.set_meta("is_child", child)
 	_actors.append(
 		{
 			"holder": holder,
 			"animation": animation,
 			"base": base,
+			"axis": axis,
+			"limbs": limbs,
 			"phase": float(index) * 1.37,
 			"child": child
 		}
@@ -196,8 +234,16 @@ func advance(delta: float, paused := false) -> void:
 		var holder: Node3D = entry.holder
 		var phase := _time * 0.38 + float(entry.phase)
 		var displacement := sin(phase) * 1.25
-		holder.position = entry.base + Vector3(displacement, 0, 0)
-		holder.rotation.y = PI * 0.5 if cos(phase) > 0 else -PI * 0.5
+		var axis: Vector3 = entry.axis
+		holder.position = entry.base + axis * displacement
+		holder.position.y = REGION.ground(holder.position.x, holder.position.z)
+		holder.rotation.y = atan2(axis.x, axis.z) + (PI if cos(phase) < 0 else 0.0)
+		var stride := sin(_time * 5.4 + entry.phase) * clampf(absf(cos(phase)) * 1.5, 0, 1)
+		var limbs: Array = entry.limbs
+		for i in range(mini(4, limbs.size())):
+			limbs[i].rotation.x = stride * (.20 if i in [0, 3] else -.20)
+		if limbs.size() > 4:
+			limbs[4].rotation.y = sin(_time * 1.7 + entry.phase) * .18
 		var animation: AnimationPlayer = entry.animation
 		if animation != null:
 			animation.advance(step * (0.65 if bool(entry.child) else 0.48))
