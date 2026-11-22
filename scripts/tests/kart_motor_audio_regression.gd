@@ -162,6 +162,19 @@ func _run() -> void:
 	audio.update_motors(game, STEP)
 	var right := await _sample("rival_right")
 	check(left.rms > .001 and left.left > left.right * 1.3 and right.right > right.left * 1.3, "Nearby motor crosses the actual stereo field")
+	# Isolate the third spatial stream and sample two different actions on the
+	# same kart at the same position and speed.
+	var passing = audio.rival_motors[0]
+	passing.body.bus = "Master"
+	passing.induction.bus = "Master"
+	rival.motion_drift = true
+	var skid := await _sample("rival_tires")
+	rival.motion_drift = false
+	rival.motion_boost = true
+	var turbo := await _sample("rival_turbo")
+	rival.motion_boost = false
+	check(skid.rms > .0003 and turbo.rms > .0003, "Nearby rival drift and turbo reach the mixer")
+	check(absf(skid.brightness - turbo.brightness) > .012, "Rival tire and boost signals have different spectra")
 	game.opponents[1].global_position = game.player.global_position + Vector3(-1, 0, 0)
 	audio.update_motors(game, STEP)
 	check(not audio.rival_motors[0].body.playing and audio.rival_motors[1].body.playing, "Low budget gives the closest rival the available voice")
