@@ -1,6 +1,6 @@
 extends SceneTree
 ## Bildbelege des Kartentischs mit echtem Renderer: Auswahl, Einführung, jede
-## der drei Partien, Stich-/Anlege-/Quartett-Moment, Rundenwertung, Endstand –
+## der vier Partien, Stich-/Anlege-/Quartett-Moment, Rundenwertung, Endstand –
 ## in Hoch- und Querformat, dazu ein Fold-Bild. Keine Gerätemessung.
 
 const TABLE := "res://scenes/games/cards_table.tscn"
@@ -117,6 +117,9 @@ func _run() -> void:
 		await DRIVER.settle(self, 8)
 		await create_timer(0.8).timeout
 		await _shot("01_auswahl")
+		await _start("ziel", 3, 1, 9)
+		await _shot("40_punktlandung")
+		table._open_select()
 		if prefix.begins_with("fold"):
 			await _start("stich", 4, 3, 4242)
 			await _advance(func() -> bool: return table._can_act() and int(table.rules.s.r.trick_no) >= 1)

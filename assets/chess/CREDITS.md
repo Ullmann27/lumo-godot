@@ -1,13 +1,11 @@
-# Lumo Schach – Herkunft
+# Lumos Schachwerkstatt
 
-Alles in diesem Ordner ist **Eigenbau**: keine heruntergeladenen Modelle,
-Fotos, Texturen, Schriften oder Marken; keine bezahlten Dienste.
+Die sechs Figuren und das Brett stammen aus eigenen Blender-Zeichnungen. Alle Maße sind in Metern, ein Feld ist 0,1 m breit. Porzellanfarbene und tintenblaue Figuren tragen eine Messingmanschette. Die Springer haben ein extrudiertes Pferdeprofil, die Damen eine offene Blütenkrone und die Könige ein breites Kreuz.
 
-| Datei(en) | Herkunft | Werkzeug |
-|---|---|---|
-| `models/*.glb` (pawn, rook, knight, bishop, queen, king, board) | prozedural modelliert: Drehkörper aus Profilen mit gerundeten Ecken, Springer als abgerundete Silhouette mit Mähne | `tools/lumo_chess_art/build_chess_set.py` (Blender/bpy 5.3) |
-| `textures/*.webp` (Brettfläche mit Intarsienrand, Ahorn/Nussbaum für Figuren und Rahmen, Filz, Kontaktschatten) | prozedural erzeugt (gestrecktes Rauschen, Sinus-Jahresringe) | dasselbe Skript (numpy, Pillow) |
-| `icons/*.webp` (Figurensymbole der Draufsicht) | Cycles-Render der eigenen Modelle mit den eigenen Holztexturen | dasselbe Skript (`--only icons`) |
+Das Skript baut die GLB-Dateien, berechnet die Texturen der salbeigrünen Spielfläche und rendert beide Figurensätze für die Draufsicht in Cycles. Getestet mit Blender 4.3.2, NumPy und Pillow.
 
-Lizenz: wie das Projekt. Neu erzeugen:
-`/home/user/tools/bpyenv/bin/python tools/lumo_chess_art/build_chess_set.py`
+```sh
+blender -b -t 2 -P tools/lumo_chess_art/build_chess_set.py -- --only models,textures,icons
+```
+
+Lizenz wie das Projekt.

@@ -115,6 +115,10 @@ static func winner_of(trick: Array, trump: int) -> int:
 	return int(trick[best].p)
 
 
+func _trick_winner(trick: Array) -> int:
+	return winner_of(trick, int(s.r.trump))
+
+
 func _apply(player: int, move: Dictionary) -> Array:
 	var card := int(move.card)
 	var lead := lead_suit()
@@ -127,7 +131,8 @@ func _apply(player: int, move: Dictionary) -> Array:
 	if s.r.trick.size() < players():
 		s.r.turn = (player + 1) % players()
 		return events
-	var winner := winner_of(s.r.trick, int(s.r.trump))
+	var winner := _trick_winner(s.r.trick)
+	var winning_card: int = int(s.r.trick[(winner - int(s.r.leader) + players()) % players()].c)
 	var cards: Array = []
 	for entry: Dictionary in s.r.trick:
 		cards.append(int(entry.c))
@@ -138,7 +143,7 @@ func _apply(player: int, move: Dictionary) -> Array:
 	s.r.leader = winner
 	s.r.turn = winner
 	s.r.last_winner = winner
-	events.append({"t": "trick", "winner": winner, "cards": cards, "tricks": s.r.tricks.duplicate()})
+	events.append({"t": "trick", "winner": winner, "best": winning_card, "cards": cards, "tricks": s.r.tricks.duplicate()})
 	if s.r.hands[winner].is_empty():
 		events.append(_score_round())
 	return events

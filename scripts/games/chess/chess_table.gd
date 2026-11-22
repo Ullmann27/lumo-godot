@@ -183,7 +183,7 @@ func _process(delta: float) -> void:
 ## ausbrennen), der Sternenkreis im Filz bleibt ruhig, kein Staub vor der Linse.
 func _tune_room() -> void:
 	if room.key_light != null:
-		room.key_light.light_energy = 2.1
+		room.key_light.light_energy = 1.55
 		room.key_light.spot_angle = 64.0
 	if room.table_glow_material != null:
 		var felt: StandardMaterial3D = room.table_glow_material
@@ -236,7 +236,7 @@ func _icon(key: String) -> Texture2D:
 	return load(path) if ResourceLoader.exists(path) else null
 
 
-func _style(face: Color, edge: Color, radius: int = 18, border: int = 3) -> StyleBoxFlat:
+func _style(face: Color, edge: Color, radius: int = 14, border: int = 1) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = face
 	style.border_color = edge
@@ -252,10 +252,13 @@ func _style(face: Color, edge: Color, radius: int = 18, border: int = 3) -> Styl
 func _make_theme() -> Theme:
 	var theme := Theme.new()
 	theme.default_font_size = int(19 * _density)
-	theme.set_stylebox("normal", "Button", _style(Color("2c4a7c"), GOLD.darkened(0.15)))
-	theme.set_stylebox("hover", "Button", _style(Color("365b96"), GOLD))
-	theme.set_stylebox("pressed", "Button", _style(Color("1f3760"), GOLD))
-	theme.set_stylebox("focus", "Button", StyleBoxEmpty.new())
+	theme.set_stylebox("normal", "Button", _style(Color("28484f"), Color("648883")))
+	theme.set_stylebox("hover", "Button", _style(Color("385e63"), GOLD))
+	theme.set_stylebox("pressed", "Button", _style(Color("153a40"), GOLD))
+	var focus := _style(Color.TRANSPARENT, GOLD, 14, 2)
+	focus.draw_center = false
+	focus.shadow_size = 0
+	theme.set_stylebox("focus", "Button", focus)
 	theme.set_stylebox("disabled", "Button", _style(Color("3a4458"), Color("59647a")))
 	theme.set_color("font_color", "Button", CREAM)
 	theme.set_color("font_hover_color", "Button", Color.WHITE)
@@ -265,7 +268,7 @@ func _make_theme() -> Theme:
 	theme.set_constant("h_separation", "Button", int(10 * _density))
 	theme.set_constant("icon_max_width", "Button", int(46 * _density))
 	theme.set_stylebox(
-		"panel", "PanelContainer", _style(Color(0.07, 0.11, 0.22, 0.92), GOLD.darkened(0.25), 22)
+		"panel", "PanelContainer", _style(Color(0.055, 0.12, 0.14, 0.97), Color("73918a"), 20)
 	)
 	return theme
 
@@ -288,7 +291,7 @@ func _build_ui() -> void:
 	# Hinter der Draufsicht wird der Raum abgedunkelt, damit nur das Brett zählt.
 	top_backdrop = ColorRect.new()
 	top_backdrop.name = "TopBackdrop"
-	top_backdrop.color = Color(0.05, 0.07, 0.14, 0.86)
+	top_backdrop.color = Color(0.055, 0.12, 0.14, 0.94)
 	top_backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	top_backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_backdrop.visible = false
@@ -349,7 +352,7 @@ func _button(text: String, callback: Callable, icon_key: String = "") -> Button:
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 56 * _density)
-	button.focus_mode = Control.FOCUS_NONE
+	button.focus_mode = Control.FOCUS_ALL
 	if not icon_key.is_empty():
 		button.icon = _icon(icon_key)
 		button.expand_icon = false
@@ -749,7 +752,7 @@ func open_path() -> void:
 		)
 		button.disabled = not open
 		if i == first_open:
-			button.add_theme_stylebox_override("normal", _style(Color("3d7a4a"), GOLD, 18, 4))
+			button.add_theme_stylebox_override("normal", _style(Color("276958"), Color("9ed9ba"), 14, 2))
 	_overlay_button("Back", "Zurück", open_home)
 	_show_overlay("path")
 	if first_open >= 0:
@@ -1198,7 +1201,7 @@ func _ask_promotion(options: Array[int]) -> void:
 					t == RULES.QUEEN
 				)
 				if t == RULES.QUEEN:
-					b.add_theme_stylebox_override("normal", _style(Color("3d7a4a"), GOLD, 18, 4))
+					b.add_theme_stylebox_override("normal", _style(Color("276958"), Color("9ed9ba"), 14, 2))
 	_show_overlay("promo")
 
 

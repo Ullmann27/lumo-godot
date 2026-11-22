@@ -10,10 +10,11 @@ const DECK = preload("res://scripts/games/cards/rules/star_deck.gd")
 const AI = preload("res://scripts/games/cards/rules/cards_ai.gd")
 const RULES := {
 	"stich": preload("res://scripts/games/cards/rules/sternenstich_rules.gd"),
+	"ziel": preload("res://scripts/games/cards/rules/punktlandung_rules.gd"),
 	"leiter": preload("res://scripts/games/cards/rules/sternenleiter_rules.gd"),
 	"quartett": preload("res://scripts/games/cards/rules/quartett_rules.gd"),
 }
-const GAMES: Array[String] = ["stich", "leiter", "quartett"]
+const GAMES: Array[String] = ["stich", "leiter", "quartett", "ziel"]
 const VERSION := 1
 const BOOKED_LIMIT := 300
 const PLACE_STARS := [3, 2, 1, 1]

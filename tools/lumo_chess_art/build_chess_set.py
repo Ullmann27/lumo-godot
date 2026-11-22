@@ -2,7 +2,7 @@
 """Lumo Schach: Figuren, Brett, Holztexturen und Figurensymbole – alles Eigenbau.
 
 Aufruf:
-  /home/user/tools/bpyenv/bin/python tools/lumo_chess_art/build_chess_set.py [--only models,textures,icons]
+  blender -b -t 2 -P tools/lumo_chess_art/build_chess_set.py -- --only models,textures,icons
 
 Ausgabe unter assets/chess/:
   models/<figur>.glb   pawn, rook, knight, bishop, queen, king, board
@@ -14,15 +14,13 @@ auf dem Ursprung und schauen nach −Y (in Godot +Z). Materialnamen sind
 Schlüssel: „wood“ (Godot setzt hell/dunkel ein), „felt“ (Filz unter dem Fuß),
 „board_top“, „frame“, „board_felt“.
 
-Formen: Drehkörper aus Profilen, deren Ecken mit Chaikin-Glättung weich
-gerundet werden; der Springer ist eine abgerundete Silhouette (Bevel +
-Subdivision). Danach glatte Normalen. Keine fremde Geometrie, keine fremden Bilder.
+Formen: Stufenfuß mit Messingband, gedrehte Säulen und eigenständig gezeichnete
+Profile. Die Figuren der Draufsicht werden aus derselben Geometrie gerendert.
 """
 from __future__ import annotations
 
 import argparse
 import math
-import random
 import sys
 from pathlib import Path
 
@@ -31,7 +29,7 @@ import bmesh
 from mathutils import Matrix, Vector
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "assets" / "chess"
@@ -45,7 +43,7 @@ def linear(hex_color: str) -> tuple:
 
 
 _MATS: dict[str, bpy.types.Material] = {}
-BASE = {"wood": "e8c896", "felt": "1f5a3a", "board_top": "ffffff", "frame": "5b3a26", "board_felt": "1f5a3a"}
+BASE = {"brass": "d9ad60", "wood": "f3eee2", "felt": "1f5a3a", "board_top": "ffffff", "frame": "5b3a26", "board_felt": "1f5a3a"}
 
 
 def mat(name: str) -> bpy.types.Material:
@@ -84,50 +82,6 @@ def to_object(name: str, bm: bmesh.types.BMesh, material: str, smooth: bool = Tr
     bpy.context.scene.collection.objects.link(ob)
     me.materials.append(mat(material))
     return ob
-
-
-def chaikin(points: list, iterations: int = 3, keep: set | None = None) -> list:
-    """Rundet Ecken einer offenen Linie; Endpunkte (und Indizes in keep) bleiben."""
-    keep = keep or set()
-    pts = [(Vector(p), i in keep) for i, p in enumerate(points)]
-    for _ in range(iterations):
-        out = [pts[0]]
-        for i in range(len(pts) - 1):
-            (a, ka), (b, kb) = pts[i], pts[i + 1]
-            if i > 0 and not ka:
-                out.append((a * 0.75 + b * 0.25, False))
-            elif i > 0:
-                out.append((a, True))
-            if i < len(pts) - 2 and not kb:
-                out.append((a * 0.25 + b * 0.75, False))
-        out.append(pts[-1])
-        pts = out
-    return simplify([(p.x, p.y) for p, _ in pts])
-
-
-def simplify(points: list, degrees: float = 7.0, min_len: float = 0.0006) -> list:
-    """Entfernt Punkte, an denen die Linie kaum knickt (spart Dreiecke)."""
-    out = [points[0]]
-    for i in range(1, len(points) - 1):
-        a = Vector(out[-1])
-        b = Vector(points[i])
-        c = Vector(points[i + 1])
-        d1 = b - a
-        d2 = c - b
-        if d1.length < 1e-9 or d2.length < 1e-9:
-            continue
-        if math.degrees(d1.angle(d2)) < degrees and (b - a).length < 0.008:
-            continue
-        if (b - a).length < min_len:
-            continue
-        out.append(points[i])
-    out.append(points[-1])
-    return out
-
-
-def arc(cx: float, cz: float, r: float, a0: float, a1: float, n: int) -> list:
-    return [(cx + math.cos(math.radians(a0 + (a1 - a0) * i / n)) * r, cz + math.sin(math.radians(a0 + (a1 - a0) * i / n)) * r)
-            for i in range(n + 1)]
 
 
 def lathe_bm(profile: list, segments: int = SEG) -> bmesh.types.BMesh:
@@ -194,158 +148,97 @@ def join(objects: list, name: str) -> bpy.types.Object:
     return ob
 
 
-def finish(ob: bpy.types.Object, subdiv: int = 0, weighted: bool = True) -> bpy.types.Object:
-    bpy.context.view_layer.objects.active = ob
-    if subdiv > 0:
-        mod = ob.modifiers.new("smooth", "SUBSURF")
-        mod.levels = subdiv
-        mod.render_levels = subdiv
-        bpy.ops.object.modifier_apply(modifier=mod.name)
-    for poly in ob.data.polygons:
-        poly.use_smooth = True
-    if weighted:
-        mod = ob.modifiers.new("wn", "WEIGHTED_NORMAL")
-        mod.keep_sharp = False
-        mod.weight = 50
-        bpy.ops.object.modifier_apply(modifier=mod.name)
-    return ob
+def profile(name, points, material="wood", sides=32):
+    """Turn the workshop drawing (radius and height in millimetres)."""
+    return lathe(name, [(r / 1000, z / 1000) for r, z in points], material, sides)
 
 
-# ===================================================================== Figuren
-#
-# Profile: (Radius, Höhe) von der Achse unten nach oben. Fuß mit Filzring,
-# Wulst, Hals, Kopf. Die Höhen staffeln sich deutlich, damit jede Figur auch
-# schräg von oben sofort erkennbar ist: Bauer 0,072 · Turm 0,086 · Springer
-# 0,098 · Läufer 0,108 · Dame 0,128 · König 0,148 m.
+def base(name, radius, shoulder, height):
+    # Stepped ceramic plinth, thin brass collar, then a tapered column.
+    body = profile(name, [(0, 1), (radius - 3, 1), (radius, 4), (radius, 8),
+                          (radius - 3, 11), (radius - 9, 13), (shoulder, height), (0, height)])
+    brass = profile("Collar", [(radius, 4), (radius + .2, 4.6),
+                               (radius + .2, 6.6), (radius, 7)], "brass")
+    pad = profile("Felt", [(0, 0), (radius - 3, 0), (radius - 3, 1), (0, 1)], "felt")
+    return [body, brass, pad]
 
 
-def foot(r: float) -> list:
-    """Gedrechselter Fuß: breite Platte, Hohlkehle, Wulst."""
-    return [(0.0, 0.0006), (r - 0.002, 0.0006), (r, 0.003), (r, 0.0075), (r - 0.004, 0.0105), (r - 0.006, 0.012),
-            (r - 0.0045, 0.0145), (r - 0.0045, 0.0175), (r - 0.0085, 0.0205)]
+def silhouette(name, outline, half_width, axis="y"):
+    """Bevel an original drawn outline into a solid standing on the plinth."""
+    bm = bmesh.new()
+    layers = []
+    for half in [-half_width, half_width]:
+        layers.append([bm.verts.new((half/1000, u/1000, z/1000) if axis == "y"
+                                    else (u/1000, half/1000, z/1000)) for u, z in outline])
+    bm.faces.new(layers[0])
+    bm.faces.new(layers[1][::-1])
+    for i in range(len(outline)):
+        j = (i + 1) % len(outline)
+        bm.faces.new((layers[0][i], layers[1][i], layers[1][j], layers[0][j]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=.0014, segments=3, affect="EDGES")
+    return to_object(name, bm, "wood", smooth=False)
 
 
-def felt_pad(r: float) -> bpy.types.Object:
-    bm = lathe_bm([(0.0, 0.0), (r - 0.0025, 0.0), (r - 0.002, 0.0008), (0.0, 0.0008)], 48)
-    return to_object("Felt", bm, "felt")
-
-
-def build_pawn() -> list:
-    r = 0.031
-    prof = foot(r) + [(0.017, 0.026), (0.0105, 0.040), (0.0092, 0.046), (0.0165, 0.0485), (0.017, 0.0515),
-                      (0.0098, 0.0535)]
-    body = chaikin(prof, 3, keep={0})
-    head = arc(0.0, 0.0605, 0.0128, -52, 90, 16)
-    profile = body + head[1:]
-    return [lathe("Pawn", profile), felt_pad(r)]
-
-
-def build_rook() -> list:
-    r = 0.034
-    prof = foot(r) + [(0.0215, 0.026), (0.0195, 0.060), (0.0205, 0.064), (0.0255, 0.068), (0.0262, 0.0745),
-                      (0.0262, 0.086), (0.0185, 0.086), (0.0175, 0.079), (0.0, 0.079)]
-    profile = chaikin(prof, 2, keep={0, len(prof) - 1, len(prof) - 2, len(prof) - 3, len(prof) - 4})
-    rook = lathe("Rook", profile)
-    # Zinnen: fünf Scharten in den Kranz schneiden.
-    for i in range(5):
-        a = math.tau * i / 5 + 0.3
-        cutter = box("Cut", (math.cos(a) * 0.024, math.sin(a) * 0.024, 0.088), (0.02, 0.0085, 0.016), rot_z=a)
-        boolean(rook, cutter)
-    # Schmales Zierband unter dem Kranz.
-    band = lathe("Band", chaikin([(0.0, 0.0612), (0.0212, 0.0612), (0.0218, 0.0628), (0.0212, 0.0644), (0.0, 0.0644)], 2, keep={0, 4}))
-    return [rook, band, felt_pad(r)]
-
-
-def build_bishop() -> list:
-    r = 0.032
-    prof = foot(r) + [(0.0175, 0.027), (0.0105, 0.052), (0.0095, 0.0605), (0.0185, 0.0635), (0.0188, 0.0665),
-                      (0.0110, 0.0685), (0.0128, 0.0745), (0.0158, 0.0835), (0.0142, 0.0925), (0.0085, 0.1005), (0.0035, 0.1035)]
-    body = chaikin(prof, 3, keep={0})
-    knob = arc(0.0, 0.1072, 0.0048, -40, 90, 8)
-    bishop = lathe("Bishop", body + knob)
-    # Kerbe in der Mitra: schräger, schmaler Schnitt.
-    cutter = box("Slit", (0.0, -0.011, 0.0885), (0.04, 0.012, 0.0032), rot_x=math.radians(-38))
-    boolean(bishop, cutter)
-    return [bishop, felt_pad(r)]
-
-
-def build_queen() -> list:
-    r = 0.036
-    prof = foot(r) + [(0.0195, 0.028), (0.0118, 0.060), (0.0102, 0.080), (0.0195, 0.0845), (0.0198, 0.0875),
-                      (0.0118, 0.0895), (0.0135, 0.0985), (0.0215, 0.111), (0.0222, 0.1145), (0.0165, 0.1155),
-                      (0.0105, 0.117)]
-    body = chaikin(prof, 3, keep={0})
-    dome = arc(0.0, 0.112, 0.0105, 10, 90, 10)
-    queen = lathe("Queen", body + dome[1:])
-    parts = [queen]
-    # Krone: neun kleine Kugeln auf dem Rand, eine Perle oben.
-    for i in range(9):
-        a = math.tau * i / 9
-        parts.append(sphere("Pearl", (math.cos(a) * 0.0205, math.sin(a) * 0.0205, 0.1175), 0.0042))
-    parts.append(sphere("Top", (0.0, 0.0, 0.1265), 0.0058))
-    parts.append(felt_pad(r))
+def build_pawn():
+    parts = base("Pawn", 29, 10, 40)
+    parts.append(profile("Cup", [(10, 37), (16, 42), (16, 45), (9, 48), (0, 48)]))
+    parts.append(sphere("Orb", (0, 0, .057), .016, scale=(1, 1, 1.03)))
     return parts
 
 
-def build_king() -> list:
-    r = 0.037
-    prof = foot(r) + [(0.0205, 0.028), (0.0125, 0.063), (0.0108, 0.085), (0.0205, 0.0895), (0.0208, 0.0925),
-                      (0.0125, 0.0945), (0.0142, 0.104), (0.0205, 0.1165), (0.0205, 0.1205), (0.0150, 0.1215)]
-    body = chaikin(prof, 3, keep={0})
-    dome = arc(0.0, 0.1175, 0.0115, 25, 90, 10)
-    king = lathe("King", body + dome[1:])
-    # Kreuz mit runden Kanten.
-    upright = box("CrossV", (0.0, 0.0, 0.1385), (0.0068, 0.0068, 0.0215), bevel=0.0019)
-    beam = box("CrossH", (0.0, 0.0, 0.1405), (0.0195, 0.0066, 0.0066), bevel=0.0019)
-    return [king, upright, beam, felt_pad(r)]
+def build_rook():
+    parts = base("Rook", 33, 18, 58)
+    parts.append(profile("Battlement", [(18, 55), (27, 65), (27, 77), (0, 77)]))
+    for i in range(4):
+        a = math.tau * i / 4 + math.pi/4
+        parts.append(box("Merlon", (.019*math.cos(a), .019*math.sin(a), .080),
+                         (.015, .024, .015), rot_z=a, bevel=.002))
+    return parts
 
 
-def build_knight() -> list:
-    r = 0.034
-    base_prof = foot(r) + [(0.0205, 0.0245), (0.0195, 0.0275), (0.0, 0.0285)]
-    base = lathe("KnightBase", chaikin(base_prof, 3, keep={0, len(base_prof) - 1}))
-    # Seitenansicht des Pferdekopfs (y nach vorn = Blickrichtung −Y in Blender
-    # wird unten gespiegelt). Punkte gegen den Uhrzeigersinn.
-    sil = [(-0.021, 0.024), (-0.0235, 0.046), (-0.0215, 0.066), (-0.0165, 0.082), (-0.0095, 0.0925),
-           (-0.0045, 0.0985), (-0.0015, 0.1035), (0.0018, 0.0975), (0.0058, 0.0945), (0.0145, 0.0885),
-           (0.0255, 0.0765), (0.0322, 0.0675), (0.0328, 0.0615), (0.0285, 0.0575), (0.0195, 0.0585),
-           (0.0175, 0.0585), (0.0155, 0.0525), (0.0165, 0.042), (0.0185, 0.030), (0.0195, 0.024)]
-    closed = sil + [sil[0]]
-    smooth = chaikin(closed, 3)[:-1]
-    bm = bmesh.new()
-    half = 0.0118
-    front = [bm.verts.new((-half, y, z)) for y, z in smooth]
-    back = [bm.verts.new((half, y, z)) for y, z in smooth]
-    bm.faces.new(front)
-    bm.faces.new(list(reversed(back)))
-    n = len(smooth)
-    for i in range(n):
-        bm.faces.new((front[i], front[(i + 1) % n], back[(i + 1) % n], back[i]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    edges = [e for e in bm.edges if abs(e.verts[0].co.x - e.verts[1].co.x) < 1e-6]
-    bmesh.ops.bevel(bm, geom=edges, offset=0.0038, segments=4, affect="EDGES", profile=0.5)
-    # Maul und Stirn schmaler als der Hals: Kopf verjüngt sich nach vorn.
-    for v in bm.verts:
-        t = min(1.0, max(0.0, (v.co.y + 0.004) / 0.036))
-        v.co.x *= 1.0 - 0.32 * t
-    head = to_object("KnightHead", bm, "wood")
-    finish(head, subdiv=1, weighted=False)
-    parts = [base, head]
-    # Mähne: Reihe abgeflachter Kugeln hinten am Hals.
-    back = [Vector(p) for p in [(-0.0235, 0.046), (-0.0215, 0.066), (-0.0165, 0.082), (-0.0095, 0.0925), (-0.0045, 0.0985)]]
-    for i in range(10):
-        t = i / 9.0 * (len(back) - 1)
-        k = min(int(t), len(back) - 2)
-        at = back[k].lerp(back[k + 1], t - k)
-        parts.append(sphere("Mane", (0.0, at.x + 0.0012, at.y), 0.0050 - 0.0012 * i / 9.0, scale=(0.72, 0.9, 1.3)))
-    # Augen: kleine Kugeln, leicht erhaben, auf beiden Seiten; Nüstern vorn.
-    for side in (-1, 1):
-        parts.append(sphere("Eye", (side * 0.0098, 0.0115, 0.0845), 0.0028, scale=(0.6, 1.0, 1.0)))
-        parts.append(sphere("Nostril", (side * 0.0058, 0.0305, 0.0635), 0.0021, scale=(0.7, 1.0, 1.0)))
-    parts.append(felt_pad(r))
-    # Blender −Y ist vorn; die Silhouette schaut nach +Y: einmal umdrehen.
-    for ob in parts:
-        ob.rotation_euler = (0, 0, math.pi)
+def build_knight():
+    parts = base("Knight", 32, 21, 29)
+    parts.append(silhouette("Horse", [(-20, 27), (-24, 43), (-20, 67), (-9, 88),
+                                      (-6, 104), (2, 97), (5, 93), (12, 90), (32, 71),
+                                      (31, 62), (23, 59), (9, 66), (5, 56), (13, 38),
+                                      (19, 27)], 11))
+    for side in [-1, 1]:
+        parts.append(sphere("Eye", (side*.011, .006, .084), .0028, material="brass"))
+    return parts
+
+
+def build_bishop():
+    parts = base("Bishop", 32, 11, 65)
+    parts.append(profile("Collar", [(11, 60), (18, 64), (17, 68), (0, 70)]))
+    mitre = profile("Mitre", [(7, 68), (16, 75), (18, 84), (14, 96), (3, 111), (0, 113)])
+    boolean(mitre, box("Slit", (.009, 0, .098), (.005, .060, .039), rot_z=0,
+                       bevel=0))
+    parts.append(mitre)
+    return parts
+
+
+def build_queen():
+    parts = base("Queen", 35, 10, 84)
+    parts.append(profile("Cup", [(10, 78), (17, 84), (13, 90), (23, 105), (22, 110), (0, 110)]))
+    # Five gold-tipped petals form a readable open crown.
+    for i in range(5):
+        a = math.tau*i/5
+        petal = sphere("Petal", (0, 0, 0), .009, scale=(.72, .82, 1.65))
+        petal.location = (.022*math.cos(a), .022*math.sin(a), .113)
+        petal.rotation_euler = (0, .28, a)
+        parts.append(petal)
+    parts.append(sphere("Pearl", (0, 0, .115), .009, "brass"))
+    return parts
+
+
+def build_king():
+    parts = base("King", 36, 12, 89)
+    parts.append(profile("Cap", [(12, 83), (21, 91), (14, 96), (20, 106),
+                                 (18, 115), (7, 120), (0, 120)]))
+    parts.append(silhouette("Cross", [(-5, 116), (5, 116), (5, 128), (15, 128),
+                                      (15, 137), (5, 137), (5, 150), (-5, 150),
+                                      (-5, 137), (-15, 137), (-15, 128), (-5, 128)], 4, "x"))
     return parts
 
 
@@ -373,16 +266,9 @@ def export(name: str, objects: list) -> None:
 
 def build_piece(name: str) -> list:
     parts = PIECES[name]()
-    wood = [p for p in parts if p.data.materials[0].name == "wood"]
-    felt = [p for p in parts if p.data.materials[0].name == "felt"]
-    body = join(wood, name.capitalize())
-    if name != "knight":
-        finish(body)
-    else:
-        for poly in body.data.polygons:
-            poly.use_smooth = True
-    out = [body] + felt
-    return out
+    pads = [p for p in parts if p.data.materials[0].name == "felt"]
+    body = join([p for p in parts if p not in pads], name.capitalize())
+    return [body, *pads]
 
 
 # ======================================================================= Brett
@@ -486,8 +372,8 @@ def save(img: np.ndarray, name: str, quality: int = 92) -> None:
     print(f"[chess] Textur {name}: {out.size[0]}x{out.size[1]}")
 
 
-MAPLE = ((238, 214, 172), (205, 160, 104))
-WALNUT = ((112, 72, 44), (58, 34, 20))
+MAPLE = ((212, 226, 210), (194, 211, 192))
+WALNUT = ((103, 151, 145), (77, 123, 121))
 
 
 def build_textures() -> None:
@@ -497,13 +383,12 @@ def build_textures() -> None:
     img = np.zeros((size, size, 3), np.float32)
     # Intarsienband: Nussbaum, darin eine helle Ahornader und kleine Rauten.
     band = wood((size, size), WALNUT[0], WALNUT[1], rng, rings=60, vertical=False)
-    img[:] = band
+    img[:] = band * .46
     yy, xx = np.mgrid[0:size, 0:size].astype(np.float32)
     inner0 = (BOARD_INLAY - BOARD_INNER) / 2 * px_per_m
     edge = np.minimum(np.minimum(xx, yy), np.minimum(size - 1 - xx, size - 1 - yy))
     vein = (edge > inner0 * 0.42) & (edge < inner0 * 0.58)
-    maple_band = wood((size, size), MAPLE[0], MAPLE[1], rng, rings=24, vertical=True)
-    img[vein] = maple_band[vein]
+    img[vein] = (225, 188, 119)
     # Felder: abwechselnd Ahorn und Nussbaum, Maserung jedes Feld eigen.
     cell = BOARD_INNER / 8 * px_per_m
     for rank in range(8):
@@ -529,10 +414,10 @@ def build_textures() -> None:
     img[grid] *= 0.55
     save(img, "board_top")
     # Figurenholz (wird in Godot dreiplanar aufgelegt): feine, dichte Maserung.
-    save(wood((1024, 1024), (246, 226, 188), (214, 172, 118), np.random.default_rng(5), rings=26, warp=2.0, pores=0.1), "piece_maple")
-    save(wood((1024, 1024), (84, 50, 30), (34, 19, 10), np.random.default_rng(6), rings=26, warp=2.0, pores=0.14), "piece_walnut")
+    save(wood((1024, 1024), (245, 238, 216), (234, 225, 204), np.random.default_rng(5), rings=26, warp=2.0, pores=0.1), "piece_maple")
+    save(wood((1024, 1024), (52, 66, 86), (43, 51, 72), np.random.default_rng(6), rings=26, warp=2.0, pores=0.14), "piece_walnut")
     # Rahmen: Nussbaum, längs gemasert.
-    save(wood((1024, 1024), (122, 80, 50), (66, 39, 23), np.random.default_rng(9), rings=30, warp=2.0, vertical=False), "frame_walnut")
+    save(wood((1024, 1024), (43, 74, 73), (31, 56, 58), np.random.default_rng(9), rings=30, warp=2.0, vertical=False), "frame_walnut")
     # Filz unter Brett und Figuren.
     felt = _noise((256, 256), 2.0, np.random.default_rng(3))
     base = np.array((34, 92, 58), np.float32)
@@ -586,14 +471,13 @@ def build_icons(size: int = 256) -> None:
             reset_scene()
             parts = build_piece(name)
             body = parts[0]
-            body.data.materials.clear()
-            body.data.materials.append(_render_material("m", "piece_maple" if colour == "w" else "piece_walnut", 0.32))
+            body.data.materials[0] = _render_material("m", "piece_maple" if colour == "w" else "piece_walnut", 0.32)
             for felt in parts[1:]:
                 bpy.data.objects.remove(felt, do_unlink=True)
             scene = bpy.context.scene
             scene.render.engine = "CYCLES"
-            scene.cycles.samples = 48
-            scene.cycles.use_denoising = True
+            scene.cycles.samples = 16
+            scene.cycles.use_denoising = False
             scene.render.film_transparent = True
             scene.render.resolution_x = size
             scene.render.resolution_y = size
@@ -623,7 +507,7 @@ def build_icons(size: int = 256) -> None:
             for loc, energy, size_l in [((-0.35, -0.45, 0.55), 16.0, 0.35), ((0.45, -0.2, 0.25), 6.0, 0.5),
                                         ((0.1, 0.5, 0.4), 12.0, 0.25)]:
                 light_data = bpy.data.lights.new("l", "AREA")
-                light_data.energy = energy * (0.42 if colour == "w" else 1.8)
+                light_data.energy = energy * (0.33 if colour == "w" else .86)
                 light_data.size = size_l
                 light = bpy.data.objects.new("l", light_data)
                 light.location = loc

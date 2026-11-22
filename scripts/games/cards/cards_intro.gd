@@ -14,14 +14,20 @@ const SESSION = preload("res://scripts/games/cards/cards_session.gd")
 const DECK = preload("res://scripts/games/cards/rules/star_deck.gd")
 
 ## Feste Startwerte; `ready()` prüft, dass sie die Lernsituation hergeben.
-const SEEDS := {"stich": 23, "leiter": 9, "quartett": 9}
+const SEEDS := {"stich": 23, "leiter": 9, "quartett": 9, "ziel": 9}
 const PLAYERS := 4
 
 const STEPS := {
+	"ziel": [
+		{"text": "Die offene Karte links gibt dir eine Zielzahl. Alle suchen eine Karte, die möglichst nah daran liegt.", "wait": "tap", "when": "now", "focus": "table"},
+		{"text": "Bei Ziel 6 wäre die 6 perfekt. Eine 5 oder 7 ist nur einen Schritt entfernt. Jede Farbe ist erlaubt.", "wait": "tap", "when": "now", "focus": "hand"},
+		{"text": "Welche deiner Zahlen liegt am nächsten? Tippe die Karte an und bestätige mit Legen.", "wait": "play", "when": "turn", "focus": "hand"},
+		{"text": "Wer am nächsten liegt, gewinnt den Stich! Bei gleichem Abstand gewinnt die frühere Karte. Danach kommt eine neue Zielzahl.", "wait": "done", "when": "now", "focus": ""},
+	],
 	"stich": [
-		{"text": "Beim Sternenstich legt jeder reihum eine Karte in die Mitte. Die höchste Karte gewinnt alle – das ist ein Stich.", "wait": "tap", "when": "now", "focus": "table"},
+		{"text": "Beim Sternenstich legt jeder reihum eine Karte in die Mitte. Diese Karten zusammen heißen Stich.", "wait": "tap", "when": "now", "focus": "table"},
 		{"text": "Die aufgedeckte Karte am Stapel zeigt die Trumpffarbe. Ein Trumpf schlägt jede andere Farbe.", "wait": "tap", "when": "now", "focus": "trump"},
-		{"text": "Jetzt du! Du musst dieselbe Farbe legen wie die erste Karte. Tippe eine leuchtende Karte an und dann noch einmal.", "wait": "play", "when": "turn", "focus": "hand"},
+		{"text": "Jetzt du! Hast du die Farbe der ersten Karte, musst du sie legen. Tippe eine leuchtende Karte an und dann noch einmal.", "wait": "play", "when": "turn", "focus": "hand"},
 		{"text": "Super! Wer den Stich gewinnt, spielt als Nächstes aus. Wer am Ende die meisten Stiche hat, gewinnt die Runde.", "wait": "done", "when": "now", "focus": ""},
 	],
 	"leiter": [

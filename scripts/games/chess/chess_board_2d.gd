@@ -105,15 +105,15 @@ func _draw() -> void:
 	# Schatten und Rahmen, dann die echte Brett-Textur.
 	draw_rect(Rect2(r.position + Vector2(0, r.size.x * 0.012), r.size), Color(0, 0, 0, 0.35))
 	var frame := r.grow(r.size.x * 0.035)
-	draw_rect(frame, Color("4a2c1a"))
-	draw_rect(frame.grow(-r.size.x * 0.006), Color("6b4128"))
+	draw_rect(frame, Color("192e35"))
+	draw_rect(frame.grow(-r.size.x * 0.006), Color("294749"))
 	if _top != null:
 		draw_texture_rect(_top, r, false)
 	else:
 		for sq in 64:
 			draw_rect(
 				square_rect(sq),
-				Color("eed6ac") if (sq & 7) % 2 != (sq >> 3) % 2 else Color("70482c")
+				Color("cbdcc9") if (sq & 7) % 2 != (sq >> 3) % 2 else Color("62918c")
 			)
 	var c := cell()
 	var pulse := 0.65 + 0.3 * sin(_time * 4.2)
