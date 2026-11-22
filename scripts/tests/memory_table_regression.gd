@@ -1,7 +1,6 @@
 extends SceneTree
 ## Presentation fixture only. The real Dart authority is exercised separately.
 ## This fixture never writes a saved round and never awards a wallet result.
-const TABLE := "res://scripts/games/memory/memory_table.gd"
 const TOKEN := "cccccccccccccccccccccccccccccccc"
 const OWNER := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 var table
@@ -203,16 +202,23 @@ func _run() -> void:
 	await _profile(Vector2i(960,540),1.0,Rect2())
 	bridge = ObservedTransport.new()
 	bridge.state = _state()
-	var script: GDScript = load(TABLE)
-	if script == null or not script.can_instantiate():
-		_check(false,"production presenter compiles after autoload initialization")
+	var route: String = root.get_node("SceneRouter").SCENES.memory
+	var scene: PackedScene = load(route)
+	if scene == null or not scene.can_instantiate():
+		_check(false,"routed Memory scene loads after autoload initialization")
 		quit(1)
 		return
-	table = script.new()
+	root.scaling_3d_scale = 0.75
+	table = scene.instantiate()
 	table._host = bridge
 	root.add_child(table)
 	await _frames(8)
 	_check(table._state.token==TOKEN,"token bound")
+	_check(is_equal_approx(root.scaling_3d_scale,1.0),"Memory draws the table at native window resolution")
+	_check(table._cards[0].body.mesh == table._cards[1].body.mesh,"board cards share a beveled blank")
+	for motif in table.MOTIFS:
+		var portrait: Texture2D = load("res://assets/games/memory/collection/%s.webp" % motif)
+		_check(portrait != null and portrait.get_size() == Vector2(768,1008),"full artwork resolution for "+str(motif))
 	_visible_targets()
 	await _snap("memory-landscape-hidden")
 	for card in table._cards:
@@ -284,6 +290,13 @@ func _run() -> void:
 			next.rejected = int(table._state.rejected)
 			await _apply(next)
 			_visible_targets()
+			if profile.name == "phone" and level == "leicht":
+				await _tap(table._cards[0].button,"phone card touch")
+				_check(int(bridge.requests.back().index)==0 and table._pending>0,"phone touch reaches projected card")
+				var phone_face := _reply({"reduceMotion":true})
+				phone_face.cards[0] = {"index":0,"faceUp":true,"matched":false,"motif":"giraffe"}
+				await _apply(phone_face)
+				await _snap("memory-phone-one-flipped")
 			var seen := {}
 			for page in range(ceili(float(table._cards.size())/table._page_size)):
 				for card in table._cards:
@@ -304,6 +317,7 @@ func _run() -> void:
 	table.queue_free()
 	await _frames(4)
 	_check(not FileAccess.file_exists("user://memory_layout_v1.json"),"scene exit removes ephemeral layout")
+	_check(is_equal_approx(root.scaling_3d_scale,0.75),"return restores former render scale")
 	Input.emulate_touch_from_mouse = original_touch
 	var result := {"status":"PASS" if errors.is_empty() else "FAIL","checks":checks,"errors":errors,
 		"scope":"Production Godot presenter; synthetic public-state/transport fixture and actual ScreenTouch events; no Dart, Android, wallet or device FPS claim.",

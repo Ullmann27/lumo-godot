@@ -23,12 +23,12 @@ const LEVELS := ["leicht", "mittel", "schwer", "knifflig", "profi"]
 const COUNTS := [8, 12, 16, 20, 24]
 const PACKS := ["alle", "tiere", "weltall", "garten"]
 const MOTIFS := {
-	"panda":["Panda","face_panda"], "giraffe":["Giraffe","face_giraffe"],
-	"lumo":["Lumo","fox_avatar"], "hase":["Hase","face_bunny"],
-	"pinguin":["Pinguin","face_penguin"], "stern":["Sternchen","sticker_star"],
-	"laterne":["Laterne","sticker_lantern"], "truhe":["Schatztruhe","sticker_chest"],
-	"note":["Notenfreund","sticker_note"], "fahne":["Sternenfahne","sticker_flag"],
-	"pilz":["Pilz","sticker_mushroom"], "stein":["Stachelstein","sticker_rock"]
+	"panda":"Panda", "giraffe":"Giraffe",
+	"lumo":"Lumo", "hase":"Hase",
+	"pinguin":"Pinguin", "stern":"Sternchen",
+	"laterne":"Laterne", "truhe":"Schatztruhe",
+	"note":"Notenfreund", "fahne":"Sternenfahne",
+	"pilz":"Pilz", "stein":"Stachelstein"
 }
 const CARD_ASPECT := 0.76
 ## Felt margin and wooden rim around the grid, in world units (1 = 100 px).
@@ -49,6 +49,8 @@ var _columns := 4
 var _rows := 6
 var _cards: Array[Dictionary] = []
 var _textures: Dictionary = {}
+var _card_body_mesh: ArrayMesh
+var _card_body_size := Vector2.ZERO
 var _dirty := true
 var _layout_frames := 2
 var _layout_sequence := 0
@@ -110,10 +112,11 @@ var _selected_style: StyleBoxFlat
 
 func _ready() -> void:
 	var window := get_window()
-	_previous = {"scale":window.content_scale_size,"mode":window.content_scale_mode,
+	_previous = {"render_scale":window.scaling_3d_scale,"scale":window.content_scale_size,"mode":window.content_scale_mode,
 		"quit":get_tree().quit_on_go_back,"accept":get_tree().auto_accept_quit,
 		"orientation":DisplayServer.screen_get_orientation()}
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	window.scaling_3d_scale = 1.0
 	get_tree().quit_on_go_back = false
 	get_tree().auto_accept_quit = false
 	if OS.has_feature("mobile"):
@@ -141,6 +144,7 @@ func _exit_tree() -> void:
 	if get_window().size_changed.is_connected(_layout):
 		get_window().size_changed.disconnect(_layout)
 	if not _previous.is_empty():
+		get_window().scaling_3d_scale = _previous.render_scale
 		get_window().content_scale_size = _previous.scale
 		get_window().content_scale_mode = _previous.mode
 		get_tree().quit_on_go_back = _previous.quit
@@ -361,6 +365,42 @@ func _rounded_mesh(width: float,height: float,depth: float) -> ArrayMesh:
 	return tool.commit()
 
 
+## One shared die-cut blank per board size. Its outer bevel catches the room light during a flip.
+func _beveled_card(size: Vector2) -> ArrayMesh:
+	var shape := SurfaceTool.new()
+	shape.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var radius := size.x * 0.10
+	var bevel := minf(size.x * 0.022, 0.022)
+	var vertices := PackedVector2Array()
+	var normals := PackedVector2Array()
+	for corner in range(4):
+		var center: Vector2 = (size * 0.5 - Vector2.ONE * radius) * [
+			Vector2(1,1), Vector2(-1,1), Vector2(-1,-1), Vector2(1,-1)][corner]
+		for step in range(7):
+			var direction := Vector2.from_angle((corner + step / 6.0) * PI * 0.5)
+			vertices.append(center + direction * radius)
+			normals.append(direction)
+	var rings := [Vector2(bevel,-0.055),Vector2(0,-0.055+bevel),
+		Vector2(0,0.055-bevel),Vector2(bevel,0.055)]
+	for i in range(vertices.size()):
+		var j := (i+1)%vertices.size()
+		for side in [-1,1]:
+			shape.set_normal(Vector3(0,0,side))
+			shape.add_vertex(Vector3(0,0,side*0.055))
+			for k in ([j,i] if side==1 else [i,j]):
+				var point := vertices[k] - normals[k]*bevel
+				shape.add_vertex(Vector3(point.x,point.y,side*0.055))
+		for band in range(3):
+			for slot in [0,3,1,1,3,2]:
+				var k: int = j if slot in [1,2] else i
+				var ring: Vector2 = rings[band + (1 if slot >= 2 else 0)]
+				var point := vertices[k] - normals[k]*ring.x
+				shape.set_normal(Vector3(normals[k].x,normals[k].y,band-1).normalized())
+				shape.add_vertex(Vector3(point.x,point.y,ring.y))
+	shape.index()
+	return shape.commit()
+
+
 func _create_card(index: int) -> Dictionary:
 	var root := Node3D.new()
 	root.name = "AcknowledgedCard%d" % index
@@ -375,9 +415,7 @@ func _create_card(index: int) -> Dictionary:
 	front.position.z = 0.057
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.albedo_color = Color("fff4da")
-	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	front.material_override = material
 	root.add_child(front)
 	var back := MeshInstance3D.new()
@@ -436,7 +474,7 @@ func _sync_card(index: int, immediate: bool) -> void:
 	if showing and str(card.motif) != str(public_card.motif):
 		var motif: String = public_card.motif
 		if not _textures.has(motif):
-			_textures[motif] = load("res://assets/games/memory/%s.png" % MOTIFS[motif][1])
+			_textures[motif] = load("res://assets/games/memory/collection/%s.webp" % motif)
 		card.front.material_override.albedo_texture = _textures[motif]
 		card.front.visible = true
 		card.motif = motif
@@ -450,7 +488,7 @@ func _sync_card(index: int, immediate: bool) -> void:
 		body.emission_energy_multiplier = 0.35 if matched else 0.0
 		card.root.scale = Vector3.ONE
 	card.was_matched = matched
-	card.button.tooltip_text = "Karte %d · %s" % [index+1, MOTIFS[public_card.motif][0] if showing else "verdeckt"]
+	card.button.tooltip_text = "Karte %d · %s" % [index+1, MOTIFS[public_card.motif] if showing else "verdeckt"]
 	if immediate or bool(_state.reduceMotion):
 		if is_instance_valid(card.tween): card.tween.kill()
 		card.root.rotation.y = 0.0 if showing else PI
@@ -1090,9 +1128,12 @@ func _layout() -> void:
 		var centre := target.get_center()-grid_center
 		card.root.position = Vector3(centre.x/100.0,-centre.y/100.0,CARD_Z)
 		card.root.set_meta("height",card.size.y)
-		card.body.mesh = _rounded_mesh(card.size.x,card.size.y,0.11)
+		if _card_body_size != card.size:
+			_card_body_size = card.size
+			_card_body_mesh = _beveled_card(card.size)
+		card.body.mesh = _card_body_mesh
 		# The motif sits inset so the gold frame stays visible all around it.
-		card.front.mesh.size = card.size*0.86
+		card.front.mesh.size = card.size*0.93
 		card.back.mesh.size = card.size*0.92
 		card.matched.position.y = -card.size.y*0.35
 		card.matched.scale = Vector3.ONE*minf(card.size.x/0.95,1.4)
