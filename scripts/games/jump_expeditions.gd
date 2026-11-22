@@ -5,7 +5,7 @@ extends RefCounted
 const COURSES: Array[Dictionary] = [
 	{
 		"name": "Wolkenpfad",
-		"description": "Lerne die Inseln kennen und entdecke eine Sprungfeder.",
+		"description": "Spring durch die Sonnenringe und hol dir Rückenwind.",
 		"goals":
 		[
 			{"id": "crystals", "label": "Kristalle", "target": 6},
@@ -14,7 +14,7 @@ const COURSES: Array[Dictionary] = [
 	},
 	{
 		"name": "Windbrücken",
-		"description": "Kurvigere Wege und Sterne auf wandernden Inseln.",
+		"description": "Spring vom Pfeilbrett in die wandernden Windringe.",
 		"goals":
 		[
 			{"id": "moving", "label": "Wanderstern", "target": 1},
@@ -23,7 +23,7 @@ const COURSES: Array[Dictionary] = [
 	},
 	{
 		"name": "Sternenstieg",
-		"description": "Mehr Höhenwechsel: Erkunde die geheime Seiteninsel.",
+		"description": "Überspring die Kometenschweife und finde die geheime Seiteninsel.",
 		"goals":
 		[
 			{"id": "side", "label": "Geheimsterne", "target": 2},

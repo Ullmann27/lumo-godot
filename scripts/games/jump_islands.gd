@@ -6,10 +6,11 @@ const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.g
 const EXPEDITIONS = preload("res://scripts/games/jump_expeditions.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const JUMP_ACTION = preload("res://scripts/games/jump_touch_button.gd")
-const RUN_SPEED: float = 5.5
-const GROUND_ACCELERATION: float = 24.0
-const GROUND_BRAKING: float = 32.0
-const AIR_ACCELERATION: float = 16.0
+const SKY_TRIALS = preload("res://scripts/games/jump_sky_trials.gd")
+const RUN_SPEED: float = 8.3
+const GROUND_ACCELERATION: float = 48.0
+const GROUND_BRAKING: float = 50.0
+const AIR_ACCELERATION: float = 30.0
 const GRAVITY: float = 18.0
 const JUMP_SPEED: float = 8.5
 const SHORT_JUMP_SPEED: float = 4.8
@@ -76,6 +77,7 @@ var bonus_stars: Array[Node3D] = []
 var stars_gathered: Dictionary = {}
 var extra_island: Vector3 = Vector3.ZERO
 var checkpoint_flags: Dictionary = {}
+var trials := SKY_TRIALS.new()
 var _modal_fit_queued: bool = false
 
 
@@ -101,7 +103,7 @@ func _ready() -> void:
 	_build_ui()
 	# Erste Einführung je Kind (beim Spielen): scripts/games/guides/jump_guide.gd
 	load("res://scripts/games/guides/jump_guide.gd").attach(self)
-	message.text = "%s · Halten = höher springen" % EXPEDITIONS.COURSES[course_index].name
+	message.text = trials.OPENING[course_index]
 	if _restore_session():
 		_pause()
 		message.text = RESTORED_TEXT
@@ -109,7 +111,16 @@ func _ready() -> void:
 
 
 func _build_world() -> void:
-	LumoEnvironment.apply(self, "wolkeninseln")
+	var light := LumoEnvironment.apply(self, "wolkeninseln")
+	var env: Environment = light.environment
+	var sky: ProceduralSkyMaterial = env.sky.sky_material
+	if course_index == 1:
+		sky.sky_top_color = Color("287a9b")
+		sky.sky_horizon_color = Color("c2e9d5")
+	elif course_index == 2:
+		sky.sky_top_color = Color("655b9a")
+		sky.sky_horizon_color = Color("fbd0b3")
+		env.fog_light_color = Color("d6bfd2")
 	art = JumpSkyIslandsArt.new()
 	for i in range(ISLAND_COUNT):
 		var point: Vector3 = EXPEDITIONS.point(i, course_index)
@@ -158,6 +169,9 @@ func _build_world() -> void:
 	_build_bonus_stars()
 	_build_checkpoint_flags()
 	art.finish(self)
+	add_child(trials)
+	trials.build(islands, course_index)
+	trials.contact.connect(_trial_contact)
 	actor = CharacterBody3D.new()
 	actor.floor_snap_length = 0.3
 	actor.floor_stop_on_slope = true
@@ -245,7 +259,7 @@ func _build_ui() -> void:
 	safe.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	var back := _button("‹ Spiele", _pause)
+	var back := _button("‹ Menü", _pause)
 	header_buttons.append(back)
 	top.add_child(back)
 	hud = _label("Insel 1/12", 21)
@@ -254,11 +268,32 @@ func _build_ui() -> void:
 	var pause_button := _button("Pause", _pause)
 	header_buttons.append(pause_button)
 	top.add_child(pause_button)
-	message = _label("", 24)
-	column.add_child(message)
-	objective = _label("", 17)
-	objective.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(objective)
+	# Keep the play field clear. The route and current action share one
+	# compact panel sized to its text, anchored above the left thumb.
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var plate := StyleBoxFlat.new()
+	plate.bg_color = Color("193950e5")
+	plate.set_corner_radius_all(9)
+	plate.content_margin_left = 10 * _ui_unit()
+	plate.content_margin_right = 10 * _ui_unit()
+	plate.content_margin_top = 4 * _ui_unit()
+	plate.content_margin_bottom = 4 * _ui_unit()
+	panel.add_theme_stylebox_override("panel", plate)
+	column.add_child(panel)
+	var notes := VBoxContainer.new()
+	notes.add_theme_constant_override("separation", 0)
+	panel.add_child(notes)
+	objective = _label("", 13)
+	message = _label("", 16)
+	for label: Label in [objective, message]:
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		label.autowrap_mode = TextServer.AUTOWRAP_OFF
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		notes.add_child(label)
+	objective.add_theme_color_override("font_color", Color("a1e7d5"))
+	message.add_theme_color_override("font_color", Color("fff4cf"))
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -344,14 +379,15 @@ func _layout_ui() -> void:
 	movement_stick.custom_minimum_size = Vector2.ONE * stick_side
 	jump_action.custom_minimum_size = Vector2.ONE * clampf(view.x / unit * 0.29, 104, 136) * unit
 	for button in header_buttons:
+		button.autowrap_mode = TextServer.AUTOWRAP_OFF
 		button.custom_minimum_size = Vector2(76, 48) * unit
 		button.add_theme_font_size_override("font_size", roundi(17 * unit))
 		_size_button_margins(button, unit)
 	for hint in control_hints:
 		hint.add_theme_font_size_override("font_size", roundi(12 * unit))
 	hud.add_theme_font_size_override("font_size", roundi(16 * unit))
-	message.add_theme_font_size_override("font_size", roundi(18 * unit))
-	objective.add_theme_font_size_override("font_size", roundi(14 * unit))
+	message.add_theme_font_size_override("font_size", roundi(15 * unit))
+	objective.add_theme_font_size_override("font_size", roundi(12 * unit))
 	for item in modal_column.get_children():
 		if item is Button:
 			item.custom_minimum_size = Vector2(80, 52) * unit
@@ -455,6 +491,7 @@ func _physics_process(delta: float) -> void:
 			if is_instance_valid(star) and star.visible:
 				star.rotation.y += delta * 1.35
 		_step_movers(delta)
+		trials.step(delta)
 	if not paused and not finished and not question_open:
 		var keyboard := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 		var direction: Vector2 = (keyboard + touch_direction).limit_length()
@@ -463,7 +500,14 @@ func _physics_process(delta: float) -> void:
 		var acceleration: float = AIR_ACCELERATION
 		if grounded:
 			acceleration = GROUND_BRAKING if direction.length_squared() < 0.001 else GROUND_ACCELERATION
-		horizontal = horizontal.move_toward(direction * RUN_SPEED, acceleration * delta)
+		# Retain fine walk control below half stick; the outer half opens into a sprint.
+		var amount := direction.length()
+		var speed := amount * 5.5 + maxf(0.0, amount - .5) * 2.0 * (RUN_SPEED - 5.5)
+		if trials.boost > 0.0:
+			speed *= 1.18
+		if trials.stumble > 0.0:
+			speed *= .55
+		horizontal = horizontal.move_toward(direction.normalized() * speed, acceleration * delta)
 		actor.velocity.x = horizontal.x
 		actor.velocity.z = horizontal.y
 		coyote_time = COYOTE_SECONDS if grounded else maxf(0, coyote_time - delta)
@@ -475,7 +519,7 @@ func _physics_process(delta: float) -> void:
 		if grounded:
 			jump_active = false
 		if jump_buffer > 0 and coyote_time > 0:
-			actor.velocity.y = JUMP_SPEED
+			actor.velocity.y = trials.launch_speed(actor.position, JUMP_SPEED)
 			jump_active = true
 			jump_buffer = 0
 			coyote_time = 0
@@ -485,7 +529,9 @@ func _physics_process(delta: float) -> void:
 			actor.velocity.y = minf(actor.velocity.y, SHORT_JUMP_SPEED)
 			jump_cut_pending = false
 		_try_bounce(delta)
+		var before := actor.position
 		actor.move_and_slide()
+		trials.crossed(before, actor.position)
 		if direction.length() > 0.1:
 			actor.rotation.y = lerp_angle(
 				actor.rotation.y, atan2(-direction.x, -direction.y), minf(1, delta * 10)
@@ -554,12 +600,16 @@ func _physics_process(delta: float) -> void:
 		]
 	)
 	var target: int = EXPEDITIONS.stage_target(checkpoint)
-	var goals: Array = EXPEDITIONS.COURSES[course_index].goals
-	var progress: Array[String] = []
-	for goal in goals:
-		progress.append("%s %d/%d" % [goal.label, mini(_goal_value(str(goal.id)), int(goal.target)), int(goal.target)])
-	objective.text = "Etappe %d/4 · %s %d\nBonus: %s" % [mini(4, checkpoint / 3 + 1), "Zielinsel" if target == 11 else "Zur Lerninsel", target + 1, " · ".join(progress)]
+	objective.text = "Etappe %d/4 · Insel %d · ☀ %d/%d" % [
+		mini(4, checkpoint / 3 + 1), target + 1, trials.stamps.size(), trials.count_marks()]
 
+
+
+
+func _trial_contact(cue: String, sound: String) -> void:
+	message.text = cue
+	GameSoundscape.stinger(sound)
+	_save_session()
 
 
 func _set_stick_axis(value: Vector2) -> void:
@@ -611,10 +661,12 @@ func _stop_input() -> void:
 
 func _respawn() -> void:
 	falls += 1
+	trials.boost = 0.0
+	trials.stumble = 0.0
 	actor.position = islands[checkpoint] + Vector3(0, 0.5, 1)
 	actor.velocity = Vector3.ZERO
 	_stop_input()
-	message.text = "Wir versuchen es noch einmal. Dein Kontrollpunkt ist gespeichert."
+	message.text = "Du bist zurück am Kontrollpunkt."
 
 
 func _clear_modal() -> void:
@@ -656,7 +708,7 @@ func _answer(answer: String) -> void:
 		question_open = false
 		_set_controls_enabled(true)
 		modal.hide()
-		message.text = "Richtig! Weiter zur nächsten Wolkeninsel."
+		message.text = trials.OPENING[course_index]
 		_save_session()
 	else:
 		wrong_count += 1
@@ -678,6 +730,10 @@ func _pause() -> void:
 	_save_session()
 	_clear_modal()
 	modal_column.add_child(_label("Kleine Pause", 28))
+	var progress: Array[String] = []
+	for goal in EXPEDITIONS.COURSES[course_index].goals:
+		progress.append("%s %d/%d" % [goal.label, mini(_goal_value(str(goal.id)), int(goal.target)), int(goal.target)])
+	modal_column.add_child(_label("Bonus · " + " · ".join(progress), 16))
 	modal_column.add_child(_button("Weiterspielen", _resume))
 	modal_column.add_child(_button("Kurse & Bonusziele", _show_courses))
 	modal_column.add_child(
@@ -722,7 +778,7 @@ func _refresh_challenges() -> void:
 		if _goal_value(id) >= int(goal.target) and not goals_completed.has(id):
 			goals_completed[id] = true
 			if is_instance_valid(message) and not question_open:
-				message.text = "Bonusziel geschafft: %s! +2 Sterne am Ziel." % goal.label
+				message.text = "Bonusziel: %s! +2 Sterne" % goal.label
 
 
 func _completed_goal_count() -> int:
@@ -831,6 +887,7 @@ func _finish() -> void:
 	_celebrate_goal()
 	_clear_modal()
 	modal_column.add_child(_label("Wolkeninseln geschafft! ★", 29))
+	modal_column.add_child(_label("Himmelszeichen: %d/%d" % [trials.stamps.size(), trials.count_marks()], 19))
 	modal_column.add_child(
 		_label(
 			(
@@ -865,6 +922,7 @@ func _save_session() -> void:
 		return
 	var config := ConfigFile.new()
 	config.set_value("jump", "version", 1)
+	config.set_value("jump", "sky_marks", trials.stamps)
 	config.set_value("jump", "child_scope", child_scope)
 	config.set_value("jump", "course", course_index)
 	config.set_value("jump", "grade", grade)
@@ -917,6 +975,7 @@ func _restore_session() -> bool:
 		"question_open"
 	]:
 		set(key, config.get_value("jump", key, get(key)))
+	trials.restore(config.get_value("jump", "sky_marks", {}))
 	recent_questions.assign(config.get_value("jump", "recent_questions", recent_questions))
 	checkpoint = clampi(checkpoint, 0, ISLAND_COUNT - 2)
 	actor.position = islands[checkpoint] + Vector3(0, 0.5, 1)
