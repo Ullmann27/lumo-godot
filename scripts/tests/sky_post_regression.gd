@@ -536,7 +536,8 @@ func _test_save_and_children() -> void:
 		"Weiterfliegen behält die Adressen der Tour"
 	)
 	rewards.clear()
-	game.autopilot = BOT.new(game).stick
+	bot = BOT.new(game)
+	game.autopilot = bot.stick
 	_fly(game, 600.0, func() -> bool: return game.phase == game.Phase.FINISHED)
 	_check(game.phase == game.Phase.FINISHED and rewards.size() == 1, "fortgesetzte Tour endet mit einem Ergebnis")
 	_check(

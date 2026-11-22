@@ -11,6 +11,9 @@ const DROP_SHARE: float = 0.6
 var game
 var wide_turn: float = 0.0
 var drops: int = 0
+var approach_house := -1
+var approach_seconds := 0.0
+var escape_seconds := 0.0
 ## Optional: deliberately drop at this house (index into layout.houses) once.
 var wrong_house: int = -1
 
@@ -62,6 +65,21 @@ func _delivery() -> Vector2:
 	if wrong_house >= 0:
 		house = wrong_house
 	var box: Vector3 = game.layout.houses[house].mailbox
+	if house != approach_house:
+		approach_house = house
+		approach_seconds = 0.0
+		escape_seconds = 0.0
+	if escape_seconds > 0.0:
+		escape_seconds -= 1.0 / 60.0
+		return Vector2(0.0, clampf((box.y + 12.0 - flight.pos.y) * 0.16, -1.0, 1.0))
+	if delivery.in_district(flight.pos) and delivery.drop.is_empty():
+		approach_seconds += 1.0 / 60.0
+		if approach_seconds > 12.0:
+			# Ein verfehlter Anflug braucht wieder eine Gerade für den Abwurf.
+			# Sonst umkreist der Bot bei Seitenwind denselben Briefkasten.
+			approach_seconds = 0.0
+			wide_turn = 0.0
+			escape_seconds = 3.0
 	if not delivery.in_district(flight.pos):
 		return _towards(delivery.centre() + Vector3(0, 14.0, 0))
 	if delivery.drop.is_empty() and delivery.can_drop(flight.pos):
