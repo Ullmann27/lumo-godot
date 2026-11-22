@@ -2202,7 +2202,10 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	var grip: float = POWERTRAIN.grip_rate(kart_factors, drifting)
 	if is_instance_valid(item_ext):
 		grip *= item_ext.grip_factor(-1)
-	physical_velocity = physical_velocity.lerp(forward * speed, minf(1, delta * grip))
+	var drive_velocity := forward * speed
+	if track_id == WORLD.GARDEN.ID and not airborne and not road.is_empty():
+		drive_velocity = WORLD.GARDEN.wall_velocity(world, road, forward, speed)
+	physical_velocity = physical_velocity.lerp(drive_velocity, minf(1, delta * grip))
 	# Child-friendly precision flight: velocity-only boundary, measured from
 	# the SAME curving road frame as the game's lane value. The lip frame alone
 	# cannot constrain a long curved flight (it drifted 2.98 m in CI).
@@ -3162,7 +3165,10 @@ func _drive_opponents(delta: float) -> void:
 			# Brake, wait and pull away again smoothly at a LUMO passage.
 			target_speed = minf(target_speed, float(passage_rule.speed))
 			target_speed = minf(target_speed, absf(rival.motion_speed) + 30.0 * delta)
-		rival.position += forward * target_speed * delta
+		var drive_velocity: Vector3 = forward * target_speed
+		if track_id == WORLD.GARDEN.ID:
+			drive_velocity = WORLD.GARDEN.wall_velocity(world, sampled, forward, target_speed)
+		rival.position += drive_velocity * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
 		opponent_distances[i] += travel
@@ -3644,6 +3650,11 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		+ ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + speed_ratio * 1.8)
 		+ Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
 	)
+	if track_id == WORLD.GARDEN.ID and not airborne:
+		var road_ahead: Vector3 = world.forward(previous_road_distance)
+		var slope := clampf(road_ahead.y * ahead.dot(road_ahead), -0.35, 0.35)
+		target.y += slope * VISUAL_GRADE.CAMERA_LOOK_AHEAD
+		desired.y -= slope * chase_distance
 	camera.position = (
 		desired
 		if snap

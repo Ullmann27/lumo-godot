@@ -80,6 +80,7 @@ const CAN_SPOUT: Vector2 = Vector2(447.0, 459.0)
 const CAN_SLIDE_END: float = 521.0
 const LANDING: Vector2 = Vector2(521.0, 604.0)
 const HOSE: Vector2 = Vector2(735.0, 984.0)
+const WALL_BANK_LIMIT := PI / 4.0
 const HOSE_APEXES: Array[float] = [759.0, 822.0, 886.0]
 const SPIRAL: Vector2 = Vector2(984.0, 1236.0)
 const RAILS: Vector2 = Vector2(1290.0, 1352.0)
@@ -277,14 +278,14 @@ static func wall_at(distance: float) -> float:
 static func bank_profile(distance: float) -> Vector2:
 	var d: float = fposmod(distance, LENGTH)
 	var hose: float = (
-		_blend(d, HOSE.x - 10.0, HOSE.x + 14.0) * (1.0 - _blend(d, HOSE.y - 18.0, HOSE.y))
+		_blend(d, HOSE.x, HOSE.x + 14.0) * (1.0 - _blend(d, HOSE.y - 18.0, HOSE.y))
 	)
 	var spiral: float = (
 		_blend(d, SPIRAL.x, SPIRAL.x + 20.0) * (1.0 - _blend(d, SPIRAL.y - 20.0, SPIRAL.y))
 	)
-	var gain: float = 0.68 + hose * (4.6 - 0.68) + spiral * (1.7 - 0.68)
-	# Röhre höchstens 23° (0,40 rad): Strecken-Vertrag verlangt Fahrbahn-Normale y > 0,9.
-	var limit: float = 0.14 + hose * (0.40 - 0.14) + spiral * (0.22 - 0.14)
+	var gain: float = 0.68 + hose * (8.5 - 0.68) + spiral * (1.7 - 0.68)
+	# Der Abschnittsvertrag prüft den Übergang, die Höchstneigung und alle drei Außenlinien.
+	var limit: float = 0.14 + hose * (WALL_BANK_LIMIT - 0.14) + spiral * (0.22 - 0.14)
 	return Vector2(gain, limit)
 
 
@@ -294,7 +295,25 @@ static func frame(world: Node3D, distance: float) -> Basis:
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(world.forward(distance + 5.0) - ahead)
 	var profile: Vector2 = bank_profile(distance)
-	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * profile.x, -profile.y, profile.y))
+	return Basis(right, up, -ahead).rotated(ahead, clampf(bend * profile.x, -profile.y, profile.y))
+
+
+## Reifenhaftung begrenzt das seitliche Gleiten. Im Steilwandkanal zieht die
+## Schwerkraft langsam fahrende Karts nach innen. Bei hohem Tempo wandert die
+## Gleichgewichtslinie nach außen (v²/R in der geneigten Fahrbahnebene).
+static func wall_velocity(world, road: Dictionary, heading: Vector3, speed: float) -> Vector3:
+	var d: float = road.distance
+	if d < HOSE.x or d > HOSE.y:
+		return heading * speed
+	var basis: Basis = road.basis
+	var tangent := heading.slide(basis.y).normalized()
+	var along := speed * tangent.dot(-basis.z)
+	var horizontal_right: Vector3 = road.forward.cross(Vector3.UP).normalized()
+	var curvature: float = horizontal_right.dot(world.forward(d + 2.0) - world.forward(d - 2.0)) / 4.0
+	var side_accel := -9.81 * basis.x.y - along * along * curvature * horizontal_right.dot(basis.x)
+	var slip := clampf(side_accel * 0.14, -2.8, 2.8)
+	var weight := _blend(d, HOSE.x, HOSE.x + 14.0) * (1.0 - _blend(d, HOSE.y - 18.0, HOSE.y))
+	return (heading * speed).lerp(tangent * speed + basis.x * slip, weight)
 
 
 static func section_at(distance: float) -> int:

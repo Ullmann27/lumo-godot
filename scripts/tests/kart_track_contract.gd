@@ -1,6 +1,24 @@
 extends SceneTree
 ## Surface projection, seam and geometry contracts required by free driving.
 const SKY_ISLANDS=preload("res://scripts/games/kart_sky_islands.gd")
+const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
+
+func _check_garden_wall(world) -> void:
+	for apex in GARDEN.HOSE_APEXES:
+		var basis: Basis = world.frame(apex)
+		var pad := GARDEN.hose_wall_pads(world).filter(func(p): return p.start < apex and p.end > apex)
+		assert(pad.size() == 1, "Eine Turbolinie pro Steilkurve")
+		var lateral: float = pad[0].lateral
+		assert(basis.x.y * lateral > 1.5, "Außenlinie liegt über der Innenbahn")
+		var road: Dictionary = world.sample_road(world.position_at(apex), apex)
+		var slow := GARDEN.wall_velocity(world, road, -basis.z, 2.0)
+		var fast := GARDEN.wall_velocity(world, road, -basis.z, 45.0)
+		assert(slow.dot(basis.x) * lateral < 0.0, "Langsam geht es hangabwärts")
+		assert(fast.dot(basis.x) * lateral > 0.0, "Bei Tempo trägt es das Kart an die Außenwand")
+		assert(absf(fast.dot(basis.y)) < 0.02, "Kontakt hält das Kart in der Wandebene")
+	for metre in range(int(GARDEN.HOSE.x), int(GARDEN.HOSE.y)):
+		assert(world.frame(metre).y.y > 0.69, "Höchstens 45 Grad Überhöhung plus Längsneigung")
+
 func _initialize() -> void:
 	call_deferred("_run")
 func _run() -> void:
@@ -39,6 +57,8 @@ func _run() -> void:
 			assert(absf(world.alternate_route_height(float(split.end)+0.5,-3.0))<0.01)
 			assert(world.alternate_route_pitch(float(split.start)+2.0,-3.0)>0.0)
 			assert(world.alternate_route_pitch(float(split.end)-2.0,-3.0)<0.0)
+		if id == GARDEN.ID:
+			_check_garden_wall(world)
 		assert(world.position_at(0).distance_to(world.position_at(world.length))<0.001)
 		assert(world.checkpoint_positions.size()==8)
 		var min_radius: float=INF
@@ -60,7 +80,8 @@ func _run() -> void:
 				assert(absf(sample.lateral-lateral)<0.12)
 				assert(absf(sample.height-p.y)<0.08)
 				assert(sample.on_road, "%s: valid lane %.1f m rejected at %.0f m" % [id,lateral,d])
-				assert(sample.basis.y.y>0.9, "%s: road tilt %.2f at %.0f m lane %.1f" % [id,sample.basis.y.y,d,lateral])
+				var in_wall: bool = id == GARDEN.ID and d >= GARDEN.HOSE.x and d <= GARDEN.HOSE.y
+				assert(sample.basis.y.y > (0.69 if in_wall else 0.9), "%s: road tilt %.2f at %.0f m lane %.1f" % [id,sample.basis.y.y,d,lateral])
 				assert(sample.distance>=0.0 and sample.distance<world.length)
 		var clearance: float=INF
 		for a in range(100):
