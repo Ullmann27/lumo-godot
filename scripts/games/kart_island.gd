@@ -23,6 +23,7 @@ const WORLD = preload("res://scripts/games/kart_world.gd")
 const DARKRIDE_EVENT = preload("res://scripts/games/kart_darkride_event_director.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const ADVENTURE_DRAMA = preload("res://scripts/games/kart_adventure_drama.gd")
+const WINDWERK_TRIALS = preload("res://scripts/games/kart_windwerk_trials.gd")
 const ROADSIDE_LASSO = preload("res://scripts/games/kart_roadside_lasso.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const MINIMAP = preload("res://scripts/games/kart_hud/kart_race_minimap.gd")
@@ -141,6 +142,7 @@ const PREVIEW_SECONDS: float = 5.0
 const PREVIEW_BLEND_SECONDS: float = 1.1
 var curve: Curve3D
 var world: LumoRaceWorld
+var windwerk_trials: Node3D
 var roadside_lasso: Node3D
 var darkride_event = DARKRIDE_EVENT.new()
 var track_length: float
@@ -535,6 +537,7 @@ func _build_world() -> void:
 	darkride_event.bind_world(null)
 	if is_instance_valid(kart_audio):
 		kart_audio.bind_world(null)
+	windwerk_trials = null
 	roadside_lasso = null
 	world = null
 	arena = null
@@ -558,6 +561,11 @@ func _build_world() -> void:
 		roadside_lasso.name = "RoadsideLasso"
 		world.add_child(roadside_lasso)
 		roadside_lasso.setup(world)
+		if track_id == "windwerk_3000":
+			windwerk_trials = WINDWERK_TRIALS.new()
+			windwerk_trials.name = "WindwerkTrials"
+			world.add_child(windwerk_trials)
+			windwerk_trials.setup(world)
 		darkride_event.bind_world(world)
 		curve = world.curve
 		track_length = world.length
@@ -2050,6 +2058,8 @@ func _physics_process(delta: float) -> void:
 			TRACK_PIECES.race_tick(self, delta)
 			if is_instance_valid(roadside_lasso):
 				roadside_lasso.advance(self, delta)
+			if is_instance_valid(windwerk_trials):
+				windwerk_trials.advance(self, delta)
 			darkride_event.tick(distance, track_length, delta, reduced_motion)
 			_update_checkpoints()
 			if mode == "time_trial":
@@ -2155,6 +2165,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if kart_factors.is_empty():
 		_refresh_kart_factors()
 	var target: float = POWERTRAIN.top_speed(kart_factors, float(rules.speed))
+	if is_instance_valid(windwerk_trials):
+		target *= windwerk_trials.speed_factor(-1, elapsed)
 	target *= clampf(float(player.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
 	if mode != "arena":
 		target *= world.dive_factor(previous_road_distance)
@@ -3117,6 +3129,8 @@ func _drive_opponents(delta: float) -> void:
 		)
 		if thrill_lane < INF:
 			target_lane = thrill_lane
+		if is_instance_valid(windwerk_trials):
+			target_lane = windwerk_trials.rival_lane(opponent_distances[i], absf(rival.motion_speed), elapsed, i, target_lane)
 		var traffic: PackedVector3Array = _rival_traffic(i, sampled)
 		target_lane = RIVAL_RACECRAFT.choose_lane(
 			float(sampled.lateral), target_lane, traffic, float(profile.overtake) + 10.0, i
@@ -3166,6 +3180,8 @@ func _drive_opponents(delta: float) -> void:
 		_sync_rival_item_fx(i)
 		if opponent_stuns[i] > 0:
 			target_speed *= 0.3
+		if is_instance_valid(windwerk_trials):
+			target_speed *= windwerk_trials.speed_factor(i, elapsed)
 		target_speed *= clampf(float(rival.get_meta("roadside_speed_factor", 1.0)), 0.0, 1.0)
 		target_speed *= _rival_gameplay_factor(i)
 		var rival_drifting: bool = _update_rival_drift(i, sampled, target_speed, delta)
