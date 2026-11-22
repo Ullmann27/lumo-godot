@@ -228,7 +228,7 @@ const SPECS: Dictionary = {
 		{
 			"kind": "leap",
 			"id": "tempelfluss",
-			"at": 530.0,
+			"at": 564.0,
 			"side": -1.0,
 			"theme": "water",
 			"name": "Tempelfluss-Sprung"

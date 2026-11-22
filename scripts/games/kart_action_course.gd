@@ -60,6 +60,15 @@ static func plan(world) -> Dictionary:
 		return result
 	var blocked: Array = _blocked_ranges(world, length)
 	var taken: Array = []
+	# Der lange Unterwassertunnel braucht einen durchgehenden Korridor.
+	if course.has("dive"):
+		var range_fractions: Array = course.dive
+		var dive_start: float = float(range_fractions[0]) * length
+		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
+		var start := _free_start(dive_start, dive_length, length, blocked, taken)
+		if start >= 0.0:
+			result.dives.append({"start": start, "end": start + dive_length})
+			taken.append(Vector2(start, start + dive_length))
 	var pad_lane: float = -2.2
 	for fraction in course.get("pads", []):
 		var start: float = _free_start(float(fraction) * length, PAD_LENGTH, length, blocked, taken)
@@ -118,21 +127,6 @@ static func plan(world) -> Dictionary:
 			"landing_road_end": start + 76.0,
 		})
 		taken.append(Vector2(start, start + 76.0))
-	if course.has("dive"):
-		var range_fractions: Array = course.dive
-		var dive_start: float = float(range_fractions[0]) * length
-		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
-		# Höhepunkte (kart_track_thrills.gd) belegen viel Strecke: findet der Tunnel in voller
-		# Länge keinen Platz, wird er kürzer statt ganz zu entfallen.
-		var start: float = -1.0
-		for share in [1.0, 0.8, 0.65, 0.5]:
-			start = _free_start(dive_start, dive_length * share, length, blocked, taken)
-			if start >= 0.0:
-				dive_length *= share
-				break
-		if start >= 0.0:
-			result.dives.append({"start": start, "end": start + dive_length})
-			taken.append(Vector2(start, start + dive_length))
 	for fraction in course.get("edges", []):
 		var start: float = _free_start(float(fraction) * length, EDGE_LENGTH, length, blocked, taken)
 		if start >= 0.0:

@@ -58,6 +58,11 @@ func _check_plans() -> void:
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
 		assert(_planned(course.kickers) == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
 		assert(_planned(course.dives) == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
+		if config.has("dive"):
+			var fractions: Array = config.dive
+			var planned_length: float = (float(fractions[1]) - float(fractions[0])) * world.length
+			var actual_length: float = course.dives[0].end - course.dives[0].start
+			assert(is_equal_approx(actual_length, planned_length), "%s: volle Tunnellänge" % track)
 		assert(_planned(course.edges) == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
 		for pad in _plan_items(course.pads):
