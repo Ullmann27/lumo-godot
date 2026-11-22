@@ -412,7 +412,7 @@ func visible_surface_count() -> int:
 
 ## Anbauteile nach dem Look setzen (Serie = nichts angebaut). Mehrfach aufrufbar: Vorschau
 ## in der Garage wechselt sofort, ohne das Kart neu zu bauen.
-func apply_parts(look: Dictionary) -> void:
+func apply_parts(look: Dictionary, animate_slot: String = "") -> void:
 	for node in _part_nodes:
 		if is_instance_valid(node):
 			_dressing.erase(node)
@@ -422,14 +422,18 @@ func apply_parts(look: Dictionary) -> void:
 	mounted_parts = {}
 	if asset_root == null:
 		return
-	var packed: PackedScene = _scene(PARTS_PATH) if ResourceLoader.exists(PARTS_PATH) else null
 	var paint: Color = _paints[0].albedo_color if not _paints.is_empty() else Color("e8eef6")
 	for slot in TUNING.PART_SLOTS:
 		var entry: Dictionary = TUNING.option(slot, str(look.get(slot, "serie")))
 		mounted_parts[slot] = str(entry.get("id", "serie"))
 		var node_name: String = str(entry.get("node", ""))
-		if node_name.is_empty() or packed == null:
+		if node_name.is_empty():
 			continue
+		var path: String = entry.get("file", PARTS_PATH)
+		var packed: PackedScene = _scene(path) if ResourceLoader.exists(path) else null
+		if packed == null:
+			continue
+		var first_mount := _part_nodes.size()
 		match slot:
 			"wheel_cover", "tires":
 				for rotor in wheel_rotors:
@@ -449,6 +453,19 @@ func apply_parts(look: Dictionary) -> void:
 						marker,
 						Transform3D(Basis().scaled(Vector3.ONE * 1.5), Vector3.ZERO)
 					)
+			"brakes":
+				for index in wheel_pivots.size():
+					var mirror := _mirror(wheel_pivots[index].position.x < 0.0)
+					_mount(packed, node_name, paint, wheel_pivots[index], mirror)
+					_mount(packed, node_name + "Disc", paint, wheel_rotors[index], mirror)
+			"steering", "gearbox", "ballast":
+				var carrier := asset_root
+				if slot != "ballast":
+					var axle_name := "FrontAxle" if slot == "steering" else "RearAxle"
+					carrier = asset_root.find_child(axle_name, true, false) as Node3D
+				var width := absf(wheel_pivots[0].position.x) / 0.77
+				var fit := Transform3D(Basis().scaled(Vector3(width, 1.0, 1.0)), Vector3.ZERO)
+				_mount(packed, node_name, paint, carrier, fit)
 			"suspension":
 				for pivot in wheel_pivots:
 					_mount(packed, node_name, paint, pivot, _mirror(pivot.position.x < 0.0))
@@ -464,6 +481,18 @@ func apply_parts(look: Dictionary) -> void:
 					asset_root,
 					_mirror(true).translated(Vector3(-at.x, at.y, at.z))
 				)
+		if slot == animate_slot:
+			for index in range(first_mount, _part_nodes.size()):
+				var mount := _part_nodes[index]
+				var rest := mount.position
+				var offset := Vector3.UP * 0.24
+				if slot in ["brakes", "tires", "wheel_cover", "suspension"]:
+					offset = Vector3.RIGHT * signf(mount.get_parent().get_parent().position.x) * 0.25
+					if mount.get_parent() in wheel_pivots:
+						offset = Vector3.RIGHT * signf(mount.get_parent().position.x) * 0.25
+				mount.position = rest + offset
+				mount.create_tween().tween_property(mount, "position", rest, 0.32).set_trans(
+					Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	for node in _part_nodes:
 		node.visible = lod_level == 0
 		_dressing.append(node)

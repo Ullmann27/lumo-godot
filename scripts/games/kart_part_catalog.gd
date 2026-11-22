@@ -252,6 +252,12 @@ static func _build() -> Dictionary:
 				"Greifen beim Anfahren und in Kurven, Endtempo niedriger.",
 				"Greift sofort",
 			),
+			_part(
+				"tires", "regen", "Regenreifen", 9, "Tire_Rain",
+				{"grip": 1.07, "speed": 0.988}, {},
+				"Das Pfeilprofil hält die Linie in Kurven. Auf der Geraden rollt es etwas langsamer.",
+				"Spurtreu in Kurven"
+			),
 		],
 		"wing":
 		[
@@ -313,6 +319,12 @@ static func _build() -> Dictionary:
 				{},
 				"Hält den Drift ruhig und lädt ihn schneller, sonst rutscht es mehr.",
 				"Ruhiger Drift",
+			),
+			_part(
+				"wing", "tandem", "Doppeldecker-Flügel", 11, "Wing_Tandem",
+				{"air_turn": 1.1, "speed": 0.982}, {},
+				"Zwei kurze Flügel helfen beim Lenken in der Luft und kosten etwas Endtempo.",
+				"Lenkbar im Flug"
 			),
 		],
 		"booster":

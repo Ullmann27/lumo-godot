@@ -388,12 +388,14 @@ func _current(slot_id: String) -> String:
 
 
 func _on_tile(id: String) -> void:
+	if id == _current(slot):
+		return
 	pending[slot] = id
 	for key in tiles:
 		tiles[key].set_pressed_no_signal(key == id)
 	var vehicle = _vehicle()
 	if vehicle != null:
-		vehicle.apply_parts(preview_look())
+		vehicle.apply_parts(preview_look(), "" if menu.reduced_motion else slot)
 	_refresh_dyno()
 	_focus_camera()
 

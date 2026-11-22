@@ -134,6 +134,10 @@ func _performance_parts(garage, bay) -> void:
 		"wing": ["gross", "Wing_Big", 1],
 		"booster": ["kurz", "Booster_Short", 2],
 		"suspension": ["sprung", "Damper_Spring", 4],
+		"steering": ["direkt", "Steer_Direct", 1],
+		"brakes": ["sport", "Brake_SportDisc", 4],
+		"gearbox": ["kurz", "Gear_Short", 1],
+		"ballast": ["vorn", "Ballast_Front", 1],
 	}
 	for slot_id in mounts:
 		bay._on_open()
@@ -148,6 +152,16 @@ func _performance_parts(garage, bay) -> void:
 			_count_mounts(vehicle, str(mounts[slot_id][1])) == int(mounts[slot_id][2]),
 			"%s sichtbar am Kart (%d×)" % [mounts[slot_id][1], mounts[slot_id][2]]
 		)
+
+	for variant in [["tires", "regen", "Tire_Rain", 4], ["wing", "tandem", "Wing_Tandem", 1]]:
+		bay._on_open()
+		bay._on_slot(variant[0])
+		bay._on_tile(variant[1])
+		await _frames(3)
+		_check(_count_mounts(_vehicle(garage.preview_kart), variant[2]) == variant[3],
+			"%s in der Garage montiert" % variant[2])
+		bay._on_back()
+		await _frames(3)
 
 
 func _run() -> void:

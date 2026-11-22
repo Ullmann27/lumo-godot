@@ -213,6 +213,32 @@ def tire_soft(m):
     return r
 
 
+def tire_rain(m):
+    r = root("Tire_Rain")
+    BP.tire_shell("RainShell", TIRE_R, 0.174, m["rubber"], r)
+    for k in range(22):
+        angle = math.tau * k / 22
+        for side in (-1, 1):
+            points = [(side * x, (TIRE_R + 0.004) * math.cos(angle + turn),
+                       (TIRE_R + 0.004) * math.sin(angle + turn))
+                      for x, turn in ((0.016, 0.0), (0.08, 0.07), (0.144, 0.18))]
+            sweep("RainTread", points, 0.009, m["dark"], r, 6)
+    for side in (-1, 1):
+        BP.sidewall_ring("RainMark", side * 0.197, 0.296, 0.304, m["gold"], r)
+    return r
+
+
+def wing_tandem(m):
+    r = root("Wing_Tandem")
+    for i, (height, depth, width) in enumerate(((0.25, 0.0, 0.8), (0.34, 0.11, 0.72))):
+        BP.wing_plane("TandemBlade%d" % i, width, 0.145, 0.034, height, depth, m["paint"], r)
+    for side in (-1, 1):
+        prism("TandemPlate", [(0.18,-0.09), (0.27,-0.10), (0.39,0.14), (0.32,0.19)],
+              0.018, m["gold"], r, "x", side * 0.36, 0.004)
+        box("TandemSupport", (side * 0.19, 0.14, 0), (0.034, 0.20, 0.06), m["dark"], r)
+    return r
+
+
 # --------------------------------------------------------------------- Flügel (wing_deck)
 def wing_flap(m):
     r = root("Wing_Flap")
@@ -701,8 +727,8 @@ def tool_dyno_roller(m):
 
 BUILDERS = {
     "parts_engine": [engine_charger, engine_light, engine_hybrid],
-    "parts_tires": [tire_slick, tire_soft],
-    "parts_wing": [wing_flap, wing_fin],
+    "parts_tires": [tire_slick, tire_soft, tire_rain],
+    "parts_wing": [wing_flap, wing_fin, wing_tandem],
     "parts_booster": [booster_twin, booster_igniter, booster_cool],
     "parts_suspension": [damper_offroad, damper_air],
     "parts_steering": [steer_direct, steer_calm, steer_servo, steer_air, steer_track],
@@ -782,7 +808,7 @@ def render_thumbs(roots):
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 32
-    scene.cycles.use_denoising = True
+    scene.cycles.use_denoising = False
     scene.cycles.device = "CPU"
     scene.render.film_transparent = True
     scene.render.resolution_x = 256
