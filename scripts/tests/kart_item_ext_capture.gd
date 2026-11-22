@@ -171,6 +171,14 @@ func _tick(seconds: float) -> void:
 
 
 func _shot(name: String) -> void:
+	if item == "star_rocket" and not name.begins_with("1_") and not _impact_seen():
+		printerr("[KartItemExtCapture] Rocket did not reach its target")
+		quit(1)
+		return
+	if item == "star_magnet" and name.begins_with("3_") and game.item_status_fx._pulls.is_empty():
+		printerr("[KartItemExtCapture] No collected star in flight")
+		quit(1)
+		return
 	RenderingServer.render_loop_enabled = true
 	await process_frame
 	await RenderingServer.frame_post_draw
