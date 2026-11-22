@@ -80,3 +80,13 @@ func _process(delta: float) -> void:
 func advance_managed(delta: float, reduced_motion: bool) -> void:
 	_age += delta
 	PRISM.animate(self, delta, _age, spin_speed, reduced_motion)
+
+
+## Near boxes keep the rails and inner shell; distant rows use only their silhouette.
+func set_presentation_profile(quality: String) -> void:
+	var near_range := 48.0 if quality == "low" else 88.0
+	var far_range := 125.0 if quality == "low" else 180.0
+	for visual in find_children("*", "GeometryInstance3D", true, false):
+		var near_detail := visual.name in ["Rail", "MysteryPrismInner", "PrismBeacon"]
+		visual.visibility_range_end = near_range if near_detail else far_range
+		visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

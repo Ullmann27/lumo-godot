@@ -8,6 +8,8 @@ const STEP: float = 1.0 / 60.0
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 ## Je Item: [Zeit nach dem Auslösen (s), Bildname].
 const SHOTS: Dictionary = {
+	"star_magnet": [[0.12, "1_anlauf"], [0.41, "2_feld"], [0.68, "3_anziehung"]],
+	"star_rocket": [[0.08, "1_flug"], [0.0, "2_treffer"], [0.15, "3_staubring"]],
 	"thunder_star":
 	[
 		[0.25, "1_laden"],
@@ -139,6 +141,8 @@ func _tick(seconds: float) -> void:
 		for i in game.opponent_shield_times.size():
 			game.opponent_shield_times[i] = maxf(0.0, game.opponent_shield_times[i] - STEP)
 		game._update_gameplay_layer(STEP)
+		if item == "star_magnet" and game.magnet_time > 0:
+			game._track_events()
 		if not OS.get_environment("LUMO_KART_ITEM_DEBUG").is_empty():
 			for behaviour in game.item_ext.effects:
 				for entry in game.item_ext.effects[behaviour].active:
@@ -189,6 +193,8 @@ func _shot(name: String) -> void:
 
 
 func _impact_seen() -> bool:
+	if item == "star_rocket":
+		return int(game.fx.fired.get("rocket_hit", 0)) > 0
 	var ext = game.item_ext
 	for behaviour in ext.effects:
 		for entry in ext.effects[behaviour].active:
@@ -275,6 +281,14 @@ func _run() -> void:
 			break
 		at += 7.0
 	game.lane = 0.0
+	if item == "star_magnet":
+		# Approach a real collectible after the camera settles. The normal course pickup
+		# code consumes it inside the magnet radius during the third exposure.
+		for i in range(game.gem_distances.size()):
+			var star_d: float = game.gem_distances[i]
+			if star_d >= at and game.item_ext.safe_at(star_d):
+				at = star_d - pace * 1.2 - 14.3
+				break
 	if rival_attacks:
 		offsets = [[-13.0, -0.6], [-55.0, 2.0], [-62.0, -2.0], [-70.0, 1.0], [-78.0, -1.0]]
 	else:
@@ -313,6 +327,10 @@ func _run() -> void:
 		game._grant_item(item)
 		game.item_roulette_time = 0.0
 		game._use_item()
+	if item == "star_rocket" and not rival_attacks:
+		game.lock_target = 0
+		game.lock_progress = 1.0
+		game._fire_player_rockets()
 	if item == "star_decoy":
 		# Ein Rivale hinter dem Kind feuert ein Raketenpaar auf das Kind (echter Raketenflug).
 		await _tick(0.3)

@@ -26,7 +26,7 @@ const EVENTS: Dictionary = {
 	# Sternraketen: star/spark burst on a hit, cyan sparks on a shield bounce.
 	"rocket_fire": [Color("ffb347"), 18, 0.10, 0.55, "rocket_launch"],
 	"rocket_hit": [Color("ffd166"), 44, 0.26, 0.5, "rocket_hit"],
-	"rocket_pop": [Color("ffe680"), 20, 0.0, 0.0, "rocket_hit"],
+	"rocket_pop": [Color("ffe680"), 20, 0.0, 0.0, "bubble_pop"],
 	"shield_deflect": [Color("8af4ff"), 30, 0.16, 0.25, "shield_ping"],
 	"shield_up": [Color("66e8ff"), 24, 0.10, 0.2, "shield_up"],
 	"rocket_fizzle": [Color("d8dcf0"), 12, 0.0, 0.0, ""],
@@ -55,6 +55,10 @@ var _flash_pool: Array[MeshInstance3D] = []
 var _flash_age: Array[float] = []
 var _flash_size: Array[float] = []
 var _flash_cursor: int = 0
+var _dust_pool: Array[MeshInstance3D] = []
+var _dust_age: Array[float] = []
+var _dust_cursor := 0
+const DUST_TIME := 0.62
 var _star_cursor: int = 0
 var _cursor: int = 0
 var _time: float = 0.0
@@ -116,6 +120,22 @@ func setup(overlay_parent: Node, quality: String, reduced: bool) -> void:
 			particles.local_coords = false
 			add_child(particles)
 			_pool.append(particles)
+		var shock := _impact_dust_mesh(quality == "low")
+		for i in range(2):
+			var dust := MeshInstance3D.new()
+			dust.name = "RocketImpactDust%d" % i
+			dust.mesh = shock
+			var material_dust := StandardMaterial3D.new()
+			material_dust.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			material_dust.vertex_color_use_as_albedo = true
+			material_dust.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			material_dust.cull_mode = BaseMaterial3D.CULL_DISABLED
+			dust.material_override = material_dust
+			dust.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			dust.visible = false
+			add_child(dust)
+			_dust_pool.append(dust)
+			_dust_age.append(DUST_TIME)
 		var star_mesh := _star_mesh()
 		var flash_star := _star_mesh(true)
 		for index in range(2):
@@ -174,7 +194,7 @@ func setup(overlay_parent: Node, quality: String, reduced: bool) -> void:
 
 
 ## Fire a named event at a world position. Unknown ids are ignored (returns false).
-func trigger(event_id: String, at: Vector3, strength: float = 1.0) -> bool:
+func trigger(event_id: String, at: Vector3, strength: float = 1.0, ground: Variant = null) -> bool:
 	if not EVENTS.has(event_id):
 		return false
 	var spec: Array = EVENTS[event_id]
@@ -187,6 +207,16 @@ func trigger(event_id: String, at: Vector3, strength: float = 1.0) -> bool:
 		particles.global_position = at
 		particles.restart()
 		particles.emitting = true
+	if event_id == "rocket_hit" and not _dust_pool.is_empty():
+		var dust := _dust_pool[_dust_cursor]
+		if ground is Transform3D:
+			dust.global_transform = ground
+		else:
+			dust.global_transform = Transform3D(Basis.IDENTITY, at + Vector3.DOWN * 0.61)
+		dust.scale = Vector3.ONE * 0.2
+		dust.visible = true
+		_dust_age[_dust_cursor] = 0.0
+		_dust_cursor = (_dust_cursor+1) % _dust_pool.size()
 	if STAR_EVENTS.has(event_id) and not _star_pool.is_empty():
 		var stars: CPUParticles3D = _star_pool[_star_cursor]
 		_star_cursor = (_star_cursor + 1) % _star_pool.size()
@@ -218,6 +248,17 @@ func trigger(event_id: String, at: Vector3, strength: float = 1.0) -> bool:
 
 func _process(delta: float) -> void:
 	_time += delta
+	for i in range(_dust_pool.size()):
+		var dust := _dust_pool[i]
+		if not dust.visible:
+			continue
+		_dust_age[i] += delta
+		var t := clampf(_dust_age[i] / DUST_TIME, 0.0, 1.0)
+		var wave := 1.0 - (1.0-t)*(1.0-t)
+		var radius := lerpf(0.48, 1.45 if reduced_motion else 2.85, wave)
+		dust.scale = Vector3(radius, 0.50 if reduced_motion else 0.7+0.45*wave, radius)
+		(dust.material_override as StandardMaterial3D).albedo_color.a = 0.84 * (1.0-t*t)
+		dust.visible = t < 1.0
 	for index in range(_flash_pool.size()):
 		if _flash_age[index] > 0.6:
 			_flash_pool[index].visible = false
@@ -287,3 +328,32 @@ static func _star_mesh(soft_centre: bool = false) -> ArrayMesh:
 	material.emission_energy_multiplier = 0.6
 	mesh.surface_set_material(0, material)
 	return mesh
+
+## One batched ring of faceted dust rolls and warm outward sparks at the impact point.
+static func _impact_dust_mesh(low: bool) -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var count := 9 if low else 15
+	for i in range(count):
+		var angle := TAU*i/count
+		var out := Vector3(cos(angle), 0, sin(angle))
+		var tangent := Vector3(-out.z, 0, out.x)
+		var centre := out*(0.83 + 0.11*sin(i*2.7))
+		var base := centre - Vector3.UP*0.06
+		var size := 0.19+0.06*sin(i*1.3)
+		var crown := centre + Vector3.UP*(0.19+0.15*absf(sin(i*4.1)))
+		for k in range(6):
+			var a := TAU*k/6
+			var b := TAU*(k+1)/6
+			var left := base + (tangent*cos(a)*1.4 + out*sin(a))*size
+			var right := base + (tangent*cos(b)*1.4 + out*sin(b))*size
+			var dusty := Color("ab8266").lerp(Color("edd5a2"), 0.55+0.25*cos(a))
+			for v in [left, right, crown]:
+				surface.set_color(dusty)
+				surface.add_vertex(v)
+		var root := centre + Vector3.UP*0.24
+		var tail := root + out*(0.25+0.21*absf(sin(i))) + Vector3.UP*(0.39+0.38*absf(cos(i)))
+		for v in [root-tangent*0.04, root+tangent*0.04, tail]:
+			surface.set_color(Color("ffd96c"))
+			surface.add_vertex(v)
+	return surface.commit()

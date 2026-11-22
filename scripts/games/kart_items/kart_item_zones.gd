@@ -1,5 +1,5 @@
 extends RefCounted
-## Sammelzonen für die Zufallsprismen („LUMO Sternenkompass“) – je Runde 5 bis 8 Zonen,
+## Sammelzonen für die Zufallsprismen („LUMO Sternenkompass“) – je nach Streckenlänge zusätzliche sichere Zonen,
 ## nach Streckenlänge skaliert und nur dort, wo die Fahrt ruhig und sicher ist.
 ##
 ## Grundlage sind die echten Streckenkoordinaten (Distanz entlang der Strecke, Querlage
@@ -28,9 +28,9 @@ const LEAP_LEAD_M: float = 60.0
 const ELEMENT_LEAD_M: float = 30.0
 
 const MIN_ZONES: int = 5
-const MAX_ZONES: int = 8
-## Etwa eine Zone je 270 m: bei ~28 m/s Reisetempo rund alle 9–10 s ein Prisma.
-const METRES_PER_ZONE: float = 270.0
+const MAX_ZONES: int = 15
+## Bei 28 m/s liegt die gewünschte nächste Wahl rund sieben Sekunden voraus.
+const METRES_PER_ZONE: float = 185.0
 ## Prismen-Querabstand (wie die bisherige Reihe) und Abstand zur Planke.
 const PRISM_SPACING: float = 3.2
 const WALL_CLEARANCE: float = 1.25
@@ -52,7 +52,13 @@ const MIN_GAP_FRACTION: float = 0.5
 
 
 static func target_count(length: float) -> int:
-	return clampi(roundi(length / METRES_PER_ZONE), MIN_ZONES, MAX_ZONES)
+	return clampi(roundi(length / METRES_PER_ZONE), 7, MAX_ZONES)
+
+
+## Long tracks allow a larger gap. A compact pair still leaves about 2.5 seconds
+## at normal child driving speed to finish the compass and use the first item.
+static func minimum_extra_gap(length: float) -> float:
+	return clampf(length / target_count(length) * 0.34, 64.0, 92.0)
 
 
 ## Alle Sperrbereiche als {start, end, kind}; start/end in Metern (start < end, kann
@@ -285,12 +291,42 @@ static func plan(world, occupied: Array = []) -> Array[Dictionary]:
 	# Verteilung (vorher die der letzten, kleinsten Zahl – auf dicht bebauten Strecken wie dem
 	# Zauberwald fielen so mögliche fünf Zonen auf vier zurück).
 	var picks: Array[float] = []
-	for count in range(target_count(length), MIN_ZONES - 2, -1):
+	var previous_target := clampi(roundi(length / 270.0), 5, 8)
+	for count in range(previous_target, MIN_ZONES - 2, -1):
 		var trial: Array[float] = _best_spread(free, count, length)
 		if trial.size() > picks.size() or (trial.size() == count and trial.size() == picks.size()):
 			picks = trial
 		if picks.size() >= count:
 			break
+	# Keep the published pickup locations for saved races, then fill the longest
+	# unobstructed gaps, including the gap across the finish line.
+	var previous := picks.duplicate()
+	var target := target_count(length)
+	var min_gap := minimum_extra_gap(length)
+	var remaining := free.duplicate()
+	while picks.size() < target:
+		var extra := -1.0
+		var largest := min_gap
+		for candidate in remaining:
+			var nearest := length
+			for existing in picks:
+				var gap := absf(existing - candidate)
+				nearest = minf(nearest, minf(gap, length - gap))
+			if nearest <= largest:
+				continue
+			largest = nearest
+			extra = candidate
+		if extra < 0.0:
+			break
+		remaining.erase(extra)
+		var visible_lanes := true
+		for lane in laterals_for(world, extra, picks.size()):
+			if sight_distance(world, extra, lane) < SIGHT_MIN_M:
+				visible_lanes = false
+				break
+		if visible_lanes:
+			picks.append(extra)
+	picks.sort()
 	for i in range(picks.size()):
 		var at: float = picks[i]
 		(
@@ -298,7 +334,8 @@ static func plan(world, occupied: Array = []) -> Array[Dictionary]:
 			. append(
 				{
 					"distance": at,
-					"laterals": laterals_for(world, at, i),
+					"laterals": laterals_for(world, at, previous.find(at) if at in previous else i),
+					"original": at in previous,
 					"sight": sight_distance(world, at),
 					"half": usable_half(world, at),
 					"turn": turn_degrees(world, at),

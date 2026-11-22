@@ -1,7 +1,7 @@
 extends SceneTree
-## Vertragstest der Sammelzonen (kart_item_zones.gd) auf allen 13 Strecken.
+## Vertragstest der Sammelzonen (kart_item_zones.gd) auf allen veröffentlichten Strecken.
 ## Je Strecke wird das echte Rennen gebaut und geprüft:
-##  - Anzahl 5–8 Zonen je Runde (Streckenlänge/270 m), je Zone 2–3 Prismen;
+##  - zusätzliche sichere Reihen zwischen den früheren Sammelzonen, je Zone 2–3 Prismen;
 ##  - kein Prisma in einem Sperrbereich (Start/Ziel, Checkpoint, Rampe, Looping, Sprung,
 ##    Tunnel, Passage, offene Kante, Slalom, Turbofeld, Hindernis, Ringe);
 ##  - innerhalb der Planke, auf Kart-Höhe, keine scharfe Kurve, keine Kuppe;
@@ -70,14 +70,35 @@ func _course(track: String) -> void:
 		"zonen": zones.size(),
 		"ziel": expected,
 		"prismen": game.catalog_boxes.size(),
+		"prismen_vorher": game.previous_catalog_indices.size(),
 	}
 	_check(zones.size() >= ZONES.MIN_ZONES, "mindestens 5 Zonen je Runde (%d)" % zones.size())
-	_check(zones.size() <= ZONES.MAX_ZONES, "höchstens 8 Zonen je Runde (%d)" % zones.size())
-	_check(
-		zones.size() >= expected - 2,
-		"Zonen passen zur Länge (%d von %d)" % [zones.size(), expected]
-	)
+	_check(zones.size() <= ZONES.MAX_ZONES, "Zonenanzahl im Streckenbudget (%d)" % zones.size())
 	var areas: Array[Dictionary] = ZONES.hazards(world, game._catalog_zone_occupied())
+	_check(game.catalog_boxes.size() > game.previous_catalog_indices.size(), "Mehr erreichbare Überraschungsprismen als zuvor")
+	if zones.size() < expected:
+		# A target based on length assumes a completely clear course. On a heavily
+		# scripted course every possible extra row must be too near another row,
+		# on a hazard or outside the required camera sight line.
+		var spare := false
+		for metre in range(0, ceili(length), int(ZONES.CANDIDATE_STEP)):
+			var candidate := float(metre)
+			var far_enough := true
+			for zone in zones:
+				var gap := absf(float(zone.distance) - candidate)
+				if minf(gap, length-gap) <= ZONES.minimum_extra_gap(length):
+					far_enough = false
+					break
+			if not far_enough or not ZONES.reject_reason(world, candidate, areas).is_empty():
+				continue
+			var visible := true
+			for lateral in ZONES.laterals_for(world, candidate, zones.size()):
+				if ZONES.sight_distance(world, candidate, lateral) < ZONES.SIGHT_MIN_M:
+					visible = false
+			if visible:
+				spare = true
+				break
+		_check(not spare, "Alle zusätzlichen sicheren Sammelstellen ausgeschöpft")
 	var spacing: float = length / float(maxi(1, zones.size()))
 	var min_gap := INF
 	var min_sight := INF
@@ -126,8 +147,8 @@ func _course(track: String) -> void:
 		var gap: float = fposmod(next_d - d, length) if zones.size() > 1 else length
 		min_gap = minf(min_gap, gap)
 	_check(
-		min_gap >= length / float(ZONES.target_count(length)) * ZONES.MIN_GAP_FRACTION - 0.1,
-		"Zonenabstand ≥ halber Idealabstand (%.0f m)" % min_gap
+		min_gap >= ZONES.minimum_extra_gap(length) - 0.1,
+		"Sicherer Fahrabstand zwischen zwei Überraschungen (%.0f m)" % min_gap
 	)
 	_elements(world, zones, areas, length, row)
 	row["kleinster_abstand_m"] = roundi(min_gap)
@@ -153,6 +174,15 @@ func _course(track: String) -> void:
 			game.opponents[0].position = game.catalog_boxes[first].position
 			game._rival_collect_catalog_box(0)
 			_check(not str(game.opponent_items[0]).is_empty(), "Rivale sammelt ein Prisma")
+			game.opponent_items[0] = ""
+			game._rival_collect_catalog_box(0)
+			_check(str(game.opponent_items[0]).is_empty(), "Dasselbe Prisma gewährt dem stehenden Rivalen keinen Nachschub")
+		if not game.previous_catalog_indices.is_empty():
+			var old_index: int = game.previous_catalog_indices.size()-1
+			var old_save := ConfigFile.new()
+			old_save.set_value("race", "catalog_box_collected", {game.previous_catalog_indices.size()+old_index: true})
+			game._restore_item_continuity(old_save)
+			_check(game.catalog_box_collected.has(game.catalog_boxes.size()+game.previous_catalog_indices[old_index]), "Alte Runde-2-Sammlung am selben Prisma fortgesetzt")
 	table.append(row)
 	print("[KartItemZones] ", JSON.stringify(row))
 

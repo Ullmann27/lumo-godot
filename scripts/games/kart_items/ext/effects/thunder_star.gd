@@ -7,8 +7,8 @@ extends "res://scripts/games/kart_items/ext/kart_item_ext_effect.gd"
 ##                           Fahrbahn unter ihm schrumpft (Ziel = Kind: Warnton + Text + roter
 ##                           Pfeil; Zeit genug für den Schild). strike = 1.15 s (Rivale 0.95 s,
 ##                           Kind 1.35 s in „Entdecken“).
-##   strike +0.28 s EINSCHLAG verästelter Blitz Wolke -> Kartdach (dreimal neu verästelt),
-##                           Lichtblitz und Funken am Dach. Mit Schild: endet an der Kuppel,
+##   strike +0.28 s EINSCHLAG verästelter Blitz Wolke -> Kartdach (stabile Äste folgen dem Ziel),
+##                           Einmaliger Lichtimpuls und Funken am Dach. Mit Schild: endet an der Kuppel,
 ##                           teilt sich in drei Äste zur Fahrbahn ab, Kuppel zeigt Welle.
 ##   +0.0–1.1 s   REAKTION  Tempo kurz auf 68 % (weich zurück, kein Stopp), Funkenbögen
 ##                           kriechen über das Kart, Rennfahrer bleibt steuerbar.
@@ -17,9 +17,9 @@ extends "res://scripts/games/kart_items/ext/kart_item_ext_effect.gd"
 const FX = preload("res://scripts/games/kart_items/ext/kart_item_ext_fx.gd")
 const CHARGE: float = 0.45
 const TRAVEL: float = 0.35
-const BOLT_TIME: float = 0.28
+const BOLT_TIME: float = 0.36
 const AFTER: float = 1.1
-const CLOUD_HEIGHT: float = 3.6
+const CLOUD_HEIGHT: float = 10.5
 const RANGE_AHEAD: float = 48.0
 const RANGE_BEHIND: float = 22.0
 const SLOW: float = 0.68
@@ -278,7 +278,8 @@ func _draw(entry: Dictionary, rig: Node3D, _delta: float) -> void:
 	var arc_mesh: ImmediateMesh = (rig.get_node("Arcs") as MeshInstance3D).mesh
 	var own_top: Vector3 = host.kart_top(owner)
 	var target_top: Vector3 = host.kart_top(target)
-	var cloud_at: Vector3 = target_top + Vector3.UP * CLOUD_HEIGHT
+	var sky_side := (host.track_basis(host.progress(target)) as Basis).x
+	var cloud_at: Vector3 = target_top + Vector3.UP * CLOUD_HEIGHT + sky_side * 2.3
 	var eye: Vector3 = host.eye()
 	var identity := Transform3D.IDENTITY
 	# 1) Laden + 2) Weg: der Stern.
@@ -305,14 +306,14 @@ func _draw(entry: Dictionary, rig: Node3D, _delta: float) -> void:
 		halo.global_position = star_at
 		trail.global_position = star_at
 		star.scale = Vector3.ONE * size
-		halo.scale = Vector3.ONE * size * (1.0 if reduced else 0.9 + 0.2 * sin(age * 40.0))
+		halo.scale = Vector3.ONE * size
 		if not reduced:
 			star.rotation.z = age * 6.0
 	# Knisternde Bögen am eigenen Kart, solange es lädt (neu verästelt alle 60 ms).
 	if age < CHARGE and not reduced:
 		var lines: Array = []
 		var centre: Vector3 = host.kart_centre(owner)
-		_rng.seed = int(age / 0.06) * 131 + 17
+		_rng.seed = 17
 		for k in range(3):
 			var a: Vector3 = (
 				centre
@@ -341,42 +342,44 @@ func _draw(entry: Dictionary, rig: Node3D, _delta: float) -> void:
 			puff.position = Vector3(cos(angle) * 1.5, sin(k * 1.7) * 0.32, sin(angle) * 1.0) * grow
 			puff.scale = Vector3.ONE * grow * (0.8 + 0.25 * float(k % 3))
 		var glow_node: MeshInstance3D = cloud.get_node("CloudGlow")
-		var flicker: float = 1.0 if reduced else 0.75 + 0.25 * sin(age * 31.0) * sin(age * 13.0)
+		var cloud_alpha := 0.75 + 0.25 * smoothstep(CHARGE, strike, age)
 		var charge_up: float = clampf(
 			(age - CHARGE - TRAVEL) / maxf(0.05, strike - CHARGE - TRAVEL), 0.0, 1.0
 		)
 		(glow_node.material_override as StandardMaterial3D).albedo_color.a = (
-			(0.5 + 0.5 * charge_up) * flicker * (1.0 - cloud_out)
+			(0.5 + 0.5 * charge_up) * cloud_alpha * (1.0 - cloud_out)
 		)
 		glow_node.position = Vector3.DOWN * 0.3
 		# Alle Wolkenballen teilen ein Material (je Darstellung eins): einmal setzen genügt.
 		var puff: MeshInstance3D = cloud.get_node("Puff0")
 		var puff_material := puff.material_override as StandardMaterial3D
 		puff_material.albedo_color.a = (1.0 - cloud_out) * smoothstep(0.0, 1.0, cloud_in)
-	ring.visible = cloud_in > 0.0 and age < strike + 0.05
+	ring.visible = age >= CHARGE * 0.35 and age < strike + 0.05
 	if ring.visible:
 		var warn: float = clampf(
-			(age - CHARGE - TRAVEL * 0.6) / maxf(0.1, strike - CHARGE - TRAVEL * 0.6), 0.0, 1.0
+			(age - CHARGE * 0.35) / maxf(0.1, strike - CHARGE * 0.35), 0.0, 1.0
 		)
 		ring.global_transform = Transform3D(
-			host.track_basis(host.progress(target)).scaled(Vector3.ONE * lerpf(2.4, 1.3, warn)),
+			host.track_basis(host.progress(target)).scaled(Vector3.ONE * lerpf(3.75, 1.85, warn)),
 			host.track_global(host.progress(target), host.lateral(target), 0.06)
 		)
-		var pulse: float = 1.0 if reduced else 0.7 + 0.3 * sin(age * 18.0)
+		var pulse: float = 0.72 + 0.28 * warn
 		(ring.material_override as StandardMaterial3D).albedo_color.a = 0.95 * pulse
 	# 4) Einschlag: verästelter Blitz von der Wolke zum Kartdach / zur Kuppel.
 	var since: float = age - strike
 	if since >= 0.0 and since < BOLT_TIME and not str(entry.result).is_empty():
 		var impact: Vector3 = _impact_point(entry)
-		var seed_step: int = 0 if reduced else int(since / 0.07)
+		var seed_step: int = 0
+		var bolt_node := rig.get_node("Bolt") as MeshInstance3D
+		bolt_node.global_position = impact
 		if int(rig.get_meta("bolt_seed", -1)) != seed_step:
 			rig.set_meta("bolt_seed", seed_step)
 			_rng.seed = 991 + seed_step * 7 + int(entry.get("target", 0)) * 13
-			var segments: int = 9 if host.quality != "low" else 6
-			var branches: int = {"low": 1, "medium": 3, "high": 4}.get(host.quality, 3)
+			var segments: int = 12 if host.quality != "low" else 8
+			var branches: int = {"low": 2, "medium": 4, "high": 5}.get(host.quality, 3)
 			var lines: Array = []
 			var main_lines: Array = FX.bolt(
-				cloud_at + Vector3.DOWN * 0.4, impact, _rng, segments, 0.75, branches
+				cloud_at + Vector3.DOWN * 0.4, impact, _rng, segments, 1.58, branches
 			)
 			if str(entry.result) == "blocked":
 				# Abgeleitet: drei Äste von der Kuppel zur Fahrbahn rund um das Kart.
@@ -392,15 +395,15 @@ func _draw(entry: Dictionary, rig: Node3D, _delta: float) -> void:
 			for line in main_lines:
 				var glow_line: Dictionary = {
 					"points": line.points,
-					"width": float(line.width) * 3.4,
-					"color": Color(1.0, 0.72, 0.08, 0.6)
+					"width": float(line.width) * 3.0,
+					"color": Color(0.49, 0.29, 0.66, 0.92)
 				}
 				var core_line: Dictionary = {
 					"points": line.points, "width": float(line.width), "color": CORE
 				}
 				lines.append(glow_line)
 				lines.append(core_line)
-			FX.ribbons(bolt_mesh, lines, eye, 0.28, CORE, identity)
+			FX.ribbons(bolt_mesh, lines, eye, 0.22 if reduced else 0.32, CORE, bolt_node.global_transform.affine_inverse())
 		var fade: float = 1.0 - since / BOLT_TIME
 		flash.visible = true
 		flash.global_position = impact
@@ -416,7 +419,7 @@ func _draw(entry: Dictionary, rig: Node3D, _delta: float) -> void:
 	if str(entry.result) == "hit" and since >= 0.0 and since < SLOW_SECONDS * 0.85:
 		var arcs: Array = []
 		var centre: Vector3 = host.kart_centre(target)
-		var step: int = 0 if reduced else int(since / 0.06)
+		var step: int = 0
 		_rng.seed = 5003 + step * 11
 		var count: int = 1 if reduced else (2 if host.quality == "low" else 3)
 		for k in range(count):

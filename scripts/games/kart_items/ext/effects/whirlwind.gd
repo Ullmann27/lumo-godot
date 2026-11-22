@@ -26,7 +26,7 @@ const PUSH: float = 2.2
 const PUSH_SECONDS: float = 0.55
 const SLOW: float = 0.85
 const SLOW_SECONDS: float = 0.8
-const HEIGHT: float = 3.2
+const HEIGHT: float = 4.1
 const DEBRIS: int = 22
 const THEMES: Dictionary = {
 	"sand": [Color(0.86, 0.74, 0.52), Color(0.95, 0.88, 0.7), Color(0.75, 0.62, 0.42)],
@@ -216,6 +216,12 @@ func build_rig() -> Node3D:
 	funnel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	rig.add_child(funnel)
 	var debris_material := StandardMaterial3D.new()
+	var veil := MeshInstance3D.new()
+	veil.name = "WindSheets"
+	veil.mesh = _wind_sheets(host.quality == "low")
+	veil.material_override = FX.soft(Color.WHITE, false, false).duplicate()
+	veil.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	rig.add_child(veil)
 	debris_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	debris_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	debris_material.vertex_color_use_as_albedo = true
@@ -300,7 +306,13 @@ func _draw(entry: Dictionary, rig: Node3D) -> void:
 	var collapse: float = 0.0 if flying else clampf(since / 0.45, 0.0, 1.0)
 	var grow: float = smoothstep(0.0, 0.3, age)
 	var palette: Array = THEMES.get(host.theme(), THEMES.sand)
-	var spin: float = (2.5 if reduced else 9.0) * age
+	var spin: float = 0.45 if reduced else age * 3.8
+	var veil := rig.get_node("WindSheets") as MeshInstance3D
+	veil.visible = grow > 0.001 and collapse < 1.0
+	if veil.visible:
+		var axes := Basis(Vector3.UP, spin).scaled(Vector3(grow, grow * (1.0-collapse*0.5), grow))
+		veil.global_transform = Transform3D(axes, base)
+		(veil.material_override as StandardMaterial3D).albedo_color.a = 1.0-collapse
 	# Trichter: drei drehende Windbänder, unten schmal, oben weit.
 	var lines: Array = []
 	var bands: int = 3 if host.quality != "low" else 2
@@ -309,7 +321,7 @@ func _draw(entry: Dictionary, rig: Node3D) -> void:
 		var points := PackedVector3Array()
 		for s in range(steps + 1):
 			var t: float = float(s) / float(steps)
-			var radius: float = lerpf(0.3, 1.35, t * t) * grow * (1.0 + collapse * 1.5)
+			var radius: float = lerpf(0.26, 1.7, t * t) * grow * (1.0 + collapse * 1.5)
 			var angle: float = spin + t * TAU * 1.6 + TAU * b / bands
 			var sway: Vector3 = (
 				Vector3(sin(age * 3.0 + t * 2.0), 0.0, cos(age * 2.3 + t)) * 0.18 * t
@@ -333,36 +345,29 @@ func _draw(entry: Dictionary, rig: Node3D) -> void:
 	else:
 		funnel_mesh.clear_surfaces()
 	# Streckenteilchen kreisen im Trichter (nach dem Einschlag: fliegen aus und sinken).
-	var flakes: Array = []
+	var leaves: ImmediateMesh = (rig.get_node("Debris") as MeshInstance3D).mesh
+	leaves.clear_surfaces()
+	leaves.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	var count: int = host.budget(DEBRIS)
 	for k in range(count):
+	var foliage := [Color("3c7456"), Color("a9ba58"), Color("ce8345"), Color("487f6b")]
 		var h: float = fmod(float(k) * 0.618, 1.0)
 		var angle: float = spin * (1.2 - h * 0.5) + float(k) * 2.4
-		var radius: float = lerpf(0.4, 1.3, h) * grow
-		var p: Vector3 = (
-			base + up * (0.2 + h * HEIGHT * 0.85) + Vector3(cos(angle), 0.0, sin(angle)) * radius
-		)
+		var outward := Vector3(cos(angle), 0, sin(angle))
+		var radius := lerpf(0.45, 1.9, h*h) * grow
+		var p := base + up*(0.22 + h*HEIGHT*0.9) + outward*radius
 		if not flying:
-			var out: Vector3 = Vector3(cos(angle), 0.0, sin(angle))
-			p += out * since * (2.5 + h * 2.0) + up * (since * 2.0 - since * since * 5.0)
-		var tangent: Vector3 = Vector3(-sin(angle), 0.0, cos(angle)) * 0.16
-		var colour: Color = palette[k % palette.size()]
-		colour.a = 0.95 * (1.0 - clampf((since - 0.5) / 0.8, 0.0, 1.0))
-		flakes.append(
-			{
-				"points": PackedVector3Array([p - tangent, p + tangent]),
-				"width": 1.0,
-				"color": colour
-			}
-		)
-	FX.ribbons(
-		(rig.get_node("Debris") as MeshInstance3D).mesh,
-		flakes,
-		host.eye(),
-		0.13,
-		palette[0],
-		Transform3D.IDENTITY
-	)
+			p += outward*since*(2.5+h*2.0) + up*(since*2.0-since*since*5.0)
+		var tangent := outward.cross(up)*0.24 + up*(0.12*sin(angle))
+		var vein := up*0.115 + outward*0.055
+		var centre := p + outward*0.085
+		var tint: Color = foliage[k % foliage.size()]
+		tint.a = 1.0-clampf((since-0.5)/0.8, 0.0, 1.0)
+		for half in [1.0, -1.0]:
+			leaves.surface_set_color(tint if half > 0 else tint.lightened(0.28))
+			for vertex in [p-tangent, centre, p+vein*float(half), p+vein*float(half), centre, p+tangent]:
+				leaves.surface_add_vertex(vertex)
+	leaves.surface_end()
 	var dust: CPUParticles3D = rig.get_node("Dust")
 	dust.global_position = base + up * 0.1
 	if flying and not bool(rig.get_meta("dust_on", false)) and host.quality != "low":
@@ -372,3 +377,26 @@ func _draw(entry: Dictionary, rig: Node3D) -> void:
 	if not flying and not bool(rig.get_meta("burst", false)):
 		rig.set_meta("burst", true)
 		FX.burst(rig.get_node("Burst"), base + up * 1.0, Vector3.UP)
+
+## Three torn, translucent helical sheets outline a hollow funnel even against a bright sky.
+static func _wind_sheets(low: bool) -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var steps := 20 if low else 32
+	for band in range(2 if low else 3):
+		var previous := PackedVector3Array()
+		for i in range(steps+1):
+			var t := float(i)/steps
+			var angle := TAU * (1.18*t + band/3.0)
+			var radius := 0.19 + 1.48*t*t
+			var centre := Vector3(cos(angle)*radius + 0.26*t, HEIGHT*t, sin(angle)*radius)
+			var half_width := Vector3.UP * (0.08+0.22*t) * sin(PI*t)
+			var next := PackedVector3Array([centre-half_width, centre+half_width])
+			if not previous.is_empty():
+				var tint := Color("638a93").lerp(Color("cce7da"), t)
+				tint.a = 0.75 - 0.28*t
+				for vertex in [previous[0], previous[1], next[1], previous[0], next[1], next[0]]:
+					surface.set_color(tint)
+					surface.add_vertex(vertex)
+			previous = next
+	return surface.commit()

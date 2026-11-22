@@ -292,6 +292,8 @@ var catalog_boxes: Array[Node3D] = []
 var catalog_box_distances: Array[float] = []
 var catalog_box_laterals: Array[float] = []
 var catalog_box_collected: Dictionary = {}
+var previous_catalog_indices: Array[int] = []
+var rival_catalog_collected: Dictionary = {}
 var hud: Label
 var message: Label
 var boost_button: Control
@@ -510,6 +512,8 @@ func _build_world() -> void:
 	item_box_laterals.clear()
 	item_box_collected.clear()
 	catalog_boxes.clear()
+	previous_catalog_indices.clear()
+	rival_catalog_collected.clear()
 	catalog_box_distances.clear()
 	catalog_box_laterals.clear()
 	catalog_box_collected.clear()
@@ -595,9 +599,11 @@ func _build_world() -> void:
 			_item_box(_clear_at(float(entry[0]) * track_length), float(entry[1]))
 		for entry in BOOST_RING_LAYOUT:
 			_boost_ring(_clear_at(float(entry[0]) * track_length), float(entry[1]))
-		# Sammelzonen für Zufallsprismen: 5–8 je Runde (kart_items/kart_item_zones.gd).
+		# In langen freien Abschnitten kommen zusätzliche Überraschungsprismen dazu.
 		for zone in ITEM_ZONES.plan(world, _catalog_zone_occupied()):
 			for lateral in zone.laterals:
+				if zone.original:
+					previous_catalog_indices.append(catalog_boxes.size())
 				_catalog_box(float(zone.distance), float(lateral))
 	player = VEHICLE.new()
 	player.set_meta("roadside_speed_factor", 1.0)
@@ -2092,7 +2098,7 @@ func _physics_process(delta: float) -> void:
 			if item_boxes[i].visible:
 				RESONANCE.advance_ring(item_boxes[i], elapsed + float(i) * 0.37, reduced_motion)
 		for i in range(catalog_boxes.size()):
-			if catalog_boxes[i].visible and catalog_boxes[i].has_method("advance_managed"):
+			if catalog_boxes[i].visible and player.position.distance_squared_to(catalog_boxes[i].position) < 95.0 * 95.0 and catalog_boxes[i].has_method("advance_managed"):
 				catalog_boxes[i].advance_managed(0.0 if paused else delta, reduced_motion)
 	if is_instance_valid(shield_visual):
 		shield_visual.reduced_motion = reduced_motion
@@ -3437,6 +3443,8 @@ func _track_events() -> void:
 			collected[key] = true
 			if collected.size() % 3 == 0:
 				boosts = mini(3, boosts + 1)
+			if magnet_time > 0.0 and is_instance_valid(item_status_fx):
+				item_status_fx.pull_star(gems[i] as MeshInstance3D)
 			# Gem collection rewards the existing boost charges, never random weapons.
 			# All tactical items come from a measured resonance-ring crossing.
 	for i in range(item_boxes.size()):
@@ -4890,6 +4898,8 @@ func _rebuild_graphics() -> void:
 	var saved_item_boxes: Dictionary = item_box_collected.duplicate()
 	var rival_transforms: Array[Transform3D] = []
 	for rival in opponents:
+	var saved_prisms: Dictionary = catalog_box_collected.duplicate()
+	var saved_rival_prisms: Dictionary = rival_catalog_collected.duplicate()
 		rival_transforms.append(rival.transform)
 	var state: Dictionary = {}
 	for key in [
@@ -4921,6 +4931,8 @@ func _rebuild_graphics() -> void:
 	item_box_collected.assign(saved_item_boxes)
 	_sync_item_box_visibility()
 	for i in range(opponent_item_fx.size()):
+	catalog_box_collected.assign(saved_prisms)
+	rival_catalog_collected.assign(saved_rival_prisms)
 		_sync_rival_item_fx(i)
 	records.recording = saved_recording
 	records.replay_index = saved_replay_index
@@ -5004,6 +5016,8 @@ func _save_session() -> void:
 	config.set_value("race", "version", SESSION_VERSION)
 	config.set_value("race", "track_pass_owner", _track_pass_owner)
 	for key in [
+	config.set_value("race", "prism_layout", 2)
+	config.set_value("race", "rival_catalog_collected", rival_catalog_collected)
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
 		"lap_times", "lap_started_at",
 		"boost_time", "boosts", "opponent_distances", "opponent_lanes", "collected", "difficulty",
@@ -5183,7 +5197,16 @@ func _restore_item_continuity(config: ConfigFile) -> void:
 	if saved_boxes is Dictionary:
 		for key in saved_boxes:
 			if typeof(key) == TYPE_INT and key >= 0 and typeof(saved_boxes[key]) == TYPE_BOOL and saved_boxes[key]:
-				catalog_box_collected[key] = true
+				var index: int = key
+				if int(config.get_value("race", "prism_layout", 1)) == 1 and not previous_catalog_indices.is_empty():
+					@warning_ignore("integer_division")
+					var lap: int = index / previous_catalog_indices.size()
+					index = lap * catalog_boxes.size() + previous_catalog_indices[index % previous_catalog_indices.size()]
+				catalog_box_collected[index] = true
+	rival_catalog_collected.clear()
+	var rival_pickups = config.get_value("race", "rival_catalog_collected", {})
+	if rival_pickups is Dictionary:
+		rival_catalog_collected.assign(rival_pickups)
 	_sync_item_box_visibility()
 	var saved_items = config.get_value("race", "opponent_items", [])
 	for i in range(opponents.size()):
@@ -5521,6 +5544,7 @@ func _build_gameplay_layer() -> void:
 	opponent_spin_totals.clear()
 	for i in range(opponents.size()):
 		opponent_spin_totals.append(1.0)
+	item_status_fx.low_detail = graphics_profile == "low"
 		opponent_previous_positions[i] = opponents[i].global_position
 	player_previous_position = player.global_position
 	# Track scenes may place their own LumoKartItemBox / BoostRing / BoostPad nodes.
@@ -5536,6 +5560,7 @@ func _build_gameplay_layer() -> void:
 			catalog_box_distances.append(float(sampled_box.distance))
 			catalog_box_laterals.append(float(sampled_box.lateral))
 		else:
+			previous_catalog_indices.append(catalog_boxes.size())
 			track_triggers.append(node)
 	_build_item_experience()
 
@@ -5604,7 +5629,12 @@ func _on_fx_sound(_event_id: String, fallback: String) -> void:
 
 func _fx(event_id: String, at: Vector3, strength: float = 1.0) -> void:
 	if is_instance_valid(fx):
-		fx.trigger(event_id, at, strength)
+		if event_id == "rocket_hit" and is_instance_valid(world):
+			var road: Dictionary = world.sample_road(at)
+			var ground := Transform3D(road.basis, road.position + (road.basis as Basis).y * 0.09)
+			fx.trigger(event_id, at, strength, ground)
+		else:
+			fx.trigger(event_id, at, strength)
 
 
 func _stat(key: String, amount: int = 1) -> void:
@@ -5815,6 +5845,7 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 			var seconds: float = ITEM_CATALOG.number(id, "seconds", 4.5)
 			opponent_aurora_times[index] = seconds
 			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
+			ITEM_STATUS_FX.show_rival_magnet(opponents[index], graphics_profile, ITEM_CATALOG.number(id, "seconds", 4.0))
 		_:
 			if not ITEM_EXT.handles(behaviour):
 				return
@@ -5856,6 +5887,12 @@ func _update_item_feedback(delta: float) -> void:
 			if at != Vector3.ZERO:
 				_fx("spark_bounce" if str(cue.kind) == "wall_bounce" else "bubble_pop", at, 0.6)
 	if is_instance_valid(item_status_fx):
+	for rival in opponents:
+		var field = rival.get_node_or_null("KartItemStatusFx")
+		if field != null and (field.rival_seconds > 0.0 or field.magnet_ring.visible):
+			field.reduced_motion = reduced_motion
+			field.rival_seconds = maxf(0, field.rival_seconds - delta)
+			field.advance(delta, field.rival_seconds, ITEM_CATALOG.number("star_magnet", "seconds", 4.0), 0.0, 1.0)
 		item_status_fx.reduced_motion = reduced_motion
 		var magnet_before: bool = item_status_fx.magnet_ring.visible
 		var aurora_before: bool = item_status_fx.aurora_ring.visible
@@ -6147,6 +6184,7 @@ func _collect_catalog_boxes(lap: int) -> void:
 		var key: int = lap * catalog_boxes.size() + i
 		if catalog_box_collected.has(key) or not catalog_boxes[i].visible:
 			continue
+	node.set_presentation_profile(graphics_profile)
 		if player.position.distance_to(catalog_boxes[i].position) > CATALOG_BOX_RADIUS:
 			continue
 		catalog_box_collected[key] = true
@@ -6173,8 +6211,13 @@ func _rival_collect_catalog_box(index: int) -> void:
 			opponent_item_cooldowns[index] = 1.8
 			return
 
+	var lap := floori(opponent_distances[index] / maxf(track_length, 1.0))
 
 # --- Sternraketen, Zielerfassung und Sternenschild (item experience) ---------------------
+			var key := Vector3i(index, lap, i)
+			if rival_catalog_collected.has(key):
+				continue
+			rival_catalog_collected[key] = true
 
 ## Lock-on per difficulty: cone half-angle (deg), range (m), seconds to a full lock.
 ## "Entdecken" (gemuetlich) is generous so a child locks on almost at once.
