@@ -22,6 +22,15 @@ const OBSERVATION := "user://memory_layout_v1.json"
 const LEVELS := ["leicht", "mittel", "schwer", "knifflig", "profi"]
 const COUNTS := [8, 12, 16, 20, 24]
 const PACKS := ["alle", "tiere", "weltall", "garten"]
+## Perspective gives neighbouring cards intersecting bounding boxes. The actual
+## touch shape follows the four visible corners, including the sloping sides.
+class TableCardButton extends Button:
+	var face_polygon := PackedVector2Array()
+
+	func _has_point(point: Vector2) -> bool:
+		return Geometry2D.is_point_in_polygon(point, face_polygon)
+
+
 const MOTIFS := {
 	"panda":"Panda", "giraffe":"Giraffe",
 	"lumo":"Lumo", "hase":"Hase",
@@ -440,7 +449,7 @@ func _create_card(index: int) -> Dictionary:
 	var long_stroke := _box(matched,Vector3(0.045,0.27,0.025),Vector3(0.055,0.035,0.025),check_material)
 	long_stroke.rotation.z = -PI/4.0
 	root.add_child(matched)
-	var button := Button.new()
+	var button := TableCardButton.new()
 	button.name = "MemoryCard%d" % index
 	button.flat = true
 	for variant in ["normal","hover","pressed","disabled","focus"]:
@@ -1143,6 +1152,8 @@ func _layout() -> void:
 		for point in quad: rect = rect.expand(point)
 		card.button.position = rect.position-safe.position
 		card.button.size = rect.size
+		card.button.face_polygon = PackedVector2Array(quad.map(
+			func(point: Vector2) -> Vector2: return point - rect.position))
 	_update_shadows()
 	_update_ui()
 

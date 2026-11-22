@@ -7,6 +7,7 @@ var table
 var bridge
 var output := ""
 var capture := false
+var on_demand := false
 var checks := 0
 var errors: Array[String] = []
 var inputs: Array[Dictionary] = []
@@ -34,6 +35,7 @@ class ObservedTransport extends RefCounted:
 func _initialize() -> void:
 	output = OS.get_environment("LUMO_MEMORY_CAPTURE_DIR")
 	capture = "--capture" in OS.get_cmdline_user_args()
+	on_demand = capture and "--on-demand" in OS.get_cmdline_user_args()
 	call_deferred("_run")
 
 
@@ -60,7 +62,7 @@ func _state(level: String="leicht") -> Dictionary:
 func _frames(count: int) -> void:
 	for index in range(count):
 		await process_frame
-		if capture: await RenderingServer.frame_post_draw
+		if capture and not on_demand: await RenderingServer.frame_post_draw
 
 
 func _physical(control: Control) -> Rect2:
@@ -118,6 +120,7 @@ func _snap(name: String) -> void:
 	file.store_string(raw)
 	file.close()
 	if capture:
+		if on_demand: RenderingServer.force_draw(true)
 		var image := root.get_texture().get_image()
 		_check(image != null and not image.is_empty(),"real framebuffer "+name)
 		if image != null and not image.is_empty():
@@ -145,7 +148,7 @@ func _profile(size: Vector2i,density: float,insets: Rect2) -> void:
 func _visible_targets() -> void:
 	var safe_px := Rect2(table._safe_rect.position*table._density,table._safe_rect.size*table._density)
 	var count := 0
-	var rectangles: Array[Rect2] = []
+	var faces: Array[PackedVector2Array] = []
 	for card in table._cards:
 		if not card.button.is_visible_in_tree(): continue
 		count += 1
@@ -182,8 +185,21 @@ func _visible_targets() -> void:
 						near = maxf(near,minf(a,b))
 						far = minf(far,maxf(a,b))
 				_check(far < near or near > card_distance+0.02,"actual tabletop cannot occlude a projected card face")
-		for earlier in rectangles: _check(not rect.intersects(earlier),"unique non-overlapping card target")
-		rectangles.append(rect)
+		var physical_face := PackedVector2Array()
+		for point in card.button.face_polygon:
+			var local := Vector2(point)
+			var parent_point: Vector2 = card.button.get_global_transform_with_canvas() * local
+			physical_face.append(parent_point * Vector2(root.size) / root.get_visible_rect().size)
+			_check(card.button._has_point(local.lerp(card.button.size*0.5,0.03)),
+				"touch just inside each projected corner reaches this card")
+		var units_per_dp: Vector2 = card.button.size / rect.size * table._density
+		for corner in [Vector2(-1,-1),Vector2(-1,1),Vector2(1,-1),Vector2(1,1)]:
+			_check(card.button._has_point(card.button.size*0.5 + corner*24*units_per_dp),
+				"projected face contains a full 48dp touch square")
+		for previous in faces:
+			_check(Geometry2D.intersect_polygons(physical_face,previous).is_empty(),
+				"actual playable faces have unique non-overlapping touch targets")
+		faces.append(physical_face)
 	_check(count>0,"visible board cards exist")
 	for button in [table.back_button,table.pause_button,table.previous_button,table.next_button]:
 		var rect := _physical(button)
@@ -197,6 +213,7 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(output)
+	if on_demand: RenderingServer.render_loop_enabled = false
 	original_touch = Input.emulate_touch_from_mouse
 	Input.emulate_touch_from_mouse = true
 	await _profile(Vector2i(960,540),1.0,Rect2())
