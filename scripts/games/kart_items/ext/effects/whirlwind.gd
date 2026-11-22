@@ -215,13 +215,13 @@ func build_rig() -> Node3D:
 	funnel.material_override = FX.glow(Color.WHITE)
 	funnel.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	rig.add_child(funnel)
-	var debris_material := StandardMaterial3D.new()
 	var veil := MeshInstance3D.new()
 	veil.name = "WindSheets"
 	veil.mesh = _wind_sheets(host.quality == "low")
 	veil.material_override = FX.soft(Color.WHITE, false, false).duplicate()
 	veil.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	rig.add_child(veil)
+	var debris_material := StandardMaterial3D.new()
 	debris_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	debris_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	debris_material.vertex_color_use_as_albedo = true
@@ -349,8 +349,8 @@ func _draw(entry: Dictionary, rig: Node3D) -> void:
 	leaves.clear_surfaces()
 	leaves.surface_begin(Mesh.PRIMITIVE_TRIANGLES)
 	var count: int = host.budget(DEBRIS)
-	for k in range(count):
 	var foliage := [Color("3c7456"), Color("a9ba58"), Color("ce8345"), Color("487f6b")]
+	for k in range(count):
 		var h: float = fmod(float(k) * 0.618, 1.0)
 		var angle: float = spin * (1.2 - h * 0.5) + float(k) * 2.4
 		var outward := Vector3(cos(angle), 0, sin(angle))

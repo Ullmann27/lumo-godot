@@ -3441,10 +3441,10 @@ func _track_events() -> void:
 		var key: int = _gem_key(lap, i)
 		if not collected.has(key) and player.position.distance_to(gems[i].position) < _gem_pickup_radius():
 			collected[key] = true
-			if collected.size() % 3 == 0:
-				boosts = mini(3, boosts + 1)
 			if magnet_time > 0.0 and is_instance_valid(item_status_fx):
 				item_status_fx.pull_star(gems[i] as MeshInstance3D)
+			if collected.size() % 3 == 0:
+				boosts = mini(3, boosts + 1)
 			# Gem collection rewards the existing boost charges, never random weapons.
 			# All tactical items come from a measured resonance-ring crossing.
 	for i in range(item_boxes.size()):
@@ -4896,10 +4896,10 @@ func _rebuild_graphics() -> void:
 	var saved_transform: Transform3D = player.transform
 	var saved_heading: float = player_heading
 	var saved_item_boxes: Dictionary = item_box_collected.duplicate()
-	var rival_transforms: Array[Transform3D] = []
-	for rival in opponents:
 	var saved_prisms: Dictionary = catalog_box_collected.duplicate()
 	var saved_rival_prisms: Dictionary = rival_catalog_collected.duplicate()
+	var rival_transforms: Array[Transform3D] = []
+	for rival in opponents:
 		rival_transforms.append(rival.transform)
 	var state: Dictionary = {}
 	for key in [
@@ -4929,10 +4929,10 @@ func _rebuild_graphics() -> void:
 		var target: Array = get(key)
 		target.assign(state[key])
 	item_box_collected.assign(saved_item_boxes)
-	_sync_item_box_visibility()
-	for i in range(opponent_item_fx.size()):
 	catalog_box_collected.assign(saved_prisms)
 	rival_catalog_collected.assign(saved_rival_prisms)
+	_sync_item_box_visibility()
+	for i in range(opponent_item_fx.size()):
 		_sync_rival_item_fx(i)
 	records.recording = saved_recording
 	records.replay_index = saved_replay_index
@@ -5014,10 +5014,10 @@ func _save_session() -> void:
 		return
 	var config := ConfigFile.new()
 	config.set_value("race", "version", SESSION_VERSION)
-	config.set_value("race", "track_pass_owner", _track_pass_owner)
-	for key in [
 	config.set_value("race", "prism_layout", 2)
 	config.set_value("race", "rival_catalog_collected", rival_catalog_collected)
+	config.set_value("race", "track_pass_owner", _track_pass_owner)
+	for key in [
 		"distance", "result_id", "checkpoint_index", "lane", "speed", "countdown", "elapsed",
 		"lap_times", "lap_started_at",
 		"boost_time", "boosts", "opponent_distances", "opponent_lanes", "collected", "difficulty",
@@ -5540,11 +5540,11 @@ func _build_gameplay_layer() -> void:
 	frame_smoother.offset_provider = _display_offset  # Hook items-neu (vorher rocket_flight.offset_for)
 	race_root.add_child(frame_smoother)
 	item_status_fx = ITEM_STATUS_FX.new()
+	item_status_fx.low_detail = graphics_profile == "low"
 	player.add_child(item_status_fx)
 	opponent_spin_totals.clear()
 	for i in range(opponents.size()):
 		opponent_spin_totals.append(1.0)
-	item_status_fx.low_detail = graphics_profile == "low"
 		opponent_previous_positions[i] = opponents[i].global_position
 	player_previous_position = player.global_position
 	# Track scenes may place their own LumoKartItemBox / BoostRing / BoostPad nodes.
@@ -5556,11 +5556,11 @@ func _build_gameplay_layer() -> void:
 		if str(node.get("trigger_kind")) == "item_box" and mode != "arena":
 			node.managed = true
 			var sampled_box: Dictionary = world.sample_road(node.global_position, 0.0)
+			previous_catalog_indices.append(catalog_boxes.size())
 			catalog_boxes.append(node)
 			catalog_box_distances.append(float(sampled_box.distance))
 			catalog_box_laterals.append(float(sampled_box.lateral))
 		else:
-			previous_catalog_indices.append(catalog_boxes.size())
 			track_triggers.append(node)
 	_build_item_experience()
 
@@ -5840,12 +5840,12 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 				return
 			item_runtime.drop_trap(id, index, progress, rival_lane)
 		"magnet":
+			ITEM_STATUS_FX.show_rival_magnet(opponents[index], graphics_profile, ITEM_CATALOG.number(id, "seconds", 4.0))
 			opponent_boost_times[index] = 1.5
 		"aurora":
 			var seconds: float = ITEM_CATALOG.number(id, "seconds", 4.5)
 			opponent_aurora_times[index] = seconds
 			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
-			ITEM_STATUS_FX.show_rival_magnet(opponents[index], graphics_profile, ITEM_CATALOG.number(id, "seconds", 4.0))
 		_:
 			if not ITEM_EXT.handles(behaviour):
 				return
@@ -5881,18 +5881,18 @@ func _update_gameplay_layer(delta: float) -> void:
 
 ## Kleine Item-Rückmeldungen ohne Spielwirkung (Bande, Blase, Laufzeit-Ring, Ende).
 func _update_item_feedback(delta: float) -> void:
-	if is_instance_valid(item_runtime):
-		for cue in item_runtime.take_feedback():
-			var at: Vector3 = cue.get("position", Vector3.ZERO)
-			if at != Vector3.ZERO:
-				_fx("spark_bounce" if str(cue.kind) == "wall_bounce" else "bubble_pop", at, 0.6)
-	if is_instance_valid(item_status_fx):
 	for rival in opponents:
 		var field = rival.get_node_or_null("KartItemStatusFx")
 		if field != null and (field.rival_seconds > 0.0 or field.magnet_ring.visible):
 			field.reduced_motion = reduced_motion
 			field.rival_seconds = maxf(0, field.rival_seconds - delta)
 			field.advance(delta, field.rival_seconds, ITEM_CATALOG.number("star_magnet", "seconds", 4.0), 0.0, 1.0)
+	if is_instance_valid(item_runtime):
+		for cue in item_runtime.take_feedback():
+			var at: Vector3 = cue.get("position", Vector3.ZERO)
+			if at != Vector3.ZERO:
+				_fx("spark_bounce" if str(cue.kind) == "wall_bounce" else "bubble_pop", at, 0.6)
+	if is_instance_valid(item_status_fx):
 		item_status_fx.reduced_motion = reduced_motion
 		var magnet_before: bool = item_status_fx.magnet_ring.visible
 		var aurora_before: bool = item_status_fx.aurora_ring.visible
@@ -6174,6 +6174,7 @@ func _catalog_box(distance_on_track: float, lateral: float) -> void:
 	node.position = _track_position(distance_on_track, lateral) + basis.y * 1.05
 	node.basis = basis
 	race_root.add_child(node)
+	node.set_presentation_profile(graphics_profile)
 	catalog_boxes.append(node)
 	catalog_box_distances.append(distance_on_track)
 	catalog_box_laterals.append(lateral)
@@ -6184,7 +6185,6 @@ func _collect_catalog_boxes(lap: int) -> void:
 		var key: int = lap * catalog_boxes.size() + i
 		if catalog_box_collected.has(key) or not catalog_boxes[i].visible:
 			continue
-	node.set_presentation_profile(graphics_profile)
 		if player.position.distance_to(catalog_boxes[i].position) > CATALOG_BOX_RADIUS:
 			continue
 		catalog_box_collected[key] = true
@@ -6201,8 +6201,13 @@ func _collect_catalog_boxes(lap: int) -> void:
 
 
 func _rival_collect_catalog_box(index: int) -> void:
+	var lap := floori(opponent_distances[index] / maxf(track_length, 1.0))
 	for i in range(catalog_boxes.size()):
 		if opponents[index].position.distance_to(catalog_boxes[i].position) <= CATALOG_BOX_RADIUS:
+			var key := Vector3i(index, lap, i)
+			if rival_catalog_collected.has(key):
+				continue
+			rival_catalog_collected[key] = true
 			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index])
 			item_telemetry.note_draw(
 				index, _opponent_place(index), opponent_items[index],
@@ -6211,13 +6216,8 @@ func _rival_collect_catalog_box(index: int) -> void:
 			opponent_item_cooldowns[index] = 1.8
 			return
 
-	var lap := floori(opponent_distances[index] / maxf(track_length, 1.0))
 
 # --- Sternraketen, Zielerfassung und Sternenschild (item experience) ---------------------
-			var key := Vector3i(index, lap, i)
-			if rival_catalog_collected.has(key):
-				continue
-			rival_catalog_collected[key] = true
 
 ## Lock-on per difficulty: cone half-angle (deg), range (m), seconds to a full lock.
 ## "Entdecken" (gemuetlich) is generous so a child locks on almost at once.
