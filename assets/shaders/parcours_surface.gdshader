@@ -27,9 +27,18 @@ float noise(vec2 p) {
 		mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
+// Integral of a periodic strip. Sampling both pixel edges gives the correct
+// average even when a distant pixel spans several bridge planks.
+float strip_integral(float phase, float duty) {
+	return floor(phase) * duty + min(fract(phase), duty);
+}
+
 float seam(float v, float size, float thickness) {
-	float f = abs(fract(v / size + 0.5) - 0.5) * size;
-	return 1.0 - smoothstep(thickness * 0.5, thickness, f);
+	float duty = 1.5 * thickness / size;
+	float centre = v / size + duty * 0.5;
+	float width = max(fwidth(v) / size, 0.5 * thickness / size);
+	return clamp((strip_integral(centre + width * 0.5, duty)
+		- strip_integral(centre - width * 0.5, duty)) / width, 0.0, 1.0);
 }
 
 void fragment() {
@@ -46,11 +55,13 @@ void fragment() {
 		color *= 0.94 + 0.08 * hash(cell);
 		vec2 local = fract(uv / panel) * panel;
 		float rivet = 0.0;
+		float pixel_radius = max(fwidth(uv.x), fwidth(uv.y)) * 0.5;
 		for (int i = 0; i < 4; i++) {
 			vec2 c = vec2(i % 2 == 0 ? 0.28 : panel - 0.28, i < 2 ? 0.28 : panel - 0.28);
-			rivet = max(rivet, 1.0 - smoothstep(0.05, 0.09, length(local - c)));
+			float edge = max(0.02, pixel_radius);
+			rivet = max(rivet, 1.0 - smoothstep(0.07 - edge, 0.07 + edge, length(local - c)));
 		}
-		color = mix(color, line_color.rgb * 1.3, rivet * 0.6);
+		color = mix(color, line_color.rgb * 1.3, rivet * 0.6 * (1.0 - smoothstep(0.07, 0.18, pixel_radius)));
 		metal = 0.35;
 	} else if (style == 1) {
 		float plank = floor(uv.x / 0.55);

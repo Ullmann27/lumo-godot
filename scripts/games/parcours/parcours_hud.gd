@@ -58,7 +58,11 @@ func min_touch() -> float:
 	if DisplayServer.get_name() == "headless" or window.x <= 0.0:
 		return MIN_TOUCH_PX * visible.y / 720.0 * 0.5
 	var scale_factor: float = window.y / maxf(visible.y, 1.0)
-	return MIN_TOUCH_PX / maxf(scale_factor, 0.01)
+	var target_px := MIN_TOUCH_PX
+	if not OS.has_feature("android") and not OS.has_feature("ios"):
+		# Small desktop windows have fewer physical pixels per logical touch target.
+		target_px = clampf(MIN_TOUCH_PX * minf(window.x, window.y) / 1080.0, 56.0, MIN_TOUCH_PX)
+	return target_px / maxf(scale_factor, 0.01)
 
 
 func _button(
@@ -264,7 +268,7 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 	styles.name = "Styles"
 	styles.add_theme_constant_override("separation", 14)
 	column.add_child(styles)
-	for spec in [["zeitlauf", "⏱  Zeitlauf"], ["erkunden", "✿  Entspannt erkunden"]]:
+	for spec in [["rennen", "Rennen zu dritt"], ["zeitlauf", "Zeitlauf"], ["erkunden", "Erkunden"]]:
 		var id: String = spec[0]
 		var button := _button(
 			("✓ " if id == _choice_style else "") + str(spec[1]),
@@ -287,11 +291,16 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 		card.name = "World_" + id
 		card.focus_mode = Control.FOCUS_NONE
 		UI.premium_button(card, Color(entry.color), false)
+		var photo_path := "res://assets/kart/parcours_previews/%s.webp" % id
+		if ResourceLoader.exists(photo_path):
+			card.icon = load(photo_path) as Texture2D
+			card.expand_icon = true
+			card.add_theme_constant_override("h_separation", 16)
 		card.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		card.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var lines: PackedStringArray = [
-			"Welt %s · %s" % [entry.letter, entry.name], str(entry.description)
+			str(entry.name), str(entry.description)
 		]
 		if int(stats.completed) > 0:
 			var best: String = (
@@ -305,8 +314,8 @@ func show_choice(entries: Array, progress, style: String, has_session: bool) -> 
 					% [best, int(stats.best_stars), (stats.secrets as Array).size()]
 				)
 			)
-		else:
-			lines.append("Noch nicht geschafft – los geht's!")
+		if int(stats.get("races", 0)) > 0 and int(stats.get("best_place", 0)) > 0:
+			lines.append("Bester Platz %d von 3" % int(stats.best_place))
 		card.text = "\n".join(lines)
 		card.pressed.connect(func(): game.start_world(id, _choice_style))
 		cards.add_child(card)
@@ -361,13 +370,15 @@ func update_hud(run, style: String) -> void:
 	var course = run.course
 	if game.countdown <= 0.0 and not countdown_label.text.is_empty():
 		countdown_label.text = ""
-	if style == "zeitlauf":
+	if style == "rennen" and game.race != null:
+		info.text = "%s · Platz %d/3" % [course.title, game.race.place]
+	elif style == "zeitlauf":
 		info.text = "%s · %s" % [course.title, format_time(run.elapsed)]
 	else:
 		info.text = "%s · Erkunden" % course.title
 	stars_label.text = "★ %d/%d" % [run.stars_taken.size(), course.stars.size()]
 	message_age += 1.0 / 60.0
-	if message_age > 5.0:
+	if message_age > (0.9 if message.text == "LOS!" else 5.0):
 		message.visible = false
 	var on_foot: bool = run.on_foot
 	for button in [gas_button, brake_button, drift_button, boost_button]:
@@ -428,7 +439,9 @@ func show_pause() -> void:
 func show_result(payload: Dictionary, stats: Dictionary, answer: Dictionary, saved: bool) -> void:
 	_open_modal("Geschafft!")
 	var lines: PackedStringArray = []
-	if str(payload.style) == "zeitlauf":
+	if str(payload.style) == "rennen":
+		lines.append("Platz %d von %d · %s" % [int(payload.place), int(payload.racers), format_time(float(payload.elapsedSeconds))])
+	elif str(payload.style) == "zeitlauf":
 		lines.append("Zeit: %s" % format_time(float(payload.elapsedSeconds)))
 		if bool(answer.get("new_best", false)):
 			lines.append("Neue Bestzeit!")
@@ -468,7 +481,7 @@ func close_overlay() -> bool:
 
 
 func layout() -> void:
-	if not is_instance_valid(root):
+	if not is_instance_valid(root) or not root.is_inside_tree():
 		return
 	var area: Vector2 = root.get_viewport_rect().size
 	var touch: float = maxf(min_touch(), 64.0)
@@ -534,7 +547,9 @@ func layout() -> void:
 			column.custom_minimum_size.x = scroll.size.x - 8.0
 			var cards := column.get_node("WorldCards") as GridContainer
 			cards.columns = clampi(floori(scroll.size.x / 520.0), 1, 3)
+			var card_width := (scroll.size.x - 16.0 * (cards.columns - 1)) / cards.columns
 			for card in cards.get_children():
+				(card as Button).add_theme_constant_override("icon_max_width", roundi(clampf(card_width * 0.32, 96.0, 260.0)))
 				(card as Button).custom_minimum_size = Vector2(0, maxf(touch * 1.6, 200.0))
 				(card as Button).add_theme_font_size_override(
 					"font_size", roundi(clampf(short_side * 0.032, 22, 40))
