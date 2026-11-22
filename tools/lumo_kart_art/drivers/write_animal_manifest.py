@@ -1,6 +1,6 @@
 """Write assets/kart/production/drivers/manifest.json for the rigged animal rivals.
 
-Run after build_animal_drivers.py. Every LOD file is checked against the
+Run after finish_race_drivers.py. Every LOD file is checked against the
 build measurement (SHA-256, bytes, triangles) and its glTF structure (one
 skin with the 26 body and face bones, the 12 clips, embedded textures only).
 Run: python3 tools/lumo_kart_art/drivers/write_animal_manifest.py
@@ -65,8 +65,9 @@ def main() -> None:
         'asset_set': 'LUMO rival animals (kart, table)',
         'units': 'metres',
         'runtime_axes': 'X right, Y up, -Z forward',
-        'source_generator': {'file': 'tools/lumo_kart_art/drivers/build_animal_drivers.py',
-                             'sha256': sha(ROOT / 'tools/lumo_kart_art/drivers/build_animal_drivers.py'),
+        'source_generator': {'file': 'tools/lumo_kart_art/drivers/finish_race_drivers.py',
+                             'sha256': sha(ROOT / 'tools/lumo_kart_art/drivers/finish_race_drivers.py'),
+                             'base_generator_sha256': sha(ROOT / 'tools/lumo_kart_art/drivers/build_animal_drivers.py'),
                              'species_file_sha256': sha(ROOT / 'tools/lumo_kart_art/drivers/animal_species.py'),
                              'body_file_sha256': sha(ROOT / 'tools/lumo_kart_art/drivers/animal_body.py')},
         'blender_sources': 'Reproducible from the generator; .blend files are not versioned.',

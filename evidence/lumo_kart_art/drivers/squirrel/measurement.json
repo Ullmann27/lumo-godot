@@ -104,51 +104,51 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 14491,
-      "triangles": 28631,
+      "vertices": 17989,
+      "triangles": 35371,
       "materials": 6,
       "max_weight_sum_error": 4.284083843231201e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7898,
-        1.2221,
+        0.8262,
+        1.2386,
         1.4068
       ],
       "file": "assets/kart/production/drivers/squirrel/driver.glb",
-      "bytes": 1600684,
-      "sha256": "3eb81f4061e5e1f25c1f47461572b4b12b406a223df3e47aa4405276d5c90844"
+      "bytes": 1865028,
+      "sha256": "58a17fde711486f3c8318c8ac24491c391ac2c6ebb961a4d4e9ec86c03391045"
     },
     "lod1": {
-      "vertices": 9740,
-      "triangles": 19130,
+      "vertices": 11772,
+      "triangles": 22938,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7898,
-        1.2221,
-        1.4069
+        0.8262,
+        1.2386,
+        1.407
       ],
       "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
-      "bytes": 1237800,
-      "sha256": "1cfc2ce88bca9de507cfb3181d355fdf3e4d5848ff711af70389739cfd9df196"
+      "bytes": 1391200,
+      "sha256": "a12331d9731689bb3a4f1be334463fa8c44209b5ae57f8177c3c71b70bc0e014"
     },
     "lod2": {
-      "vertices": 7363,
-      "triangles": 14380,
+      "vertices": 8662,
+      "triangles": 16722,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7895,
-        1.2223,
+        0.8268,
+        1.2388,
         1.407
       ],
       "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
-      "bytes": 1055656,
-      "sha256": "34c709882e3344fb232ed2ff925afa2f18751a79fe495985704e296ca615b7b7"
+      "bytes": 1152792,
+      "sha256": "ce98aa7e487612a9e9132b8ff081f43c4f36494c8186e16ee8206865b3002120"
     }
   },
   "build_seconds": 98.7,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
 }

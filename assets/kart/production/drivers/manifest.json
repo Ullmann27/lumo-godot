@@ -4,8 +4,9 @@
   "units": "metres",
   "runtime_axes": "X right, Y up, -Z forward",
   "source_generator": {
-    "file": "tools/lumo_kart_art/drivers/build_animal_drivers.py",
-    "sha256": "a70ddb526bfc5dbd55034d51e25fcedd5151ed0150294a5a06869215a4b0b2e3",
+    "file": "tools/lumo_kart_art/drivers/finish_race_drivers.py",
+    "sha256": "b5008187185192ff8dc68155cc18cf3be986c873f141e2e13e454e9d0c3beb88",
+    "base_generator_sha256": "a70ddb526bfc5dbd55034d51e25fcedd5151ed0150294a5a06869215a4b0b2e3",
     "species_file_sha256": "46f5048080273d7cd6bc506d05f821ead21dde7fb8152d5a1c8ac7cb91f08c84",
     "body_file_sha256": "7af32cb0c19a06b1ca09537976bceca03be0598f4fb847176874a62620bf3ac3"
   },
@@ -121,12 +122,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/lion/driver.glb",
-          "bytes": 1625320,
-          "sha256": "db967fdeb08dcf8402df33c086c4994c0fdf25b435dbf93807eca059c1cd3d4b",
-          "vertices": 14741,
+          "bytes": 1836684,
+          "sha256": "77a8fafac15cd273f556ae5dfdbda40a3ddf85ab9f76851806a5b30152b1c567",
+          "vertices": 17537,
           "max_influences": 4,
           "glb": {
-            "triangles": 29100,
+            "triangles": 34500,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -160,12 +161,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
-          "bytes": 1261000,
-          "sha256": "cc5c9e6e5af7142079bf85032be06b67c52ddfe3c80dab8e6a21aae49ad58bc1",
-          "vertices": 9991,
+          "bytes": 1383944,
+          "sha256": "2c35758ca3c55c346b5f5f177d2341ffdb998a7960ce9401d361397b60970d75",
+          "vertices": 11625,
           "max_influences": 4,
           "glb": {
-            "triangles": 19600,
+            "triangles": 22676,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -199,12 +200,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
-          "bytes": 1077552,
-          "sha256": "38e10fe6abaf8c24877f0f8f07bf27244f244c4c5260fd06ac7e25a85656b3dc",
-          "vertices": 7616,
+          "bytes": 1156108,
+          "sha256": "42b4656ff8b967c65dce8eeafdb1ef82f8e4a3f8fff3fb4cc9588513f993694d",
+          "vertices": 8669,
           "max_influences": 4,
           "glb": {
-            "triangles": 14850,
+            "triangles": 16764,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -346,12 +347,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/owl/driver.glb",
-          "bytes": 1562732,
-          "sha256": "13cca59ab4e348c14073aa7f222e59e757dd5d4e55f26b7a7e449141bea971b7",
-          "vertices": 13541,
+          "bytes": 1735588,
+          "sha256": "21f395930bb2e81b07af5c556c7607eed77954447267fcbd933c6801f69a20ec",
+          "vertices": 15829,
           "max_influences": 4,
           "glb": {
-            "triangles": 26920,
+            "triangles": 31320,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -385,12 +386,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
-          "bytes": 1185284,
-          "sha256": "dce2424cc52231f08ee1ed479421340f44ac7ebeb71d203434e2d233c03bb360",
-          "vertices": 8791,
+          "bytes": 1283332,
+          "sha256": "86d41c7d07c8f6e7871e4bc7fed03f209839d8319bc557580d92cc55cd75ca65",
+          "vertices": 10108,
           "max_influences": 4,
           "glb": {
-            "triangles": 17420,
+            "triangles": 19878,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -424,12 +425,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
-          "bytes": 995748,
-          "sha256": "4d1bf4682ce2866fed77d38c289e8b57753d6c8b464ec1f93ceaad69bd01d4f5",
-          "vertices": 6416,
+          "bytes": 1057404,
+          "sha256": "309eac638f5ffb7426b0b8dd15ae65322fe780a5fab760317daaf018369fe675",
+          "vertices": 7247,
           "max_influences": 4,
           "glb": {
-            "triangles": 12670,
+            "triangles": 14156,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -571,12 +572,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/rabbit/driver.glb",
-          "bytes": 1649644,
-          "sha256": "e919df914f71d106f7a545d38433a990b91ab0a61b5cdc497e6681dd1ea3e750",
-          "vertices": 15025,
+          "bytes": 1762452,
+          "sha256": "5860522916c61ab5c21e7e86ffbd753aa2f60c7a9cbf55b0be69c076ecfa1444",
+          "vertices": 16517,
           "max_influences": 4,
           "glb": {
-            "triangles": 29672,
+            "triangles": 32556,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -610,12 +611,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/rabbit/driver_lod1.glb",
-          "bytes": 1285872,
-          "sha256": "ab4833bc0ae3609989b6ddf4683acb127d743a717f2909658a2d1bbf94eb76d8",
-          "vertices": 10275,
+          "bytes": 1352000,
+          "sha256": "bcbdcbd587b74fa098dcc1e4184196218978a6cf1fe4ff2406f18e4905d0d50e",
+          "vertices": 11155,
           "max_influences": 4,
           "glb": {
-            "triangles": 20172,
+            "triangles": 21832,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -649,12 +650,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/rabbit/driver_lod2.glb",
-          "bytes": 1102192,
-          "sha256": "d538df02f00e7ef637a94713259cb6a4fe8b0d78691016d97630481440189653",
-          "vertices": 7900,
+          "bytes": 1144700,
+          "sha256": "5f518f8ef969bf4e5807cc5481e6f8e685ad9eb8171b80209e8d380f5ec7f249",
+          "vertices": 8474,
           "max_influences": 4,
           "glb": {
-            "triangles": 15422,
+            "triangles": 16470,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -796,12 +797,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/squirrel/driver.glb",
-          "bytes": 1600684,
-          "sha256": "3eb81f4061e5e1f25c1f47461572b4b12b406a223df3e47aa4405276d5c90844",
-          "vertices": 14491,
+          "bytes": 1865028,
+          "sha256": "58a17fde711486f3c8318c8ac24491c391ac2c6ebb961a4d4e9ec86c03391045",
+          "vertices": 17989,
           "max_influences": 4,
           "glb": {
-            "triangles": 28631,
+            "triangles": 35371,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -835,12 +836,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
-          "bytes": 1237800,
-          "sha256": "1cfc2ce88bca9de507cfb3181d355fdf3e4d5848ff711af70389739cfd9df196",
-          "vertices": 9740,
+          "bytes": 1391200,
+          "sha256": "a12331d9731689bb3a4f1be334463fa8c44209b5ae57f8177c3c71b70bc0e014",
+          "vertices": 11772,
           "max_influences": 4,
           "glb": {
-            "triangles": 19130,
+            "triangles": 22938,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -874,12 +875,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
-          "bytes": 1055656,
-          "sha256": "34c709882e3344fb232ed2ff925afa2f18751a79fe495985704e296ca615b7b7",
-          "vertices": 7363,
+          "bytes": 1152792,
+          "sha256": "ce98aa7e487612a9e9132b8ff081f43c4f36494c8186e16ee8206865b3002120",
+          "vertices": 8662,
           "max_influences": 4,
           "glb": {
-            "triangles": 14380,
+            "triangles": 16722,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -1021,12 +1022,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/turtle/driver.glb",
-          "bytes": 1566400,
-          "sha256": "a33c3c9ed0e568a0e87a8111d30d6cc84bb224550cde4ad6390251b515c9db96",
-          "vertices": 13868,
+          "bytes": 1765732,
+          "sha256": "422f0618c636f6d812bd023bb2a24ed04d82b5f698d07b6ab01e186e5ceb90bc",
+          "vertices": 16504,
           "max_influences": 4,
           "glb": {
-            "triangles": 27484,
+            "triangles": 32584,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -1060,12 +1061,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
-          "bytes": 1201504,
-          "sha256": "7bdfd6ecfc69af2d10d195c41914273249b9b28f72503da52acc4deee35a4cc8",
-          "vertices": 9118,
+          "bytes": 1314536,
+          "sha256": "fcee179be69096867b2576505296dc67083372d6c06bb4e8ca579dfff51dc466",
+          "vertices": 10628,
           "max_influences": 4,
           "glb": {
-            "triangles": 17984,
+            "triangles": 20832,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -1099,12 +1100,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
-          "bytes": 1015684,
-          "sha256": "7ee8997736529dde2900b33a0eb8e264ac2de9e6470d18e8f55b89a079271053",
-          "vertices": 6743,
+          "bytes": 1085548,
+          "sha256": "e99b5ee829478e00b227d85beaa9ee7d66c011f297ae01c129347d49dac39506",
+          "vertices": 7690,
           "max_influences": 4,
           "glb": {
-            "triangles": 13234,
+            "triangles": 14956,
             "primitives": 6,
             "materials": [
               "Finish_Organic",
@@ -1246,12 +1247,12 @@
         {
           "level": "lod0",
           "file": "assets/kart/production/drivers/frog/driver.glb",
-          "bytes": 1476404,
-          "sha256": "e434b1500bcb63fbb48a5b9e86f4fe512551a1298ca91fde2afd4cb30c4a4b76",
-          "vertices": 12661,
+          "bytes": 1653064,
+          "sha256": "a5c1991dc23bdf91e043bcecacb5aced42e2d6847c38de70a7d00d29dba78f6a",
+          "vertices": 14997,
           "max_influences": 4,
           "glb": {
-            "triangles": 25260,
+            "triangles": 29784,
             "primitives": 4,
             "materials": [
               "Finish_Organic",
@@ -1283,12 +1284,12 @@
         {
           "level": "lod1",
           "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
-          "bytes": 1109272,
-          "sha256": "9cd97388c2d3b1fcca04affca3f6522b1413b80a7363d82ce34b435f40ad3ec6",
-          "vertices": 7911,
+          "bytes": 1207208,
+          "sha256": "5bd3211f55caecf4f4e033232cf84d05659c99f80735f4b4a96e039984df0a33",
+          "vertices": 9223,
           "max_influences": 4,
           "glb": {
-            "triangles": 15760,
+            "triangles": 18236,
             "primitives": 4,
             "materials": [
               "Finish_Organic",
@@ -1320,12 +1321,12 @@
         {
           "level": "lod2",
           "file": "assets/kart/production/drivers/frog/driver_lod2.glb",
-          "bytes": 922224,
-          "sha256": "bbb03a9bafe3693bc0311e1a231cfe875104f824626c9848a203decbe09cc4b3",
-          "vertices": 5535,
+          "bytes": 981780,
+          "sha256": "7111d5c30209adc858fa1d2d1a9e8a3a5da61ad00886daae7079d883705549cd",
+          "vertices": 6336,
           "max_influences": 4,
           "glb": {
-            "triangles": 11008,
+            "triangles": 12462,
             "primitives": 4,
             "materials": [
               "Finish_Organic",

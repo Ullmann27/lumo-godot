@@ -104,8 +104,8 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 14741,
-      "triangles": 29100,
+      "vertices": 17537,
+      "triangles": 34500,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -115,14 +115,14 @@
         1.2596
       ],
       "file": "assets/kart/production/drivers/lion/driver.glb",
-      "bytes": 1625320,
-      "sha256": "db967fdeb08dcf8402df33c086c4994c0fdf25b435dbf93807eca059c1cd3d4b"
+      "bytes": 1836684,
+      "sha256": "77a8fafac15cd273f556ae5dfdbda40a3ddf85ab9f76851806a5b30152b1c567"
     },
     "lod1": {
-      "vertices": 9991,
-      "triangles": 19600,
+      "vertices": 11625,
+      "triangles": 22676,
       "materials": 6,
-      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_weight_sum_error": 4.6566128730773926e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.9085,
@@ -130,12 +130,12 @@
         1.2596
       ],
       "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
-      "bytes": 1261000,
-      "sha256": "cc5c9e6e5af7142079bf85032be06b67c52ddfe3c80dab8e6a21aae49ad58bc1"
+      "bytes": 1383944,
+      "sha256": "2c35758ca3c55c346b5f5f177d2341ffdb998a7960ce9401d361397b60970d75"
     },
     "lod2": {
-      "vertices": 7616,
-      "triangles": 14850,
+      "vertices": 8669,
+      "triangles": 16764,
       "materials": 6,
       "max_weight_sum_error": 4.0046870708465576e-08,
       "max_influences": 4,
@@ -145,10 +145,10 @@
         1.2598
       ],
       "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
-      "bytes": 1077552,
-      "sha256": "38e10fe6abaf8c24877f0f8f07bf27244f244c4c5260fd06ac7e25a85656b3dc"
+      "bytes": 1156108,
+      "sha256": "42b4656ff8b967c65dce8eeafdb1ef82f8e4a3f8fff3fb4cc9588513f993694d"
     }
   },
   "build_seconds": 163.7,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
 }

@@ -104,8 +104,8 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 13541,
-      "triangles": 26920,
+      "vertices": 15829,
+      "triangles": 31320,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -115,12 +115,12 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver.glb",
-      "bytes": 1562732,
-      "sha256": "13cca59ab4e348c14073aa7f222e59e757dd5d4e55f26b7a7e449141bea971b7"
+      "bytes": 1735588,
+      "sha256": "21f395930bb2e81b07af5c556c7607eed77954447267fcbd933c6801f69a20ec"
     },
     "lod1": {
-      "vertices": 8791,
-      "triangles": 17420,
+      "vertices": 10108,
+      "triangles": 19878,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -130,12 +130,12 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
-      "bytes": 1185284,
-      "sha256": "dce2424cc52231f08ee1ed479421340f44ac7ebeb71d203434e2d233c03bb360"
+      "bytes": 1283332,
+      "sha256": "86d41c7d07c8f6e7871e4bc7fed03f209839d8319bc557580d92cc55cd75ca65"
     },
     "lod2": {
-      "vertices": 6416,
-      "triangles": 12670,
+      "vertices": 7247,
+      "triangles": 14156,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -145,10 +145,10 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
-      "bytes": 995748,
-      "sha256": "4d1bf4682ce2866fed77d38c289e8b57753d6c8b464ec1f93ceaad69bd01d4f5"
+      "bytes": 1057404,
+      "sha256": "309eac638f5ffb7426b0b8dd15ae65322fe780a5fab760317daaf018369fe675"
     }
   },
   "build_seconds": 82.4,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
 }
