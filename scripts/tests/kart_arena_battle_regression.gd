@@ -18,6 +18,7 @@ func check(ok: bool, detail: String) -> void:
 
 
 func run() -> void:
+	root.size = Vector2i(1280, 720)
 	var game = load(BOARD).instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
@@ -90,6 +91,8 @@ func run() -> void:
 			game.item_button.pressed.emit()
 		game.steering = sin(float(frame) * 0.013) * 0.6
 		game._physics_process(DT)
+		if frame % 60 == 0:
+			await process_frame
 		if frame == 420 and not sample.is_empty():
 			await process_frame
 			await RenderingServer.frame_post_draw
@@ -105,6 +108,8 @@ func run() -> void:
 	print("[Arena] Punkte Lumo=",game.arena_scores," Gegner=",game.opponent_scores)
 	game._start_selected_race({"mode":"arena","track":"sonnenhafen","driver":"fox","kart":"comet"})
 	check(not is_instance_valid(game.battle) and game.gems.size() == 30 and game.arena_time_limit() == 90.0, "Klassische Arena")
+	for frame in 4:
+		await process_frame
 	check(await DROP.release_scene(self,game,"[ArenaBattle]"), "Freigabe")
 	print("ARENA_BATTLE_%s checks=%d failures=%d" % ["PASS" if errors.is_empty() else "FAIL", checks, errors.size()])
 	quit(0 if errors.is_empty() else 1)
