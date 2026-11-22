@@ -445,7 +445,7 @@ func _wave_jump(edge: float, lane: float) -> float:
 	_trail(land + 4.0, land + 14.0, 0.0, lane * 0.6)
 	moments.append({
 		"id": "wellensprung", "name": "Wellensprung", "need": "clear", "look": "wave",
-		"cue": start_s + 56.0, "go": edge - 11.0, "s0": edge - 4.0, "s1": edge + gap,
+		"cue": start_s + 56.0, "go": edge - 12.5, "s0": edge - 4.0, "s1": edge + gap,
 		"lat": 0.0, "arch_s": edge - 0.6, "colour": "ffb648", "coach": "jump",
 		"land_s": land, "land_lat": 0.0, "boost": 1.0,
 		"say": "Welle voraus! Über den Turbostreifen – am Ring SPRINGEN!",

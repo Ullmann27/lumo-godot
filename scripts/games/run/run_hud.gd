@@ -489,8 +489,11 @@ func _draw_coach() -> void:
 		var finger: Vector2 = centre + Vector2(-rect.size.x * 0.1, -rect.size.y * (0.75 + 0.12 * wave))
 		coach.draw_circle(finger, 13.0 * u, UI.WHITE)
 		coach.draw_rect(Rect2(finger + Vector2(-8.0 * u, -34.0 * u), Vector2(16.0 * u, 34.0 * u)), UI.WHITE)
-	var view: Vector2 = coach.size
-	var box := Rect2(view.x * 0.5 - 70.0 * u, view.y * 0.30, 140.0 * u, 92.0 * u)
+	# The demonstration belongs above the steering thumb. The centre stays
+	# clear so the child can see the obstacle the diagram describes.
+	u *= .72
+	var box := Rect2(stick.position.x, maxf(top.position.y + top.size.y, stick.position.y - 102.0 * u),
+		140.0 * u, 92.0 * u)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.02, 0.09, 0.22, 0.75)
 	style.border_color = UI.GOLD

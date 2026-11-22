@@ -202,10 +202,9 @@ func _decor(kind: String, at: float, lat: float, extra: Dictionary = {}) -> void
 ## Registers an adventure passage: announced `lead` metres before its hole,
 ## with a safe line (shorter jump, more time) and a brave line (longer jump,
 ## gold stars). Both are branches for the scripted player as well.
-## 54 m lead: at the 1.6 path tempo with both flow stages (21.3 m/s on screen)
-## the child still gets 2.5 s of warning (50 m were 2.35 s).
+## The sign precedes the hole by 2.5 seconds at the fastest clean sprint.
 func _passage(name: String, hole: float, length_m: float, safe: Dictionary, brave: Dictionary, say: String,
-		brave_speed: float, lead: float = 54.0) -> void:
+		brave_speed: float, lead: float = 62.0) -> void:
 	passages.append({
 		"name": name, "s0": hole, "s1": hole + length_m, "announce": hole - lead, "say": say,
 		"safe_lat": float(safe.lat), "safe_gap": float(safe.gap), "brave_lat": float(brave.lat), "brave_gap": float(brave.gap),
@@ -296,10 +295,10 @@ func _vine_moment() -> void:
 	_gold(stream + 4.0, 0.0, 4.4)
 	_decor("torch", stream - 3.0, -2.9)
 	_decor("torch", stream - 3.0, 2.9)
-	coaches.append({"s0": stream - 12.0, "s1": stream + 1.0, "icon": "jump"})
+	coaches.append({"s0": stream - 13.0, "s1": stream + 1.0, "icon": "jump"})
 	moments.append({
 		"id": "liane", "name": "Lianenschwung", "need": "ride", "look": "vine",
-		"cue": run_up - 22.0, "go": stream - 12.0, "s0": stream - 4.0, "s1": stream + 8.0,
+		"cue": run_up - 22.0, "go": stream - 13.0, "s0": stream - 4.0, "s1": stream + 8.0,
 		"lat": 0.0, "arch_s": stream - 2.6, "colour": "ffd75e", "coach": "jump",
 		"say": "Liane! Am Leuchtring SPRINGEN und festhalten!",
 		"done_say": "Juhu, geschwungen!", "miss_say": "Platsch! Gleich nochmal – am Ring springen.",

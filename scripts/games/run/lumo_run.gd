@@ -22,6 +22,7 @@ const PROPS = preload("res://scripts/games/run/run_props.gd")
 const ACTOR = preload("res://scripts/games/run/run_actor.gd")
 const CAMERA = preload("res://scripts/games/run/run_camera.gd")
 const FX = preload("res://scripts/games/run/run_fx.gd")
+const STUNT_RELAY = preload("res://scripts/games/run/run_stunt_relay.gd")
 const MOMENTS = preload("res://scripts/games/run/run_moments.gd")
 const MOMENT_PROPS = preload("res://scripts/games/run/run_moment_props.gd")
 const HUD = preload("res://scripts/games/run/run_hud.gd")
@@ -83,6 +84,7 @@ var fx
 ## Early highlights: announce, act, react (run_moments.gd + run_moment_props.gd).
 var moments = MOMENTS.new()
 var moment_props
+var relay
 var _trail_left: float = 0.0
 var _trail_tick: float = 0.0
 var _trail_colour := Color.WHITE
@@ -381,6 +383,10 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 	hud.set_letters(plan.letters.map(func(letter: Dictionary) -> String: return str(letter.char)), track.letters)
 	hud.set_skip_visible(plan.adventure and not restored and plan.intro_end > plan.start_s)
 	moments.setup(plan.moments, player.s)
+	relay = STUNT_RELAY.new()
+	props.add_child(relay)
+	relay.build(world, plan, player.s)
+	relay.feedback.connect(_relay_feedback)
 	_section = -1
 	load_ms = Time.get_ticks_msec() - load_started
 	menus.close()
@@ -393,6 +399,8 @@ func start_course(index: int, with_save: bool, spread_frames: bool = false) -> v
 		actor.greet()
 		if ghost.best_time_ms() > 0:
 			hud.say("Bestzeitgeist · %s" % UI.clock(ghost.best_time_ms()), 4.5)
+		else:
+			hud.say(relay.upcoming_hint(), 2.0)
 	elif with_save:
 		hud.say("Weiter ab Kontrollpunkt %d." % (track.checkpoint + 1), 3.0)
 	if with_save and not restored:
@@ -481,6 +489,7 @@ func _simulate(delta: float) -> void:
 		if _trail_tick <= 0.0:
 			_trail_tick = 0.07
 			fx.play("sparkle", feet_transform().origin + Vector3.UP * 0.7, _trail_colour)
+	relay.advance(player)
 	props.advance(delta, run_clock, player.s)
 	_combo_left = maxf(0.0, _combo_left - delta)
 	if _combo_left <= 0.0:
@@ -616,6 +625,16 @@ func _on_moment(step: Dictionary) -> void:
 			if not bool(step.get("again", false)):
 				moment_props.set_calling(index, false)
 			hud.say(str(spot.miss_say), 2.2)
+
+
+func _relay_feedback(kind: String, text: String) -> void:
+	moment.emit("relay_" + kind, {"chain": relay.chain})
+	hud.say(text, 1.25)
+	if kind == "hit" or kind == "triple":
+		_sound("star_3" if kind == "hit" else "checkpoint", "coin")
+		fx.play("sparkle", feet_transform().origin + Vector3.UP * .8)
+	if kind == "triple" and not reduced_motion:
+		camera.kick(.26)
 
 
 func _on_player_event(event: StringName) -> void:
