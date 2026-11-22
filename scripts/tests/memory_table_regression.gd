@@ -145,6 +145,21 @@ func _profile(size: Vector2i,density: float,insets: Rect2) -> void:
 	await _frames(6)
 
 
+## A rotated chair's axis-aligned bounds include empty space between rails.
+## Inspect its actual triangles before reporting a visible card as obstructed.
+func _mesh_blocks_face(mesh: MeshInstance3D, origin: Vector3, face: Vector3) -> bool:
+	if mesh.mesh == null: return false
+	var local_origin := mesh.to_local(origin)
+	var local_end := mesh.to_local(face)
+	var triangles := mesh.mesh.get_faces()
+	for i in range(0,triangles.size(),3):
+		var hit = Geometry3D.segment_intersects_triangle(local_origin,local_end,
+			triangles[i],triangles[i+1],triangles[i+2])
+		if hit != null and mesh.to_global(hit).distance_to(face) > 0.002:
+			return true
+	return false
+
+
 func _visible_targets() -> void:
 	var safe_px := Rect2(table._safe_rect.position*table._density,table._safe_rect.size*table._density)
 	var count := 0
@@ -184,7 +199,9 @@ func _visible_targets() -> void:
 						var b := (bounds.end[axis]-origin[axis])/direction[axis]
 						near = maxf(near,minf(a,b))
 						far = minf(far,maxf(a,b))
-				_check(far < near or near > card_distance+0.02,"actual tabletop cannot occlude a projected card face")
+				if far >= near and near <= card_distance+0.02:
+					_check(not _mesh_blocks_face(child,origin,world),"solid %s in front of %s at %s %s" %
+						[child.get_path(),card.root.name,root.size,table._state.difficulty])
 		var physical_face := PackedVector2Array()
 		for point in card.button.face_polygon:
 			var local := Vector2(point)
@@ -193,9 +210,12 @@ func _visible_targets() -> void:
 			_check(card.button._has_point(local.lerp(card.button.size*0.5,0.03)),
 				"touch just inside each projected corner reaches this card")
 		var units_per_dp: Vector2 = card.button.size / rect.size * table._density
+		# The centre of a distorted card is different from its axis-aligned bounding-box centre.
+		var face_center := Vector2.ZERO
+		for point in card.button.face_polygon: face_center += Vector2(point)/4
 		for corner in [Vector2(-1,-1),Vector2(-1,1),Vector2(1,-1),Vector2(1,1)]:
-			_check(card.button._has_point(card.button.size*0.5 + corner*24*units_per_dp),
-				"projected face contains a full 48dp touch square")
+			_check(card.button._has_point(face_center + corner*24*units_per_dp),
+				"48dp touch square inside %s at %s %s" % [card.root.name, root.size, table._state.difficulty])
 		for previous in faces:
 			_check(Geometry2D.intersect_polygons(physical_face,previous).is_empty(),
 				"actual playable faces have unique non-overlapping touch targets")
