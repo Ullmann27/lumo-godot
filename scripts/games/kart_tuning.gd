@@ -606,8 +606,8 @@ func save() -> bool:
 	var temporary: String = target + ".tmp"
 	if config.save(temporary) != OK:
 		return false
-	if FileAccess.file_exists(target):
-		DirAccess.remove_absolute(target)
+	# Replace in the same directory. Removing the previous profile first would
+	# lose the mounted setup if the rename fails or the app closes between calls.
 	return DirAccess.rename_absolute(temporary, target) == OK
 
 
