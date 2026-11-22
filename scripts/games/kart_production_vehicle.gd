@@ -3,9 +3,7 @@ extends Node3D
 ## changes at LOD boundaries; wheel/driver anchors never move or get replaced.
 
 const VARIANTS: Array[String] = ["comet", "glider", "turbo"]
-## Every kart of the fleet drives one of the three authored bodies, so the
-## driver always sits in a real cockpit. Paint, trim, accent and neon come
-## from the kart's own look.
+## The three mechanical platforms carry fourteen individually fitted Blender exteriors.
 const BODY_OF: Dictionary = {
 	"comet": "comet",
 	"boru_rally": "comet",
@@ -24,6 +22,7 @@ const BODY_OF: Dictionary = {
 }
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
+const SHELL_DIRECTORY := "res://assets/kart/production/fleet/"
 const LOD_HYSTERESIS := 2.0
 ## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
 const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
@@ -55,11 +54,9 @@ var _profile := "high"
 var _paints: Array[StandardMaterial3D] = []
 ## Nummern und Aufkleber: nur in der nahen LOD sichtbar.
 var _dressing: Array[Node3D] = []
-## Schaustück-Teile (Glas, Anlauffarben, Staubfilm) aus aurora_<v>_showcase.glb: nur in
-## Garage, Werkstatt und auf dem Podest, nie im Rennen. Wird erst bei Bedarf geladen.
+## Material details from the selected shell are visible in close-up previews.
 var _showcase_meshes: Array[MeshInstance3D] = []
-var _showcase_loaded := false
-const DUST_PATH := "res://assets/kart/production/details/kart_dust_film.png"
+var shell_path := ""
 ## Austauschbare Anbauteile (Radaufsätze, Auspuffblenden), siehe kart_tuning.gd und
 ## tools/lumo_kart_art/karts/build_parts.py. Wurzel jedes Teils = sein Montagepunkt.
 const PARTS_PATH := "res://assets/kart/production/parts/kart_parts.glb"
@@ -99,7 +96,7 @@ static func supports(id: String) -> bool:
 	return BODY_OF.has(id) and not fallback_only
 
 
-## Authored body ("comet", "glider" or "turbo") of a fleet kart.
+## Mechanical platform for suspension, steering, grip anchors and wheels.
 static func body_of(id: String) -> String:
 	return str(BODY_OF.get(id, ""))
 
@@ -132,6 +129,18 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 		if source == null:
 			return false
 		source_paths.append(path)
+		# Keep the complete animated mechanical hierarchy from the production core.
+		# The replacement includes its own seat, body panels, lights and decal points.
+		var old_body := source.find_child("Coachwork", true, false)
+		if old_body == null:
+			source.free()
+			return false
+		for child in old_body.get_children():
+			if child is MeshInstance3D or str(child.name).begins_with("Decal_"):
+				child.free()
+			elif child.name == "BonnetBadge":
+				for old_mesh in child.find_children("*", "MeshInstance3D", true, false):
+					old_mesh.free()
 		for player in source.find_children("*", "AnimationPlayer", true, false):
 			# The review clip is never an autonomous game clock.
 			player.free()
@@ -160,6 +169,8 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 			source.free()
 		for mesh in _lod_meshes[level]:
 			_apply_appearance(mesh, look, stock)
+	if not _install_shell(look, stock):
+		return false
 	steering_wheel = asset_root.find_child("SteeringWheel", true, false) as Node3D
 	if steering_wheel == null:
 		return false
@@ -188,6 +199,26 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	set_lod(0)
 	set_braking(0.0)
 	_refresh_finish()
+	return true
+
+
+func _install_shell(look: Dictionary, stock: Dictionary) -> bool:
+	shell_path = SHELL_DIRECTORY + design + ".glb"
+	var packed := _scene(shell_path)
+	if packed == null:
+		return false
+	var shell := packed.instantiate() as Node3D
+	asset_root.add_child(shell)
+	for level in range(3):
+		var mesh := shell.find_child("LOD%d" % level, true, false) as MeshInstance3D
+		if mesh == null:
+			return false
+		_lod_meshes[level].append(mesh)
+		_apply_appearance(mesh, look, stock)
+	var detail := shell.find_child("ShowroomDetail", true, false) as MeshInstance3D
+	if detail != null:
+		detail.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_showcase_meshes.append(detail)
 	return true
 
 
@@ -303,48 +334,9 @@ func set_graphics_quality(profile: String) -> void:
 func set_preview_detail(enabled: bool) -> void:
 	_preview_detail = enabled
 	_refresh_finish()
-	if enabled and not _showcase_loaded:
-		_load_showcase()
 	if enabled:
 		set_lod(0)
 	_sync_showcase()
-
-
-func _load_showcase() -> void:
-	_showcase_loaded = true
-	if asset_root == null:
-		return
-	var path := MODEL_DIRECTORY + "aurora_" + variant + "_showcase.glb"
-	if not ResourceLoader.exists(path):
-		return
-	var packed := _scene(path)
-	if packed == null:
-		return
-	var source := packed.instantiate() as Node3D
-	for player in source.find_children("*", "AnimationPlayer", true, false):
-		player.free()
-	for item in source.find_children("*", "MeshInstance3D", true, false):
-		var mesh := item as MeshInstance3D
-		var target := asset_root.get_node_or_null(source.get_path_to(mesh.get_parent()))
-		if not target is Node3D:
-			continue
-		mesh.owner = null
-		mesh.get_parent().remove_child(mesh)
-		mesh.name = str(mesh.name) + "_Showcase"
-		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		target.add_child(mesh)
-		for surface in range(mesh.mesh.get_surface_count()):
-			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
-			if original != null and original.resource_name == "RoadDustFilm":
-				var dust := original.duplicate() as StandardMaterial3D
-				dust.albedo_color = Color(1, 1, 1, 1)
-				dust.albedo_texture = load(DUST_PATH)
-				dust.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-				dust.roughness = 0.95
-				dust.metallic = 0.0
-				mesh.set_surface_override_material(surface, dust)
-		_showcase_meshes.append(mesh)
-	source.free()
 
 
 func _sync_showcase() -> void:
@@ -501,6 +493,9 @@ func apply_parts(look: Dictionary, animate_slot: String = "") -> void:
 ## Montagepunkt eines Leistungsteils am Kart (Godot-Koordinaten des Karts). Dieselben Werte
 ## nutzt tools/lumo_kart_art/karts/render_parts_fit.py für die Passprobe in Blender.
 func _anchor(slot: String) -> Vector3:
+	var marker := asset_root.find_child("Mount_" + slot, true, false) as Node3D
+	if marker != null:
+		return marker.position
 	return (PART_MOUNTS.get(variant, PART_MOUNTS.comet) as Dictionary).get(slot, Vector3.ZERO)
 
 

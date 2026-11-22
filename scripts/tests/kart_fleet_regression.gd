@@ -37,6 +37,7 @@ func _run() -> void:
 	assert(CATALOG.KARTS.size() == 14)
 	var seen: Dictionary = {}
 	var signatures: Dictionary = {}
+	var shell_geometry: Dictionary = {}
 	for entry in CATALOG.KARTS:
 		assert(not seen.has(entry.id), "Garage IDs must be unique")
 		seen[entry.id] = true
@@ -63,11 +64,30 @@ func _run() -> void:
 		kart.set_motion(12.0, 0.7, true, true)
 		kart._process(0.016)
 		assert(kart.flames[0].visible and kart.sparks[0].visible)
-		# Every design drives on an authored body; its own livery and physical
-		# profile keep it a design of its own.
-		assert(is_instance_valid(kart.production_vehicle), "Every kart uses an authored body")
-		assert(kart.production_vehicle.get_meta("fleet_design") == entry.id)
-		assert(["comet", "glider", "turbo"].has(kart.production_vehicle.get_meta("fleet_body")))
+		assert(is_instance_valid(kart.production_vehicle), "Every kart uses an authored exterior")
+		var production = kart.production_vehicle
+		assert(production.get_meta("fleet_design") == entry.id)
+		assert(production.shell_path.ends_with("/%s.glb" % entry.id))
+		var shell_vertices := 0
+		for level in range(3):
+			production.set_lod(level)
+			var shell := production.asset_root.find_child("LOD%d" % level, true, false) as MeshInstance3D
+			assert(shell != null and shell.is_visible_in_tree())
+			var vertices := 0
+			var outlines: Array[int] = []
+			for surface in range(shell.mesh.get_surface_count()):
+				vertices += shell.mesh.surface_get_array_len(surface)
+				if level == 0:
+					outlines.append(hash(shell.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]))
+			if level == 0:
+				var signature := hash(outlines)
+				assert(not shell_geometry.has(signature), "Selectable shells must have distinct geometry")
+				shell_geometry[signature] = entry.id
+			else:
+				assert(vertices < shell_vertices, "Each shell LOD must reduce geometry")
+			shell_vertices = vertices
+		assert(production.dressing_nodes().size() == 7)
+		assert(is_instance_valid(kart.production_lumo_seat), "Original Lumo retains the pedal and seat fit")
 		if FLEET.IDS.has(str(entry.id)):
 			var info: Dictionary = FLEET.profile(str(entry.id))
 			var signature: String = str(info)

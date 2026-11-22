@@ -714,11 +714,8 @@ func _build_production_vehicle() -> bool:
 	if not PRODUCTION_VEHICLE.supports(kart_style):
 		return false
 	var candidate = PRODUCTION_VEHICLE.new()
-	# The body's own colours are the reference: a fleet kart on a shared body
-	# always receives its paint, a stock Comet keeps the authored finish.
 	var body: String = PRODUCTION_VEHICLE.body_of(kart_style)
-	var livery: Dictionary = look if body == kart_style else chassis_look
-	if not candidate.build(kart_style, livery, FLEET.entry(body).look):
+	if not candidate.build(kart_style, look, FLEET.entry(kart_style).look):
 		candidate.free()
 		return false
 	production_vehicle = candidate
