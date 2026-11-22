@@ -22,12 +22,15 @@ var scene: PackedScene
 var rewards: Array[Dictionary] = []
 var only: PackedStringArray = []
 var step_ms: Array[float] = []
+var delivery_receipt := ""
 
 
 func _initialize() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("only="):
 			only = arg.trim_prefix("only=").split(",")
+		elif arg.begins_with("receipt="):
+			delivery_receipt = arg.trim_prefix("receipt=")
 	call_deferred("_run")
 
 
@@ -320,6 +323,12 @@ func _test_delivery(stage: String) -> void:
 			int(rewards[0].stars) > 0 and str(rewards[0].game) == "skypost",
 			"%s: Sterne an den Host (%d)" % [stage, int(rewards[0].stars)]
 		)
+	if not delivery_receipt.is_empty() and stage == "entdecken" and rewards.size() == 1:
+		var receipt := FileAccess.open(delivery_receipt, FileAccess.WRITE)
+		_check(receipt != null, "Übergabebeleg des Testflugs schreiben")
+		if receipt != null:
+			receipt.store_string(JSON.stringify(rewards[0]))
+			receipt.close()
 	game._finish_delivery()
 	game._book_reward()
 	bridge.reward(game.result_payload)

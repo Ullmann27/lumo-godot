@@ -55,6 +55,7 @@ var pending: Dictionary = {}
 var slot: String = "engine"
 var _open := false
 var _scale := 1.0
+var _inspection: Node3D
 var _drawer := Rect2()
 var _stage := Rect2()
 
@@ -531,6 +532,7 @@ func _on_back() -> void:
 
 
 func _close() -> void:
+	_clear_inspection()
 	_open = false
 	_sync()
 	if menu.has_method("_choose_preview_view"):
@@ -549,12 +551,61 @@ func handle_back() -> bool:
 	return false
 
 
-## Kurze Kamerafahrt ans Vorderrad (Räder) bzw. ans Heck (Auspuff) des echten Karts.
+func _clear_inspection() -> void:
+	if is_instance_valid(_inspection):
+		_inspection.free()
+	_inspection = null
+
+
+## Im eingebauten Zustand verdecken Verkleidung und Reifen diese Teile.
+## Die Werkstattansicht zeigt dasselbe Blender-Modell neben dem Kart.
+func _inspect_internal(vehicle, kart: Node3D) -> bool:
+	var node_name := str(TUNING.option(slot, _current(slot)).get("node", ""))
+	if node_name.is_empty():
+		return false
+	var part := vehicle.asset_root.find_child("Mount_" + node_name, true, false) as Node3D
+	if part == null:
+		return false
+	var sources: Array[Node3D] = [part]
+	if slot == "brakes":
+		var disc := vehicle.asset_root.find_child("Mount_" + node_name + "Disc", true, false) as Node3D
+		if disc != null:
+			sources.append(disc)
+	_inspection = Node3D.new()
+	_inspection.name = "Teileansicht"
+	kart.add_child(_inspection)
+	var bounds := AABB()
+	for source in sources:
+		var copy := source.duplicate(0) as Node3D
+		_inspection.add_child(copy)
+		copy.global_transform = source.global_transform
+		for mesh in copy.find_children("*", "MeshInstance3D", true, false):
+			var box: AABB = mesh.global_transform * mesh.get_aabb()
+			bounds = box if not bounds.has_surface() else bounds.merge(box)
+	if not bounds.has_surface():
+		_clear_inspection()
+		return false
+	var target := kart.to_global(Vector3(1.95, 1.2, -1.55))
+	_inspection.global_position += target - bounds.get_center()
+	var outward := (kart.global_basis * Vector3(1.0, 0.55, -0.82)).normalized()
+	var aspect: float = menu.preview_camera.get_viewport().get_visible_rect().size.aspect()
+	var distance := maxf(0.8, bounds.size.length() * 2.15) * clampf(1.0 / aspect, 1.0, 1.6)
+	menu.preview_camera.h_offset = 0
+	menu.preview_camera.v_offset = 0
+	menu._move_preview_camera(target + outward * distance, target - Vector3.UP * distance * .07,
+		Vector3.UP, 40.0, 2.8, true, Camera3D.PROJECTION_PERSPECTIVE)
+	return true
+
+
+## Kurze Kamerafahrt an den ausgewählten Steckplatz des echten Karts.
 func _focus_camera() -> void:
+	_clear_inspection()
 	var vehicle = _vehicle()
 	if vehicle == null or not menu.has_method("_move_preview_camera"):
 		return
 	var kart: Node3D = menu.preview_kart
+	if slot in ["steering", "brakes", "gearbox", "ballast"] and _inspect_internal(vehicle, kart):
+		return
 	var centre: Vector3 = kart.global_position + Vector3(0, 0.45, 0)
 	var target: Vector3
 	var outward: Vector3

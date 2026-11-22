@@ -44,6 +44,23 @@ func _check_banked_track(world) -> void:
 		world.track_id, bank.id, bank.start, bank.end, rad_to_deg(asin(steepest))])
 
 
+func _check_relief(world) -> void:
+	var low := INF
+	var high := -INF
+	var ascent := 0.0
+	var descent := 0.0
+	for metre in range(0, floori(world.length), 4):
+		var y: float = world.position_at(metre).y
+		low = minf(low, y)
+		high = maxf(high, y)
+		var tangent: Vector3 = world.forward(metre)
+		var grade := tangent.y / maxf(Vector2(tangent.x, tangent.z).length(), 0.01)
+		ascent = maxf(ascent, grade)
+		descent = maxf(descent, -grade)
+	print("[KartRelief] %s Höhe %.1f m, maximal bergauf %.1f%%, bergab %.1f%%" % [
+		world.track_id, high - low, ascent * 100.0, descent * 100.0])
+	assert(high - low > 5.0 and ascent > .025 and descent > .025, "Anstieg, Kuppe und Abfahrt auf " + world.track_id)
+
 func _initialize() -> void:
 	call_deferred("_run")
 func _run() -> void:
@@ -54,6 +71,7 @@ func _run() -> void:
 		root.add_child(world)
 		world.build(true, id, true)
 		assert(world.length>340.0)
+		_check_relief(world)
 		if id=="bergwelt":
 			assert(world.length>400.0, "Himmelsinseln must remain a long-form course")
 			world.jump=SKY_ISLANDS.jump_layout(world.length)

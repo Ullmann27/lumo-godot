@@ -16,6 +16,7 @@ var sizes: Array[Vector2i] = [Vector2i(1812, 2176)]
 var kart_id: String = "comet"
 var with_race := false
 var with_perf := false
+var new_parts := false
 var only: PackedStringArray = PackedStringArray()
 var written: int = 0
 
@@ -28,6 +29,8 @@ func _initialize() -> void:
 			kart_id = arg.trim_prefix("--kart=")
 		elif arg == "--race":
 			with_race = true
+		elif arg == "--new-parts":
+			new_parts = true
 		elif arg == "--perf":
 			with_perf = true
 		elif arg.begins_with("--only="):
@@ -42,7 +45,7 @@ func _initialize() -> void:
 
 
 func _frames(count: int) -> void:
-	for _index in range(count):
+	for _index in range(mini(count, 3) if new_parts else count):
 		await process_frame
 
 
@@ -83,6 +86,21 @@ func _run() -> void:
 	var workshop = game.garage.workshop
 	for slot in ["wheel_cover", "exhaust"]:
 		workshop.choose(kart_id, slot, "serie")
+	if new_parts:
+		game.garage.reduced_motion = true
+		for window in sizes:
+			root.size = window
+			await _open_garage()
+			var bay = game.garage.parts_bay
+			bay._on_open()
+			for selection in [["tires", "regen"], ["wing", "tandem"], ["steering", "direkt"],
+				["brakes", "sport"], ["gearbox", "kurz"], ["ballast", "vorn"]]:
+				bay._on_slot(selection[0])
+				bay._on_tile(selection[1])
+				await _shot(selection[0] + "_" + selection[1])
+			bay._on_back()
+		await _finish_capture()
+		return
 	if with_perf:
 		await _perf_sequence(workshop)
 		_finish_capture()
