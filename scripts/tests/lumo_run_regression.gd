@@ -385,6 +385,7 @@ func _test_start_screen_and_controls() -> void:
 		if game.player.grounded:
 			break
 	_check(game.player.grounded, "Lumo lands again after a tap jump")
+	var hold_start_s: float = game.player.s
 	await _touch(jump_at, 4, true)
 	var hold_peak: float = 0.0
 	var air_steps: int = 0
@@ -397,7 +398,10 @@ func _test_start_screen_and_controls() -> void:
 	await _touch(jump_at, 4, false)
 	_check(tap_peak > 0.8 and tap_peak < 1.6, "tap jump is low but clears a hurdle (%.2f m)" % tap_peak)
 	_check(hold_peak > tap_peak + 0.8, "holding jumps higher (%.2f m vs %.2f m)" % [hold_peak, tap_peak])
-	_check(float(air_steps) * STEP * TUNING.CRUISE > 8.0, "a held jump carries far")
+	# Course time is scaled; measure the actual flight instead of screen time * base speed.
+	var hold_distance: float = game.player.s - hold_start_s
+	_check(game.player.grounded, "Lumo lands again after a held jump")
+	_check(hold_distance > 8.0, "a held jump carries far (%.2f m)" % hold_distance)
 	# Jump buffering: pressed shortly before landing, Lumo jumps again on touchdown.
 	game.player.press_jump()
 	game.player.release_jump()
