@@ -598,11 +598,13 @@ static func _railway(root: Node3D, world: Node3D, low: bool, parts: Dictionary) 
 		Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * scale), Vector3(0, 0, 4.2 + 3.9 + 5.6 * scale + 0.6)),
 		low
 	)
-	train.set_meta("distance", d)
-	train.set_meta("rest_lateral", -half - 1.0)
-	train.set_meta("stop_lateral", stop_lateral - 0.2)
+	var rest: Vector3 = world.position_at(d, -half - 1.0) + basis.y * 0.28
+	var stop: Vector3 = world.position_at(d, stop_lateral - 0.2) + basis.y * 0.28
+	train.transform = Transform3D(Basis.looking_at(basis.x, basis.y), rest)
 	parts["train"] = train
-	parts["train_basis"] = Basis.looking_at(basis.x, basis.y)
+	parts["train_rest"] = rest
+	parts["train_stop"] = stop
+	parts["railway_gate"] = entry
 	# Abgestellter Zug auf dem Nebengleis rechts.
 	var siding: float = d + 40.0
 	var siding_basis: Basis = _yaw(world, siding)

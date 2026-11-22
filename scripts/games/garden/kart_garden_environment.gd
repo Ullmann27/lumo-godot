@@ -291,6 +291,7 @@ func _mist() -> void:
 func advance_race(game: Node, delta: float) -> void:
 	if events != null and not game.paused and game.countdown <= 0.0 and not game.finished:
 		events.advance(game.distance >= game.track_length, delta)
+		events.advance_train(game.elapsed)
 
 
 func celebrate_finish() -> void:

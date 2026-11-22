@@ -1,6 +1,7 @@
 extends RefCounted
 ## Runde zwei öffnet die Sicht und schaltet die Wasserbögen über der Fahrbahn ein.
 
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 const MORNING_DENSITY := 0.0045
 const CLEAR_DENSITY := 0.0018
 const CLEAR_SECONDS := 4.0
@@ -36,3 +37,15 @@ func advance(second_lap: bool, delta: float) -> void:
 		if not low_detail:
 			sprinkler.rainbow.visible = true
 			sprinkler.rainbow.material_override.set_shader_parameter("amount", amount)
+
+
+## Die Lok fährt nur während der Sperrphase über den linken Fahrstreifen und
+## steht beim Öffnen der Schranke wieder hinter der Haltelinie.
+func advance_train(elapsed: float) -> void:
+	if not parts.has("train"):
+		return
+	var gate := PASSAGES.swing_state(parts.railway_gate, elapsed)
+	var fraction := 0.0
+	if gate.phase == "swing":
+		fraction = sin(PI * float(gate.progress)) ** 2
+	parts.train.position = (parts.train_rest as Vector3).lerp(parts.train_stop, fraction)

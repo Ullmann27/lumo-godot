@@ -45,6 +45,13 @@ godot_log_ok /tmp/lumo-kart-race-bridge-tests.log '\[KartRaceBridge\] PASS' || e
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_physics_regression.gd 2>&1 | tee /tmp/lumo-kart-physics-tests.log
 godot_log_ok /tmp/lumo-kart-physics-tests.log '\[KartPhysics\] PASS' || exit 1
 
+for entry in 'kart_authored_elements_regression KartAuthored' 'kart_garden_drive_regression GardenDrive' 'kart_garden_lap_regression GardenLap'; do
+  read -r script marker <<< "$entry"
+  log="/tmp/lumo-${script}.log"
+  timeout 180s "$GODOT" --headless --audio-driver Dummy --script "scripts/tests/${script}.gd" 2>&1 | tee "$log"
+  godot_log_ok "$log" "^\[${marker}\] PASS" || exit 1
+done
+
 timeout 120s "$GODOT" --headless --script scripts/tests/kart_jump_regression.gd 2>&1 | tee /tmp/lumo-kart-jump-tests.log
 godot_log_ok /tmp/lumo-kart-jump-tests.log '\[KartJump\] PASS' || exit 1
 
