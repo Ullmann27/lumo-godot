@@ -357,7 +357,7 @@ func advance(delta: float) -> void:
 		marks.lift_all()
 		flames.finish()
 		_settle(step, kart)
-		_update_engine(step, false)
+		_update_engine(step)
 		_silence(true)
 		_update_lines(step, false)
 		return
@@ -464,7 +464,7 @@ func advance(delta: float) -> void:
 		marks.lift("launch:0")
 		marks.lift("launch:1")
 	# Lift-off at speed: a soft overrun pop from the exhaust (Lastwechsel).
-	if _previous_gas and not gas and speed > 10.0 and _backfire_cooldown <= 0.0:
+	if _previous_gas and not gas and speed > 10.0 and _backfire_cooldown <= 0.0 and race.kart_audio.player_motor.electric < .9:
 		_backfire(kart, forward)
 	_previous_gas = gas
 	# Boost: exhaust jets, heat wisps, swirling air, speed lines, FOV punch.
@@ -491,14 +491,15 @@ func advance(delta: float) -> void:
 	fov_punch = move_toward(fov_punch, 0.0, step * 7.0)
 	_shake_phase += step
 	# Sound: the layered engine and the loops follow the same state.
-	_update_engine(step, true, gas, boosting, speed)
+	_update_engine(step)
 	_set_loop("scrape", scrape_level, 0.75 + speed / 30.0)
-	_set_loop("squeal", squeal, 0.85 + speed / 45.0 + 0.05 * float(tier))
+	var motor = race.kart_audio.player_motor
+	_set_loop("squeal", squeal / motor.tire_grip, (0.85 + speed / 45.0 + 0.05 * float(tier)) * motor.brake_timbre)
 	var rolling := ratio * (1.0 if grounded else 0.0)
 	var loop_kind: String = str(style.loop)
 	_set_loop("gravel", rolling * 0.9 if loop_kind == "gravel" else 0.0, 0.8 + ratio * 0.5)
 	_set_loop("snow", rolling * 0.9 if loop_kind == "snow" else 0.0, 0.8 + ratio * 0.45)
-	_set_loop("turbo", 0.85 if boosting else 0.0, 1.0 + ratio * 0.2)
+	_set_loop("turbo", 0.85 if boosting else 0.0, (1.0 + ratio * 0.2) * motor.boost_timbre)
 	_set_loop("wind", ratio * ratio * 0.75 + (0.25 if not grounded else 0.0), 0.8 + ratio * 0.5)
 
 
@@ -957,33 +958,12 @@ func _update_lines(step: float, on: bool) -> void:
 		material.set_shader_parameter("aspect", size.x / maxf(1.0, size.y))
 
 
-func _update_engine(step: float, running: bool, gas: bool = false, boosting: bool = false, speed: float = 0.0) -> void:
+func _update_engine(step: float) -> void:
 	var audio = race.get("kart_audio")
-	if not is_instance_valid(audio):
-		return
-	var countdown_idle: bool = float(race.countdown) > 0.0 and not bool(race.menu_active) and not bool(race.finished)
-	if not running and not countdown_idle:
-		for kind in ["engine_low", "engine_mid", "engine_high", "engine_off"]:
-			audio.set_loop(kind, 0.0)
-		rpm = 0.0
-		return
-	var ratio := clampf(speed / 25.0, 0.0, 1.0)
-	var target := 0.12 + 0.78 * ratio
-	if gas and speed < 8.0 and running:
-		target += 0.22 * (1.0 - speed / 8.0)
-	if boosting:
-		target += 0.12
-	rpm = move_toward(rpm, clampf(target, 0.08, 1.05), step * (2.4 if target > rpm else 1.4))
-	load = move_toward(load, 1.0 if (gas or boosting or countdown_idle) else 0.0, step * 7.0)
-	var frequency := 52.0 + rpm * 200.0
-	var on := 0.35 + 0.65 * load
-	var low := 1.0 - smoothstep(75.0, 125.0, frequency)
-	var mid := smoothstep(70.0, 115.0, frequency) * (1.0 - smoothstep(150.0, 210.0, frequency))
-	var high := smoothstep(140.0, 200.0, frequency)
-	audio.set_loop("engine_low", low * on, clampf(frequency / 62.0, 0.6, 2.0))
-	audio.set_loop("engine_mid", mid * on, clampf(frequency / 118.0, 0.6, 2.0))
-	audio.set_loop("engine_high", high * on, clampf(frequency / 196.0, 0.6, 2.0))
-	audio.set_loop("engine_off", (1.0 - load) * 0.85 * smoothstep(60.0, 90.0, frequency), clampf(frequency / 104.0, 0.6, 2.0))
+	if is_instance_valid(audio):
+		audio.update_motors(race, step)
+		rpm = audio.player_motor.rpm
+		load = audio.player_motor.load_amount
 
 
 func _set_loop(kind: String, gain: float, pitch_scale: float) -> void:
@@ -1001,8 +981,7 @@ func _silence(keep_engine: bool = false) -> void:
 	for kind in ["scrape", "squeal", "gravel", "snow", "turbo", "wind"]:
 		audio.set_loop(kind, 0.0)
 	if not keep_engine:
-		for kind in ["engine_low", "engine_mid", "engine_high", "engine_off"]:
-			audio.set_loop(kind, 0.0)
+		audio.stop_motors()
 
 
 func _sound(kind: String, pitch_scale: float, gain: float) -> void:

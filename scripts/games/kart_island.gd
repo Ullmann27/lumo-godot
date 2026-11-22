@@ -334,7 +334,6 @@ var obstacle_distances: Array[float] = []
 var kart_audio: Node
 var last_countdown_tick: int = 4
 var engine_player: AudioStreamPlayer
-var engine_playback: AudioStreamGeneratorPlayback
 var materials: Dictionary = {}
 var boxes: Dictionary = {}
 var sphere_mesh: SphereMesh
@@ -674,6 +673,7 @@ func _build_world() -> void:
 		opponent_spin_times.append(0.0)
 		opponent_aurora_times.append(0.0)
 		opponent_previous_positions.append(Vector3.ZERO)
+	kart_audio.configure_motors(player, opponents)
 	camera = Camera3D.new()
 	camera.fov = VISUAL_GRADE.BASE_FOV
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
@@ -2099,13 +2099,6 @@ func _physics_process(delta: float) -> void:
 	_update_camera(delta)
 	_update_hud()
 	_update_start_lights(delta)
-	# Hook kart_fx: der mehrschichtige Motor (kart_drive_fx) ersetzt den einfachen Sinus.
-	var layered_engine: bool = is_instance_valid(drive_fx) and drive_fx.owns_engine_sound()
-	if engine_playback and not layered_engine and not muted and host_sound_enabled and racing and not paused and not finished:
-		for i in range(engine_playback.get_frames_available()):
-			var phase: float = (float(Time.get_ticks_usec()) / 1000000.0 + float(i) / 22050) * (70 + speed * 5)
-			var sample: float = sin(phase * TAU) * 0.025 * effects_volume
-			engine_playback.push_frame(Vector2(sample, sample))
 
 
 ## Werkstatt des aktuellen Kindes (einmal anlegen; die Sterne kommen aus dem Fortschritt).
@@ -2189,7 +2182,7 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	else:
 		reverse_hold_time = 0.0
 		target *= throttle
-		target *= 1.0 - braking * 0.94
+		target *= 1.0 - braking
 		target = _passage_creep_target(target, manual_gas)
 	if hit_timer > 0:
 		target *= _factor("stability", 0.45)
@@ -3353,9 +3346,10 @@ func _update_hud() -> void:
 	item_button.item_kind = item
 	item_button.disabled = item.is_empty() or not enabled
 	joystick.set_enabled(enabled)
-	gas_button.disabled = not enabled
+	var grid_rev := countdown > 0.0 and preview_left <= 0.0 and not paused and not finished
+	gas_button.disabled = not (enabled or grid_rev)
 	brake_button.disabled = not enabled
-	gas_button.visible = not auto_gas
+	gas_button.visible = not auto_gas or grid_rev
 	RACE_HUD.push(self, place, display_speed)
 	_update_jump_hint(enabled)
 
@@ -5226,9 +5220,8 @@ func _notification(what: int) -> void:
 		else:
 			_pause()
 	if what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
-		if is_instance_valid(engine_player):
-			engine_player.stop()
-			engine_playback = null
+		if is_instance_valid(kart_audio):
+			kart_audio.stop_motors()
 		if is_instance_valid(modal) and not finished:
 			_pause()
 
@@ -5240,10 +5233,8 @@ func _exit_tree() -> void:
 		get_viewport().size_changed.disconnect(_on_viewport_size_changed)
 	get_tree().auto_accept_quit = previous_auto_accept_quit
 	get_tree().quit_on_go_back = previous_quit_on_go_back
-	if is_instance_valid(engine_player):
-		engine_player.stop()
-		engine_playback = null
-		engine_player.stream = null
+	if is_instance_valid(kart_audio):
+		kart_audio.stop_motors()
 	_save_session()
 	get_window().content_scale_size = previous_scale
 	if OS.has_feature("android") or OS.has_feature("ios"):
@@ -5421,12 +5412,7 @@ func _build_engine_sound() -> void:
 	add_child(kart_audio)
 	kart_audio.set_muted(muted or not host_sound_enabled)
 	kart_audio.set_volumes(music_volume, effects_volume)
-	engine_player = AudioStreamPlayer.new()
-	var stream := AudioStreamGenerator.new()
-	stream.mix_rate = 22050
-	stream.buffer_length = 0.1
-	engine_player.stream = stream
-	add_child(engine_player)
+	engine_player = kart_audio.player_motor.body
 	_update_audio()
 
 
@@ -5434,14 +5420,7 @@ func _update_audio() -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.set_muted(muted or not host_sound_enabled)
 		kart_audio.set_paused(paused)
-	if not is_instance_valid(engine_player):
-		return
-	if muted or not host_sound_enabled or menu_active or paused or finished or not racing:
-		engine_player.stop()
-		engine_playback = null
-	elif not engine_player.playing:
-		engine_player.play()
-		engine_playback = engine_player.get_stream_playback()
+		kart_audio.update_motors(self, 0.0)
 
 
 ## Lautstärkezeile im Pausenmenü: große Schieberegler (10 %-Schritte), sofort hörbar.

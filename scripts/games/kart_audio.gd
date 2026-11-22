@@ -3,6 +3,8 @@ extends Node
 ## API: play_menu(), play_track(track_id), effect(kind), set_muted(bool),
 ## set_paused(bool). The owner persists its existing sound preference.
 
+const MOTOR = preload("res://scripts/games/kart_fx/kart_motor_voice.gd")
+const RIVAL_LIMIT := {"low": 1, "medium": 2, "high": 3}
 const MUSIC_PATH := "res://assets/audio/kart/%s.ogg"
 const JUNGLE_ID := "jungle_emerald_3600"
 const JUNGLE_AMBIENCE = preload("res://scripts/games/kart_jungle_audio.gd")
@@ -68,6 +70,9 @@ var _loops: Dictionary = {}
 var _fx_players: Array[AudioStreamPlayer] = []
 var _fx_cursor: int = 0
 var _loop_fed: Dictionary = {}
+var player_motor: MOTOR
+var rival_motors: Array[MOTOR] = []
+var _motors_fed := 0
 var _duck_until_msec: int = 0
 var ducking: bool = false
 ## Every accepted driving-sound request (kind -> count), muted or not; tests read it.
@@ -85,6 +90,7 @@ func _ready() -> void:
 func _ensure_players() -> void:
 	if not _music.is_empty():
 		return
+	player_motor = MOTOR.new(self, false)
 	for index in range(2):
 		var player := AudioStreamPlayer.new()
 		player.name = "Music%d" % index
@@ -115,12 +121,92 @@ func _ensure_players() -> void:
 func set_volumes(music: float, effects: float) -> void:
 	music_volume = clampf(music, 0.0, 1.0)
 	effects_volume = clampf(effects, 0.0, 1.0)
+	if effects_volume <= .01:
+		stop_loops()
 	if not _music.is_empty() and _music[_active].playing:
 		if is_instance_valid(_fade):
 			_fade.kill()
 		_music[_active].volume_db = music_db()
 	if is_instance_valid(_ambience):
 		_ambience.set_audio_state(_blocked(), effects_volume)
+
+
+func configure_motors(player, rivals: Array) -> void:
+	stop_motors()
+	rival_motors.clear()
+	player_motor.configure(player.kart_style, player.look)
+	for kart in rivals:
+		var voice := MOTOR.new(kart, true)
+		voice.configure(kart.kart_style, kart.look)
+		rival_motors.append(voice)
+
+
+func stop_motors() -> void:
+	if player_motor:
+		player_motor.stop()
+	for voice in rival_motors:
+		voice.stop()
+
+
+func update_motors(race, step: float) -> void:
+	if _blocked() or effects_volume <= .01 or race.menu_active or race.finished or not is_instance_valid(race.player):
+		stop_motors()
+		return
+	var grid: bool = not race.racing and race.countdown > 0.0 and race.preview_left <= 0.0
+	if (not grid and not race.racing) or player_motor.body.stream == null:
+		stop_motors()
+		return
+	_motors_fed = Time.get_ticks_msec()
+	var brake: float = race.brake_visual_amount if not grid else 0.0
+	var manual: bool = race._manual_gas_active()
+	var throttle: bool = manual or (race.auto_gas and not grid and brake < .5)
+	var rev: bool = manual and (grid or (brake > .5 and absf(race.speed) < 3.0) or race.airborne)
+	player_motor.advance(step, 0.0 if grid else race.speed, float(throttle), brake,
+		not grid and race.boost_time > 0.0, rev, effect_db() - 7.0)
+	var near: Array[MOTOR] = []
+	for i in rival_motors.size():
+		var voice := rival_motors[i]
+		var kart = race.opponents[i]
+		voice.distance_sq = race.player.global_position.distance_squared_to(kart.global_position)
+		if voice.distance_sq < MOTOR.RADIUS * MOTOR.RADIUS:
+			near.append(voice)
+		else:
+			voice.stop()
+			voice.previous_speed = absf(kart.motion_speed)
+	# A voice already playing keeps a one-metre advantage at a close pass.
+	near.sort_custom(func(a: MOTOR, b: MOTOR) -> bool:
+		return sqrt(a.distance_sq) - float(a.body.playing) < sqrt(b.distance_sq) - float(b.body.playing))
+	for i in near.size():
+		var voice := near[i]
+		var kart = voice.body.get_parent()
+		var speed := 0.0 if grid else absf(kart.motion_speed)
+		if i >= int(RIVAL_LIMIT.get(race.graphics_profile, 2)):
+			voice.stop()
+			voice.previous_speed = speed
+			continue
+		var delta_speed := (speed - voice.previous_speed) / maxf(step, .001)
+		var brake_load := clampf(-delta_speed / 22.0, 0.0, 1.0)
+		var gas := 0.0 if grid or speed < .1 else clampf(.78 + delta_speed / 25.0, 0.0, 1.0)
+		voice.advance(step, speed, gas, brake_load, kart.motion_boost and not grid, false, effect_db() - 11.0)
+		var cue := ""
+		var gain := 0.0
+		if not grid and kart.motion_boost:
+			cue = "turbo"
+			gain = .55 * voice.boost_timbre
+		elif speed > 4.0 and (kart.motion_drift or brake_load > .15):
+			cue = "squeal"
+			gain = .55 if kart.motion_drift else brake_load
+		if cue.is_empty():
+			voice.road.stop()
+		else:
+			var stream := _load_stream("fx/" + cue, true)
+			if stream != null:
+				if voice.road.stream != stream:
+					voice.road.stream = stream
+				voice.road.pitch_scale = clampf((.82 + speed / 68.0) * voice.tire_grip, .7, 1.75)
+				voice.road.volume_db = effect_db() - 16.0 + linear_to_db(gain)
+				if not voice.road.playing:
+					voice.road.play()
 
 
 func music_db() -> float:
@@ -289,6 +375,8 @@ func set_loop(kind: String, gain: float, pitch: float = 1.0) -> void:
 func _process(_delta: float) -> void:
 	var now := Time.get_ticks_msec()
 	_update_duck(now)
+	if now - _motors_fed > 250 and player_motor and player_motor.body.playing:
+		stop_motors()
 	if _loops.is_empty():
 		return
 	for kind in _loops:
@@ -324,6 +412,7 @@ func loop_level(kind: String) -> float:
 
 
 func stop_loops() -> void:
+	stop_motors()
 	for player in _loops.values():
 		(player as AudioStreamPlayer).stop()
 
@@ -400,6 +489,8 @@ func _notification(what: int) -> void:
 
 
 func _exit_tree() -> void:
+	stop_motors()
+	rival_motors.clear()
 	if is_instance_valid(_fade):
 		_fade.kill()
 	_fade = null
