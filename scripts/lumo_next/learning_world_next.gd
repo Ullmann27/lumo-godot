@@ -3,6 +3,11 @@ extends "res://scripts/learning/learning_wonder_world.gd"
 ## LUMO rig. Task rules, rewards, host return and accessible inputs stay inherited.
 const LEARNING_FOX = preload("res://scripts/lumo_next/learning_lumo_actor.gd")
 const LEARNING_MESHES = preload("res://scripts/lumo_next/learning_asset_meshes.gd")
+var _guide_token := -1
+var _guide_slot := -1
+var _guide_arrived := -1.0
+var _landing_ring: MeshInstance3D
+
 var _registered_nodes: Dictionary = {}
 var _slot_nodes: Array[Node3D] = []
 var _semantic_anchors: Dictionary = {}
@@ -350,6 +355,9 @@ func _fit_explanation_bounds() -> void:
 
 
 func _update_focus() -> void:
+	if _guide_token >= 0 and not suspended:
+		_guide_demonstration()
+		return
 	if _focus_id.is_empty() or suspended or not is_instance_valid(_focus_ring):
 		return
 	var at: Variant = _object_position(_focus_id)
@@ -379,10 +387,61 @@ func _update_director_view() -> void:
 
 
 func _demonstrate_token(index: int) -> void:
-	if is_instance_valid(fox) and fox.is_usable():
-		# The target registry follows the animated mesh all the way to its slot.
-		fox.set_teaching_target_id(str(tokens[index].get_meta("lumo_object_id")))
-		fox.teacher_react("demonstrate")
+	if not is_instance_valid(fox) or not fox.is_usable():
+		return
+	_guide_token = index
+	_guide_slot = activity.target_for_step(activity.placed.size() - 1)
+	_guide_arrived = -1.0
+	if not is_instance_valid(_landing_ring):
+		_landing_ring = _focus_ring.duplicate() as MeshInstance3D
+		_landing_ring.name = "DemonstrationDestination"
+		_landing_ring.material_override = _focus_ring.material_override.duplicate()
+		_landing_ring.material_override.albedo_color = Color("69e8fa")
+		content.add_child(_landing_ring)
+	_landing_ring.position = targets[_guide_slot] + Vector3.UP * .035
+	_landing_ring.visible = not reduced_motion
+	fox.set_teaching_target_id(str(tokens[index].get_meta("lumo_object_id")))
+	fox.teacher_react("demonstrate")
+	_guide_demonstration()
+
+
+func _guide_demonstration() -> void:
+	if _guide_token >= tokens.size() or not is_instance_valid(_focus_ring):
+		_guide_token = -1
+		return
+	var token: Node3D = tokens[_guide_token]
+	_focus_ring.show()
+	_focus_ring.global_position = token.global_position + Vector3.UP * .03
+	if _moving.has(_guide_token):
+		return
+	if _guide_arrived < 0.0:
+		_guide_arrived = _clock
+		_landing_ring.hide()
+		return
+	if _clock - _guide_arrived < 1.15 or _speech_wait >= 0.0 or _speech_state in ["preparing", "playing"]:
+		return
+	_guide_token = -1
+	_focus_ring.hide()
+	if activity.is_complete():
+		fox.teacher_react("celebrate")
+		return
+	# Give the child the next turn. The receiving slot stays available for
+	# direct touch even while Lumo points; narration never gates input.
+	var next: Node3D = _slot_nodes[activity.target_index()]
+	fox.set_teaching_target_id(str(next.get_meta("lumo_object_id")))
+	fox.teacher_react("point")
+	_landing_ring.global_position = next.global_position + Vector3.UP * .035
+	_landing_ring.show()
+	_demo_line = TEACHER_LINES.child_turn(activity, _lesson_grade)
+	explanation.text = _demo_line
+	_queue_narration()
+
+
+func _cancel_performance() -> void:
+	_guide_token = -1
+	if is_instance_valid(_landing_ring):
+		_landing_ring.hide()
+	super._cancel_performance()
 
 
 func _teacher(reaction: String, at: Vector3) -> void:
