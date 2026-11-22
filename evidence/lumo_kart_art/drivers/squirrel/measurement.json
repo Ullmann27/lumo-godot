@@ -39,25 +39,25 @@
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 3.919883500923486e-07
+      "sampled_max_hand_origin_error_m": 4.300734308261219e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 3.9000071073479654e-07
+      "sampled_max_hand_origin_error_m": 3.8743019104003906e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 3.9000071073479654e-07
+      "sampled_max_hand_origin_error_m": 3.8743019104003906e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 2.874031889734553e-07
+      "sampled_max_hand_origin_error_m": 3.375038997204937e-07
     },
     "celebrate": {
       "frames": 72,
@@ -104,10 +104,10 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 14283,
-      "triangles": 28247,
+      "vertices": 14491,
+      "triangles": 28631,
       "materials": 6,
-      "max_weight_sum_error": 3.213062882423401e-08,
+      "max_weight_sum_error": 4.284083843231201e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.7898,
@@ -115,14 +115,14 @@
         1.4068
       ],
       "file": "assets/kart/production/drivers/squirrel/driver.glb",
-      "bytes": 1433724,
-      "sha256": "07028dbd162420e4db94f4a8e68bc4e472a62136cb4f9244398b0f255c39412d"
+      "bytes": 1600684,
+      "sha256": "3eb81f4061e5e1f25c1f47461572b4b12b406a223df3e47aa4405276d5c90844"
     },
     "lod1": {
-      "vertices": 9532,
-      "triangles": 18746,
+      "vertices": 9740,
+      "triangles": 19130,
       "materials": 6,
-      "max_weight_sum_error": 3.119930624961853e-08,
+      "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.7898,
@@ -130,14 +130,14 @@
         1.4069
       ],
       "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
-      "bytes": 1071444,
-      "sha256": "252eaf4a430c354e584404c78f2692b64a0f76a9c89f5cd4472b4573796b05e5"
+      "bytes": 1237800,
+      "sha256": "1cfc2ce88bca9de507cfb3181d355fdf3e4d5848ff711af70389739cfd9df196"
     },
     "lod2": {
-      "vertices": 7155,
-      "triangles": 13996,
+      "vertices": 7363,
+      "triangles": 14380,
       "materials": 6,
-      "max_weight_sum_error": 3.3527612686157227e-08,
+      "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.7895,
@@ -145,10 +145,10 @@
         1.407
       ],
       "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
-      "bytes": 889412,
-      "sha256": "331c6950e7c894f0dee2279cc4afe8a89eb40460037413c79eaaded7a44a09ef"
+      "bytes": 1055656,
+      "sha256": "34c709882e3344fb232ed2ff925afa2f18751a79fe495985704e296ca615b7b7"
     }
   },
-  "build_seconds": 64.0,
+  "build_seconds": 98.7,
   "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
 }

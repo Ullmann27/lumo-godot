@@ -15,6 +15,7 @@ ROOT=Path(__file__).resolve().parents[3]
 
 def main():
     parser=argparse.ArgumentParser()
+    parser.add_argument('--out', type=Path, default=ROOT/'evidence/lumo_kart_art/drivers')
     parser.add_argument('--preview',action='store_true')
     parser.add_argument('--with-karts',action='store_true',help='Show seated drivers and unchanged Comet GLBs from behind for appendage inspection.')
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
@@ -23,7 +24,7 @@ def main():
     authoring=importlib.util.module_from_spec(spec);spec.loader.exec_module(authoring)
     camera=authoring.studio()
     scene=bpy.context.scene
-    scene.render.threads=4
+    scene.cycles.use_denoising = False
     scene.cycles.max_bounces=3;scene.cycles.diffuse_bounces=1;scene.cycles.glossy_bounces=2
     scene.cycles.samples=8 if args.preview else 32
     scene.cycles.use_adaptive_sampling=True
@@ -31,18 +32,20 @@ def main():
     scene.render.resolution_x=1400 if args.preview else 2800
     scene.render.resolution_y=650 if args.preview else 1300
     scene.render.resolution_percentage=100
-    scene.camera=camera;camera.data.type='ORTHO';camera.data.ortho_scale=7.1
+    scene.camera=camera;camera.data.type='ORTHO';camera.data.ortho_scale=8.4
     camera.location=(0,8,1.35);authoring.look_at(camera,(0,0,1.05))
     if args.with_karts:
         scene.render.resolution_x=1900 if args.preview else 2400
         scene.render.resolution_y=700 if args.preview else 885
-        camera.data.ortho_scale=14.3
+        camera.data.ortho_scale=17.0
         camera.location=(0,8,4.1);authoring.look_at(camera,(0,0,1.05))
         for light in [obj for obj in scene.objects if obj.type=='LIGHT']:
             light.data.size*=2.0
             light.data.energy*=2.0
     groups=[];inputs=[]
-    for index,animal in enumerate(['lion','owl','rabbit','squirrel','turtle']):
+    manifest = json.loads((ROOT/'assets/kart/production/drivers/manifest.json').read_text())
+    drivers = [driver['id'] for driver in manifest['drivers']]
+    for index, animal in enumerate(drivers):
         source=ROOT/'art/lumo_kart/blender/drivers'/(animal+'.blend')
         with bpy.data.libraries.load(str(source),link=False) as (available,loaded):
             loaded.objects=[name for name in available.objects if name in ['DriverRig','DriverMesh','Grip_L','Grip_R','Foot_L','Foot_R','HeadAnchor','NeckAnchor','SeatAnchor']]
@@ -62,7 +65,7 @@ def main():
             added=set(bpy.data.objects)-before
             for obj in added:
                 if obj.parent not in added:obj.parent=group
-        group.location.x=(index-2)*(2.75 if args.with_karts else 1.27)
+        group.location.x=(index - (len(drivers) - 1) / 2)*(2.75 if args.with_karts else 1.27)
         scene.frame_set(1);bpy.context.view_layer.update()
         skin=next(obj for obj in objects if obj.type=='MESH')
         evaluated=skin.evaluated_get(bpy.context.evaluated_depsgraph_get());data=evaluated.to_mesh()
@@ -71,7 +74,7 @@ def main():
         if not args.with_karts:group.location.z=-minimum
         groups.append(group)
         inputs.append({'species':animal,'blend':str(source.relative_to(ROOT)),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()})
-    evidence=ROOT/'evidence/lumo_kart_art/drivers';evidence.mkdir(parents=True,exist_ok=True)
+    evidence=args.out;evidence.mkdir(parents=True,exist_ok=True)
     angles=[('front',0),('three_quarter',math.pi/4)] if args.preview else [('front',0),('three_quarter',math.pi/4),('side',math.pi/2),('rear',math.pi)]
     if args.with_karts:angles=[('rear_three_quarter',3*math.pi/4),('rear',math.pi)]
     prefix='roster_'+('kart_' if args.with_karts else '')+('preview_' if args.preview else '')

@@ -104,8 +104,8 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 13660,
-      "triangles": 27100,
+      "vertices": 13868,
+      "triangles": 27484,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -115,40 +115,40 @@
         1.1584
       ],
       "file": "assets/kart/production/drivers/turtle/driver.glb",
-      "bytes": 1399876,
-      "sha256": "bf0b733782e0eeef68c823c4615f4973a793edab1302f364df9408a6f554f491"
+      "bytes": 1566400,
+      "sha256": "a33c3c9ed0e568a0e87a8111d30d6cc84bb224550cde4ad6390251b515c9db96"
     },
     "lod1": {
-      "vertices": 8910,
-      "triangles": 17600,
+      "vertices": 9118,
+      "triangles": 17984,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.9192,
         0.7909,
-        1.1584
+        1.1582
       ],
       "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
-      "bytes": 1035892,
-      "sha256": "a9edf5b806971f7e13293a2f6fccdef198b2f23e0ad33f7690c89e098e130ab0"
+      "bytes": 1201504,
+      "sha256": "7bdfd6ecfc69af2d10d195c41914273249b9b28f72503da52acc4deee35a4cc8"
     },
     "lod2": {
-      "vertices": 6535,
-      "triangles": 12850,
+      "vertices": 6743,
+      "triangles": 13234,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.9192,
         0.7904,
-        1.1582
+        1.1581
       ],
       "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
-      "bytes": 850004,
-      "sha256": "d23e6c84e52adcc7d70916966728757ce4f5bccdb1598f438c5af4e6eb9850ab"
+      "bytes": 1015684,
+      "sha256": "7ee8997736529dde2900b33a0eb8e264ac2de9e6470d18e8f55b89a079271053"
     }
   },
-  "build_seconds": 32.3,
+  "build_seconds": 120.1,
   "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
 }

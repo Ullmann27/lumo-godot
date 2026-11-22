@@ -104,8 +104,8 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 13333,
-      "triangles": 26536,
+      "vertices": 13541,
+      "triangles": 26920,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -115,14 +115,14 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver.glb",
-      "bytes": 1395768,
-      "sha256": "91f221a173eb6311413f8e56a5c496ed001d22d05e0af05aba142246d415d996"
+      "bytes": 1562732,
+      "sha256": "13cca59ab4e348c14073aa7f222e59e757dd5d4e55f26b7a7e449141bea971b7"
     },
     "lod1": {
-      "vertices": 8583,
-      "triangles": 17036,
+      "vertices": 8791,
+      "triangles": 17420,
       "materials": 6,
-      "max_weight_sum_error": 3.9814040064811707e-08,
+      "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.8005,
@@ -130,12 +130,12 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
-      "bytes": 1019228,
-      "sha256": "dceb4997a0e56e194ea1afe9d0c88153d69a22ae40ba7266cdb8c4a7e7ff536d"
+      "bytes": 1185284,
+      "sha256": "dce2424cc52231f08ee1ed479421340f44ac7ebeb71d203434e2d233c03bb360"
     },
     "lod2": {
-      "vertices": 6208,
-      "triangles": 12286,
+      "vertices": 6416,
+      "triangles": 12670,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
@@ -145,10 +145,10 @@
         1.2799
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
-      "bytes": 829696,
-      "sha256": "4a22c29486c9ee594eba70c4465cb351ac6a38c786bf0c1a3560b901743c7edb"
+      "bytes": 995748,
+      "sha256": "4d1bf4682ce2866fed77d38c289e8b57753d6c8b464ec1f93ceaad69bd01d4f5"
     }
   },
-  "build_seconds": 105.1,
+  "build_seconds": 82.4,
   "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
 }
