@@ -44,7 +44,7 @@ func setup(player_run, workshop, lightweight: bool, reduced: bool, saved: Array)
 		pilot.racing_line = line
 		var start: Vector3 = course.start.pos
 		var grid := Basis(Vector3.UP, float(course.start.heading))
-		var grid_position: Vector3 = start + grid * Vector3(float(profile.lane), 0, -1.5 if i == 0 else 2.5)
+		var grid_position: Vector3 = start + grid * Vector3(float(profile.lane), 0, 2.5 if i == 0 else -1.5)
 		run.drive.place(grid_position, float(course.start.heading))
 		if i < saved.size():
 			run.restore(saved[i])
@@ -118,7 +118,10 @@ func sync_mechanisms(delta: float) -> void:
 	for i in range(course.stations.size()):
 		if bool(player.state.get(str(course.stations[i].mechanism), false)):
 			for run in runs:
-				run.station_done[i] = true
+				# A driver who already stepped onto the puzzle completes that walking
+				# route. Turning back halfway could point through an unjumpable gap.
+				if not run.on_foot or run.station != i:
+					run.station_done[i] = true
 
 
 func advance(delta: float) -> void:
@@ -128,6 +131,7 @@ func advance(delta: float) -> void:
 			continue
 		var pilot = racer.pilot
 		var axis := 0.0
+		var resets_before: int = run.resets
 		if run.on_foot:
 			var action: Dictionary = pilot.foot_input(run)
 			if action.jump:
@@ -143,8 +147,11 @@ func advance(delta: float) -> void:
 			if run.can_leave_kart():
 				run.leave_kart()
 			var input: Dictionary = pilot.drive_input(run, delta)
+			var careful: bool = int(racer.get("careful_checkpoint", -1)) == run.checkpoint
+			if careful and run.drive.speed > 11.0:
+				input.brake = maxf(float(input.brake), 0.58)
 			axis = float(input.axis)
-			if run.drive.boosts > 0 and absf(axis) < 0.2 and float(input.brake) < 0.1:
+			if not careful and run.drive.boosts > 0 and absf(axis) < 0.2 and float(input.brake) < 0.1:
 				var hit: Dictionary = run.drive.hit
 				if not hit.is_empty():
 					var slab: Dictionary = run.course.slabs[int(hit.slab)]
@@ -152,7 +159,7 @@ func advance(delta: float) -> void:
 					if float(hit.width) >= 10.0 and clear_metres >= 35.0 and not slab.has("cap") and not slab.has("motion"):
 						run.drive.use_boost()
 			# Beim Aufschließen auf breiten Platten eine Seite zum Überholen suchen.
-			if float(run.drive.hit.get("width", 0.0)) >= 9.0 and absf(axis) < 0.4:
+			if not careful and float(run.drive.hit.get("width", 0.0)) >= 9.0 and absf(axis) < 0.4:
 				var ahead: Vector3 = -run.drive.basis.z
 				for other in runs:
 					if other == run or other.finished or other.on_foot:
@@ -162,6 +169,10 @@ func advance(delta: float) -> void:
 						axis += 0.32 * signf(float(racer.side))
 						break
 			run.step(delta, clampf(axis, -1.0, 1.0), float(input.brake), true, true)
+		if run.resets > resets_before:
+			# On a repeat approach, look into the corner earlier and leave room at the join.
+			racer.careful_checkpoint = run.checkpoint
+			pilot.reaction = minf(float(pilot.reaction), 0.22)
 		_draw_racer(racer, axis)
 	update_place()
 
