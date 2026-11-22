@@ -421,6 +421,15 @@ func spread_plates() -> void:
 				a.position.x = maxf(dp(6), a.position.x - rest)
 			a.position.y = maxf(a.position.y, _top_limit(a.position.x, a.size.x))
 			b.position.y = maxf(b.position.y, _top_limit(b.position.x, b.size.x))
+	# On narrow phones three full-width nameplates can exceed the available row.
+	# Stack any remaining intersecting plate below its already placed neighbours.
+	for index in range(1, shown.size()):
+		var plate := shown[index]
+		for _pass in range(index):
+			for placed in shown.slice(0, index):
+				var occupied := Rect2(placed.position, placed.size).grow(dp(2))
+				if occupied.intersects(Rect2(plate.position, plate.size)):
+					plate.position.y = minf(occupied.end.y + dp(2), safe.size.y - plate.size.y - dp(6))
 
 
 ## Untere Zone: Höhe der eigenen Hand in Bildpunkten (vom Tisch gesetzt).
