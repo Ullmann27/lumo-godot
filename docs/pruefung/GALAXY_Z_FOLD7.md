@@ -12,6 +12,17 @@ APK-Version und Buildnummer aus der App, Godot-Commit aus dem Baunachweis, Andro
 | Lumo-Lauf | Eine Welt bis zum Ziel laufen. Medaille und Bestzeit ablesen und nach erneutem Start vergleichen. | NICHT GETESTET |
 | 3D-Nachhilfe | Je eine Plus-, Minus- und Malaufgabe öffnen. Darstellungen und Hilfeschritte antippen. Nach dem Zuklappen prüfen, ob Figuren, Aufgabe und Bedienelemente weiterhin sichtbar und erreichbar sind. | NICHT GETESTET |
 
+### Zusätzlicher Durchgang für Build 2065
+
+| Versuch | Durchführung und erwartetes Ergebnis | Gerätebefund |
+| --- | --- | --- |
+| Nach der Ziellinie | Ein Einzelrennen beenden, „Zur Streckenwahl“ und dann „Karts“ antippen. Beim nächsten Cup-Ergebnis „Neue Fahrt auswählen“ öffnen. In beiden Fällen Lumo und Kart ansehen und drehen. Dasselbe mit einem Faltwechsel am Ergebnisbildschirm wiederholen. | NICHT GETESTET |
+| Bremsen in der Werkstatt | Das ganze Kart ansehen, „Teile wechseln“ öffnen und Serie mit Sportbremse vergleichen. Das gewählte Teil und Lumo bleiben sichtbar. Den Bremsweg vom gleichen Starttempo auf derselben Geraden vergleichen. | NICHT GETESTET |
+| Motoren im Starterfeld | Im Stand ohne Gas zuhören, dann vor Grün Gas halten und lösen. Nach dem Losfahren bremsen. Mit demselben Kart den Auspuff wechseln und zum Vergleich ein Kart mit anderem Antrieb wählen. Beim Vorbeifahren auf die Richtung des gegnerischen Motors achten. | NICHT GETESTET |
+| Lumos Windwerk | Zwei volle Runden fahren. An den Schiebeplatten zuerst die sichere Linie und dann die schnellere Linie nehmen. Die Torzeichen auf der zweiten Runde erneut lesen. | NICHT GETESTET |
+| Dorf und Spieltisch | Ein Haus frei setzen, ein Gehege ziehen und durch das Tor gehen. Die Starthilfe beenden und allein weiterbauen. Am Kartentisch eine Partie Punktlandung und am neuen Schachbrett einen legalen Zug spielen. | NICHT GETESTET |
+| Erklären und selbst lösen | In der ersten Klasse ein Bild antippen und eine Sachaufgabe mit Anschauung lösen. In der zweiten Klasse Bild und Text verbinden. In Klasse drei oder vier die Strategie selbst begründen. Beobachten, wohin Lumo beim Vormachen und nach einem Fehler zeigt. | NICHT GETESTET |
+
 Für 2064 zusätzlich die Rechenhilfe bei **8 + 5**, **14 − 8** und **6 × 7** oder bei einer gleichartigen Aufgabe öffnen. Das Kind lässt den ersten Sprung auf der Zehn landen und führt den zweiten selbst aus. Beim Punktefeld die goldene Reihe erklären lassen und das Feld drehen. Für einen Vergleich mit einem späteren Übungstag bei gleich schweren, neuen Aufgaben die Anzahl selbstständiger Lösungen, Versuche und benötigter Hilfen im selben lokalen Profil notieren.
 
 Die Menüdiagnose kann auf einem per USB verbundenen Rechner während des Versuchs mitlaufen:
