@@ -13,6 +13,7 @@ const REFERENCE_LANDING = preload("res://scripts/games/kart_neon_hub.gd")
 const INTRO = preload("res://scripts/games/kart_intro.gd")
 const RECORDS = preload("res://scripts/games/kart_records.gd")
 const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
+const ARENA_BATTLE = preload("res://scripts/games/kart_arena_battle.gd")
 const ARENA = preload("res://scripts/games/kart_arena.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const PHYSICAL_LOOP = preload("res://scripts/games/kart_physical_loop.gd")
@@ -379,6 +380,7 @@ var opponent_pulse_warning_times: Array[float] = []
 var opponent_item_fx: Array = []
 var opponent_scores: Array[int] = []
 var opponent_targets: Array[int] = []
+var battle: Node3D
 var arena: Node3D
 var arena_scores: int = 0
 var arena_pickup_timers: Array[float] = []
@@ -476,7 +478,7 @@ func _ready() -> void:
 	):
 		# Direkter Einstieg aus der App in den Abenteuer-Parcours (Weltwahl).
 		_open_parcours.call_deferred(garage.setup.duplicate(true))
-	print("[Kart] Holographic garage ready: five modes, %d worlds, free steering" % CATALOG.TRACKS.size())
+	print("[Kart] Holographic garage ready: %d modes, %d worlds, free steering" % [CATALOG.MODES.size(), CATALOG.TRACKS.size()])
 
 
 func _wait_for_landscape() -> bool:
@@ -545,6 +547,7 @@ func _build_world() -> void:
 	roadside_lasso = null
 	world = null
 	arena = null
+	battle = null
 	crystal_mesh = _gem_mesh()
 	star_mesh = SHAPES.star()
 	if mode == "arena":
@@ -552,9 +555,14 @@ func _build_world() -> void:
 		race_root.add_child(arena)
 		arena.build(lightweight)
 		track_length = 240
-		for position in arena.pickups:
-			gems.append(_mesh(race_root, crystal_mesh, position, Color("89f3ff")))
-			arena_pickup_timers.append(0.0)
+		if setup_snapshot.get("arena_rule", "") == "battle":
+			battle = ARENA_BATTLE.new()
+			arena.add_child(battle)
+			battle.build(self)
+		else:
+			for position in arena.pickups:
+				gems.append(_mesh(race_root, crystal_mesh, position, Color("89f3ff")))
+				arena_pickup_timers.append(0.0)
 	else:
 		world = WORLD.new()
 		race_root.add_child(world)
@@ -706,6 +714,8 @@ func _build_world() -> void:
 			var angle: float = TAU * float(i + 1) / 6.0
 			opponents[i].position = Vector3(sin(angle) * 28, 0.04, cos(angle) * 28)
 			opponent_headings[i] = angle
+		if is_instance_valid(battle):
+			battle.start(self)
 	else:
 		player.transform = world.reset_transform(distance, lane)
 		player.position.y += 0.035
@@ -808,11 +818,28 @@ func _show_garage() -> void:
 		_show_reference_landing(not setup_snapshot.is_empty())
 	if not intro_done:
 		intro_done = true
-		if _intro_wanted():
+		var wants_film := _intro_wanted()
+		SceneRouter.launch_options.erase("kartOpeningFilm")
+		if wants_film:
 			intro = INTRO.new()
 			intro.audio = kart_audio
 			intro.reduced_motion = reduced_motion
-			intro.finished.connect(func(): intro = null)
+			# The opaque film replaces the preview temporarily. Avoid rendering two
+			# full-resolution scenes underneath the video decoder on a folding phone.
+			var previous_visible: bool = garage.visible
+			var previous_mode: ProcessMode = garage.process_mode
+			var preview: SubViewport = garage.preview_viewport
+			var previous_update := preview.render_target_update_mode
+			garage.hide()
+			garage.process_mode = Node.PROCESS_MODE_DISABLED
+			preview.render_target_update_mode = SubViewport.UPDATE_DISABLED
+			intro.finished.connect(func():
+				if is_instance_valid(garage):
+					garage.process_mode = previous_mode
+					garage.visible = previous_visible
+				if is_instance_valid(preview):
+					preview.render_target_update_mode = previous_update
+				intro = null)
 			safe_ui.add_child(intro)
 
 
@@ -859,7 +886,12 @@ func _reference_select_mode(selected: String) -> void:
 		"parcours":
 			_open_parcours(garage.setup)
 			return
+		"arena_battle":
+			garage.setup["mode"] = "arena"
+			garage.setup["arena_rule"] = "battle"
+			return
 		"race", "cup", "time_trial", "training", "arena":
+			garage.setup.erase("arena_rule")
 			# Mode selection updates the actual next race on the same live stage.
 			garage.setup["mode"] = selected
 			return
@@ -974,7 +1006,7 @@ func _intro_wanted() -> bool:
 		return false
 	if intro_mode == "force":
 		return true
-	if bool(SceneRouter.launch_options.get("kartEntryPrepared", false)):
+	if bool(SceneRouter.launch_options.get("kartEntryPrepared", false)) and not bool(SceneRouter.launch_options.get("kartOpeningFilm", false)):
 		return false
 	# Automatisierte Szenenprüfungen starten mit --script und erwarten das Menü sofort.
 	return not OS.get_cmdline_args().has("--script")
@@ -1147,6 +1179,7 @@ func _resume_saved_race() -> void:
 		):
 			return
 	mode = _known_mode(str(session_config.get_value("race", "mode", "race")))
+	setup_snapshot = session_config.get_value("race", "setup_snapshot", {})
 	track_id = str(session_config.get_value("race", "track_id", "sonnenhafen"))
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
 	selected_kart = str(session_config.get_value("race", "selected_kart", "comet"))
@@ -2052,7 +2085,7 @@ func _physics_process(delta: float) -> void:
 		wall_sound_timer = maxf(0, wall_sound_timer - delta)
 		if mode == "arena":
 			_update_arena(delta)
-			if elapsed >= 90:
+			if elapsed >= arena_time_limit():
 				_finish()
 		else:
 			_drive_opponents(delta)
@@ -3346,7 +3379,8 @@ func _update_hud() -> void:
 	var place: int = _place()
 	var display_speed: int = 0 if finished else int(speed * 3.6)
 	if mode == "arena":
-		hud.text = "KRISTALL-ARENA    %02d:%02d    ◆ %d    PLATZ %d / 6" % [int(maxf(0, 90 - elapsed)) / 60, int(maxf(0, 90 - elapsed)) % 60, arena_scores, place]
+		var left := ceili(maxf(0, arena_time_limit() - elapsed))
+		hud.text = "%s    %02d:%02d    ◆ %d    PLATZ %d / 6" % ["TREFFERJAGD" if is_instance_valid(battle) else "KRISTALL-ARENA", left / 60, left % 60, arena_scores, place]
 	elif mode == "training":
 		hud.text = "FREIES TRAINING    %d km/h    ★ %d    PAUSE → BEENDEN" % [display_speed, collected.size()]
 	elif mode == "time_trial":
@@ -3365,6 +3399,8 @@ func _update_hud() -> void:
 		item_button.text = {"": "TAKTIK\n◇", "shield": "SCHILD\n◎", "pulse": "IMPULS\n✧", "boost": "SCHUB\n➜"}.get(item, "TAKTIK")
 	else:
 		item_button.text = ITEM_CATALOG.label(item)
+	if is_instance_valid(battle) and not item.is_empty():
+		item_button.text = "RAKETE\nFEUERN" if item == ROCKET_ID else "METEOR\nZIELKREIS"
 	if item_charges > 1:
 		item_button.text += " ×%d" % item_charges
 	item_button.item_kind = item
@@ -3394,6 +3430,10 @@ func _update_jump_hint(enabled: bool) -> void:
 		jump_hint.hide_hint()
 	else:
 		jump_hint.show_for(speed, kicker)
+
+
+func arena_time_limit() -> float:
+	return ARENA_BATTLE.SECONDS if is_instance_valid(battle) else 90.0
 
 
 func _place() -> int:
@@ -3487,6 +3527,9 @@ func _use_item() -> void:
 		return
 	if item.is_empty() or not racing or paused or finished or item_roulette_time > 0.0:
 		return
+	if is_instance_valid(battle):
+		battle.fire(self, 0, item)
+		return
 	if item == ROCKET_ID:
 		if rocket_phase != "armed":
 			_arm_rockets()
@@ -3528,6 +3571,9 @@ func _use_item() -> void:
 
 
 func _update_arena(delta: float) -> void:
+	if is_instance_valid(battle):
+		battle.tick(self, delta)
+		return
 	for i in range(gems.size()):
 		arena_pickup_timers[i] = maxf(0, arena_pickup_timers[i] - delta)
 		gems[i].visible = arena_pickup_timers[i] <= 0
@@ -4405,7 +4451,11 @@ func _finish(cinematic: bool = true) -> void:
 		"checkpoints": checkpoint_index, "resets": reset_count
 	}
 	if mode == "arena":
-		result_payload["crystals"] = arena_scores
+		if is_instance_valid(battle):
+			result_payload["arenaRule"] = "battle"
+			result_payload["hits"] = arena_scores
+		else:
+			result_payload["crystals"] = arena_scores
 	if mode == "time_trial":
 		best_record = records.finish(elapsed, ghost_valid)
 		friend_duel.on_finish(self)
@@ -4472,7 +4522,7 @@ func _show_result() -> void:
 	if mode == "training":
 		title = "Gut trainiert!"
 	elif mode == "arena":
-		title = "Kristall-Arena geschafft!"
+		title = "Trefferjagd beendet!" if is_instance_valid(battle) else "Kristall-Arena geschafft!"
 	elif mode == "cup":
 		title = (
 			"Rennen %d von %d geschafft!" % [cup_index + 1, CATALOG.TRACKS.size()]
@@ -4510,7 +4560,7 @@ func _show_result() -> void:
 		mastery_row.name = "TrackPassResult"
 		modal_column.add_child(mastery_row)
 	if mode == "arena":
-		var crystals := RESULT_WIDGETS.Row.new().setup("crystal", "Kristalle gesammelt", str(arena_scores))
+		var crystals := RESULT_WIDGETS.Row.new().setup("crystal", "Treffer erzielt" if is_instance_valid(battle) else "Kristalle gesammelt", str(arena_scores))
 		crystals.name = "ResultCrystals"
 		modal_column.add_child(crystals)
 	if mode == "time_trial":
@@ -4917,8 +4967,15 @@ func _rebuild_graphics() -> void:
 		state[key] = get(key).duplicate()
 	var saved_recording: Array = records.recording.duplicate(true)
 	var saved_replay_index: int = records.replay_index
+	var saved_battle_shots: Array = battle.save_shots() if is_instance_valid(battle) else []
+	var saved_battle_item := item
+	var saved_battle_charges := item_charges
 	var saved_item_ext: Dictionary = item_ext.save_state() if is_instance_valid(item_ext) else {}
 	_build_world()
+	if is_instance_valid(battle):
+		item = saved_battle_item
+		item_charges = saved_battle_charges
+		battle.restore_shots(saved_battle_shots)
 	if is_instance_valid(item_ext):
 		item_ext.restore_state(saved_item_ext)
 	player.transform = saved_transform
@@ -5042,6 +5099,8 @@ func _save_session() -> void:
 	RIVAL_FLIGHT.save_positions(self, config)
 	if is_instance_valid(item_ext):
 		config.set_value("race", "item_ext", item_ext.save_state())
+	if is_instance_valid(battle):
+		config.set_value("race", "arena_shots", battle.save_shots())
 	var tmp_path: String = SESSION + ".tmp"
 	if config.save(tmp_path) != OK:
 		push_warning("Race checkpoint tmp write failed")
@@ -5100,6 +5159,8 @@ func _restore_session() -> bool:
 		var positions: Array = config.get_value("race", "opponent_positions", [])
 		for i in range(mini(positions.size(), opponents.size())):
 			opponents[i].position = positions[i]
+	if is_instance_valid(battle):
+		battle.restore_shots(config.get_value("race", "arena_shots", []))
 	_restore_lap_timing(config)
 	player.rotation.y = player_heading
 	ghost_valid = false
@@ -5495,10 +5556,10 @@ func _apply_volumes() -> void:
 
 
 func _sound_effect(kind: String, pitch: float = 1.0) -> void:
-	if is_instance_valid(kart_audio):
-		kart_audio.effect(kind, pitch)
 	if reduced_motion and kind in ["rocket_hit", "thunder_strike", "whirl_hit", "magnet_pull"]:
 		return
+	if is_instance_valid(kart_audio):
+		kart_audio.effect(kind, pitch)
 
 
 # --- Arcade gameplay layer (Lumo-Kart items, spins, slipstream, tricks, combos) ---
@@ -5787,9 +5848,9 @@ func _use_catalog_item() -> void:
 			_fx("bubble_drop", _track_position(distance - 2.2, lane) + Vector3.UP * 0.8, 0.7)
 		"magnet":
 			magnet_time = float(row.get("seconds", 4.0))
+			item_ext.arm_magnet(-1, magnet_time)
 			message.text = "Sternmagnet: Sterne fliegen zu dir, Windschatten zieht stärker!"
 			_fx("magnet", at)
-			item_ext.arm_magnet(-1, magnet_time)
 		"aurora":
 			aurora_time = float(row.get("seconds", 4.5))
 			shield_time = maxf(shield_time, aurora_time)
@@ -5845,9 +5906,9 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 		"magnet":
 			ITEM_STATUS_FX.show_rival_magnet(opponents[index], graphics_profile, ITEM_CATALOG.number(id, "seconds", 4.0))
 			opponent_boost_times[index] = 1.5
+			item_ext.arm_magnet(index, ITEM_CATALOG.number(id, "seconds", 4.0))
 		"aurora":
 			var seconds: float = ITEM_CATALOG.number(id, "seconds", 4.5)
-			item_ext.arm_magnet(index, ITEM_CATALOG.number(id, "seconds", 4.0))
 			opponent_aurora_times[index] = seconds
 			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
 		_:
@@ -5968,10 +6029,10 @@ func _apply_item_event(event: Dictionary) -> void:
 		item_telemetry.note_event("grace", event, elapsed)
 		_fx("rocket_pop", at)
 		return
-	var grace: float = float(_lock_rules().grace)
-	if target == -1:
 	if rocket and is_instance_valid(rocket_flight):
 		rocket_flight.on_item_event(event, true)
+	var grace: float = float(_lock_rules().grace)
+	if target == -1:
 		_spin_player(minf(float(event.spin), 1.0) if rocket else float(event.spin), rocket)
 		player_grace_time = grace
 		# Das Kind selbst: milder Hüpfer, die Kamera bleibt ruhig (halbe Effektstärke).

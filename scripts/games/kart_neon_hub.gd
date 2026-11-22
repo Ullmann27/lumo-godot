@@ -83,6 +83,7 @@ var _overlay: PanelContainer
 var _overlay_title: Label
 var _overlay_list: VBoxContainer
 ## Rennarten bleiben dauerhaft im Menü, damit jede Rennart einen Tipp entfernt ist.
+var _battle_start: Button
 var _race_kinds: GridContainer
 var _race_kinds_compact := false
 var _race_kind_buttons: Dictionary = {}
@@ -569,6 +570,15 @@ func _build_race_kinds(column: VBoxContainer) -> void:
 		kind.pressed.connect(func(): _select_race_kind(id))
 		_race_kinds.add_child(kind)
 		_race_kind_buttons[id] = kind
+	_battle_start = Button.new()
+	_battle_start.name = "ArenaTrefferjagd"
+	_battle_start.text = "Trefferjagd · 60 s mit Raketen und Meteoren"
+	_battle_start.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_battle_start.custom_minimum_size = Vector2(0, 54)
+	THEME.premium_button(_battle_start, VIOLET, false)
+	_battle_start.pressed.connect(func(): _start("arena_battle"))
+	column.add_child(_battle_start)
+	_battle_start.hide()
 	_live_start = Button.new()
 	_live_start.name = "LiveQuickStart"
 	_live_start.text = "START"
@@ -587,10 +597,14 @@ func _select_race_kind(id: String) -> void:
 
 
 func _refresh_race_kinds() -> void:
+	if is_instance_valid(_battle_start):
+		_battle_start.visible = current_mode == "arena" and _race_kinds.visible
 	if is_instance_valid(_kind_description):
 		var selected := CATALOG.entry(CATALOG.MODES, current_mode)
 		_kind_description.text = str(selected.description)
-		_live_start.text = str(selected.name) + " starten"
+		if current_mode == "arena":
+			_kind_description.text = "Sammle Kristalle oder spiele auf Treffer: Hinter den Pfeilern laden, zum Zielring lenken und Item drücken."
+		_live_start.text = "Kristalljagd · 90 s" if current_mode == "arena" else str(selected.name) + " starten"
 	for id in _race_kind_buttons:
 		var kind: Button = _race_kind_buttons[id]
 		var chosen: bool = id == current_mode
@@ -675,6 +689,7 @@ func _open_overlay(kind: String) -> void:
 		_overlay_list.remove_child(child)
 		child.queue_free()
 	_race_kinds.visible = kind == "race"
+	_battle_start.visible = kind == "race" and current_mode == "arena"
 	_live_start.visible = kind in ["race", "cup"]
 	_live_start.text = "Sternen-Cup starten" if kind == "cup" else "START"
 	if kind == "cup":
