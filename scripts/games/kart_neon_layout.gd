@@ -50,7 +50,10 @@ static func arrange(hub: Control) -> void:
 	if hub._overlay.visible:
 		# Groß genug für bebilderte Karten (Cup-Strecken, Belohnungen, Sternenpfad).
 		var w := minf(area.x - 2 * m, 760.0)
-		var max_h := (358.0 if landscape else 458.0) if hub._race_kinds.visible else 900.0
+		var max_h := 900.0
+		if hub._race_kinds.visible:
+			# Narrow portrait columns wrap the names and goals onto additional lines.
+			max_h = 358.0 if landscape else (646.0 if w < 525.0 else 458.0)
 		var h := minf(area.y - 2 * m, max_h)
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
