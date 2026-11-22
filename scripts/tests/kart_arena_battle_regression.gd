@@ -23,6 +23,8 @@ func run() -> void:
 	game.set_physics_process(false)
 	await process_frame
 	game.lightweight = true
+	game._show_reference_landing()
+	await process_frame
 	var menu = game.reference_landing
 	menu._open_overlay("race")
 	menu.find_child("Mode_arena", true, false).pressed.emit()
