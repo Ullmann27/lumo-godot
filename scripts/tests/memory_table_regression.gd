@@ -71,12 +71,12 @@ func _physical(control: Control) -> Rect2:
 	return Rect2(transform*Vector2.ZERO*factor,control.size*transform.get_scale()*factor)
 
 
-func _tap(button: Button,label: String) -> void:
+func _tap(button: Button,label: String,at := Vector2.INF) -> void:
 	_check(button.is_visible_in_tree() and not button.disabled,label+" is currently actionable")
 	var rect := _physical(button)
 	var dp: Vector2 = rect.size/table._density
 	_check(dp.x>=48.0 and dp.y>=48.0,label+" actual size >=48dp")
-	var point := rect.get_center()
+	var point := rect.get_center() if at == Vector2.INF else at
 	for pos in [Vector2.ZERO,point]:
 		var motion := InputEventMouseMotion.new()
 		motion.position = pos
@@ -259,7 +259,18 @@ func _run() -> void:
 	await _tap(table._cards[0].button,"rejected actual touch")
 	_check(table._pending==0 and not table._cards[0].face,"transport failure never reveals a card")
 	bridge.accept = true
-	await _tap(table._cards[0].button,"first actual card touch")
+	# Near the upper right of the first card, its bounding box overlaps the
+	# next one. Dispatch through the GUI at a point on the first sloped face.
+	var first_button: Button = table._cards[0].button
+	var next_button: Button = table._cards[1].button
+	var first_rect := _physical(first_button)
+	var next_rect := _physical(next_button)
+	var overlap := first_rect.intersection(next_rect)
+	var edge := overlap.position + overlap.size * Vector2(0.35,0.12)
+	_check(overlap.has_area() and first_button._has_point((edge-first_rect.position)*first_button.size/first_rect.size)
+		and not next_button._has_point((edge-next_rect.position)*next_button.size/next_rect.size),
+		"sloped card edge belongs only to the left card")
+	await _tap(first_button,"actual touch at sloped card edge",edge)
 	_check(table._pending>0 and bridge.requests.back().action=="flip" and int(bridge.requests.back().index)==0,"actual touch emits bounded intent")
 	_check(not table._cards[0].face,"no visual reveal before authority")
 	_check(not FileAccess.file_exists(table.OBSERVATION),"pending intent invalidates layout")
