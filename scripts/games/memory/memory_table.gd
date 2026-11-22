@@ -569,7 +569,7 @@ func _build_room() -> void:
 	environment.glow_hdr_threshold = 1.0
 	environment.adjustment_enabled = true
 	environment.adjustment_saturation = 1.08
-	if tier == "high":
+	if tier == "high" and RenderingServer.get_current_rendering_method() == "forward_plus":
 		environment.ssao_enabled = true
 		environment.ssao_radius = 0.5
 	world.environment = environment

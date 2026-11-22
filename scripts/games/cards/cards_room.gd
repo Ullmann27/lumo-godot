@@ -618,7 +618,7 @@ func _build_lights() -> void:
 	environment.adjustment_enabled = true
 	environment.adjustment_saturation = 1.1
 	environment.adjustment_contrast = 1.06
-	if quality == "high":
+	if quality == "high" and RenderingServer.get_current_rendering_method() == "forward_plus":
 		environment.ssao_enabled = true
 		environment.ssao_radius = 0.6
 		environment.ssao_intensity = 1.4

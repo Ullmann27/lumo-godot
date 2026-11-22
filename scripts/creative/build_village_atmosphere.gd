@@ -47,7 +47,7 @@ static func apply(root: Node3D, tier: String) -> void:
 	env.glow_bloom = 0.04
 	env.glow_hdr_threshold = 1.25
 	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SCREEN
-	env.ssao_enabled = tier == "high"
+	env.ssao_enabled = tier == "high" and RenderingServer.get_current_rendering_method() == "forward_plus"
 	env.ssao_radius = 1.4
 	env.ssao_intensity = 1.1
 	env.adjustment_enabled = true
