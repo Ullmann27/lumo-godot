@@ -7,6 +7,7 @@ const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
 const HARBOR_LONG = preload("res://scripts/games/kart_sonnenhafen_long_course.gd")
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
 const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
+const WINDWERK = preload("res://scripts/games/windwerk/kart_windwerk_course.gd")
 static var IDS: Array[String] = _all_ids()
 
 static func _all_ids() -> Array[String]:
@@ -14,11 +15,14 @@ static func _all_ids() -> Array[String]:
 	result.append_array(EXPANSION.IDS)
 	result.append(JUNGLE.ID)
 	result.append(GARDEN.ID)
+	result.append(WINDWERK.ID)
 	result.make_read_only()
 	return result
 
 
 static func definition(id: String) -> Dictionary:
+	if id == WINDWERK.ID:
+		return WINDWERK.definition()
 	if id == JUNGLE.ID:
 		return JUNGLE.definition()
 	if id == GARDEN.ID:

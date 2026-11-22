@@ -17,6 +17,7 @@ const OUT := "res://assets/kart/track_stage/"
 ## Kamerapunkt je Strecke: Kurvenscheitel als Anteil der Rundenlänge, Seite der
 ## Kamera (+1 = außen, −1 = innen) und Höhe. Gewählt am Probebild (Kurve + Landmarke).
 const SHOTS := {
+	"windwerk_3000": {"f": .052, "back": 55.0, "h": 3.6, "off": -3.5, "abs": 1.0, "ahead": 48.0, "look_lat": -8.5},
 	"sonnenhafen": {"f": 0.988, "side": 1.0},
 	"zauberwald": {"f": 0.562, "side": 1.0},
 	"bergwelt": {"f": 0.156, "side": -1.0},

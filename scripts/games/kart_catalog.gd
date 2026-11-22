@@ -24,6 +24,11 @@ static func _all_tracks() -> Array[Dictionary]:
 		"tag": "LUMOS SOMMERGARTEN · 2,4 KM", "color": Color("ffcf3a"),
 		"description": "Winzig im Riesengarten: Gießkannen-Schanze, Gartenschlauch und Gewächshaus."
 	})
+	result.append({
+		"id": "windwerk_3000", "name": "Lumos Windwerk",
+		"tag": "WINDWERK · 3,0 KM", "color": Color("45d3bd"),
+		"description": "Rase ins Turbinental, über die Weichen und durch die Signaltore der Windbahn."
+	})
 	result.make_read_only()
 	return result
 

@@ -134,6 +134,9 @@ func build(
 	_make_curve()
 	jump={}
 	loop_layout={}
+	if track_id == TRACKS.WINDWERK.ID:
+		load("res://scripts/games/windwerk/kart_windwerk_world.gd").build(self, geometry_only)
+		return
 	if track_id == GARDEN.ID:
 		load("res://scripts/games/garden/kart_garden_world.gd").build(self, geometry_only)
 		return
@@ -257,13 +260,15 @@ func build(
 func _make_curve() -> void:
 	if track_id == JUNGLE.ID:
 		curve = JUNGLE.make_curve()
+	elif track_id == TRACKS.WINDWERK.ID:
+		curve = TRACKS.WINDWERK.make_curve()
 	elif track_id == GARDEN.ID:
 		curve = GARDEN.make_curve()
 	else:
 		_make_legacy_curve()
 	length = curve.get_baked_length()
 	PASSAGES.plan(self)
-	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID] else ADVENTURE_TUNNELS.layout(self)
+	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID, TRACKS.WINDWERK.ID] else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
@@ -310,6 +315,8 @@ func _make_legacy_curve() -> void:
 		curve.add_point(points[index], -tangent, tangent)
 
 func road_width_at(distance: float) -> float:
+	if track_id == TRACKS.WINDWERK.ID:
+		return TRACKS.WINDWERK.WIDTH
 	var deck: float = PASSAGES.deck_half(self, distance)
 	if deck > 0.0:
 		return deck * 2.0
@@ -318,6 +325,8 @@ func road_width_at(distance: float) -> float:
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
+	if track_id == TRACKS.WINDWERK.ID:
+		return TRACKS.WINDWERK.WIDTH * .5 - .9
 	var deck_wall: float = PASSAGES.rival_wall(self, distance)
 	if deck_wall < INF:
 		return deck_wall

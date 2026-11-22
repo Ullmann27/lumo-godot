@@ -40,6 +40,8 @@ static func plan(race_world) -> Array[Dictionary]:
 	var loop: Dictionary = race_world.loop_layout
 	if not loop.is_empty():
 		blocked.append(Vector2(float(loop.start) - 100.0, float(loop.start) + 100.0))
+	for trial in race_world.action.get("trials", []):
+		blocked.append(Vector2(float(trial.start) - 50.0, float(trial.end) + 35.0))
 	for ramp in race_world.action.get("kickers", []):
 		blocked.append(Vector2(float(ramp.start) - 85.0, float(ramp.take_off) + 85.0))
 	for dive in race_world.action.get("dives", []):
