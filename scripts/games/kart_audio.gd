@@ -156,19 +156,17 @@ func update_motors(race, step: float) -> void:
 	if (not grid and not race.racing) or player_motor.body.stream == null:
 		stop_motors()
 		return
-	_motors_fed = Time.get_ticks_msec()
-	var brake: float = race.brake_visual_amount if not grid else 0.0
-	var manual: bool = race._manual_gas_active()
-	var throttle: bool = manual or (race.auto_gas and not grid and brake < .5)
-	var rev: bool = manual and (grid or (brake > .5 and absf(race.speed) < 3.0) or race.airborne)
-	player_motor.advance(step, 0.0 if grid else race.speed, float(throttle), brake,
-		not grid and race.boost_time > 0.0, rev, effect_db() - 7.0)
+	update_player_motor(step, race.speed, race.brake_visual_amount, race._manual_gas_active(),
+		race.auto_gas, grid, race.boost_time > 0.0, race.airborne)
+	update_rival_motors(step, race.player.global_position, race.graphics_profile, grid)
+
+
+func update_rival_motors(step: float, listener_position: Vector3, profile: String, grid: bool, parked: Array = []) -> void:
 	var near: Array[MOTOR] = []
-	for i in rival_motors.size():
-		var voice := rival_motors[i]
-		var kart = race.opponents[i]
-		voice.distance_sq = race.player.global_position.distance_squared_to(kart.global_position)
-		if voice.distance_sq < MOTOR.RADIUS * MOTOR.RADIUS:
+	for voice in rival_motors:
+		var kart = voice.body.get_parent()
+		voice.distance_sq = listener_position.distance_squared_to(kart.global_position)
+		if not _blocked() and effects_volume > .01 and not parked.has(kart) and voice.distance_sq < MOTOR.RADIUS * MOTOR.RADIUS:
 			near.append(voice)
 		else:
 			voice.stop()
@@ -180,7 +178,7 @@ func update_motors(race, step: float) -> void:
 		var voice := near[i]
 		var kart = voice.body.get_parent()
 		var speed := 0.0 if grid else absf(kart.motion_speed)
-		if i >= int(RIVAL_LIMIT.get(race.graphics_profile, 2)):
+		if i >= int(RIVAL_LIMIT.get(profile, 2)):
 			voice.stop()
 			voice.previous_speed = speed
 			continue
@@ -207,6 +205,19 @@ func update_motors(race, step: float) -> void:
 				voice.road.volume_db = effect_db() - 16.0 + linear_to_db(gain)
 				if not voice.road.playing:
 					voice.road.play()
+
+
+func update_player_motor(step: float, speed: float, brake: float, manual: bool,
+		auto_gas: bool, grid: bool, boost: bool, airborne: bool) -> void:
+	if _blocked() or effects_volume <= .01 or player_motor.body.stream == null:
+		player_motor.stop()
+		return
+	_motors_fed = Time.get_ticks_msec()
+	var braking := 0.0 if grid else brake
+	var throttle := manual or (auto_gas and not grid and braking < .5)
+	var rev := manual and (grid or (braking > .5 and absf(speed) < 3.0) or airborne)
+	player_motor.advance(step, 0.0 if grid else speed, float(throttle), braking,
+		boost and not grid, rev, effect_db() - 7.0)
 
 
 func music_db() -> float:

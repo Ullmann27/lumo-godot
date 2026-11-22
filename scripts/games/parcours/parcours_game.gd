@@ -6,6 +6,7 @@ extends Node3D
 ## Kart-Musik und Belohnungsweg (HostBridge, ProgressStore) sind dieselben wie im Rennen.
 
 const WORLDS = preload("res://scripts/games/parcours/parcours_worlds.gd")
+const RACE = preload("res://scripts/games/parcours/parcours_race.gd")
 const RUN = preload("res://scripts/games/parcours/parcours_run.gd")
 const BUILDER = preload("res://scripts/games/parcours/parcours_builder.gd")
 const PROGRESS = preload("res://scripts/games/parcours/parcours_progress.gd")
@@ -21,11 +22,12 @@ const START_COUNTDOWN: float = 2.4
 const SAVE_EVERY: float = 4.0
 
 var world_id: String = ""
-var play_style: String = "zeitlauf"
+var play_style: String = "rennen"
 var child_key: String = "standalone"
 var progress
 var run
 var course
+var race
 var builder: Node3D
 var kart: LumoRaceKart
 var lumo: Node3D
@@ -86,6 +88,8 @@ func _ready() -> void:
 	kart_audio = KART_AUDIO.new()
 	kart_audio.name = "KartAudio"
 	add_child(kart_audio)
+	var volumes: Vector2 = get_meta("volumes")
+	kart_audio.set_volumes(volumes.x, volumes.y)
 	kart_audio.set_muted(muted or not bool(options.get("soundEnabled", true)))
 	hud = HUD.new()
 	hud.name = "ParcoursHud"
@@ -99,7 +103,7 @@ func _ready() -> void:
 	camera.current = true
 	var requested: String = str(options.get("parcoursWorld", ""))
 	if requested in WORLDS.playable_ids():
-		start_world(requested, str(options.get("parcoursStyle", "zeitlauf")))
+		start_world(requested, str(options.get("parcoursStyle", "rennen")))
 	else:
 		show_world_choice()
 	set_physics_process(true)
@@ -145,9 +149,11 @@ func show_world_choice() -> void:
 
 
 func _clear_world() -> void:
-	for node in [builder, kart, lumo]:
+	kart_audio.stop_loops()
+	for node in [builder, kart, lumo, race]:
 		if is_instance_valid(node):
 			node.queue_free()
+	race = null
 	builder = null
 	kart = null
 	lumo = null
@@ -194,6 +200,16 @@ func start_world(id: String, style: String, resume: Dictionary = {}) -> void:
 	add_child(lumo)
 	lumo.setup(reduced_motion)
 	lumo.visible = false
+	if play_style == "rennen":
+		race = RACE.new()
+		race.name = "ParcoursRennen"
+		add_child(race)
+		race.setup(run, workshop, lightweight, reduced_motion, resume.get("rivals", []))
+	var sounding_rivals: Array = []
+	if race != null:
+		for racer in race.racers:
+			sounding_rivals.append(racer.kart)
+	kart_audio.configure_motors(kart, sounding_rivals)
 	_place_visuals(0.0)
 	camera_yaw = run.drive.heading
 	_update_camera(0.0, true)
@@ -223,6 +239,7 @@ func _physics_process(delta: float) -> void:
 		countdown = maxf(0.0, countdown - delta)
 		if ceili(countdown) != before:
 			kart_audio.effect("start" if countdown <= 0.0 else "countdown")
+		_update_driving_audio(delta, 0.0, gas_held or Input.is_physical_key_pressed(KEY_W), true)
 		hud.set_countdown(countdown)
 		_update_visuals(0.0)
 		return
@@ -241,7 +258,12 @@ func _physics_process(delta: float) -> void:
 
 ## Ein Spielschritt mit fertigen Eingaben (auch von Tests und dem Bild-Bot genutzt).
 func step_game(delta: float, axis: float, braking: float, manual_gas: bool, move: Vector2) -> void:
+	if race != null:
+		race.sync_mechanisms(delta)
 	run.step(delta, axis, braking, manual_gas, auto_gas, move)
+	if race != null:
+		race.advance(delta)
+	_update_driving_audio(delta, braking, manual_gas, false)
 	for e in run.events:
 		_on_event(e)
 	save_timer += delta
@@ -284,7 +306,7 @@ func _on_event(e: Dictionary) -> void:
 		event_log.pop_front()
 	match str(e.kind):
 		"checkpoint":
-			hud.say("Checkpoint! Hier fängt dich die Lumo-Wolke auf.")
+			hud.say("Checkpoint! Dein Turbo ist bereit." if race != null else "Checkpoint! Hier fängt dich die Lumo-Wolke auf.")
 			kart_audio.effect("gate_bell")
 			_save_session()
 		"star":
@@ -321,11 +343,31 @@ func _update_visuals(delta: float) -> void:
 	_place_visuals(delta)
 	_update_camera(delta, false)
 	hud.update_hud(run, play_style)
-	var moving: bool = playing and not paused and not finished and countdown <= 0.0
-	var ratio: float = clampf(absf(run.drive.speed) / 22.0, 0.0, 1.0)
-	kart_audio.set_loop(
-		"engine_mid", (0.25 + ratio * 0.6) if moving and not run.on_foot else 0.0, 0.8 + ratio * 0.6
-	)
+
+
+func _update_driving_audio(delta: float, braking: float, manual_gas: bool, grid: bool) -> void:
+	if finished or paused:
+		kart_audio.stop_loops()
+		return
+	if race != null:
+		var parked: Array = []
+		for racer in race.racers:
+			if racer.run.on_foot or racer.run.finished:
+				parked.append(racer.kart)
+		var listener: Vector3 = run.walker.position if run.on_foot else run.drive.position
+		kart_audio.update_rival_motors(delta, listener, "low" if lightweight else "high", grid, parked)
+	if run.on_foot:
+		kart_audio.player_motor.stop()
+		kart_audio.set_loop("squeal", 0.0)
+		kart_audio.set_loop("turbo", 0.0)
+		return
+	var drive = run.drive
+	kart_audio.update_player_motor(delta, drive.speed, braking, manual_gas, auto_gas,
+		grid, drive.boost_time > 0.0, drive.airborne)
+	var rolling: float = 0.0 if grid or drive.airborne else clampf(absf(drive.speed) / 16.0, 0.0, 1.0)
+	var tire: float = maxf(float(drive.drifting), braking) * rolling
+	kart_audio.set_loop("squeal", tire, (.85 + .35 * rolling) * kart_audio.player_motor.tire_grip)
+	kart_audio.set_loop("turbo", .65 * kart_audio.player_motor.boost_timbre if drive.boost_time > 0.0 and not grid else 0.0)
 
 
 func _place_visuals(delta: float) -> void:
@@ -416,6 +458,7 @@ func context_action() -> void:
 		return
 	if run.can_leave_kart():
 		run.leave_kart()
+		kart_audio.player_motor.stop()
 	elif run.on_foot and run.use_lever():
 		pass
 	elif run.can_enter_kart():
@@ -509,6 +552,7 @@ func _finish() -> void:
 	if finished:
 		return
 	finished = true
+	kart_audio.stop_loops()
 	kart_audio.effect("finish")
 	var earned: int = 3
 	result_payload = {
@@ -530,11 +574,14 @@ func _finish() -> void:
 		"kart": selected_kart,
 		"driver": selected_driver
 	}
+	if race != null:
+		result_payload.place = race.place
+		result_payload.racers = 1 + race.racers.size()
 	_book_reward()
 	last_result = progress.record(result_payload)
 	progress.clear_session()
 	if is_instance_valid(kart):
-		kart.celebrate(1)
+		kart.celebrate(int(result_payload.get("place", 1)))
 	hud.show_result(
 		result_payload,
 		progress.world(world_id),
@@ -584,6 +631,8 @@ func _save_session() -> void:
 	var data: Dictionary = run.snapshot()
 	data["result_id"] = result_id
 	data["kart"] = selected_kart
+	if race != null:
+		data.rivals = race.snapshot()
 	progress.save_session(data)
 
 

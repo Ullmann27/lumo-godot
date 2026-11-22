@@ -146,7 +146,7 @@ func planar_step(
 	else:
 		reverse_hold_time = 0.0
 		target *= throttle
-		target *= 1.0 - braking * 0.94
+		target *= 1.0 - braking
 	if bump_time > 0.0:
 		target *= factor("stability", 0.45)
 	var acceleration: float = POWERTRAIN.acceleration(factors, braking > 0.1)
