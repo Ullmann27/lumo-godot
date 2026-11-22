@@ -115,6 +115,7 @@ func _run() -> void:
 		table = load(TABLE).instantiate()
 		root.add_child(table)
 		await DRIVER.settle(self, 8)
+		await DRIVER.skip_opening(self, table)
 		await create_timer(0.8).timeout
 		await _shot("01_auswahl")
 		await _start("ziel", 3, 1, 9)

@@ -319,6 +319,7 @@ func _run() -> void:
 		table.display_insets = insets
 		root.add_child(table)
 		table.time_scale = 60.0
+		await DRIVER.skip_opening(self, table)
 		await DRIVER.settle(self, 6)
 		# Solange Android noch keine Ränder gemeldet hat, bleibt die Oberfläche verborgen.
 		table._android_safe_area_enabled = true

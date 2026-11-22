@@ -9,6 +9,7 @@ extends Node3D
 
 signal settled(payload: Dictionary)
 
+const OPENING = preload("res://scripts/games/cards/cards_opening.gd")
 const ROOM = preload("res://scripts/games/cards/cards_room.gd")
 const SEAT = preload("res://scripts/games/cards/cards_seat.gd")
 const CARD = preload("res://scripts/games/cards/cards_card.gd")
@@ -59,6 +60,7 @@ const GAMES := {
 var room: Node3D
 var hud: Control
 var camera: Camera3D
+var opening: Node3D
 var session: RefCounted
 var rules: RefCounted
 var seats: Array = []
@@ -143,8 +145,30 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_resize)
 	MobileRuntime.safe_area_changed.connect(_resize)
 	_resize()
+	if not reduced_motion and not session.intro_seen("table_opening") and session.data.matches.is_empty():
+		screen = "opening"
+		hud.hide()
+		opening = OPENING.new()
+		opening.name = "TableOpening"
+		add_child(opening)
+		opening.finished.connect(_end_opening)
+		opening.sound_cue.connect(_sfx)
+		var volume := AudioManager.get_sfx_volume() if sound_enabled and not AudioManager.is_muted() else 0.0
+		opening.begin(camera, seats, _ui_scale, _safe_area_insets(), volume)
+	else:
+		_open_select()
+		_greet.call_deferred()
+
+
+func _end_opening() -> void:
+	if not is_instance_valid(opening):
+		return
+	opening.queue_free()
+	opening = null
+	session.mark_intro_seen("table_opening")
 	_open_select()
-	_greet.call_deferred()
+	_resize()
+	_greet()
 
 
 func _exit_tree() -> void:
@@ -163,7 +187,9 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		if screen == "play" and hud.overlay_kind.is_empty():
+		if is_instance_valid(opening):
+			opening.finish()
+		elif screen == "play" and hud.overlay_kind.is_empty():
 			_pause()
 		elif screen == "select":
 			_leave()
@@ -198,9 +224,12 @@ func _resize() -> void:
 	_android_safe_area = _get_safe_area_observation()
 	_ui_scale = MobileRuntime.get_ui_density()
 	var insets := _safe_area_insets()
-	hud.visible = not _android_safe_area_enabled or _android_safe_area.get("window_size") == get_window().size
+	hud.visible = not is_instance_valid(opening) and (not _android_safe_area_enabled or _android_safe_area.get("window_size") == get_window().size)
 	hud.rebuild(_ui_scale, insets)
 	_frame_camera()
+	if is_instance_valid(opening):
+		opening.resize(_ui_scale, insets)
+		return
 	_measure_hand()
 	_layout_all(0.0)
 	_refresh_hud()
@@ -422,6 +451,8 @@ func _open_setup(id: String) -> void:
 func _on_chosen(id: String, payload: Dictionary) -> void:
 	if _closed:
 		return
+	if is_instance_valid(opening):
+		opening.finish()
 	if id not in ["action", "seat"]:
 		_sfx("ui_confirm")
 	match id:
@@ -806,6 +837,11 @@ func _tap_card(card: int) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(opening):
+		if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			opening.finish()
+		return
 	var point := Vector2.ZERO
 	var pressed := false
 	var released := false

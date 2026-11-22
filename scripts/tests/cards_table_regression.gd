@@ -53,6 +53,7 @@ func _open() -> void:
 	table = load(TABLE).instantiate()
 	root.add_child(table)
 	table.time_scale = SPEED
+	await DRIVER.skip_opening(self, table)
 	table.settled.connect(func(payload: Dictionary) -> void: settled.append(payload))
 	await DRIVER.settle(self, 4)
 

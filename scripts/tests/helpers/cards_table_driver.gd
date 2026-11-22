@@ -65,6 +65,11 @@ static func control_centre(control: Control) -> Vector2:
 	return control.get_global_transform_with_canvas() * (control.size * 0.5)
 
 
+static func skip_opening(tree: SceneTree, table: Node) -> void:
+	if is_instance_valid(table.opening):
+		await touch(tree, control_centre(table.opening.skip))
+
+
 static func press(tree: SceneTree, table: Node, id: String) -> bool:
 	var button: Button = table.hud.find_button(id)
 	if button == null or button.disabled:
