@@ -17,7 +17,7 @@ static func connect_route(
 		var u := float(i) / 8.0
 		var bend := sin(PI * u)
 		var point := start.lerp(end, u) + lateral * offset * bend * bend
-		point.y += 0.055 + rise * bend * bend
+		point.y += -0.18 + rise * bend * bend * bend * bend
 		stations.append(point)
 	var original_size: int = course.route.size()
 	var middle: Array[Dictionary] = []
@@ -31,7 +31,7 @@ static func connect_route(
 		pen.straight(
 			Vector2(travel.x, travel.z).length(), travel.y, fenced, fenced,
 			{
-				"cap": cap, "race_fork": true, "no_supports": i % 2 != 0,
+				"cap": cap, "race_fork": true, "fork_junction": i < 2 or i > 5, "no_supports": i % 2 != 0,
 				"route_from": distance_from + distance_step * i, "race_distance_span": distance_step
 			}
 		)

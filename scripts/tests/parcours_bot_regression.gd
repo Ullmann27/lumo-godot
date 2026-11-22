@@ -8,6 +8,7 @@ const STEP: float = 1.0 / 60.0
 var failures: int = 0
 var checks: int = 0
 var trace: bool = false
+var take_branch: bool = false
 var worlds_script: GDScript
 var run_script: GDScript
 var bot_script: GDScript
@@ -38,6 +39,11 @@ func _drive_world(world_id: String, seed_value: int, reaction: float, level: Str
 	run.drive.factors = _factors()
 	run.drive.difficulty = level
 	var bot = bot_script.new(seed_value, reaction, 0.14)
+	var line: Array = course.route
+	if take_branch:
+		var branch: Dictionary = course.race_branch
+		line = line.slice(0, branch.entry + 1) + branch.points + line.slice(branch.exit)
+		bot.racing_line = line
 	var cp_times: Array[float] = [0.0]
 	var longest_gap: float = 0.0
 	var steps: int = 0
@@ -88,7 +94,7 @@ func _drive_world(world_id: String, seed_value: int, reaction: float, level: Str
 							str(bot.target)
 							+ " "
 							+ str(
-								(run.course.route[bot.target].pos as Vector3).snapped(Vector3.ONE)
+								(line[bot.target].pos as Vector3).snapped(Vector3.ONE)
 							)
 							+ " h="
 							+ str(snappedf(run.drive.heading, 0.01))
@@ -268,6 +274,8 @@ func _phase_test(world_id: String) -> void:
 					j, p + Vector3.UP * 3.4, 0.0, a.mechanisms, 0.0
 				)
 				if not hit.is_empty() and absf(float(hit.height) - p.y) < 3.4:
+					if _is_fork_merge(a, si, a.slabs[j], p):
+						continue
 					clashes.append(
 						"%d(%s)/%d(%s)" % [i, si.get("style", ""), j, a.slabs[j].get("style", "")]
 					)
@@ -284,6 +292,20 @@ func _phase_test(world_id: String) -> void:
 			not str(skill.intro).is_empty() and not str(skill.retry).is_empty(),
 			"%s: Ansage und Hilfe für %s" % [world_id, skill.id]
 		)
+
+
+## Only the open ends of the fork share road surface with the main route.
+## Central spans, other course sections and branch-to-branch crossings stay checked.
+func _is_fork_merge(course, first: Dictionary, second: Dictionary, sample: Vector3) -> bool:
+	if bool(first.get("race_fork", false)) == bool(second.get("race_fork", false)):
+		return false
+	var branch: Dictionary = first if first.get("race_fork", false) else second
+	if not branch.get("fork_junction", false):
+		return false
+	var entry: Vector3 = course.route[course.race_branch.entry].pos
+	var merge: Vector3 = course.route[course.race_branch.exit].pos
+	var junction_length := entry.distance_to(merge) * 0.28
+	return sample.distance_to(entry) < junction_length or sample.distance_to(merge) < junction_length
 
 
 func _exempt(slab: Dictionary) -> bool:
@@ -304,6 +326,8 @@ func _run() -> void:
 	var worlds = worlds_script
 	var only: String = ""
 	for arg in OS.get_cmdline_user_args():
+		if arg == "--race-branch":
+			take_branch = true
 		if arg == "--trace":
 			trace = true
 		if arg.begins_with("--world="):

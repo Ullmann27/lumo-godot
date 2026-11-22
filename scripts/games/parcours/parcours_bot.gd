@@ -41,6 +41,9 @@ func drive_input(run, delta: float) -> Dictionary:
 	var pos: Vector3 = seen.pos
 	# Weiter, sobald der Punkt erreicht oder überholt ist.
 	while target < route.size() - 1:
+		var plate: String = str(route[target].get("plate", ""))
+		if not plate.is_empty() and not run.state.get(plate, false):
+			break
 		var here: Vector3 = route[target].pos
 		var next_point: Vector3 = route[target + 1].pos
 		var to_here: Vector3 = here - pos

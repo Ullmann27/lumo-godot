@@ -81,7 +81,7 @@ static func build():
 		"Ganz sanft lenken, dann bleibst du auf der Wurzel."
 	)
 	pen.style = "wood"
-	pen.width = 5.4
+	pen.width = 6.2
 	var fork_entry: int = course.route.size()
 	var fork_from: float = pen.travelled
 	pen.star_line(3, 22.0)
@@ -95,7 +95,7 @@ static func build():
 	pen.width = 12.0
 	pen.straight(10.0)
 	FORKS.connect_route(
-		course, fork_entry, course.route.size() - 1, "Terrassenweg", "moss", 14.0, 2.6, 8.0, 15.0, fork_from
+		course, fork_entry, course.route.size() - 1, "Terrassenweg", "moss", 16.0, 2.2, 9.0, 12.0, fork_from
 	)
 	# 2) Lianenhalle: Sonnenplatte öffnet das Lianentor.
 	pen.checkpoint("lianenhalle")
@@ -120,7 +120,7 @@ static func build():
 			"text": "Die Sonnenplatte leuchtet – das Lianentor öffnet sich!"
 		}
 	)
-	course.route.append({"pos": plate + Vector3.UP * 0.3, "cap": 10.0})
+	course.route.append({"pos": plate + Vector3.UP * 0.3, "cap": 8.0, "plate": "vines_1"})
 	course.route.append(
 		{"pos": room_start + PEN.forward_of(room_heading) * 28.0 + Vector3.UP * 0.3, "cap": 10.0}
 	)
@@ -180,7 +180,7 @@ static func build():
 		"Ein bisschen gegenlenken und geradeaus aufs Tor zielen."
 	)
 	pen.star(0.0, 10.0)
-	pen.spin_disc(10.0, -0.36, 3, {"style": "sun_disc"})
+	pen.spin_disc(10.0, -0.30, 3, {"style": "sun_disc"})
 	pen.straight(12.0)
 	pen.star_line(3, 40.0, 2.0)
 	pen.turn(26.0, 60.0)
