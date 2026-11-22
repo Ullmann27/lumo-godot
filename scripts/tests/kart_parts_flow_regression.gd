@@ -11,6 +11,8 @@ extends SceneTree
 ## Kopflos: godot --headless --path . --script res://scripts/tests/kart_parts_flow_regression.gd
 
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const CHILD := "parts_flow_child"
 var failures: Array[String] = []
 var checks := 0
@@ -351,6 +353,21 @@ func _run() -> void:
 	await _frames(4)
 	_check(garage.workshop.chosen("comet", "exhaust") == "doppel", "Doppelrohr gespeichert")
 	await _performance_parts(garage, bay)
+	var previous_stars: int = garage.stars
+	garage.stars = 1000
+	for kart_id in FLEET.ids():
+		garage._select("kart", kart_id)
+		await _frames(3)
+		_check(garage.setup.kart == kart_id, "Freigeschaltete Karosserie gewählt: " + kart_id)
+		bay._on_open()
+		bay._on_slot("brakes")
+		bay._on_tile("sport")
+		await _frames(3)
+		_check_preview_fit(garage, bay)
+		bay._on_back()
+	garage._select("kart", "comet")
+	await _frames(3)
+	garage.stars = previous_stars
 	# Rennen starten: Teile am Rennfahrzeug.
 	game.selected_kart = "comet"
 	garage.start_requested.emit(garage.setup.duplicate(true))
@@ -482,11 +499,10 @@ func _run() -> void:
 
 
 func _finish() -> void:
+	if is_instance_valid(game):
+		_check(await TEARDOWN.release_scene(self, game, "[KartPartsFlow]"), "Kart-Szene und aktiver Ton freigegeben")
 	if failures.is_empty():
 		print("[KartPartsFlow] PASS %d checks" % checks)
 	else:
 		print("[KartPartsFlow] FAIL %d of %d checks" % [failures.size(), checks])
-	if is_instance_valid(game):
-		game.queue_free()
-	await process_frame
 	quit(0 if failures.is_empty() else 1)
