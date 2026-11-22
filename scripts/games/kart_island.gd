@@ -5389,11 +5389,11 @@ func _roll_item_for_place(_place: int) -> String:
 
 ## Surprise item boxes draw from the data-driven catalogue (assets/kart/items/kart_items.json).
 ## Skill resonance rings keep their deterministic award.
-func _roll_catalog_item(place: int, progress: float = -INF) -> String:
+func _roll_catalog_item(place: int, progress: float = -INF, for_player: bool = true) -> String:
 	# Data-driven odds from assets/kart/items/kart_items.json; the legacy three-item
 	# pool stays as a safe fallback if the catalog cannot be read.
 	var rolled: String = ITEM_CATALOG.roll(
-		place, rng, _catch_up_amount(place, distance if progress == -INF else progress)
+		place, rng, _catch_up_amount(place, distance if progress == -INF else progress), for_player
 	)
 	if not rolled.is_empty():
 		return rolled
@@ -6220,7 +6220,7 @@ func _rival_collect_catalog_box(index: int) -> void:
 			if rival_catalog_collected.has(key):
 				continue
 			rival_catalog_collected[key] = true
-			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index])
+			opponent_items[index] = _roll_catalog_item(_opponent_place(index), opponent_distances[index], false)
 			item_telemetry.note_draw(
 				index, _opponent_place(index), opponent_items[index],
 				int(opponent_distances[index] / maxf(track_length, 1.0)), elapsed

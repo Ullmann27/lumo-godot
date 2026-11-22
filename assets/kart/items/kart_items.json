@@ -93,9 +93,10 @@
       "range": 70.0,
       "role": "attack",
       "weights": [1.8, 8.2, 11.5, 12.4, 12.0, 9.3],
+      "player_weights": [3.4, 15.0, 19.8, 20.8, 20.3, 15.6],
       "sound": "item",
       "charges": 2,
-      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer. Gewichte 19.11.2026 (Monte-Carlo-Beleg scripts/tests/kart_rocket_odds_montecarlo.gd): Platz 1 selten (~5 %), Plätze 2-6 ~20-27 %; Ketten verhindert kart_rocket_fairness.gd."
+      "note": "Zwei Salven: links und rechts je ein Halter mit zwei Raketen. 1. Tippen = scharf schalten, 2. Tippen = Feuer. Die KI nutzt ihre ursprüngliche Verteilung. Die getrennten Spielergewichte erhöhen die Ziehchance, die Treffer-Schonzeit gilt weiterhin."
     },
     {
       "id": "spark_ball",
@@ -116,6 +117,7 @@
         2,
         1
       ],
+      "player_weights": [5.8, 7.2, 6.8, 5.5, 4.2, 3.0],
       "sound": "item"
     },
     {
@@ -247,6 +249,7 @@
         1,
         1
       ],
+      "player_weights": [0, 3.3, 3.7, 4.1, 4.2, 4.0],
       "sound": "item",
       "sounds": [
         "meteor_launch",

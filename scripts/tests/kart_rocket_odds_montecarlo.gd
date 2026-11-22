@@ -9,16 +9,12 @@ extends SceneTree
 const CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
 const ROCKET := "star_rocket"
 const DIFFICULTIES: Array[String] = ["gemuetlich", "flott", "pro"]
-## Zielquoten Sternraketen je Platz [min, max]: Platz 1 selten (nicht unmöglich), Plätze 2–6
-## deutlich häufiger als vorher, hinten nicht über 30 %, damit Schild, Turbo und Aufholhilfen
-## (Kometen-Trio, Nordlicht) für die Letzten wichtig bleiben.
+## Child-only projectile weights leave the original rival draw as the reproducible
+## baseline. Front-runners remain less heavily armed than the rest of the field.
+const MEASURED := ["star_rocket", "spark_ball", "fire_meteor"]
 const TARGETS: Dictionary = {
-	1: [0.03, 0.08],
-	2: [0.15, 0.23],
-	3: [0.22, 0.31],
-	4: [0.22, 0.31],
-	5: [0.22, 0.31],
-	6: [0.22, 0.31],
+	1: [0.065, 0.13], 2: [0.24, 0.33], 3: [0.29, 0.40],
+	4: [0.28, 0.40], 5: [0.27, 0.40], 6: [0.27, 0.39],
 }
 
 var game
@@ -89,17 +85,31 @@ func _run() -> void:
 			game.rng.seed = 20261119 + place * 101 + DIFFICULTIES.find(difficulty) * 7
 			gap_rng.seed = 911 + place
 			var counts: Dictionary = {}
+			var baseline: Dictionary = {}
+			var eligible := true
 			for n in range(draws):
 				var gap: float = 0.0 if place == 1 else gap_rng.randf_range(0.0, 150.0)
 				_arrange(place, gap)
 				if n == 0:
 					_check(game._place() == place, "Aufstellung Platz %d" % place)
+				var state: int = game.rng.state
+				var previous: String = game._roll_catalog_item(place, game.distance, false)
+				baseline[previous] = int(baseline.get(previous, 0)) + 1
+				game.rng.state = state
 				var id: String = game._roll_catalog_item(place)
+				var rank := clampi(place + roundi(2.0 * game._catch_up_amount(place, game.distance)), 1, 6)
+				eligible = eligible and float(CATALOG.entry(id).weights[rank-1]) > 0.0
 				counts[id] = int(counts.get(id, 0)) + 1
 			var shares: Dictionary = {}
 			for id in counts:
 				shares[id] = snappedf(float(counts[id]) / float(draws), 0.0001)
-			table[difficulty][str(place)] = {"draws": draws, "shares": shares}
+			table[difficulty][str(place)] = {"draws": draws, "shares": shares, "player_counts": counts, "baseline_and_ai_counts": baseline}
+			_check(eligible, "Jede Ziehung ist für den effektiven Rang zulässig")
+			for measured in MEASURED:
+				if place == 1 and measured == "fire_meteor":
+					_check(not counts.has(measured), "Meteor bleibt auf Platz 1 gesperrt")
+				elif check_targets:
+					_check(int(counts.get(measured, 0)) > int(baseline.get(measured, 0)), "Häufigere Spielerziehung %s %s Rang %d" % [measured, difficulty, place])
 			var rocket: float = float(shares.get(ROCKET, 0.0))
 			print(
 				(
@@ -124,7 +134,7 @@ func _run() -> void:
 				)
 	var analytic: Dictionary = {}
 	for place in range(1, 7):
-		analytic[str(place)] = CATALOG.odds(place)
+		analytic[str(place)] = {"player": CATALOG.odds(place, true), "before_and_ai": CATALOG.odds(place)}
 	if not report.is_empty():
 		var file := FileAccess.open(report, FileAccess.WRITE)
 		if file != null:
