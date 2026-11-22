@@ -12,6 +12,8 @@ APK-Version und Buildnummer aus der App, Godot-Commit aus dem Baunachweis, Andro
 | Lumo-Lauf | Eine Welt bis zum Ziel laufen. Medaille und Bestzeit ablesen und nach erneutem Start vergleichen. | NICHT GETESTET |
 | 3D-Nachhilfe | Je eine Plus-, Minus- und Malaufgabe öffnen. Darstellungen und Hilfeschritte antippen. Nach dem Zuklappen prüfen, ob Figuren, Aufgabe und Bedienelemente weiterhin sichtbar und erreichbar sind. | NICHT GETESTET |
 
+Für 2064 zusätzlich die Rechenhilfe bei **8 + 5**, **14 − 8** und **6 × 7** oder bei einer gleichartigen Aufgabe öffnen. Das Kind lässt den ersten Sprung auf der Zehn landen und führt den zweiten selbst aus. Beim Punktefeld die goldene Reihe erklären lassen und das Feld drehen. Für einen Vergleich mit einem späteren Übungstag bei gleich schweren, neuen Aufgaben die Anzahl selbstständiger Lösungen, Versuche und benötigter Hilfen im selben lokalen Profil notieren.
+
 Die Menüdiagnose kann auf einem per USB verbundenen Rechner während des Versuchs mitlaufen:
 
 ```sh
