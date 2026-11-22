@@ -24,6 +24,17 @@ func _run() -> void:
 	assert(audio.music_volume == 1.0 and audio.effects_volume == 0.0, "Werte werden begrenzt")
 	audio.play_menu()
 	await process_frame
+	var catalog = load("res://scripts/games/kart_catalog.gd")
+	var sources: Dictionary = {}
+	for entry in catalog.TRACKS:
+		audio.play_track(entry.id)
+		var playing: AudioStreamOggVorbis = audio._music[audio._active].stream
+		assert(playing != null and playing.loop and playing.get_length() > 10.0, str(entry.id))
+		assert(not sources.has(playing.resource_path), "%s needs its own score" % entry.id)
+		sources[playing.resource_path] = true
+	for world in audio.PARCOURS_MUSIC:
+		audio.play_track(world)
+		assert(audio._current == world and audio._music[audio._active].stream.get_length() > 55.0, world)
 	audio.play_track("sonnenhafen")
 	audio.effect("collision")
 	await process_frame

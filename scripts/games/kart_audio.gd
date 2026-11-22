@@ -11,10 +11,12 @@ const JUNGLE_AMBIENCE = preload("res://scripts/games/kart_jungle_audio.gd")
 ## Hook items-neu: Töne der erweiterten Items (gleicher Ordner items/).
 const ITEM_EXT_REGISTRY = preload("res://scripts/games/kart_items/ext/kart_item_ext_registry.gd")
 const TRACKS := ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
+const COURSE_CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const PARCOURS_MUSIC := ["wolkenwerkstatt", "eisturm", "dschungeltempel"]
 const EFFECTS := ["start", "boost", "drift", "item", "finish", "countdown", "collision"]
 ## Item cues (tools/art/generate_kart_item_audio.py) in assets/audio/kart/items/.
 const ITEM_EFFECTS := [
-	"rocket_arm", "lock_beep", "lock_on", "rocket_launch", "rocket_hit", "shield_up",
+	"rocket_arm", "lock_beep", "lock_on", "rocket_launch", "rocket_hit", "magnet_pull", "shield_up",
 	"shield_ping", "missile_warning", "roulette_tick", "roulette_done",
 ]
 ## Short repeating cues (lock tone, roulette, warning) use their own player so they
@@ -243,7 +245,7 @@ func play_track(track_id: Variant) -> void:
 	if track == JUNGLE_ID:
 		_play_music(_jungle_music("main"))
 		return
-	if not TRACKS.has(track):
+	if track not in PARCOURS_MUSIC and not COURSE_CATALOG.TRACKS.any(func(entry: Dictionary): return str(entry.id) == track):
 		track = "sonnenhafen"
 	_play_music(track)
 
@@ -319,7 +321,7 @@ func effect(kind: String, pitch: float = 1.0, gain: float = 1.0) -> void:
 	if fx_cue:
 		fx_requests[kind] = int(fx_requests.get(kind, 0)) + 1
 	var passage_cue: bool = PASSAGE_EFFECTS.has(kind)
-	if _blocked() or not (EFFECTS.has(kind) or item_cue or fx_cue or passage_cue):
+	if _blocked() or effects_volume <= .01 or not (EFFECTS.has(kind) or item_cue or fx_cue or passage_cue):
 		return
 	_ensure_players()
 	var now := Time.get_ticks_msec()

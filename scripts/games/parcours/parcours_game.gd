@@ -216,7 +216,7 @@ func start_world(id: String, style: String, resume: Dictionary = {}) -> void:
 	hud.show_play(course, play_style)
 	countdown = START_COUNTDOWN if resume.is_empty() else 1.0
 	playing = true
-	kart_audio.play_track(str(course.theme.get("music", "bergwelt")))
+	kart_audio.play_track(world_id)
 	hud.say(
 		(
 			"%s! %s" % [course.title, "Fahr los, wenn das Licht grün wird."]
