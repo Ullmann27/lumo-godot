@@ -39,6 +39,8 @@ var plates: Array[Dictionary] = []
 var mechanisms: Dictionary = {}
 ## Fahrlinie für den Prüf-Bot (und für die Kamera-Vorschau), mit Warteregeln.
 var route: Array[Dictionary] = []
+## Optionaler zweiter Fahrweg zwischen zwei Wegpunkten der Hauptlinie.
+var race_branch: Dictionary = {}
 ## Wegpunkte des Fußabschnitts für den Bot, je Station.
 var foot_routes: Dictionary = {}
 ## Fahrlinien über die Geheimwege (für den Geheimweg-Test).

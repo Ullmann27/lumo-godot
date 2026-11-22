@@ -6,7 +6,7 @@ extends RefCounted
 const DRIVE = preload("res://scripts/games/parcours/parcours_drive.gd")
 const WALKER = preload("res://scripts/games/parcours/parcours_walker.gd")
 const STAR_RADIUS: float = 1.9
-const PLAY_STYLES: Array[String] = ["zeitlauf", "erkunden"]
+const PLAY_STYLES: Array[String] = ["zeitlauf", "erkunden", "rennen"]
 
 var course
 var drive = DRIVE.new()
@@ -31,6 +31,7 @@ var station_done: Dictionary = {}
 ## Ereignisse dieses Schritts für Szene und Tests: [{kind, text, …}].
 var events: Array[Dictionary] = []
 var finish_order_ok: bool = false
+var shared_lift: bool = false
 
 
 func setup(target_course, style: String = "zeitlauf") -> void:
@@ -63,7 +64,8 @@ func step(
 	var along: float = 0.0 if slab < 0 else float(drive.hit.along)
 	if on_foot:
 		slab = -1
-	course.update_mechanics(state, t, slab, along)
+	if not shared_lift:
+		course.update_mechanics(state, t, slab, along)
 	if on_foot:
 		walker.step(delta, move, course, t0, t, state)
 		_foot_logic()
@@ -91,6 +93,8 @@ func _progress(p: Vector3) -> void:
 	if cp > checkpoint:
 		checkpoint = cp
 		reached[cp] = true
+		if play_style == "rennen":
+			drive.boosts = maxi(1, drive.boosts)
 		events.append({"kind": "checkpoint", "id": str(course.checkpoints[cp].id)})
 	for index in range(course.stars.size()):
 		if stars_taken.has(index):

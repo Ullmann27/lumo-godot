@@ -54,6 +54,9 @@ func record(result: Dictionary) -> Dictionary:
 		if float(entry.best_time) <= 0.0 or seconds < float(entry.best_time):
 			answer.new_best = float(entry.best_time) > 0.0
 			entry.best_time = seconds
+	elif str(result.get("style", "")) == "rennen":
+		entry.races = int(entry.get("races", 0)) + 1
+		entry.best_place = mini(int(entry.get("best_place", 3)), int(result.get("place", 3)))
 	else:
 		entry.explored = int(entry.explored) + 1
 	entry.best_stars = maxi(int(entry.best_stars), int(result.get("starTokens", 0)))

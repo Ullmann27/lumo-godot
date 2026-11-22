@@ -3,6 +3,7 @@ extends RefCounted
 ## Verzögerung, lenkt mit Rauschen und nutzt nur die echten Eingaben (Lenkachse,
 ## Bremse, Gas, Aussteigen, Hebel, Sprung). Er folgt der Fahrlinie der Welt.
 
+var racing_line: Array = []
 var reaction: float = 0.32
 var noise: float = 0.12
 var rng := RandomNumberGenerator.new()
@@ -23,12 +24,13 @@ func _init(seed_value: int = 7, reaction_seconds: float = 0.32, noise_amount: fl
 ## Liefert {axis, brake, gas} für das Kart.
 func drive_input(run, delta: float) -> Dictionary:
 	var drive = run.drive
+	var route: Array = run.course.route if racing_line.is_empty() else racing_line
 	if not _history.is_empty() and (_history[-1].pos as Vector3).distance_to(drive.position) > 8.0:
 		# Nach einer Rettung: Fahrlinie ab dem nächstgelegenen Punkt neu aufnehmen.
 		_history.clear()
 		var best: float = INF
-		for i in range(run.course.route.size()):
-			var d: float = (run.course.route[i].pos as Vector3).distance_to(drive.position)
+		for i in range(route.size()):
+			var d: float = (route[i].pos as Vector3).distance_to(drive.position)
 			if d < best:
 				best = d
 				target = i
@@ -36,7 +38,6 @@ func drive_input(run, delta: float) -> Dictionary:
 	while _history.size() > 2 and run.t - float(_history[1].t) >= reaction:
 		_history.pop_front()
 	var seen: Dictionary = _history[0]
-	var route: Array = run.course.route
 	var pos: Vector3 = seen.pos
 	# Weiter, sobald der Punkt erreicht oder überholt ist.
 	while target < route.size() - 1:
