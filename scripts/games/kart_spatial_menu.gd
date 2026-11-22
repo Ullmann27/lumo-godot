@@ -133,7 +133,8 @@ func set_landing_active(active: bool) -> void:
 		control.visible = not active
 	_selection_surface.visible = not active
 	view_choice.visible = not active and step in [1, 2]
-	preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	preview_camera.make_current()
 	_sync_home_stage()
 	_fit_welcome_camera()
 
@@ -241,6 +242,7 @@ func _sync_workshop_host() -> void:
 	if not is_instance_valid(service_station):
 		return
 	var show_host: bool = _application_active and visible and step == 2 and inspection_view == 0 and not _landing_active
+	show_host = show_host and not (parts_bay != null and parts_bay.is_open())
 	service_station.set_active(show_host, reduced_motion)
 	# The same original fox stands beside his kart only in the workshop. The
 	# selected vehicle/driver are untouched for every actual start and inspection.
@@ -316,6 +318,11 @@ func _notification(what: int) -> void:
 		_sync_home_stage()
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_APPLICATION_RESUMED]:
 		_application_active = true
+		if _spatial_ready and visible and not is_instance_valid(workshop_view):
+			preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+			preview_camera.make_current()
+			_queue_preview_render_scale()
+			_fit_welcome_camera.call_deferred()
 		_sync_home_stage()
 		# Nach der Rückkehr in die App sofort prüfen, ob die Vorschau noch zeichnet.
 		_preview_watch_time = PREVIEW_WATCH_SECONDS
@@ -863,18 +870,43 @@ func preview_pixels_problem() -> String:
 	var image: Image = texture.get_image()
 	if image == null or image.is_empty():
 		return "bild_leer"
-	var low := 1.0
-	var high := 0.0
-	for gx in range(1, 10):
-		for gy in range(1, 10):
-			var color: Color = image.get_pixel(
-				mini(image.get_width() - 1, int(image.get_width() * gx / 10.0)),
-				mini(image.get_height() - 1, int(image.get_height() * gy / 10.0))
-			)
-			var light: float = color.get_luminance() * color.a
-			low = minf(low, light)
-			high = maxf(high, light)
-	return "bild_einfarbig" if high - low < 0.02 else ""
+	# Sample local edges where the vehicle is framed. A uniform wall with a
+	# brightness gradient passed the old full-screen min/max luminance check.
+	var area := _visible_stage_region().intersection(Rect2(0, 0, 1, 1))
+	if not area.has_area():
+		return "vorschau_ohne_flaeche"
+	var edges := 0
+	for row in range(1, 10):
+		var previous := Color()
+		for col in range(1, 14):
+			var uv := area.position + area.size * Vector2(col / 14.0, row / 10.0)
+			var point := Vector2i(uv * Vector2(image.get_size()))
+			var color := image.get_pixelv(point.min(image.get_size() - Vector2i.ONE))
+			if col > 1 and maxf(absf(color.r - previous.r),
+					maxf(absf(color.g - previous.g), absf(color.b - previous.b))) > 0.09:
+				edges += 1
+			previous = color
+	return "bild_einfarbig" if edges < 3 else ""
+
+
+func _renew_render_target() -> void:
+	# An Android surface can resume with a valid scene and a stale colour buffer.
+	# Keep the live nodes and their signals, but allocate a fresh viewport target.
+	var old := preview_viewport
+	var fresh := SubViewport.new()
+	fresh.world_3d = old.world_3d
+	fresh.size = old.size
+	fresh.msaa_3d = old.msaa_3d
+	fresh.scaling_3d_scale = old.scaling_3d_scale
+	fresh.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	preview_container.add_child(fresh)
+	preview.reparent(fresh, false)
+	preview_container.remove_child(old)
+	old.queue_free()
+	preview_viewport = fresh
+	fresh.size_changed.connect(_queue_preview_render_scale)
+	preview_camera.make_current()
+	_queue_preview_render_scale()
 
 
 ## Baut die Vorschau neu auf (höchstens alle 30 s, höchstens sechsmal je Besuch).
@@ -887,9 +919,9 @@ func repair_preview(reason: String) -> bool:
 	push_warning("[KartMenu] preview_repair:%s (%d)" % [reason, preview_repairs.size()])
 	print("[KartMenu] preview_repair:%s count=%d" % [reason, preview_repairs.size()])
 	if is_instance_valid(preview_viewport):
-		preview_viewport.render_target_update_mode = (
-			SubViewport.UPDATE_WHEN_VISIBLE if _landing_active else SubViewport.UPDATE_ALWAYS
-		)
+		if reason in ["bild_fehlt", "bild_leer", "bild_einfarbig"]:
+			_renew_render_target()
+		preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	# Der Drehpunkt der Vorschau steht immer im Ursprung (nur seine Drehung wird animiert).
 	if is_instance_valid(preview_pivot):
 		preview_pivot.position = Vector3.ZERO
@@ -899,7 +931,6 @@ func repair_preview(reason: String) -> bool:
 	_refresh_preview()
 	if is_instance_valid(preview_camera):
 		preview_camera.make_current()
-	if _landing_active:
-		_fit_welcome_camera()
+	_fit_welcome_camera()
 	return true
 

@@ -745,8 +745,25 @@ func _show_garage() -> void:
 	modal_backdrop.hide()
 	hud_content.hide()
 	map_panel.hide()
+	if is_instance_valid(item_hud):
+		item_hud.hide()
+		item_hud.camera = null
 	if is_instance_valid(race_root):
-		race_root.hide()
+		# Saving is complete before entering here. Release the race camera, world,
+		# render targets and five rival rigs before building the showroom on Android.
+		darkride_event.bind_world(null)
+		if is_instance_valid(kart_audio):
+			kart_audio.bind_world(null)
+		remove_child(race_root)
+		race_root.free()
+		race_root = null
+		player = null
+		camera = null
+		world = null
+		arena = null
+		opponents.clear()
+	if is_instance_valid(dive_tint):
+		dive_tint.hide()
 	records.update_unlocks(ProgressStore.total_stars(), CATALOG.DRIVERS, CATALOG.KARTS)
 	if is_instance_valid(garage):
 		garage.queue_free()
@@ -813,7 +830,6 @@ func _hide_reference_landing() -> void:
 	if is_instance_valid(garage):
 		garage.show()
 		garage.set_landing_active(false)
-		garage.preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 
 
 func _reference_select_mode(selected: String) -> void:
@@ -981,6 +997,15 @@ static func _known_mode(requested: String) -> String:
 	return requested if requested in MODE_IDS else "race"
 
 
+func _close_garage_for_race() -> void:
+	for screen in [reference_landing, garage]:
+		if is_instance_valid(screen):
+			screen.hide()
+			screen.queue_free()
+	reference_landing = null
+	garage = null
+
+
 func _begin_race() -> void:
 	_session_handed_off = false
 	_track_pass_owner = track_pass.child_key.sha256_text()
@@ -988,10 +1013,7 @@ func _begin_race() -> void:
 	_reset_action_course()
 	loop_state = PHYSICAL_LOOP.new()
 	loop_count = 0
-	if is_instance_valid(garage):
-		garage.queue_free()
-	if is_instance_valid(reference_landing):
-		reference_landing.queue_free()
+	_close_garage_for_race()
 	menu_active = false
 	hud_content.show()
 	modal.hide()
@@ -1115,8 +1137,7 @@ func _resume_saved_race() -> void:
 	selected_driver = str(session_config.get_value("race", "selected_driver", "fox"))
 	selected_kart = str(session_config.get_value("race", "selected_kart", "comet"))
 	_refresh_kart_factors()
-	if is_instance_valid(garage):
-		garage.queue_free()
+	_close_garage_for_race()
 	menu_active = false
 	hud_content.show()
 	_build_world()
@@ -4838,6 +4859,8 @@ func _restart_setup() -> void:
 
 
 func _leave_race_for_menu() -> void:
+	if menu_active:
+		return
 	_save_session()
 	saved_session_available = not abandoned and (not finished or pending_cup_next)
 	_show_garage()
