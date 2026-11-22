@@ -5497,6 +5497,8 @@ func _apply_volumes() -> void:
 func _sound_effect(kind: String, pitch: float = 1.0) -> void:
 	if is_instance_valid(kart_audio):
 		kart_audio.effect(kind, pitch)
+	if reduced_motion and kind in ["rocket_hit", "thunder_strike", "whirl_hit", "magnet_pull"]:
+		return
 
 
 # --- Arcade gameplay layer (Lumo-Kart items, spins, slipstream, tricks, combos) ---
@@ -5787,6 +5789,7 @@ func _use_catalog_item() -> void:
 			magnet_time = float(row.get("seconds", 4.0))
 			message.text = "Sternmagnet: Sterne fliegen zu dir, Windschatten zieht stärker!"
 			_fx("magnet", at)
+			item_ext.arm_magnet(-1, magnet_time)
 		"aurora":
 			aurora_time = float(row.get("seconds", 4.5))
 			shield_time = maxf(shield_time, aurora_time)
@@ -5844,6 +5847,7 @@ func _rival_use_catalog_item(index: int, local_gap: Vector3) -> void:
 			opponent_boost_times[index] = 1.5
 		"aurora":
 			var seconds: float = ITEM_CATALOG.number(id, "seconds", 4.5)
+			item_ext.arm_magnet(index, ITEM_CATALOG.number(id, "seconds", 4.0))
 			opponent_aurora_times[index] = seconds
 			opponent_shield_times[index] = maxf(opponent_shield_times[index], minf(seconds, 5.0))
 		_:
@@ -5904,7 +5908,8 @@ func _update_item_feedback(delta: float) -> void:
 			_fx("item_end", player.global_position + Vector3.UP * 0.7, 0.5)
 
 
-func _spin_player(seconds: float) -> void:
+func _spin_player(seconds: float, rocket: bool = false) -> void:
+	player.set_meta("rocket_roll", rocket)
 	player_spin_time = seconds
 	player_spin_total = maxf(0.1, seconds)
 	speed *= 0.6
@@ -5912,7 +5917,8 @@ func _spin_player(seconds: float) -> void:
 	_stat("player_hits_taken")
 
 
-func _spin_rival(index: int, seconds: float) -> void:
+func _spin_rival(index: int, seconds: float, rocket: bool = false) -> void:
+	opponents[index].set_meta("rocket_roll", rocket)
 	opponent_spin_times[index] = seconds
 	opponent_spin_totals[index] = maxf(0.1, seconds)
 
@@ -5922,7 +5928,7 @@ func _apply_item_event(event: Dictionary) -> void:
 	var source: int = int(event.get("source", -99))
 	var at: Vector3 = event.get("position", Vector3.ZERO)
 	var rocket: bool = str(event.get("item", "")) == ROCKET_ID
-	if is_instance_valid(rocket_flight):
+	if is_instance_valid(rocket_flight) and str(event.type) != "hit":
 		rocket_flight.on_item_event(event, rocket)
 	item_telemetry.note_event(str(event.type), event, elapsed)
 	if str(event.type) == "intercepted":
@@ -5964,20 +5970,22 @@ func _apply_item_event(event: Dictionary) -> void:
 		return
 	var grace: float = float(_lock_rules().grace)
 	if target == -1:
-		_spin_player(float(event.spin))
+	if rocket and is_instance_valid(rocket_flight):
+		rocket_flight.on_item_event(event, true)
+		_spin_player(minf(float(event.spin), 1.0) if rocket else float(event.spin), rocket)
 		player_grace_time = grace
 		# Das Kind selbst: milder Hüpfer, die Kamera bleibt ruhig (halbe Effektstärke).
 		var hit_at: Vector3 = player.global_position + Vector3.UP * 0.8
 		_fx("rocket_hit" if rocket else "hit_spin", hit_at, 0.45 if rocket else 1.0)
 		if is_instance_valid(rocket_flight) and rocket:
-			rocket_flight.start_tumble(-1, float(event.spin) * 0.8, true)
+			rocket_flight.start_tumble(-1, player_spin_total, true)
 		message.text = "Huch, gedreht! Gleich geht's weiter."
 		if source >= 0 and source < opponents.size():
 			opponents[source].cheer_in_race(1.2)
 	elif target >= 0 and target < opponents.size():
-		_spin_rival(target, float(event.spin))
+		_spin_rival(target, minf(float(event.spin), 1.1) if rocket else float(event.spin), rocket)
 		if is_instance_valid(rocket_flight):
-			rocket_flight.start_tumble(target, float(event.spin), rocket)
+			rocket_flight.start_tumble(target, opponent_spin_totals[target], rocket)
 		if target < opponent_grace_times.size():
 			opponent_grace_times[target] = grace
 		_fx("rocket_hit" if rocket else "hit_spin", opponents[target].global_position + Vector3.UP * 0.8, 0.6 if source != -1 else 1.0)
@@ -6090,7 +6098,7 @@ func _apply_spin_visuals() -> void:
 	_player_spin_applied = false
 	var base: Basis = player.basis
 	var spun: Basis = base
-	if player_spin_time > 0.0:
+	if player_spin_time > 0.0 and not player.get_meta("rocket_roll", false):
 		var t: float = 1.0 - player_spin_time / player_spin_total
 		var turns: float = 0.25 if reduced_motion else 2.0
 		var angle: float = TAU * turns * (1.0 - pow(1.0 - t, 2.0))
@@ -6101,7 +6109,7 @@ func _apply_spin_visuals() -> void:
 		_player_spun_basis = player.basis
 		_player_spin_applied = true
 	for i in range(opponents.size()):
-		if opponent_spin_times[i] <= 0.0:
+		if opponent_spin_times[i] <= 0.0 or opponents[i].get_meta("rocket_roll", false):
 			continue
 		var rival_t: float = 1.0 - opponent_spin_times[i] / opponent_spin_totals[i]
 		var rival_turns: float = 0.25 if reduced_motion else 2.0

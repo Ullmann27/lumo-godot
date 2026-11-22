@@ -20,6 +20,7 @@ const RESET_PROTECT_S: float = 4.0
 const AFTER_HIT_PROTECT_S: float = 12.0
 const MAX_CHASERS_ON_CHILD: int = 1
 const DANGER_KINDS: Array[String] = [
+	"start_finish",
 	"ramp",
 	"loop",
 	"jump",
@@ -71,6 +72,9 @@ func _areas(world) -> Array[Dictionary]:
 				trimmed.start = (
 					float(area.start) + (35.0 if str(area.kind) != "open_edge" else 30.0)
 				)
+				if str(area.kind) == "start_finish":
+					trimmed.start = -12.0
+					trimmed.end = 12.0
 				_danger.append(trimmed)
 	return _danger
 

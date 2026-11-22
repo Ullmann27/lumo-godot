@@ -199,7 +199,8 @@ func _contact(entry: Dictionary, key: int) -> void:
 		host.involves_player(int(entry.owner), key)
 		or host.eye().distance_to(host.kart_centre(key)) < 50.0
 	):
-		host.sound("whirl_hit")
+		if str(entry.result) == "hit":
+			host.sound("whirl_hit")
 
 
 # --- Darstellung ---------------------------------------------------------------------------

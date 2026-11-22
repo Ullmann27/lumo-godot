@@ -49,13 +49,12 @@ def cue(name):
         buzz = np.sign(np.sin(TAU * np.cumsum(110 + 330 * (t / t[-1]) ** 1.4) / SR)) * 0.08 * env(t, 0.1, 0.1)
         return hum + buzz + crackle(len(t), 60, 500) * 0.35 * (t / t[-1])
     if name == "thunder_strike":
-        # Bright zap, then a soft rolling rumble (no sharp crack): lightning hits from above.
-        t = t_axis(1.3)
-        zap = noise(len(t), 1800, 9000) * np.exp(-t * 22) * 0.7
-        snap = sweep(t, 2400, 300, 0.4) * np.exp(-t * 18) * 0.35
-        rumble = noise(len(t), 30, 260) * env(t, 0.06, 0.9) * np.exp(-t * 2.2) * 0.9
-        sparkle = sum(bell(delayed(t, d), f, 9) for d, f in ((0.04, 2093), (0.1, 2637), (0.16, 3136))) * 0.18
-        return zap + snap + rumble + sparkle + crackle(len(t), 40, 400) * 0.25 * np.exp(-t * 3)
+        t = t_axis(.78)
+        # Two short discharges above the rolling, lower thunder.
+        crack = noise(len(t), 620, 3500) * (np.exp(-39*t) + .46*np.exp(-43*np.abs(t-.065)))
+        bass = noise(len(t), 53, 300) * env(t,.035,.48) * np.exp(-3.6*t)
+        body = np.sin(TAU*(68*t+1.8*(1-np.exp(-17*t)))) * np.exp(-5*t)
+        return (.46*crack+.66*bass+.23*body)*env(t,.008,.13)
     if name == "frost_launch":
         t = t_axis(0.55)
         glass = bell(t, 2349, 8) * 0.35 + bell(t, 3520, 11) * 0.2
@@ -110,10 +109,11 @@ def cue(name):
         whistle = sweep(t, 700, 1100, 0.9) * env(t, 0.2, 0.3) * 0.12
         return wind * swirl * 0.6 + whistle
     if name == "whirl_hit":
-        t = t_axis(0.8)
-        gust = noise(len(t), 200, 3200) * np.exp(-t * 4) * env(t, 0.01, 0.2) * 0.7
-        flutter = noise(len(t), 1500, 5000) * (0.5 + 0.5 * np.sin(TAU * 18 * t)) * np.exp(-t * 6) * 0.3
-        return gust + flutter
+        t = t_axis(.72)
+        breath = noise(len(t),160,2300)*env(t,.13,.36)
+        spin = .52+.48*np.sin(TAU*(4.4*t+5.3*t*t))
+        whistle = sweep(t,550,220,.6)*np.sin(np.pi*t/t[-1])**2
+        return breath*spin*.72 + whistle*.19
     if name == "gravity_wave":
         # Deep "wobbly" whoomp + rising hologram shimmer: space bends, karts float.
         t = t_axis(1.2)

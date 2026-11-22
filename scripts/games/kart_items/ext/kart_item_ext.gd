@@ -37,6 +37,7 @@ var effects: Dictionary = {}
 var mods: Dictionary = {}
 ## key -> [{left, total, amount, done}] laufende seitliche Versätze.
 var pushes: Dictionary = {}
+var magnet_contacts: Dictionary = {}
 var child_attack_cooldown: float = 0.0
 var reduced_motion: bool = false
 var quality: String = "medium"
@@ -115,8 +116,43 @@ func tick(delta: float) -> void:
 	_warning_cooldown = maxf(0.0, _warning_cooldown - delta)
 	_age_mods(delta)
 	_apply_pushes(delta)
+	_update_magnets(delta)
 	for behaviour in effects:
 		effects[behaviour].tick(delta)
+
+
+## One near-field tug per charge. Pickups continue to follow the original magnet timer.
+func arm_magnet(owner_key: int, seconds: float) -> void:
+	magnet_contacts[owner_key] = seconds
+
+
+func _update_magnets(delta: float) -> void:
+	for owner_key in magnet_contacts.keys():
+		magnet_contacts[owner_key] -= delta
+		if float(magnet_contacts[owner_key]) <= 0.0:
+			magnet_contacts.erase(owner_key)
+			continue
+		var closest := 6.0
+		var target := -99
+		for key in racer_keys():
+			if key == owner_key or (key == PLAYER and not child_attackable(owner_key)):
+				continue
+			if absf(progress(owner_key) - progress(key)) > 8.0:
+				continue
+			var gap := kart_centre(owner_key).distance_to(kart_centre(key))
+			if gap < closest and safe_at(progress(key), key):
+				closest = gap
+				target = key
+		if target == -99:
+			continue
+		magnet_contacts.erase(owner_key)
+		if resolve(target, owner_key, "star_magnet", kart_centre(target)) == "hit":
+			var lane_gap := lateral(owner_key) - lateral(target)
+			push(target, clampf(lane_gap * .38, -.85, .85), .42)
+			if absf(lane_gap) < .45:
+				add_mod(target, "magnet_pull", .42, .93 if progress(target) > progress(owner_key) else 1.07, 1.0, 1.0)
+			if involves_player(owner_key, target) or eye().distance_to(kart_centre(target)) < 35.0:
+				sound("magnet_pull")
 
 
 func speed_factor(key: int) -> float:
@@ -188,6 +224,7 @@ func save_state() -> Dictionary:
 		"version": SAVE_VERSION,
 		"mods": mods.duplicate(true),
 		"pushes": pushes.duplicate(true),
+		"magnet_contacts": magnet_contacts.duplicate(),
 		"child_attack_cooldown": child_attack_cooldown,
 		"effects": saved_effects,
 	}
@@ -197,6 +234,11 @@ func restore_state(data: Variant) -> void:
 	clear()
 	if not data is Dictionary or int(data.get("version", 0)) != SAVE_VERSION:
 		return
+	var contacts: Variant = data.get("magnet_contacts", {})
+	if contacts is Dictionary:
+		for key in contacts:
+			if typeof(key) == TYPE_INT and _valid_key(key) and typeof(contacts[key]) in [TYPE_FLOAT, TYPE_INT]:
+				arm_magnet(key, clampf(contacts[key], 0.0, 4.0))
 	var cooldown: Variant = data.get("child_attack_cooldown", 0.0)
 	child_attack_cooldown = (
 		clampf(float(cooldown), 0.0, 12.0) if typeof(cooldown) in [TYPE_INT, TYPE_FLOAT] else 0.0
@@ -226,6 +268,7 @@ func restore_state(data: Variant) -> void:
 func clear() -> void:
 	mods.clear()
 	pushes.clear()
+	magnet_contacts.clear()
 	child_attack_cooldown = 0.0
 	for behaviour in effects:
 		effects[behaviour].clear()
@@ -396,6 +439,9 @@ func resolve(
 		race._cheer_timer = 1.2
 	elif target == PLAYER and source >= 0 and source < race.opponents.size():
 		race.opponents[source].cheer_in_race(1.0)
+	if item_id in ["thunder_star", "whirlwind", "star_magnet"] and is_instance_valid(race.rocket_flight):
+		var direction := -1.0 if _valid_key(source) and lateral(source) < lateral(target) else 1.0
+		race.rocket_flight.start_response(target, item_id, .76 if item_id == "whirlwind" else .56, direction)
 	return "hit"
 
 

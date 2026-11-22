@@ -33,10 +33,17 @@
     },
     {
       "file": "rocket_hit.ogg",
-      "seconds": 1.0,
-      "bytes": 12232,
-      "sha256": "7e100f2a32486ff93271403cd7c572c4592f038fb7fd1b7677eb9c16088df763",
+      "seconds": 0.58,
+      "bytes": 8151,
+      "sha256": "885af7a9b926f4ac12e11a1d9c49e8009a5bbe2d7664b03f60c99b9039cab990",
       "description": "Original synthesized rocket_hit cue"
+    },
+    {
+      "file": "magnet_pull.ogg",
+      "seconds": 0.49,
+      "bytes": 5830,
+      "sha256": "2950bf590874a87564c572027a22791b66e83d9c5fa00f340d835e74f150cff4",
+      "description": "Original synthesized magnet_pull cue"
     },
     {
       "file": "shield_up.ogg",

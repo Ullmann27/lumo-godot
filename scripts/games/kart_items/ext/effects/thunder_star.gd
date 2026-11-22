@@ -145,7 +145,8 @@ func _strike(entry: Dictionary) -> void:
 		"grace":
 			stats.grace += 1
 	if host.involves_player(owner, target) or host.eye().distance_to(dome_top) < 60.0:
-		host.sound("thunder_strike", 1.0 if str(entry.result) == "hit" else 1.12)
+		if str(entry.result) == "hit":
+			host.sound("thunder_strike")
 
 
 # --- Darstellung ---------------------------------------------------------------------------

@@ -89,12 +89,18 @@ def cue(name):
         late = np.roll(mono, int(0.045 * SR)) * 0.75
         return np.stack([mono, late], axis=1)
     if name == "rocket_hit":
-        # Friendly sparkle pop: soft boom + rising glitter chimes (no explosion crack).
-        t = t_axis(1.0)
-        boom = np.sin(TAU * (70 * t + 20 * (1 - np.exp(-t * 25)))) * np.exp(-t * 9) * 0.6
-        puff = noise(len(t), 200, 2400) * np.exp(-t * 10) * 0.35
-        chimes = sum(bell(np.maximum(t - d, 0), f, 6) * (t > d) for d, f in ((0.05, 1568), (0.12, 2093), (0.19, 2637), (0.27, 3136))) * 0.32
-        return boom + puff + chimes
+        # A padded, downward-pitched air drum and a short cloud of low debris.
+        t = t_axis(.58)
+        body = np.sin(TAU * (53*t + 3.4*(1-np.exp(-22*t)))) * np.exp(-t*10)
+        puff = noise(len(t), 130, 1020) * np.exp(-t*15)
+        flap = np.sin(TAU*106*t) * np.exp(-t*9) * (.5+.5*np.cos(TAU*12*t))
+        return (.72*body + .42*puff + .16*flap) * env(t,.013,.1)
+    if name == "magnet_pull":
+        # Two resonating tines approach the same pitch, then release together.
+        t = t_axis(.49)
+        tines = sum(np.sin(TAU*np.cumsum(276+offset*np.exp(-8*t))/SR) for offset in (-88,119))
+        catch = np.sin(TAU*552*t) * np.exp(-16*np.abs(t-.19))
+        return (tines*.32 + .19*catch) * env(t,.065,.24)
     if name == "shield_up":
         t = t_axis(0.8)
         shimmer = sum(np.sin(TAU * f * t + i) for i, f in enumerate((523, 784, 1046, 1318))) / 4
@@ -126,7 +132,7 @@ def cue(name):
     raise ValueError(name)
 
 
-CUES = ["rocket_arm", "lock_beep", "lock_on", "rocket_launch", "rocket_hit", "shield_up", "shield_ping", "missile_warning", "roulette_tick", "roulette_done"]
+CUES = ["rocket_arm", "lock_beep", "lock_on", "rocket_launch", "rocket_hit", "magnet_pull", "shield_up", "shield_ping", "missile_warning", "roulette_tick", "roulette_done"]
 
 
 def export(name, audio):

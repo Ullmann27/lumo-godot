@@ -334,10 +334,14 @@ func on_item_event(event: Dictionary, rocket: bool) -> void:
 
 ## Startet den Wirbel eines getroffenen Fahrers (key -1 = Kind). total = Drehzeit (s).
 func start_tumble(key: int, total: float, rocket: bool) -> void:
-	tumbles[key] = {"age": 0.0, "total": maxf(0.3, total), "kind": "rocket" if rocket else "spin"}
-	stats.tumbles += 1
+	start_response(key, "mild" if key == -1 else ("rocket" if rocket else "spin"), total)
 	if key >= 0 and rocket:
 		_assist_watch = maxf(_assist_watch, total)
+
+
+func start_response(key: int, kind: String, seconds: float, direction: float = 1.0) -> void:
+	tumbles[key] = {"age": 0.0, "total": clampf(seconds, .3, 1.2), "kind": kind, "direction": direction}
+	stats.tumbles += 1
 
 
 func impact(at: Vector3, strength: float = 1.0) -> void:
@@ -393,7 +397,7 @@ func muzzle(at: Transform3D) -> void:
 ## Anzeige-Versatz eines Fahrers in Kart-Raum für den Anteil u (0..1) der Drehzeit.
 ## Rakete auf Rivalen: hoch (~1,9 m), eine Rolle um die Längsachse, Aufsetzer, steht.
 ## mild (das Kind): kleiner Hüpfer ohne Rolle. reduced: nichts (nur der alte Rutscher).
-static func tumble_offset(u: float, kind: String, reduced: bool) -> Transform3D:
+static func tumble_offset(u: float, kind: String, reduced: bool, direction: float = 1.0) -> Transform3D:
 	if reduced or u <= 0.0 or u >= 1.0:
 		return Transform3D.IDENTITY
 	var lift: float = 0.0
@@ -416,8 +420,29 @@ static func tumble_offset(u: float, kind: String, reduced: bool) -> Transform3D:
 			pitch = -0.12 * sin(PI * m)
 		elif u < MILD_AIR + 0.12:
 			lift = 0.06 * sin(PI * (u - MILD_AIR) / 0.12)
+	var yaw := 0.0
+	if kind in ["thunder_star", "whirlwind", "star_magnet"]:
+		# A short anticipation, one clean arc, then damped suspension travel.
+		var airborne := clampf((u - .08) / .62, 0.0, 1.0)
+		var arc := sin(PI * airborne)
+		var landing := clampf((u - .70) / .30, 0.0, 1.0)
+		var rebound := sin(TAU * landing) * (1.0 - landing) * (1.0 - landing)
+		var spring := sin(PI * clampf(u / .08, 0.0, 1.0))
+		match kind:
+			"thunder_star":
+				lift = .46 * arc + .07 * absf(rebound)
+				pitch = -.19 * arc + .12 * spring + .09 * rebound
+				roll = .12 * sin(airborne * TAU * 2.0) * arc
+			"whirlwind":
+				lift = .78 * arc + .09 * absf(rebound)
+				yaw = direction * .98 * sin(TAU * airborne) * arc
+				roll = direction * (.22 * arc - .09 * rebound)
+			"star_magnet":
+				lift = .19 * arc + .035 * absf(rebound)
+				roll = direction * (.28 * arc - .11 * spring - .13 * rebound)
+				yaw = direction * .18 * arc
 	var pivot := Vector3(0.0, TUMBLE_PIVOT, 0.0)
-	var turn := Basis(Vector3.FORWARD, roll) * Basis(Vector3.RIGHT, pitch)
+	var turn := Basis(Vector3.UP, yaw) * Basis(Vector3.FORWARD, roll) * Basis(Vector3.RIGHT, pitch)
 	# Um den Schwerpunkt drehen, dann anheben.
 	return (
 		Transform3D(Basis.IDENTITY, pivot + Vector3.UP * lift)
@@ -436,10 +461,8 @@ func offset_for(node: Node3D) -> Variant:
 	if key < -1 or not tumbles.has(key):
 		return null
 	var record: Dictionary = tumbles[key]
-	var kind: String = "mild" if key == -1 else ("rocket" if str(record.kind) == "rocket" else "")
-	if kind.is_empty():
-		return null
-	return tumble_offset(float(record.age) / float(record.total), kind, reduced_motion)
+	return tumble_offset(float(record.age) / float(record.total), str(record.kind), reduced_motion, float(record.direction))
+
 
 
 func _camera_offset() -> Variant:
@@ -467,8 +490,7 @@ func tumble_lift(key: int) -> float:
 		return 0.0
 	var record: Dictionary = tumbles[key]
 	var u: float = float(record.age) / float(record.total)
-	var kind: String = "mild" if key == -1 else ("rocket" if str(record.kind) == "rocket" else "")
-	return tumble_offset(u, kind, reduced_motion).origin.y if not kind.is_empty() else 0.0
+	return tumble_offset(u, str(record.kind), reduced_motion, float(record.direction)).origin.y
 
 
 # --- Physiktakt: Wirbel-Uhr, Kamera-Hilfe, Trefferbild, Fluggeräusch ------------------------
