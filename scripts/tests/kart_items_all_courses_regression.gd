@@ -73,17 +73,20 @@ func _place_racers() -> void:
 
 func _clear_items() -> void:
 	game.item_runtime.clear()
+	game.item_ext.clear()
 	game.item = ""
 	game.item_charges = 0
 	game.item_roulette_time = 0.0
 	game._sync_player_rocket_phase()
 	game.shield_time = 0.0
+	game.aurora_time = 0.0
 	game.player_grace_time = 0.0
 	game.player_spin_time = 0.0
 	for i in range(game.opponents.size()):
 		game.opponent_spin_times[i] = 0.0
 		game.opponent_grace_times[i] = 0.0
 		game.opponent_shield_times[i] = 0.0
+		game.opponent_aurora_times[i] = 0.0
 		game.opponent_items[i] = ""
 
 
@@ -154,9 +157,9 @@ func _driven_pickup(row: Dictionary) -> void:
 	_check(not str(game.item).is_empty(), "nach der Box hat der Spieler ein Item (%s)" % game.item)
 	_check(game.reset_count == resets_before, "kein Rücksetzer auf dem Weg zur Box")
 	row["item_aus_box"] = str(game.item)
-	# The roulette spins about a second; afterwards the item must be usable.
+	# Der Sternenkompass zeigt die Ziehung rund 3,5 s; danach ist das Item nutzbar.
 	var roulette_frames := 0
-	while roulette_frames < 150 and game.item_roulette_time > 0.0:
+	while roulette_frames < 300 and game.item_roulette_time > 0.0:
 		game._physics_process(STEP)
 		roulette_frames += 1
 	_check(game.item_roulette_time <= 0.0, "Item-Rad kommt zur Ruhe (%d Schritte)" % roulette_frames)
@@ -197,6 +200,9 @@ func _rockets(row: Dictionary, base: float) -> void:
 
 func _shield_and_grace(row: Dictionary, base: float) -> void:
 	_clear_items()
+	# Mitten im Rennen, ohne frühere Trefferpause (kart_rocket_fairness.gd).
+	game.elapsed = 40.0
+	game.rocket_fairness.reset()
 	game.distance = base
 	game.lane = 0.0
 	for i in range(game.opponents.size()):
@@ -248,6 +254,11 @@ func _rival_ai(row: Dictionary, base: float) -> void:
 	game.opponent_items[0] = "star_rocket"
 	game.opponent_item_cooldowns[0] = 0.0
 	game.opponent_rocket_hold[0] = 99.0
+	# Mitten im Rennen: der Startschutz (kart_rocket_fairness.gd, erste 8 s) ist vorbei.
+	game.elapsed = 80.0
+	game.rocket_fairness.reset()
+	var reason: String = game.rocket_fairness.child_block_reason(game, 0)
+	_check(reason.is_empty(), "ruhige Teststelle: Kind darf erfasst werden (%s)" % reason)
 	var warned := false
 	var fired := false
 	for frame in range(360):
@@ -303,6 +314,7 @@ func _drive_effects(row: Dictionary, base: float) -> void:
 func _course_run(track: String) -> void:
 	course = track
 	var row := {"strecke": track}
+	game.race_seed = 4242
 	game._start_selected_race(
 		{"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "gemuetlich"}
 	)
@@ -320,6 +332,15 @@ func _course_run(track: String) -> void:
 		_inventory(row)
 		# A calm stretch: the first surprise row is placed away from ramps and events.
 		var base: float = maxf(40.0, float(game.catalog_box_distances[0]) - 60.0)
+		# Ruhige Teststrecke: keine Sturzstelle (dort zerplatzen Geschosse absichtlich).
+		for zone_distance in game.catalog_box_distances:
+			var calm := true
+			for step in range(-60, 50, 5):
+				if not game.rocket_fairness.danger_at(game.world, float(zone_distance) + step).is_empty():
+					calm = false
+			if calm and float(zone_distance) > 100.0:
+				base = float(zone_distance) - 60.0
+				break
 		_driven_pickup(row)
 		_rockets(row, base)
 		_shield_and_grace(row, base)

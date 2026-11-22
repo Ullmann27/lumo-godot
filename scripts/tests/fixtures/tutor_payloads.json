@@ -1,0 +1,2210 @@
+{
+ "schema": 1,
+ "host_revision": "540a1c5480b2108bb04d0c18bdd034d399679227",
+ "host_test": "test/tutoring/lumo_nachhilfe_3d_test.dart (LUMO_TUTOR_FIXTURE_EXPORT)",
+ "host_source_blobs": {
+  "lib/domain/tutoring/native_learning_activity.dart": "07250fab9267a81cfb080fb18059607781ef3607",
+  "lib/domain/tutoring/lumo_nachhilfe.dart": "c117ced7d93f5697aec76ea520a7b0289568d6e7",
+  "lib/features/lumo3d/lumo3d_launcher.dart": "aa32e132f9a8e5918aa7bd88472480f18cfa51af"
+ },
+ "boundary": "Echter Dart-Aufruf launchLumo3D, StandardMethodCodec; jsonEncode bildet Kotlin JSONObject(learning) nach. Kein Android-IPC-Beleg.",
+ "cases": [
+  {
+   "name": "acht_plus_fuenf",
+   "bytes": 9350,
+   "learning": {
+    "kind": "tutor",
+    "typ": "addition_20",
+    "a": 8,
+    "b": 5,
+    "prompt": "8 + 5 = ?",
+    "wege": [
+     "rechenrahmen",
+     "zahlenstrahl",
+     "zerlegen"
+    ],
+    "startWeg": "rechenrahmen",
+    "startStufe": "hinweis",
+    "fehler": "zehnerVergessen",
+    "rueckmeldung": "Die volle Zehnerreihe ist wichtig. Wir machen sie zusammen voll.",
+    "plaene": [
+     {
+      "weg": "rechenrahmen",
+      "stufe": "hinweis",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 8 + 5 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 8 Perlen nach links. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Wie viele Perlen fehlen in der ersten Reihe bis zur 10?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "teilschritt",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Wir fangen 8 + 5 gemeinsam an – mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 8 Perlen nach links. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "vorzeigen",
+      "a": 7,
+      "b": 5,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 7 + 5 mit dem Rechenrahmen. 8 + 5 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 7 Perlen nach links. Fünf rote und 2 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Bis zur 10 fehlen 3. Ich mache die Reihe voll.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 5 sind noch 2 übrig. Sie kommen in die zweite Reihe: 10 + 2 = 12.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 2
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "7 + 5 = 12.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "ueben",
+      "a": 8,
+      "b": 4,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 8 + 4 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 8 Perlen nach links in die erste Reihe. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Von den 4 hast du 2 benutzt. Schieb den Rest in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 2
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 8 + 4? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "hinweis",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 8 + 5 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 8.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 8
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Spring zuerst bis zur 10. Wie weit ist das von der 8?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "teilschritt",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Wir fangen 8 + 5 gemeinsam an – auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 8.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 8
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 8,
+         "nach": 10
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "vorzeigen",
+      "a": 7,
+      "b": 5,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 7 + 5 auf dem Zahlenstrahl. 8 + 5 geht genauso.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 7.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 7
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich springe bis zur 10. Das sind 3 Sprünge.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 7,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 5 sind noch 2 übrig. Ich springe 2 weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 12
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "7 + 5 = 12.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "ueben",
+      "a": 8,
+      "b": 4,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 8 + 4 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "kind",
+        "text": "Tipp auf den Stein 8. Lumo springt hin.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 8
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 8,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "2 von den 4 hast du schon gesprungen. Wie viele fehlen noch? Spring weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 12
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 8 + 4? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "hinweis",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 8 + 5 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 8 Perlen nach links. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Teile die 5 so, dass die 8 genau 10 wird.",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "teilschritt",
+      "a": 8,
+      "b": 5,
+      "zwilling": false,
+      "einleitung": "Wir fangen 8 + 5 gemeinsam an – mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 8 Perlen nach links. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 5 in zwei Teile. Der erste Teil macht die 8 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 5,
+         "teil1": 2,
+         "teil2": 3,
+         "zerlegungen": [
+          [
+           1,
+           4
+          ],
+          [
+           2,
+           3
+          ],
+          [
+           3,
+           2
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 8 + 5 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "vorzeigen",
+      "a": 7,
+      "b": 5,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 7 + 5 mit Zerlegen. 8 + 5 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 7 Perlen nach links. Fünf rote und 2 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "lumo",
+        "text": "Der 7 fehlen 3 bis zur 10. Also teile ich 5 in 3 und 2.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 5,
+         "teil1": 3,
+         "teil2": 2,
+         "zerlegungen": [
+          [
+           2,
+           3
+          ],
+          [
+           3,
+           2
+          ],
+          [
+           4,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich schiebe 3 dazu: 7 + 3 = 10.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Die anderen 2 kommen in die zweite Reihe: 10 + 2 = 12.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 2
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "7 + 5 = 12.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "ueben",
+      "a": 8,
+      "b": 4,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 8 + 4 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 8 Perlen nach links in die erste Reihe. Fünf rote und 3 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 4 in zwei Teile. Der erste Teil macht die 8 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 4,
+         "teil1": 2,
+         "teil2": 2,
+         "zerlegungen": [
+          [
+           1,
+           3
+          ],
+          [
+           2,
+           2
+          ],
+          [
+           3,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Schieb den zweiten Teil in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 2
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 8 + 4? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 12,
+         "optionen": [
+          11,
+          12,
+          13
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 8 + 5. Probier es jetzt selbst."
+     }
+    ],
+    "allowedActions": [
+     "explain",
+     "repeat",
+     "slower",
+     "hint",
+     "stop"
+    ],
+    "scope": {
+     "protocolVersion": 1,
+     "sessionId": "attempt-9cb4506706e749db52e18e24b17b46a6",
+     "taskId": "synthetic-tutor-acht_plus_fuenf",
+     "revision": 1,
+     "cancelEpoch": 1
+    }
+   }
+  },
+  {
+   "name": "sechs_plus_sieben",
+   "bytes": 11798,
+   "learning": {
+    "kind": "tutor",
+    "typ": "addition_20",
+    "a": 6,
+    "b": 7,
+    "prompt": "6 + 7 = ?",
+    "wege": [
+     "rechenrahmen",
+     "zahlenstrahl",
+     "zerlegen",
+     "verdoppeln"
+    ],
+    "startWeg": "zahlenstrahl",
+    "startStufe": "teilschritt",
+    "fehler": "einsDaneben",
+    "rueckmeldung": "Du warst ganz knapp dran. Wir zählen die Sprünge, nicht die Steine.",
+    "plaene": [
+     {
+      "weg": "rechenrahmen",
+      "stufe": "hinweis",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 6 + 7 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 6 Perlen nach links. Fünf rote und 1 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Wie viele Perlen fehlen in der ersten Reihe bis zur 10?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "teilschritt",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Wir fangen 6 + 7 gemeinsam an – mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 6 Perlen nach links. Fünf rote und 1 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "vorzeigen",
+      "a": 5,
+      "b": 6,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 5 + 6 mit dem Rechenrahmen. 6 + 7 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 5 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 5,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Bis zur 10 fehlen 5. Ich mache die Reihe voll.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 6 sind noch 1 übrig. Sie kommen in die zweite Reihe: 10 + 1 = 11.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "5 + 6 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "ueben",
+      "a": 7,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 7 + 8 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 7 Perlen nach links in die erste Reihe. Fünf rote und 2 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Von den 8 hast du 3 benutzt. Schieb den Rest in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 5
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 7 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 15,
+         "optionen": [
+          14,
+          15,
+          16
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "hinweis",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 6 + 7 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 6.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 6
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Spring zuerst bis zur 10. Wie weit ist das von der 6?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "teilschritt",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Wir fangen 6 + 7 gemeinsam an – auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 6.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 6
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 6,
+         "nach": 10
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "vorzeigen",
+      "a": 5,
+      "b": 6,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 5 + 6 auf dem Zahlenstrahl. 6 + 7 geht genauso.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 5.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 5
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich springe bis zur 10. Das sind 5 Sprünge.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 5,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 6 sind noch 1 übrig. Ich springe 1 weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 11
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "5 + 6 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "ueben",
+      "a": 7,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 7 + 8 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "kind",
+        "text": "Tipp auf den Stein 7. Lumo springt hin.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 7
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 7,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "3 von den 8 hast du schon gesprungen. Wie viele fehlen noch? Spring weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 15
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 7 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 15,
+         "optionen": [
+          14,
+          15,
+          16
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "hinweis",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 6 + 7 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 6 Perlen nach links. Fünf rote und 1 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Teile die 7 so, dass die 6 genau 10 wird.",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "teilschritt",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Wir fangen 6 + 7 gemeinsam an – mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 6 Perlen nach links. Fünf rote und 1 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 7 in zwei Teile. Der erste Teil macht die 6 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 7,
+         "teil1": 4,
+         "teil2": 3,
+         "zerlegungen": [
+          [
+           3,
+           4
+          ],
+          [
+           4,
+           3
+          ],
+          [
+           5,
+           2
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "vorzeigen",
+      "a": 5,
+      "b": 6,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 5 + 6 mit Zerlegen. 6 + 7 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 5 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 5,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "lumo",
+        "text": "Der 5 fehlen 5 bis zur 10. Also teile ich 6 in 5 und 1.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 6,
+         "teil1": 5,
+         "teil2": 1,
+         "zerlegungen": [
+          [
+           4,
+           2
+          ],
+          [
+           5,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich schiebe 5 dazu: 5 + 5 = 10.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Die anderen 1 kommen in die zweite Reihe: 10 + 1 = 11.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "5 + 6 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "ueben",
+      "a": 7,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 7 + 8 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 7 Perlen nach links in die erste Reihe. Fünf rote und 2 weiße.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 8 in zwei Teile. Der erste Teil macht die 7 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 8,
+         "teil1": 3,
+         "teil2": 5,
+         "zerlegungen": [
+          [
+           2,
+           6
+          ],
+          [
+           3,
+           5
+          ],
+          [
+           4,
+           4
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Schieb den zweiten Teil in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 5
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 7 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 15,
+         "optionen": [
+          14,
+          15,
+          16
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "verdoppeln",
+      "stufe": "hinweis",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 6 + 7 mit Verdoppeln.",
+      "schritte": [
+       {
+        "id": "doppel",
+        "wer": "lumo",
+        "text": "Ich schiebe in beide Reihen 6 Perlen: 6 + 6 = 12.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 6
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Kennst du 6 + 6? Dann fehlt nur noch eins.",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Clever! Du hast eine Verdopplung benutzt und nur eins dazugetan.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "verdoppeln",
+      "stufe": "teilschritt",
+      "a": 6,
+      "b": 7,
+      "zwilling": false,
+      "einleitung": "Wir fangen 6 + 7 gemeinsam an – mit Verdoppeln.",
+      "schritte": [
+       {
+        "id": "doppel",
+        "wer": "lumo",
+        "text": "Ich schiebe in beide Reihen 6 Perlen: 6 + 6 = 12.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 6
+        }
+       },
+       {
+        "id": "eins",
+        "wer": "kind",
+        "text": "Bei 6 + 7 ist eine Zahl um eins größer. Schieb noch eine Perle dazu.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 6
+        }
+       }
+      ],
+      "lob": "Clever! Du hast eine Verdopplung benutzt und nur eins dazugetan.",
+      "abschluss": "Jetzt rechnest du 6 + 7 selbst fertig."
+     },
+     {
+      "weg": "verdoppeln",
+      "stufe": "vorzeigen",
+      "a": 5,
+      "b": 6,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 5 + 6 mit Verdoppeln. 6 + 7 geht genauso.",
+      "schritte": [
+       {
+        "id": "doppel",
+        "wer": "lumo",
+        "text": "Ich schiebe in beide Reihen 5 Perlen: 5 + 5 = 10.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 5,
+         "reihe2": 5
+        }
+       },
+       {
+        "id": "eins",
+        "wer": "lumo",
+        "text": "Eine Zahl ist um eins größer. Ich schiebe noch eine dazu: 10 + 1 = 11.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 6,
+         "reihe2": 5
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "5 + 6 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Clever! Du hast eine Verdopplung benutzt und nur eins dazugetan.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     },
+     {
+      "weg": "verdoppeln",
+      "stufe": "ueben",
+      "a": 7,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 7 + 8 mit Verdoppeln.",
+      "schritte": [
+       {
+        "id": "doppel",
+        "wer": "kind",
+        "text": "Schieb in beide Reihen 7 Perlen. Das ist 7 + 7.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 7,
+         "reihe2": 7
+        }
+       },
+       {
+        "id": "eins",
+        "wer": "kind",
+        "text": "Bei 7 + 8 ist eine Zahl um eins größer. Schieb noch eine Perle dazu.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 8,
+         "reihe2": 7
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 7 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 15,
+         "optionen": [
+          14,
+          15,
+          16
+         ]
+        }
+       }
+      ],
+      "lob": "Clever! Du hast eine Verdopplung benutzt und nur eins dazugetan.",
+      "abschluss": "Genauso geht 6 + 7. Probier es jetzt selbst."
+     }
+    ],
+    "allowedActions": [
+     "explain",
+     "repeat",
+     "slower",
+     "hint",
+     "stop"
+    ],
+    "scope": {
+     "protocolVersion": 1,
+     "sessionId": "attempt-0edc04b1ac417a67fecb099eeac45c06",
+     "taskId": "synthetic-tutor-sechs_plus_sieben",
+     "revision": 3,
+     "cancelEpoch": 3
+    }
+   }
+  },
+  {
+   "name": "drei_plus_neun",
+   "bytes": 11413,
+   "learning": {
+    "kind": "tutor",
+    "typ": "addition_20",
+    "a": 3,
+    "b": 9,
+    "prompt": "3 + 9 = ?",
+    "wege": [
+     "tauschen",
+     "rechenrahmen",
+     "zahlenstrahl",
+     "zerlegen"
+    ],
+    "startWeg": "tauschen",
+    "startStufe": "vorzeigen",
+    "fehler": "keines",
+    "rueckmeldung": "",
+    "plaene": [
+     {
+      "weg": "tauschen",
+      "stufe": "hinweis",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 3 + 9 mit Tauschen.",
+      "schritte": [
+       {
+        "id": "tauschen",
+        "wer": "lumo",
+        "text": "3 + 9 ist dasselbe wie 9 + 3. Ich starte bei 9.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 9
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Fang mit der größeren Zahl an.",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Schlau getauscht! Mit der großen Zahl anfangen spart Arbeit.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "tauschen",
+      "stufe": "teilschritt",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Wir fangen 3 + 9 gemeinsam an – mit Tauschen.",
+      "schritte": [
+       {
+        "id": "tauschen",
+        "wer": "lumo",
+        "text": "3 + 9 ist dasselbe wie 9 + 3. Ich starte bei 9.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 9
+        }
+       },
+       {
+        "id": "dazu",
+        "wer": "kind",
+        "text": "Jetzt 3 Sprünge weiter. Wo landet Lumo?",
+        "aktion": {
+         "art": "huepfen",
+         "von": 9,
+         "nach": 12
+        }
+       }
+      ],
+      "lob": "Schlau getauscht! Mit der großen Zahl anfangen spart Arbeit.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "tauschen",
+      "stufe": "vorzeigen",
+      "a": 2,
+      "b": 9,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 2 + 9 mit Tauschen. 3 + 9 geht genauso.",
+      "schritte": [
+       {
+        "id": "tauschen",
+        "wer": "lumo",
+        "text": "2 + 9 ist dasselbe wie 9 + 2. Ich starte bei 9.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 9
+        }
+       },
+       {
+        "id": "dazu",
+        "wer": "lumo",
+        "text": "Ich springe 2 weiter und lande auf 11.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 9,
+         "nach": 11
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "2 + 9 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Schlau getauscht! Mit der großen Zahl anfangen spart Arbeit.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "tauschen",
+      "stufe": "ueben",
+      "a": 3,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 3 + 8 mit Tauschen.",
+      "schritte": [
+       {
+        "id": "tauschen",
+        "wer": "kind",
+        "text": "3 + 8 ist dasselbe wie 8 + 3. Tipp auf die größere Zahl.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 8
+        }
+       },
+       {
+        "id": "dazu",
+        "wer": "kind",
+        "text": "Jetzt 3 Sprünge weiter. Wo landet Lumo?",
+        "aktion": {
+         "art": "huepfen",
+         "von": 8,
+         "nach": 11
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 3 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Schlau getauscht! Mit der großen Zahl anfangen spart Arbeit.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "hinweis",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 3 + 9 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 3 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Wie viele Perlen fehlen in der ersten Reihe bis zur 10?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "teilschritt",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Wir fangen 3 + 9 gemeinsam an – mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 3 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "vorzeigen",
+      "a": 2,
+      "b": 9,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 2 + 9 mit dem Rechenrahmen. 3 + 9 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 2 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 2,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Bis zur 10 fehlen 8. Ich mache die Reihe voll.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 9 sind noch 1 übrig. Sie kommen in die zweite Reihe: 10 + 1 = 11.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "2 + 9 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "rechenrahmen",
+      "stufe": "ueben",
+      "a": 3,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 3 + 8 mit dem Rechenrahmen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 3 Perlen nach links in die erste Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Mach die erste Reihe voll. Wie viele fehlen bis 10?",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Von den 8 hast du 7 benutzt. Schieb den Rest in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 3 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Stark! Du hast zuerst die Zehnerreihe voll gemacht – so musst du nicht einzeln zählen.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "hinweis",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 3 + 9 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 3.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 3
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Spring zuerst bis zur 10. Wie weit ist das von der 3?",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "teilschritt",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Wir fangen 3 + 9 gemeinsam an – auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 3.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 3
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 3,
+         "nach": 10
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "vorzeigen",
+      "a": 2,
+      "b": 9,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 2 + 9 auf dem Zahlenstrahl. 3 + 9 geht genauso.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "lumo",
+        "text": "Ich springe auf die 2.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 2
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich springe bis zur 10. Das sind 8 Sprünge.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 2,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Von den 9 sind noch 1 übrig. Ich springe 1 weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 11
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "2 + 9 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zahlenstrahl",
+      "stufe": "ueben",
+      "a": 3,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 3 + 8 auf dem Zahlenstrahl.",
+      "schritte": [
+       {
+        "id": "start",
+        "wer": "kind",
+        "text": "Tipp auf den Stein 3. Lumo springt hin.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 0,
+         "nach": 3
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Spring bis zur 10. Tipp auf die 10.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 3,
+         "nach": 10
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "7 von den 8 hast du schon gesprungen. Wie viele fehlen noch? Spring weiter.",
+        "aktion": {
+         "art": "huepfen",
+         "von": 10,
+         "nach": 11
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 3 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Super gesprungen! Erst bis zur 10, dann weiter – das ist ein kluger Weg.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "hinweis",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Ich gebe dir einen Tipp für 3 + 9 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 3 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "tipp",
+        "wer": "lumo",
+        "text": "Teile die 9 so, dass die 3 genau 10 wird.",
+        "aktion": {
+         "art": "zeigen"
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "teilschritt",
+      "a": 3,
+      "b": 9,
+      "zwilling": false,
+      "einleitung": "Wir fangen 3 + 9 gemeinsam an – mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 3 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 9 in zwei Teile. Der erste Teil macht die 3 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 9,
+         "teil1": 7,
+         "teil2": 2,
+         "zerlegungen": [
+          [
+           6,
+           3
+          ],
+          [
+           7,
+           2
+          ],
+          [
+           8,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Jetzt rechnest du 3 + 9 selbst fertig."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "vorzeigen",
+      "a": 2,
+      "b": 9,
+      "zwilling": true,
+      "einleitung": "Schau mir zu: Ich rechne 2 + 9 mit Zerlegen. 3 + 9 geht genauso.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "lumo",
+        "text": "Ich schiebe 2 Perlen nach links.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 2,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "lumo",
+        "text": "Der 2 fehlen 8 bis zur 10. Also teile ich 9 in 8 und 1.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 9,
+         "teil1": 8,
+         "teil2": 1,
+         "zerlegungen": [
+          [
+           7,
+           2
+          ],
+          [
+           8,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "lumo",
+        "text": "Ich schiebe 8 dazu: 2 + 8 = 10.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "lumo",
+        "text": "Die anderen 1 kommen in die zweite Reihe: 10 + 1 = 11.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "lumo",
+        "text": "2 + 9 = 11.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     },
+     {
+      "weg": "zerlegen",
+      "stufe": "ueben",
+      "a": 3,
+      "b": 8,
+      "zwilling": true,
+      "einleitung": "Jetzt du: Rechne 3 + 8 mit Zerlegen.",
+      "schritte": [
+       {
+        "id": "erste",
+        "wer": "kind",
+        "text": "Schieb 3 Perlen nach links in die erste Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 3,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "teilen",
+        "wer": "kind",
+        "text": "Teile die 8 in zwei Teile. Der erste Teil macht die 3 zur 10.",
+        "aktion": {
+         "art": "zerlegen",
+         "ganz": 8,
+         "teil1": 7,
+         "teil2": 1,
+         "zerlegungen": [
+          [
+           6,
+           2
+          ],
+          [
+           7,
+           1
+          ]
+         ]
+        }
+       },
+       {
+        "id": "zehn",
+        "wer": "kind",
+        "text": "Schieb den ersten Teil dazu, bis die Reihe voll ist.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 0
+        }
+       },
+       {
+        "id": "rest",
+        "wer": "kind",
+        "text": "Schieb den zweiten Teil in die zweite Reihe.",
+        "aktion": {
+         "art": "perlen",
+         "reihe1": 10,
+         "reihe2": 1
+        }
+       },
+       {
+        "id": "ergebnis",
+        "wer": "kind",
+        "text": "Wie viel ist 3 + 8? Tipp auf das Ergebnis.",
+        "aktion": {
+         "art": "ergebnis",
+         "richtig": 11,
+         "optionen": [
+          10,
+          11,
+          12
+         ]
+        }
+       }
+      ],
+      "lob": "Toll zerlegt! Du hast die Zahl so geteilt, dass die 10 voll wird.",
+      "abschluss": "Genauso geht 3 + 9. Probier es jetzt selbst."
+     }
+    ],
+    "allowedActions": [
+     "explain",
+     "repeat",
+     "slower",
+     "hint",
+     "stop"
+    ],
+    "scope": {
+     "protocolVersion": 1,
+     "sessionId": "attempt-c835f235894d03d796868dfd657aefe2",
+     "taskId": "synthetic-tutor-drei_plus_neun",
+     "revision": 5,
+     "cancelEpoch": 5
+    }
+   }
+  }
+ ]
+}

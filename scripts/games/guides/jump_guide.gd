@@ -62,5 +62,5 @@ static func _walked(guide, game: Node) -> bool:
 ## Rechts unter der Kopfzeile.
 static func _replay_spot(size: Vector2, game: Node) -> Vector2:
 	var view: Rect2 = game.get_viewport().get_visible_rect()
-	var below: float = game.objective.get_global_rect().end.y
+	var below: float = maxf(game.objective.get_global_rect().end.y, game.message.get_global_rect().end.y)
 	return Vector2(view.end.x - size.x - 16.0, below + 12.0)

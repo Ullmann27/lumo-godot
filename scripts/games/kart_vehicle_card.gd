@@ -5,7 +5,7 @@ extends Button
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
-const THUMBNAIL: String = "res://assets/kart/fleet/%s.png"
+const THUMBNAIL: String = "res://assets/kart/menu/fleet/%s.webp"
 var item: Dictionary = {}
 var locked: bool = false
 var missing_stars: int = 0
@@ -61,7 +61,7 @@ func _ready() -> void:
 	column.add_child(title_label)
 	role_label = Label.new()
 	var tag_text: String = str(item.tag).to_lower()
-	role_label.text = "%s · %s" % [str(item.role).to_upper(), tag_text.substr(0, 1).to_upper() + tag_text.substr(1)]
+	role_label.text = tag_text.capitalize()
 	role_label.add_theme_color_override("font_color", Color("74e5f5"))
 	role_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	role_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -94,37 +94,33 @@ func _ready() -> void:
 	badge.offset_right = -12
 	add_child(badge)
 	if locked:
-		thumb.modulate = Color(0.34, 0.42, 0.55)
+		thumb.modulate = Color(0.74, 0.80, 0.86)
 		title_label.modulate = Color("96acc5")
 		bars.modulate = Color(1, 1, 1, 0.45)
 	apply_size(1.0, false)
 
 
-## Farbiger Auftritt je Kart: Lackfarbe als weicher Lichthof hinter dem Vorschaubild und
-## eine Akzent-Leiste unten – die Liste wirkt wie eine Reihe glänzender Showroom-Plätze.
+## The paint swatch stays readable even when the kart is locked.
 func _draw() -> void:
 	if not is_instance_valid(thumb):
 		return
-	var look: Dictionary = item.get("look", {})
-	var paint: Color = look.get("paint", Color("2f7bff"))
-	var accent: Color = look.get("accent", Color("ffc23a"))
-	var strength: float = 0.25 if locked else 1.0
-	var centre: Vector2 = thumb.position + margin.position + thumb.size * 0.5
-	var radius: float = maxf(thumb.size.x, size.y) * 0.62
-	for k in range(6):
-		var t: float = 1.0 - k / 6.0
-		draw_circle(centre + Vector2(0, size.y * 0.08), radius * t, Color(paint.lightened(0.25), 0.07 * strength))
-	# Bodenspiegel: heller Streifen unter dem Kart.
-	draw_rect(Rect2(centre + Vector2(-radius * 0.7, size.y * 0.28), Vector2(radius * 1.4, maxf(2.0, size.y * 0.035))), Color(1, 1, 1, 0.10 * strength))
-	var bar := Rect2(Vector2(size.y * 0.25, size.y - maxf(3.0, size.y * 0.045) - 2.0), Vector2(size.x - size.y * 0.5, maxf(3.0, size.y * 0.045)))
-	draw_rect(bar, Color(accent, 0.85 * strength))
-	draw_rect(Rect2(bar.position, Vector2(bar.size.x * 0.35, bar.size.y)), Color(paint.lightened(0.35), 0.95 * strength))
+	var paint: Color = item.get("look", {}).get("paint", Color("537da8"))
+	var box := Rect2(thumb.global_position - global_position, thumb.size)
+	var band := minf(box.size.x * 0.19, size.y * 0.28)
+	var mid := box.get_center()
+	var h := minf(size.y * 0.35, box.size.y * 0.4)
+	for i in 2:
+		var at := mid + Vector2(-band * (1.4 - i * 1.2), 0)
+		draw_colored_polygon(PackedVector2Array([
+			at + Vector2(-band, h), at + Vector2(0, h),
+			at + Vector2(band, -h), at + Vector2(0, -h)
+		]), Color(paint.lightened(0.2), 0.13))
 
 
 func apply_size(scale_factor: float, compact: bool) -> void:
 	if not is_instance_valid(title_label):
 		return
-	var thumb_width: float = (100.0 if compact else 150.0) * scale_factor
+	var thumb_width: float = (105.0 if compact else 150.0) * scale_factor
 	thumb.custom_minimum_size = Vector2(thumb_width, 0)
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, roundi(10 * scale_factor))

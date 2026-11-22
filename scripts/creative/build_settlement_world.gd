@@ -27,6 +27,7 @@ const RAIDS_VIEW = preload("res://scripts/creative/build_village_raids_view.gd")
 const GUARDS = preload("res://scripts/creative/build_village_guards.gd")
 const GUARDS_VIEW = preload("res://scripts/creative/build_village_guards_view.gd")
 const SUPPLY = preload("res://scripts/creative/build_village_supply.gd")
+const YARDS = preload("res://scripts/creative/build_village_yards.gd")
 const FIELDS = preload("res://scripts/creative/build_village_fields.gd")
 const DOCK = preload("res://scripts/creative/build_village_dock.gd")
 const SCHEDULE = preload("res://scripts/creative/build_village_schedule.gd")
@@ -130,6 +131,11 @@ var guards_view: Node3D
 var guard_post := "mitte"
 var guard_kind := "schild"
 var field_drag := false
+var yard_mode := false
+var yard_button: Button
+var yard_view: Node3D
+var yard_preview: Node3D
+var site_offset := Vector2i.ZERO
 var field_button: Button
 var drag_from := -1
 var drag_to := -1
@@ -216,6 +222,11 @@ func _ready() -> void:
 	explorer.horizontal_limit = FOCUS_LIMIT if model.living_village else Vector2(31, 18)
 	add_child(explorer)
 	if model.living_village:
+		yard_view = YARDS.new()
+		yard_view.name = "Gartenzaeune"
+		add_child(yard_view)
+		yard_preview = YARDS.new()
+		add_child(yard_preview)
 		_build_village_ui()
 	else:
 		_build_ui()
@@ -364,7 +375,7 @@ func _build_landscape() -> void:
 		_build_village_story_beacon()
 		village_residents = RESIDENTS.new()
 		add_child(village_residents)
-		village_residents.configure()
+		village_residents.configure(quality)
 		village_life = LIFE.new()
 		add_child(village_life)
 		village_life.configure(quality)
@@ -675,6 +686,7 @@ func _layout() -> void:
 
 func _rebuild() -> void:
 	if model.living_village and is_instance_valid(village_region):
+		yard_view.sync(model._player.get("yards", []))
 		village_region.set_unlocked_plots(int(model.player().plots), false)
 		village_region.set_far_bank_open(bool(model.player().get("city_projects", {}).get("bridge", false)))
 		if mode == "rival":
@@ -692,7 +704,7 @@ func _rebuild() -> void:
 		selection_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	selection_marker.visible = selected_plot >= 0
 	if selected_plot >= 0:
-		selection_marker.position = _plot_world(selected_plot) + Vector3.UP * 0.12
+		selection_marker.position = _plot_world(selected_plot) + Vector3(site_offset.x * 0.01, 0.12, site_offset.y * 0.01)
 	if is_instance_valid(village_residents):
 		village_residents.sync(model.player())
 		village_residents.set_focus(explorer.position if walking else focus)
@@ -800,12 +812,15 @@ func _sync_facilities(view_focus: Vector3) -> void:
 			)
 		var detailed := 0
 		for building: Dictionary in ordered:
-			var at := _plot_world(int(building.plot), opponent)
+			var at := YARDS.building_at(building, opponent) if model.living_village else _plot_world(int(building.plot), opponent)
 			var key := "%s_%s" % ["r" if opponent else "p", str(building.id)]
 			var near := at.distance_squared_to(view_focus) <= 55.0 * 55.0 or ordered.size() <= 25
 			if not model.living_village or (detailed < MAX_DETAILED_FACILITIES and near):
 				active[key] = true
 				detailed += 1
+				if facility_nodes.has(key) and not (facility_nodes[key] as Node3D).position.is_equal_approx(at + Vector3.UP * 0.06):
+					facility_nodes[key].queue_free()
+					facility_nodes.erase(key)
 				if not facility_nodes.has(key):
 					var variant := posmod(int(building.plot) * 7 + (3 if opponent else 0), 3)
 					var facility: StaticBody3D = VISUAL.create(str(building.kind), opponent, variant)
@@ -1085,14 +1100,19 @@ func _winner_text(winner: String) -> String:
 func _buy(kind: String) -> void:
 	if _transactions_blocked():
 		return
+	if model.living_village and selected_plot < 0 and kind == "house":
+		selected_kind = "house"
+		feedback.text = "Tippe auf die Wiese, wo dein Haus stehen soll. Tippe dann auf Wohnhaus."
+		return
 	if model.living_village and selected_plot < 0:
+		site_offset = Vector2i.ZERO
 		var free := _next_free_plot()
 		if free >= 0:
 			selected_plot = free
 			focus = _plot_world(free)
 			_camera_update(true)
 	selected_kind = kind
-	if not model.try_build(kind, selected_plot):
+	if not model.try_build(kind, selected_plot, site_offset if kind == "house" else Vector2i.ZERO):
 		feedback.text = model.last_error
 		return
 	var built: Array = model.player().buildings
@@ -1118,7 +1138,7 @@ func _next_free_plot() -> int:
 	for building in town.buildings:
 		used[int(building.plot)] = true
 	for candidate in range(int(town.plots)):
-		if not used.has(candidate) and model.plot_buildable(candidate):
+		if not used.has(candidate) and model.plot_buildable(candidate) and (not model.living_village or model.site_available(model._player, candidate)):
 			return candidate
 	return -1
 
@@ -1133,8 +1153,9 @@ func _focus_next_free_plot() -> void:
 	var count: int = int(town.plots)
 	for offset in range(count):
 		var candidate: int = (selected_plot + 1 + offset) % count
-		if used.has(candidate) or not model.plot_buildable(candidate):
+		if used.has(candidate) or not model.plot_buildable(candidate) or (model.living_village and not model.site_available(model._player, candidate)):
 			continue
+		site_offset = Vector2i.ZERO
 		selected_plot = candidate
 		focus = _plot_world(candidate)
 		_rebuild()
@@ -1767,6 +1788,7 @@ func _pick_plot(point: Vector2) -> void:
 		origin, origin + camera.project_ray_normal(point) * 180, 1
 	)
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	var tapped: Vector3 = hit.get("position", Vector3.ZERO)
 	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot") and _open_landmark(hit.position):
 		return
 	if not hit.is_empty() and model.living_village and not hit.collider.has_meta("plot"):
@@ -1800,6 +1822,10 @@ func _pick_plot(point: Vector2) -> void:
 		feedback.text = "Miras Grundstück: Sie baut mit denselben Rohstoffregeln wie du."
 		return
 	selected_plot = int(hit.collider.get_meta("plot"))
+	site_offset = Vector2i.ZERO
+	if model.living_village and not hit.collider.has_meta("facility_kind"):
+		var delta := tapped - _plot_world(selected_plot)
+		site_offset = Vector2i(roundi(delta.x * 100), roundi(delta.z * 100))
 	_rebuild()
 	if model.living_village:
 		_open_plot_action(selected_plot)
@@ -2190,7 +2216,8 @@ func _village_release(event: InputEvent) -> bool:
 	touches.erase(index)
 	var canceled: bool = event is InputEventScreenTouch and event.canceled
 	if drag_from >= 0:
-		if was_single and not canceled and not paused:
+		if was_single and not canceled and not paused and not _world_gesture_starts_on_ui(event.position):
+			_field_drag_update(event.position)
 			_field_drag_finish()
 		else:
 			_field_drag_cancel()
@@ -2414,6 +2441,10 @@ func _build_village_ui() -> void:
 	field_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	_dock_tool(field_button, "versorgen", true)
 	actions.add_child(field_button)
+	yard_button = VHUD.button("Zaun ziehen", _toggle_yard, 130, "teal", 15)
+	yard_button.name = "VillageDrawFence"
+	_dock_tool(yard_button, "bauen")
+	actions.add_child(yard_button)
 	expand_button = VHUD.button("Erweitern", _from_more.bind(_expand), 150, "sky", 15)
 	expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 	more_box.add_child(expand_button)
@@ -2638,6 +2669,10 @@ func dock_section() -> String:
 func select_dock_section(section: String) -> void:
 	if dock == null or not dock.select(section):
 		return
+	if section != "bauen" and yard_mode:
+		_toggle_yard()
+	if section != "versorgen" and field_drag:
+		_toggle_field_drag()
 	if section == "schuetzen" and schedule != null:
 		schedule.defense_seen = true
 	if is_instance_valid(more_panel):
@@ -2848,6 +2883,8 @@ func tutorial_target_rect(target: String) -> Rect2:
 				var tab: Control = area_tabs.get(DOCK.section_of_kind(kind))
 				return _hud_rect(tab) if tab != null and tab.is_visible_in_tree() else Rect2()
 			return _clip_to_scroll(card)
+		"fence_tool":
+			return _clip_to_scroll(yard_button) if yard_button.is_visible_in_tree() else _hud_rect(area_tabs.bauen)
 		"tab_bauen", "tab_versorgen", "tab_nachbarn", "tab_schuetzen":
 			var tab: Control = area_tabs.get(target.substr(4))
 			return _hud_rect(tab) if tab != null and tab.is_visible_in_tree() else Rect2()
@@ -3288,7 +3325,20 @@ func _open_defense_from(dialog: Window) -> void:
 
 # ------------------------------------------------------- Felder ziehen
 # Ein Fingerzug legt im Rechteck zwischen Start- und Endplatz Höfe an.
+func _toggle_yard() -> void:
+	if _transactions_blocked():
+		return
+	_field_drag_cancel()
+	yard_mode = not yard_mode
+	field_drag = false
+	field_button.text = "Felder ziehen"
+	yard_button.text = "Zaun beenden" if yard_mode else "Zaun ziehen"
+	feedback.text = "Zieh von Ecke zu Ecke. Die grünen Pfosten markieren das offene Tor." if yard_mode else "Tippe auf die Wiese für dein nächstes Haus."
+
+
 func _toggle_field_drag() -> void:
+	yard_mode = false
+	yard_button.text = "Zaun ziehen"
 	field_drag = not field_drag
 	if is_instance_valid(field_button):
 		field_button.text = "Felder ziehen: an" if field_drag else "Felder ziehen"
@@ -3315,7 +3365,7 @@ func plot_at_screen(point: Vector2) -> int:
 
 
 func _field_drag_begin(point: Vector2) -> void:
-	if not field_drag or walking or not model.living_village:
+	if (not field_drag and not yard_mode) or walking or not model.living_village:
 		return
 	drag_from = plot_at_screen(point)
 	drag_to = drag_from
@@ -3324,7 +3374,7 @@ func _field_drag_begin(point: Vector2) -> void:
 
 func _field_drag_update(point: Vector2) -> void:
 	var index := plot_at_screen(point)
-	if index >= 0 and index != drag_to:
+	if index != drag_to and (index >= 0 or yard_mode):
 		drag_to = index
 		_field_preview()
 
@@ -3334,10 +3384,17 @@ func _field_drag_cancel() -> void:
 	drag_to = -1
 	if is_instance_valid(field_preview):
 		field_preview.visible = false
+	if is_instance_valid(yard_preview):
+		yard_preview.preview({})
 
 
 func _field_preview() -> void:
 	if drag_from < 0:
+		return
+	if yard_mode:
+		var issue := YARDS.error(model, drag_from, drag_to)
+		yard_preview.preview({"a": drag_from, "b": drag_to} if issue.is_empty() else {})
+		feedback.text = "Loslassen baut den Zaun mit offenem Tor." if issue.is_empty() else issue
 		return
 	if not is_instance_valid(field_preview):
 		field_preview = kit.box(self, Vector3.ZERO, Vector3.ONE, Color("f3d36b"))
@@ -3356,6 +3413,20 @@ func _field_preview() -> void:
 
 
 func _field_drag_finish() -> void:
+	if yard_mode:
+		var a := drag_from
+		var b := drag_to
+		_field_drag_cancel()
+		if _transactions_blocked() or not gesture_moved:
+			return
+		if not model.try_yard(a, b):
+			feedback.text = model.last_error
+			return
+		_toggle_yard()
+		_rebuild()
+		feedback.text = "Dein Zaun steht. Zwischen den grünen Torpfosten kannst du hindurchgehen."
+		_save()
+		return
 	var plots := FIELDS.area(model, drag_from, drag_to)
 	_field_drag_cancel()
 	if _transactions_blocked():

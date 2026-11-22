@@ -28,7 +28,9 @@ func _ready() -> void:
 	_apply()
 
 
-func _material(color: Color, rough: float, metal: float = 0.0, glow: float = 0.0) -> StandardMaterial3D:
+func _material(
+	color: Color, rough: float, metal: float = 0.0, glow: float = 0.0
+) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = rough
@@ -153,6 +155,12 @@ func row_anchor(row: int) -> Vector3:
 	return to_global(Vector3(LEFT + SLOT * 4.5, ROD_Y[row], 0))
 
 
+## Mitte der links gezählten Perlen einer Reihe (dorthin zeigt Lumo).
+func counted_anchor(row: int) -> Vector3:
+	var count := maxi(1, counts[row])
+	return to_global(Vector3(LEFT + SLOT * (count - 1) * 0.5, ROD_Y[row], 0))
+
+
 func _process(delta: float) -> void:
 	if _settled:
 		return
@@ -202,16 +210,48 @@ func pick(camera: Camera3D, screen: Vector2, tolerance: float) -> Vector2i:
 
 ## Anzahl links, wenn ein Finger in Reihe [row] bei screen.x steht (Ziehen).
 func count_at(camera: Camera3D, row: int, screen_x: float) -> int:
-	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, ROD_Y[row - 1], 0))).x
-	var right := camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, ROD_Y[row - 1], 0))).x
+	var left := (
+		camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, ROD_Y[row - 1], 0))).x
+	)
+	var right := (
+		camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, ROD_Y[row - 1], 0))).x
+	)
 	if right - left < 1.0:
 		return counts[row - 1]
 	return clampi(roundi((screen_x - left) / (right - left) * 10.0), 0, 10)
 
 
-func row_at(camera: Camera3D, screen: Vector2, tolerance: float) -> int:
+## Bildschirmpunkt, an dem ein Finger in Reihe [row] [count] Perlen links hält
+## (Umkehrung von count_at; für Bildbelege und Tests).
+func count_point(camera: Camera3D, row: int, count: int) -> Vector2:
+	var y_value := ROD_Y[row - 1]
+	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT * 0.5, y_value, 0)))
+	var right := camera.unproject_position(to_global(Vector3(LEFT + SLOT * 9.5, y_value, 0)))
+	return left.lerp(right, clampf(count / 10.0, 0.0, 1.0))
+
+
+## Reihe unter dem Finger: die nähere der beiden Stangen, wenn der Finger
+## höchstens [band] Pixel davon und über dem Rahmen liegt. Zwischen den Stangen
+## entscheidet die Mitte, so ist jede Reihe ein breiter Streifen (Fingerziel),
+## auch wenn die Perlen im schmalen Hochformat klein sind.
+func row_at(camera: Camera3D, screen: Vector2, band: float) -> int:
+	var left := camera.unproject_position(to_global(Vector3(LEFT - SLOT, ROD_Y[0], 0))).x
+	var right := camera.unproject_position(to_global(Vector3(RIGHT + SLOT, ROD_Y[0], 0))).x
+	if screen.x < left - band * 0.5 or screen.x > right + band * 0.5:
+		return 0
+	var best := 0
+	var best_distance := band
 	for row in range(2):
-		var y := camera.unproject_position(row_anchor(row)).y
-		if absf(screen.y - y) < tolerance:
-			return row + 1
-	return 0
+		var distance := absf(screen.y - camera.unproject_position(row_anchor(row)).y)
+		if distance < best_distance:
+			best_distance = distance
+			best = row + 1
+	return best
+
+
+## Höhe des Fingerstreifens einer Reihe in Pixeln (für Tests und Belege).
+func row_band(camera: Camera3D, band: float) -> float:
+	var gap := absf(
+		camera.unproject_position(row_anchor(1)).y - camera.unproject_position(row_anchor(0)).y
+	)
+	return band + minf(band, gap * 0.5)

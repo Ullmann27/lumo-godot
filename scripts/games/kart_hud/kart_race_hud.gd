@@ -146,8 +146,8 @@ static func push(game: Node, place: int, display_speed: int) -> void:
 		bar.show_values({
 			"mode": game.mode, "lap": lap, "laps": game.TOTAL_LAPS, "place": place, "field": 6,
 			"speed": display_speed, "top": top, "stars": game.collected.size(),
-			"time": maxf(0.0, 90.0 - game.elapsed) if game.mode == "arena" else game.elapsed,
-			"score": game.arena_scores,
+			"time": maxf(0.0, game.arena_time_limit() - game.elapsed) if game.mode == "arena" else game.elapsed,
+			"score": game.arena_scores, "battle": is_instance_valid(game.battle),
 		}, delta)
 	if game.gas_button.get("skin") == "kart3d":
 		game.gas_button.meter = clampf(float(display_speed) / top, 0.0, 1.0)

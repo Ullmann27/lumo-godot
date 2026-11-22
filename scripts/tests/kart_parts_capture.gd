@@ -4,12 +4,19 @@ extends SceneTree
 ## Aufruf: godot --rendering-method gl_compatibility --script
 ##   res://scripts/tests/kart_parts_capture.gd -- --out=<ordner>
 ##   [--sizes=1812x2176,2176x1812,1080x2340] [--kart=comet] [--race] [--only=garage,werte]
+##   [--perf]  Leistungsteile: Motor wählen → Prüfstand → gesperrtes Teil → montieren
+##             (Motor, Reifen, Flügel, Turbo, Fahrwerk) → erstes Bild im Rennen.
 ## Setzt die Teile des gewählten Karts zu Beginn auf Serie (nur im XDG-Profil des Aufrufs).
+const PERF_SET: Dictionary = {
+	"engine": "sprint", "tires": "haft", "wing": "gross", "booster": "kurz", "suspension": "sprung"
+}
 var game
 var out_dir: String = "user://kart_parts_capture"
 var sizes: Array[Vector2i] = [Vector2i(1812, 2176)]
 var kart_id: String = "comet"
 var with_race := false
+var with_perf := false
+var new_parts := false
 var only: PackedStringArray = PackedStringArray()
 var written: int = 0
 
@@ -22,6 +29,10 @@ func _initialize() -> void:
 			kart_id = arg.trim_prefix("--kart=")
 		elif arg == "--race":
 			with_race = true
+		elif arg == "--new-parts":
+			new_parts = true
+		elif arg == "--perf":
+			with_perf = true
 		elif arg.begins_with("--only="):
 			only = arg.trim_prefix("--only=").split(",", false)
 		elif arg.begins_with("--sizes="):
@@ -34,7 +45,7 @@ func _initialize() -> void:
 
 
 func _frames(count: int) -> void:
-	for _index in range(count):
+	for _index in range(mini(count, 3) if new_parts else count):
 		await process_frame
 
 
@@ -75,6 +86,25 @@ func _run() -> void:
 	var workshop = game.garage.workshop
 	for slot in ["wheel_cover", "exhaust"]:
 		workshop.choose(kart_id, slot, "serie")
+	if new_parts:
+		game.garage.reduced_motion = true
+		for window in sizes:
+			root.size = window
+			await _open_garage()
+			var bay = game.garage.parts_bay
+			bay._on_open()
+			for selection in [["tires", "regen"], ["wing", "tandem"], ["steering", "direkt"],
+				["brakes", "sport"], ["gearbox", "kurz"], ["ballast", "vorn"]]:
+				bay._on_slot(selection[0])
+				bay._on_tile(selection[1])
+				await _shot(selection[0] + "_" + selection[1])
+			bay._on_back()
+		await _finish_capture()
+		return
+	if with_perf:
+		await _perf_sequence(workshop)
+		_finish_capture()
+		return
 	for window in sizes:
 		root.size = window
 		await _frames(12)
@@ -126,6 +156,61 @@ func _run() -> void:
 			print("[KartPartsCapture] Rennfahrzeug-Teile ", vehicle.mounted_parts)
 		for slot in ["wheel_cover", "exhaust"]:
 			workshop.choose(kart_id, slot, "serie")
+	_finish_capture()
+
+
+func _reset_perf(workshop) -> void:
+	for slot in PERF_SET:
+		workshop.choose(kart_id, slot, "serie")
+	for slot in ["wheel_cover", "exhaust"]:
+		workshop.choose(kart_id, slot, "serie")
+
+
+func _perf_sequence(workshop) -> void:
+	for window in sizes:
+		root.size = window
+		_reset_perf(workshop)
+		await _frames(12)
+		await _open_garage()
+		var bay = game.garage.parts_bay
+		await _shot("10_garage_serie")
+		bay._on_open()
+		bay._on_slot("engine")
+		await _frames(50)
+		await _shot("11_motor_waehlen")
+		bay._on_tile("sprint")
+		await _frames(20)
+		await _shot("12_pruefstand_sprintmotor")
+		bay._on_tile("dauer")
+		await _frames(20)
+		await _shot("13_pruefstand_langstrecke")
+		bay._on_tile("sprint")
+		bay._on_mount()
+		for slot in ["tires", "wing", "booster", "suspension"]:
+			bay._on_open()
+			bay._on_slot(slot)
+			await _frames(40)
+			bay._on_tile(str(PERF_SET[slot]))
+			await _frames(20)
+			await _shot("14_pruefstand_" + slot)
+			bay._on_mount()
+		await _frames(50)
+		await _shot("15_garage_montiert")
+	if with_race:
+		await _open_garage()
+		game.selected_kart = kart_id
+		game.garage.start_requested.emit(game.garage.setup.duplicate(true))
+		await _frames(40)
+		await _shot("16_rennen_erstes_bild")
+		var vehicle = (
+			game.player.get("production_vehicle") if is_instance_valid(game.player) else null
+		)
+		if vehicle != null:
+			print("[KartPartsCapture] Rennfahrzeug-Teile ", vehicle.mounted_parts)
+	_reset_perf(workshop)
+
+
+func _finish_capture() -> void:
 	print("[KartPartsCapture] bilder=%d" % written)
 	var sound := root.get_node_or_null("GameSoundscape")
 	if sound != null and sound.has_method("release_audio"):

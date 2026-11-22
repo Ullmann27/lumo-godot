@@ -19,6 +19,16 @@ static func _all_tracks() -> Array[Dictionary]:
 		"tag": "EXPEDITION SMARAGD · 3,6 KM", "color": Color("9dcb6b"),
 		"description": "Zwölf Dschungelwelten: Flusshafen, Wasserfall, Wurzelgrotte und Kronenbrücke."
 	})
+	result.append({
+		"id": "riesengarten_2400", "name": "Riesengarten",
+		"tag": "LUMOS SOMMERGARTEN · 2,4 KM", "color": Color("ffcf3a"),
+		"description": "Winzig im Riesengarten: Gießkannen-Schanze, Gartenschlauch und Gewächshaus."
+	})
+	result.append({
+		"id": "windwerk_3000", "name": "Lumos Windwerk",
+		"tag": "WINDWERK · 3,0 KM", "color": Color("45d3bd"),
+		"description": "Rase ins Turbinental, über die Weichen und durch die Signaltore der Windbahn."
+	})
 	result.make_read_only()
 	return result
 
@@ -27,7 +37,9 @@ const MODES: Array[Dictionary] = [
 	{"id": "cup", "name": "Sternen-Cup", "tag": "ALLE WELTEN · EIN POKAL", "description": "Fahre durch alle Rennwelten. Jeder Platz zählt für die Gesamtwertung."},
 	{"id": "time_trial", "name": "Zeitfahren", "tag": "DU GEGEN DEINEN GEIST", "description": "Verbessere deine Bestzeit. Deine beste Fahrt fährt als Geist mit."},
 	{"id": "training", "name": "Freies Training", "tag": "ENTDECKEN OHNE DRUCK", "description": "Lerne lenken, bremsen und driften. Du bestimmst, wann du fertig bist."},
-	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."}
+	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."},
+	# Eigene Szene mit demselben Kart: scripts/games/parcours/ (Weltwahl dort).
+	{"id": "parcours", "name": "Abenteuer-Parcours", "tag": "RENNEN · GEHEIMWEGE · ZU FUSS", "description": "Fahr mit Nova und Milo um die Wette. Wähle deinen Weg und öffne die Brücke zu Fuß."}
 ]
 const DRIVERS: Array[Dictionary] = [
 	{"id": "fox", "name": "Lumo", "tag": "DEIN MUTIGER FUCHS", "color": Color("76d9ff"), "unlock": 0},

@@ -13,6 +13,13 @@ const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 
 ## Where the bonus room lies in road space: before the start, never on the way.
 const BONUS_S0: float = -300.0
+## Metres of temple stones from the mine exit (ENDSPURT) to the golden
+## mushrooms of the finale: at full flow about 2.5 s, time to read the call.
+const FINALE_SPRINT: float = 52.0
+## Metres from the golden mushrooms of the finale to the landing target: a
+## child at full flow comes down about 20 m behind them, a slow runner (carried
+## by the mushrooms) about 14 m; the gorge ends 7.2 m behind them.
+const FINALE_FLIGHT: float = 18.5
 const SECTION_NAMES: Array[String] = [
 	"Lichtung", "Wurzelpfad", "Kronenwege", "Tempelruinen", "Wasserfallhöhle", "Lorenfahrt"
 ]
@@ -195,10 +202,9 @@ func _decor(kind: String, at: float, lat: float, extra: Dictionary = {}) -> void
 ## Registers an adventure passage: announced `lead` metres before its hole,
 ## with a safe line (shorter jump, more time) and a brave line (longer jump,
 ## gold stars). Both are branches for the scripted player as well.
-## 54 m lead: at the 1.6 path tempo with both flow stages (21.3 m/s on screen)
-## the child still gets 2.5 s of warning (50 m were 2.35 s).
+## The sign precedes the hole by 2.5 seconds at the fastest clean sprint.
 func _passage(name: String, hole: float, length_m: float, safe: Dictionary, brave: Dictionary, say: String,
-		brave_speed: float, lead: float = 54.0) -> void:
+		brave_speed: float, lead: float = 62.0) -> void:
 	passages.append({
 		"name": name, "s0": hole, "s1": hole + length_m, "announce": hole - lead, "say": say,
 		"safe_lat": float(safe.lat), "safe_gap": float(safe.gap), "brave_lat": float(brave.lat), "brave_gap": float(brave.gap),
@@ -289,10 +295,10 @@ func _vine_moment() -> void:
 	_gold(stream + 4.0, 0.0, 4.4)
 	_decor("torch", stream - 3.0, -2.9)
 	_decor("torch", stream - 3.0, 2.9)
-	coaches.append({"s0": stream - 12.0, "s1": stream + 1.0, "icon": "jump"})
+	coaches.append({"s0": stream - 13.0, "s1": stream + 1.0, "icon": "jump"})
 	moments.append({
 		"id": "liane", "name": "Lianenschwung", "need": "ride", "look": "vine",
-		"cue": run_up - 22.0, "go": stream - 12.0, "s0": stream - 4.0, "s1": stream + 8.0,
+		"cue": run_up - 22.0, "go": stream - 13.0, "s0": stream - 4.0, "s1": stream + 8.0,
 		"lat": 0.0, "arch_s": stream - 2.6, "colour": "ffd75e", "coach": "jump",
 		"say": "Liane! Am Leuchtring SPRINGEN und festhalten!",
 		"done_say": "Juhu, geschwungen!", "miss_say": "Platsch! Gleich nochmal – am Ring springen.",
@@ -600,9 +606,45 @@ func _mine_ride() -> void:
 	var out: float = _leg(10.0, 0.0, 0.0, 1.3, "rail", -2.0)
 	_safe(out + 1.0, 0.0, true)
 	cart["s1"] = out + 9.0
-	var last: float = _leg(40.0, 0.0, 0.0, 3.0, "stone")
-	_line(last + 3.0, last + 20.0, 0.0, 0.0)
-	finish_s = last + 26.0
+	_finale()
+
+
+## The finale "Tempeltor" (a run_moments.gd moment flagged `finale`, see
+## run_course_plan.gd for the road worlds): out of the mine, ENDSPURT is called
+## on the temple stones; Lumo sprints along a star line to a row of golden
+## mushrooms over the whole way, which throw him high over the last gorge
+## (LAUNCH_SPEED: 1.1 s in the air; the launch also carries him forward and
+## takes an early jump, so nobody falls in right before the finish) along a star
+## arc onto a landing target and through the temple gate. The stone way runs on
+## past the gate, so Lumo has room to slow down. A fall is caught at the start
+## of the sprint. About 60 m longer than the old plain home straight.
+func _finale() -> void:
+	var sprint: float = _leg(FINALE_SPRINT, 0.0, 0.0, 3.0, "stone")
+	_safe(sprint + 2.0)
+	_line(sprint + 4.0, sprint + FINALE_SPRINT - 6.0, 0.0, 0.0)
+	var launch: float = s - 1.2
+	for lane in [-1.8, 0.0, 1.8]:
+		_mushroom(launch, lane, TUNING.LAUNCH_SPEED)
+		var pad: Dictionary = bounces[bounces.size() - 1]
+		pad["look"] = "gold"
+		pad["catch"] = true
+		pad["carry"] = true
+	var gorge: float = _hole(6.0)
+	var land: float = launch + FINALE_FLIGHT
+	_arc(launch + 1.5, land - 1.5, 0.0, 5.6, 8, 1.4)
+	_gold((launch + land) * 0.5, 0.0, 6.0)
+	var last: float = _leg(60.0, 0.0, 0.0, 3.0, "stone")
+	_safe(last + 6.0)
+	finish_s = land + 22.0
+	_line(land + 3.0, finish_s - 3.0, 0.0, 0.0)
+	moments.append({
+		"id": "tempeltor", "name": "Tempeltor", "finale": true, "need": "clear", "look": "",
+		"cue": sprint + 1.0, "go": launch - 10.0, "s0": launch - 1.0, "s1": gorge + 6.0,
+		"lat": 0.0, "arch_s": launch - 3.0, "colour": "ffd75e", "coach": "",
+		"land_s": land, "land_lat": 0.0, "boost": 0.8, "lane_to": finish_s,
+		"say": "Über die Goldpilze zum Tempeltor!",
+		"done_say": "Was für ein Zielsprung!", "miss_say": "Hoppla! Noch einmal über die Goldpilze.",
+	})
 	_decor("finish_temple", finish_s + 6.0, 0.0)
 
 

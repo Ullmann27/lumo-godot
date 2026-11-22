@@ -8,6 +8,7 @@ const COMPANION_SCOPE = preload("res://scripts/learning/learning_companion_scope
 const FRAME_PROBE = preload("res://scripts/learning/learning_frame_probe.gd")
 const QUESTION_PANEL = preload("res://scripts/learning/learning_conversation_panel.gd")
 const ACTIVITY = preload("res://scripts/learning/learning_activity.gd")
+const TEACHER_LINES = preload("res://scripts/learning/lesson_teacher_lines.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const ATELIER = preload("res://scripts/learning/learning_atelier.gd")
 const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
@@ -58,6 +59,9 @@ var suspended := false
 var _clock := 0.0
 var _growth := 0.62
 var _moving: Dictionary = {}
+var _demo_token := -1
+var _demo_line := ""
+var _lesson_grade := 1
 var _tweens: Array[Tween] = []
 var _original_auto_quit := true
 var _original_back_quit := true
@@ -147,6 +151,7 @@ func _ready() -> void:
 		capture_options if not capture_options.is_empty() else SceneRouter.launch_options
 	)
 	reduced_motion = bool(options.get("reduceAnimations", false))
+	_lesson_grade = clampi(int(options.get("grade", 1)), 1, 4)
 	_speech_enabled = (
 		options.get("learningVoiceEnabled", false) == true
 		and options.get("localVoiceLicenseAccepted", false) == true
@@ -926,7 +931,7 @@ func _build_plant() -> void:
 
 func _refresh() -> void:
 	_mark_learning_observation()
-	explanation.text = activity.explanation()
+	explanation.text = activity.explanation() if _demo_line.is_empty() else _demo_line
 	for group in range(_group_labels.size()):
 		_group_labels[group].mesh.text = str(activity.count_in_group(group))
 		var next_group: int = (
@@ -1321,21 +1326,22 @@ func _end_drag(point: Vector2, canceled: bool) -> void:
 	drag_finger = -1
 	if canceled or not within_target or not move_token(selected):
 		_animate_token(selected, token_sources[selected])
-		if not canceled:
-			_teacher("encourage", token_sources[selected])
+		if not canceled and target >= 0 and target < targets.size():
+			_teacher("encourage", targets[target])
 		if not canceled and activity.kind == "syllables":
 			explanation.text = activity.explanation()
 		_queue_narration()
 	get_viewport().set_input_as_handled()
 
 
-func move_token(index: int) -> bool:
+func move_token(index: int, demonstrating: bool = false) -> bool:
 	if suspended or not _moving.is_empty():
 		return false
 	_cancel_performance()
 	var destination: int = activity.target_index()
 	if not activity.place(index, destination):
-		_teacher("encourage", Vector3(0, 1, 0))
+		if destination >= 0 and destination < targets.size():
+			_teacher("encourage", targets[destination])
 		return false
 	print(
 		(
@@ -1344,11 +1350,23 @@ func move_token(index: int) -> bool:
 		)
 	)
 	_animate_token(index, targets[destination])
-	_teacher("celebrate" if activity.is_complete() else "correct", targets[destination])
-	wonder.celebrate(targets[destination] + Vector3.UP * 0.65)
+	if demonstrating:
+		_demo_line = TEACHER_LINES.show_move(activity, _lesson_grade)
+	# The new step rebinds the actor's interaction context. Start the gesture
+	# afterwards so the context change cannot cancel it on its first frame.
 	_refresh()
+	if demonstrating:
+		_demonstrate_token(index)
+	else:
+		_teacher("celebrate" if activity.is_complete() else "correct", targets[destination])
+		wonder.celebrate(targets[destination] + Vector3.UP * 0.65)
 	_queue_narration()
 	return true
+
+
+func _demonstrate_token(index: int) -> void:
+	_demo_token = index
+	_teacher("explain", tokens[index].global_position)
 
 
 func _animate_token(index: int, destination: Vector3) -> void:
@@ -1386,7 +1404,7 @@ func _show_one() -> void:
 		return
 	for index in range(tokens.size()):
 		if not activity.placed.has(index):
-			move_token(index)
+			move_token(index, true)
 			return
 
 
@@ -1454,6 +1472,10 @@ func _process(delta: float) -> void:
 	_tick_speech(delta)
 	_tick_conversation(delta)
 	_update_focus()
+	if _demo_token >= 0 and _demo_token < tokens.size() and fox != null and fox.is_usable():
+		fox.set_teaching_target(tokens[_demo_token].global_position)
+		if not _moving.has(_demo_token):
+			_demo_token = -1
 	_frame_probe.sample(
 		self, activity.kind, reduced_motion, _speech_state == "playing", _speech_audible
 	)
@@ -1846,13 +1868,7 @@ func _layout_english(dimensions: Vector2, scale_value: float) -> void:
 	var pixels_per_unit := dimensions.y / camera.size
 	camera.h_offset = -shift.x / pixels_per_unit
 	camera.v_offset = shift.y / pixels_per_unit
-	if fox.is_usable():
-		fox.set_teaching_target(
-			(
-				english_models[activity.english_objects.find(activity.word)].global_position
-				+ Vector3.UP
-			)
-		)
+
 
 
 func english_pick_rect(index: int) -> Rect2:
@@ -1910,10 +1926,10 @@ func _choose_english(index: int) -> void:
 		return
 	_cancel_performance()
 	var matched: bool = activity.choose_english(index)
+	_refresh()
 	_teacher(
 		"correct" if matched else "encourage", english_models[index].global_position + Vector3.UP
 	)
-	_refresh()
 	_queue_narration()
 	print(
 		"[LearningEnglish] choice=",
@@ -1929,11 +1945,12 @@ func _english_hint() -> void:
 	if suspended or not activity.english_hint():
 		return
 	_cancel_performance()
-	_teacher(
-		"explain",
-		english_models[activity.english_objects.find(activity.word)].global_position + Vector3.UP
-	)
 	_refresh()
+	if activity.english_hint_level >= 2:
+		var wanted: int = activity.english_objects.find(activity.word)
+		_teacher("explain", english_models[wanted].global_position + Vector3.UP)
+	elif fox.is_usable():
+		fox.teacher_react("encourage")
 	_queue_narration()
 
 
@@ -2196,8 +2213,8 @@ func _update_object_registry() -> void:
 				companion_objects["choice_%d" % index] = _task_card.get_node_or_null("Answer%d" % index)
 		else:
 			companion_objects["clock_face"] = _clock_dial
-			companion_objects["clock_hour"] = _clock_dial.get_node_or_null("HourHand")
-			companion_objects["clock_minute"] = _clock_dial.get_node_or_null("MinuteHand")
+			companion_objects["clock_hour"] = _clock_dial.get_node("HourHand/GoldenHour")
+			companion_objects["clock_minute"] = _clock_dial.get_node("MinuteHand/TurquoiseMinute")
 	elif activity.kind == "plant_parts":
 		for part in part_nodes:
 			companion_objects["plant_" + str(part)] = part_nodes[part]
@@ -2306,6 +2323,8 @@ func _sync_companion_context() -> void:
 
 
 func _cancel_performance() -> void:
+	_demo_token = -1
+	_demo_line = ""
 	_performance_serial += 1
 	companion_scope.cancel()
 	_turn_id = 0
@@ -2611,7 +2630,7 @@ func _clock_hint() -> void:
 	)
 	status.text = "Tippe auf einen Zeiger, oder wähle unten deinen Vorschlag."
 	_focus_object("clock_minute")
-	_teacher("explain", _clock_dial.global_position)
+	_teacher("explain", _object_position("clock_minute"))
 	_queue_narration()
 
 
@@ -2691,7 +2710,7 @@ func _pick_clock(point: Vector2) -> void:
 		if nearest == 0
 		else "Der kurze goldene Zeiger zeigt die Stunde. Er bewegt sich zwischen den Zahlen."
 	)
-	_teacher("explain", _clock_dial.global_position)
+	_teacher("explain", _object_position(_focus_id))
 	_queue_narration()
 	get_viewport().set_input_as_handled()
 
@@ -2724,7 +2743,7 @@ func _choose_task_answer(index: int) -> void:
 	_refresh()
 	if activity.kind == "task_card":
 		_focus_object("answer_%d" % index)
-		_teacher("encourage", _task_card.global_position)
+		_teacher("encourage", _object_position("answer_%d" % index))
 	elif is_instance_valid(_clock_dial):
 		_focus_object("clock_face")
 		_teacher("encourage", _clock_dial.global_position)

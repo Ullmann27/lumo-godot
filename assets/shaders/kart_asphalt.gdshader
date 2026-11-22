@@ -42,7 +42,8 @@ void fragment() {
 	float grain_visibility = 1.0 - smoothstep(0.012, 0.035, max(fwidth(UV.x), fwidth(UV.y)));
 	float aggregate = mix(0.5, hash21(floor(UV * 26.0)), grain_visibility);
 	float coarse = hash21(floor(UV * 1.8));
-	float rubber = exp(-pow((abs(UV.x) - 2.4) * 1.1, 2.0));
+	float tyre_offset = (abs(UV.x) - 2.4) * 1.1;
+	float rubber = exp(-tyre_offset * tyre_offset);
 	// Two world-scale procedural aggregates: broad repairs and fine gravel.
 	// The high-frequency layer fades with pixel footprint to avoid shimmer.
 	float pebble_footprint = max(fwidth(UV.x), fwidth(UV.y)) * 14.0;
@@ -51,8 +52,9 @@ void fragment() {
 	float repairs = hash21(floor(UV * 0.92 + vec2(13.0, 2.1))) - 0.5;
 	float driven_lane = rubber * (0.86 + 0.14 * sin(UV.y * 0.17));
 	float lane_wear = 0.96 - rubber * mix(0.085, 0.115, sky_island_detail);
+	float joint_coverage = fwidth(UV.y) / 13.0;
 	float joint_phase = fract(UV.y / 13.0);
-	float joint = 1.0 - smoothstep(0.0, max(fwidth(joint_phase) * 1.5, 0.006), min(joint_phase, 1.0 - joint_phase));
+	float joint = 1.0 - smoothstep(0.0, max(joint_coverage * 1.5, 0.006), min(joint_phase, 1.0 - joint_phase));
 	float surface_joint = joint * sky_island_detail * 0.055;
 	float edge_distance = abs(abs(UV.x) - 5.08);
 	float edge_band = 1.0 - smoothstep(0.05, 0.24, edge_distance);
@@ -123,7 +125,8 @@ void fragment() {
 		} else if (surface_style == 5) {
 			// Basalt plates; the cracks between them glow and breathe slowly.
 			float vein = abs(value_noise(UV * 0.55) - 0.5);
-			float crack = 1.0 - smoothstep(0.0, 0.034, vein);
+			float crack = (1.0 - smoothstep(0.0, 0.034, vein))
+				* (1.0 - smoothstep(0.035, 0.12, fwidth(vein)));
 			float halo = 1.0 - smoothstep(0.0, 0.13, vein);
 			themed = road_tint.rgb * (0.84 + value_noise(UV * 2.2) * 0.26);
 			themed = mix(themed, themed * 0.55, halo * 0.5);
@@ -186,7 +189,8 @@ void fragment() {
 		final_roughness = mix(final_roughness, 0.35, crack * 0.6 * road_detail);
 		// Reifenabrieb: dunkle Laengsstreifen auf der Ideallinie (beide Spuren)
 		float streak = value_noise(vec2(UV.x * 7.0, UV.y * 0.04)) * value_noise(vec2(UV.x * 2.3 + 5.0, UV.y * 0.11));
-		float line = exp(-pow((abs(UV.x + sin(UV.y * 0.013) * 1.2) - 1.4) * 0.9, 2.0));
+		float line_offset = (abs(UV.x + sin(UV.y * 0.013) * 1.2) - 1.4) * 0.9;
+		float line = exp(-line_offset * line_offset);
 		float rubber_line = line * smoothstep(0.15, 0.55, streak) * road_detail;
 		base *= 1.0 - rubber_line * (surface_style == 0 ? 0.22 : 0.10);
 		final_roughness = mix(final_roughness, final_roughness * 0.82, rubber_line);
@@ -195,7 +199,9 @@ void fragment() {
 		float lateral = abs(UV.x) - 4.55;
 		float in_gully = step(0.0, lateral) * step(lateral, 0.42) * step(along, 0.75) * float(surface_style == 0);
 		if (in_gully > 0.5) {
-			float slot = step(0.45, fract(along * 10.0));
+			// Blend unresolved grate slots to their mean coverage at a grazing angle.
+			float slot = mix(step(0.45, fract(along * 10.0)), 0.55,
+				smoothstep(0.25, 0.9, footprint * 10.0));
 			float frame_edge = step(0.06, min(along, 0.75 - along)) * step(0.05, min(lateral, 0.42 - lateral));
 			base = mix(vec3(0.08, 0.085, 0.09), vec3(0.015), slot * frame_edge);
 			final_metallic = 0.55;

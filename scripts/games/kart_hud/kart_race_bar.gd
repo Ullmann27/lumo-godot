@@ -64,7 +64,7 @@ func _groups() -> Array:
 	match mode:
 		"arena":
 			var left: int = int(values.get("time", 0.0))
-			groups = [["clock", "%d:%02d" % [left / 60, left % 60], ""], ["score", str(int(values.get("score", 0))), ""]]
+			groups = [["clock", "%d:%02d" % [left / 60, left % 60], ""], ["score", str(int(values.get("score", 0))), "TREFFER" if values.get("battle", false) else ""]]
 			if place > 0:
 				groups.append(["place", str(place), "/%d" % int(values.get("field", 6))])
 		"training":

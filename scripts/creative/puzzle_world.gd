@@ -38,6 +38,7 @@ var hover_marker: MeshInstance3D
 var alive_picture: MeshInstance3D
 var snap_burst: GPUParticles3D
 var info: Label
+var title_label: Label
 var status: Label
 var menu: PanelContainer
 var menu_box: VBoxContainer
@@ -183,6 +184,7 @@ func _ui() -> void:
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title.clip_text = true
+	title_label = title
 	top.add_child(title)
 	info = KIT.label("", 18)
 	info.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -258,6 +260,16 @@ func _resize_ui() -> void:
 				child.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		var width := minf(470.0, maxf(180.0, safe_ui.size.x - 24.0))
 		menu.custom_minimum_size.x = width
+		var preview := menu_box.find_child("MotifPreview", false, false) as Control
+		if preview != null:
+			preview.custom_minimum_size.y = clampf(
+				(width - 24.0) / 1.78, 96.0, maxf(96.0, safe_ui.size.y * 0.3)
+			)
+	if is_instance_valid(title_label):
+		# Schmales Hochformat: kurzer Titel statt „LUMOS PUZZLE-ATEL…“.
+		title_label.text = (
+			"PUZZLE-ATELIER" if safe_ui.size.x < 560.0 else "LUMOS PUZZLE-ATELIER"
+		)
 		call_deferred("_fit_menu")
 	if is_instance_valid(camera) and camera.is_inside_tree():
 		var view := get_viewport().get_visible_rect().size
@@ -381,6 +393,7 @@ func _show_selection() -> void:
 	_hide_alive()
 	_clear_menu()
 	menu_box.add_child(KIT.label("Stück für Stück entsteht deine Welt", 23))
+	menu_box.add_child(_motif_preview())
 	menu_box.add_child(KIT.button("Bild: %s" % TITLES[selected_motif], _next_motif))
 	menu_box.add_child(
 		KIT.button(
@@ -394,10 +407,30 @@ func _show_selection() -> void:
 			_toggle_rotation_mode
 		)
 	)
-	menu_box.add_child(KIT.button("Neues Puzzle beginnen", start))
+	menu_box.add_child(
+		KIT.button("Neues Puzzle beginnen", start, 82, Color(0, 0, 0, 0), "primary")
+	)
 	if FileAccess.file_exists(save_path):
 		menu_box.add_child(KIT.button("Gespeichertes Puzzle fortsetzen", _resume))
 	menu_box.add_child(KIT.button("Zur Spielewelt", _leave))
+
+
+## Das gewählte Bild groß im Menü: das Kind sieht, was es gleich legt.
+func _motif_preview() -> Control:
+	var frame := PanelContainer.new()
+	frame.name = "MotifPreview"
+	frame.add_theme_stylebox_override(
+		"panel", KIT.tinted_panel(Color(0.02, 0.04, 0.1, 1.0), Color("d7b056"), 12)
+	)
+	frame.custom_minimum_size.y = 150
+	var picture := TextureRect.new()
+	picture.name = "MotifPicture"
+	picture.texture = MOTIFS[selected_motif]
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(picture)
+	return frame
 
 
 func _next_count() -> void:
@@ -732,6 +765,8 @@ func _apply_drop(id: int, at: Vector2) -> void:
 
 func _play_snap_fx(id: int) -> void:
 	last_snap_fx = true
+	# Hörbares Einrasten: der vorhandene Puzzle-Klang war bisher nirgends verdrahtet.
+	AudioManager.play_sfx("puzzle_snap")
 	nodes[id].scale = Vector3(1.14, 1.14, 1.14)
 	_set_overlay(id, Color(1.0, 0.92, 0.45, 0.4))
 	var tw := create_tween()
@@ -875,7 +910,9 @@ func _win() -> void:
 		}
 	)
 	_clear_menu()
+	GameSoundscape.stinger("celebrate")
 	menu_box.add_child(KIT.label("Dein Bild ist fertig!", 28))
+	menu_box.add_child(KIT.star_row(earned))
 	menu_box.add_child(
 		KIT.label("%d Teile · %d Sterne · %d Züge" % [model.count, earned, model.moves], 20)
 	)

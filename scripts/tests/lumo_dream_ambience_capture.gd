@@ -1,6 +1,7 @@
 extends SceneTree
 ## Capture real existing game scenes. These are renderer originals, not concept art.
 const SCENES := {
+	"hub": "res://scenes/games/game_hub.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",
 	"build": "res://scenes/creative/build_world.tscn",
 	"puzzle": "res://scenes/creative/puzzle_world.tscn",

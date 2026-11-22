@@ -4,15 +4,15 @@ extends RefCounted
 
 ## Forward speed in m/s. Lumo is drawn at hero scale so the kart worlds fit him.
 const CRUISE: float = 13.0
-const START_SPEED: float = 4.0
+const START_SPEED: float = 7.0
 const START_COUNTDOWN_SECONDS: float = 1.0
 ## Advance the whole road course together so jump arcs and obstacle positions stay matched.
-## 1.3 since 19.11. (was 1.2): Zauberwald and Sonnenhafen run 16.9 m/s on screen;
+## Zauberwald and Sonnenhafen run 19.5 m/s on screen;
 ## coyote time and jump buffer scale with it (same windows on screen).
-const ROAD_TIME_SCALE: float = 1.3
+const ROAD_TIME_SCALE: float = 1.5
 const MIN_SPEED: float = 5.0
 const SLOW_FACTOR: float = 0.62
-const ACCELERATION: float = 6.5
+const ACCELERATION: float = 9.5
 const DECELERATION: float = 5.0
 const BURST_ACCELERATION: float = 34.0
 ## Momentum from the terrain: uphill costs speed, downhill gives it back.
@@ -62,6 +62,8 @@ const CRATE_STARS: int = 2
 ## Rating thresholds on the share of all course stars that Lumo kept.
 const RATING_TWO: float = 0.5
 const RATING_THREE: float = 0.8
+const MEDAL_NAMES: Array[String] = ["Bronze", "Silber", "Gold"]
+const MEDAL_COLOURS: Array[Color] = [Color("e9a271"), Color("deedfa"), Color("ffd46b")]
 
 
 ## Height above the take-off point after `t` seconds of an unheld flight.
@@ -101,10 +103,10 @@ static func reward(solved: int, stars_rating: int) -> int:
 const PATH_CRUISE: float = 8.5
 ## The whole path plays this much faster than it was
 ## laid out - Lumo, creatures, platforms, vines and jumps alike. On screen Lumo
-## runs PATH_CRUISE * PATH_TIME_SCALE (13.6 m/s) and every jump still lands
-## where it was built to land. 1.6 since 19.11. (was 1.5: "Lumo ist zu langsam");
+## runs PATH_CRUISE * PATH_TIME_SCALE (15.7 m/s) and every jump still lands
+## where it was built to land;
 ## the jump windows below are given in screen time and scale with it.
-const PATH_TIME_SCALE: float = 1.6
+const PATH_TIME_SCALE: float = 1.85
 ## Sonic-like momentum: running on without braking or bumping builds "flow"
 ## over PATH_FLOW_SECONDS, which adds up to PATH_FLOW_BONUS m/s (sprint).
 const PATH_FLOW_BONUS: float = 3.0
@@ -121,10 +123,10 @@ const PATH_FLOW2_SECONDS: float = 3.0
 const PATH_PRECISE_LEAD: float = 24.0
 ## Obstacles closer together than this (metres) make a dense stretch: there the
 ## top stage pauses too, so it never shortens the time a child has to react.
-const PATH_DENSE_SPACING: float = 20.0
+const PATH_DENSE_SPACING: float = 25.0
 ## Faster pick-up on the path, with 160 ms coyote time and a 220 ms input
 ## buffer on screen at any tempo. The values below are in simulation time.
-const PATH_ACCELERATION: float = 9.0
+const PATH_ACCELERATION: float = 13.5
 const PATH_COYOTE_SECONDS: float = 0.16 * PATH_TIME_SCALE
 const PATH_JUMP_BUFFER_SECONDS: float = 0.22 * PATH_TIME_SCALE
 ## Speed pads on the long safe stretches of the path. The path is dense, so a
@@ -161,3 +163,8 @@ const RIDE_GRAB_RADIUS: float = 1.35
 const VINE_HIGH_HANDLE: float = 2.8
 ## Push forward (seconds of a speed pad) after a highlight was mastered.
 const MOMENT_BOOST_SECONDS: float = 0.8
+## A finale launch still takes Lumo when he jumped early and is at most this
+## high above it (metres; a tapped jump peaks at about 1.7 m).
+const FINALE_CATCH_HEIGHT: float = 2.6
+## Seconds of turbo a finale launch gives along the way (it throws forward).
+const FINALE_CARRY_SECONDS: float = 1.2

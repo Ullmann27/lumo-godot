@@ -48,7 +48,8 @@ func _run() -> void:
 		scroll.scroll_vertical = 0
 		await _settle(2)
 		var clip: Rect2 = scroll.get_global_rect()
-		assert(cards.get_child_count() == 5)
+		# Rennarten aus dem Katalog (seit dem Abenteuer-Parcours sechs).
+		assert(cards.get_child_count() == load("res://scripts/games/kart_catalog.gd").MODES.size())
 		for card in cards.get_children():
 			assert(card.size.y * dimensions.y / root.get_visible_rect().size.y >= 48.0,
 				"Modes retain real 48dp targets in this density-1 fixture")

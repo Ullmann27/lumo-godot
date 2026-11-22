@@ -52,7 +52,7 @@ func _run() -> void:
 					"Road projection height drift on " + track_id)
 		verified += 1
 		world.free()
-	assert(verified == 13, "Expected four core, eight expansion tracks and Dschungelherz")
+	assert(verified == TRACKS.IDS.size(), "Every catalogue track passes the coordinate audit")
 
 	# Real loop functions also ALREADY use -basis.z and a positive determinant.
 	var world = WORLD.new()

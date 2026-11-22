@@ -53,6 +53,7 @@ func _open() -> void:
 	table = load(TABLE).instantiate()
 	root.add_child(table)
 	table.time_scale = SPEED
+	await DRIVER.skip_opening(self, table)
 	table.settled.connect(func(payload: Dictionary) -> void: settled.append(payload))
 	await DRIVER.settle(self, 4)
 
@@ -90,6 +91,8 @@ func _run() -> void:
 			only = argument.trim_prefix("--only=")
 	if only.is_empty():
 		await _layouts()
+	if only in ["", "ziel"]:
+		await _ziel()
 	if only in ["", "stich"]:
 		await _stich(bridge)
 	if only in ["", "leiter"]:
@@ -270,6 +273,37 @@ func _final_checks(game: String, result_id: String, stars_before: int) -> Dictio
 	_check(root.get_node("ProgressStore").total_stars() == stars_before + int(payload.get("stars", 0)), game + ": stars are added once")
 	_check(table.session.is_booked(result_id) and not table.session.has_match(game), game + ": the finished match is booked and cleared")
 	return payload
+
+
+func _ziel() -> void:
+	var game := "ziel"
+	# Unterschiedliche Farben, gleicher Abstand: Die erste Karte behält den Stich.
+	var model: RefCounted = SESSION.create_rules(game)
+	model.setup({"seed":9, "players":3, "rounds":1})
+	var target: int = model.target_rank()
+	var neighbour := target + 1 if target < 13 else target - 1
+	var tied := [{"p":2, "c":DECK.card(0, neighbour)}, {"p":0, "c":DECK.card(1, neighbour)}]
+	_check(model._trick_winner(tied) == 2, "Bei gleichem Abstand gewinnt die erste Karte")
+	tied.append({"p":1, "c":DECK.card(2, target)})
+	_check(model._trick_winner(tied) == 1, "Die genaue Zielzahl schlägt die Nachbarzahl")
+	await _intro(game)
+	await _pick("players", 2, "Zwei am Zieltisch")
+	await _pick("rounds", 1, "Eine Runde Punktlandung")
+	var stars_before: int = root.get_node("ProgressStore").total_stars()
+	await _press("start", "Punktlandung starten")
+	await DRIVER.idle(self, table)
+	var id: String = table.rules.s.result_id
+	_check(table.rules.target_rank() == DECK.rank(table.rules.target_card()), "Zielkarte zeigt die Zielzahl")
+	_check(table.cards[table.rules.target_card()].zone == "target", "Zielkarte liegt offen auf dem Tisch")
+	var restored: RefCounted = table.session.resume(game)
+	_check(restored != null and restored.snapshot() == table.rules.snapshot(), "Ziel und Hand bleiben beim Fortsetzen erhalten")
+	await _play_until(func() -> bool: return table.screen == "final", game)
+	_final_checks(game, id, stars_before)
+	_check(int(table.rules.s.r.trick_no) == 7, "Sieben gewertete Zielkarten")
+	settled.clear()
+	rewards.clear()
+	await _close("Punktlandung beendet")
+	await _open()
 
 
 func _stich(bridge: Node) -> void:

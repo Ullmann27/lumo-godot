@@ -12,6 +12,9 @@ extends Node3D
 const PLAN = preload("res://scripts/learning/holo/holo_lesson_plan.gd")
 const MATH = preload("res://scripts/learning/holo/holo_math_room.gd")
 const WORDS = preload("res://scripts/learning/holo/holo_word_room.gd")
+const SYLLABLES = preload("res://scripts/learning/holo/holo_syllable_room.gd")
+const READING = preload("res://scripts/learning/holo/holo_reading_room.gd")
+const CLAP = preload("res://scripts/characters/lumo/lumo_clap_motion.gd")
 const MODELS = preload("res://scripts/learning/holo/holo_models.gd")
 const FOX = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const HOLO_ATRIUM = preload("res://scripts/learning/lumo_holo_atrium.gd")
@@ -27,6 +30,15 @@ const NOUN_HELP := {
 	"adjektiv": "„%s“ ist ein Wiewort.",
 	"andere": "„%s“ ist kein Namenwort.",
 }
+const ADJECTIVE_HELP := {
+	"verb": "„%s“ ist ein Tunwort. Es sagt, was jemand tut.",
+	"nomen": "„%s“ ist ein Namenwort. Es sagt, wer oder was.",
+	"artikel": "„%s“ ist ein Begleiter. Er steht vor dem Namenwort.",
+	"andere": "„%s“ sagt nicht, wie jemand ist.",
+}
+const TIMES := ["", "einmal", "zweimal", "dreimal", "viermal", "fünfmal", "sechsmal"]
+## Abstand der Klatscher, wenn Lumo Silben klatscht (Sekunden).
+const CLAP_BEAT := 0.62
 const TYPE_HELP := {
 	"nomen": "„%s“ ist ein Namenwort. Es sagt, wer etwas tut – nicht, was jemand tut.",
 	"artikel": "„%s“ ist ein Begleiter. Er steht vor dem Namenwort.",
@@ -49,6 +61,12 @@ var camera: Camera3D
 var fox: Node3D
 var math_room: Node3D
 var word_room: Node3D
+var syllable_room: Node3D
+var reading_room: Node3D
+## Lumos Klatschen (Armknochen des Originalmodells), nur wenn das Modell da ist.
+var clap: Node
+var clap_button: Button
+var reset_button: Button
 var wonder: Node3D
 var ui: Control
 var header: PanelContainer
@@ -138,7 +156,11 @@ func _ready() -> void:
 	if not raw is Dictionary:
 		raw = {}
 	valid = plan.configure(raw)
-	if valid and plan.kind == "holo_sentence":
+	if (
+		valid
+		and plan.kind == "holo_sentence"
+		and plan.mode in ["verb", "order", "noun", "adjective"]
+	):
 		valid = _read_types(raw)
 	var scoped: Dictionary = raw.duplicate(true)
 	if scoped.get("scope") is Dictionary:
@@ -184,6 +206,10 @@ func _read_types(raw: Dictionary) -> bool:
 		# Namenwort finden: genau ein Namenwort, und es ist das gesuchte Wort.
 		if plan.mode == "noun":
 			if checked.count("nomen") != 1 or checked[task.nounIndex] != "nomen":
+				return false
+		# Wiewort finden: genau ein Wiewort, und es ist das gesuchte Wort.
+		if plan.mode == "adjective":
+			if checked.count("adjektiv") != 1 or checked[task.adjIndex] != "adjektiv":
 				return false
 		if source == raw:
 			_types = checked
@@ -250,6 +276,14 @@ func _build_stage() -> void:
 	word_room.name = "Wortkarten"
 	word_room.reduced_motion = reduced_motion
 	add_child(word_room)
+	syllable_room = SYLLABLES.new()
+	syllable_room.name = "Silben"
+	syllable_room.reduced_motion = reduced_motion
+	add_child(syllable_room)
+	reading_room = READING.new()
+	reading_room.name = "Lesen"
+	reading_room.reduced_motion = reduced_motion
+	add_child(reading_room)
 	fox = FOX.new()
 	fox.name = "HoloLumo"
 	add_child(fox)
@@ -264,6 +298,12 @@ func _build_stage() -> void:
 		_fox_unit = maxf(0.2, high - low)
 		_fox_low = low
 		fox.set_reduced_motion(reduced_motion)
+		var motion: Node = CLAP.new()
+		if motion.bind(skeleton):
+			fox.add_child(motion)
+			clap = motion
+		else:
+			motion.free()
 	else:
 		fox.hide()
 	wonder = WISPS.new()
@@ -282,6 +322,8 @@ func _apply_effects() -> void:
 	_key_light.shadow_enabled = not low_effects
 	wonder.visible = not low_effects
 	word_room.calm_holograms = low_effects
+	syllable_room.calm_holograms = low_effects
+	reading_room.calm_holograms = low_effects
 
 
 func _on_quality_profile_changed(_profile_name: String) -> void:
@@ -481,6 +523,8 @@ func _show_unavailable() -> void:
 		button.hide()
 	math_room.hide()
 	word_room.hide()
+	syllable_room.hide()
+	reading_room.hide()
 	_place_fox(Vector3(0, 0, -0.5), 0.0)
 
 
@@ -494,6 +538,9 @@ func _start_phase() -> void:
 	busy = false
 	var task: Dictionary = plan.current()
 	feedback.text = ""
+	_stop_clap()
+	syllable_room.hide()
+	reading_room.hide()
 	# Deutsch: neben der Kartenleiste (Querformat) bzw. rechts dahinter mit
 	# freien Füßen über den Karten (Hochformat) – nie vor den Karten.
 	_fox_home = Vector3(2.6, 0, -2.7) if _portrait() else Vector3(5.6, 0, -0.5)
@@ -517,15 +564,56 @@ func _start_phase() -> void:
 			if plan.phase == "original"
 			else ("Neue Äpfel, gleiche Frage. Diesmal schaffst du es allein – ich schaue nur zu.")
 		)
+	elif plan.mode == "syllables":
+		math_room.hide()
+		word_room.hide()
+		syllable_room.show()
+		syllable_room.build(task, _card_basis())
+		title.text = "Silben klatschen" if plan.phase == "original" else "Ähnliches Wort · allein"
+		prompt_label.text = str(task.prompt)
+		bubble_text.text = (
+			(
+				(
+					"Tippe die Wortkarte an, dann lese ich dir das Wort vor. "
+					if _speech_enabled
+					else "Lies das Wort leise. "
+				)
+				+ "Sprich es langsam und tippe bei jeder Silbe einmal auf „Klatschen“."
+			)
+			if plan.phase == "original"
+			else "Neues Wort. Diesmal klatschst du allein – ich schaue nur zu."
+		)
+		_fox_home = syllable_room.lumo_spot(FOX_HALF_WIDTH)
+	elif plan.mode == "reading":
+		math_room.hide()
+		word_room.hide()
+		reading_room.show()
+		reading_room.build(task, task.scenes, _card_basis(), _narrow())
+		title.text = (
+			"Lesen: Welches Bild passt?" if plan.phase == "original" else "Neuer Satz · allein"
+		)
+		prompt_label.text = "„%s“\n%s" % [task.sentence, task.question]
+		bubble_text.text = (
+			"Lies den Satz genau. Tippe dann das Bild an, das zum Satz passt."
+			if plan.phase == "original"
+			else "Neuer Satz, neue Bilder. Diesmal findest du es allein."
+		)
+		_fox_home = reading_room.lumo_spot(FOX_HALF_WIDTH)
 	else:
 		math_room.hide()
 		word_room.show()
-		if plan.mode in ["verb", "noun"]:
-			var target := "Tunwort" if plan.mode == "verb" else "Namenwort"
+		if plan.mode in ["verb", "noun", "adjective"]:
+			var target: String = {"verb": "Tunwort", "noun": "Namenwort", "adjective": "Wiewort"}[
+				plan.mode
+			]
 			title.text = (
 				"%s finden" % target if plan.phase == "original" else "Ähnlicher Satz · allein"
 			)
-			prompt_label.text = "„%s“\nWelches Wort ist das %s?" % [task.sentence, target]
+			prompt_label.text = (
+				"„%s“\n%s" % [task.sentence, task.question]
+				if plan.mode == "adjective"
+				else "„%s“\nWelches Wort ist das %s?" % [task.sentence, target]
+			)
 			bubble_text.text = (
 				"Lies den Satz. Tippe eine Karte an – sie hebt sich"
 				+ (" und ich lese sie vor." if _speech_enabled else ".")
@@ -598,6 +686,21 @@ func _rebuild_choices() -> void:
 		choice_bar.remove_child(button)
 		button.queue_free()
 	choice_buttons.clear()
+	clap_button = null
+	reset_button = null
+	if plan.mode == "syllables":
+		# Großer Klatsch-Knopf (je Silbe einmal) und „Neu“ zum Wiederholen.
+		clap_button = _button("👏 Klatschen", clap_syllable, choice_bar, true)
+		clap_button.name = "Klatschen"
+		clap_button.custom_minimum_size = Vector2(170, 64)
+		clap_button.add_theme_font_size_override("font_size", 24)
+		choice_bar.move_child(clap_button, 0)
+		reset_button = _button("↺ Neu", clear_claps, choice_bar)
+		reset_button.name = "NeuKlatschen"
+		choice_bar.move_child(reset_button, 1)
+		choice_buttons.append(clap_button)
+		choice_buttons.append(reset_button)
+		return
 	if plan.kind != "holo_word_problem":
 		return
 	for value: int in plan.choices():
@@ -622,20 +725,24 @@ func _update_actions() -> void:
 	hint_button.visible = hint_button.visible and not busy
 	twin_button.visible = solved_original
 	twin_button.disabled = busy
-	confirm_button.visible = plan.kind == "holo_sentence" and not done and not solved_original
+	confirm_button.visible = (
+		plan.kind == "holo_sentence" and plan.mode != "reading" and not done and not solved_original
+	)
 	# Kurz, damit „Mehr Hilfe“/„Überspringen“ und „Prüfen“ in eine Zeile passen.
 	confirm_button.text = "Satz prüfen ✓" if plan.mode == "order" else "Prüfen ✓"
 	if plan.kind == "holo_sentence":
-		confirm_button.disabled = (
-			busy
-			or (
-				word_room.selected < 0
-				if plan.mode != "order"
-				else plan.placed.size() != plan.current().words.size()
-			)
-		)
+		if plan.mode == "syllables":
+			confirm_button.disabled = busy or plan.claps == 0
+		elif plan.mode == "order":
+			confirm_button.disabled = busy or plan.placed.size() != plan.current().words.size()
+		else:
+			confirm_button.disabled = busy or word_room.selected < 0
 	for button in choice_buttons:
 		button.disabled = busy or done or solved_original
+	if is_instance_valid(clap_button):
+		clap_button.disabled = clap_button.disabled or plan.claps >= PLAN.MAX_CLAPS
+	if is_instance_valid(reset_button):
+		reset_button.disabled = reset_button.disabled or plan.claps == 0
 	skip_button.visible = busy
 	voice_button.visible = _speech_enabled
 	stop_button.visible = _speech_enabled and _speech_state in ["preparing", "playing"]
@@ -685,6 +792,8 @@ func skip() -> void:
 	_stop_speech()
 	math_room.finish_motion()
 	word_room.finish_motion()
+	syllable_room.finish_motion()
+	reading_room.finish_motion()
 	events.append("skip")
 
 
@@ -786,6 +895,9 @@ func _begin_sequence() -> int:
 	busy = true
 	math_room.finish_motion()
 	word_room.finish_motion()
+	syllable_room.finish_motion()
+	reading_room.finish_motion()
+	_stop_clap()
 	_update_actions()
 	return _seq
 
@@ -907,9 +1019,25 @@ func _after_correct() -> void:
 		var named := "%s %s" % [str(task.words[article]).to_lower(), noun] if article >= 0 else noun
 		feedback.text = "Richtig! „%s“ ist ein Namenwort: %s." % [noun, named]
 		focus = word_room.field_spot()
+	elif plan.mode == "adjective":
+		var adjective: String = task.words[task.adjIndex]
+		feedback.text = (
+			"Richtig! „%s“ ist das Wiewort. Es sagt, %s." % [adjective, _how_clause(task)]
+		)
+		focus = word_room.field_spot()
+	elif plan.mode == "syllables":
+		var count: int = task.syllables.size()
+		feedback.text = (
+			"Richtig! „%s“ hat %s."
+			% ["-".join(task.syllables), "eine Silbe" if count == 1 else "%d Silben" % count]
+		)
+		focus = syllable_room.global_position + Vector3(0, 1.2, 0)
+	elif plan.mode == "reading":
+		feedback.text = "Richtig! %s" % task.sentence
+		focus = reading_room.plates[task.scenes.find(task.answer)].global_position
 	else:
 		feedback.text = "Richtig! „%s“" % task.sentence
-	_teacher("celebrate", camera.global_position)
+	_teacher("celebrate", focus)
 	if not low_effects:
 		wonder.celebrate(focus)
 	events.append("celebrate:%s" % plan.phase)
@@ -931,6 +1059,16 @@ func _after_correct() -> void:
 		await _wait(0.35, serial)
 		word_room.show_picture(str(task.picture))
 		events.append("picture:%s" % task.picture)
+	elif plan.mode == "adjective":
+		await _wait(0.35, serial)
+		word_room.show_picture(str(task.picture), str(task.look))
+		events.append("picture:%s:%s" % [task.picture, task.look])
+	elif plan.mode == "syllables":
+		# Die Karte teilt sich, Lumo klatscht das Wort im Takt.
+		syllable_room.clear_tokens()
+		await _clap_word(serial)
+	elif plan.mode == "reading":
+		reading_room.mark_right(task.scenes.find(task.answer))
 	await _wait(0.6, serial)
 	_end_sequence(serial)
 
@@ -966,6 +1104,7 @@ func _show_math_solution(serial: int) -> void:
 	await _wait(0.4, serial)
 	math_room.show_ten(true)
 	math_room.show_parts(0, 0, int(task.sum) - 10)
+	_teacher("explain", math_room.slot_position(int(task.sum) - 1))
 	events.append("solution_shown")
 
 
@@ -995,6 +1134,16 @@ func request_hint() -> int:
 	else:
 		if plan.phase == "twin":
 			_word_twin_tip()
+		elif plan.mode == "syllables":
+			if level == PLAN.HINT_FOCUS:
+				_syllable_focus_hint()
+			else:
+				_syllable_full_help()
+		elif plan.mode == "reading":
+			if level == PLAN.HINT_FOCUS:
+				_reading_focus_hint()
+			else:
+				_reading_full_help()
 		elif level == PLAN.HINT_FOCUS:
 			_word_focus_hint()
 		else:
@@ -1156,6 +1305,10 @@ func confirm() -> String:
 		return "ignored"
 	var task: Dictionary = plan.current()
 	var value := ""
+	if plan.mode == "syllables":
+		return _confirm_claps()
+	if plan.mode == "reading":
+		return "ignored"
 	if plan.mode != "order":
 		if word_room.selected < 0:
 			return "ignored"
@@ -1168,10 +1321,15 @@ func confirm() -> String:
 	var outcome: String = plan.answer(value)
 	events.append("answer:%s=%s" % [value, outcome])
 	if outcome == "wrong":
-		_teacher("encourage", camera.global_position)
+		var touched: Vector3 = word_room.cards[chosen].global_position if chosen >= 0 else word_room.field_spot()
+		_teacher("encourage", touched)
 		if plan.mode != "order":
 			var kind_of: String = task.get("types", _types)[chosen]
-			var help_table: Dictionary = NOUN_HELP if plan.mode == "noun" else TYPE_HELP
+			var help_table: Dictionary = (
+				NOUN_HELP
+				if plan.mode == "noun"
+				else (ADJECTIVE_HELP if plan.mode == "adjective" else TYPE_HELP)
+			)
 			feedback.text = help_table.get(kind_of, help_table.andere) % value
 			word_room.deselect()
 		else:
@@ -1243,6 +1401,19 @@ func _word_focus_hint() -> void:
 		else:
 			_say(note + "Frag: Wer oder was? %s" % _question())
 		events.append("noun_hint")
+	elif plan.mode == "adjective":
+		# Wiewort: zwei gleiche Figuren, die sich in Größe oder Farbe
+		# unterscheiden – ohne Beschriftung, ohne Hinweis auf eine Karte.
+		word_room.show_contrast(str(task.picture), str(task.contrast), str(task.look))
+		events.append("contrast:%s:%s" % [task.picture, task.contrast])
+		_say(
+			(
+				note
+				+ "Schau dir die zwei Figuren an. Sie sehen nicht gleich aus. "
+				+ "Ein Wiewort sagt, wie etwas ist. %s" % _question()
+			)
+		)
+		_teacher("explain", word_room.answer_field.global_position + Vector3(0, 0.6, 0))
 	elif demo == "jump":
 		# Lumo springt frei an seinem Platz neben den Karten.
 		_say(note + "Schau mir zu!")
@@ -1275,13 +1446,20 @@ func _word_full_help() -> void:
 	var serial := _begin_sequence()
 	var task: Dictionary = plan.current()
 	if plan.mode != "order":
-		var target := int(task.nounIndex if plan.mode == "noun" else task.verbIndex)
+		var target := int(
+			{"noun": task.get("nounIndex", 0), "adjective": task.get("adjIndex", 0)}.get(
+				plan.mode, task.verbIndex
+			)
+		)
 		var word: String = task.words[target]
 		var card: Node3D = word_room.cards[target]
 		word_room.clear_highlights()
 		var note := _take_feedback()
 		if plan.mode == "noun":
 			_say(note + "Namenwörter sagen, wer oder was. %s" % _question())
+		elif plan.mode == "adjective":
+			word_room.clear_contrast(true)
+			_say(note + "Wiewörter sagen, wie jemand oder etwas ist. %s" % _question())
 		else:
 			_say(note + "Das Tunwort sagt, was jemand tut. %s" % _question())
 		# Lumo geht seitlich an die Zeile der Karte und zeigt darauf.
@@ -1289,7 +1467,15 @@ func _word_full_help() -> void:
 		if not await _wait(1.0, serial):
 			return
 		word_room.highlight(target, 0.9)
-		if plan.mode == "noun":
+		if plan.mode == "adjective":
+			events.append("show_adjective:%s" % word)
+			_say(
+				(
+					"„%s“ sagt, %s. Also ist „%s“ das Wiewort. Tippe es an."
+					% [word, _how_clause(task), word]
+				)
+			)
+		elif plan.mode == "noun":
 			events.append("show_noun:%s" % word)
 			_say(
 				(
@@ -1341,9 +1527,236 @@ func _word_twin_tip() -> void:
 			_say("Tipp: Wer tut etwas? Damit fängt der Satz an. Der Punkt kommt ans Ende.")
 		"noun":
 			_say("Tipp: Frag: Wer oder was? %s" % _question())
+		"adjective":
+			_say("Tipp: Frag dich: Wie ist es? %s" % _question())
+		"syllables":
+			_say("Tipp: Sprich das Wort langsam. Bei jeder Silbe geht dein Mund auf.")
+		"reading":
+			_say("Tipp: Such im Satz das Wort, das sagt, wo etwas ist.")
 		_:
 			_say("Tipp: %s" % _question())
 	await _wait(1.0, serial)
+	_end_sequence(serial)
+
+
+## „wie der Fuchs ist“ aus der Frage „Welches Wort sagt, wie der Fuchs ist?“.
+func _how_clause(task: Dictionary) -> String:
+	return str(task.question).trim_prefix("Welches Wort sagt, ").trim_suffix("?")
+
+
+# ---------------------------------------------------------------- Silben
+
+
+## Kind tippt „Klatschen“: eine Klatschmarke mehr auf der Leiste.
+func clap_syllable() -> int:
+	if busy or not valid or plan.mode != "syllables" or plan.phase == "done":
+		return plan.claps
+	if plan.phase == "original" and plan.original_correct:
+		return plan.claps
+	var before: int = plan.claps
+	var count: int = plan.clap()
+	if count == before:
+		return count
+	syllable_room.add_token(count)
+	feedback.text = "Du hast %s geklatscht." % TIMES[count]
+	events.append("clap:%d" % count)
+	_update_actions()
+	return count
+
+
+## „Neu“: Klatschmarken weg, noch einmal klatschen.
+func clear_claps() -> void:
+	if busy or plan.mode != "syllables":
+		return
+	plan.clear_claps()
+	syllable_room.clear_tokens()
+	feedback.text = ""
+	events.append("claps_cleared")
+	_update_actions()
+
+
+## Wortkarte antippen: Lumo liest das Wort vor (wenn Ton an), die Karte leuchtet.
+func hear_word() -> void:
+	if busy or plan.mode != "syllables":
+		return
+	syllable_room.flash_word()
+	events.append("hear:%s" % plan.current().word)
+	if _speech_enabled:
+		_speak(str(plan.current().word))
+	await get_tree().create_timer(0.4).timeout
+	if is_instance_valid(syllable_room) and not busy:
+		syllable_room.clear_glow()
+
+
+func _confirm_claps() -> String:
+	var count: int = plan.claps
+	if count <= 0:
+		return "ignored"
+	var outcome: String = plan.answer(str(count))
+	events.append("answer:%d=%s" % [count, outcome])
+	if outcome == "wrong":
+		_teacher("encourage", camera.global_position)
+		plan.clear_claps()
+		syllable_room.clear_tokens()
+		feedback.text = "Du hast %s geklatscht. Das passt noch nicht." % TIMES[count]
+		if plan.phase == "original":
+			if plan.wrong == 1 and plan.hint_level == 0:
+				request_hint()
+			elif plan.wrong >= 2 and plan.hint_level < PLAN.HINT_FULL:
+				while plan.hint_level < PLAN.HINT_FULL - 1:
+					plan.request_hint()
+				request_hint()
+		else:
+			feedback.text += " Sprich es langsam."
+		_update_actions()
+	elif outcome == "correct":
+		_after_correct()
+	return outcome
+
+
+func _syllable_focus_hint() -> void:
+	var serial := _begin_sequence()
+	var note := _take_feedback()
+	_teacher("encourage", camera.global_position)
+	_say(
+		(
+			note
+			+ "Sprich das Wort langsam. Bei jeder Silbe geht dein Mund auf. "
+			+ "Klatsch bei jeder Silbe einmal."
+		)
+	)
+	events.append("syllable_hint")
+	if _speech_enabled:
+		_speak(str(plan.current().word))
+	await _wait(1.4, serial)
+	_end_sequence(serial)
+
+
+## Ausführliche Hilfe: Lumo spricht und klatscht das Wort Silbe für Silbe,
+## die Karte teilt sich. Danach klatscht das Kind selbst.
+func _syllable_full_help() -> void:
+	var serial := _begin_sequence()
+	var note := _take_feedback()
+	var parts: Array = plan.current().syllables
+	_say(note + "Hör und schau: Ich klatsche das Wort.")
+	if not await _wait(0.8, serial):
+		return
+	await _clap_word(serial)
+	if serial != _seq:
+		return
+	_say("%s. Jetzt klatschst du – bei jeder Silbe einmal." % " – ".join(parts))
+	events.append("show_syllables")
+	await _wait(1.0, serial)
+	_end_sequence(serial)
+
+
+## Lumo klatscht das Wort: je Silbe ein Klatscher mit den echten Armen, die
+## Silbenkarte leuchtet im selben Takt. Ruhige Bewegung: Hände ruhig
+## zusammen, die Karte steht gleich geteilt da.
+func _clap_word(serial: int) -> void:
+	var parts: Array = plan.current().syllables
+	events.append("lumo_clap:%d" % parts.size())
+	syllable_room.split()
+	_teacher("encourage", camera.global_position)
+	if _speech_enabled:
+		_speak(" – ".join(parts))
+	if clap == null:
+		for index in range(parts.size()):
+			syllable_room.pulse_syllable(index)
+			if not await _wait(CLAP_BEAT, serial):
+				return
+		return
+	clap.start(parts.size(), CLAP_BEAT, reduced_motion)
+	var shown := 0
+	while shown < clap.fired:
+		syllable_room.pulse_syllable(shown)
+		shown += 1
+	while clap.is_clapping() and not reduced_motion and serial == _seq and is_inside_tree():
+		if _skip:
+			_stop_clap()
+			break
+		await get_tree().process_frame
+		while shown < clap.fired:
+			syllable_room.pulse_syllable(shown)
+			events.append("lumo_clap_beat:%d" % shown)
+			shown += 1
+	syllable_room.clear_glow()
+
+
+func _stop_clap() -> void:
+	if clap != null and (clap.is_clapping() or clap.hold):
+		clap.stop()
+
+
+# ---------------------------------------------------------------- Lesen
+
+
+## Kind tippt eine Szene an: Sie ist die Antwort.
+func choose_scene(index: int) -> String:
+	if busy or not valid or plan.mode != "reading" or index < 0:
+		return "ignored"
+	if index >= reading_room.plates.size():
+		return "ignored"
+	var value: String = plan.current().scenes[index]
+	var outcome: String = plan.answer(value)
+	events.append("answer:%s=%s" % [value, outcome])
+	if outcome == "wrong":
+		_teacher("encourage", camera.global_position)
+		reading_room.mark_wrong(index)
+		feedback.text = "Dieses Bild passt noch nicht zum Satz."
+		if plan.phase == "original":
+			if plan.wrong == 1 and plan.hint_level == 0:
+				request_hint()
+			elif plan.wrong >= 2 and plan.hint_level < PLAN.HINT_FULL:
+				while plan.hint_level < PLAN.HINT_FULL - 1:
+					plan.request_hint()
+				request_hint()
+		else:
+			feedback.text += " Lies den Satz noch einmal."
+		_update_actions()
+	elif outcome == "correct":
+		_after_correct()
+	return outcome
+
+
+func _reading_focus_hint() -> void:
+	var serial := _begin_sequence()
+	var note := _take_feedback()
+	_say(note + "Lies den Satz noch einmal langsam, Wort für Wort. %s" % _question())
+	events.append("reading_hint")
+	await _walk_to(
+		reading_room.point_spot(FOX_HALF_WIDTH),
+		reading_room.strip.global_position + Vector3(0, 0.7, reading_room.strip.row_z[-1]),
+		serial
+	)
+	if not await _wait(1.4, serial):
+		return
+	await _step_aside(serial)
+	_end_sequence(serial)
+
+
+## Ausführliche Hilfe: Das entscheidende Wort wird vorgelesen und leuchtet –
+## keine Szene wird markiert.
+func _reading_full_help() -> void:
+	var serial := _begin_sequence()
+	var note := _take_feedback()
+	var task: Dictionary = plan.current()
+	var key := int(task.keyIndex)
+	var word: String = task.words[key]
+	reading_room.clear_marks()
+	_say(note + "Ein Wort im Satz sagt, wo es ist. Hör genau hin.")
+	var card: Node3D = reading_room.strip.cards[key]
+	await _walk_to(reading_room.point_spot(FOX_HALF_WIDTH), card.global_position, serial)
+	if not await _wait(0.6, serial):
+		return
+	reading_room.strip.highlight(key, 0.9)
+	events.append("key_word:%s" % word)
+	_say("Das wichtige Wort ist „%s“. Welches Bild zeigt „%s“? Tippe es an." % [word, word])
+	if _speech_enabled:
+		_speak(word)
+	if not await _wait(1.4, serial):
+		return
+	await _step_aside(serial)
 	_end_sequence(serial)
 
 
@@ -1377,10 +1790,19 @@ func _layout() -> void:
 		0.0 if wide else lines * bubble_text.get_line_height() + 12.0
 	)
 	for button in choice_buttons:
-		button.custom_minimum_size.x = 64 if wide else 76
+		if button != clap_button and button != reset_button:
+			button.custom_minimum_size.x = 64 if wide else 76
 	# Feste Zeilenzahl der Antwortleiste: Mathe im schmalen Hochformat zwei
 	# Zeilen (Zahlen + Hilfe), sonst passt alles in eine.
-	var rows := 2 if not wide and plan.kind == "holo_word_problem" and column < 520.0 else 1
+	var rows := (
+		2
+		if (
+			not wide
+			and (plan.kind == "holo_word_problem" or plan.mode == "syllables")
+			and column < 520.0
+		)
+		else 1
+	)
 	choice_bar.custom_minimum_size.y = rows * 56.0 + (rows - 1) * 8.0
 	var left := origin.x if wide else origin.x + (available.x - column) * 0.5
 	_place_feedback(wide, column)
@@ -1460,6 +1882,10 @@ func _content_boxes() -> Array[AABB]:
 		boxes.append(AABB(Vector3(-2, 0, -2), Vector3(4, 2.5, 3)))
 	elif plan.kind == "holo_word_problem":
 		boxes.assign(math_room.content_boxes())
+	elif plan.mode == "syllables":
+		boxes.assign(syllable_room.content_boxes())
+	elif plan.mode == "reading":
+		boxes.assign(reading_room.content_boxes())
 	else:
 		boxes.assign(word_room.content_boxes())
 	# Lumo darf am Rand stehen, wird aber mit eingerahmt (Deutsch: samt
@@ -1573,13 +1999,23 @@ func _unhandled_input(event: InputEvent) -> void:
 		_drag_start = point
 		_drag_moved = false
 		_drag_index = pick(point)
-	elif moved and finger == _drag_finger and _drag_index >= 0 and not busy:
+	elif (
+		moved
+		and finger == _drag_finger
+		and _drag_index >= 0
+		and not busy
+		and plan.mode not in ["syllables", "reading"]
+	):
 		if point.distance_to(_drag_start) > 16.0 * maxf(1.0, MobileRuntime.get_ui_density()):
 			_drag_moved = true
 			_drag_preview(point)
 	elif released and finger == _drag_finger:
 		if _drag_index >= 0:
-			if _drag_moved:
+			if plan.mode == "syllables":
+				hear_word()
+			elif plan.mode == "reading":
+				choose_scene(_drag_index)
+			elif _drag_moved:
 				_drop(point)
 			elif plan.kind == "holo_word_problem":
 				tap_apple(_drag_index)
@@ -1595,6 +2031,10 @@ func pick(point: Vector2) -> int:
 	var minimum := 126.0 * MobileRuntime.get_ui_density() / 2.625
 	if plan.kind == "holo_word_problem":
 		return math_room.pick(camera, point, minimum * 0.5)
+	if plan.mode == "syllables":
+		return 0 if syllable_room.hits_word(camera, point) else -1
+	if plan.mode == "reading":
+		return reading_room.pick(camera, point)
 	return word_room.pick(camera, point, minimum)
 
 
@@ -1762,12 +2202,16 @@ func _notification(what: int) -> void:
 			wonder.set_paused(true)
 		if is_instance_valid(fox):
 			fox.set_suspended(true)
+		if clap != null:
+			clap.suspended = true
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
 		suspended = false
 		if is_instance_valid(wonder):
 			wonder.set_paused(false)
 		if is_instance_valid(fox):
 			fox.set_suspended(false)
+		if clap != null:
+			clap.suspended = false
 
 
 func _exit_tree() -> void:

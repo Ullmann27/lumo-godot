@@ -251,8 +251,18 @@ func resolve(player, time: float) -> Array[Dictionary]:
 		if float(pad.s) > s + 3.0:
 			break
 		var reach: float = 0.9 if bool(pad.get("band", false)) else float(pad.radius)
-		if on_ground and absf(s - float(pad.s)) <= reach and absf(player.lat - float(pad.lat)) <= float(pad.half):
+		# A finale launch (`catch`) also takes Lumo when SPRINGEN came a little
+		# early and he flies low over it: nobody falls in right before the finish.
+		var touches: bool = on_ground or (
+			bool(pad.get("catch", false)) and player.h <= TUNING.FINALE_CATCH_HEIGHT
+			and player.vy < float(pad.power) * 0.75
+		)
+		if touches and absf(s - float(pad.s)) <= reach and absf(player.lat - float(pad.lat)) <= float(pad.half):
 			player.bounce(float(pad.power))
+			if bool(pad.get("carry", false)):
+				# It throws forward as well: even a slow runner clears the water.
+				player.speed = maxf(player.speed, player.cruise)
+				player.boost(TUNING.FINALE_CARRY_SECONDS)
 			events.append({"type": "bounce", "index": index})
 			on_ground = false
 	for index in range(_cursor("boost", plan.boosts, "s1", s - 0.5), plan.boosts.size()):

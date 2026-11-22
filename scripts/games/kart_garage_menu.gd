@@ -184,10 +184,10 @@ void fragment() {
 	var header_shell := PanelContainer.new()
 	header_shell.name = "LumoPremiumHeader"
 	var header_style := StyleBoxFlat.new()
-	header_style.bg_color = Color(0.018, 0.10, 0.24, 0.79)
-	header_style.border_color = Color("53ddfd")
+	header_style.bg_color = Color("142638f2")
+	header_style.border_color = Color("536777")
 	header_style.set_border_width_all(1)
-	header_style.set_corner_radius_all(16)
+	header_style.set_corner_radius_all(12)
 	header_style.set_content_margin_all(2)
 	header_shell.add_theme_stylebox_override("panel", header_style)
 	body.add_child(header_shell)
@@ -306,7 +306,7 @@ void fragment() {
 	viewport_panel.add_child(preview_vignette)
 	var viewport := SubViewport.new()
 	viewport.size = Vector2i(600, 500)
-	viewport.own_world_3d = true
+	viewport.world_3d = World3D.new()
 	viewport.transparent_bg = false
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	# Keep the real 3D face/kart preview crisp on the high-quality profile.
@@ -355,6 +355,7 @@ void fragment() {
 	ground_fill.shadow_enabled = false
 	preview.add_child(ground_fill)
 	preview_camera = built.camera
+	preview_camera.make_current()
 	preview_pivot = built.pivot
 	preview_caption = _label("Dein Fahrer · Dein Kart · Ziehen zum Drehen", 14, Color("e2f6ff"))
 	preview_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1221,13 +1222,12 @@ func _status_glass() -> StyleBoxFlat:
 
 func _step_glass(active: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.66, 0.82, 0.96) if active else Color(0.018, 0.11, 0.27, 0.82)
-	style.border_color = Color("a4fcff") if active else Color(0.33, 0.75, 0.94, 0.40)
-	style.set_border_width_all(2 if active else 1)
-	style.set_corner_radius_all(26)
+	style.bg_color = Color("19534f") if active else Color("172738ec")
+	style.border_color = Color("61e6cd") if active else Color("56697a")
+	style.set_border_width_all(1)
+	style.border_width_bottom = 4 if active else 1
+	style.set_corner_radius_all(12)
 	style.set_content_margin_all(8)
-	style.shadow_color = Color(0.04, 0.85, 0.99, 0.24) if active else Color(0, 0, 0, 0.14)
-	style.shadow_size = 7
 	return style
 
 
@@ -1263,27 +1263,24 @@ func _mode_glass(mode_id: String, selected: bool) -> StyleBoxFlat:
 
 func _gold_glass(hovered: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("fff072") if hovered else Color("ffd645")
-	style.border_color = Color("fff8ba")
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(32)
+	style.bg_color = Color("ffcf75") if hovered else Color("ffbb50")
+	style.border_color = Color("ffe3a0")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(14)
 	style.set_content_margin_all(10)
-	style.shadow_color = Color(1.0, 0.65, 0.08, 0.55)
-	style.shadow_size = 15 if hovered else 10
-	style.shadow_offset = Vector2(0, 3)
+	style.shadow_color = Color("38241255")
+	style.shadow_size = 3
+	style.shadow_offset = Vector2(0, 2)
 	return style
 
 
 func _glass(selected: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.055, 0.30, 0.42, 0.96) if selected else Color(0.025, 0.085, 0.18, 0.89)
-	style.border_color = Color("65e7f0") if selected else Color(0.4, 0.7, 0.9, 0.26)
+	style.bg_color = Color("18473f") if selected else Color("182738f4")
+	style.border_color = Color("72e5c9") if selected else Color("536272")
 	style.set_border_width_all(2 if selected else 1)
-	style.set_corner_radius_all(22)
-	style.set_content_margin_all(15)
-	style.shadow_color = Color(0, 0.02, 0.06, 0.45)
-	style.shadow_size = 8
-	style.shadow_offset = Vector2(0, 5)
+	style.set_corner_radius_all(14)
+	style.set_content_margin_all(12)
 	return style
 
 

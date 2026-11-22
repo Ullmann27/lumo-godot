@@ -85,7 +85,7 @@ func _run() -> void:
 	hub._rotation_left.pressed.emit()
 	hub._rotation_right.pressed.emit()
 	_check(rotations.size() == 2 and is_equal_approx(rotations[0] + rotations[1], 0), "Drehteller links/rechts")
-	_check(hub._mode_tiles.size() == 4, "vier große Modus-Kacheln: Rennen, Turniere, Saison, Event")
+	_check(hub._mode_tiles.size() == 4, "vier spielbare Modus-Kacheln: Rennen, Turnier, Abenteuer, Wochenrennen")
 	hub._mode_tiles["race"].pressed.emit()
 	_check(routes == ["race"] and starts == 1 and hub.current_mode == "race", "Rennen startet sofort ein echtes Rennen")
 	routes.clear()
@@ -109,7 +109,10 @@ func _run() -> void:
 	_check(routes.size() == 2 and routes[0] == hub._weekly_track and routes[1] == "race" and starts == 3,
 		"Event = Wochen-Abenteuer auf echter Strecke")
 	routes.clear()
-	hub._mode_tiles["season"].pressed.emit()
+	hub._mode_tiles["parcours"].pressed.emit()
+	_check(routes == ["parcours"], "Abenteuer öffnet die echte Parcours-Weltwahl")
+	routes.clear()
+	hub._progress.pressed.emit()
 	_check(hub._overlay.visible and hub._overlay_title.text == "Sternenpfad", "Saison öffnet den Sternenpfad")
 	var route: VBoxContainer = hub._overlay_list.get_node_or_null("StarPathRoute")
 	_check(route != null and route.get_child_count() == PATH.milestones().size(),

@@ -17,6 +17,7 @@ const COVER_BY_SCENE: Dictionary = {
 	"treasure": "res://assets/creative/covers/treasure.png",
 	"jump": "res://assets/kart/menu/lumo-world.webp",
 	"run": "res://assets/kart/menu/lumo-world.webp",
+	"skypost": "res://assets/skypost/cover.webp",
 }
 const TITLE_BY_SCENE: Dictionary = {
 	"kart": "LUMO KART",
@@ -27,6 +28,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"treasure": "LUMO SCHATZSUCHE",
 	"jump": "LUMO ABENTEUER",
 	"run": "LUMO LAUF",
+	"skypost": "LUMOS STERNENPOST",
 	"learning": "LUMO LERNWERKSTATT",
 	"tutor": "NACHHILFE MIT LUMO",
 	"holo": "LUMOS HOLO-LERNRAUM",
@@ -84,7 +86,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "run", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
+		"kart", "jump", "run", "skypost", "puzzle", "build", "settlement", "rhythm", "treasure", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
 	] else "games"
 	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
 	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.
@@ -281,7 +283,9 @@ func _finish_loading() -> void:
 	_set_phase("transitioning")
 	SceneRouter.launch_options["reduceAnimations"] = _reduced_motion
 	if target_scene == "kart":
-		# One entry, not a boot greeting followed by another forced 4.4s intro.
+		# The optional film belongs to this fresh launch. Returning from a race or
+		# the Parcours reuses the prepared menu without requesting a second film.
+		SceneRouter.launch_options["kartOpeningFilm"] = not _reduced_motion
 		SceneRouter.launch_options["kartEntryPrepared"] = true
 	# Present the actually ready scene once; do not fade a not-yet-drawn hero.
 	if DisplayServer.get_name() != "headless":

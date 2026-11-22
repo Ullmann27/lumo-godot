@@ -82,6 +82,12 @@ func _run() -> void:
 			_check(captured == OK, "completed round renderer capture written")
 	game.queue_free()
 	await process_frame
+	# Das Einrasten klingt jetzt: Klänge vor dem Ende lösen (keine Ressourcen-Lecks).
+	root.get_node("GameSoundscape").release_audio()
+	for voice in root.get_node("AudioManager").get("_pool"):
+		voice.stop()
+		voice.stream = null
+	await create_timer(0.4).timeout
 	DirAccess.remove_absolute("user://lumo_puzzle_expansion_regression.json")
 	if failures.is_empty():
 		print(

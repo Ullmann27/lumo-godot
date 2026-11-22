@@ -3,6 +3,9 @@ extends RefCounted
 ## German descriptions use the existing German local voice. The English word
 ## stays visible; this class does not claim an English pronunciation channel.
 const ENTRIES := {
+	"lion": {"meanings": ["Löwe"], "hint": "Schau nach der langen Mähne um den Kopf und der Quaste am Schwanz."},
+	"cow": {"meanings": ["Kuh"], "hint": "Suche das große Weidetier mit den Hufen und der breiten Schnauze."},
+	"sheep": {"meanings": ["Schaf"], "hint": "Suche das Weidetier mit dem dicken Wollfell."},
 	"cat": {
 		"meanings": ["Katze"],
 		"hint": "Die Katze hat zwei spitze Ohren, Schnurrhaare und einen langen Schwanz.",

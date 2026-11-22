@@ -10,7 +10,7 @@ const ART = preload("res://scripts/games/cards/cards_deck_art.gd")
 const PORTRAITS := "res://assets/cards_table/portraits/%s.webp"
 const SUIT_ICONS := "res://assets/cards_table/ui/suit_%s.webp"
 const ICONS := "res://assets/kart/ui3d/"
-const TILE_PLATES := {"stich": "plate_hero_amber.webp", "leiter": "plate_hero_teal.webp", "quartett": "plate_hero_violet.webp"}
+const TILE_COLORS := {"stich": Color("956139"), "leiter": Color("34736c"), "quartett": Color("735982"), "ziel": Color("486a97")}
 
 var density := 1.0
 var compact := false
@@ -421,6 +421,15 @@ func spread_plates() -> void:
 				a.position.x = maxf(dp(6), a.position.x - rest)
 			a.position.y = maxf(a.position.y, _top_limit(a.position.x, a.size.x))
 			b.position.y = maxf(b.position.y, _top_limit(b.position.x, b.size.x))
+	# On narrow phones three full-width nameplates can exceed the available row.
+	# Stack any remaining intersecting plate below its already placed neighbours.
+	for index in range(1, shown.size()):
+		var plate := shown[index]
+		for _pass in range(index):
+			for placed in shown.slice(0, index):
+				var occupied := Rect2(placed.position, placed.size).grow(dp(2))
+				if occupied.intersects(Rect2(plate.position, plate.size)):
+					plate.position.y = minf(occupied.end.y + dp(2), safe.size.y - plate.size.y - dp(6))
 
 
 ## Untere Zone: Höhe der eigenen Hand in Bildpunkten (vom Tisch gesetzt).
@@ -708,7 +717,7 @@ func show_select(data: Dictionary) -> void:
 	var logo := KIT.label("Lumo Karten", 26 if not compact else 22, density, KIT.GOLD, true)
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titles.add_child(logo)
-	var sub := KIT.label("Drei Spiele am Sternentisch", 13, density, KIT.CYAN)
+	var sub := KIT.label("Vier Spiele am Sternentisch", 13, density, KIT.CYAN)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titles.add_child(sub)
 	var stars := KIT.panel("row_stat.webp", density, 8.0)
@@ -718,39 +727,39 @@ func show_select(data: Dictionary) -> void:
 	stars.add_child(star_row)
 	star_row.add_child(KIT.picture(ICONS + "icon_star_gold.webp", 26, density))
 	star_row.add_child(KIT.label(str(int(data.get("stars", 0))), 17, density, KIT.GOLD, true))
-	# Platz für den Blick auf den Tisch, dann die drei Kacheln.
 	var gap := Control.new()
 	gap.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	gap.size_flags_stretch_ratio = 0.9 if not compact else 0.2
+	gap.size_flags_stretch_ratio = 0.12 if compact else 0.6
 	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(gap)
-	# Nebeneinander nur im Querformat; hochkant (auch Fold) stehen die Kacheln untereinander.
-	var sideways := compact or (area.x > area.y and area.x / density >= 700.0)
-	var tiles: BoxContainer = HBoxContainer.new() if sideways else VBoxContainer.new()
+	var tiles := GridContainer.new()
 	tiles.name = "Tiles"
-	tiles.add_theme_constant_override("separation", int(dp(12)))
+	tiles.columns = 2 if area.x / density >= 570.0 else 1
+	tiles.add_theme_constant_override("h_separation", int(dp(8)))
+	tiles.add_theme_constant_override("v_separation", int(dp(8)))
 	tiles.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	tiles.size_flags_stretch_ratio = 2.2
+	tiles.size_flags_stretch_ratio = 2.3
 	column.add_child(tiles)
 	for game: Dictionary in data.get("games", []):
-		tiles.add_child(_tile(game, sideways))
-	var foot := KIT.label("Tippe ein Spiel an – Lumo zeigt dir, wie es geht.", 13, density, KIT.MUTED)
-	foot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	foot.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	column.add_child(foot)
+		tiles.add_child(_tile(game, tiles.columns == 2 and area.y / density > 540.0))
 
 
 func _tile(game: Dictionary, sideways: bool) -> Button:
 	var tile := Button.new()
 	tile.name = "Tile_" + str(game.id)
-	tile.focus_mode = Control.FOCUS_NONE
+	tile.focus_mode = Control.FOCUS_ALL
 	tile.clip_contents = true
 	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	tile.custom_minimum_size = Vector2(140, 96) * density
-	var box := KIT.slice(TILE_PLATES.get(str(game.id), "plate_feature_navy.webp"), density, 10.0)
-	for state: String in ["normal", "hover", "focus", "pressed", "disabled"]:
-		tile.add_theme_stylebox_override(state, box)
+	tile.custom_minimum_size = Vector2(120, 76 if compact else 85) * density
+	var accent: Color = TILE_COLORS[game.id]
+	var face := accent.darkened(0.54)
+	var box := KIT.surface(face, accent.lightened(.2), density, 8.0)
+	box.border_width_left = roundi(dp(4))
+	tile.add_theme_stylebox_override("normal", box)
+	tile.add_theme_stylebox_override("hover", KIT.surface(face.lightened(.08), accent, density, 8.0))
+	tile.add_theme_stylebox_override("focus", KIT.surface(face, KIT.GOLD, density, 8.0))
+	tile.add_theme_stylebox_override("pressed", KIT.surface(face.darkened(.12), accent, density, 8.0))
 	tile.pressed.connect(_emit("game", {"game": str(game.id)}))
 	# Nebeneinander stehende Kacheln: Fächer oben, Text darunter.
 	# Untereinander (Hochformat): Fächer links, Text rechts.
@@ -773,7 +782,7 @@ func _tile(game: Dictionary, sideways: bool) -> Button:
 		fan.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		fan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	else:
-		fan.custom_minimum_size = Vector2(118, 72) * density
+		fan.custom_minimum_size = Vector2(78 if compact else 96, 48 if compact else 60) * density
 		fan.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		fan.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		fan.size_flags_stretch_ratio = 0.5

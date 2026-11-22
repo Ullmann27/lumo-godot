@@ -1,5 +1,5 @@
 extends SceneTree
-## Kart-Einstieg: Intro über dem Menü, Einfahrt mit Drift, Logo, Überspringen,
+## Kart-Einstieg: Film über dem Menü, geprüfte Dekodierung, Überspringen,
 ## danach sofort bedienbares Menü; reduzierte Bewegung und --script ohne Intro.
 ## Mit Anzeige (xvfb) und Pfadargument entsteht ein Kontaktbogen echter Bilder.
 ## Aufruf: godot --rendering-method gl_compatibility --script scripts/tests/kart_intro_regression.gd -- [out.png]
@@ -46,24 +46,28 @@ func _run() -> void:
 	intro.set_process(false)
 	assert(intro.mouse_filter == Control.MOUSE_FILTER_STOP, "Intro fängt Tipps ab, statt Menüknöpfe auszulösen")
 	var sheet := Image.create(1920, 1080, false, Image.FORMAT_RGBA8)
-	var shots := [0.55, 1.85, 2.75, 3.9]
-	var positions: Array[float] = []
-	var headings: Array[float] = []
-	for index in range(shots.size()):
-		intro._update(shots[index])
-		positions.append(intro.kart.position.x)
-		headings.append(intro.kart.rotation.y)
-		if render:
+	assert(is_instance_valid(intro.film) and intro.film.stream.resource_path == intro.OPENING_PATH, "Der verpackte Rennfilm läuft")
+	assert(intro.film.is_playing(), "Der Decoder startet beim Einstieg")
+	# Let Godot decode four successive shots (Theora has no portable seek).
+	if render:
+		intro.set_process(true)
+		var cue_times := [.3,1.7,3.4,4.95]
+		var index := 0
+		var until := Time.get_ticks_msec() + 60000
+		while index < cue_times.size() and Time.get_ticks_msec() < until:
+			await process_frame
+			if not is_instance_valid(intro) or intro.leaving:
+				break
+			if intro.film.stream_position < cue_times[index]:
+				continue
 			await RenderingServer.frame_post_draw
 			var image: Image = root.get_texture().get_image()
-			image.resize(960, 540)
+			print("[KartIntro] Dekodiertes Filmbild ",index," bei ",intro.film.stream_position)
+			image.resize(960,540)
 			image.convert(Image.FORMAT_RGBA8)
-			sheet.blit_rect(image, Rect2i(0, 0, 960, 540), Vector2i((index % 2) * 960, (index / 2) * 540))
-	assert(positions[0] < -8.0 and positions[1] > positions[0] and absf(positions[3]) < 0.01, "Lumo fährt von links auf die Bühne")
-	assert(headings[1] > headings[0] + 0.5, "Lumo driftet quer ein")
-	assert(absf(headings[3] - intro.FINAL_HEADING) < 0.01, "Lumo kommt zur Kamera gedreht zum Stehen")
-	assert(intro.logo.modulate.a > 0.99 and intro.lumo_label.text == "LUMO", "Logo steht")
-	assert(intro.kart.celebration_place == 1, "Lumo freut sich nach dem Einparken")
+			sheet.blit_rect(image, Rect2i(0,0,960,540), Vector2i((index%2)*960,(index/2)*540))
+			index += 1
+		assert(index == 4, "Alle vier Einstellungen vom laufenden Videoplayer gesehen (%d/4)" % index)
 	# Tippen überspringt; während des Ausblendens geht der nächste Tipp schon ans Menü.
 	var tap := InputEventScreenTouch.new()
 	tap.pressed = true
@@ -88,7 +92,7 @@ func _run() -> void:
 	if render:
 		DirAccess.make_dir_recursive_absolute(out_path.get_base_dir())
 		assert(sheet.save_png(out_path) == OK)
-	print("[KartIntro] PASS: Einfahrt, Drift, Logo, Freude, Tippen/Zurück überspringen, Menü danach bedienbar, kein Intro in Prüfungen")
+	print("[KartIntro] PASS: Film, Dekoder, Touch/Zurück, Menü und einmaliger Einstieg")
 	# Let the asynchronous audio mixer release the final stopped playback.
 	await create_timer(0.2).timeout
 	quit(0)

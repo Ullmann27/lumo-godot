@@ -21,6 +21,17 @@ func _settle() -> void:
 	await process_frame
 
 
+## Elemente aus dem Aktionsplan (ohne die von Höhepunkten oder dem Garten ergänzten).
+func _plan_items(items: Array) -> Array:
+	return items.filter(
+		func(item): return not (item.has("thrill") or item.has("highlight") or item.has("garden"))
+	)
+
+
+func _planned(items: Array) -> int:
+	return _plan_items(items).size()
+
+
 func _check_plans() -> void:
 	for track in ACTION.COURSES:
 		var world = WORLD.new()
@@ -40,22 +51,29 @@ func _check_plans() -> void:
 		# LUMO passages add one reward pad behind a bridge (kart_passages.extend_action).
 		var passage_pads: int = course.pads.filter(func(pad): return pad.has("passage")).size()
 		assert(bridge_pads <= passage_pads, "%s: jede Brücke hat ihr Turbo-Feld" % track)
-		assert(course.pads.size() == config.get("pads", []).size() + stunt_pads + passage_pads, "%s: alle Turbo-Felder haben Platz" % track)
-		assert(course.gates.size() == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
+		# Höhepunkte (kart_track_thrills.gd, kart_track_highlights.gd, Garten) bringen eigene
+		# Elemente mit; verglichen werden nur die im Plan konfigurierten.
+		assert(_planned(course.pads) == config.get("pads", []).size() + stunt_pads + passage_pads, "%s: alle Turbo-Felder haben Platz" % track)
+		assert(_planned(course.gates) == (ACTION.GATE_COUNT if config.has("slalom") else 0), "%s: Slalom-Tore" % track)
 		var stunt_kickers: int = ACTION.STUNT.kickers(world).size() if config.get("stunt", false) else 0
-		assert(course.kickers.size() == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
-		assert(course.dives.size() == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
-		assert(course.edges.size() == config.get("edges", []).size(), "%s: offene Kanten" % track)
+		assert(_planned(course.kickers) == (1 if config.has("kicker") else 0) + stunt_kickers + config.get("extra_kickers", []).size(), "%s: Sprungschanze" % track)
+		assert(_planned(course.dives) == (1 if config.has("dive") else 0), "%s: Tauchstrecke" % track)
+		if config.has("dive"):
+			var fractions: Array = config.dive
+			var planned_length: float = (float(fractions[1]) - float(fractions[0])) * world.length
+			var actual_length: float = course.dives[0].end - course.dives[0].start
+			assert(is_equal_approx(actual_length, planned_length), "%s: volle Tunnellänge" % track)
+		assert(_planned(course.edges) == config.get("edges", []).size(), "%s: offene Kanten" % track)
 		var spans: Array = []
-		for pad in course.pads:
+		for pad in _plan_items(course.pads):
 			spans.append(Vector2(pad.start, pad.end))
 		if not course.gates.is_empty():
 			spans.append(Vector2(course.gates[0].distance - 6.0, course.gates[-1].distance + 6.0))
-		for kicker in course.kickers:
+		for kicker in _plan_items(course.kickers):
 			spans.append(Vector2(kicker.start, kicker.take_off + 10.0))
-		for dive in course.dives:
+		for dive in _plan_items(course.dives):
 			spans.append(Vector2(dive.start, dive.end))
-		for edge in course.edges:
+		for edge in _plan_items(course.edges):
 			spans.append(Vector2(edge.start, edge.end))
 			assert(absf(float(edge.side)) == 1.0)
 		for span in spans:

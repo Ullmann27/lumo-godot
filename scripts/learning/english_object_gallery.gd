@@ -1,6 +1,7 @@
 extends RefCounted
 ## Bounded, real object meshes. No downloaded models, answer rules or saves.
 ## Each object has its own distinguishing geometry and a numbered plinth.
+const VILLAGE_ART = preload("res://scripts/creative/build_village_art.gd")
 const VOCABULARY = preload("res://scripts/learning/english_vocabulary.gd")
 
 
@@ -65,6 +66,19 @@ static func make(word: String, index: int) -> Node3D:
 	shape.position.y = 0.22
 	object.add_child(shape)
 	match word:
+		"lion":
+			var lion := preload("res://assets/creative/village/lion_village.glb").instantiate() as Node3D
+			lion.scale = Vector3.ONE * .76
+			lion.rotation.y = -.65
+			shape.add_child(lion)
+		"cow", "sheep":
+			var animal := VILLAGE_ART.instance(word)
+			var bounds: AABB = VILLAGE_ART.bundle(word).aabb
+			var fit := 1.8 / maxf(bounds.size.x, bounds.size.z)
+			animal.scale = Vector3.ONE * fit
+			animal.position.y = -bounds.position.y * fit
+			animal.rotation.y = -.65
+			shape.add_child(animal)
 		"cat":
 			var fur := _material("d58950", 0.76)
 			var cream := _material("f3d3a6", 0.82)

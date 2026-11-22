@@ -1,13 +1,13 @@
 extends SceneTree
 ## Presentation fixture only. The real Dart authority is exercised separately.
 ## This fixture never writes a saved round and never awards a wallet result.
-const TABLE := "res://scripts/games/memory/memory_table.gd"
 const TOKEN := "cccccccccccccccccccccccccccccccc"
 const OWNER := "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 var table
 var bridge
 var output := ""
 var capture := false
+var on_demand := false
 var checks := 0
 var errors: Array[String] = []
 var inputs: Array[Dictionary] = []
@@ -35,6 +35,7 @@ class ObservedTransport extends RefCounted:
 func _initialize() -> void:
 	output = OS.get_environment("LUMO_MEMORY_CAPTURE_DIR")
 	capture = "--capture" in OS.get_cmdline_user_args()
+	on_demand = capture and "--on-demand" in OS.get_cmdline_user_args()
 	call_deferred("_run")
 
 
@@ -61,7 +62,7 @@ func _state(level: String="leicht") -> Dictionary:
 func _frames(count: int) -> void:
 	for index in range(count):
 		await process_frame
-		if capture: await RenderingServer.frame_post_draw
+		if capture and not on_demand: await RenderingServer.frame_post_draw
 
 
 func _physical(control: Control) -> Rect2:
@@ -70,12 +71,12 @@ func _physical(control: Control) -> Rect2:
 	return Rect2(transform*Vector2.ZERO*factor,control.size*transform.get_scale()*factor)
 
 
-func _tap(button: Button,label: String) -> void:
+func _tap(button: Button,label: String,at := Vector2.INF) -> void:
 	_check(button.is_visible_in_tree() and not button.disabled,label+" is currently actionable")
 	var rect := _physical(button)
 	var dp: Vector2 = rect.size/table._density
 	_check(dp.x>=48.0 and dp.y>=48.0,label+" actual size >=48dp")
-	var point := rect.get_center()
+	var point := rect.get_center() if at == Vector2.INF else at
 	for pos in [Vector2.ZERO,point]:
 		var motion := InputEventMouseMotion.new()
 		motion.position = pos
@@ -119,6 +120,7 @@ func _snap(name: String) -> void:
 	file.store_string(raw)
 	file.close()
 	if capture:
+		if on_demand: RenderingServer.force_draw(true)
 		var image := root.get_texture().get_image()
 		_check(image != null and not image.is_empty(),"real framebuffer "+name)
 		if image != null and not image.is_empty():
@@ -143,10 +145,25 @@ func _profile(size: Vector2i,density: float,insets: Rect2) -> void:
 	await _frames(6)
 
 
+## A rotated chair's axis-aligned bounds include empty space between rails.
+## Inspect its actual triangles before reporting a visible card as obstructed.
+func _mesh_blocks_face(mesh: MeshInstance3D, origin: Vector3, face: Vector3) -> bool:
+	if mesh.mesh == null: return false
+	var local_origin := mesh.to_local(origin)
+	var local_end := mesh.to_local(face)
+	var triangles := mesh.mesh.get_faces()
+	for i in range(0,triangles.size(),3):
+		var hit = Geometry3D.segment_intersects_triangle(local_origin,local_end,
+			triangles[i],triangles[i+1],triangles[i+2])
+		if hit != null and mesh.to_global(hit).distance_to(face) > 0.002:
+			return true
+	return false
+
+
 func _visible_targets() -> void:
 	var safe_px := Rect2(table._safe_rect.position*table._density,table._safe_rect.size*table._density)
 	var count := 0
-	var rectangles: Array[Rect2] = []
+	var faces: Array[PackedVector2Array] = []
 	for card in table._cards:
 		if not card.button.is_visible_in_tree(): continue
 		count += 1
@@ -182,9 +199,27 @@ func _visible_targets() -> void:
 						var b := (bounds.end[axis]-origin[axis])/direction[axis]
 						near = maxf(near,minf(a,b))
 						far = minf(far,maxf(a,b))
-				_check(far < near or near > card_distance+0.02,"actual tabletop cannot occlude a projected card face")
-		for earlier in rectangles: _check(not rect.intersects(earlier),"unique non-overlapping card target")
-		rectangles.append(rect)
+				if far >= near and near <= card_distance+0.02:
+					_check(not _mesh_blocks_face(child,origin,world),"solid %s in front of %s at %s %s" %
+						[child.get_path(),card.root.name,root.size,table._state.difficulty])
+		var physical_face := PackedVector2Array()
+		for point in card.button.face_polygon:
+			var local := Vector2(point)
+			var parent_point: Vector2 = card.button.get_global_transform_with_canvas() * local
+			physical_face.append(parent_point * Vector2(root.size) / root.get_visible_rect().size)
+			_check(card.button._has_point(local.lerp(card.button.size*0.5,0.03)),
+				"touch just inside each projected corner reaches this card")
+		var units_per_dp: Vector2 = card.button.size / rect.size * table._density
+		# The centre of a distorted card is different from its axis-aligned bounding-box centre.
+		var face_center := Vector2.ZERO
+		for point in card.button.face_polygon: face_center += Vector2(point)/4
+		for corner in [Vector2(-1,-1),Vector2(-1,1),Vector2(1,-1),Vector2(1,1)]:
+			_check(card.button._has_point(face_center + corner*24*units_per_dp),
+				"48dp touch square inside %s at %s %s" % [card.root.name, root.size, table._state.difficulty])
+		for previous in faces:
+			_check(Geometry2D.intersect_polygons(physical_face,previous).is_empty(),
+				"actual playable faces have unique non-overlapping touch targets")
+		faces.append(physical_face)
 	_check(count>0,"visible board cards exist")
 	for button in [table.back_button,table.pause_button,table.previous_button,table.next_button]:
 		var rect := _physical(button)
@@ -198,21 +233,29 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.make_dir_recursive_absolute(output)
+	if on_demand: RenderingServer.render_loop_enabled = false
 	original_touch = Input.emulate_touch_from_mouse
 	Input.emulate_touch_from_mouse = true
 	await _profile(Vector2i(960,540),1.0,Rect2())
 	bridge = ObservedTransport.new()
 	bridge.state = _state()
-	var script: GDScript = load(TABLE)
-	if script == null or not script.can_instantiate():
-		_check(false,"production presenter compiles after autoload initialization")
+	var route: String = root.get_node("SceneRouter").SCENES.memory
+	var scene: PackedScene = load(route)
+	if scene == null or not scene.can_instantiate():
+		_check(false,"routed Memory scene loads after autoload initialization")
 		quit(1)
 		return
-	table = script.new()
+	root.scaling_3d_scale = 0.75
+	table = scene.instantiate()
 	table._host = bridge
 	root.add_child(table)
 	await _frames(8)
 	_check(table._state.token==TOKEN,"token bound")
+	_check(is_equal_approx(root.scaling_3d_scale,1.0),"Memory draws the table at native window resolution")
+	_check(table._cards[0].body.mesh == table._cards[1].body.mesh,"board cards share a beveled blank")
+	for motif in table.MOTIFS:
+		var portrait: Texture2D = load("res://assets/games/memory/collection/%s.webp" % motif)
+		_check(portrait != null and portrait.get_size() == Vector2(768,1008),"full artwork resolution for "+str(motif))
 	_visible_targets()
 	await _snap("memory-landscape-hidden")
 	for card in table._cards:
@@ -236,7 +279,18 @@ func _run() -> void:
 	await _tap(table._cards[0].button,"rejected actual touch")
 	_check(table._pending==0 and not table._cards[0].face,"transport failure never reveals a card")
 	bridge.accept = true
-	await _tap(table._cards[0].button,"first actual card touch")
+	# Near the upper right of the first card, its bounding box overlaps the
+	# next one. Dispatch through the GUI at a point on the first sloped face.
+	var first_button: Button = table._cards[0].button
+	var next_button: Button = table._cards[1].button
+	var first_rect := _physical(first_button)
+	var next_rect := _physical(next_button)
+	var overlap := first_rect.intersection(next_rect)
+	var edge := overlap.position + overlap.size * Vector2(0.35,0.12)
+	_check(overlap.has_area() and first_button._has_point((edge-first_rect.position)*first_button.size/first_rect.size)
+		and not next_button._has_point((edge-next_rect.position)*next_button.size/next_rect.size),
+		"sloped card edge belongs only to the left card")
+	await _tap(first_button,"actual touch at sloped card edge",edge)
 	_check(table._pending>0 and bridge.requests.back().action=="flip" and int(bridge.requests.back().index)==0,"actual touch emits bounded intent")
 	_check(not table._cards[0].face,"no visual reveal before authority")
 	_check(not FileAccess.file_exists(table.OBSERVATION),"pending intent invalidates layout")
@@ -284,6 +338,13 @@ func _run() -> void:
 			next.rejected = int(table._state.rejected)
 			await _apply(next)
 			_visible_targets()
+			if profile.name == "phone" and level == "leicht":
+				await _tap(table._cards[0].button,"phone card touch")
+				_check(int(bridge.requests.back().index)==0 and table._pending>0,"phone touch reaches projected card")
+				var phone_face := _reply({"reduceMotion":true})
+				phone_face.cards[0] = {"index":0,"faceUp":true,"matched":false,"motif":"giraffe"}
+				await _apply(phone_face)
+				await _snap("memory-phone-one-flipped")
 			var seen := {}
 			for page in range(ceili(float(table._cards.size())/table._page_size)):
 				for card in table._cards:
@@ -304,6 +365,7 @@ func _run() -> void:
 	table.queue_free()
 	await _frames(4)
 	_check(not FileAccess.file_exists("user://memory_layout_v1.json"),"scene exit removes ephemeral layout")
+	_check(is_equal_approx(root.scaling_3d_scale,0.75),"return restores former render scale")
 	Input.emulate_touch_from_mouse = original_touch
 	var result := {"status":"PASS" if errors.is_empty() else "FAIL","checks":checks,"errors":errors,
 		"scope":"Production Godot presenter; synthetic public-state/transport fixture and actual ScreenTouch events; no Dart, Android, wallet or device FPS claim.",

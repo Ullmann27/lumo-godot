@@ -6,19 +6,27 @@ const ADVENTURE = preload("res://scripts/games/kart_adventure_routes.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
 const HARBOR_LONG = preload("res://scripts/games/kart_sonnenhafen_long_course.gd")
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
+const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
+const WINDWERK = preload("res://scripts/games/windwerk/kart_windwerk_course.gd")
 static var IDS: Array[String] = _all_ids()
 
 static func _all_ids() -> Array[String]:
 	var result: Array[String] = ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]
 	result.append_array(EXPANSION.IDS)
 	result.append(JUNGLE.ID)
+	result.append(GARDEN.ID)
+	result.append(WINDWERK.ID)
 	result.make_read_only()
 	return result
 
 
 static func definition(id: String) -> Dictionary:
+	if id == WINDWERK.ID:
+		return WINDWERK.definition()
 	if id == JUNGLE.ID:
 		return JUNGLE.definition()
+	if id == GARDEN.ID:
+		return GARDEN.definition()
 	var result: Dictionary = _original_definition(id)
 	if ADVENTURE.supports(id):
 		result["points"] = ADVENTURE.points(id)

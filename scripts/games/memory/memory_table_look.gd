@@ -6,8 +6,8 @@ extends RefCounted
 const CARD_BACK := """
 shader_type spatial;
 render_mode unshaded, cull_back;
-uniform vec4 top_color : source_color = vec4(0.16, 0.62, 0.74, 1.0);
-uniform vec4 bottom_color : source_color = vec4(0.11, 0.24, 0.52, 1.0);
+uniform vec4 top_color : source_color = vec4(0.14, 0.47, 0.51, 1.0);
+uniform vec4 bottom_color : source_color = vec4(0.095, 0.176, 0.314, 1.0);
 uniform vec4 gold : source_color = vec4(1.0, 0.80, 0.34, 1.0);
 uniform float aspect = 0.76;
 uniform float shine = 1.0;
@@ -42,13 +42,24 @@ void fragment() {
 	float frame = sd_round_rect(p, extent - vec2(0.05), 0.07);
 	col = mix(col, gold.rgb, 1.0 - smoothstep(0.004, 0.014, abs(frame + 0.012)));
 	col = mix(col, gold.rgb * 0.75, 1.0 - smoothstep(0.002, 0.008, abs(frame + 0.042)));
-	vec2 sp = vec2(p.x, -p.y + 0.01);
-	float s = sd_star(sp, 0.19, 0.46);
+	float dial = aspect * 0.32;
+	float aa = max(fwidth(rc), 0.001);
+	col = mix(col, bottom_color.rgb * 1.18, 1.0 - smoothstep(dial-aa, dial+aa, rc));
+	float fine_line = min(abs(rc-dial), abs(rc-dial*0.79));
+	float ring = 1.0 - smoothstep(0.001, 0.003+aa, fine_line);
+	float angle = atan(p.y, p.x+0.00001);
+	float bearing = abs(sin(12.0*angle))*rc;
+	float length_mark = mix(0.9, 0.8, step(0.92, abs(cos(4.0*angle))));
+	float tick = (1.0-smoothstep(0.015, 0.018+aa*8.0, bearing)) *
+		step(dial*length_mark,rc) * step(rc,dial*0.985);
+	col = mix(col, gold.rgb*0.90, max(ring,tick));
+	vec2 sp = vec2(p.x, -p.y + 0.005);
+	float s = sd_star(sp, aspect * 0.20, 0.46);
 	float outline = 1.0 - smoothstep(0.012, 0.022, s);
 	col = mix(col, vec3(0.42, 0.22, 0.05), outline);
 	float fill = 1.0 - smoothstep(-0.003, 0.004, s);
 	vec3 star = mix(gold.rgb, vec3(1.0, 0.97, 0.82), clamp(0.55 * sp.y / 0.19 + 0.35, 0.0, 1.0));
-	star = mix(star, gold.rgb * 0.8, step(0.0, sp.x) * 0.25);
+	star = mix(star, gold.rgb * 0.58, step(0.0, sin(5.0*atan(sp.x,sp.y+0.00001))) * 0.42);
 	col = mix(col, star, fill);
 	for (int i = 0; i < 4; i++) {
 		float a = float(i) * 1.5707963 + 0.7853981;

@@ -199,19 +199,23 @@ def corner_index(card: Image.Image, label: str, suit: str, dark) -> None:
 
 def number_card(suit_index: int, rank: int) -> Image.Image:
     key, _name, light, dark, accent = SUITS[suit_index]
-    card = card_base(light, dark, accent)
-    # Große Farbform als Wasserzeichen.
-    mark = tint(symbol_mask(key, int(W * 0.80)), WHITE, 0.20)
-    card.alpha_composite(mark, (int(W * 0.10), int(H * 0.50 - W * 0.40)))
+    card = Image.new('RGBA', (W, H), (252, 249, 237, 255))
+    draw = ImageDraw.Draw(card)
+    inset = int(W * .035)
+    draw.rounded_rectangle((inset, inset, W - inset, H - inset), radius=int(W * .065),
+                           outline=dark + (255,), width=3 * SS)
+    # An inset suit seal and a large dark numeral keep the value readable in a small hand.
+    cx, cy = W * .52, H * .49
+    radius = W * .33
+    paper_tint = tuple(round(.22 * v + .78 * 248) for v in light)
+    draw.ellipse((cx-radius, cy-radius, cx+radius, cy+radius), fill=paper_tint + (255,))
+    mark = tint(symbol_mask(key, int(W * .51)), accent)
+    card.alpha_composite(mark, (int(cx - mark.width/2), int(cy - mark.height/2)))
     corner_index(card, str(rank), key, dark)
-    # Große Zahl.
+    ink = tuple(round(v * .51) for v in dark)
     label = str(rank)
-    pixel = W * (0.60 if len(label) == 1 else 0.47)
-    centre = (W * 0.52, H * (0.475 if len(label) == 1 else 0.50))
-    numeral = text_layer((W, H), label, pixel, WHITE + (255,), at=centre, stroke=SS * 3,
-                         stroke_fill=tuple(int(v * 0.42) for v in dark) + (255,))
-    card.alpha_composite(soft_shadow(numeral, (0, SS * 5), SS * 4, tuple(int(v * 0.3) for v in dark), 0.7))
-    card.alpha_composite(numeral)
+    pixel = W * (.58 if len(label) == 1 else .47)
+    card.alpha_composite(text_layer((W, H), label, pixel, ink + (255,), at=(cx, cy)))
     # Mengenbild: so viele kleine Formen wie der Wert (Zehnerfeld, 2 × 5).
     pip = int(W * 0.088)
     gap = int(pip * 0.22)
@@ -223,9 +227,8 @@ def number_card(suit_index: int, rank: int) -> Image.Image:
         total = count * pip + (count - 1) * gap
         x0 = (W - total) // 2
         for column in range(count):
-            symbol = tint(symbol_mask(key, pip), WHITE)
+            symbol = tint(symbol_mask(key, pip), dark)
             position = (x0 + column * (pip + gap), top + row * (pip + gap))
-            card.alpha_composite(soft_shadow(symbol, (0, SS), SS, (0, 0, 0), 0.35), position)
             card.alpha_composite(symbol, position)
     return card
 
@@ -524,7 +527,7 @@ def main() -> int:
     parser.add_argument('--sheet', type=Path, help='zusätzlich ein PNG-Prüfbild des Atlas schreiben')
     args = parser.parse_args()
     atlas, layout = build_deck()
-    save_webp(atlas, OUT / 'deck' / 'star_deck.webp', quality=92)
+    save_webp(atlas, OUT / 'deck' / 'star_deck.webp', quality=94)
     (OUT / 'deck' / 'star_deck.json').write_text(json.dumps(layout, indent=1) + '\n')
     for index, suit in enumerate(SUITS):
         save_webp(suit_icon(index), OUT / 'ui' / f'suit_{suit[0]}.webp', lossless=True)

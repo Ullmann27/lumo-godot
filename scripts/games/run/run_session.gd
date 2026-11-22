@@ -4,6 +4,7 @@ extends RefCounted
 ## course plan before it is used; anything doubtful is ignored, never repaired.
 
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
+const GHOST = preload("res://scripts/games/run/run_ghost.gd")
 const VERSION: int = 1
 const SECTION: String = "run"
 const RECORDS: String = "user://run_records.cfg"
@@ -257,8 +258,35 @@ static func store_record(child_scope: String, course_id: String, rating: int, ti
 	if config == null:
 		config = ConfigFile.new()
 	config.set_value(_record_section(child_scope), course_id, {"rating": rating, "time_ms": time_ms})
-	write_sealed(RECORDS, config)
+	if write_sealed(RECORDS + ".tmp", config):
+		DirAccess.rename_absolute(RECORDS + ".tmp", RECORDS)
 
 
 static func _record_section(child_scope: String) -> String:
 	return "best_" + (child_scope.substr(0, 24) if not child_scope.is_empty() else "standalone")
+
+
+static func replay_path(child_scope: String, course_id: String) -> String:
+	return "user://run_replay_%s_%s.cfg" % [_record_section(child_scope), course_id]
+
+
+static func replay(path: String, signature: String) -> Dictionary:
+	var config: ConfigFile = read_sealed(path)
+	if config == null or config.get_value(SECTION, "signature", "") != signature:
+		return {}
+	var time_ms: Variant = config.get_value(SECTION, "time_ms", 0)
+	var samples: Variant = config.get_value(SECTION, "samples", null)
+	if typeof(time_ms) != TYPE_INT or typeof(samples) != TYPE_PACKED_VECTOR4_ARRAY:
+		return {}
+	if not GHOST.valid_samples(samples, time_ms):
+		return {}
+	return {"time_ms": time_ms, "samples": samples}
+
+
+static func store_replay(path: String, signature: String, time_ms: int, samples: PackedVector4Array) -> bool:
+	if not GHOST.valid_samples(samples, time_ms):
+		return false
+	var best: Dictionary = replay(path, signature)
+	if not best.is_empty() and time_ms >= int(best.time_ms):
+		return false
+	return save(path, {"signature": signature}, {"time_ms": time_ms, "samples": samples})

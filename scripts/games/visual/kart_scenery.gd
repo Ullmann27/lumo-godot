@@ -7,6 +7,7 @@ extends RefCounted
 ## Profile: low (sicher spielbar), medium (ausgewogen), high, ultra (manuell,
 ## PerformanceManager.set_ultra(true)).
 
+const COURSE_LANDMARK = preload("res://scripts/games/visual/kart_course_landmark.gd")
 const LUMO_QUALITY = preload("res://scripts/systems/render/lumo_quality.gd")
 const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
 const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
@@ -359,6 +360,7 @@ static func build(world) -> void:
 	var root := Node3D.new()
 	root.name = "KartScenery"
 	world.add_child(root)
+	COURSE_LANDMARK.place(world, root, tier == "low")
 	var stats := {"quality": tier, "species": {}, "lamps": 0, "reflectors": 0, "particles": 0}
 	_roadside_flora(world, look, budget)
 	var material: ShaderMaterial = foliage_material(world, look, budget)

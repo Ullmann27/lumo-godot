@@ -2,7 +2,7 @@ extends SceneTree
 ## Renders the small course pictures of the Kart menu from the real courses.
 ##
 ##   xvfb-run -a godot --path . --rendering-method gl_compatibility --audio-driver Dummy \
-##     --script res://scripts/tests/kart_track_preview_capture.gd -- --out=<dir> [--all] [--spots=0.03,0.35]
+##     --script res://scripts/tests/kart_track_preview_capture.gd -- --out=<dir> [--all | --track=<id>] [--spots=0.03,0.35]
 ##
 ## Writes <id>_<n>.png (640x360) per course and spot; the chosen picture is saved as
 ## assets/kart/neon_previews/<id>.webp. Without --all only courses without a picture.
@@ -17,11 +17,14 @@ func _initialize() -> void:
 func _run() -> void:
 	var out := ""
 	var all := false
+	var track := ""
 	var spots: Array[float] = [0.03, 0.35]
 	for argument in OS.get_cmdline_user_args():
 		var text := str(argument)
 		if text.begins_with("--out="):
 			out = text.trim_prefix("--out=")
+		elif text.begins_with("--track="):
+			track = text.trim_prefix("--track=")
 		elif text == "--all":
 			all = true
 		elif text.begins_with("--spots="):
@@ -37,7 +40,9 @@ func _run() -> void:
 	var done := 0
 	for entry in CATALOG.TRACKS:
 		var id := str(entry.id)
-		if not all and ResourceLoader.exists("res://assets/kart/neon_previews/%s.webp" % id):
+		if not track.is_empty() and track != id:
+			continue
+		if track.is_empty() and not all and ResourceLoader.exists("res://assets/kart/neon_previews/%s.webp" % id):
 			continue
 		var world = WORLD.new()
 		root.add_child(world)
@@ -59,12 +64,18 @@ func _run() -> void:
 			await RenderingServer.frame_post_draw
 			var image := root.get_texture().get_image()
 			image.resize(640, 360, Image.INTERPOLATE_LANCZOS)
-			image.save_png(out.path_join("%s_%d.png" % [id, index]))
+			if image.save_png(out.path_join("%s_%d.png" % [id, index])) != OK:
+				quit(1)
+				return
 		print("[TrackPreview] %s (%.0f m)" % [id, float(world.length)])
 		done += 1
 		root.remove_child(world)
 		world.queue_free()
 		await process_frame
 		await process_frame
+	if not track.is_empty() and done == 0:
+		push_error("Unbekannte Strecke: " + track)
+		quit(1)
+		return
 	print("[TrackPreview] PASS: %d Strecken" % done)
 	quit(0)

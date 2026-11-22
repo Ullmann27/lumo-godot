@@ -27,8 +27,8 @@ const STEPS := [
 		"say": "Schau, das ist dein Tal. Gleich landen wir.", "target": "", "mode": "flight"},
 	{"id": "hallo", "text": "Hier entsteht dein Dorf. Wollen wir das erste Haus bauen?",
 		"say": "Hier entsteht dein Dorf. Wollen wir das erste Haus bauen?", "target": "lumo", "mode": "start"},
-	{"id": "bauplatz", "text": "Tippe auf einen hellen Bauplatz.",
-		"say": "Tippe auf einen hellen Platz auf der Wiese.", "target": "plot", "mode": "wait"},
+	{"id": "bauplatz", "text": "Tippe auf die Wiese, genau dort, wo dein Haus stehen soll.",
+		"say": "Such auf der hellen Wiese selbst eine Stelle für dein Haus aus.", "target": "plot", "mode": "wait"},
 	{"id": "wohnhaus", "text": "Tippe auf das Wohnhaus. Dort wohnt eine Familie.",
 		"say": "Jetzt tippe auf das Wohnhaus. Dort wohnt eine Familie.", "target": "card_house", "mode": "wait"},
 	{"id": "versorgen", "text": "Tippe auf „Versorgen“. Dort wächst das Essen.",
@@ -41,8 +41,11 @@ const STEPS := [
 		"say": "Schau! Dein Hof hat %d Karotten geerntet. Sie kommen in den Vorrat.", "target": "harvest", "mode": "ok"},
 	{"id": "familie", "text": "Aus dem Vorrat isst die Familie: %d Karotten. Alle satt!",
 		"say": "Aus dem Vorrat isst die Familie %d Karotten. Alle sind satt.", "target": "people", "mode": "ok"},
-	{"id": "ziel", "text": "Hier steht dein Ziel. Jetzt baust du weiter!",
-		"say": "Hier steht dein nächstes Ziel. Jetzt baust du weiter.", "target": "goal", "mode": "ok"},
+	{"id": "ziel", "text": "Jetzt entscheidest du. Baue weiter oder probiere einen Gartenzaun aus.",
+		"say": "Jetzt entscheidest du selbst. Du kannst weiterbauen oder einen Gartenzaun ausprobieren.", "target": "goal", "mode": "ok"},
+	{"id": "zaunwerkzeug", "text": "Tippe auf „Zaun ziehen“.", "say": "Tippe auf Zaun ziehen.", "target": "fence_tool", "mode": "wait", "replay": true},
+	{"id": "zaunziehen", "text": "Zieh auf der Wiese von einer Ecke zur anderen.", "say": "Zieh von einer Ecke zur anderen. Lass los, wenn der Zaun passt.", "target": "", "mode": "wait", "replay": true},
+	{"id": "zauntor", "text": "Die grünen Pfosten zeigen den Durchgang. Jetzt ist dein Garten fertig.", "say": "Zwischen den grünen Pfosten ist das Tor offen.", "target": "", "mode": "ok", "replay": true},
 	{"id": "kamera", "text": "Wische mit einem Finger, um dich umzusehen.",
 		"say": "Wische mit einem Finger über das Bild, um dich umzusehen.", "target": "world", "mode": "wait", "replay": true},
 	{"id": "rohstoffe", "text": "Oben siehst du Holz, Stein und Essen.",
@@ -52,7 +55,7 @@ const STEPS := [
 const V1_IDS := ["hallo", "bauplatz", "bauplatz", "wohnhaus", "versorgen", "versorgen", "tag", "familie", "ziel"]
 ## Themen für „Lumo zeigt es noch einmal“: erster und letzter Schritt.
 const TOPICS := {
-	"Umsehen": ["kamera", "kamera"], "Bauen": ["bauplatz", "wohnhaus"], "Rohstoffe": ["rohstoffe", "rohstoffe"],
+	"Gartenzaun": ["zaunwerkzeug", "zauntor"], "Umsehen": ["kamera", "kamera"], "Bauen": ["bauplatz", "wohnhaus"], "Rohstoffe": ["rohstoffe", "rohstoffe"],
 	"Essen": ["versorgen", "bauernhof"], "Tage": ["tag", "familie"], "Ziele": ["ziel", "ziel"],
 }
 ## Kontext-Erklärungen: genau einmal, nie als Textwand. Optional mit Zeigerziel.
@@ -94,6 +97,7 @@ var context_topic := ""
 var clock := 0.0
 var spoken_step := ""
 var harvest: Dictionary = {}
+var yard_count := 0
 
 
 func setup(owner_world: Node, saved: Variant, options: Dictionary = {}) -> void:
@@ -137,6 +141,18 @@ func setup(owner_world: Node, saved: Variant, options: Dictionary = {}) -> void:
 	_show()
 	if active() and STEPS[step].mode == "flight":
 		guide.start_flight()
+
+
+func _offer_yard() -> void:
+	_next()
+	replay("Gartenzaun")
+
+
+func _leave_yard_tour() -> void:
+	if world.yard_mode:
+		world._toggle_yard()
+	step = replay_end
+	_next()
 
 
 func _restore_seen(raw: Variant) -> void:
@@ -289,9 +305,13 @@ func _show() -> void:
 				_add_button("Ich kenne das schon", skip, "cream")
 		"ok":
 			_add_button("Verstanden", _next)
+			if str(spec.id) == "ziel" and replay_end < 0:
+				_add_button("Zaun ausprobieren", _offer_yard, "cream")
 		_:
 			if replay_end < 0:
 				_add_button("Überspringen", skip, "cream")
+	if replay_end >= 0 and str(spec.id) in ["zaunwerkzeug", "zaunziehen"]:
+		_add_button("Allein weiter", _leave_yard_tour, "cream")
 	if str(spec.id) == "kamera":
 		camera_start = world.focus
 		camera_turn = world.orbit + world.radius * 0.1 + world.tilt
@@ -397,6 +417,9 @@ func replay(topic: String) -> void:
 	if not TOPICS.has(topic):
 		return
 	var span: Array = TOPICS[topic]
+	if topic == "Gartenzaun":
+		yard_count = world.model._player.get("yards", []).size()
+		world.select_dock_section("bauen")
 	if replay_end < 0:
 		resume_step = step if not done and not offering else -1
 		resume_offer = offering
@@ -436,6 +459,10 @@ func record_day(report: Dictionary) -> void:
 func _condition_met(id: String) -> bool:
 	var town: Dictionary = world.model.player()
 	match id:
+		"zaunwerkzeug":
+			return world.yard_mode
+		"zaunziehen":
+			return world.model._player.get("yards", []).size() > yard_count
 		"kamera":
 			var turned: float = world.orbit + world.radius * 0.1 + world.tilt
 			return world.focus.distance_to(camera_start) > 4.0 or absf(turned - camera_turn) > 0.35

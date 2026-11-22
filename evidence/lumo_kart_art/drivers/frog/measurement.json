@@ -39,25 +39,25 @@
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 4.998001405968792e-07
+      "sampled_max_hand_origin_error_m": 5.206884506242319e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 4.023313522338867e-07
+      "sampled_max_hand_origin_error_m": 4.308471767545033e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 4.023313522338867e-07
+      "sampled_max_hand_origin_error_m": 4.308471767545033e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 6.085806446272772e-07
+      "sampled_max_hand_origin_error_m": 3.877166459339168e-07
     },
     "celebrate": {
       "frames": 72,
@@ -104,51 +104,51 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 12661,
-      "triangles": 25260,
-      "materials": 6,
-      "max_weight_sum_error": 4.6566128730773926e-08,
-      "max_influences": 4,
-      "dimensions_blender_m": [
-        0.897,
-        0.7685,
-        0.9336
-      ],
-      "file": "assets/kart/production/drivers/frog/driver.glb",
-      "bytes": 1322512,
-      "sha256": "ef361d19a52b6d1c66887ad5f947e8d36af399e13e7d3680ae5a97609e80a399"
-    },
-    "lod1": {
-      "vertices": 7911,
-      "triangles": 15760,
-      "materials": 6,
-      "max_weight_sum_error": 4.6566128730773926e-08,
-      "max_influences": 4,
-      "dimensions_blender_m": [
-        0.897,
-        0.7685,
-        0.9336
-      ],
-      "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
-      "bytes": 956096,
-      "sha256": "a565a1661e4cd943b3ae58cccb46b6394616d61ed6e7fd13129d1946aa8d9787"
-    },
-    "lod2": {
-      "vertices": 5535,
-      "triangles": 11008,
+      "vertices": 14997,
+      "triangles": 29784,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.897,
+        0.8938,
+        0.7685,
+        0.9336
+      ],
+      "file": "assets/kart/production/drivers/frog/driver.glb",
+      "bytes": 1653064,
+      "sha256": "a5c1991dc23bdf91e043bcecacb5aced42e2d6847c38de70a7d00d29dba78f6a"
+    },
+    "lod1": {
+      "vertices": 9223,
+      "triangles": 18236,
+      "materials": 6,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.8938,
+        0.7685,
+        0.9336
+      ],
+      "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
+      "bytes": 1207208,
+      "sha256": "5bd3211f55caecf4f4e033232cf84d05659c99f80735f4b4a96e039984df0a33"
+    },
+    "lod2": {
+      "vertices": 6336,
+      "triangles": 12462,
+      "materials": 6,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.8938,
         0.7684,
         0.9336
       ],
       "file": "assets/kart/production/drivers/frog/driver_lod2.glb",
-      "bytes": 769116,
-      "sha256": "c26242af175875f51a4343eff0933d24e1b214d5072a132fa72999ef28672504"
+      "bytes": 981780,
+      "sha256": "7111d5c30209adc858fa1d2d1a9e8a3a5da61ad00886daae7079d883705549cd"
     }
   },
-  "build_seconds": 28.8,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "build_seconds": 55.5,
+  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
 }

@@ -1,0 +1,154 @@
+{
+  "species": "cat",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R"
+  ],
+  "animations": {
+    "idle": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_seated": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 6.343065695104826e-07
+    },
+    "kart_steer_left": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+    },
+    "kart_steer_right": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+    },
+    "kart_jump": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 5.094802676820385e-07
+    },
+    "celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_hit": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "greeting_wave": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "agree_nod": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "point_portal": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "card_play": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    }
+  },
+  "lods": {
+    "lod0": {
+      "vertices": 11972,
+      "triangles": 23708,
+      "materials": 6,
+      "max_weight_sum_error": 4.0512531995773315e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.7953,
+        0.891,
+        1.2852
+      ],
+      "file": "assets/kart/production/drivers/cat/driver.glb",
+      "bytes": 1411080,
+      "sha256": "c8a9c1f3c4c593c775d320267811b9181db43da3c5c35ed1b50ca1ca667c9b24"
+    },
+    "lod1": {
+      "vertices": 7722,
+      "triangles": 15208,
+      "materials": 6,
+      "max_weight_sum_error": 4.0046870708465576e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.7953,
+        0.891,
+        1.2852
+      ],
+      "file": "assets/kart/production/drivers/cat/driver_lod1.glb",
+      "bytes": 1086440,
+      "sha256": "ed62b3706fe3f859fb7fc3fdfb3a50e8cb7ceb1ed39ef2b526fea8e8d3edf5d4"
+    },
+    "lod2": {
+      "vertices": 5597,
+      "triangles": 10958,
+      "materials": 6,
+      "max_weight_sum_error": 4.0978193283081055e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.7953,
+        0.891,
+        1.285
+      ],
+      "file": "assets/kart/production/drivers/cat/driver_lod2.glb",
+      "bytes": 922636,
+      "sha256": "fbc28818e775700821bc431486d8d3a5448d56565cc486ee70e46fed05030eff"
+    }
+  },
+  "build_seconds": 11.5,
+  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+}

@@ -9,8 +9,15 @@ const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
 const PARTS_BAY = preload("res://scripts/games/kart_parts_bay.gd")
 ## Große Karten für „Fahrer“ und „Tempo & Gegner“ (Auftrag 18.11., Abschnitt 4).
 const SECTIONS = preload("res://scripts/games/kart_menu_sections.gd")
+## Wächter der 3D-Vorschau (siehe _watch_preview).
+const PREVIEW_WATCH_SECONDS: float = 5.0
+const PREVIEW_PIXEL_SECONDS: float = 20.0
+const PREVIEW_REPAIR_GAP: float = 30.0
+const PREVIEW_REPAIR_LIMIT: int = 6
 ## „Teile wechseln“ + „Werte“ beim gewählten Kart (Garage), siehe kart_parts_bay.gd.
 var parts_bay
+## Gründe der Reparaturen durch den Vorschau-Wächter (für Tests und Protokoll).
+var preview_repairs: Array[String] = []
 var service_station
 var home_promenade
 var track_stage
@@ -34,6 +41,9 @@ var _home_environment: Environment
 var _studio_ambient := Color.WHITE
 var _studio_ambient_energy := 0.46
 var _studio_sky: Sky
+var _preview_watch_time := 0.0
+var _preview_pixel_time := 0.0
+var _preview_since_repair := PREVIEW_REPAIR_GAP
 
 
 func _ready() -> void:
@@ -123,7 +133,8 @@ func set_landing_active(active: bool) -> void:
 		control.visible = not active
 	_selection_surface.visible = not active
 	view_choice.visible = not active and step in [1, 2]
-	preview_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	preview_camera.make_current()
 	_sync_home_stage()
 	_fit_welcome_camera()
 
@@ -231,6 +242,7 @@ func _sync_workshop_host() -> void:
 	if not is_instance_valid(service_station):
 		return
 	var show_host: bool = _application_active and visible and step == 2 and inspection_view == 0 and not _landing_active
+	show_host = show_host and not (parts_bay != null and parts_bay.is_open())
 	service_station.set_active(show_host, reduced_motion)
 	# The same original fox stands beside his kart only in the workshop. The
 	# selected vehicle/driver are untouched for every actual start and inspection.
@@ -306,7 +318,15 @@ func _notification(what: int) -> void:
 		_sync_home_stage()
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_APPLICATION_RESUMED]:
 		_application_active = true
+		if _spatial_ready and visible and not is_instance_valid(workshop_view):
+			preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+			preview_camera.make_current()
+			_queue_preview_render_scale()
+			_fit_welcome_camera.call_deferred()
 		_sync_home_stage()
+		# Nach der Rückkehr in die App sofort prüfen, ob die Vorschau noch zeichnet.
+		_preview_watch_time = PREVIEW_WATCH_SECONDS
+		_preview_pixel_time = PREVIEW_PIXEL_SECONDS
 
 
 func _next() -> void:
@@ -391,6 +411,7 @@ func _apply_responsive_layout() -> void:
 	var available := size / scale_factor
 	var portrait := available.x < available.y
 	var landscape_workshop := step == 2 and not portrait
+	var side_toolbar := landscape_workshop and available.x >= 590.0
 	var parts_open: bool = step == 2 and parts_bay != null and parts_bay.is_open()
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
@@ -447,13 +468,24 @@ func _apply_responsive_layout() -> void:
 		choices_rect = Rect2(margin, maxf(top + 60.0, footer_y - drawer_height - 12), available.x - margin * 2, drawer_height)
 	else:
 		var drawer_width := clampf(available.x * (0.40 if step in [0, 1, 4] else 0.31), 208, 420 if step in [0, 1, 4] else 360)
+		if side_toolbar:
+			drawer_width = clampf(available.x * 0.36, 306.0, 390.0)
 		choices_rect = Rect2(margin, top, drawer_width, maxf(72, footer_y - top - 12))
 	var parts_rect := choices_rect
 	if landscape_workshop:
-		# The view selector belongs above the kart list, outside the camera stage.
+		# Reserve the toolbar above the list without reducing the height of the photo.
 		choices_rect.position.y += 56.0
 		choices_rect.size.y = maxf(48.0, choices_rect.size.y - 56.0)
 		parts_rect.size.y = available.y - margin - top
+	if parts_open:
+		# The parts editor owns its drawer. Its measured outer edge defines the camera stage.
+		if portrait:
+			var height := clampf(available.y * 0.49, 225.0, 482.0)
+			parts_rect = Rect2(margin, available.y - margin - height, available.x - 2 * margin, height)
+		else:
+			parts_rect = Rect2(margin, margin, minf(available.x * 0.43, 530), available.y - 2 * margin)
+		parts_bay.panel.position = parts_rect.position * scale_factor
+		parts_bay.panel.size = parts_rect.size * scale_factor
 	var stage_mode: bool = track_stage.wanted()
 	if stage_mode:
 		choices_rect = track_stage.layout(available, top, footer_y, margin, portrait, scale_factor)
@@ -511,8 +543,16 @@ func _apply_responsive_layout() -> void:
 	next_button.text = "START" if narrow or ultra_short else "Rennen starten"
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
+	view_choice.fit_to_longest_item = not side_toolbar
+	view_choice.clip_text = side_toolbar
+	view_choice.set_item_text(0, "Rundum" if side_toolbar or narrow else "Rundum ansehen")
+	var actions := Rect2()
 	if landscape_workshop:
-		_stage_rect(view_choice, Rect2(margin, top, choices_rect.size.x, 48.0), scale_factor)
+		var view_width := choices_rect.size.x
+		if side_toolbar:
+			view_width = roundf(choices_rect.size.x * 0.42)
+			actions = Rect2(margin + view_width + 4.0, top, choices_rect.size.x - view_width - 4.0, 48.0)
+		_stage_rect(view_choice, Rect2(margin, top, view_width, 48.0), scale_factor)
 	else:
 		view_choice.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 		view_choice.offset_left = -256 * scale_factor
@@ -521,19 +561,21 @@ func _apply_responsive_layout() -> void:
 		view_choice.offset_bottom = (top + 48) * scale_factor
 	view_choice.visible = not _landing_active and step in [1, 2] and not parts_open
 	if parts_bay != null:
-		# Knöpfe in der freien Bühne über der Kartauswahl, Konfigurator über der Auswahl-Fläche.
+		# Projektion und Bedienelemente verwenden dieselben gemessenen Bildschirmflächen.
 		var stage_px := _visible_stage_region()
 		var full := preview_container.get_global_rect()
 		var stage_rect := Rect2(full.position + stage_px.position * full.size, stage_px.size * full.size)
 		var config_area := Rect2(parts_rect.position * scale_factor, parts_rect.size * scale_factor)
 		parts_bay.relayout(
-			scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size), config_area
+			scale_factor, Rect2(stage_rect.position - global_position, stage_rect.size), config_area,
+			Rect2(actions.position * scale_factor, actions.size * scale_factor)
 		)
 	for control in _stage_controls:
 		control.visible = not _landing_active
 	setup_left.visible = not _landing_active and not parts_open
-	footer.visible = not _landing_active and not (landscape_workshop and parts_open)
-	_stage_header.visible = not _landing_active and not ultra_short
+	footer.visible = not _landing_active and not parts_open
+	step_strip.visible = not _landing_active and not parts_open
+	_stage_header.visible = not _landing_active and not ultra_short and not parts_open
 	_selection_surface.visible = not _landing_active and not stage_mode and not parts_open
 	call_deferred("_fit_welcome_camera")
 
@@ -577,8 +619,10 @@ func _fit_welcome_camera() -> void:
 		preview_camera.h_offset = 0.0
 		preview_camera.v_offset = 0.0
 		return
-	# Teile-Konfigurator offen: die Kamera steht am Rad bzw. am Heck, keine Gesamtansicht.
 	if parts_bay != null and parts_bay.is_open() and step == 2:
+		parts_bay.fit_camera(_visible_stage_region())
+		_camera_progress = 1.0
+		_set_camera_veil(0.0)
 		return
 	# Fit the actual chassis, seated rig and light rings to the unoccluded
 	# part of the live stage. Portrait width cannot reuse a landscape frustum.
@@ -636,9 +680,14 @@ func _fit_welcome_camera() -> void:
 				for y in [0.95, 2.02]:
 					for z in [-0.55, 0.4]:
 						points.append(preview_kart.to_global(Vector3(x, y, z)))
+		if garage_stage and aspect >= 1.0:
+			var plinth: MeshInstance3D = garage_interior.turntable.get_parent().get_node("GarageTurntablePlinth")
+			var base := plinth.mesh as CylinderMesh
+			for i in range(48):
+				var angle := TAU * i / 48.0
+				points.append(plinth.to_global(Vector3(cos(angle) * base.bottom_radius, -base.height * 0.5, sin(angle) * base.bottom_radius)))
 		if garage_stage and not points.is_empty():
-			# Bildmitte = Mitte aus Kart, Lumo und Werkbank (nicht der Drehteller allein),
-			# damit die Gruppe das schmale Bild füllt.
+			# Kart und stehender Lumo bestimmen gemeinsam die Bildmitte.
 			var group := AABB(points[0], Vector3.ZERO)
 			for point in points:
 				group = group.expand(point)
@@ -693,22 +742,31 @@ func _visible_stage_region() -> Rect2:
 			return Rect2((frame.position - stage.position) / stage.size, frame.size / stage.size)
 	var inset := 8.0 * _preview_dp_scale()
 	var clear := stage.grow(-inset)
-	clear.position.y = maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
-	clear.end.y = footer.global_position.y - inset
-	if stage.size.x < stage.size.y:
-		clear.end.y = _selection_surface.global_position.y - inset
-		if view_choice.is_visible_in_tree():
-			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
+	if step == 2 and parts_bay != null and parts_bay.is_open() and stage.has_area():
+		var drawer: Rect2 = parts_bay.panel.get_global_rect()
+		if size.x < size.y:
+			clear.end.y = minf(clear.end.y, drawer.position.y - inset)
+		else:
+			var right := clear.end.x
+			clear.position.x = maxf(clear.position.x, drawer.end.x + inset)
+			clear.end.x = right
+		return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
+	var top := maxf(clear.position.y, step_strip.get_global_rect().end.y + inset)
+	var bottom := footer.global_position.y - inset
+	var left := clear.position.x
+	var right := clear.end.x
+	var portrait := size.x < size.y
+	var side_toolbar := step == 2 and not portrait and size.x / _preview_dp_scale() >= 590.0
+	if portrait:
+		bottom = _selection_surface.global_position.y - inset
 	else:
-		clear.position.x = _selection_surface.get_global_rect().end.x + inset
-		clear.end.x = stage.end.x - inset
-		# „Rundum ansehen“ belegt oben rechts nur einen Streifen. Früher schnitt er die ganze
-		# rechte Bühnenseite ab: Kamera weit weg, hinter der Studiowand, Knöpfe über der Auswahl.
-		if view_choice.is_visible_in_tree():
-			clear.position.y = maxf(clear.position.y, view_choice.get_global_rect().end.y + inset)
-	# Garage: unten in der Bühne liegen „Teile wechseln“ und „Werte“ – das Kart steht darüber.
-	if step == 2 and parts_bay != null and not _landing_active:
-		clear.end.y -= 62.0 * _preview_dp_scale()
+		left = _selection_surface.get_global_rect().end.x + inset
+	# In the landscape garage all three controls share the kart list's toolbar.
+	if view_choice.is_visible_in_tree() and (portrait or step != 2):
+		top = maxf(top, view_choice.get_global_rect().end.y + inset)
+	if step == 2 and parts_bay != null and not side_toolbar:
+		bottom -= 62.0 * _preview_dp_scale()
+	clear = Rect2(Vector2(left, top), Vector2(right - left, bottom - top))
 	if not clear.has_area():
 		return Rect2(0.36, 0.19, 0.61, 0.60)
 	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
@@ -765,6 +823,7 @@ func _process(delta: float) -> void:
 		if is_instance_valid(preview_kart.lumo_animation):
 			preview_kart.lumo_animation.play_menu_behavior("agree_nod")
 	_advance_home_camera(delta)
+	_watch_preview(delta)
 	if step == 3:
 		if not rotate_drag:
 			preview_angle = previous_angle
@@ -784,3 +843,132 @@ func handle_back() -> bool:
 	if parts_bay != null and parts_bay.handle_back():
 		return true
 	return super.handle_back()
+
+
+## Wächter der 3D-Vorschau im Kart-Menü. Gerätefehler vom 21.11.2026: „Im Hauptmenü
+## verschwindet nach einer Zeit Lumo mit dem Kart und man sieht nichts mehr.“ Im Container
+## (Ersatz-Renderer) ließ sich das weder durch langen Leerlauf noch durch Fokus-, Pause- oder
+## Größenwechsel nachstellen. Darum prüft die Vorschau sich selbst: alle 5 s ihren Zustand,
+## alle 20 s zusätzlich das tatsächlich gezeichnete Bild. Fehlt etwas, wird sie neu aufgebaut
+## und der Grund ins Protokoll (logcat) geschrieben, damit ein Gerätelauf die Ursache zeigt.
+func _watch_preview(delta: float) -> void:
+	_preview_since_repair += delta
+	if not visible or not _application_active or step == 3 or is_instance_valid(workshop_view):
+		_preview_watch_time = 0.0
+		return
+	_preview_watch_time += delta
+	_preview_pixel_time += delta
+	if _preview_watch_time < PREVIEW_WATCH_SECONDS:
+		return
+	_preview_watch_time = 0.0
+	var reason := preview_problem()
+	if reason.is_empty() and _preview_pixel_time >= PREVIEW_PIXEL_SECONDS:
+		_preview_pixel_time = 0.0
+		reason = preview_pixels_problem()
+	if not reason.is_empty():
+		repair_preview(reason)
+
+
+## Leerer Text = Vorschau in Ordnung; sonst ein kurzer Grund.
+func preview_problem() -> String:
+	if not is_instance_valid(preview_viewport) or not is_instance_valid(preview_camera):
+		return "vorschau_fehlt"
+	if preview_viewport.size.x < 16 or preview_viewport.size.y < 16:
+		return "vorschau_ohne_flaeche"
+	if preview_viewport.render_target_update_mode == SubViewport.UPDATE_DISABLED:
+		return "vorschau_angehalten"
+	if not preview_camera.is_current():
+		return "kamera_nicht_aktiv"
+	return _preview_kart_problem()
+
+
+func _preview_kart_problem() -> String:
+	if not is_instance_valid(preview_kart) or not preview_kart.is_inside_tree():
+		return "kart_fehlt"
+	if not preview_kart.is_visible_in_tree():
+		return "kart_unsichtbar"
+	var where: Vector3 = preview_kart.global_position
+	if not (is_finite(where.x) and is_finite(where.y) and is_finite(where.z)):
+		return "kart_position_ungueltig"
+	if preview_kart.global_transform.basis.get_scale().length() < 0.3:
+		return "kart_winzig"
+	if not preview_camera.is_position_in_frustum(where + Vector3.UP * 0.5):
+		return "kart_ausserhalb_bild"
+	return ""
+
+
+## Prüft das gezeichnete Bild: Ist es (fast) einfarbig, zeichnet die Vorschau nichts mehr.
+## Ohne echten Renderer (Tests ohne Bildschirm) wird nichts geprüft.
+func preview_pixels_problem() -> String:
+	if DisplayServer.get_name() == "headless" or not is_instance_valid(preview_viewport):
+		return ""
+	var texture: ViewportTexture = preview_viewport.get_texture()
+	if texture == null:
+		return "bild_fehlt"
+	var image: Image = texture.get_image()
+	if image == null or image.is_empty():
+		return "bild_leer"
+	# Sample local edges where the vehicle is framed. A uniform wall with a
+	# brightness gradient passed the old full-screen min/max luminance check.
+	var area := _visible_stage_region().intersection(Rect2(0, 0, 1, 1))
+	if not area.has_area():
+		return "vorschau_ohne_flaeche"
+	var edges := 0
+	for row in range(1, 10):
+		var previous := Color()
+		for col in range(1, 14):
+			var uv := area.position + area.size * Vector2(col / 14.0, row / 10.0)
+			var point := Vector2i(uv * Vector2(image.get_size()))
+			var color := image.get_pixelv(point.min(image.get_size() - Vector2i.ONE))
+			if col > 1 and maxf(absf(color.r - previous.r),
+					maxf(absf(color.g - previous.g), absf(color.b - previous.b))) > 0.09:
+				edges += 1
+			previous = color
+	return "bild_einfarbig" if edges < 3 else ""
+
+
+func _renew_render_target() -> void:
+	# An Android surface can resume with a valid scene and a stale colour buffer.
+	# Keep the live nodes and their signals, but allocate a fresh viewport target.
+	var old := preview_viewport
+	var fresh := SubViewport.new()
+	fresh.world_3d = old.world_3d
+	fresh.size = old.size
+	fresh.msaa_3d = old.msaa_3d
+	fresh.scaling_3d_scale = old.scaling_3d_scale
+	fresh.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	preview_container.add_child(fresh)
+	preview.reparent(fresh, false)
+	preview_container.remove_child(old)
+	old.queue_free()
+	preview_viewport = fresh
+	fresh.size_changed.connect(_queue_preview_render_scale)
+	preview_camera.make_current()
+	_queue_preview_render_scale()
+
+
+## Baut die Vorschau neu auf (höchstens alle 30 s, höchstens sechsmal je Besuch).
+func repair_preview(reason: String) -> bool:
+	var limited: bool = preview_repairs.size() >= PREVIEW_REPAIR_LIMIT
+	if _preview_since_repair < PREVIEW_REPAIR_GAP or limited:
+		return false
+	_preview_since_repair = 0.0
+	preview_repairs.append(reason)
+	push_warning("[KartMenu] preview_repair:%s (%d)" % [reason, preview_repairs.size()])
+	print("[KartMenu] preview_repair:%s count=%d" % [reason, preview_repairs.size()])
+	if is_instance_valid(preview_viewport):
+		if reason in ["bild_fehlt", "bild_leer", "bild_einfarbig"]:
+			_renew_render_target()
+		preview_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	# Der Drehpunkt der Vorschau steht immer im Ursprung (nur seine Drehung wird animiert).
+	if is_instance_valid(preview_pivot):
+		preview_pivot.position = Vector3.ZERO
+		preview_pivot.scale = Vector3.ONE
+		preview_pivot.visible = true
+	preview_signature = ""
+	_refresh_preview()
+	if is_instance_valid(preview_camera):
+		preview_camera.make_current()
+	_fit_welcome_camera()
+	return true
+

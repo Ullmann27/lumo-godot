@@ -80,14 +80,18 @@ func wood_material(key: String) -> StandardMaterial3D:
 			material.uv1_triplanar = true
 			material.uv1_triplanar_sharpness = 3.0
 			material.uv1_scale = Vector3.ONE * 9.0
-			material.roughness = 0.36 if key == "white" else 0.26
+			material.roughness = 0.47 if key == "white" else 0.38
 			material.metallic_specular = 0.62
 			material.rim_enabled = true
 			material.rim = 0.22 if key == "white" else 0.35
 			material.rim_tint = 0.6
 			material.albedo_color = (
-				Color(0.84, 0.8, 0.74) if key == "white" else Color(0.92, 0.86, 0.84)
+				Color(0.78, 0.80, 0.80) if key == "white" else Color.WHITE
 			)
+		"brass":
+			material.albedo_color = Color("dab777")
+			material.metallic = 0.48
+			material.roughness = 0.32
 		"frame":
 			material.albedo_texture = _texture("frame_walnut")
 			material.uv1_triplanar = true
@@ -96,9 +100,9 @@ func wood_material(key: String) -> StandardMaterial3D:
 			material.metallic_specular = 0.6
 		"top":
 			material.albedo_texture = _texture("board_top")
-			material.albedo_color = Color(0.86, 0.84, 0.82)
+			material.albedo_color = Color(0.69, 0.77, 0.74)
 			material.roughness = 0.3
-			material.metallic_specular = 0.58
+			material.metallic_specular = 0.28
 		"felt":
 			material.albedo_texture = _texture("felt_green")
 			material.roughness = 1.0
@@ -123,6 +127,8 @@ func _skin(node: Node, wood: String) -> void:
 			match key:
 				"felt", "board_felt":
 					target = "felt"
+				"brass":
+					target = "brass"
 				"board_top":
 					target = "top"
 				"frame":
@@ -171,7 +177,7 @@ func _coord_label(text: String) -> Label3D:
 	label.font_size = 64
 	label.pixel_size = 0.00032
 	label.outline_size = 0
-	label.modulate = Color("2a160a")
+	label.modulate = Color("f2ddab")
 	label.rotation.x = -PI * 0.5
 	label.shaded = false
 	label.double_sided = false

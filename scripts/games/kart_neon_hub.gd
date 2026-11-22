@@ -14,6 +14,7 @@ const THEME = preload("res://scripts/games/kart_ui_theme.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
 const TILE = preload("res://scripts/games/kart_neon_tile.gd")
+const POSTCARD = preload("res://scripts/games/kart_mode_postcard.gd")
 const PLAYER_CARD = preload("res://scripts/games/kart_neon_player_card.gd")
 const SEASON_BAR = preload("res://scripts/games/kart_neon_season_bar.gd")
 const PATH = preload("res://scripts/games/kart_star_path.gd")
@@ -24,7 +25,11 @@ const ICONS = preload("res://scripts/games/kart_neon_icons.gd")
 const OVERLAYS = preload("res://scripts/games/kart_neon_overlays.gd")
 ## Kit-Icon je Rennart des Katalogs (Overlay "Rennarten").
 const RACE_KIND_ICONS := {"race": "icon_flag", "cup": "icon_trophy", "time_trial": "icon_stopwatch",
-	"training": "icon_route", "arena": "icon_star_crystal"}
+	"training": "icon_route", "arena": "icon_star_crystal", "parcours": "icon_chevrons"}
+const MODE_GOALS := {
+	"race": "Fünf Karts überholen", "cup": "Punkte sammeln", "time_trial": "Gegen deinen Geist",
+	"training": "Lenken und driften", "arena": "Kristalle sammeln", "parcours": "Fahren und springen",
+}
 const NEON := Color("21ccff")
 const AMBER := Color("ffa91f")
 const VIOLET := Color("8a5cff")
@@ -73,13 +78,16 @@ var _dock: ScrollContainer
 var _navigation: HBoxContainer
 var _rotation_left: Button
 var _rotation_right: Button
+var _dimmer: ColorRect
 var _overlay: PanelContainer
 var _overlay_title: Label
 var _overlay_list: VBoxContainer
 ## Rennarten bleiben dauerhaft im Menü, damit jede Rennart einen Tipp entfernt ist.
+var _battle_start: Button
 var _race_kinds: GridContainer
 var _race_kinds_compact := false
 var _race_kind_buttons: Dictionary = {}
+var _kind_description: Label
 var _live_start: Button
 var _weekly_track := ""
 var _stage_bounds := Rect2()
@@ -212,7 +220,9 @@ func _build_highlight() -> void:
 	for entry in CATALOG.TRACKS:
 		var id: String = str(entry.id)
 		var thumb = _tile("Track_" + id, str(TRACK_NAMES.get(id, entry.get("name", id))), "", "", NEON, "thumb")
-		var path := PREVIEW_DIR + id + ".webp"
+		var path := STAGE_ART_DIR + "cards/" + id + ".webp"
+		if not ResourceLoader.exists(path, "Texture2D"):
+			path = PREVIEW_DIR + id + ".webp"
 		if ResourceLoader.exists(path, "Texture2D"):
 			thumb.art = load(path)
 		thumb.pressed.connect(func(): _choose_track(id))
@@ -283,6 +293,11 @@ func _feature_track(id: String) -> void:
 		return
 	_featured_track = id
 	selected_track = id
+	if _mode_tiles.has("race"):
+		var preview := STAGE_ART_DIR + "cards/" + id + ".webp"
+		if ResourceLoader.exists(preview, "Texture2D"):
+			_mode_tiles.race.art = load(preview)
+			_mode_tiles.race.queue_redraw()
 	_highlight_pick.title = TRACK_NAMES.get(id, str(CATALOG.entry(CATALOG.TRACKS, id).get("name", id)))
 	_highlight_pick.tooltip_text = "%s fahren – Strecke wählen" % _highlight_pick.title
 	# Das große Bild nutzt das scharfe Bühnenbild der Streckenwahl (1920×1080); geladen
@@ -329,23 +344,29 @@ func _build_modes() -> void:
 	for entry in CATALOG.TRACKS:
 		tracks.append(str(entry.id))
 	_weekly_track = PATH.weekly_track(tracks)
-	var weekly_name: String = TRACK_NAMES.get(_weekly_track, "Abenteuer")
+	var weekly_name: String = str(CATALOG.entry(CATALOG.TRACKS, _weekly_track).name)
+	var previews := STAGE_ART_DIR + "cards/"
 	for spec in [
-		["race", "Rennen", "Schnelles Rennen – sofort los!", "flag", AMBER, "plate_hero_amber", "Sofort los!"],
-		["cup", "Turniere", "Sternen-Cup über alle Welten", "trophy", VIOLET, "plate_hero_violet", "Sternen-Cup"],
-		["season", "Saison", "Sternenpfad: echte Freischaltungen", "star", TEAL, "plate_hero_teal", "Sternenpfad"],
-		["event", "Event", "Wochen-Abenteuer: " + weekly_name, "calendar", MAGENTA, "plate_hero_magenta", weekly_name],
+		["race", "Rennen", "Fünf Karts überholen", "flag", AMBER, previews + selected_track + ".webp"],
+		["cup", "Turnier", "Punkte für den Pokal", "trophy", VIOLET, previews + "galaxy_ringway.webp"],
+		["parcours", "Abenteuer", "Fahren und springen", "road", Color("53e6b5"), "res://assets/kart/parcours_previews/wolkenwerkstatt.webp"],
+		["event", "Wochenrennen", "Strecke der Woche", "calendar", Color("ff8c99"), previews + _weekly_track + ".webp"],
 	]:
 		var id: String = spec[0]
-		var tile = _tile("Mode_" + id, spec[1], spec[2], spec[3], spec[4], "hero")
-		tile.plate = spec[5]
-		tile.short_caption = spec[6]
+		var tile = POSTCARD.new()
+		tile.name = "Mode_" + id
+		tile.title = spec[1]
+		tile.short_caption = spec[2]
+		tile.caption = weekly_name if id == "event" else str(spec[2])
+		tile.icon_kind = spec[3]
+		tile.accent = spec[4]
+		tile.reduced_motion = reduced_motion
+		tile.tile_style = "action"
+		if ResourceLoader.exists(str(spec[5]), "Texture2D"):
+			tile.art = load(str(spec[5]))
 		tile.pressed.connect(func(): _press_mode(id))
 		_mode_tiles[id] = tile
 		_layout_root.add_child(tile)
-	_mode_tiles["event"].badge = not _weekly_track.is_empty()
-	# Alter Name bleibt für vorhandene Menü-Tests erhalten.
-	_mode_tiles["race"].set_meta("legacy_name", "LiveQuickStart")
 
 
 func _press_mode(id: String) -> void:
@@ -357,6 +378,8 @@ func _press_mode(id: String) -> void:
 			current_mode = "cup"
 			mode_selected.emit("cup")
 			_open_overlay("cup")
+		"parcours":
+			mode_selected.emit("parcours")
 		"season":
 			_open_overlay("season")
 		"event":
@@ -415,7 +438,7 @@ func _build_dock() -> void:
 	_dock.add_child(_navigation)
 	for spec in [
 		["Dock_home", "Home", "home", "home", AMBER, ""],
-		["Dock_race", "Rennen", "race", "flag", NEON, ""],
+		["Dock_race", "Spielarten", "race", "flag", NEON, ""],
 		["Open_garage", "Garage", "garage", "wrench", NEON, ""],
 		["Open_world", "Strecken", "world", "road", NEON, ""],
 		["Dock_cup", "Turniere", "cup", "trophy", NEON, ""],
@@ -464,6 +487,18 @@ func _build_rotators() -> void:
 
 
 func _build_overlay() -> void:
+	_dimmer = ColorRect.new()
+	_dimmer.name = "OverlayBackdrop"
+	_dimmer.color = Color(0.014, 0.028, 0.07, 0.68)
+	_dimmer.mouse_filter = Control.MOUSE_FILTER_STOP
+	_dimmer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_dimmer.hide()
+	add_child(_dimmer)
+	_dimmer.gui_input.connect(func(e: InputEvent):
+		if (e is InputEventScreenTouch or e is InputEventMouseButton) and not e.pressed:
+			_dimmer.accept_event()
+			_close_overlay()
+	)
 	_overlay = PanelContainer.new()
 	_overlay.name = "SternenpfadOverlay"
 	var skin := StyleBoxFlat.new()
@@ -535,6 +570,15 @@ func _build_race_kinds(column: VBoxContainer) -> void:
 		kind.pressed.connect(func(): _select_race_kind(id))
 		_race_kinds.add_child(kind)
 		_race_kind_buttons[id] = kind
+	_battle_start = Button.new()
+	_battle_start.name = "ArenaTrefferjagd"
+	_battle_start.text = "Trefferjagd · 60 s mit Raketen und Meteoren"
+	_battle_start.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_battle_start.custom_minimum_size = Vector2(0, 54)
+	THEME.premium_button(_battle_start, VIOLET, false)
+	_battle_start.pressed.connect(func(): _start("arena_battle"))
+	column.add_child(_battle_start)
+	_battle_start.hide()
 	_live_start = Button.new()
 	_live_start.name = "LiveQuickStart"
 	_live_start.text = "START"
@@ -553,12 +597,19 @@ func _select_race_kind(id: String) -> void:
 
 
 func _refresh_race_kinds() -> void:
+	if is_instance_valid(_battle_start):
+		_battle_start.visible = current_mode == "arena" and _race_kinds.visible
+	if is_instance_valid(_kind_description):
+		var selected := CATALOG.entry(CATALOG.MODES, current_mode)
+		_kind_description.text = str(selected.description)
+		if current_mode == "arena":
+			_kind_description.text = "Sammle Kristalle oder spiele auf Treffer: Hinter den Pfeilern laden, zum Zielring lenken und Item drücken."
+		_live_start.text = "Kristalljagd · 90 s" if current_mode == "arena" else str(selected.name) + " starten"
 	for id in _race_kind_buttons:
 		var kind: Button = _race_kind_buttons[id]
 		var chosen: bool = id == current_mode
 		kind.text = ("✓ " if chosen else "") + str(kind.get_meta("race_kind_name"))
-		if not _race_kinds_compact:
-			kind.text += "\n" + str(kind.get_meta("race_kind_description"))
+		kind.text += "\n" + str(MODE_GOALS.get(id, kind.get_meta("race_kind_description")))
 		kind.tooltip_text = str(kind.get_meta("race_kind_description"))
 		kind.alignment = HORIZONTAL_ALIGNMENT_CENTER if _race_kinds_compact else HORIZONTAL_ALIGNMENT_LEFT
 		kind.modulate = Color.WHITE if chosen else Color(1, 1, 1, 0.82)
@@ -619,21 +670,26 @@ func _skin_race_kinds() -> void:
 		kind.add_theme_constant_override("h_separation", roundi(8 * k))
 
 
-## Querformat: drei Spalten nur mit Namen, damit alle fünf Rennarten und START
-## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung.
+## Querformat: drei Spalten nur mit Namen, damit alle Rennarten und START
+## ohne Scrollen sichtbar sind. Hochformat: eine Spalte mit Beschreibung, ab sechs
+## Rennarten (mit dem Abenteuer-Parcours) zwei Spalten.
 func set_race_kind_layout(landscape: bool, short: bool) -> void:
-	_race_kinds.columns = 3 if landscape else 1
-	_race_kinds_compact = landscape and short
+	var many: bool = _race_kind_buttons.size() > 5
+	_race_kinds.columns = 3 if landscape else (2 if many else 1)
+	# Hochformat mit sechs Rennarten: zwei Spalten nur mit Namen (Beschreibung als Tooltip).
+	_race_kinds_compact = (landscape and short) or (not landscape and many)
 	_refresh_race_kinds()
 
 
 func _open_overlay(kind: String) -> void:
+	_kind_description = null
 	for child in _overlay_list.get_children():
 		if child == _race_kinds:
 			continue
 		_overlay_list.remove_child(child)
 		child.queue_free()
 	_race_kinds.visible = kind == "race"
+	_battle_start.visible = kind == "race" and current_mode == "arena"
 	_live_start.visible = kind in ["race", "cup"]
 	_live_start.text = "Sternen-Cup starten" if kind == "cup" else "START"
 	if kind == "cup":
@@ -644,14 +700,14 @@ func _open_overlay(kind: String) -> void:
 		return
 	if kind == "race":
 		_overlay_title.text = "Rennarten"
-		_overlay_line("Wähle deine Rennart. START beginnt das Rennen.", Color("d9e6ff"))
+		_kind_description = Label.new()
+		_kind_description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_kind_description.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_kind_description.add_theme_font_override("font", THEME.BODY)
+		_overlay_list.add_child(_kind_description)
 		_overlay_list.move_child(_race_kinds, -1)
 		_refresh_race_kinds()
-		_overlay.visible = true
-		_overlay.move_to_front()
-		_layout()
-		for tile in _navigation.get_children():
-			tile.set_active(tile.name == "Dock_race")
+		_show_overlay("Dock_race")
 		return
 	var unlocked := PATH.unlocked_count(total_stars)
 	var all := PATH.milestones()
@@ -679,6 +735,7 @@ func _scroll_overlay_to(target: Control) -> void:
 
 
 func _show_overlay(dock_name: String) -> void:
+	_dimmer.show()
 	_overlay.visible = true
 	_overlay.move_to_front()
 	_layout()
@@ -728,6 +785,7 @@ func scale_overlay_lines(k: float, font_dp: float) -> void:
 func _close_overlay() -> void:
 	if is_instance_valid(_overlay):
 		_overlay.visible = false
+		_dimmer.hide()
 	for tile in _navigation.get_children():
 		tile.set_active(tile.name == "Dock_home")
 

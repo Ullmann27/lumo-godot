@@ -49,6 +49,8 @@ static func attach(game: Node) -> CanvasLayer:
 			and not bool(game.finished)
 			and not bool(game.menu_active)
 		)
+	# Die Platzierung braucht die Einführung selbst (Ziel des Schritts); sie entsteht erst unten.
+	var holder: Array = [null]
 	var guide = GUIDE.attach(
 		game,
 		ID,
@@ -57,10 +59,12 @@ static func attach(game: Node) -> CanvasLayer:
 		{
 			"outro": "Super gefahren! Jetzt gehört die Strecke dir.",
 			"replay_position": func(size: Vector2) -> Vector2: return _replay_spot(game, size),
+			"bubble_position": func(_size: Vector2) -> float: return bubble_top(game, holder[0]),
 		}
 	)
 	if guide == null:
 		return null
+	holder[0] = guide
 	game.item_button.pressed.connect(func() -> void: guide.note("item_tap"))
 	game.drift_button.button_up.connect(
 		func() -> void:
@@ -114,6 +118,23 @@ static func _next_box_rect(game: Node) -> Variant:
 
 
 ## Unter dem Menü-Knopf oben links, damit Lenkstick und Pedale frei bleiben.
+## Obere Kante der Sprechblase: unter der Renn-Leiste (Runde, Platz, Tempo, Sterne). Am Handy
+## quer lag die Blase sonst auf der Leiste (Emulator-Rundgang 19.11.2026: „RUNDE 1/2“ halb
+## verdeckt). Liegt das gezeigte Ziel in der oberen Bildhälfte (Itembox voraus), rückt die
+## Blase darunter. Die Meldung des Rennens weicht nach unten aus (kart_island.gd).
+static func bubble_top(game: Node, guide: Variant = null) -> float:
+	var top: float = 12.0
+	var pause: Control = game.top_pause_button
+	if is_instance_valid(pause) and pause.is_visible_in_tree():
+		top = maxf(top, (pause.get_parent() as Control).get_global_rect().end.y + 8.0)
+	if guide != null and is_instance_valid(guide):
+		var target: Rect2 = guide.target_rect()
+		var view: Vector2 = game.get_viewport().get_visible_rect().size
+		if target.has_area() and target.get_center().y < view.y * 0.5:
+			top = maxf(top, target.end.y + 40.0 * float(guide.unit()))
+	return top
+
+
 static func _replay_spot(game: Node, _size: Vector2) -> Vector2:
 	var top: Control = game.top_menu_button
 	if is_instance_valid(top) and top.is_visible_in_tree():

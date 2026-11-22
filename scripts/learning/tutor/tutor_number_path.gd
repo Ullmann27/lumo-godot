@@ -61,7 +61,9 @@ func _build() -> void:
 	for number in range(21):
 		if number == 10:
 			continue
-		multi.set_instance_transform(slot, Transform3D(Basis(), Vector3((number - 10) * SPACING, 0.12, 0)))
+		multi.set_instance_transform(
+			slot, Transform3D(Basis(), Vector3((number - 10) * SPACING, 0.12, 0))
+		)
 		slot += 1
 	_gold = MeshInstance3D.new()
 	var gold_mesh := CylinderMesh.new()
@@ -127,7 +129,9 @@ func add_hop(from_number: int, to_number: int) -> void:
 		var t := float(index + 1) / float(ARC_DOTS + 1)
 		var point := start.lerp(finish, t)
 		point.y += sin(t * PI) * 0.75
-		_dots.multimesh.set_instance_transform(_hops * ARC_DOTS + index, Transform3D(Basis(), point))
+		_dots.multimesh.set_instance_transform(
+			_hops * ARC_DOTS + index, Transform3D(Basis(), point)
+		)
 	_hops += 1
 	_dots.multimesh.visible_instance_count = _hops * ARC_DOTS
 

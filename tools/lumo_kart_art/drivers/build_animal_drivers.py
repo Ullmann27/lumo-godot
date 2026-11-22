@@ -456,7 +456,11 @@ def eyes(design: Design, sculpt: Sculpt):
                 cols.append(srgb_to_linear(pal.get('PupilColor', pal['Pupil'])))
             elif q.z > 0 and radial < si:
                 f = radial / si
-                cols.append(iris * (1.2 - .6 * f ** 3))
+                angle = math.atan2(q.y, q.x)
+                fibres = 0.5 + 0.5 * math.cos(11 * angle + 2.2 * f)
+                rim = max(0.0, (f - 0.84) / 0.16)
+                amber = srgb_to_linear('F1AD64') * (1.0 - f) ** 2
+                cols.append(iris * (1.18 + 0.21 * fibres - 0.58 * rim) + amber * 0.25)
             else:
                 cols.append(srgb_to_linear(pal['EyeWhite']))
         primitive('Eye.' + side, verts, faces, np.clip(np.array(cols), 0, 1), 'Face', 'Eye.' + side)
@@ -612,6 +616,11 @@ def goggles(design: Design, sculpt: Sculpt):
         ring = [tuple(base + n * .022 + R @ Vector((.07 * math.cos(TAU * i / 24), .052 * math.sin(TAU * i / 24), 0))) for i in range(25)]
         v, f = tube_mesh(ring, .008, 6, caps=False)
         primitive('GoggleRim', v, f, pal['Metal'], 'Metal', 'Head')
+        # Recessed brass fasteners distinguish the lens rim from the soft leather housing.
+        for angle in (0.22 * math.pi, 0.78 * math.pi, 1.22 * math.pi, 1.78 * math.pi):
+            pin = base + R @ Vector((.070 * math.cos(angle), .052 * math.sin(angle), .030))
+            v, f, _ = ellipsoid_mesh(pin, (.005, .005, .0028), R, 8, 4)
+            primitive('RimRivet', v, f, 'EDBC77', 'Metal', 'Head')
         hl = [tuple(base + n * .045 + R @ Vector((-.035 + .025 * t, .018 + .012 * t, 0))) for t in (0, .5, 1)]
         v, f = tube_mesh(hl, .004, 6)
         primitive('LensGlint', v, f, 'F4FAFF', 'Face', 'Head')
@@ -656,8 +665,8 @@ def suit_hardware(design: Design, sculpt: Sculpt):
     if len(pts) > 3:
         v, f = tube_mesh(pts, (.006, .003), 6)
         primitive('Zipper', v, f, pal['Metal'], 'Metal', lambda p: {'Spine': np.clip((1.12 - p[:, 2]) / .2, 0, 1), 'Chest': 1 - np.clip((1.12 - p[:, 2]) / .2, 0, 1)})
-        top = Vector(pts[-2])
-        v, f, _ = ellipsoid_mesh(top + Vector((.012, .006, -.01)), (.011, .005, .02), seg=12, rings=6)
+        pull_anchor = Vector(pts[-2])
+        v, f, _ = ellipsoid_mesh(pull_anchor + Vector((.012, .006, -.01)), (.011, .005, .02), seg=12, rings=6)
         primitive('ZipPull', v, f, pal['Metal'], 'Metal', 'Chest')
     # Racing stripes: white diagonal chest panels with an orange inner line,
     # following the actual suit surface (reference sheets).
@@ -897,7 +906,8 @@ def clip_curves(clip, t):
         c['jaw'] = .95 * up
         c['blink'] = .45 * up
         c['head_pitch'] = -.12 * up
-        c['head_roll'] = .06 * math.sin(TAU * 2 * t) * up
+        c['head_roll'] = .10 * math.sin(TAU * 2 * t) * up
+        c['look'] = (.22 * math.sin(TAU * t) * up, .14 * up)
     elif clip == 'kart_hit':
         jolt = math.sin(math.pi * min(1, t / .35)) if t < .35 else math.sin(math.pi * (1 - (t - .35) / .65) / 2) ** 2
         c['head_pitch'] = -.22 * jolt
@@ -967,7 +977,8 @@ def posed_points(bones, clip, t):
                 axis = Vector((0, -math.cos(.45), math.sin(.45)))
                 hand = Vector((0, .33, 1.035)) + Quaternion(axis, -steer * .4) @ (hand - Vector((0, .33, 1.035)))
             if 'celebrate' in c:
-                hand += Vector((s * .07, -.20, .51)) * c['celebrate']
+                beat = math.sin(TAU * 2 * t + (0 if side == 'L' else math.pi / 2))
+                hand += Vector((s * (.11 + .06 * beat), -.20, .47 + .08 * beat)) * c['celebrate']
             if side == 'R' and 'wave' in c:
                 hand += Vector((.16 + .05 * c['wave_phase'], -.24, .52)) * c['wave']
             if side == 'R' and 'point' in c:

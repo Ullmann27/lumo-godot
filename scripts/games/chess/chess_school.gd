@@ -518,6 +518,56 @@ const LESSONS := {
 			},
 		],
 	},
+	"schaefer":
+	{
+		"title": "Das schnelle Matt",
+		"icon": "w_queen",
+		"steps":
+		[
+			{
+				"type": "move",
+				"fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				"say": "Zieh den Bauern vor deinem König zwei Felder vor.",
+				"goal": "reach",
+				"from": ["e2"],
+				"targets": ["e4"]
+			},
+			{
+				"type": "move",
+				"fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+				"say": "Ich ziehe auch. Jetzt dein Läufer schräg nach c4!",
+				"goal": "reach",
+				"from": ["f1"],
+				"targets": ["c4"]
+			},
+			{
+				"type": "move",
+				"fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+				"say": "Deine Dame geht schräg bis nach h5.",
+				"goal": "reach",
+				"from": ["d1"],
+				"targets": ["h5"]
+			},
+			{
+				"type": "show",
+				"fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+				"say": "Dame und Läufer zielen beide auf f7.",
+				"glow": ["f7", "h5", "c4"]
+			},
+			{
+				"type": "move",
+				"fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+				"say": "Schlag auf f7 und setz mich matt!",
+				"goal": "mate"
+			},
+			{
+				"type": "show",
+				"fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+				"say": "Spielst du Schwarz, pass gut auf f7 auf!",
+				"glow": ["f7"]
+			},
+		],
+	},
 }
 
 ## Probespiel-Stufen: echte kleine Partien gegen Lumo. Ohne König gewinnt, wer
@@ -588,6 +638,7 @@ const PATH := [
 	["lesson", "vorbei"],
 	["lesson", "gabel"],
 	["lesson", "fesselung"],
+	["lesson", "schaefer"],
 ]
 
 
@@ -673,6 +724,10 @@ static func tap_ok(step: Dictionary, sq: int) -> bool:
 ## Ist ein Zug die Lösung des Schritts? `g` ist die Stellung vor dem Zug.
 static func move_ok(step: Dictionary, g: RefCounted, m: int) -> bool:
 	if not allowed_moves(g, step).has(m):
+		return false
+	# Optional: nur die genannte Figur darf ziehen (geführte Eröffnung).
+	var from_squares := squares(step.get("from", []))
+	if not from_squares.is_empty() and not from_squares.has(RULES.move_from(m)):
 		return false
 	var to := RULES.move_to(m)
 	var flags := RULES.move_flags(m)

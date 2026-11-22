@@ -25,11 +25,31 @@ static func choose(view: Dictionary, legal: Array, level: int, rng: int) -> Dict
 		match str(view.get("game", "")):
 			"stich":
 				move = ai._stich(view, legal, level)
+			"ziel":
+				move = ai._target(view, legal, level)
 			"leiter":
 				move = ai._leiter(view, legal, level)
 			"quartett":
 				move = ai._quartett(view, legal, level)
 	return {"move": move, "rng": ai._rng}
+
+
+func _target(view: Dictionary, legal: Array, level: int) -> Dictionary:
+	if level == 0 and _chance(65):
+		return _any(legal)
+	var best_gap := 14
+	for entry: Dictionary in view.trick:
+		best_gap = mini(best_gap, absi(DECK.rank(entry.c) - int(view.target)))
+	var scores: Array = []
+	for move: Dictionary in legal:
+		var rank := DECK.rank(move.card)
+		var gap := absi(rank - int(view.target))
+		# Ist der Stich schon verloren, behält Schwer zentrale Zahlen für spätere Ziele.
+		var value := 14 - gap
+		if level >= 2 and gap >= best_gap:
+			value = -8 + absi(7 - rank)
+		scores.append(value)
+	return _best(legal, scores)
 
 
 func _roll(bound: int) -> int:

@@ -104,51 +104,51 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 13660,
-      "triangles": 27100,
+      "vertices": 16504,
+      "triangles": 32584,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.9192,
-        0.7907,
+        0.8184,
         1.1584
       ],
       "file": "assets/kart/production/drivers/turtle/driver.glb",
-      "bytes": 1399876,
-      "sha256": "bf0b733782e0eeef68c823c4615f4973a793edab1302f364df9408a6f554f491"
+      "bytes": 1765732,
+      "sha256": "422f0618c636f6d812bd023bb2a24ed04d82b5f698d07b6ab01e186e5ceb90bc"
     },
     "lod1": {
-      "vertices": 8910,
-      "triangles": 17600,
+      "vertices": 10628,
+      "triangles": 20832,
       "materials": 6,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
         0.9192,
-        0.7909,
-        1.1584
-      ],
-      "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
-      "bytes": 1035892,
-      "sha256": "a9edf5b806971f7e13293a2f6fccdef198b2f23e0ad33f7690c89e098e130ab0"
-    },
-    "lod2": {
-      "vertices": 6535,
-      "triangles": 12850,
-      "materials": 6,
-      "max_weight_sum_error": 4.470348358154297e-08,
-      "max_influences": 4,
-      "dimensions_blender_m": [
-        0.9192,
-        0.7904,
+        0.8184,
         1.1582
       ],
+      "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
+      "bytes": 1314536,
+      "sha256": "fcee179be69096867b2576505296dc67083372d6c06bb4e8ca579dfff51dc466"
+    },
+    "lod2": {
+      "vertices": 7690,
+      "triangles": 14956,
+      "materials": 6,
+      "max_weight_sum_error": 4.330649971961975e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.9192,
+        0.8184,
+        1.1581
+      ],
       "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
-      "bytes": 850004,
-      "sha256": "d23e6c84e52adcc7d70916966728757ce4f5bccdb1598f438c5af4e6eb9850ab"
+      "bytes": 1085548,
+      "sha256": "e99b5ee829478e00b227d85beaa9ee7d66c011f297ae01c129347d49dac39506"
     }
   },
-  "build_seconds": 32.3,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "build_seconds": 120.1,
+  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
 }

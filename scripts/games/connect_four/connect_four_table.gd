@@ -458,7 +458,7 @@ func _build_room() -> void:
 	environment.glow_enabled = tier != "low"
 	environment.glow_intensity = 0.45
 	environment.glow_hdr_threshold = 1.0
-	if tier == "high":
+	if tier == "high" and RenderingServer.get_current_rendering_method() == "forward_plus":
 		environment.ssao_enabled = true
 	world.environment = environment
 	add_child(world)

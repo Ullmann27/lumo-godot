@@ -12,6 +12,7 @@ signal skip_pressed
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const ACTION = preload("res://scripts/games/run/run_touch_button.gd")
 const UI = preload("res://scripts/games/run/run_ui.gd")
+const GHOST = preload("res://scripts/games/run/run_ghost.gd")
 const THEME = preload("res://scripts/games/kart_ui_theme.gd")
 
 var stick
@@ -26,6 +27,7 @@ var star_total: int = 0
 var solved: int = 0
 var question_total: int = 3
 var progress: float = 0.0
+var ghost_progress: float = -1.0
 var marks := PackedFloat32Array()
 var mark_is_question := PackedByteArray()
 var reached: int = -1
@@ -133,6 +135,7 @@ func set_course(shares: PackedFloat32Array, questions: PackedByteArray, total: i
 	mark_is_question = questions
 	star_total = total
 	question_total = 0
+	ghost_progress = -1.0
 	for flag in questions:
 		question_total += int(flag)
 	top.queue_redraw()
@@ -151,6 +154,13 @@ func set_state(star_count: int, share: float, solved_count: int, checkpoint: int
 func set_letters(chars: Array, mask: int) -> void:
 	letter_chars = chars
 	letter_mask = mask
+	top.queue_redraw()
+
+
+func set_ghost_progress(value: float) -> void:
+	if absf(value - ghost_progress) < 0.002:
+		return
+	ghost_progress = value
 	top.queue_redraw()
 
 
@@ -447,6 +457,11 @@ func _draw_top() -> void:
 			),
 			Color("ff8a2a")
 		)
+	if ghost_progress >= 0.0:
+		var ghost_at := Vector2(_bar.position.x + _bar.size.x * ghost_progress, _bar.end.y + 4.0 * u)
+		var diamond := PackedVector2Array([Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT])
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 8.0 * u, 0.0, ghost_at) * diamond, UI.INK)
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 5.5 * u, 0.0, ghost_at) * diamond, GHOST.COLOUR)
 
 
 func _pill(rect: Rect2, accent: Color) -> void:
@@ -474,8 +489,11 @@ func _draw_coach() -> void:
 		var finger: Vector2 = centre + Vector2(-rect.size.x * 0.1, -rect.size.y * (0.75 + 0.12 * wave))
 		coach.draw_circle(finger, 13.0 * u, UI.WHITE)
 		coach.draw_rect(Rect2(finger + Vector2(-8.0 * u, -34.0 * u), Vector2(16.0 * u, 34.0 * u)), UI.WHITE)
-	var view: Vector2 = coach.size
-	var box := Rect2(view.x * 0.5 - 70.0 * u, view.y * 0.30, 140.0 * u, 92.0 * u)
+	# The demonstration belongs above the steering thumb. The centre stays
+	# clear so the child can see the obstacle the diagram describes.
+	u *= .72
+	var box := Rect2(stick.position.x, maxf(top.position.y + top.size.y, stick.position.y - 102.0 * u),
+		140.0 * u, 92.0 * u)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.02, 0.09, 0.22, 0.75)
 	style.border_color = UI.GOLD

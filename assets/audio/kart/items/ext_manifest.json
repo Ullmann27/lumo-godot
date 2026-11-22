@@ -1,0 +1,154 @@
+{
+  "generator": "tools/art/generate_kart_item_ext_audio.py",
+  "seed": 20261119,
+  "original_samples_only": true,
+  "assets": [
+    {
+      "file": "thunder_charge.ogg",
+      "seconds": 0.6,
+      "bytes": 10195,
+      "sha256": "87e25802b2a1a288b04fa608e608b71790cff0283b75c1017eed1c974387a6b1",
+      "description": "Original synthesized thunder_charge cue"
+    },
+    {
+      "file": "thunder_strike.ogg",
+      "seconds": 0.78,
+      "bytes": 9247,
+      "sha256": "ae1a943a12a510470a3bab2dd41206f8c0e021c12ec994c752494f64d426ac3a",
+      "description": "Original synthesized thunder_strike cue"
+    },
+    {
+      "file": "frost_launch.ogg",
+      "seconds": 0.55,
+      "bytes": 9346,
+      "sha256": "746f9455cbe27caf84387e86c08c8c320da7f6d28ff28b2171b8cee2a6843d9e",
+      "description": "Original synthesized frost_launch cue"
+    },
+    {
+      "file": "frost_hit.ogg",
+      "seconds": 1.0,
+      "bytes": 13019,
+      "sha256": "a425b22c3f7037a28a202ec811090ca77d902f7ea84fcb17cf94157a54318fa6",
+      "description": "Original synthesized frost_hit cue"
+    },
+    {
+      "file": "frost_melt.ogg",
+      "seconds": 0.9,
+      "bytes": 12160,
+      "sha256": "71387db20e9ab62ba0a219239d03b5c93dcc73c7e259cd9758e09bb1ea871121",
+      "description": "Original synthesized frost_melt cue"
+    },
+    {
+      "file": "meteor_launch.ogg",
+      "seconds": 0.8,
+      "bytes": 11385,
+      "sha256": "9d5c0021f9f2617d98b0f16a1c94e3b6a5ffb8603992a25ce383cb25fe9cd7b7",
+      "description": "Original synthesized meteor_launch cue"
+    },
+    {
+      "file": "meteor_hit.ogg",
+      "seconds": 1.1,
+      "bytes": 20849,
+      "sha256": "1069b4fe301667f11d16fa34052e3703ba6f3265501c3fce88b36a5d2195a411",
+      "description": "Original synthesized meteor_hit cue"
+    },
+    {
+      "file": "ember_hiss.ogg",
+      "seconds": 0.7,
+      "bytes": 10675,
+      "sha256": "da48daa8dd97f7dae720016f51884d3b32529c37ad6e77d7b5b15dc9384e7c68",
+      "description": "Original synthesized ember_hiss cue"
+    },
+    {
+      "file": "fortress_up.ogg",
+      "seconds": 1.2,
+      "bytes": 12414,
+      "sha256": "95b903d61fffbe68b65965ec9771d2d368a4823d445eee0bbdcc4671fea23e72",
+      "description": "Original synthesized fortress_up cue"
+    },
+    {
+      "file": "fortress_end.ogg",
+      "seconds": 0.7,
+      "bytes": 6994,
+      "sha256": "9610c47920c8664f456b5bbdee0f52c75a2d8a6ce28e8f266b3d353ffebbed7a",
+      "description": "Original synthesized fortress_end cue"
+    },
+    {
+      "file": "whirl_go.ogg",
+      "seconds": 1.0,
+      "bytes": 12696,
+      "sha256": "27dde629f5bd14c38014d857873d408068306fc5b18e2cfb5276b558281fec0b",
+      "description": "Original synthesized whirl_go cue"
+    },
+    {
+      "file": "whirl_hit.ogg",
+      "seconds": 0.72,
+      "bytes": 10394,
+      "sha256": "55f32ca5d2021539446c2fbd49108bec4ef4aecaa2cde26bf01f78ca504337a2",
+      "description": "Original synthesized whirl_hit cue"
+    },
+    {
+      "file": "ext_warning.ogg",
+      "seconds": 0.42,
+      "bytes": 6639,
+      "sha256": "c92b17622c0ed328ae556b97a3b60be8a73f01819cc8ed9ecbb6fd054130a218",
+      "description": "Original synthesized ext_warning cue"
+    },
+    {
+      "file": "gravity_wave.ogg",
+      "seconds": 1.2,
+      "bytes": 11319,
+      "sha256": "ed49d62f48d19e5af31a0ac791eb2acf1d35c3cc76cfab9688a15b88fb7bf122",
+      "description": "Original synthesized gravity_wave cue"
+    },
+    {
+      "file": "decoy_up.ogg",
+      "seconds": 0.8,
+      "bytes": 10191,
+      "sha256": "e3c4dbb19df90f81991ff84a465b1af307d71c3af88492e287c8cb41e7c519e6",
+      "description": "Original synthesized decoy_up cue"
+    },
+    {
+      "file": "decoy_pop.ogg",
+      "seconds": 0.6,
+      "bytes": 9264,
+      "sha256": "ce6ef2be14f85a52f8a7ac74588f45d04c881586a1082533cf251da22bf6008a",
+      "description": "Original synthesized decoy_pop cue"
+    },
+    {
+      "file": "turbo_xl.ogg",
+      "seconds": 1.3,
+      "bytes": 15817,
+      "sha256": "1f3252bf54cfc9514944f75b7d8930f2b4df05b2a02fd8a69fe65ed2d764b7b4",
+      "description": "Original synthesized turbo_xl cue"
+    },
+    {
+      "file": "arc_place.ogg",
+      "seconds": 0.7,
+      "bytes": 12765,
+      "sha256": "4911668af8c03ee6bcd47c69c31a0dcdbfae18ac0c200b119a13a3e7e8813a93",
+      "description": "Original synthesized arc_place cue"
+    },
+    {
+      "file": "arc_zap.ogg",
+      "seconds": 0.6,
+      "bytes": 10967,
+      "sha256": "bd2dff05e72f6143af01939ece8a5ecd7f09ff6be2b29b1da9e3a17e5e2f5ce6",
+      "description": "Original synthesized arc_zap cue"
+    },
+    {
+      "file": "bloom_open.ogg",
+      "seconds": 1.4,
+      "bytes": 17200,
+      "sha256": "596b23dcdafeabdbefff33e9adfb762b56add35ef39733e1425a43a946323bf3",
+      "description": "Original synthesized bloom_open cue"
+    },
+    {
+      "file": "bloom_slow.ogg",
+      "seconds": 0.8,
+      "bytes": 6996,
+      "sha256": "bbe305e90ceca932aca9831907cf8807d51ca7c129bce57c3081c45d4accc93b",
+      "description": "Original synthesized bloom_slow cue"
+    }
+  ]
+}

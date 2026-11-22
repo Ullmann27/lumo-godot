@@ -12,9 +12,15 @@ signal again_pressed
 signal leave_pressed(destination: String)
 
 const UI = preload("res://scripts/games/run/run_ui.gd")
+## Seconds the result card takes to fade in once its hold is over.
+const FADE_SECONDS: float = 0.25
 
 var screen: String = ""
 var data: Dictionary = {}
+## Screen seconds the opened screen still waits before it shows (the result
+## card waits while Lumo crosses the finish line). While it waits it is
+## invisible and swallows taps, so a thumb still on SPRINGEN presses nothing.
+var hold_left: float = 0.0
 ## Screen rectangle left free for the live Lumo on the start screen.
 var hero_rect := Rect2()
 var _unit: float = 1.0
@@ -35,16 +41,35 @@ func _exit_tree() -> void:
 		MobileRuntime.safe_area_changed.disconnect(refresh)
 
 
-func open(kind: String, content: Dictionary = {}) -> void:
+func open(kind: String, content: Dictionary = {}, hold: float = 0.0) -> void:
 	screen = kind
 	data = content
+	hold_left = maxf(hold, 0.0)
+	modulate.a = 0.0 if hold_left > 0.0 else 1.0
 	refresh()
 
 
 func close() -> void:
 	screen = ""
 	data = {}
+	hold_left = 0.0
+	modulate.a = 1.0
 	refresh()
+
+
+## Counts a hold down in the game's own screen time, then fades the screen in.
+func wait(delta: float) -> void:
+	if hold_left > 0.0:
+		hold_left -= delta
+		if hold_left > 0.0:
+			return
+		hold_left = 0.0
+		var shield: Node = get_node_or_null("Hold")
+		if shield != null:
+			remove_child(shield)
+			shield.queue_free()
+	if modulate.a < 1.0:
+		modulate.a = minf(1.0, modulate.a + delta / FADE_SECONDS)
 
 
 func refresh() -> void:
@@ -66,6 +91,12 @@ func refresh() -> void:
 			_build_pause()
 		"result":
 			_build_result()
+	if hold_left > 0.0:
+		var shield := Control.new()
+		shield.name = "Hold"
+		shield.mouse_filter = Control.MOUSE_FILTER_STOP
+		shield.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(shield)
 
 
 # ------------------------------------------------------------------ shared pieces
@@ -465,7 +496,8 @@ func _build_result() -> void:
 	rating.name = "Rating"
 	rating.custom_minimum_size = Vector2(0, (46.0 if short else 62.0) * u)
 	rating.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rating.draw.connect(_draw_rating.bind(rating, int(data.rating)))
+	var medal_colour: Color = data.get("medal_colour", UI.GOLD)
+	rating.draw.connect(_draw_rating.bind(rating, int(data.rating), medal_colour))
 	column.add_child(rating)
 	var facts := GridContainer.new()
 	facts.name = "Facts"
@@ -512,14 +544,33 @@ func _build_result() -> void:
 			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 
-func _draw_rating(canvas: Control, rating: int) -> void:
-	var radius: float = canvas.size.y * 0.44
+func _draw_rating(canvas: Control, rating: int, medal_colour: Color) -> void:
+	var centre := canvas.size * 0.5
+	var face: float = canvas.size.y * 0.36
+	var medal_at := Vector2(centre.x - face * 3.1, centre.y - face * 0.13)
+	for side in [-1.0, 1.0]:
+		var ribbon := PackedVector2Array([
+			medal_at + Vector2(side * 0.15, 0.4) * face,
+			medal_at + Vector2(side * 0.68, 0.48) * face,
+			medal_at + Vector2(side * 0.83, 1.45) * face,
+			medal_at + Vector2(side * 0.27, 1.15) * face,
+		])
+		canvas.draw_colored_polygon(ribbon, medal_colour.darkened(0.38))
+	canvas.draw_circle(medal_at, face, UI.INK)
+	canvas.draw_circle(medal_at, face * 0.90, medal_colour)
+	canvas.draw_circle(medal_at, face * 0.72, medal_colour.darkened(0.25))
+	canvas.draw_colored_polygon(UI.star_points(medal_at, face * 0.55), medal_colour.lightened(0.35))
+	var caption: String = str(data.get("medal", ""))
+	var font: Font = get_theme_default_font()
+	var text_size: int = roundi(16.0 * _unit)
+	var text_width: float = font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, text_size).x
+	canvas.draw_string(font, centre + Vector2(face * 0.8 - text_width * 0.5, face * 1.2), caption,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, text_size, medal_colour)
+	var radius: float = face * 0.63
 	var step: float = radius * 2.5
 	for index in range(3):
-		var centre := Vector2(canvas.size.x * 0.5 + (float(index) - 1.0) * step, canvas.size.y * 0.52)
-		var raise: float = radius * 0.16 if index == 1 else 0.0
-		centre.y -= raise
-		canvas.draw_colored_polygon(UI.star_points(centre, radius * 1.12), UI.INK)
+		var at := centre + Vector2(face * 0.8 + (float(index) - 1.0) * step, -face * 0.42)
+		canvas.draw_colored_polygon(UI.star_points(at, radius * 1.12), UI.INK)
 		canvas.draw_colored_polygon(
-			UI.star_points(centre, radius), UI.GOLD if index < rating else Color(0.3, 0.38, 0.5)
+			UI.star_points(at, radius), medal_colour if index < rating else Color(0.3, 0.38, 0.5)
 		)

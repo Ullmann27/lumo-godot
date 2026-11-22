@@ -5,6 +5,7 @@ extends SceneTree
 ## lava slows without stopping, ice keeps the kart sliding. Ramp feet are
 ## flush with the road. Optional LUMO_CAPTURE_DIR saves real renderer frames.
 const PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const RAMP = preload("res://scripts/games/track_pieces/kart_ramp_piece.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
@@ -36,11 +37,14 @@ func _start(markers: Array) -> void:
 	)
 	game._end_preview()
 	await _settle()
+	# Pieces need four free stretches: author them on the classic Zauberwald layout
+	# without the Strecken-2.0 jumps (kart_track_thrills.gd), which fill the lap.
+	game.world.set_meta(THRILLS.OFF_META, true)
 	if not markers.is_empty():
 		# Same path a track author uses: markers on the world, then its build.
 		game.world.set_meta(PIECES.META_KEY, markers)
-		game.world.build(game.lightweight, TRACK)
-		await _settle()
+	game.world.build(game.lightweight, TRACK)
+	await _settle()
 	game.countdown = 0
 	game.racing = true
 	game.auto_gas = false

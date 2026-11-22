@@ -89,21 +89,35 @@ static func wrapped(text: String, size: float, scale: float, color: Color = WHIT
 	return node
 
 
+static func surface(face: Color, edge: Color, scale: float, margin: float) -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = face
+	box.border_color = edge
+	box.set_border_width_all(maxi(1, roundi(scale)))
+	box.set_corner_radius_all(roundi(13.0 * scale))
+	box.set_content_margin_all(margin * scale)
+	box.shadow_color = Color(0.02, 0.05, 0.09, 0.33)
+	box.shadow_size = roundi(3.0 * scale)
+	box.shadow_offset = Vector2(0, 2.0 * scale)
+	return box
+
+
 ## Glänzender Knopf: "gold" für die Hauptaktion, "blue" für alles andere.
 static func button(text: String, kind: String, scale: float, min_width: float = 56.0, font: float = 20.0) -> Button:
 	var node := Button.new()
 	node.text = text
-	node.focus_mode = Control.FOCUS_NONE
+	node.focus_mode = Control.FOCUS_ALL
 	node.custom_minimum_size = Vector2(min_width, 56.0) * scale
 	node.add_theme_font_override("font", THEME.HEADING)
 	node.add_theme_font_size_override("font_size", int(roundf(font * scale)))
 	var gold := kind == "gold"
-	var base := "button_primary_gold" if gold else "button_secondary_blue"
-	var normal := slice(base + ".webp", scale, 14.0)
-	var pressed := slice(base + "_pressed.webp", scale, 14.0)
+	var fill := Color("f3c76a") if gold else Color("23434d")
+	var edge := Color("ffe3a3") if gold else Color("6f989b")
+	var normal := surface(fill, edge, scale, 10.0)
+	var pressed := surface(fill.darkened(.18), edge, scale, 10.0)
 	node.add_theme_stylebox_override("normal", normal)
-	node.add_theme_stylebox_override("hover", normal)
-	node.add_theme_stylebox_override("focus", normal)
+	node.add_theme_stylebox_override("hover", surface(fill.lightened(.09), edge, scale, 10.0))
+	node.add_theme_stylebox_override("focus", surface(fill, Color.WHITE, scale, 10.0))
 	node.add_theme_stylebox_override("pressed", pressed)
 	node.add_theme_stylebox_override("disabled", pressed)
 	var face := Color("3a2400") if gold else WHITE
@@ -117,12 +131,12 @@ static func button(text: String, kind: String, scale: float, min_width: float = 
 static func choice(text: String, selected: bool, scale: float, min_width: float = 64.0) -> Button:
 	var node := Button.new()
 	node.text = text
-	node.focus_mode = Control.FOCUS_NONE
+	node.focus_mode = Control.FOCUS_ALL
 	node.toggle_mode = false
 	node.custom_minimum_size = Vector2(min_width, 52.0) * scale
 	node.add_theme_font_override("font", THEME.HEADING)
 	node.add_theme_font_size_override("font_size", int(roundf(17 * scale)))
-	var box := slice("plate_nav_active.webp" if selected else "plate_nav.webp", scale, 8.0)
+	var box := surface(Color("f3c76a") if selected else Color("294653"), Color("f4db9f") if selected else Color("64818a"), scale, 7.0)
 	for state: String in ["normal", "hover", "focus", "pressed", "disabled"]:
 		node.add_theme_stylebox_override(state, box)
 	# Gewählt: dunkle Schrift auf der goldenen Fläche, sonst weiß auf Blau – gut lesbar.
@@ -137,7 +151,10 @@ static func choice(text: String, selected: bool, scale: float, min_width: float 
 
 static func panel(file: String, scale: float, margin: float = 16.0) -> PanelContainer:
 	var node := PanelContainer.new()
-	node.add_theme_stylebox_override("panel", slice(file, scale, margin))
+	if file == "panel_glass_navy.webp" or file == "row_stat.webp":
+		node.add_theme_stylebox_override("panel", surface(Color("192f3df7"), Color("567783"), scale, margin))
+	else:
+		node.add_theme_stylebox_override("panel", slice(file, scale, margin))
 	return node
 
 

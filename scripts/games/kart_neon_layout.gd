@@ -50,7 +50,11 @@ static func arrange(hub: Control) -> void:
 	if hub._overlay.visible:
 		# Groß genug für bebilderte Karten (Cup-Strecken, Belohnungen, Sternenpfad).
 		var w := minf(area.x - 2 * m, 760.0)
-		var h := minf(area.y - 2 * m, 900.0)
+		var max_h := 900.0
+		if hub._race_kinds.visible:
+			# Narrow portrait columns wrap the names and goals onto additional lines.
+			max_h = 358.0 if landscape else (646.0 if w < 525.0 else 458.0)
+		var h := minf(area.y - 2 * m, max_h)
 		hub._overlay.position = (Vector2((area.x - w) * 0.5, (area.y - h) * 0.5) * k).round()
 		hub._overlay.size = (Vector2(w, h) * k).round()
 		hub._overlay.scale = Vector2.ONE
@@ -61,13 +65,16 @@ static func arrange(hub: Control) -> void:
 static func _scale_overlay(hub: Control, k: float) -> void:
 	hub._overlay_title.add_theme_font_size_override("font_size", roundi(24 * k))
 	hub.scale_overlay_lines(k, 15.0 if hub._race_kinds.visible else 17.0)
+	var low_picker: bool = hub._race_kinds.visible and hub._overlay.size.y / k < 355.0
+	if is_instance_valid(hub._kind_description):
+		hub._kind_description.visible = not low_picker
 	for kind in hub._race_kinds.get_children():
-		kind.custom_minimum_size = Vector2(0, 72) * k
-		kind.add_theme_font_size_override("font_size", roundi(16.0 * k))
-	hub._live_start.custom_minimum_size = Vector2(0, 64) * k
+		kind.custom_minimum_size = Vector2(0, 58 if low_picker else 72) * k
+		kind.add_theme_font_size_override("font_size", roundi((14.0 if low_picker else 16.0) * k))
+	hub._live_start.custom_minimum_size = Vector2(0, 50 if low_picker else 64) * k
 	hub._live_start.add_theme_font_size_override("font_size", roundi(22 * k))
 	var close: Button = hub._overlay.find_child("CloseOverlay", true, false)
-	close.custom_minimum_size = Vector2(120, 56) * k
+	close.custom_minimum_size = Vector2(120, 48 if low_picker else 56) * k
 	close.add_theme_font_size_override("font_size", roundi(18 * k))
 
 
@@ -75,7 +82,7 @@ static func _header(hub: Control, r: Rect2, k: float) -> void:
 	var narrow := r.size.x < 420.0
 	var chip := MIN_TOUCH
 	_place(hub._back, Rect2(r.position.x, r.position.y + (r.size.y - chip) * 0.5, chip, chip), k)
-	var logo_w := 78.0 if narrow else clampf(r.size.x * 0.27, 110.0, 190.0)
+	var logo_w := 96.0 if narrow else clampf(r.size.x * 0.29, 126.0, 242.0)
 	_place(hub._logo, Rect2(r.position.x + chip + 2, r.position.y - 2, logo_w, r.size.y + 4), k)
 	var stars_w := 70.0 if narrow else 96.0
 	_place(hub._stars_chip, Rect2(r.end.x - stars_w, r.position.y + (r.size.y - chip) * 0.5, stars_w, chip), k)
@@ -86,14 +93,14 @@ static func _header(hub: Control, r: Rect2, k: float) -> void:
 
 
 ## Auf schmalen Handys bleiben nur Ziele in der Leiste, die nicht schon als große Kachel da sind.
-const NARROW_NAV := ["Dock_home", "Dock_race", "Open_garage", "Open_world", "Dock_rewards", "Landing_settings"]
+const NARROW_NAV := ["Dock_race", "Open_garage", "Open_world", "Dock_season", "Dock_rewards", "Landing_settings"]
 
 
 static func _nav(hub: Control, r: Rect2, k: float, short: bool) -> void:
 	_place(hub._dock, r, k)
 	var visible: Array = []
 	for tile in hub._navigation.get_children():
-		var keep: bool = r.size.x / 9.0 >= 58.0 or str(tile.name) in NARROW_NAV
+		var keep: bool = str(tile.name) in NARROW_NAV
 		tile.visible = keep
 		if keep:
 			visible.append(tile)
@@ -194,7 +201,7 @@ static func _track_arrows(hub: Control, big: Rect2, k: float) -> void:
 
 
 ## Platz über jeder Kachelreihe, in den die großen 3D-Icons der Modus-Kacheln hineinragen.
-const ICON_POP := 10.0
+const ICON_POP := 0.0
 
 
 ## Streckennamen stehen nur auf den kleinen Bildern, wenn jeder Name in lesbarer Größe
@@ -210,7 +217,7 @@ static func _thumb_labels(thumbs: Array, width_dp: float, k: float) -> void:
 
 
 static func _mode_row(hub: Control, r: Rect2, k: float, columns: int, compact: bool) -> void:
-	var ids := ["race", "cup", "season", "event"]
+	var ids := ["race", "cup", "parcours", "event"]
 	var rows := ceili(4.0 / columns)
 	var w := (r.size.x - 8.0 * (columns - 1)) / columns
 	var h := (r.size.y - (8.0 + ICON_POP) * (rows - 1) - ICON_POP) / rows
@@ -234,19 +241,19 @@ static func _feature_row(hub: Control, r: Rect2, k: float, compact: bool) -> voi
 
 static func _portrait(hub: Control, r: Rect2, k: float, g: float) -> void:
 	var season_h := clampf(r.size.y * 0.1, 58.0, 76.0)
-	var mode_h := clampf(r.size.y * 0.2, 88.0, 138.0)
-	var feature_h := clampf(r.size.y * 0.15, 66.0, 116.0)
+	var mode_h := clampf(r.size.y * 0.28, 146.0, 220.0)
+	var feature_h := clampf(r.size.y * 0.105, 58.0, 90.0)
 	var top_h := r.size.y - season_h - mode_h - feature_h - 3 * g
 	if top_h < 210.0:
 		var deficit := 210.0 - top_h
 		feature_h = maxf(64.0, feature_h - deficit * 0.5)
-		mode_h = maxf(76.0, mode_h - deficit * 0.5)
+		mode_h = maxf(136.0, mode_h - deficit * 0.5)
 		top_h = r.size.y - season_h - mode_h - feature_h - 3 * g
 	var hero_w := r.size.x * 0.5
 	_hero_and_rotators(hub, Rect2(r.position, Vector2(hero_w - g * 0.5, top_h)), k)
 	_highlight(hub, Rect2(r.position.x + hero_w + g * 0.5, r.position.y, r.size.x - hero_w - g * 0.5, top_h), k, false)
 	var y := r.position.y + top_h + g
-	_mode_row(hub, Rect2(r.position.x, y, r.size.x, mode_h), k, 4, r.size.x < 380.0)
+	_mode_row(hub, Rect2(r.position.x, y, r.size.x, mode_h), k, 2, r.size.x < 380.0)
 	y += mode_h + g
 	_feature_row(hub, Rect2(r.position.x, y, r.size.x, feature_h), k, feature_h < 80.0)
 	y += feature_h + g

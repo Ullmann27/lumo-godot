@@ -3,6 +3,7 @@ extends RefCounted
 ## production and needs. Time advances only through the child's Next Day action.
 const VILLAGE = preload("res://scripts/creative/build_settlement_economy.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
+const YARDS = preload("res://scripts/creative/build_village_yards.gd")
 const CLASSIC_KINDS := ["house", "farm", "lumber", "quarry", "market", "school"]
 const BUILDINGS := {
 	"house":
@@ -115,12 +116,12 @@ func rival() -> Dictionary:
 	return _rival.duplicate(true)
 
 
-func try_build(kind: String, plot: int) -> bool:
+func try_build(kind: String, plot: int, site_cm := Vector2i.ZERO) -> bool:
 	last_error = ""
 	if not _can_act():
 		return false
 	var before := _player.duplicate(true)
-	if not _buy(_player, kind, plot):
+	if not _buy(_player, kind, plot, site_cm):
 		return false
 	_remember(before)
 	return true
@@ -149,7 +150,7 @@ func try_build_many(kind: String, plots: Array) -> Array[int]:
 	return built
 
 
-func _buy(town: Dictionary, kind: String, plot: int) -> bool:
+func _buy(town: Dictionary, kind: String, plot: int, site_cm := Vector2i.ZERO) -> bool:
 	if not BUILDINGS.has(kind) or (not living_village and kind not in CLASSIC_KINDS):
 		last_error = "Wähle ein vorhandenes Gebäude."
 		return false
@@ -166,12 +167,21 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 		if int(building.plot) == plot:
 			last_error = "Dieses Grundstück ist bereits bebaut."
 			return false
+	if site_cm != Vector2i.ZERO and (not living_village or kind != "house" or absi(site_cm.x) > 265 or absi(site_cm.y) > 265):
+		last_error = "Wähle eine Stelle auf deinem Bauplatz."
+		return false
+	if living_village and not site_available(town, plot, site_cm):
+		last_error = "Lass Platz zwischen Gebäuden, Zaun und Tor."
+		return false
 	var cost: Dictionary = building_cost(kind)
 	if not _affords(town, cost):
 		last_error = "Dafür fehlen noch Rohstoffe. Produziere oder handle zuerst."
 		return false
 	_pay(town, cost)
 	var new_building := {"id": "b%d" % int(town.next_id), "kind": kind, "plot": plot}
+	if site_cm != Vector2i.ZERO:
+		new_building["site_x_cm"] = site_cm.x
+		new_building["site_z_cm"] = site_cm.y
 	# Exact paid prices survive Save/Load and never mint coins on demolition.
 	# Older markets without this receipt retain their historical two-coin refund.
 	if living_village and kind == "market":
@@ -182,6 +192,42 @@ func _buy(town: Dictionary, kind: String, plot: int) -> bool:
 	town.next_id = int(town.next_id) + 1
 	if living_village:
 		VILLAGE.update_campaign(self, town)
+	return true
+
+
+func site_available(town: Dictionary, plot: int, site_cm := Vector2i.ZERO) -> bool:
+	var position := YARDS.building_at({"plot": plot, "site_x_cm": site_cm.x, "site_z_cm": site_cm.y}, is_same(town, _rival))
+	var flat := Vector2(position.x, position.z)
+	if site_cm != Vector2i.ZERO:
+		for x in [-YARDS.BUILD_HALF, YARDS.BUILD_HALF]:
+			for z in [-YARDS.BUILD_HALF, YARDS.BUILD_HALF]:
+				var corner := Vector2(position.x + x + YARDS.REGION.TOWN_CENTER, position.z + z)
+				var index := YARDS.REGION.plot_index_at(Vector2i((corner / YARDS.REGION.SPACING).round()))
+				if index < 0 or index >= int(town.plots) or not plot_buildable(index):
+					return false
+	for building in town.buildings:
+		if site_cm == Vector2i.ZERO and not building.has("site_x_cm"):
+			continue
+		var other := YARDS.building_at(building, is_same(town, _rival))
+		if absf(other.x - flat.x) < 4.4 and absf(other.z - flat.y) < 4.4:
+			return false
+	for yard in town.get("yards", []):
+		if YARDS.blocks_building(yard, flat):
+			return false
+	return true
+
+
+func try_yard(a: int, b: int) -> bool:
+	if not living_village or not _can_act():
+		return false
+	last_error = YARDS.error(self, a, b)
+	if not last_error.is_empty():
+		return false
+	var before := _player.duplicate(true)
+	if not _player.has("yards"):
+		_player["yards"] = []
+	_player.yards.append({"a": a, "b": b})
+	_remember(before)
 	return true
 
 
@@ -712,6 +758,9 @@ static func _restored_town(town: Dictionary, is_living: bool = false) -> Diction
 		var restored_building := {
 			"id": str(building.id), "kind": str(building.kind), "plot": int(building.plot)
 		}
+		if is_living and building.has("site_x_cm"):
+			restored_building["site_x_cm"] = int(building.site_x_cm)
+			restored_building["site_z_cm"] = int(building.site_z_cm)
 		if building.has("purchase_cost"):
 			# JSON always decodes numbers as floats. Preserve canonical paid
 			# integer receipts after _valid_town has verified the exact values.
@@ -724,6 +773,10 @@ static func _restored_town(town: Dictionary, is_living: bool = false) -> Diction
 	# contain unknown fields without providing any validated village ledger.
 	if is_living:
 		VILLAGE.restore_fields(town, result)
+		if town.has("yards"):
+			result["yards"] = []
+			for yard in town.yards:
+				result.yards.append({"a": int(yard.a), "b": int(yard.b)})
 	return result
 
 
@@ -760,11 +813,23 @@ static func _valid_town(town: Dictionary, is_living: bool = false) -> bool:
 			return false
 	if town.buildings.size() > int(town.plots):
 		return false
+	if is_living and town.has("yards"):
+		if not town.yards is Array or town.yards.size() > YARDS.MAX_YARDS:
+			return false
+		for yard in town.yards:
+			if not yard is Dictionary or not _whole(yard.get("a"), 0, int(town.plots)-1) or not _whole(yard.get("b"), 0, int(town.plots)-1):
+				return false
+			var size := YARDS.FIELDS.rect(int(yard.a), int(yard.b)).size
+			if size.x > YARDS.MAX_SIDE or size.y > YARDS.MAX_SIDE:
+				return false
 	var occupied := {}
 	var identifiers := {}
 	for building: Variant in town.buildings:
 		if not building is Dictionary or not BUILDINGS.has(building.get("kind", "")):
 			return false
+		if is_living and (building.has("site_x_cm") or building.has("site_z_cm")):
+			if building.kind != "house" or not _whole(building.get("site_x_cm"), -265, 265) or not _whole(building.get("site_z_cm"), -265, 265):
+				return false
 		# The only new paid-price receipt is the coin-free village market.
 		# Validate it to prevent a tampered save from crediting arbitrary resources.
 		if building.has("purchase_cost"):

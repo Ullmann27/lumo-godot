@@ -144,6 +144,11 @@ func _widest_kart() -> float:
 				or visual is CPUParticles3D
 			):
 				continue
+			# Gemessen wird das Fahrzeug. Lumos Schweif ist weiches Fell am Fahrer und steht
+			# seit der Cockpit-Freistellung (Sockel x = 0,56) seitlich über die Karosserie.
+			var tail: Node = kart.get("tail")
+			if is_instance_valid(tail) and (visual == tail or tail.is_ancestor_of(visual)):
+				continue
 			var local: AABB = (inverse * visual.global_transform) * visual.get_aabb()
 			box = local if first else box.merge(local)
 			first = false

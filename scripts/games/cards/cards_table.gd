@@ -1,5 +1,5 @@
 extends Node3D
-## Lumos Kartentisch: drei eigene Kartenspiele an einem 3D-Rundtisch.
+## Lumos Kartentisch: vier eigene Kartenspiele an einem 3D-Rundtisch.
 ##
 ## Diese Szene ist nur Bühne und Bedienung. Die Regeln liegen in
 ## scripts/games/cards/rules/, der Spielstand in cards_session.gd. Der Tisch
@@ -9,6 +9,7 @@ extends Node3D
 
 signal settled(payload: Dictionary)
 
+const OPENING = preload("res://scripts/games/cards/cards_opening.gd")
 const ROOM = preload("res://scripts/games/cards/cards_room.gd")
 const SEAT = preload("res://scripts/games/cards/cards_seat.gd")
 const CARD = preload("res://scripts/games/cards/cards_card.gd")
@@ -30,6 +31,12 @@ const OFF := Color(0, 0, 0, 0)
 const HAND_DEPTH := 1.0
 const STOCK_SHOWN := 7
 const GAMES := {
+	"ziel": {
+		"title": "Punktlandung",
+		"text": "Triff die Zielzahl möglichst genau. Bei gleichem Abstand zählt die erste Karte.",
+		"skill": "Abstände schätzen",
+		"cards": [5, 19, 30, 44],
+	},
 	"stich": {
 		"title": "Sternenstich",
 		"text": "Bediene die Farbe und hol dir mit der höchsten Karte den Stich.",
@@ -53,6 +60,7 @@ const GAMES := {
 var room: Node3D
 var hud: Control
 var camera: Camera3D
+var opening: Node3D
 var session: RefCounted
 var rules: RefCounted
 var seats: Array = []
@@ -137,8 +145,30 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_resize)
 	MobileRuntime.safe_area_changed.connect(_resize)
 	_resize()
+	if not reduced_motion and not session.intro_seen("table_opening") and session.data.matches.is_empty():
+		screen = "opening"
+		hud.hide()
+		opening = OPENING.new()
+		opening.name = "TableOpening"
+		add_child(opening)
+		opening.finished.connect(_end_opening)
+		opening.sound_cue.connect(_sfx)
+		var volume := AudioManager.get_sfx_volume() if sound_enabled and not AudioManager.is_muted() else 0.0
+		opening.begin(camera, seats, _ui_scale, _safe_area_insets(), volume)
+	else:
+		_open_select()
+		_greet.call_deferred()
+
+
+func _end_opening() -> void:
+	if not is_instance_valid(opening):
+		return
+	opening.queue_free()
+	opening = null
+	session.mark_intro_seen("table_opening")
 	_open_select()
-	_greet.call_deferred()
+	_resize()
+	_greet()
 
 
 func _exit_tree() -> void:
@@ -157,7 +187,9 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		if screen == "play" and hud.overlay_kind.is_empty():
+		if is_instance_valid(opening):
+			opening.finish()
+		elif screen == "play" and hud.overlay_kind.is_empty():
 			_pause()
 		elif screen == "select":
 			_leave()
@@ -192,9 +224,12 @@ func _resize() -> void:
 	_android_safe_area = _get_safe_area_observation()
 	_ui_scale = MobileRuntime.get_ui_density()
 	var insets := _safe_area_insets()
-	hud.visible = not _android_safe_area_enabled or _android_safe_area.get("window_size") == get_window().size
+	hud.visible = not is_instance_valid(opening) and (not _android_safe_area_enabled or _android_safe_area.get("window_size") == get_window().size)
 	hud.rebuild(_ui_scale, insets)
 	_frame_camera()
+	if is_instance_valid(opening):
+		opening.resize(_ui_scale, insets)
+		return
 	_measure_hand()
 	_layout_all(0.0)
 	_refresh_hud()
@@ -416,6 +451,8 @@ func _open_setup(id: String) -> void:
 func _on_chosen(id: String, payload: Dictionary) -> void:
 	if _closed:
 		return
+	if is_instance_valid(opening):
+		opening.finish()
 	if id not in ["action", "seat"]:
 		_sfx("ui_confirm")
 	match id:
@@ -683,12 +720,14 @@ func _turn_hint() -> String:
 	if rules == null or rules.phase() != "playing" or rules.current() != 0:
 		return ""
 	match game:
+		"ziel":
+			return "Ziel %d · Welche deiner Zahlen liegt am nächsten?" % rules.target_rank()
 		"stich":
 			if rules.s.r.trick.is_empty():
 				return "Du spielst aus. Tippe eine Karte an."
 			var lead: int = rules.lead_suit()
-			if _legal_cards.size() < rules.s.r.hands[0].size():
-				return "Bediene %s! Tippe eine leuchtende Karte." % DECK.SUIT_NAMES[lead]
+			if DECK.suit(int(rules.legal_moves(0)[0].card)) == lead:
+				return "Lege eine %s-Karte. Tippe sie zweimal an." % DECK.SUIT_NAMES[lead]
 			return "Du hast kein %s. Lege eine beliebige Karte – Trumpf sticht." % DECK.SUIT_NAMES[lead]
 		"leiter":
 			if _legal_cards.is_empty():
@@ -798,6 +837,11 @@ func _tap_card(card: int) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(opening):
+		if event.is_action_pressed("ui_cancel") or event.is_action_pressed("ui_accept"):
+			get_viewport().set_input_as_handled()
+			opening.finish()
+		return
 	var point := Vector2.ZERO
 	var pressed := false
 	var released := false
@@ -925,7 +969,7 @@ func _cards_in_play() -> Array:
 	for hand: Array in r.hands:
 		all.append_array(hand)
 	match game:
-		"stich":
+		"stich", "ziel":
 			# Der Reststapel bleibt die Runde über liegen: Trumpfkarte und ein paar Deckkarten genügen.
 			all.append_array(r.stock.slice(0, STOCK_SHOWN))
 			all.append_array(r.played)
@@ -997,7 +1041,7 @@ func _deal_ticks(count: int) -> void:
 
 
 func _stock_centre() -> Vector3:
-	if game == "stich":
+	if game in ["stich", "ziel"]:
 		return Vector3(-0.56, ROOM.TABLE_Y + 0.008, -0.1)
 	return Vector3(0.0, ROOM.TABLE_Y + 0.008, -0.02)
 
@@ -1010,9 +1054,14 @@ func _assign_from_state() -> void:
 		for index in range(hand.size()):
 			_place(int(hand[index]), "hand" if player == 0 else "fan", player, index)
 	match game:
-		"stich":
+		"stich", "ziel":
+			var face: int = rules.target_card() if game == "ziel" else int(r.trump_card)
 			for index in range(r.stock.size()):
-				_place(int(r.stock[index]), "trump" if index == 0 else "stock", -1, r.stock.size() - index)
+				var card := int(r.stock[index])
+				var zone := "stock"
+				if card == face:
+					zone = "target" if game == "ziel" else "trump"
+				_place(card, zone, -1, r.stock.size() - index)
 			for index in range(r.trick.size()):
 				_place(int(r.trick[index].c), "trick", int(r.trick[index].p), index)
 			# Gewonnene Stiche: bekannte Besitzer behalten, Rest nach Stichzahl verteilen.
@@ -1124,6 +1173,8 @@ func _slot(node: Node3D, index: int, count: int) -> Transform3D:
 			return fan * local
 		"stock":
 			return _flat(_stock_centre() + Vector3(0, 0.0045 * index, 0), _jitter(card, 0.07), false, 1.0)
+		"target":
+			return _flat(_stock_centre() + Vector3(-0.10, 0.045, 0.26), 0.0, true, 1.5)
 		"trump":
 			return _flat(_stock_centre() + Vector3(0.2, -0.002, 0.0), PI * 0.5 + _jitter(card, 0.04), true, 1.0)
 		"trick":
@@ -1336,12 +1387,7 @@ func _show_trick(event: Dictionary) -> void:
 	var trick_cards: Array = event.cards
 	await _wait(0.45)
 	hud.set_hint("%s den Stich!" % ("Du gewinnst" if winner == 0 else seats[winner].display_name + " gewinnt"))
-	var best := -1
-	var lead := DECK.suit(int(trick_cards[0]))
-	for card: int in trick_cards:
-		var power: int = rules.strength(card, lead, int(rules.s.r.trump))
-		if best < 0 or power > rules.strength(best, lead, int(rules.s.r.trump)):
-			best = card
+	var best := int(event.best)
 	if cards.has(best):
 		cards[best].set_glow(GOLD)
 	_sfx("trick_win")
@@ -1561,6 +1607,8 @@ func _refresh_hud() -> void:
 	var round_text := "Runde %d von %d" % [rules.round_number(), rules.rounds_total()]
 	if not _intro_steps.is_empty():
 		round_text = "Einführung"
+	if game == "ziel":
+		round_text += "   ·   Ziel %d" % rules.target_rank()
 	hud.set_game(str(info.title), round_text)
 	hud.set_stars(ProgressStore.total_stars())
 	hud.set_trump(int(rules.s.r.trump) if game == "stich" else -1)
@@ -1570,7 +1618,7 @@ func _refresh_hud() -> void:
 		var detail := ""
 		var extra := ""
 		match game:
-			"stich":
+			"stich", "ziel":
 				var count := int(rules.s.r.tricks[player])
 				detail = "%d Stich%s" % [count, "" if count == 1 else "e"]
 			"leiter":
@@ -1632,7 +1680,7 @@ func _round_rows(points: Array, detail_for: Callable) -> Array:
 
 func _round_detail(entry: Dictionary, player: int) -> String:
 	match game:
-		"stich":
+		"stich", "ziel":
 			var count := int(entry.tricks[player])
 			return "%d Stich%s · gesamt %d" % [count, "" if count == 1 else "e", int(rules.s.scores[player])]
 		"leiter":
