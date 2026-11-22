@@ -138,10 +138,10 @@ func build(
 		load("res://scripts/games/garden/kart_garden_world.gd").build(self, geometry_only)
 		return
 	if track_id == JUNGLE.ID:
-		JUNGLE.build_road(self)
 		# Strecken 2.0 (kart_track_thrills.gd) und Fahrspaß-Höhepunkte (kart_track_highlights.gd):
 		# Dschungelherz hatte vorher keinen einzigen Sprung; beide Pläne nutzen den Action-Baukasten.
 		THRILLS.plan(self)
+		JUNGLE.build_road(self)
 		if THRILLS.has(track_id) or HIGHLIGHTS.has(track_id):
 			action = ACTION.plan(self)
 			THRILLS.extend_action(self)
@@ -343,14 +343,39 @@ func frame(distance: float) -> Basis:
 	var right: Vector3 = raw_right.normalized()
 	var up: Vector3 = right.cross(ahead).normalized()
 	var bend: float = right.dot(forward(distance + 5.0) - ahead)
-	var gain: float = 0.68
-	var limit: float = 0.14
-	if not thrill_bank.is_empty():
-		var slot: int = int(fposmod(distance, length) / THRILLS.BANK_STEP)
-		var w: float = thrill_bank[slot % thrill_bank.size()]
-		gain = lerpf(gain, THRILLS.BANK_GAIN, w)
-		limit = lerpf(limit, THRILLS.BANK_LIMIT, w)
-	return Basis(right, up, -ahead).rotated(ahead, clampf(-bend * gain, -limit, limit))
+	var weight := bank_weight(distance)
+	var roll := lerpf(clampf(-bend * 0.68, -0.14, 0.14),
+		clampf(bend * THRILLS.BANK_GAIN, -THRILLS.BANK_LIMIT, THRILLS.BANK_LIMIT), weight)
+	return Basis(right, up, -ahead).rotated(ahead, roll)
+
+
+func bank_weight(distance: float) -> float:
+	if thrill_bank.is_empty():
+		return 0.0
+	var metre := fposmod(distance, length) / THRILLS.BANK_STEP
+	var slot := floori(metre)
+	return lerpf(thrill_bank[slot], thrill_bank[(slot + 1) % thrill_bank.size()], metre - slot)
+
+
+func banked_velocity(road: Dictionary, heading: Vector3, speed: float, weight: float) -> Vector3:
+	if weight <= 0.0:
+		return heading * speed
+	var d: float = road.distance
+	var basis: Basis = road.basis
+	var tangent := heading.slide(basis.y).normalized()
+	var along := speed * tangent.dot(-basis.z)
+	var horizontal_right: Vector3 = road.forward.cross(Vector3.UP).normalized()
+	var curvature: float = horizontal_right.dot(forward(d + 2.0) - forward(d - 2.0)) / 4.0
+	var side_accel := -9.81 * basis.x.y - along * along * curvature * horizontal_right.dot(basis.x)
+	var slip := clampf(side_accel * 0.14, -2.8, 2.8)
+	return (heading * speed).lerp(tangent * speed + basis.x * slip, weight)
+
+
+func surface_velocity(road: Dictionary, heading: Vector3, speed: float) -> Vector3:
+	if track_id == GARDEN.ID:
+		return GARDEN.wall_velocity(self, road, heading, speed)
+	return banked_velocity(road, heading, speed, bank_weight(road.distance))
+
 
 func position_at(distance: float, lateral: float = 0.0) -> Vector3:
 	return curve.sample_baked(fposmod(distance, length), true) + frame(distance).x * lateral

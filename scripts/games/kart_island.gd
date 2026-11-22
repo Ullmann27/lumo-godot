@@ -2203,8 +2203,8 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 	if is_instance_valid(item_ext):
 		grip *= item_ext.grip_factor(-1)
 	var drive_velocity := forward * speed
-	if track_id == WORLD.GARDEN.ID and not airborne and not road.is_empty():
-		drive_velocity = WORLD.GARDEN.wall_velocity(world, road, forward, speed)
+	if not airborne and not road.is_empty() and mode != "arena":
+		drive_velocity = world.surface_velocity(road, forward, speed)
 	physical_velocity = physical_velocity.lerp(drive_velocity, minf(1, delta * grip))
 	# Child-friendly precision flight: velocity-only boundary, measured from
 	# the SAME curving road frame as the game's lane value. The lip frame alone
@@ -3165,9 +3165,7 @@ func _drive_opponents(delta: float) -> void:
 			# Brake, wait and pull away again smoothly at a LUMO passage.
 			target_speed = minf(target_speed, float(passage_rule.speed))
 			target_speed = minf(target_speed, absf(rival.motion_speed) + 30.0 * delta)
-		var drive_velocity: Vector3 = forward * target_speed
-		if track_id == WORLD.GARDEN.ID:
-			drive_velocity = WORLD.GARDEN.wall_velocity(world, sampled, forward, target_speed)
+		var drive_velocity: Vector3 = world.surface_velocity(sampled, forward, target_speed)
 		rival.position += drive_velocity * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
@@ -3650,7 +3648,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		+ ahead * (VISUAL_GRADE.CAMERA_LOOK_AHEAD + speed_ratio * 1.8)
 		+ Vector3.UP * VISUAL_GRADE.CAMERA_TARGET_HEIGHT
 	)
-	if track_id == WORLD.GARDEN.ID and not airborne:
+	if mode != "arena" and not airborne and is_instance_valid(world):
 		var road_ahead: Vector3 = world.forward(previous_road_distance)
 		var slope := clampf(road_ahead.y * ahead.dot(road_ahead), -0.35, 0.35)
 		target.y += slope * VISUAL_GRADE.CAMERA_LOOK_AHEAD
@@ -3673,6 +3671,9 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 			* VISUAL_GRADE.CAMERA_ROLL_MAX
 			* (0.35 + speed_ratio * 0.65)
 		)
+		if mode != "arena" and not airborne and is_instance_valid(world):
+			var road_roll: float = world.frame(previous_road_distance).x.y
+			roll = clampf(roll + road_roll * 0.08, -VISUAL_GRADE.CAMERA_ROLL_MAX, VISUAL_GRADE.CAMERA_ROLL_MAX)
 		camera.rotate_object_local(Vector3(0, 0, 1), roll)
 	_update_camera_speed_effects(delta, snap, speed_ratio)
 

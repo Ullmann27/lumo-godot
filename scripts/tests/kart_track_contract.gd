@@ -19,6 +19,31 @@ func _check_garden_wall(world) -> void:
 	for metre in range(int(GARDEN.HOSE.x), int(GARDEN.HOSE.y)):
 		assert(world.frame(metre).y.y > 0.69, "Höchstens 45 Grad Überhöhung plus Längsneigung")
 
+func _check_banked_track(world) -> void:
+	var banks: Array = world.THRILLS.of(world).filter(func(s): return s.kind == "bank")
+	assert(banks.size() == 1, "%s: genau eine ausgewiesene Steilkurve" % world.track_id)
+	var bank: Dictionary = banks[0]
+	var steepest := 0.0
+	var apex := 0
+	for metre in range(ceili(bank.start), floori(bank.end)):
+		var frame: Basis = world.frame(metre)
+		if absf(frame.x.y) > steepest:
+			steepest = absf(frame.x.y)
+			apex = metre
+		if absf(frame.x.y) < 0.40:
+			continue
+		var road: Dictionary = world.sample_road(world.position_at(metre), metre)
+		var down: Vector3 = world.surface_velocity(road, -frame.z, 1.0)
+		assert(down.dot(frame.x) * frame.x.y < 0.0, "%s: langsame Linie hangabwärts" % bank.id)
+	var apex_road: Dictionary = world.sample_road(world.position_at(apex), apex)
+	var basis: Basis = apex_road.basis
+	var fast: Vector3 = world.surface_velocity(apex_road, -basis.z, 45.0)
+	assert(fast.dot(basis.x) * basis.x.y > 0.0, "%s: Außenlinie trägt bei Renntempo" % bank.id)
+	assert(steepest > sin(deg_to_rad(29.0)), "%s: mindestens 29 Grad Überhöhung" % bank.id)
+	print("[KartBank] %s %s %.0f–%.0f m, maximal %.1f Grad" % [
+		world.track_id, bank.id, bank.start, bank.end, rad_to_deg(asin(steepest))])
+
+
 func _initialize() -> void:
 	call_deferred("_run")
 func _run() -> void:
@@ -26,11 +51,8 @@ func _run() -> void:
 	var definitions=load("res://scripts/games/kart_tracks.gd")
 	for id in definitions.IDS:
 		var world=script.new()
-		world.definition=definitions.definition(id)
-		# _make_curve() contains track-specific authoring scale. Mirror build() by setting
-		# track_id before invoking the geometry contract directly.
-		world.track_id=id
-		world._make_curve()
+		root.add_child(world)
+		world.build(true, id, true)
 		assert(world.length>340.0)
 		if id=="bergwelt":
 			assert(world.length>400.0, "Himmelsinseln must remain a long-form course")
@@ -59,6 +81,8 @@ func _run() -> void:
 			assert(world.alternate_route_pitch(float(split.end)-2.0,-3.0)<0.0)
 		if id == GARDEN.ID:
 			_check_garden_wall(world)
+		else:
+			_check_banked_track(world)
 		assert(world.position_at(0).distance_to(world.position_at(world.length))<0.001)
 		assert(world.checkpoint_positions.size()==8)
 		var min_radius: float=INF
@@ -81,7 +105,8 @@ func _run() -> void:
 				assert(absf(sample.height-p.y)<0.08)
 				assert(sample.on_road, "%s: valid lane %.1f m rejected at %.0f m" % [id,lateral,d])
 				var in_wall: bool = id == GARDEN.ID and d >= GARDEN.HOSE.x and d <= GARDEN.HOSE.y
-				assert(sample.basis.y.y > (0.69 if in_wall else 0.9), "%s: road tilt %.2f at %.0f m lane %.1f" % [id,sample.basis.y.y,d,lateral])
+				var on_banked_curve: bool = world.bank_weight(d) > 0.0
+				assert(sample.basis.y.y > (0.69 if in_wall else (0.78 if on_banked_curve else 0.9)), "%s: road tilt %.2f at %.0f m lane %.1f" % [id,sample.basis.y.y,d,lateral])
 				assert(sample.distance>=0.0 and sample.distance<world.length)
 		var clearance: float=INF
 		for a in range(100):

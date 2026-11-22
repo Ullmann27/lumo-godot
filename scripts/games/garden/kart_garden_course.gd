@@ -305,15 +305,8 @@ static func wall_velocity(world, road: Dictionary, heading: Vector3, speed: floa
 	var d: float = road.distance
 	if d < HOSE.x or d > HOSE.y:
 		return heading * speed
-	var basis: Basis = road.basis
-	var tangent := heading.slide(basis.y).normalized()
-	var along := speed * tangent.dot(-basis.z)
-	var horizontal_right: Vector3 = road.forward.cross(Vector3.UP).normalized()
-	var curvature: float = horizontal_right.dot(world.forward(d + 2.0) - world.forward(d - 2.0)) / 4.0
-	var side_accel := -9.81 * basis.x.y - along * along * curvature * horizontal_right.dot(basis.x)
-	var slip := clampf(side_accel * 0.14, -2.8, 2.8)
 	var weight := _blend(d, HOSE.x, HOSE.x + 14.0) * (1.0 - _blend(d, HOSE.y - 18.0, HOSE.y))
-	return (heading * speed).lerp(tangent * speed + basis.x * slip, weight)
+	return world.banked_velocity(road, heading, speed, weight)
 
 
 static func section_at(distance: float) -> int:

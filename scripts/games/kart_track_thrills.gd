@@ -49,8 +49,8 @@ const LANDING_RESERVE_M: float = 1.0
 const CREST_LENGTH: float = 16.0
 const CREST_HEIGHT: float = 1.3
 const CREST_BACK: float = 9.0
-const BANK_GAIN: float = 4.2
-const BANK_LIMIT: float = 0.30
+const BANK_GAIN: float = 13.0
+const BANK_LIMIT: float = PI / 5.0
 const BANK_STEP: float = 2.0
 const SIGN_LEAD_M: float = 120.0
 const TURBO_SPACING: float = 22.0
@@ -73,6 +73,10 @@ const THEMES: Dictionary = {
 ## Je Strecke: Wunschlage (m, negativ = vor dem Ziel) – die Planung rückt jede Stelle auf den
 ## nächsten freien, ausreichend geraden Abschnitt. Fehlt eine Strecke, bleibt sie unverändert.
 const SPECS: Dictionary = {
+	"sonnenhafen":
+	[
+		{"kind": "bank", "id": "werftkurve", "name": "Werftkurve", "at": 900.0, "length": 86.0, "window": 650.0},
+	],
 	"jungle_emerald_3600":
 	[
 		{"kind": "crest", "id": "startwurzel", "at": 180.0, "name": "Start-Wurzel"},
@@ -98,6 +102,7 @@ const SPECS: Dictionary = {
 		},
 		{"kind": "turbo", "id": "lianenbahn", "at": 3150.0, "name": "Lianen-Turbo"},
 		{"kind": "crest", "id": "zielwurzel", "at": 3400.0, "name": "Ziel-Wurzel"},
+		{"kind": "bank", "id": "kapokkurve", "name": "Kapokkurve", "at": 1040.0, "length": 88.0, "window": 600.0},
 	],
 	"zauberwald":
 	[
