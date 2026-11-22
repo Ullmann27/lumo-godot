@@ -5325,7 +5325,8 @@ static func _chevron_arm_geometry(track_basis: Basis, side: float) -> Dictionary
 ## It covers exactly the boost zone checked in _track_events.
 ## Fraction-placed elements avoid LUMO passages and Strecken-2.0 jumps (ramps, gaps).
 func _clear_at(distance_on_track: float) -> float:
-	return THRILLS.clear_distance(world, PASSAGES.clear_distance(world, distance_on_track))
+	var at := THRILLS.clear_distance(world, PASSAGES.clear_distance(world, distance_on_track))
+	return WINDWERK_TRIALS.clear_distance(at, world.action.trials) if is_instance_valid(windwerk_trials) else at
 
 
 func _turbo_pad(distance_on_track: float) -> void:

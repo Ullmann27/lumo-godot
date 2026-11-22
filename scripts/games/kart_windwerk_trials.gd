@@ -20,6 +20,17 @@ static func slider_lane(index: int, seconds: float) -> float:
 	return 1.95 + 2.48 * sin(seconds * 1.25 + float(index) * 2.0)
 
 
+## Frei platzierbare Ringe wandern vor bzw. hinter den Versuch. Unterschiedliche
+## Ausgangsdistanzen bleiben auch nach dem Verschieben unterscheidbar.
+static func clear_distance(at: float, trials: Array) -> float:
+	for trial: Dictionary in trials:
+		var sector := Vector2(float(trial.start), float(trial.end))
+		if at >= sector.x and at <= sector.y:
+			var middle := (sector.x + sector.y) * 0.5
+			return sector.x - 18.0 - (middle - at) * .25 if at < middle else sector.y + 18.0 + (at - middle) * .25
+	return at
+
+
 func setup(world) -> void:
 	length = world.length
 	var art = load(ART_PATH)
@@ -67,6 +78,7 @@ func _mark(parent: Node3D, at: Vector3, text: String, color: Color, flat: bool =
 	label.pixel_size = 0.026 if text.length() == 1 else 0.009
 	label.position = at
 	label.double_sided = false
+	label.visibility_range_end = 145.0
 	if flat:
 		label.rotation.x = -PI * 0.5
 	parent.add_child(label)
@@ -136,7 +148,13 @@ func advance(game, dt: float) -> void:
 	for i in sliders.size():
 		sliders[i].position.x = slider_lane(i, game.elapsed)
 	if player_reset != game.reset_count:
-		racers.erase(-1)
+		# Eine Bergung kann vor den Schieber zurücksetzen. Bereits ausgelöste
+		# Linien bleiben verbraucht, die unterbrochene Torfolge endet.
+		if racers.has(-1):
+			racers[-1].distance = game.distance
+			racers[-1].lane = game.lane
+			racers[-1].combo = 0
+			racers[-1].slow_until = 0.0
 		player_reset = game.reset_count
 	for driver in range(-1, game.opponents.size()):
 		var child := driver == -1

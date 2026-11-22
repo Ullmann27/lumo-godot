@@ -59,6 +59,14 @@ func run() -> void:
 	var trials = game.windwerk_trials
 	verify(is_instance_valid(trials) and trials.sliders.size() == 3, "Normaler Rennstart erzeugt drei Schieber")
 	if is_instance_valid(trials):
+		var placed: Array = game.catalog_box_distances.duplicate()
+		placed.append_array(game.item_box_distances)
+		for crew: Dictionary in game.roadside_lasso.layout:
+			placed.append(crew.distance)
+		for ring: Array in game.BOOST_RING_LAYOUT:
+			placed.append(game._clear_at(float(ring[0]) * game.track_length))
+		for d: float in placed:
+			verify(is_equal_approx(d, TRIALS.clear_distance(d, game.world.action.trials)), "Prüfbereich frei von Lasso und Zusatzringen")
 		drive_line(game, TRIALS.SLIDERS[0], TRIALS.SAFE)
 		verify(trials.speed_factor(-1, game.elapsed) == 1.0, "Sicherer Weg durch den bewegten Schieber")
 		# Beim Überfahren der zweiten Platte liegt diese an ihrem rechten Umkehrpunkt.
@@ -68,6 +76,9 @@ func run() -> void:
 		for i in TRIALS.GATES.size():
 			drive_line(game, TRIALS.GATES[i], TRIALS.TARGETS[i])
 			verify(game.boost_time > (1.0 if i == 2 else .1), "Normale Rennphysik fährt Tor %d mit Windschub" % i)
+		game.reset_count += 1
+		drive_line(game, TRIALS.GATES[2], TRIALS.TARGETS[2])
+		verify(game.boost_time <= 0.0, "Bergung vor einem gewerteten Tor gibt keinen zweiten Turbo")
 	verify(await TEARDOWN.release_scene(self, game, "[WindwerkTrials]"), "Rennszene schließt")
 	finish()
 
