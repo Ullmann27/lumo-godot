@@ -283,7 +283,9 @@ func _finish_loading() -> void:
 	_set_phase("transitioning")
 	SceneRouter.launch_options["reduceAnimations"] = _reduced_motion
 	if target_scene == "kart":
-		# One entry, not a boot greeting followed by another forced 4.4s intro.
+		# The optional film belongs to this fresh launch. Returning from a race or
+		# the Parcours reuses the prepared menu without requesting a second film.
+		SceneRouter.launch_options["kartOpeningFilm"] = not _reduced_motion
 		SceneRouter.launch_options["kartEntryPrepared"] = true
 	# Present the actually ready scene once; do not fade a not-yet-drawn hero.
 	if DisplayServer.get_name() != "headless":

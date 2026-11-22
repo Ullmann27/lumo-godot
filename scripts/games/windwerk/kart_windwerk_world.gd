@@ -4,6 +4,8 @@ const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const DECK = preload("res://assets/shaders/kart_windwerk_deck.gdshader")
 const ART_PATH := "res://scripts/games/kart_windwerk_art.gd"
 const HALF := COURSE.WIDTH * .5
+const SKY_SHADER = preload("res://assets/shaders/kart_scenery_sky.gdshader")
+static var _valley_sky: Sky
 
 
 static func build(world, geometry_only: bool) -> void:
@@ -95,11 +97,33 @@ static func ground_height(x: float, z: float) -> float:
 	var fold := sin(x * .015 + sin(z * .011)) * 2.4 + cos(z * .016 - x * .009) * 2.0
 	var river := absf(x - 125.0 * sin(z * .007) + 40.0)
 	var trough := smoothstep(7.0, 90.0, river)
-	var outer := smoothstep(485.0, 850.0, Vector2(x, z).length())
+	var outer := smoothstep(420.0, 735.0, Vector2(x, z).length())
 	return lerpf(-5.7, 1.6 + fold, trough) + outer * (85.0 + 42.0 * sin(x*.019) * cos(z*.012))
 
 
 static func _valley(world) -> void:
+	# Soft warm horizon behind darker ridges leaves the foreground machines readable.
+	if _valley_sky == null:
+		var cloud := ShaderMaterial.new()
+		cloud.shader = SKY_SHADER
+		cloud.set_shader_parameter("zenith", Color("24669d"))
+		cloud.set_shader_parameter("horizon", Color("8cbfc9"))
+		cloud.set_shader_parameter("haze", Color("efbd8f"))
+		cloud.set_shader_parameter("ground", Color("6a8888"))
+		cloud.set_shader_parameter("cloud_shadow", Color("889bab"))
+		cloud.set_shader_parameter("cloud_color", Color("fff0d4"))
+		cloud.set_shader_parameter("clouds", .55)
+		cloud.set_shader_parameter("energy", .87)
+		_valley_sky = Sky.new()
+		_valley_sky.sky_material = cloud
+	var worlds := world.find_children("*", "WorldEnvironment", false, false) as Array
+	if not worlds.is_empty():
+		var env: Environment = worlds[0].environment
+		env.sky = _valley_sky
+		env.fog_sky_affect = .12
+		env.fog_density = .00075
+		env.fog_light_color = Color("b6b6a7")
+		env.tonemap_exposure = .93
 	# Grid of terraced meadows below the raised track, river and a connected
 	# distant ridgeline. Fixed coordinates keep the horizon stable as karts move.
 	var ground := SurfaceTool.new()
@@ -112,7 +136,7 @@ static func _valley(world) -> void:
 			var h := ground_height(x,z)
 			var normal := Vector3(ground_height(x-1,z)-ground_height(x+1,z), 2, ground_height(x,z-1)-ground_height(x,z+1)).normalized()
 			var tone := Color("8cb88b").lerp(Color("5e9a80"), .5 + .5 * sin(.043*x + floor(z/70.0)))
-			tone = tone.lerp(Color("7e93a1"), smoothstep(12,85,h))
+			tone = tone.lerp(Color("52697c"), smoothstep(12,85,h))
 			ground.set_color(tone)
 			ground.set_normal(normal)
 			ground.add_vertex(Vector3(x,h,z))
