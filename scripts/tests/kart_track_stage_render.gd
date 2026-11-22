@@ -17,6 +17,7 @@ const OUT := "res://assets/kart/track_stage/"
 ## Kamerapunkt je Strecke: Kurvenscheitel als Anteil der Rundenlänge, Seite der
 ## Kamera (+1 = außen, −1 = innen) und Höhe. Gewählt am Probebild (Kurve + Landmarke).
 const SHOTS := {
+	"riesengarten_2400": {"f": 0.167, "back": 49.0, "h": 3.9, "off": -1.0, "ahead": 45.0, "look_lat": 0.0, "lh": 5.0, "fov": 63.0},
 	"windwerk_3000": {"f": .052, "back": 55.0, "h": 3.6, "off": -3.5, "abs": 1.0, "ahead": 48.0, "look_lat": -8.5},
 	"sonnenhafen": {"f": 0.988, "side": 1.0},
 	"zauberwald": {"f": 0.562, "side": 1.0},
@@ -92,6 +93,7 @@ func _run() -> void:
 	var maps := _read_maps()
 	for id in tracks:
 		var started := Time.get_ticks_msec()
+		RenderingServer.render_loop_enabled = false
 		var world = WORLD.new()
 		root.add_child(world)
 		world.build(maps_only, id, maps_only)
@@ -109,13 +111,17 @@ func _run() -> void:
 			world.free()
 			continue
 		if not candidates.is_empty():
+			RenderingServer.render_loop_enabled = true
 			await _candidates(world, camera, id, candidates)
 		else:
 			var shot: Dictionary = SHOTS.get(id, _auto_shot(world))
 			root.size = Vector2i(1920, 1080)
 			_pose(world, camera, shot, 0.0)
-			for _frame in range(10):
+			# Let animation and deferred setup settle before drawing the still at full size.
+			for _frame in range(9):
 				await process_frame
+			RenderingServer.render_loop_enabled = true
+			await process_frame
 			await RenderingServer.frame_post_draw
 			var image := root.get_texture().get_image()
 			failures += _save_still(id, image)
@@ -127,6 +133,7 @@ func _run() -> void:
 				% [id, (Time.get_ticks_msec() - started) / 1000.0]
 			)
 		)
+		RenderingServer.render_loop_enabled = false
 		root.remove_child(world)
 		world.queue_free()
 		for _frame in range(3):
