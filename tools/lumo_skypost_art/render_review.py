@@ -17,8 +17,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
-    name, out = sys.argv[1], sys.argv[2]
-    lod = int(sys.argv[3]) if len(sys.argv) > 3 else 0
+    args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
+    name, out = args[:2]
+    lod = int(args[2]) if len(args) > 2 else 0
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(ROOT / "assets/skypost/models" / (name + ".glb")))
     keep = "_lod%d" % lod
@@ -41,6 +42,7 @@ def main():
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 24
+    scene.cycles.use_denoising = False
     scene.cycles.device = "CPU"
     scene.render.resolution_x = 960
     scene.render.resolution_y = 640
@@ -58,7 +60,7 @@ def main():
     scene.collection.objects.link(cam)
     scene.camera = cam
     cam.data.lens = 40
-    distance = radius * (float(sys.argv[4]) if len(sys.argv) > 4 else 2.6)
+    distance = radius * (float(args[3]) if len(args) > 3 else 2.6)
     views = [(-35, 22), (180 + 30, 18)]
     out_path = Path(out)
     for index, (yaw, pitch) in enumerate(views):

@@ -222,6 +222,19 @@ def body(model, m, detail):
         for side in (-1, 1):
             model.add(G.star_prism((side * .29, 1.04, .8), .11, .03, axis="x"), m["accent"])
             model.add(G.star_prism((side * .5, .58, -.98), .2, .04, axis="x"), m["accent"])
+    if detail < 2:
+        # Brass loops hold the two leather straps against the rear of the mailbag.
+        for x in (-.16, .16):
+            model.add(G.box((x, 1.08, .997), (.068, .29, .024)), m["seat"], bevel=.007 if detail == 0 else 0)
+            if detail == 0:
+                loop = [(x + dx, 1.08 + dy, 1.014) for dx, dy in ((-.041,-.033), (.041,-.033), (.041,.033), (-.041,.033))]
+                model.add(tube(loop, .009, 6), m["accent"])
+        # Postal chevrons remain visible from the chase camera on both wings.
+        for side in (-1, 1):
+            for x in (1.04, 1.30):
+                points = [(side * (x + dx), y_at(x + dx) + .077, le_at(x + dx) + dz)
+                          for dx, dz in ((0, .11), (.15, .31), (0, .51))]
+                model.add(tube(points, .031, 6, closed=False), m["accent"])
     if detail == 0:
         for i in range(16):
             a = math.tau * i / 16

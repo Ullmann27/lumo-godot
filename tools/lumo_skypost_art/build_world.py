@@ -445,6 +445,18 @@ def post_office(model, detail):
         c = Vector((0, 12.6, 1.2)) + n * 1.62
         model.add(G.cylinder(c, c + n * .14, 1.05, segments=[32, 16, 8][detail]), m["gold"])
         model.add(G.cylinder(c + n * .05, c + n * .17, .9, segments=[32, 16, 8][detail]), m["frame"])
+        if detail < 2:
+            horizontal = Vector((math.cos(a), 0, math.sin(a)))
+            vertical = Vector((0, 1, 0))
+            face_center = c + n * .20
+            for length, angle in ((.49, -55), (.70, 60)):
+                direction = horizontal * math.sin(math.radians(angle)) + vertical * math.cos(math.radians(angle))
+                model.add(G.cylinder(face_center, face_center + direction * length, .055, segments=8), m["dark"])
+            if detail == 0:
+                for hour in range(12):
+                    angle = math.tau * hour / 12
+                    direction = horizontal * math.sin(angle) + vertical * math.cos(angle)
+                    model.add(G.cylinder(face_center + direction * .73, face_center + direction * .84, .028, segments=6), m["gold"])
     model.add(G.box((0, 15.6, 1.2), (2.8, 1.4, 2.8)), m["white"], bevel=b)
     roof = G.lathe([(2.4, 0), (0, 3.2)], segments=4)
     roof.transform(Matrix.Translation((0, 16.3, 1.2)) @ Matrix.Rotation(math.pi / 4, 4, "Y"))

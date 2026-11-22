@@ -64,7 +64,8 @@ BUILDERS.update(W.BUILDERS)
 
 
 def main():
-    wanted = [a for a in sys.argv[1:] if not a.startswith("-")] or list(BUILDERS)
+    args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
+    wanted = args or list(BUILDERS)
     OUT.mkdir(parents=True, exist_ok=True)
     manifest_path = OUT / "skypost_models.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
