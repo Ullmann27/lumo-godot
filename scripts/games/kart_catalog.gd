@@ -39,7 +39,7 @@ const MODES: Array[Dictionary] = [
 	{"id": "training", "name": "Freies Training", "tag": "ENTDECKEN OHNE DRUCK", "description": "Lerne lenken, bremsen und driften. Du bestimmst, wann du fertig bist."},
 	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."},
 	# Eigene Szene mit demselben Kart: scripts/games/parcours/ (Weltwahl dort).
-	{"id": "parcours", "name": "Abenteuer-Parcours", "tag": "GESCHICKLICHKEIT · EBENEN · ZU FUSS", "description": "Brücken, Aufzüge und Plattformen – und manchmal steigt Lumo aus."}
+	{"id": "parcours", "name": "Abenteuer-Parcours", "tag": "RENNEN · GEHEIMWEGE · ZU FUSS", "description": "Fahr mit Nova und Milo um die Wette. Wähle deinen Weg und öffne die Brücke zu Fuß."}
 ]
 const DRIVERS: Array[Dictionary] = [
 	{"id": "fox", "name": "Lumo", "tag": "DEIN MUTIGER FUCHS", "color": Color("76d9ff"), "unlock": 0},
