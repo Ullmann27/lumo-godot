@@ -87,8 +87,6 @@ static func can_use_racing_model(id: String) -> bool:
 static func racing_model_path(id: String, level: int = 0) -> String:
 	var filename := "driver.glb" if level <= 0 else "driver_lod%d.glb" % clampi(level, 1, 2)
 	var expected := "res://assets/kart/production/drivers/%s/%s" % [id, filename]
-	if id in ["otter", "badger", "cat"]:
-		return expected
 	for entry in all():
 		if str(entry.id) != id or not bool(entry.get("runtimeReady", false)):
 			continue

@@ -112,13 +112,64 @@
       "id": "frog",
       "name": "Frosch",
       "color": "#64C987",
-      "games": ["kart"],
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
       "godotModel": "res://assets/kart/production/drivers/frog/driver.glb",
       "runtimeReady": true,
       "godotLods": [
         "res://assets/kart/production/drivers/frog/driver.glb",
         "res://assets/kart/production/drivers/frog/driver_lod1.glb",
         "res://assets/kart/production/drivers/frog/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "otter",
+      "name": "Milo",
+      "color": "#75E6CE",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/otter/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/otter/driver.glb",
+        "res://assets/kart/production/drivers/otter/driver_lod1.glb",
+        "res://assets/kart/production/drivers/otter/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "badger",
+      "name": "Dachs Bruno",
+      "color": "#8397B0",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/badger/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/badger/driver.glb",
+        "res://assets/kart/production/drivers/badger/driver_lod1.glb",
+        "res://assets/kart/production/drivers/badger/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "cat",
+      "name": "Mika",
+      "color": "#D4B396",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/cat/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/cat/driver.glb",
+        "res://assets/kart/production/drivers/cat/driver_lod1.glb",
+        "res://assets/kart/production/drivers/cat/driver_lod2.glb"
       ]
     }
   ]

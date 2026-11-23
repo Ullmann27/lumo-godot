@@ -2,6 +2,8 @@ extends RefCounted
 const COURSE = preload("res://scripts/games/windwerk/kart_windwerk_course.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
+const THRILL_ART = preload("res://scripts/games/kart_track_thrill_art.gd")
 const PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const DECK = preload("res://assets/shaders/kart_windwerk_deck.gdshader")
 const ART_PATH := "res://scripts/games/kart_windwerk_art.gd"
@@ -16,6 +18,9 @@ static func build(world, geometry_only: bool) -> void:
 	world.add_child(road_root)
 	world.action = COURSE.action_plan()
 	world.set_meta("item_zone_hazards", {COURSE.ID: COURSE.TRIALS})
+	# Windwerk has its own world builder, so it must opt into the same bank
+	# planner explicitly before any road span asks world.frame() for its basis.
+	THRILLS.plan(world)
 	SPECTACLE.plan(world)
 	PIECES.plan(world, world._piece_markers + SPECTACLE.markers(world))
 	var deck := ShaderMaterial.new()
@@ -39,6 +44,7 @@ static func build(world, geometry_only: bool) -> void:
 			_collider(solid, _span(world, from, to, Vector2(HALF * side, -.3), Vector2(HALF * side, .92)))
 	ACTION.build(world)
 	_rails(world)
+	THRILL_ART.build(world)
 	for row in range(2):
 		for tile in range(20):
 			var at: Vector3 = world.position_at(1.0 + .72 * row, (tile - 9.5) * .71)

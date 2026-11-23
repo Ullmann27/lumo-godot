@@ -124,7 +124,7 @@ func _real_scene() -> void:
 	_check(scene.fox.is_real(), "original rigged Lumo is loaded")
 	# This scene intentionally runs with reduceAnimations=true. Essential
 	# locomotion must still articulate arms and legs instead of sliding.
-	var gait_start := scene.player.position
+	var gait_start: Vector3 = scene.player.position
 	scene.paused = false
 	scene.joystick.target = Vector2(0, -1)
 	for index in range(18):
@@ -153,11 +153,11 @@ func _real_scene() -> void:
 	_check(scene.build_panel.visible and not scene.joystick.visible, "build HUD replaces walking controls without launching another game")
 	var build_plot: int = scene.own_village.next_free_plot()
 	_check(build_plot >= 0, "existing village has a buildable free plot")
-	var building_count := scene.own_village.model.player().buildings.size()
+	var building_count: int = scene.own_village.model.player().buildings.size()
 	var built_result: Dictionary = scene.own_village.try_build("well", build_plot)
 	_check(bool(built_result.get("ok", false)), "explicit World build uses the existing village economy")
 	_check(scene.own_village.model.player().buildings.size() == building_count + 1, "same authoritative village model gains the building")
-	var village_after_build := FileAccess.get_file_as_string(village_path)
+	var village_after_build: String = FileAccess.get_file_as_string(village_path)
 	_check(village_after_build != bytes, "explicit World build persists to the existing village save")
 	var parsed_after_build: Dictionary = JSON.parse_string(village_after_build)
 	var restored_after_build = VILLAGE.restore_existing(parsed_after_build, PROFILE, 1)
@@ -320,6 +320,10 @@ func _visibility_and_school(scene: Node3D) -> void:
 	scene.driving = false
 	scene.player.position = Vector3(110, 0.2, -20)
 	scene.player.velocity = Vector3.ZERO
+	# Earlier in this regression we deliberately orbit the person camera.
+	# Walking is camera-relative, so restore the authored forward direction
+	# before probing the school ramp instead of drifting sideways past it.
+	scene.camera_yaw = 0.0
 	scene.kart_body.position = Vector3(77, 0.2, 18)
 	scene.drive_speed = 0.0
 	scene.paused = false

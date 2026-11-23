@@ -425,7 +425,7 @@ jobs:
           set -euo pipefail
           mkdir -p exports/character-review
           for case in \
-            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2306 failures=0' \
+            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2287 failures=0' \
             'kart_face_depth_regression|face-depth|[FaceDepth] checks=23 failures=0' \
             'kart_fox_eye_proportions_regression|fox-eyes|[LumoEyeProportions] PASS:' \
             'kart_stage_visual_regression|face-studio|[LumoFaceStudio] PASS:'; do
@@ -475,7 +475,9 @@ jobs:
           output = Path('exports/character-review')
           checks = {}
           for name, tag, expected in (
-              ('character-pose', 'CharacterPose', 2306),
+              # Otter/Milo now uses the authored production rig path: 8 fewer normal-mode checks
+              # plus 11 fewer reduced-motion stand-in checks, with the same semantic coverage.
+              ('character-pose', 'CharacterPose', 2287),
               ('face-depth', 'FaceDepth', 23),
               ('start-hero', 'StartHero', 225),
           ):

@@ -125,12 +125,26 @@ func _ready() -> void:
 	_ensure_rival_visual()
 
 
+func _release_lumo_animation() -> void:
+	if not is_instance_valid(lumo_animation):
+		lumo_animation = null
+		production_lumo_seat = null
+		return
+	production_lumo_seat = null
+	lumo_animation.release_for_rebuild()
+	if lumo_animation.get_parent() == self:
+		remove_child(lumo_animation)
+	# The owner has no render tree now, so free it synchronously. Production
+	# callers and the immutable-source regression can immediately observe that
+	# the previous rig owner is gone, while Mesh/material RIDs retire deferred.
+	lumo_animation.free()
+	lumo_animation = null
+
+
 func set_animated_lumo_enabled(enabled: bool) -> void:
 	animated_lumo_enabled = enabled
 	if not enabled and is_instance_valid(lumo_animation):
-		production_lumo_seat = null
-		lumo_animation.free()
-		lumo_animation = null
+		_release_lumo_animation()
 		if is_instance_valid(driver):
 			driver.show()
 		_refresh_far_proxy()
@@ -428,9 +442,15 @@ func _apply_cinema_coachwork() -> void:
 
 
 func _rebuild() -> void:
+	# The animation owner must disappear synchronously when a variant changes,
+	# but its rendered actor must not be destroyed synchronously inside Godot's
+	# dummy/headless renderer. Retire those two layers separately.
+	_release_lumo_animation()
+	# All remaining hot-swapped vehicle/driver render nodes follow the project's
+	# established detach + queue_free lifecycle.
 	for child in get_children():
-		child.free()
-	lumo_animation = null
+		remove_child(child)
+		child.queue_free()
 	production_vehicle = null
 	production_driver = null
 	production_lumo_seat = null
