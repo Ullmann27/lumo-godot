@@ -1405,6 +1405,8 @@ func _refresh() -> void:
 				kart_card.missing_stars = maxi(0, int(item.unlock) - stars)
 				kart_card.stats = FLEET.base_stats(str(item.id))
 				kart_card.bonus = _bonus_for(str(item.id))
+				if workshop != null:
+					kart_card.performance_factors = workshop.multipliers(str(item.id))
 				kart_card.tuning_level = (
 					workshop.total_level(str(item.id)) if workshop != null else 0
 				)

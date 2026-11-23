@@ -55,7 +55,8 @@ func setup(owner_island: Node, url: String, child_key: String = "standalone") ->
 	entry = Button.new()
 	entry.name = "KartOnlineEntry"
 	entry.text = "Online-Rennen"
-	entry.custom_minimum_size = Vector2(280, 64)
+	entry.custom_minimum_size = Vector2(48, 64)
+	entry.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	entry.add_theme_font_size_override("font_size", 24)
 	MODAL_STYLE.dress_button(entry, 1.0)
 	entry.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -65,6 +66,8 @@ func setup(owner_island: Node, url: String, child_key: String = "standalone") ->
 	entry.offset_bottom = 82.0
 	entry.pressed.connect(open_lobby)
 	island.safe_ui.add_child(entry)
+	island._apply_ui_scale(entry, float(island._modal_dp_scale()))
+	get_viewport().size_changed.connect(_scale_lobby, CONNECT_DEFERRED)
 	connect_if_registered.call_deferred()
 
 
@@ -241,6 +244,20 @@ func _refresh_lobby() -> void:
 		_text("Erst nehmt ihr die Freundschaft an. Danach wählt ihr ein Rennen. Es gibt keinen Chat.", 20)
 		_button("Verbindung trennen", func(): session.disconnect_online())
 	_button("Zurück zu Lumo Kart", close_lobby)
+	_scale_lobby()
+
+
+func _scale_lobby() -> void:
+	if not is_instance_valid(overlay):
+		return
+	# The island owns the dp conversion and base-size metadata. Newly rebuilt
+	# controls need its existing scaling immediately, before the next resize.
+	var scale: float = float(island._modal_dp_scale())
+	island._apply_ui_scale(overlay, scale)
+	if is_instance_valid(alias_edit):
+		alias_edit.add_theme_font_size_override("font_size", roundi(26.0 * scale))
+	if is_instance_valid(target_edit):
+		target_edit.add_theme_font_size_override("font_size", roundi(25.0 * scale))
 
 
 func _connect() -> void:
@@ -265,8 +282,9 @@ func _show_friend_requests() -> void:
 		var request_id: String = str(request.request_id)
 		var username: String = str(request.username)
 		_text(username + " möchte dein Freund sein.", 22)
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 12)
+		var row := HFlowContainer.new()
+		row.add_theme_constant_override("h_separation", 12)
+		row.add_theme_constant_override("v_separation", 8)
 		column.add_child(row)
 		var accept_button := _make_button("Annehmen", func(): session.accept_friend(request_id))
 		accept_button.name = "KartOnlineAcceptFriend"
@@ -283,8 +301,9 @@ func _show_friend_list(connected: bool) -> void:
 		var friend_id: String = str(friend_info.uid)
 		var friend_name: String = str(friend_info.username)
 		var available: bool = connected and bool(friend_info.get("online", false))
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 12)
+		var row := HFlowContainer.new()
+		row.add_theme_constant_override("h_separation", 12)
+		row.add_theme_constant_override("v_separation", 8)
 		column.add_child(row)
 		var invite_button := _make_button(friend_name + (" · ONLINE · Rennen einladen" if available else " · OFFLINE"),
 			func(): session.invite(friend_id, _selected_track(), _info()))
@@ -537,6 +556,7 @@ func _push_online_hud() -> void:
 		data["field"] = 2
 		data["place"] = place
 		data["lap"] = lap
+		data["laps"] = int(island.TOTAL_LAPS)
 		bar.show_values(data, 0.0)
 	island.hud.text = "ONLINE · PLATZ %d / 2 · RUNDE %d / %d · %s" % [place, lap, island.TOTAL_LAPS, _friend_alias()]
 	if not is_instance_valid(online_caption):
@@ -592,6 +612,8 @@ func _make_button(caption: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = caption
 	button.custom_minimum_size = Vector2(180, 72)
+	button.clip_text = true
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_size_override("font_size", 23)
 	MODAL_STYLE.dress_button(button, 1.0)
 	button.pressed.connect(callback)

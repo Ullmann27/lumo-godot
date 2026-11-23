@@ -326,7 +326,7 @@ static func _entry_guidance(world, layout: Dictionary) -> void:
 	world._prop("box", beam_center, Vector3(5.4, 1.5, 0.35), NAVY, basis)
 	world._prop("box", beam_center + basis.y * 0.82, Vector3(5.6, 0.12, 0.42), ORANGE, basis, true)
 	world._prop("box", beam_center - basis.y * 0.82, Vector3(5.6, 0.12, 0.42), CYAN, basis, true)
-	world._sign(beam_center + basis.z * 0.2, basis, "LOOP-ABZWEIGUNG\nSchwung holen!", 0.016)
+	world._sign(beam_center + basis.z * 0.36, basis, "LOOP-ABZWEIGUNG\nSchwung holen!", 0.0125)
 	# Arrows on the loop lane, starting before the boost pad.
 	var pad_start: float = start - PAD_GAP_M - PAD_LENGTH
 	for i in range(7):

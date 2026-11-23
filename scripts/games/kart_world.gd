@@ -1023,11 +1023,10 @@ func _terrain() -> void:
 		var h: float=_rng.randf_range(28,56) if track_id!="bergwelt" else _rng.randf_range(62,105)
 		if track_id!="holo_city":
 			var mountain_size := Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65))
-			if track_id == "sonnenhafen" and length > 1500.0:
-				# These fixed 245x220m background mountains belonged to the old
-				# 17-point island. The 1.85km course now runs THROUGH that ring.
-				# Preserve all mountains, but move each complete footprint
-				# beyond the new coastal race corridor (not merely its centre).
+			if track_id in ["sonnenhafen", "zauberwald"] and length > 1500.0:
+				# Both extended routes now cross the old 245x220m mountain ring.
+				# Preserve every mountain beyond the complete race corridor;
+				# a distant decorative mesh must not fill the driving camera.
 				var radius: float = maxf(mountain_size.x,mountain_size.z) * 1.32
 				var clearance: float = radius + RAIL_LATERAL + 5.0
 				var ring_x: float = world_extent.x + radius + 40.0
@@ -1040,12 +1039,12 @@ func _terrain() -> void:
 					ring_z += 28.0
 					at = Vector3(cos(angle) * ring_x,-5.0,sin(angle) * ring_z)
 				assert(not _near_road(at,clearance),
-					"Large Sonnenhafen backdrop must never overlap the actual 1.85km racing lane")
+					"Large backdrop must never overlap the actual extended racing lane")
 				relocated_mountains += 1
 			_prop("mountain",at,mountain_size,Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
 			if track_id=="bergwelt": _prop("mountain",at+Vector3.UP*h*0.58,Vector3(16,h*0.43,15),Color("eaf4f4"))
-	if track_id == "sonnenhafen":
-		set_meta("sonnenhafen_mountains_relocated",relocated_mountains)
+	if track_id in ["sonnenhafen", "zauberwald"]:
+		set_meta(track_id + "_mountains_relocated", relocated_mountains)
 	if track_id!="holo_city":
 		for i in range(13):
 			var angle: float=float(i)*TAU/13.0

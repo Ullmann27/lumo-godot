@@ -63,8 +63,21 @@ func _run() -> void:
 	_check(online._configured, "actual relay endpoint accepted only with loopback QA opt-in")
 	_check(str(online.session.username).is_empty(), "learning profile name was not reused")
 	game._show_reference_landing()
+	var original_window: Vector2i = root.size
+	root.size = Vector2i(320, 180)
+	await _settle(4)
 	online.open_lobby()
-	await _settle()
+	await _settle(4)
+	_check(float(game._modal_dp_scale()) >= 2.0, "compact viewport exercises the existing mobile dp scale")
+	_check_touch_targets("compact registration")
+	var dp_scale: float = float(game._modal_dp_scale())
+	_check(online.entry.get_global_rect().size.y / dp_scale >= 48.0, "kart menu entry remains at least 48 dp tall")
+	_check(online.column.get_global_rect().end.x <= online.panel.get_global_rect().end.x + 1.0, "compact registration fits the scrolling panel width")
+	online.close_lobby()
+	root.size = original_window
+	await _settle(4)
+	online.open_lobby()
+	await _settle(4)
 	_check(online.alias_edit != null and online.alias_edit.editable, "first-time own username input")
 	online.alias_edit.text = "QaAlina"
 	online._connect()
@@ -118,6 +131,7 @@ func _run() -> void:
 		return
 	await _settle(4)
 	_check(online.session.friends[0].username == "QaZoe" and online.session.friends[0].online, "friend is named and online")
+	_check_touch_targets("friend menu")
 	await _shot("01_online_freunde")
 	var invite_button: Button = online.column.find_child("KartOnlineInviteFriend", true, false)
 	_check(invite_button != null and not invite_button.disabled, "online friend has separate race invitation")
@@ -133,6 +147,7 @@ func _run() -> void:
 		return
 	await _settle(4)
 	await _shot("02_online_rennraum")
+	_check_touch_targets("race room")
 	var ready_button: Button = online.column.find_child("KartOnlineReady", true, false)
 	_check(ready_button != null, "ready button exists")
 	ready_button.pressed.emit()
@@ -194,6 +209,7 @@ func _run() -> void:
 	online._push_online_hud()
 	var bar: Node = game.hud.get_parent().get_node("KartRaceBar")
 	_check(int(bar.values.field) == 2 and int(bar.values.place) == 2, "real HUD displays place two of two")
+	_check(int(bar.values.lap) == 1 and int(bar.values.laps) == 2, "real HUD shows lap one of the agreed two laps")
 	_check(online.online_caption.text.contains("QaZoe") and online.online_caption.text.contains("vor dir"), "opponent name and gap visible")
 	await _settle(3)
 	await _shot("03_online_zwei_karts")
@@ -209,6 +225,21 @@ func _run() -> void:
 	_check(await _until(func(): return online.session.state == "online"), "returning registered player connects without a connect button")
 	_check(await _until(func(): return online.session.friends.size() == 1), "accepted friendship reloads after reconnection")
 	await _complete()
+
+
+func _check_touch_targets(context: String) -> void:
+	var dp_scale: float = float(game._modal_dp_scale())
+	var queue: Array[Node] = [online.column]
+	var count: int = 0
+	var targets_fit: bool = true
+	while not queue.is_empty():
+		var node: Node = queue.pop_back()
+		queue.append_array(node.get_children())
+		if node is Button or node is LineEdit:
+			var target: Vector2 = (node as Control).get_global_rect().size / dp_scale
+			targets_fit = targets_fit and target.x >= 47.9 and target.y >= 47.9
+			count += 1
+	_check(count > 0 and targets_fit, context + " uses actual touch rectangles of at least 48 dp")
 
 
 func _shot(name: String) -> void:

@@ -234,7 +234,10 @@ static func _action_gate(world, entry: Dictionary, theme: Array) -> void:
 	# Arch starts before the lip; never low over the airborne part of the sequence.
 	world._prop("box", world.position_at(at) + basis.y * 7.2, Vector3(half * 2.0 + 0.6, 0.55, 0.7), theme[1], basis)
 	var label: String = "PANORAMA-SPRUNG" if entry.kind == "crest" else ("SCHMALE LINIE" if entry.kind == "narrow" else str(theme[4]))
-	world._sign(world.position_at(at) + basis.y * 7.2 + basis.z * 0.4, basis, label, 0.014)
+	# The warning must remain readable against bright snow, sand and cloud themes.
+	var sign_center: Vector3 = world.position_at(at) + basis.y * 7.2
+	world._prop("box", sign_center + basis.z * 0.37, Vector3(9.0, 0.9, 0.08), Color("152c43"), basis)
+	world._sign(sign_center + basis.z * 0.43, basis, label, 0.014)
 	var count: int = 3 if lead < 12.0 else 6
 	for n in range(count):
 		var d: float = lerpf(float(entry.start) - lead + 1.0, float(entry.start) - 1.0, float(n) / float(count - 1))

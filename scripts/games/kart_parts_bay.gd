@@ -84,6 +84,7 @@ func _action(text: String, callback: Callable, fill: Color, ink: Color) -> Butto
 	var button := Button.new()
 	button.text = text
 	button.focus_mode = Control.FOCUS_ALL
+	button.custom_minimum_size = Vector2(48.0, 48.0)
 	button.add_theme_font_override("font", UI.HEADING)
 	button.add_theme_color_override("font_color", ink)
 	button.add_theme_color_override("font_hover_color", ink)
@@ -667,8 +668,13 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> v
 	category.custom_minimum_size = Vector2((108 if compact else 150) * ui_scale, 48 * ui_scale)
 	category.add_theme_font_size_override("font_size", roundi(16 * ui_scale))
 	var popup := category.get_popup()
-	popup.add_theme_constant_override("v_separation", roundi(16 * ui_scale))
-	popup.add_theme_font_size_override("font_size", roundi(17 * ui_scale))
+	var popup_font_size := roundi(17 * ui_scale)
+	popup.add_theme_font_size_override("font_size", popup_font_size)
+	var font_height := popup.get_theme_font("font").get_height(popup_font_size)
+	# Popup rows include the actual font height plus vertical separation.
+	# Keep every category reachable at >=48 dp, including high-density screens.
+	var item_padding := maxi(roundi(16 * ui_scale), ceili(48.0 * ui_scale - font_height))
+	popup.add_theme_constant_override("v_separation", item_padding + item_padding % 2)
 	title_label.add_theme_font_size_override("font_size", roundi((18 if compact else 21) * ui_scale))
 	title_label.clip_text = true
 	back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN

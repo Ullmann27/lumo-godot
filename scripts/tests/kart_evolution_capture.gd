@@ -4,6 +4,7 @@ extends SceneTree
 const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const PARTS = preload("res://scripts/games/kart_part_catalog.gd")
 const DYNO = preload("res://scripts/games/kart_dyno.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const CORNER: Dictionary = {
     "engine": "axial", "tires": "performance", "wing": "venturi",
@@ -33,6 +34,45 @@ func _frames(count: int = 8) -> void:
         await process_frame
 
 
+
+func _inspect_ui() -> Dictionary:
+    var garage = game.garage
+    var bay = garage.parts_bay
+    var dp: float = garage._preview_dp_scale()
+    var result := {"dp_scale": dp, "controls": []}
+    if bay.is_open():
+        var controls: Array[Control] = [bay.mount_button, bay.back_button, bay.category]
+        for tile in bay.tiles.values():
+            controls.append(tile)
+        for control in controls:
+            var dimensions := control.get_global_rect().size / dp
+            result.controls.append({"name": str(control.name), "width_dp": dimensions.x, "height_dp": dimensions.y})
+            if dimensions.x < 47.99 or dimensions.y < 47.99:
+                failures.append("Touch target smaller than 48 dp: " + str(control.name))
+        var popup: PopupMenu = bay.category.get_popup()
+        var row_height: float = (popup.get_theme_font("font").get_height(popup.get_theme_font_size("font_size"))
+            + popup.get_theme_constant("v_separation")) / dp
+        result["category_row_height_dp"] = row_height
+        if row_height < 47.99:
+            failures.append("Category popup row smaller than 48 dp")
+    else:
+        var card = garage.find_child("KartCard_comet", true, false)
+        if card == null:
+            failures.append("Selected vehicle card missing")
+        else:
+            var factors: Dictionary = game.workshop.multipliers("comet")
+            if card.performance_factors != factors:
+                failures.append("Vehicle card does not use the mounted workshop configuration")
+            var expected_speed := FLEET.NEUTRAL * float(factors.speed)
+            var expected_turn := FLEET.NEUTRAL * float(factors.turn)
+            if not is_equal_approx(float(card.bars.base.speed), expected_speed) or not is_equal_approx(
+                float(card.bars.base.handling), expected_turn):
+                failures.append("Vehicle card bars differ from actual driving factors")
+            result["vehicle_card"] = {"factors": card.performance_factors,
+                "bars": card.bars.base, "tooltip": card.tooltip_text}
+    return result
+
+
 func _shot(label: String, parts: Dictionary) -> void:
     await _frames(12)
     await RenderingServer.frame_post_draw
@@ -42,7 +82,7 @@ func _shot(label: String, parts: Dictionary) -> void:
         failures.append("Unable to capture " + label)
         return
     var record := {"label": label, "png": path, "sha256": FileAccess.get_sha256(path),
-        "size": [image.get_width(), image.get_height()], "parts": parts,
+        "size": [image.get_width(), image.get_height()], "parts": parts, "ui": _inspect_ui(),
         "dyno": DYNO.measure(game.workshop.multipliers_with("comet", parts))}
     image.resize(960, 540, Image.INTERPOLATE_LANCZOS)
     var jpg := output.path_join(label + ".jpg")

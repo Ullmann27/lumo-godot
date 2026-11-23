@@ -222,6 +222,51 @@ func _precision_approach(world) -> void:
 		" landing_reserve_m=", snappedf(float(zone.landing_reserve), 0.1))
 
 
+
+## Inspect actual instantiated meshes, including their complete radial extent.
+## This catches the old fixed mountain ring and planets that hide a driving view.
+func _backdrop_clearance(world) -> void:
+	if str(world.track_id) == "zauberwald":
+		var checked: int = 0
+		for child in world.get_children():
+			if not child is MultiMeshInstance3D or not str(child.name).begins_with("Decor_mountain_background"):
+				continue
+			var mesh: MultiMesh = child.multimesh
+			var vertices: PackedVector3Array = mesh.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+			for i in range(mesh.instance_count):
+				var transform: Transform3D = child.transform * mesh.get_instance_transform(i)
+				var radius: float = 0.0
+				for vertex in vertices:
+					var p: Vector3 = transform.basis * vertex
+					radius = maxf(radius, Vector2(p.x, p.z).length())
+				_check(not world._near_road(transform.origin, radius + float(world.WIDTH) * 0.5 + 3.0),
+					"Zauberwald's actual mountain footprint clears the entire driving corridor")
+				checked += 1
+		_check(checked == 12, "Zauberwald retains all 12 background mountains")
+		print("[KartSpectacle] zauberwald complete mountain footprints=", checked)
+	if str(world.track_id) == "galaxy_ringway":
+		var checked: int = 0
+		for child in world.get_children():
+			if not child is MultiMeshInstance3D or not str(child.name).begins_with("Decor_torus"):
+				continue
+			var mesh: MultiMesh = child.multimesh
+			for i in range(mesh.instance_count):
+				var transform: Transform3D = child.transform * mesh.get_instance_transform(i)
+				var radius: float = maxf(transform.basis.x.length(), transform.basis.z.length()) * 0.5
+				var tint: Color = mesh.get_instance_color(i)
+				if not tint.is_equal_approx(Color("edbd91")) or radius < 11.99:
+					continue
+				_check(not world._near_road(transform.origin, radius + float(world.WIDTH) * 0.5 + 3.9),
+					"Galaxy's actual planet rings clear the entire driving corridor")
+				for n in range(65):
+					var p: Vector3 = LOOP.point(world, world.loop_layout, float(n) / 64.0)
+					_check(Vector2(p.x - transform.origin.x, p.z - transform.origin.z).length() >= radius + 3.5,
+						"Galaxy's actual planet rings clear the exterior loop")
+				checked += 1
+		_check(checked >= 5, "Galaxy retains its full roadside planet sequence")
+		print("[KartSpectacle] galaxy complete planet ring footprints=", checked)
+
+
 func _run() -> void:
 	_check(TRACKS.IDS.size() == 15, "all 15 production circuits are covered")
 	for track in TRACKS.IDS:
@@ -241,6 +286,7 @@ func _run() -> void:
 			_sequence(world, entry)
 		for site in sites:
 			_check(not world._near_road(site.position, world.road_width_at(float(site.distance)) * 0.5 + float(site.radius) + 3.9), str(track) + " scenic footprint clears the whole road")
+		_backdrop_clearance(world)
 		var loop_report: Dictionary = _loop(world)
 		if str(track) == "sonnenhafen":
 			_loop_parts(world)

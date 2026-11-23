@@ -5,6 +5,7 @@ extends Button
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const THUMBNAIL: String = "res://assets/kart/menu/fleet/%s.webp"
 var item: Dictionary = {}
 var locked: bool = false
@@ -12,6 +13,8 @@ var missing_stars: int = 0
 var tuning_level: int = 0
 var stats: Dictionary = {}
 var bonus: Dictionary = {}
+## Mounted parts, upgrades and fine tuning: the same factors consumed by the race.
+var performance_factors: Dictionary = {}
 var thumb: TextureRect
 var title_label: Label
 var role_label: Label
@@ -69,12 +72,23 @@ func _ready() -> void:
 	bars = BARS.new()
 	bars.show_labels = true
 	bars.compact_labels = true
-	# Höchstens zwei sofort verständliche Vergleichswerte; alle fünf zeigt „Werte“.
+	# Two immediate comparisons; the parts workshop shows all twelve physical readings.
 	bars.only_keys = ["speed", "handling"] as Array[String]
 	bars.show_numbers = false
 	bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(bars)
-	bars.set_values(stats, bonus, true)
+	if performance_factors.is_empty():
+		bars.set_values(stats, bonus, true)
+	else:
+		# Bars have no numbered stat points: half-length is the neutral Comet.
+		# Multiplying by six preserves that reference and reflects real proportional changes.
+		bars.set_values({
+			"speed": FLEET.NEUTRAL * float(performance_factors.get("speed", 1.0)),
+			"handling": FLEET.NEUTRAL * float(performance_factors.get("turn", 1.0)),
+		}, {}, true)
+		var top := POWERTRAIN.top_speed(performance_factors, POWERTRAIN.race_pace())
+		var steering := POWERTRAIN.turn_rate(performance_factors, top, false, false)
+		tooltip_text += "\nMontierter Aufbau: %.0f km/h · Lenken %.2f rad/s\nTeile, Ausbaustufen und Feineinstellung sind eingerechnet." % [top * 3.6, steering]
 	lock_label = Label.new()
 	lock_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lock_label.mouse_filter = Control.MOUSE_FILTER_IGNORE

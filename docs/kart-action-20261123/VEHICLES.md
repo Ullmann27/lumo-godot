@@ -24,22 +24,26 @@ Die Faktoren stammen unmittelbar aus `kart_part_catalog.gd::_evolution_parts()`.
 
 Die Werkstatt berechnet deshalb **alle zwölf tatsächlichen Prüfstandswerte** für die vollständige Auswahl: Endtempo, 0–100 km/h, Bremsweg aus 72 km/h, Kurvenradius, seitliches Rutschen, Zeit bis zum ersten Drift-Turbo, Turbo-Dauer, Turbo-Tempo, Geländetempo, Fluglenkung, Landungsberuhigung und Tempo nach einem Rempler. Sie zeigt Montiert → Vorschau einschließlich relativer Änderung und nennt erreichte Kombinationsgrenzen. Dieselben Faktoren und Fahrformeln verwendet das Rennen.
 
-### Nachrechenbare Beispiele aus den gemeinsamen Formeln
+### Im echten Godot-Prüfstand gemessene Einzelteilwerte
 
-Referenz ist ausschließlich **Comet, ohne Ausbaustufen, andere Leistungsteile oder Feinregler**, auf ebener Straße ohne Items, Aufholhilfe oder Streckeneffekte. Dies sind exakte Formelwerte vor der Rundung in der Oberfläche, keine Messwerte eines echten Autos:
+Referenz ist ausschließlich **Comet, ohne Ausbaustufen, andere Leistungsteile oder Feinregler**, auf ebener Straße ohne Items, Aufholhilfe oder Streckeneffekte. Jeder Vergleich beginnt beim vollständigen Serienkart. Die folgenden Zahlen stammen aus den nativen `[KartEvolutionPart]`-Datensätzen von [Lauf 45133703768](https://github.com/Ullmann27/lumo-godot/actions/runs/45133703768), Quelle `447ff8956a2942bafae775a9be62edb339f64cca`, und sind wie die Werkstatt gerundet:
 
-- Serie: Beschleunigung **40 m/s²**, Bremsverzögerung **80 m/s²**, Endtempo **172,692 km/h**. Formel: `20.5 × 2.0 × 1.17 × speed × 3.6`.
-- Axial-Antrieb: Beschleunigung **48,8 m/s²**, Endtempo **165,78432 km/h**.
-- Performance-Reifen: Bremsverzögerung **84,8 m/s²**; Geländetempo **74,25756 km/h** statt **93,25368 km/h**, weil der Geländefaktor von **0,54 auf 0,43** fällt.
-- Venturi-Flügel: Haftungsrate **21,6 s⁻¹** statt **18 s⁻¹**; Endtempo **164,0574 km/h**.
-- Superkondensator: erster Drift-Turbo dauert **1,42 s** statt **1,00 s**; das in diesem Prüfstand erreichbare Turbo-Endtempo beträgt **231,788583936 km/h** statt **245,22264 km/h**.
-- Adaptive Dämpfer: Beruhigungszeit bei Aufprall mit 9 m/s **0,1125 s** statt **0,225 s**; Beschleunigung **37,6 m/s²**.
-- Vector-Lenkung: Lenkrate ab 16 m/s **3,3512 rad/s** statt **2,84 rad/s**; Drift-Haftungsrate **6,82 s⁻¹** statt **6,2 s⁻¹**; Endtempo **168,3747 km/h**.
-- Keramikbremse: Bremsverzögerung **104 m/s²**; Beschleunigung **38,4 m/s²**.
-- Doppelkupplung: Beschleunigung **46,4 m/s²**; Drift-Laderate **2,16 s⁻¹** statt **2 s⁻¹**; Endtempo **165,78432 km/h**.
-- Carbon-Chassis: Beschleunigung **44,8 m/s²**; Fluglenkrate bei vollem Lenken und mindestens 16 m/s **1,1928 rad/s** statt **0,994 rad/s**; Landungsberuhigung **0,252 s**; Stabilitätsfaktor **0,35** statt **0,45**.
+| Einzeln montiertes Teil | Gemessener Vorteil: Serie → Teil | Gemessene Abwägung: Serie → Teil |
+|---|---|---|
+| Axial-Antrieb | 0–100 km/h: **0,70 → 0,58 s** | Endtempo **173 → 166 km/h**; Turbo-Tempo **245 → 232 km/h** |
+| Performance-Reifen | Rutschen **5,01 → 4,18 m**; Bremsweg **3,0 → 2,7 m** | Geländetempo **93 → 74 km/h** |
+| Venturi-Flügel | Rutschen **5,01 → 3,68 m** | Endtempo **173 → 164 km/h**; Fluglenkung **46 → 40°** |
+| Superkondensator | Turbo-Dauer **1,00 → 1,42 s**; Drift-Turbo nach **0,42 → 0,38 s** | Turbo-Tempo **245 → 232 km/h**; Endtempo **173 → 169 km/h** |
+| Adaptive Dämpfer | Landungsberuhigung **0,23 → 0,11 s** | 0–100 km/h: **0,70 → 0,75 s** |
+| Vector-Lenkung | Kurvenradius **16,7 → 13,8 m** | Rutschen beim normalen Volleinlenken **5,01 → 5,73 m**; Endtempo **173 → 168 km/h** |
+| Keramikbremse | Bremsweg **3,0 → 2,4 m** | 0–100 km/h: **0,70 → 0,73 s** |
+| Doppelkupplung | 0–100 km/h: **0,70 → 0,60 s**; Drift-Turbo nach **0,42 → 0,38 s** | Endtempo **173 → 166 km/h** |
+| Carbon-Chassis | 0–100 km/h: **0,70 → 0,63 s**; Fluglenkung **46 → 55°** | Landungsberuhigung **0,23 → 0,25 s**; Resttempo nach Rempler **79 → 72 %** |
 
-Die vollständigen, im 60-Hz-Prüfstand erzeugten Einzelteil-Datensätze werden von `kart_evolution_regression.gd` als `[KartEvolutionPart]` ausgegeben und in `vehicle-evolution-regression.json::single_part_comet` gespeichert. Sie unterscheiden sich bewusst von bloßen Faktorprozenten.
+Die ungerundeten Werte bleiben in `vehicle-evolution-regression.json::single_part_comet` erhalten. Beispiel: Serien-Comet erreicht **172,692 km/h**, mit Axial-Antrieb **165,78432 km/h**. Diese Arcade-Spielwerte sind keine Messungen eines realen Autos.
+
+Die zwei Balken auf den Fahrzeugkarten werden zusätzlich an `workshop.multipliers(id)` angeschlossen: Endtempo und tatsächliche Lenkrate ändern sich nach dem Montieren mit. Eine halbe Balkenlänge entspricht dem neutralen Serien-Comet; die Karten zeigen keine erfundenen neuen Stat-Punkte. Der Tooltip nennt das montierte Endtempo und die Lenkrate ausdrücklich.
+
 
 ## Kombinationen und Grenzen
 
@@ -70,9 +74,15 @@ Additive Änderungen sind für Gelände auf **−0,15 bis +0,18** und Stabilitä
 - Vier Konfigurationen fahren tatsächlich durch `kart_island._drive_player`; Beschleunigung, Bremsen, Lenken und Drift-Ladung werden gegen die gemeinsamen Formeln geprüft.
 - Alle 14 Produktionsfahrzeuge werden mit den neuen Teilen aufgebaut; Montage, Geometrie, Farbzuordnung, Distanzstufen und Speicherung werden geprüft.
 
-Belegter erster Durchlauf: `KartEvolution PASS checks=112145 pairwise=1877 sampled=5760 actual_race_setups=4`; zusätzlich `KartDynoParts PASS 921 checks`, jeweils im nativen Job des [Laufs 45131743157](https://github.com/Ullmann27/lumo-godot/actions/runs/45131743157) auf `d169e1555d8f5ee39e0b06153927f518df4cdb0e`. Der Gesamtlauf wurde später abgebrochen; diese erfolgreichen Teilproben sind kein grüner Gesamtstatus. Die spätere mechanische Geometriekorrektur (`d84631b45eeb7a1f14b5237efb20cf37a5803dfd`) ist von diesem ersten Befund getrennt zu bewerten.
+Belegter aktueller Fahrzeugstand: Im nativen Job von [Lauf 45133703768](https://github.com/Ullmann27/lumo-godot/actions/runs/45133703768) auf `447ff8956a2942bafae775a9be62edb339f64cca` bestehen `KartEvolution PASS checks=112145 pairwise=1877 sampled=5760 actual_race_setups=4` und `KartDynoParts PASS 921 checks`. Dieser Stand enthält die mechanisch korrigierte Geometrie `d84631b45eeb7a1f14b5237efb20cf37a5803dfd`. Zwei gesonderte Streckenregressionen scheitern in diesem Lauf; der Gesamtstatus ist daher rot.
 
-Ein tatsächlicher Bildvergleich ist über `kart_evolution_capture.gd` vorgesehen: Serienkart, vollständige Kurventechnik-Auswahl, Sprung-/Rallye-Auswahl sowie echte Werkstattwerte. **Eine 60-FPS-Messung auf physischer Android-Hardware ist damit nicht nachgewiesen.**
+**Echter Bildnachweis:** Alle sechs Aufnahmen aus `kart_evolution_capture.gd` wurden in Godot gerendert und anschließend visuell geprüft. Serienkart, Kurventechnik- und Sprung-/Rallye-Aufbau unterscheiden sich sichtbar. Axialmotor, Venturi-Flügel, Räder, Carbon-Seitenteile und Diffusor sitzen am Kart. Die zwölf Vergleichswerte überlappen horizontal nicht; Zusatzinformationen sind im Schubfach scrollbar, Montieren und Zurück bleiben erreichbar. Artefaktpfade: `vehicles/vehicle-01-serie.png` bis `vehicles/vehicle-06-jump-rally.png`.
+
+Als begrenzte Folgereparatur verwenden die Fahrzeugkarten ihre tatsächlichen Werkstattfaktoren; Kategorie-Popupzeilen werden anhand der echten Font-Höhe auf mindestens **48 dp** angehoben. Aktionsbuttons erhalten eine explizite **48 × 48 dp**-Untergrenze. Montieren/Zurück sind im Layout 52 dp hoch, die Kategorienwahl 48 dp, Teilekacheln mindestens 108 × 84 dp. Der Capture prüft die gemessenen Control-Flächen und die echten Kartendaten.
+
+Drei zusätzliche Fahrgrenzproben prüfen den maximal ausgebauten Stella-Boostsatz, den gleichen schnellen Aufbau ohne Bremsen-Ausbaustufen sowie die tatsächlich schwächste erreichbare Bremse. Das gemeinsame stärkste Tempo-/Boostziel beträgt **107,84237129825121 m/s**, die drei Bremsverzögerungen betragen **83,664 / 71,904 / 62,496 m/s²**. Karten-/Touchkorrektur und diese zusätzlichen Grenzproben sind nach dem obigen Bildnachweis hinzugekommen; ihr eigener Folgelauf ist gesondert nachzuweisen.
+
+**Eine 60-FPS-Messung auf physischer Android-Hardware ist damit nicht nachgewiesen.**
 
 ## Maßgebliche Quellen im Repository
 
