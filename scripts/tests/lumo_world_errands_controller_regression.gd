@@ -4,6 +4,7 @@ extends SceneTree
 
 const CONTROLLER = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const POST = preload("res://scripts/creative/lumo_world_errands.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var checks := 0
 var failures: Array[String] = []
 
@@ -142,5 +143,6 @@ func _run() -> void:
 	corrupt.queue_free()
 	await process_frame
 	await process_frame
+	_check(await TEARDOWN.release_audio(self, root, "[LumoWorldErrandsController]"), "autoload click playback releases before exit")
 	print("[LumoWorldErrandsController] %s %d checks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)

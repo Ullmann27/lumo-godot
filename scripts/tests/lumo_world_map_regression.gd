@@ -3,6 +3,7 @@ extends SceneTree
 ## Runs without the 3D world, its assets, autoloads or any profile saves.
 
 const MAP = preload("res://scripts/creative/lumo_world_map.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const BOUNDS := Rect2(-36, -238, 992, 476)
 var checks := 0
 var failures: Array[String] = []
@@ -96,6 +97,7 @@ func _run() -> void:
 	await _capture_if_requested(original_missions, original_portals)
 	scroll.queue_free()
 	await _frames(3)
+	_check(await TEARDOWN.release_audio(self, root, "[WorldMap]"), "UI click audio is released before the probe ends")
 	print("[WorldMap] %s %d checks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)
 
@@ -107,14 +109,14 @@ func _tap(button: Button) -> void:
 	var motion := InputEventMouseMotion.new()
 	motion.position = center
 	motion.global_position = center
-	root.push_input(motion)
+	root.push_input(motion, true)
 	for pressed in [true, false]:
 		var event := InputEventMouseButton.new()
 		event.position = center
 		event.global_position = center
 		event.button_index = MOUSE_BUTTON_LEFT
 		event.pressed = pressed
-		root.push_input(event)
+		root.push_input(event, true)
 		await process_frame
 
 
