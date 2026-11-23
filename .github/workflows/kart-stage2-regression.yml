@@ -449,7 +449,7 @@ jobs:
             --script res://scripts/tests/kart_driver_portrait.gd \
             -- res://exports/face-showroom/lumo-driver-4views.png
           python3 tools/run_godot_probe.py --log exports/character-review/start-hero.log \
-            --timeout 600 --required '[StartHero] checks=222 failures=0' -- \
+            --timeout 600 --required '[StartHero] checks=225 failures=0' -- \
             xvfb-run -a -s '-screen 0 2400x2400x24' Godot_v4.6.3-stable_linux.x86_64 \
             --path . --rendering-method gl_compatibility --audio-driver Dummy \
             --script res://scripts/tests/kart_start_hero_regression.gd
@@ -479,7 +479,7 @@ jobs:
               # plus 11 fewer reduced-motion stand-in checks, with the same semantic coverage.
               ('character-pose', 'CharacterPose', 2287),
               ('face-depth', 'FaceDepth', 23),
-              ('start-hero', 'StartHero', 222),
+              ('start-hero', 'StartHero', 225),
           ):
               results = re.findall(rf'^\[{re.escape(tag)}\] checks=(\d+) failures=(\d+)$',
                   (output / (name + '.log')).read_text(), re.MULTILINE)
