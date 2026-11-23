@@ -27,6 +27,7 @@ const SCENES: Dictionary = {
 	"settlement": "res://scenes/creative/build_settlement_world.tscn",
 	"rhythm": "res://scenes/creative/rhythm_world.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",
+	"world": "res://scenes/creative/lumo_world.tscn",
 	"kart": "res://scenes/games/kart_island.tscn",
 	"kart_parcours": "res://scenes/games/kart_parcours.tscn",
 	"jump": "res://scenes/games/jump_islands.tscn",
@@ -101,6 +102,10 @@ func _commit_loaded_scene(scene_id: String, scene: PackedScene) -> void:
 
 
 func goto(scene_id: String) -> void:
+	if should_return_to_world(scene_id):
+		launch_options.erase("worldPortalOrigin")
+		goto("world")
+		return
 	if current_scene_id != "boot" and scene_id in ["home", "games", "learn"]:
 		if HostBridge.is_embedded():
 			HostBridge.return_to_app("learn" if scene_id == "learn" else "games")
@@ -115,3 +120,11 @@ func goto(scene_id: String) -> void:
 	# call_deferred damit der Wechsel sicher zwischen Frames passiert
 	get_tree().call_deferred("change_scene_to_file", path)
 	EventBus.scene_changed.emit(from, scene_id)
+
+
+func should_return_to_world(destination: String) -> bool:
+	return (
+		str(launch_options.get("worldPortalOrigin", "")) == "world"
+		and current_scene_id in ["kart", "kart_parcours", "cards", "settlement"]
+		and destination in ["games", "home", "build"]
+	)

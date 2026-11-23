@@ -73,6 +73,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 			"build",
 			"rhythm",
 			"treasure",
+			"world",
 			"learning",
 			"cards",
 			"connect_four",
@@ -190,6 +191,12 @@ func return_to_app(destination: String, payload: Dictionary = {}) -> bool:
 	if not retry_pending_rewards():
 		return_failed.emit(SAVE_FAILURE)
 		return false
+	# Games entered through the world return to their saved doorway inside the
+	# same engine. Their own save/reward completion still runs before this call.
+	var router := get_node_or_null("/root/SceneRouter")
+	if router != null and router.should_return_to_world(destination):
+		router.goto(destination)
+		return true
 	var target: String = "learn" if destination == "learn" else "games"
 	var result: Dictionary = payload.duplicate(true)
 	result["sessionId"] = str(_options.get("sessionId", ""))
