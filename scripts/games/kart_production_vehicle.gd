@@ -264,7 +264,9 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 		return false
 	var source_mesh := source_root as MeshInstance3D
 	if source_mesh == null:
-		source_mesh = source_root.find_child("*", true, false) as MeshInstance3D
+		var imported_meshes := source_root.find_children("*", "MeshInstance3D", true, false)
+		if not imported_meshes.is_empty():
+			source_mesh = imported_meshes[0] as MeshInstance3D
 	if source_mesh == null or source_mesh.mesh == null:
 		source_root.free()
 		meshy_shell_path = ""
