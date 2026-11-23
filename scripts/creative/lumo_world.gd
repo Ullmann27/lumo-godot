@@ -1046,7 +1046,12 @@ func _update_mission() -> void:
 
 
 func _map_dialog() -> void:
-	_open_dialog("Deine Lumo World", "Von der Schatzinsel führt die Brücke ins Sonnendorf, weiter nach Sternenstadt und zu deinem eigenen, bereits aufgebauten Dorf. Kart, Kartensalon und Dorfstrategie öffnen sich direkt an ihren Orten.")
+	_open_dialog(
+		"Deine Lumo World",
+		"Schatzinsel, Sonnendorf, Sternenstadt und dein eigenes Bauland sind eine zusammenhängende Welt. "
+		+ "Zu Fuß drehst und zoomst du die Kamera frei hinter Lumo. Mit Bauen zoomst du in die Dorfansicht, "
+		+ "setzt Gebäude mit derselben Dorfwirtschaft und kehrst danach direkt zu Lumo zurück."
+	)
 	overview = WORLD_MAP.new()
 	var map_mission: Dictionary = model.current()
 	if map_mission.is_empty():
@@ -1062,11 +1067,17 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Rennen: Umschalten\nKart: Zum Parkplatz gehen und einsteigen", 16))
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: am Parkplatz einsteigen", 16))
+	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(village_summary)
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_dialog, 160))
+
+
+func _open_build_from_dialog() -> void:
+	_close_dialog()
+	_toggle_build_mode()
 
 
 func _pause_menu() -> void:
