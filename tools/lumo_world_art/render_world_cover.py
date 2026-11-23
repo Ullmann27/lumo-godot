@@ -78,15 +78,44 @@ def import_asset(relative, at, width=None, height=None, angle=0, pose=None):
     objects = set(bpy.context.scene.objects) - before
     SOURCES.append({"path": relative, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
     if pose:
+        posed_armature = False
         for obj in objects:
             if not obj.animation_data:
                 continue
+            action = None
             for track in obj.animation_data.nla_tracks:
+                if track.name.startswith(pose) and track.strips:
+                    action = track.strips[0].action
                 track.mute = True
-            action = next((a for a in bpy.data.actions if a.name == pose or a.name.startswith(pose + ".")), None)
+            if action is None:
+                action = next((a for a in bpy.data.actions if a.name.startswith(pose)), None)
             if action:
                 obj.animation_data.action = action
-        bpy.context.scene.frame_set(14)
+                posed_armature = posed_armature or obj.type == "ARMATURE"
+        if not posed_armature:
+            raise RuntimeError("Original Lumo greeting animation was not found")
+        bpy.context.scene.frame_set(18)
+        bpy.context.view_layer.update()
+        # Freeze only the preview pose. Imported glTF root animation tracks
+        # must not overwrite this diorama's placement on later evaluations.
+        depsgraph = bpy.context.evaluated_depsgraph_get()
+        frozen = set()
+        bone_shapes = {
+            bone.custom_shape for obj in objects if obj.type == "ARMATURE"
+            for bone in obj.pose.bones if bone.custom_shape is not None
+        }
+        for obj in objects:
+            if obj.type != "MESH" or obj in bone_shapes or obj.hide_render:
+                continue
+            evaluated = obj.evaluated_get(depsgraph)
+            mesh = bpy.data.meshes.new_from_object(evaluated, depsgraph=depsgraph)
+            static = bpy.data.objects.new("Original Lumo greeting preview", mesh)
+            bpy.context.collection.objects.link(static)
+            static.matrix_world = evaluated.matrix_world.copy()
+            frozen.add(static)
+        for obj in objects:
+            bpy.data.objects.remove(obj, do_unlink=True)
+        objects = frozen
         bpy.context.view_layer.update()
     low, high = bounds(objects)
     factor = width / (high.x - low.x) if width else height / (high.z - low.z) if height else 1
@@ -101,6 +130,14 @@ def import_asset(relative, at, width=None, height=None, angle=0, pose=None):
 def repair_village_materials():
     atlas = bpy.data.images.load(str(ROOT / "assets/creative/village3d/textures/village_atlas_albedo.png"), check_existing=True)
     leaves = bpy.data.images.load(str(ROOT / "assets/creative/village3d/textures/leaf_cards.png"), check_existing=True)
+    for obj in bpy.context.scene.objects:
+        if obj.type != "MESH" or not any(m and m.name.startswith(("village_atlas", "village_foliage")) for m in obj.data.materials):
+            continue
+        obj.data.uv_layers[0].name = "WorldSurfaceUV"
+        if len(obj.data.uv_layers) > 1:
+            obj.data.uv_layers[1].name = "WorldTileUV"
+        if obj.data.color_attributes:
+            obj.data.color_attributes[0].name = "WorldTint"
     for mat in bpy.data.materials:
         if not mat.name.startswith(("village_atlas", "village_foliage")):
             continue
@@ -111,7 +148,43 @@ def repair_village_materials():
         foliage = mat.name.startswith("village_foliage")
         image.image = leaves if foliage else atlas
         image.interpolation = "Linear"
-        tree.links.new(image.outputs["Color"], shader.inputs["Base Color"])
+        surface_uv = tree.nodes.new("ShaderNodeUVMap")
+        surface_uv.uv_map = "WorldSurfaceUV"
+        if foliage:
+            tree.links.new(surface_uv.outputs["UV"], image.inputs["Vector"])
+        else:
+            tile_uv = tree.nodes.new("ShaderNodeUVMap")
+            tile_uv.uv_map = "WorldTileUV"
+            def vector_node(operation, a, b=None):
+                node = tree.nodes.new("ShaderNodeVectorMath")
+                node.operation = operation
+                tree.links.new(a, node.inputs[0])
+                if b is not None:
+                    if isinstance(b, tuple):
+                        node.inputs[1].default_value = b
+                    else:
+                        tree.links.new(b, node.inputs[1])
+                return node.outputs[0]
+            local = vector_node("FRACTION", surface_uv.outputs["UV"])
+            local = vector_node("MULTIPLY", local, (0.976, 0.976, 0))
+            local = vector_node("ADD", local, (0.012, 0.012, 0))
+            tile = vector_node("MULTIPLY", tile_uv.outputs["UV"], (4, 4, 0))
+            tile = vector_node("FLOOR", tile)
+            atlas_uv = vector_node("ADD", tile, local)
+            atlas_uv = vector_node("MULTIPLY", atlas_uv, (0.25, 0.25, 0))
+            tree.links.new(atlas_uv, image.inputs["Vector"])
+        tint = tree.nodes.new("ShaderNodeVertexColor")
+        tint.layer_name = "WorldTint"
+        multiply = tree.nodes.new("ShaderNodeMixRGB")
+        multiply.blend_type = "MULTIPLY"
+        multiply.inputs[0].default_value = 1
+        tree.links.new(image.outputs["Color"], multiply.inputs[1])
+        tree.links.new(tint.outputs["Color"], multiply.inputs[2])
+        double = tree.nodes.new("ShaderNodeVectorMath")
+        double.operation = "MULTIPLY"
+        tree.links.new(multiply.outputs[0], double.inputs[0])
+        double.inputs[1].default_value = (2, 2, 2)
+        tree.links.new(double.outputs[0], shader.inputs["Base Color"])
         shader.inputs["Roughness"].default_value = 0.82
         if foliage:
             tree.links.new(image.outputs["Alpha"], shader.inputs["Alpha"])
@@ -163,7 +236,7 @@ for x, y in [(-5, -1.6), (-7.6, -1.1), (-9.6, -0.3), (6, 1.8), (8.3, 1.1), (11, 
 repair_village_materials()
 
 # This is the user's existing hero model, posed by its authored greeting clip.
-hero = import_asset("assets/characters/lumo_animated/Lumo-Animated-Mobile.glb", (-3.7, -6.0, 0.22), height=4.4, angle=0.28, pose="greeting_wave")
+hero = import_asset("assets/characters/lumo_facial/Lumo-Facial-Mobile.glb", (-3.7, -6.0, 0.22), height=5.0, angle=0.28, pose="greeting_wave")
 import_asset("assets/kart/production/karts/aurora_comet.glb", (3.1, -5.9, 0.23), width=4.4, angle=math.pi + 0.32)
 import_asset("assets/creative/lumo_world/vehicles/school_bus.glb", (2.2, 4.1, 0.22), width=1.65, angle=0.18)
 import_asset("assets/creative/models/lumo_treasure_chest.glb", (-7.3, -7.2, 0.2), width=2.4, angle=-0.25)
@@ -191,10 +264,10 @@ scene.render.image_settings.file_format = "PNG"
 scene.render.image_settings.color_mode = "RGB"
 scene.world.use_nodes = True
 scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.11, 0.21, 0.28, 1)
-scene.world.node_tree.nodes["Background"].inputs[1].default_value = 0.55
+scene.world.node_tree.nodes["Background"].inputs[1].default_value = 0.7
 floor = material("Deep teal gallery", (0.025, 0.085, 0.12), roughness=0.75)
 box("Backdrop", (0, 0, -2.1), (200, 200, 0.1), floor, 0)
-for at, energy, size, color in [((-10, -12, 22), 3600, 12, (1, 0.88, 0.66)), ((14, 6, 18), 2800, 10, (0.53, 0.84, 1)), ((1, -15, 10), 1300, 8, (0.82, 0.96, 1))]:
+for at, energy, size, color in [((-10, -12, 22), 5200, 12, (1, 0.88, 0.66)), ((14, 6, 18), 3600, 10, (0.53, 0.84, 1)), ((1, -15, 10), 1800, 8, (0.82, 0.96, 1))]:
     bpy.ops.object.light_add(type="AREA", location=at)
     light = bpy.context.object
     light.data.energy = energy

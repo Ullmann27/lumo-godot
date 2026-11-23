@@ -96,13 +96,13 @@ func update_focus(world_position: Vector3, delta: float) -> void:
 	var buildings: Array = model.player().buildings
 	var distances: Dictionary = {}
 	for building in buildings:
-		distances[int(building.id)] = YARDS.building_at(building).distance_squared_to(local)
-	buildings.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(distances[int(a.id)]) < float(distances[int(b.id)]))
+		distances[str(building.id)] = YARDS.building_at(building).distance_squared_to(local)
+	buildings.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(distances[str(a.id)]) < float(distances[str(b.id)]))
 	var active: Dictionary = {}
 	var far: Dictionary = {}
 	var near_count := 0
 	for building in buildings:
-		var id := int(building.id)
+		var id := str(building.id)
 		var at: Vector3 = YARDS.building_at(building) + Vector3.UP * 0.06
 		var variant := posmod(int(building.plot) * 7, 3)
 		var yaw := (float(posmod(int(building.plot) * 13, 5)) - 2.0) * 0.035

@@ -49,6 +49,7 @@ var paused := false
 var time := 0.0
 var save_clock := 0.0
 var save_path := ""
+var save_blocked := false
 var last_safe := STATE.SPAWN
 var last_saved := STATE.SPAWN
 var drive_speed := 0.0
@@ -71,9 +72,19 @@ func _ready() -> void:
 	var profile: String = str(SceneRouter.launch_options.get("childKey", "standalone"))
 	save_path = "user://lumo_world_" + profile.sha256_text().substr(0, 32) + ".json"
 	if FileAccess.file_exists(save_path):
-		var saved = JSON.parse_string(FileAccess.get_file_as_string(save_path))
-		if saved is Dictionary and not model.restore(saved):
-			checkpoint_message = "Der gespeicherte Stand konnte nicht gelesen werden. Die Schatzsuche bleibt erhalten."
+		var saved_file := FileAccess.open(save_path, FileAccess.READ)
+		if saved_file == null or saved_file.get_length() > 65536:
+			save_blocked = true
+		else:
+			var text := saved_file.get_as_text()
+			var read_error := saved_file.get_error()
+			saved_file.close()
+			var parser := JSON.new()
+			save_blocked = read_error != OK or parser.parse(text) != OK or not parser.data is Dictionary
+			if not save_blocked:
+				save_blocked = not model.restore(parser.data)
+		if save_blocked:
+			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
 	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
@@ -92,7 +103,7 @@ func _ready() -> void:
 	marker.name = "WorldMissionMarker"
 	marker.scale = Vector3.ONE * 0.65
 	_build_ui()
-	if not model.pending_lesson.is_empty() and int(model.pending_lesson.get("grade", 0)) != grade:
+	if not save_blocked and not model.pending_lesson.is_empty() and int(model.pending_lesson.get("grade", 0)) != grade:
 		# A profile may move to the next school year while a lesson is open.
 		# Rotate the request before consuming a returning receipt: an old-grade
 		# completion cannot unlock the replacement mission, even after restart.
@@ -100,17 +111,20 @@ func _ready() -> void:
 		checkpoint_message = "Die Schulmission passt jetzt zu deiner Schulstufe. Deine Freunde warten auf dich."
 		_save()
 	var receipt = SceneRouter.launch_options.get("worldLearningReceipt", {})
-	if receipt is Dictionary and model.consume_learning_receipt(receipt):
+	if not save_blocked and receipt is Dictionary and model.consume_learning_receipt(receipt):
 		checkpoint_message = "Deine Lernrunde ist geschafft! Bruno wartet im Garten."
 		_save()
 	_update_mission()
-	if model.is_complete():
+	if not save_blocked and model.is_complete():
 		_report_completed_reward()
 	if not checkpoint_message.is_empty():
 		status_label.text = checkpoint_message
 	RUNTIME.watch_safe_area(self, _layout)
 	get_viewport().size_changed.connect(_layout)
 	_layout.call_deferred()
+	if save_blocked:
+		_open_dialog("Deine gespeicherte Welt bleibt erhalten", checkpoint_message)
+		modal_box.add_child(KIT.button("Zur Spielewelt", _leave, 180))
 
 
 func _exit_tree() -> void:
@@ -727,7 +741,7 @@ func _completed_step(message: String) -> void:
 
 
 func _report_completed_reward() -> bool:
-	if not model.is_complete():
+	if save_blocked or not model.is_complete():
 		return false
 	return HostBridge.reward({"resultId": model.result_id, "game": "world", "status": "completed", "stars": 3, "xp": 42})
 
@@ -795,7 +809,7 @@ func _pause_menu() -> void:
 
 
 func _save() -> bool:
-	if not is_instance_valid(player):
+	if save_blocked or not is_instance_valid(player):
 		return false
 	var at := player.position
 	if driving:
@@ -821,7 +835,7 @@ func _save() -> bool:
 
 
 func _leave() -> void:
-	if _save():
+	if save_blocked or _save():
 		SceneRouter.goto("games")
 
 
