@@ -32,6 +32,16 @@ func _sequence(world, entry: Dictionary) -> void:
 		"crest":
 			_check(world.ramp_height(begin + 7.0) > 0.45, label + " changes actual contact height")
 			_check(world.ramp_pitch(begin + 7.0) > 0.1, label + " changes actual launch pitch")
+			var deck: MeshInstance3D = world.get_node_or_null("TrackRamp_%d" % int(begin))
+			_check(deck != null, label + " has an actual ramp mesh")
+			if deck != null:
+				var vertices: PackedVector3Array = deck.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]
+				var half: float = world.road_width_at(begin) * 0.5
+				var expected: Vector3 = world.position_at(begin + 7.0, half) + world.frame(begin + 7.0).y * (world.ramp_height(begin + 7.0) + 0.012)
+				var closest: float = INF
+				for vertex in vertices:
+					closest = minf(closest, vertex.distance_to(expected))
+				_check(closest < 0.002, label + " actual mesh matches quadratic contact height across full road width")
 			var crossed: Dictionary = ACTION.kicker_crossed(world.action, begin + 13.8, begin + 14.1)
 			_check(bool(crossed.get("spectacle", false)), label + " is detected by swept takeoff")
 			if not crossed.is_empty():

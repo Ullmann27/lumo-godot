@@ -347,13 +347,15 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 	# One smooth swept wedge (was a stack of 1 m boxes with visible steps).
 	# Breitere Fahrbahn (Dschungelherz) bekommt eine ebenso breite Rampe.
 	var half: float = maxf(4.6, float(world.road_width_at(float(kicker.start))) * 0.5 - 0.8)
+	if bool(kicker.get("spectacle", false)):
+		half = float(world.road_width_at(float(kicker.start))) * 0.5
 	RAMP.build(
 		world, float(kicker.start), float(kicker.length), float(kicker.height), half,
-		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a")}
+		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a"), "profile": str(kicker.get("profile", "linear"))}
 	)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
-	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(half * 2.0 + 0.2, 0.08, 0.3), accent, lip_basis, true)
+	world._prop("box", world.position_at(lip) + lip_basis.y * kicker_height(world.action, lip), Vector3(half * 2.0 + 0.2, 0.08, 0.3), accent, lip_basis, true)
 	if bool(kicker.get("hero_flight", false)):
 		# Cyan landing markers sit outside the driving corridor.
 		for marker in range(3):

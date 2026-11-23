@@ -71,7 +71,7 @@ Die zentrale Integration liegt in `scripts/games/kart_friends/kart_friend_duel.g
 
 - Zwei Teilnehmer pro Raum, maximal 256 Verbindungen; acht gleichzeitig pro tatsächlichem Transport-Absender.
 - Absender hinter einer gemeinsamen Reverse-Proxy-Adresse teilen dieses Transportlimit; vor größeren Nutzerzahlen ist die vorgeschaltete Ratenbegrenzung mit einem vertrauenswürdig konfigurierten Proxy abzustimmen.
-- 4 KiB maximale Nachricht, 20 Positionspakete pro Sekunde im Client, serverseitige Raten- und Zahlenprüfungen.
+- 4 KiB maximale Client-Nachricht; bis 16 KiB für die begrenzten Freundes-/Anfragelisten an den Client. 20 Positionspakete pro Sekunde im Client, serverseitige Raten- und Zahlenprüfungen.
 - Zufällige, nicht erratbare Einladungs- und Raumkennungen.
 - Beidseitig bestätigte Freundschaft ist Voraussetzung für eine Renn-Einladung.
 - Abgelaufene oder fremde Einladungen lassen sich nicht annehmen.
@@ -95,6 +95,8 @@ Zwei separate echte Godot-Prozesse, separater Relay-Prozess, anschließend volls
 python scripts/tests/kart_online_two_process.py --godot /pfad/zu/godot --output /pfad/zu/pruefbelegen
 ```
 
-Die originale Ausgabe jedes Clients und Servers wird erhalten. Die Ergebnisdatei benennt ausdrücklich **lokales WebSocket**, getrennte Prozesse und Datenbankpersistenz. Dieser Nachweis ersetzt weder ein bereitgestelltes Internet-Endpunkt-Testpaar noch zwei physische Android-Geräte.
+Die originale Ausgabe jedes Clients und Servers wird erhalten. Die Ergebnisdatei benennt ausdrücklich **lokales WebSocket**, getrennte Prozesse und Datenbankpersistenz. Die echte 3D-Szene wird zusätzlich mit `python scripts/tests/kart_online_scene_probe.py --godot /pfad/zu/godot --output /pfad/zu/belegen` geprüft. Ein zweiter Lauf mit `--shots` unter einem Grafikserver speichert drei originale Bildschirmbilder. Kontrolliert gesendete Streckenpositionen prüfen hierbei den Renderer und die Integration, keinen vollständigen physikalisch gefahrenen Parcours.
+
+Dieser Nachweis ersetzt weder ein bereitgestelltes Internet-Endpunkt-Testpaar noch zwei physische Android-Geräte.
 
 Offizielle API-Grundlage: [Godot 4.6 WebSocketPeer](https://docs.godotengine.org/en/4.6/classes/class_websocketpeer.html).

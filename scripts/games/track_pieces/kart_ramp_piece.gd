@@ -1,6 +1,6 @@
 extends RefCounted
 ## Smooth, closed jump ramp swept along the road: one mesh, one draw call.
-## The deck follows world.frame() (curve and banking) and rises linearly, the
+## The deck follows world.frame() (curve and banking) and uses the authored linear or ease-in rise, the
 ## same profile kart_action_course.kicker_height() uses for contact, so what
 ## is drawn is what is driven. The foot lies flush on the asphalt (DECK_LIFT),
 ## there is no stair-stepping and no seam between segments.
@@ -12,7 +12,7 @@ const BODY_COLOR: Color = Color("23324a")
 
 
 ## Builds the ramp and returns its MeshInstance3D (already added to world).
-## colors: {"stripe_a", "stripe_b", "side", "lip"} (all optional).
+## colors: {"stripe_a", "stripe_b", "side", "lip", "profile"} (all optional).
 static func build(
 	world, start: float, length: float, height: float, half_width: float, colors: Dictionary = {}
 ) -> MeshInstance3D:
@@ -27,7 +27,8 @@ static func build(
 		var t: float = float(i) / float(steps)
 		var d: float = start + length * t
 		var basis: Basis = world.frame(d)
-		var lift: Vector3 = basis.y * (t * height + DECK_LIFT)
+		var rise: float = t * t if str(colors.get("profile", "linear")) == "ease_in" else t
+		var lift: Vector3 = basis.y * (rise * height + DECK_LIFT)
 		rows.append(
 			{
 				"d": d,

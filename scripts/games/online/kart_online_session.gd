@@ -17,6 +17,7 @@ signal friend_left(text: String)
 
 const PROTOCOL: int = 1
 const MAX_PACKET: int = 4096
+const MAX_INCOMING: int = 16384
 const SEND_HZ: float = 20.0
 const IDENTITY_FILE: String = "user://lumo_kart_online_identity.cfg"
 const FRIENDS_FILE: String = "user://lumo_kart_online_friends.cfg"
@@ -221,7 +222,7 @@ func connect_online() -> bool:
 		return false
 	disconnect_online("")
 	_socket = WebSocketPeer.new()
-	_socket.inbound_buffer_size = 32768
+	_socket.inbound_buffer_size = 65536
 	_socket.outbound_buffer_size = 16384
 	_hello_sent = false
 	_connect_started_ms = Time.get_ticks_msec()
@@ -368,7 +369,7 @@ func poll() -> void:
 	while _socket != null and _socket.get_available_packet_count() > 0 and count < 48:
 		count += 1
 		var packet: PackedByteArray = _socket.get_packet()
-		if packet.size() > MAX_PACKET:
+		if packet.size() > MAX_INCOMING:
 			_lost("Der Online-Server hat ungültige Daten gesendet.")
 			return
 		var message: Variant = JSON.parse_string(packet.get_string_from_utf8())

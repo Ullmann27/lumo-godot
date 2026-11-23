@@ -30,6 +30,7 @@ var _race_result_id: String = ""
 var _configured: bool = false
 var _refresh_queued: bool = false
 var _ready_ids: Array = []
+var _typed_friend_name: String = ""
 
 
 func setup(owner_island: Node, url: String, child_key: String = "standalone") -> void:
@@ -161,6 +162,8 @@ func _refresh_lobby() -> void:
 	_refresh_queued = false
 	if not is_instance_valid(column):
 		return
+	if is_instance_valid(target_edit):
+		_typed_friend_name = target_edit.text
 	for child in column.get_children():
 		column.remove_child(child)
 		child.queue_free()
@@ -209,6 +212,7 @@ func _refresh_lobby() -> void:
 		_text("Freund hinzufügen", 24, true)
 		target_edit = LineEdit.new()
 		target_edit.name = "KartOnlineFriendName"
+		target_edit.text = _typed_friend_name
 		target_edit.placeholder_text = "Spielername, z. B. Zoe_04"
 		target_edit.max_length = 20
 		target_edit.custom_minimum_size = Vector2(0, 68)
