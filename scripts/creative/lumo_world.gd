@@ -1265,10 +1265,10 @@ func _pan_build_camera(previous_pixel: Vector2, current_pixel: Vector2) -> void:
 func _select_build_plot_at(pixel: Vector2) -> void:
 	if not build_mode:
 		return
-	var world = _screen_ground(pixel)
+	var world: Variant = _screen_ground(pixel)
 	if not world is Vector3:
 		return
-	var plot := own_village.plot_from_world(world)
+	var plot: int = own_village.plot_from_world(world)
 	if plot < 0 or not own_village.plot_buildable(plot):
 		_refresh_build_ui("Hier kann nicht gebaut werden.")
 		return
