@@ -122,6 +122,17 @@ func _real_scene() -> void:
 	root.add_child(scene)
 	await _frames(8)
 	_check(scene.fox.is_real(), "original rigged Lumo is loaded")
+	# This scene intentionally runs with reduceAnimations=true. Essential
+	# locomotion must still articulate arms and legs instead of sliding.
+	var gait_start := scene.player.position
+	scene.paused = false
+	scene.joystick.target = Vector2(0, -1)
+	for index in range(18):
+		await physics_frame
+	_check(scene.player.position.distance_to(gait_start) > 0.25, "reduced-motion World body actually translates")
+	_check(scene.fox.current_behavior() in ["walk_loop", "run_loop"], "reduced-motion World keeps an articulated gait while moving")
+	scene.joystick.target = Vector2.ZERO
+	scene.joystick.axis = Vector2.ZERO
 	_check(scene.has_node("OriginalTreasureIsland/OriginalTreasureChest"), "the real Treasure Island chest is retained")
 	_check(scene.art.zones.has("OriginalTreasureIsland"), "original terrain and nature are the World foundation")
 	_check(scene.own_village.source_status == "loaded", "the real existing village envelope is loaded")
