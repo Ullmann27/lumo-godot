@@ -506,7 +506,10 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 	var motion := Vector2(player.velocity.x, player.velocity.z)
 	if motion.length() > 0.12:
 		fox.rotation.y = lerp_angle(fox.rotation.y, atan2(-motion.x, -motion.y), 1.0 - exp(-10.0 * delta))
-	fox.drive(player.get_real_velocity(), player.is_on_floor(), delta, time)
+	# Match the proven Treasure-world locomotion feed: CharacterBody3D.velocity
+	# remains stable across floor snap and collision correction, so the skeleton
+	# cannot lose its walk cycle while the body still translates.
+	fox.drive(player.velocity, player.is_on_floor(), delta, time)
 
 
 func _drive_tick(axis: Vector2, delta: float) -> void:
