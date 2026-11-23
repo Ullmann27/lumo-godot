@@ -130,6 +130,9 @@ static func batch(
 	multi.instance_count = transforms.size()
 	for index in range(transforms.size()):
 		multi.set_instance_transform(index, transforms[index])
+	# Preserve the authored placements for CPU-side visibility queries. The
+	# headless renderer deliberately returns empty MultiMesh draw buffers.
+	multi.set_meta("authored_transforms", transforms.duplicate())
 	var node := MultiMeshInstance3D.new()
 	node.name = label
 	node.multimesh = multi

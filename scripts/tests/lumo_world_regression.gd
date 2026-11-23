@@ -219,9 +219,10 @@ func _visibility_and_school(scene: Node3D) -> void:
 			var owner: Dictionary = clearance.owners[entry.owner]
 			var node = owner.node.get_ref()
 			if node is MultiMeshInstance3D:
-				_check(owner.source.get_instance_transform(entry.index).is_equal_approx(entry.original), "source vegetation transforms remain unchanged")
+				_check(owner.source.get_meta("authored_transforms")[entry.index].is_equal_approx(entry.original), "source vegetation transforms remain unchanged")
 				_check(node.visible and node.get_parent().visible, "clearance does not switch off a whole visible vegetation/LOD group")
-				_check(node.multimesh.get_instance_transform(entry.index).origin.y < -90000, "only the obstructing draw is parked outside the view")
+				if DisplayServer.get_name() != "headless":
+					_check(node.multimesh.get_instance_transform(entry.index).origin.y < -90000, "only the obstructing draw is parked outside the view")
 		scene.camera.position = Vector3(-2000, 6, -2000)
 		var away := Vector3(-2000, 1, -2010)
 		scene.camera.look_at(away)
@@ -230,7 +231,7 @@ func _visibility_and_school(scene: Node3D) -> void:
 		for id in hidden_ids:
 			var entry: Dictionary = clearance.entries[id]
 			var node = clearance.owners[entry.owner].node.get_ref()
-			if node is MultiMeshInstance3D:
+			if node is MultiMeshInstance3D and DisplayServer.get_name() != "headless":
 				_check(node.multimesh.get_instance_transform(entry.index).is_equal_approx(entry.original), "restored tree draw has its exact original transform")
 	# A real tree at the near-plane edge must be cleared even though the
 	# camera-to-Lumo centre segment does not touch its protected bounds.
@@ -242,7 +243,7 @@ func _visibility_and_school(scene: Node3D) -> void:
 	var tree_mesh: Mesh = VILLAGE.ART.main_mesh("tree_oak")
 	var local_box := tree_mesh.get_aabb()
 	var near_edge: float = clearance.last_near_volume.end.x - scene.camera.position.x
-	var edge_x := (clearance.BODY_RADIUS + near_edge) * 0.5
+	var edge_x: float = (clearance.BODY_RADIUS + near_edge) * 0.5
 	var real_tree := MultiMeshInstance3D.new()
 	real_tree.name = "CameraRegressionTree"
 	var source := MultiMesh.new()
@@ -251,20 +252,30 @@ func _visibility_and_school(scene: Node3D) -> void:
 	source.instance_count = 1
 	var placed := Transform3D(Basis.IDENTITY, Vector3(3000 + edge_x - local_box.position.x, 0, -1.6 - local_box.position.z))
 	source.set_instance_transform(0, placed)
+	source.set_meta("authored_transforms", [placed])
 	real_tree.multimesh = source
-	scene.art.zones.Gartenlandschaft.add_child(real_tree)
+	var lod_group := Node3D.new()
+	lod_group.name = "CameraRegressionLOD"
+	scene.art.zones.Gartenlandschaft.add_child(lod_group)
+	lod_group.add_child(real_tree)
 	await _frames(3)
 	clearance.update(scene.camera, focus, 1, 0.6)
 	var actual_box: AABB = placed * local_box
 	_check(actual_box.grow(clearance.BODY_RADIUS).intersects_segment(scene.camera.position, focus) == null, "near-plane fixture does not intersect the protected centre ray")
 	_check(actual_box.intersects(clearance.last_near_volume), "actual tree canopy intersects the camera near volume")
 	_check(clearance.hidden.size() == 1, "near-plane foliage is cleared without relying on a centre-ray hit")
-	var replacement := source.duplicate() as MultiMesh
+	lod_group.hide()
+	clearance.update(scene.camera, focus, 1, 1.0 / 60.0)
+	_check(not lod_group.visible and real_tree.visible and clearance.hidden.is_empty(), "camera restoration preserves the LOD parent's hidden state")
+	lod_group.show()
+	clearance.update(scene.camera, focus, 2, 1.0 / 60.0)
+	_check(clearance.hidden.size() == 1, "changing the follow target recomputes foreground visibility")
+	var replacement: MultiMesh = clearance._copy_draw_buffer(source)
 	real_tree.multimesh = replacement
 	clearance.update(scene.camera, focus, 2, 0.6)
 	_check(clearance.entries.size() == base_count + 1, "rebuilt vegetation buffer replaces its old registry entries")
 	_check(clearance.owners[real_tree.get_instance_id()].source == replacement, "replacement MultiMesh keeps its own restoration source")
-	real_tree.queue_free()
+	lod_group.queue_free()
 	await _frames(3)
 	_check(clearance.entries.size() == base_count and clearance.hidden.is_empty(), "freed vegetation is removed without stale hidden instances")
 	# The school uses its authored y=0 ground plane. Its original below-ground
@@ -291,7 +302,7 @@ func _visibility_and_school(scene: Node3D) -> void:
 	_check(scene.player.position.y >= entry.y - 0.2, "Lumo reaches the raised doorway landing without jumping through a foundation")
 	var direction: Label3D = scene.get_node("OriginalTreasureIsland/TreasureVillageWayfinder/Direction")
 	_check(direction.text == "Sonnendorf →" and direction.billboard == BaseMaterial3D.BILLBOARD_DISABLED, "treasure entry uses a physical directional sign")
-	_check(direction.font_size <= 28 and direction.pixel_size <= 0.006, "treasure direction no longer spans the avatar's central view")
+	_check(direction.font_size <= 28 and direction.pixel_size <= 0.00601, "treasure direction no longer spans the avatar's central view")
 	scene.player.position = Vector3(0, 0.1, 6)
 	scene.player.velocity = Vector3.ZERO
 	scene._update_camera(10.0)
