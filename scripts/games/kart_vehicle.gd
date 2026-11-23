@@ -428,8 +428,13 @@ func _apply_cinema_coachwork() -> void:
 
 
 func _rebuild() -> void:
+	# Detach the old rendered tree before retiring it. Immediate free() can make
+	# the headless/dummy renderer inspect a MeshInstance after its material RID
+	# was already released while switching race driver <-> companion. The rest
+	# of Kart already uses detach + queue_free for hot scene replacement.
 	for child in get_children():
-		child.free()
+		remove_child(child)
+		child.queue_free()
 	lumo_animation = null
 	production_vehicle = null
 	production_driver = null
