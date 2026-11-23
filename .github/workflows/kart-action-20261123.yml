@@ -148,6 +148,11 @@ jobs:
               return code, error
           for name in config['probes']:
               assert re.fullmatch(r'[a-z0-9_]+', name), name
+              # Run the exact loop route in source QA; keep the full
+              # multi-course endurance suite for the signed Android gate.
+              proof_environment.pop('LUMO_RUN_FOCUS', None)
+              if name == 'lumo_run_regression':
+                  proof_environment['LUMO_RUN_FOCUS'] = 'loop'
               target = pathlib.Path('scripts/tests') / (name + '.gd')
               assert target.is_file(), target
               log = pathlib.Path('kart-proof') / (name + '.log')

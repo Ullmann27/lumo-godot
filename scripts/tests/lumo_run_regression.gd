@@ -217,6 +217,12 @@ func _run() -> void:
 	_clean()
 	# LUMO_RUN_FOCUS=adventure runs only the Dschungelherz adventure checks.
 	var focus: String = OS.get_environment("LUMO_RUN_FOCUS")
+	if focus == "loop":
+		# The native source gate checks the mounted exterior loop and open road
+		# in seconds. The signed APK workflow still runs the entire 510+ suite.
+		await _test_obstacles_and_gaps()
+		_finish_run()
+		return
 	if focus == "replay":
 		await _test_replay_and_medal()
 		_finish_run()
