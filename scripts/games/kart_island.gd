@@ -4539,6 +4539,29 @@ func _celebrate_opponents() -> void:
 		rival.celebrate(place)
 
 
+
+func _rival_display_name(index: int) -> String:
+	if index < 0 or index >= opponents.size():
+		return "Rivale"
+	var rival: LumoRaceKart = opponents[index]
+	var rival_id: String = str(rival.animal)
+	for entry: Dictionary in OPPONENT_ROSTER.all():
+		if str(entry.get("id", "")) == rival_id:
+			return str(entry.get("name", "Rivale"))
+	# Preserve the old procedural fallback identities if a race is running
+	# without the validated production roster.
+	var legacy_names: Dictionary = {
+		"otter": "Milo",
+		"rabbit": "Nova",
+		"badger": "Borin",
+		"cat": "Yuki",
+		"fox": "Fynn",
+	}
+	if legacy_names.has(rival_id):
+		return str(legacy_names[rival_id])
+	return rival_id.capitalize() if not rival_id.is_empty() else "Rivale"
+
+
 func _show_result() -> void:
 	if is_instance_valid(controls_row):
 		controls_row.hide()
