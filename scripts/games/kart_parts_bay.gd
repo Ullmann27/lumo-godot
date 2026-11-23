@@ -455,7 +455,7 @@ func _refresh_dyno() -> void:
 	dyno_text.text = str(option.name) + " · " + str(option.get("text", "Ändert nur das Aussehen."))
 	var combination: Dictionary = workshop.mounted(_kart_id())
 	combination.merge(pending, true)
-	var notes := PART_CATALOG.limit_notes(combination, TUNING.FINE.changes(workshop.tune(_kart_id())))
+	var notes := PART_CATALOG.limit_notes(combination, TUNING.FINE.changes(workshop.tune(_kart_id())), workshop.multipliers_stock(_kart_id()))
 	if not notes.is_empty():
 		dyno_text.text += "\n" + "\n".join(notes)
 	dyno_text.text += "\nAlle Werte gelten für die ganze Kombination, einschließlich Ausbaustufen und Feineinstellung."

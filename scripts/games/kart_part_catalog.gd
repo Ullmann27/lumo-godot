@@ -5,8 +5,8 @@ extends RefCounted
 ## Sie verändert die Fahrfaktoren aus kart_fleet.multipliers(): „mul“ multipliziert,
 ## „add“ addiert (Gelände, Rempler). Die Faktoren liest das Rennen über
 ## kart_powertrain.gd; der Prüfstand (kart_dyno.gd) misst mit denselben Formeln.
-## Serie und eine Variante je Steckplatz kosten nichts, die übrigen werden mit Sternen aus
-## dem Lernen freigeschaltet (nur auf dem Papier ausgegeben, wie in kart_tuning.gd).
+## Serie, eine bisherige Variante und das neue Evolution-Teil je Steckplatz sind frei.
+## Die bisherigen weiteren Teile behalten ihre Sternpreise aus dem Lernen (kart_tuning.gd).
 ## „node“ ist der Knotenname im Modell „file“ (tools/lumo_kart_art/karts/build_parts.py):
 ## die ersten Teile liegen in kart_parts.glb, die übrigen je Steckplatz in parts_<slot>.glb.
 ## Gemeinsame Grenze (PART_LIMITS): Teile und Feineinstellung zusammen verschieben jeden
@@ -821,7 +821,7 @@ static func _evolution(slot: String, id: String, title: String, model: String,
 
 ## Describe only the caps that change this exact combined selection. The live
 ## dyno measures after the cap; this text explains why another part can plateau.
-static func limit_notes(chosen: Dictionary, extra: Dictionary = {}) -> PackedStringArray:
+static func limit_notes(chosen: Dictionary, extra: Dictionary = {}, base: Dictionary = {}) -> PackedStringArray:
 	var raw := changes(chosen, extra, false)
 	var limited := changes(chosen, extra)
 	var names := {
@@ -840,6 +840,14 @@ static func limit_notes(chosen: Dictionary, extra: Dictionary = {}) -> PackedStr
 		if not is_equal_approx(float(raw.add[factor]), float(limited.add[factor])):
 			result.append("%s: Kombinationsgrenze %+.0f Punkte" % [names.get(factor, factor),
 				float(limited.add[factor]) * 100.0])
+	for factor in ["offroad", "stability"]:
+		if not base.has(factor):
+			continue
+		var requested := float(base[factor]) + float(limited.add.get(factor, 0.0))
+		var maximum := 0.92 if factor == "offroad" else 0.85
+		var actual := clampf(requested, 0.20, maximum)
+		if not is_equal_approx(requested, actual):
+			result.append("%s: Gesamtgrenze %.0f %%" % [names[factor], actual * 100.0])
 	return result
 
 
