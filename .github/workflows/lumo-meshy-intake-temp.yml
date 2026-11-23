@@ -1,17 +1,28 @@
 name: LUMO Meshy intake temporary
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - asset/lumo-meshy-intake-20261123
+    paths:
+      - .github/workflows/lumo-meshy-intake-temp.yml
 permissions:
   contents: write
+concurrency:
+  group: lumo-meshy-intake-temp
+  cancel-in-progress: true
+
 jobs:
   intake:
-    if: false
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - name: Placeholder partial intake
+
+      - name: Download exact Meshy batch and source references
+        shell: bash
         run: |
-          mkdir -p intake/models intake/source_images
+          set -euo pipefail
+          mkdir -p intake/models intake/source_images intake/current_fleet
           curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208f5-fa88-71aa-b7b8-ef546d0992ea/01a208f8-24c7-7399-acd8-03291f735efc/Meshy_AI__1123151329_image-to-3d-texture.glb?Expires=1795564800&Signature=JcZMBGqN3mcjwDIeTlJmIwGHR9mYpH3z6yxrEOJuenUDCfwolZkUdjtY1bQgj39fvi8qRyIujmNlkgvJuLRrBpr922PYzTm7oY4kKW7dYtcjIrncaQC9SOePMHOQon49TUaTpR0OXWLzn9wguoFR8LAq-rL6LLh5EegXZyk3yutIMYxIJ5D7p4lluVSz7LOQRIRvAMjNFOGRztoBQQlxoJZdpjSAXnkAai6rY7OBw~FUAx7VvfBjYb1JE3w4rfkOOau9Pwa6u-5syLatc1fykbWKxpfGxalnkKF52pcPUem~9yzZaAcrAZaqjzVN77n9Y-mXOXy3AVEL6z-AeezxWA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_01.glb"
           curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208f5-fa88-71aa-b7b8-ef546d0992ea.png?Expires=1795564800&Signature=PIusdRbMwOiUqU4XUmrK2GsISqnkeAx3OtVWmbQPtZm6Hk2rr6ZWEW0b8pjSr7uHySh-~sD9Vk6B29NSPcJy7RSFplZk6XeTgE84N~rvnu5LeXuETisB3gO~TfPBMbYUiOm1LiCtMILEgfe6herJRJcjrIOAFgK22pqZhJ9kwkUiUkURlDXjVGiXVst7WSJytncwJUiSytrz0IVRzPrIE1L94F6Ep7jlwBOqAGBUG4CFzd2FFQkHJcU93RfYsfRqox7gM9fCOPkNWPT7fLBWg4oXHXxMudbu3zrnWLgfhozePtnCzXotJoOXrB-lxtcAEreSCex4okuO51nTMZ0uKQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_01.png"
           curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208f6-1513-72af-a6dd-0c9cbd47aa43/01a208f7-fae2-7714-9ef5-8d043c54774f/Meshy_AI__1123151319_image-to-3d-texture.glb?Expires=1795564800&Signature=KAWmjb12RsJkKFIzgai1feqSLaLE8OSOhk5WBWnR~Bz~LguiQTtbEBxZMNDXc7A1w8bjCcPvi~Am4cMi-T2bx57Egr6NtBsaJP3KDRR8-vWXE0P8qTQ4blFwmB6KiqNCa~xVdEYbanTE7JeydVQFLsr5uvCRF2P9iYQXYWoUUrLgAGcr9REbx6d44Pln-dXwknaWNW7yOyQO9c3Ds0CrvEdg-jNYRwLBedLrwIfkJEwp8ZS1jrq4K9YFrPrzhu-6lBiIsofvq7UtEL4sDkSN3VGNkqmbirE1q4DbCl2SyvMTlmdmTjWIAnGzDtSM7kWgZhSJhbiahM0USiPf1oiB1A__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_02.glb"
@@ -33,4 +44,88 @@ jobs:
           echo "05 01a208f6-5696-756a-b2fb-c8cf4b032d25" >> intake/task_ids.txt
           echo "06 01a208f8-fdfc-7211-b08e-9beb07d1c7d2" >> intake/task_ids.txt
           echo "07 01a208f9-1360-76eb-9cf8-f0b5130304f2" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208f9-2c4a-7417-8aa5-9a932ab4fb4d/01a208fb-f67a-7590-b208-a61cbc7ca0c0/Meshy_AI__1123151740_image-to-3d-texture.glb?Expires=1795564800&Signature=qXguNEcdKzP4RucAyXt3P4lohqWYmhF8REXIBNm-4CzcePvYAZs2otK7oHXAJA9xyGE61Lvfde6m2WJYfJjjtFb02BOIr5K5cavgV9Eys9Hm4iKgyNbUzp-D8Od8N1PC0dk9alafPZKfmrYua2wfhPA-pU8VJt~2Dg6~rLVaGBI-MZN1grYID93t9QFSEeBNNokkzyUGiQPU9jBMGVnoqBoCKY9kIZZBIPm3Y9pMMZ5qUQ-qU3WG0AbhU6apWJ6th~Aj7A~KpUC042nExpzWALpjJuabf0rShuS-hu8BXMVLxSWZR-GhcBVPFzmZzCvh7qJLDFd~0V2m1a5GZbiY~A__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_08.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208f9-2c4a-7417-8aa5-9a932ab4fb4d.png?Expires=1795564800&Signature=R4l5ggRkMduE5kBYlIb4SHkcmEaYn1~ciaFWYFlJVPrp6OmbeNxbLcVu5CnL9krLIMcaECLqssFkLN4XRzrNMqoTiSkvu-TY4sLFh203DfcvJwO5RaoTqJeP8YFdMkHPo5gCFQkVnK7rzhY400r7mAcUgon3gHzSzmHdQxItivjw0bzBAeIFkWWA-pIZlBytp73LTYe2wg78Lm5CD6wsgRCfjpAxlnauR6pqiiHgv707NKNBnKJwwpAMQ06ztrXXH5zoxqdvbkzbGCp9-YquMAZNKIHaIf4dbfNPJAXZZO0Q360nKgGqnoVqqzEMGdX-0f467xLZK1taQVGa3EN6SQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_08.png"
+          echo "08 01a208f9-2c4a-7417-8aa5-9a932ab4fb4d" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208f9-4430-72fc-ae88-8efb9b9bea3f/01a208fb-d91a-7483-802c-dce1ce67b6f4/Meshy_AI__1123151732_image-to-3d-texture.glb?Expires=1795564800&Signature=Cc5vNNTsHJiM52t7GE7Di6si4ZI1Fxu6kuSqwo5nUUjpczDvOdAtpZhwq1o59AZ-~bsqOq8GCiU~o~gNUBCopopDNF5Gjdt-gxZ3IdhT66qMubgphS7Iu5rKuuET5hB6giAf2MDzHSjhru3mCMDRx0y2C68PLRVJ96ZBCaSQrxtECmjbdS63wX~eiplT4BYktvyJW1eBxljaIesqUM7FPGf2xHZDPHlsHjtxvJp~kIgU47hJ0-yPNjR6rrfb68BcH4b9TR1P3ziq8b9cuq4uMlg6avYk-HCqRhHYfUKGHkHTRwYHAiPKhnHNpTMSCFdfxUiLgRBJqe-O1qN~OuaQAA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_09.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208f9-4430-72fc-ae88-8efb9b9bea3f.png?Expires=1795564800&Signature=C2Asfc0go6JX2pg6G3cz7xpJRKhCwysoTlPhWBN6T3CqqkLx5ih877X66NGMWp2XT3J65KoP8bTvC7pFW0-73s6VuzQ-4~c~R6XIMcoNg288Ivn5w004bI48DAhldUT5iYUBBJXLCy-qsowgb8p3wn-5ELudTqknBdxjnzPb4JKjKDzWMTrEdf52xIc3XbbCChXwhq-QacUo-URB0N89gVPdCYhUtW8NCvnE3cQ5ZwzqXpb0HzXZpmjHHcuxOPQUQXzyfjC9haoJoOhVC9JTFGv9TQrcJhUabq4bEJMUOWIei21Hi~Rev8cozJTJwZY9pVf5y78OIO8zye0UC9NArw__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_09.png"
+          echo "09 01a208f9-4430-72fc-ae88-8efb9b9bea3f" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208f9-599e-76a8-b2ae-177c5cc55edf/01a208fb-9a78-7311-a2a6-3ef9ae8050b9/Meshy_AI__1123151716_image-to-3d-texture.glb?Expires=1795564800&Signature=hoDZY~DvJjzIi-~m1Z9gdiFUe3mJDKRAORvNkFIekvRNj07ZnBvHMKPKbM~bcjO0owHNuojSvGNHa~KbWDX~9LBx6z0-bNAR8X1-dVRPAmwW~vA3rDSAmyK3WGTz~x9oNhTjEvXHW2rD28pklqRuzOD4~jTpqA2mHTt4zikJOBJ-V3OYKp1mHxM6OM1Q-1j0-Sn63jUeAoraUvpI~13cDdvZ4o~N8~GqPFL2iU-GDyPEhVkPGQEdMAM0mfkmEKKxjInMAwfgr0EpO1Falz1-36uJUfQaXhNOUQVn~9oP0G32Z8miredjq4hH9-mmeWUFuQhvnst0yrzgj~tdYIHJWA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_10.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208f9-599e-76a8-b2ae-177c5cc55edf.png?Expires=1795564800&Signature=l9w0zSmQxZkMZOw~HXDqRqMITnX0TggAETRxId4yO9fvXVNksEF8OfpmAZO56CjBiZQylVkz-3Lluy3nxAtM2yN6HRLTmPZgmX6vJ2rA27v4eY2UNHjhh9E5Gu-9xeJl5aCIeKY9LH0RTLq9nLIxCVFZTFOYA~~fhj7G~SGASjMZbpV9YoN4VvnNhg2r9ZuOzZQJZ1H80OXDWq~pLser6U93amali~3xemBKQrnxZumR~vv6PzWzSXQq9~-1nyORnttOoIT6OPIN0Z4~NM0Aj8cH-zMAl8bBtPfWI85ZZ56jM2UnNlWW0O7JAED0pIkR~TFQA5cgQ~tNPIE8Q8Tk4w__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_10.png"
+          echo "10 01a208f9-599e-76a8-b2ae-177c5cc55edf" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-7a36-74e9-9692-c46231c84fd2/01a20a0b-800d-75c7-ad9b-a7d3d5174b4d/Meshy_AI__1123201415_image-to-3d-texture.glb?Expires=1795564800&Signature=KbpXDhBBDmQW~yHkkRhtWt01tKMZv6bqRUnU7ki7WmAPgg-NnnftmyZIxvfCpK1EEb1xYHV-ksoSg8Un88XclzvsrjbObqvV0H8y5ReIuIiDnF7PHdMLdrbIG9TkHtA5f1JybmOsTREiL2v100WmfiSAroEoEjkX-q5GCM-NGCpXAriPX11lZV1ilxWchQ4lSQ3PURICYoRjGhWcKb4nkjPIBb4NodXDEJD7oa6OidvJ-3qRHay-X7rvnlkscU-e9m3BzFZw5g7akwSxsL7TAM4xcT0c5mN0NevLC~3F9Awn0NYZt5z7gBiQxd9-GCPbfpVmuP5lOfGR48PAT9Z9~Q__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_11.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-7a36-74e9-9692-c46231c84fd2.png?Expires=1795564800&Signature=lNgWUzPZBQElCWsCBXkJMfk~MxqpMFDoXGoI7Zj8G4oDT6oAHi40PFVi8jiRWakMeS-Obr1zazw-aN3aeNnlOJgmafH2o0Ir-MwJh9iab3VoL9qSxmQUKw8GWWLAn1vtzGsYwm4cFQMZa6tUaGghSRQHPB0PgBPx0WJ-H3GgoehkLCxAobsv8cEG-YdjmMhlrQhqLOAyiEzcobjTb1KvFq53FHNOwzk5YVksD2uMOW2Sf50pn00W5LzxckqP8su0DZW6JZ1u4JBrLbBs2Qgsxc9yH1evjBQ4pFy1O1lLj9Agk7buSFCF4E5dufOqnzR~Ql18l4hzqP8wU4J7SPC1Rw__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_11.png"
+          echo "11 01a208fa-7a36-74e9-9692-c46231c84fd2" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-920a-7050-a321-6ea885205e9b/01a208fd-ac25-70b8-ac45-796c33508c70/Meshy_AI__1123151932_image-to-3d-texture.glb?Expires=1795564800&Signature=JTErkXxJstq6~2m-zbeeUvGqdahOypHKC3BHWbkmc6VcpoUOpUBy3XOinMP7dpA3~~p05fQFdwKLI0Rw13~pLkg1-OJmJGZGevy2rCzGUd1IiaZUxEi0DUrzZRxVwxtapZMgluAldhQwA3vHUSSehr94M8f2XCUtYhdEm9ZNXvKI2X4z7gAvyXaYPJbvMuDD7JDjD6xMuV-FPF76HYaD0xGiVAontNeHoPCEmSrj~luFCYQS0p~j7og868PJzWgJYQIVbqDlIr5KskuIuF696kSF7FPzr9MT4deQlioDLggPITM0mvcrpBNuokpqV7sLGxfX8ZWqlMibi6dqs-OAQA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_12.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-920a-7050-a321-6ea885205e9b.png?Expires=1795564800&Signature=gLDJYd1-relDcqb54Gg0E6Ns49NHyoJfC7gvPI7~d2X03RuRKiOgY~8WQ~tHFrpJWy-2Qy1V2-LaskljuoTJAM5OwF7lbWibddZR7YRNKvmOlWfD75qyuK7dPYKyDiyoyWkj5iI1TJ~sBfre~qzH2wfarkb9nnr9wn-G3Ap7CKyljifrYFFx92lsqnQjViysH3KxZkEd3asbw6mIQIRimpMrl3KYxSPoF5ETFLd2yGJuD5N6IzmjRVntJTggTz1GcV~sGmZYUJB1ZSXQYpMaJ24rA-LDHiWTRka743vb-10sBUJSnucMRgSEJOe1SL5tG~XgmQN1HZq9BKe7ds-YdQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_12.png"
+          echo "12 01a208fa-920a-7050-a321-6ea885205e9b" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-a8d5-728e-a575-56a6a71e2c58/01a208fe-22f1-74bb-85b1-afa4b37229bf/Meshy_AI__1123152002_image-to-3d-texture.glb?Expires=1795564800&Signature=lY1q6JHrQUlh6BcTkgHipYfXyMRzfCuAm8t-n8oxOiUm7piK36qtPTu8F9W72Kukoxa13e~RcKR2lGF03Fg3eY3MTSuJDXMXKzCF8Zi8XE8M9f7ucSWiv3NvlbAf0AYId2M-oXYTlLERXoWaz5iIk1Y~~G8j8c7S1pAvjrAoF9sDpChfJpjtN1Jwq8QQIOKYfumPBzOvCbBOwC5z6k6OKYpgkT6cJE6DgJh-FAuTXE~uHBOzN~cV9GKJyjWAJiWgK5Wl4BQHnrC8VdxV~az4d4V2fDyf-xQ-yBb2GpygKyohhQrGV9YJIOUfQopeCtCt-yGnGMfaNy~zupCVs9w5vw__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_13.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-a8d5-728e-a575-56a6a71e2c58.png?Expires=1795564800&Signature=cL9h8ExRmpHZOiATTMInwJ3uTs5ssrk0wlGYIcWq9q1UotFEMs2PqzfJL9ZfrFLknfra2M1pBWDO2H74qqKpnteXrjKjq~rq5y~a~t0kHtKT2DvytQN5lOkItaBNxjIq1OBQPXzQbWq7jm-wyp7mHZiC8vVU-icaaQHygS-v8a6ur~Vt72vjemlM0DIxjG5ztHnoziIMEwkDVIXyu~M9fsPwS7bJM9NHaUEedxBue6VvR7bKelPzN4yly5RddWBPJrHUsTojQfiizz3yPU8a1azKfK00YKT~aV-65KfD~H24CTxhCRuj8rvbeGDeawdxfvZix9zF1YpJd7wrUBNzWg__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_13.png"
+          echo "13 01a208fa-a8d5-728e-a575-56a6a71e2c58" >> intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-c002-7308-a7be-f87bb90f9658/01a208fd-d86e-757b-8400-37e2d134b6d9/Meshy_AI__1123151943_image-to-3d-texture.glb?Expires=1795564800&Signature=c4JxqemcASmkjVAuwzIuh5mTm~ccTV9IF1JeTryyDYgJ5HtkeqPJZiZ9y0hklO14t72LWyp~7JCcGROr8NJ0lm7GqRmdBQ9dI9x8x7JMs58deitDi-wPjIVbnYBlXUlIrcjniXarknviueNac-ZdWd9UZ93d54rs9DObA0OM7NWlOIZAbHd1kj-TrCJvAPBx0gutkRVCH4gEcb6Kb1ijO4Bm7FF1EHxGsZKPsCTXq6Qw1QFiZGXRPXqbRYz~8tCU7wD5mzZUTP7BZuJpGcJ~DzKZOr4msBOMYIMy1~rbsVzat40qK0rO0BUNbpbsizqs0kjdOIvUyIwgPV7YBX-JGA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/models/vehicle_14.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-c002-7308-a7be-f87bb90f9658.png?Expires=1795564800&Signature=IsM5afvhz5DBpmDu6uOlIoZ0i97gk7QhyPXdcD36LWHYmlW8IonThcKrDmO6-jcLeSshCm8J-zjkp9wcQk5ciWj~1JSQTNQvcEJ6~v5SYr6ublWTH~zFiXpwxXwcZX83nVZ7klnG8n2VK0-7EeftLCb8QxCffi9ojDRo7SRfj79pYhjOCFv~AuNgu5JVvxqm-Q93A6pB0oJ0ErqT3U~nm3Uw3Xvz4ZPeuwLXrrOP28HLlhIBVPF8mQV3SIPezL4Hz~MPYaJKfwJROnUgNB23d2agUDKeeM6im2bbco-IRnrFUjGR7V~aqpz14zjTA0lhJ~0qkSCltGUJz8d0COhclQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "intake/source_images/vehicle_14.png"
+          echo "14 01a208fa-c002-7308-a7be-f87bb90f9658" >> intake/task_ids.txt
+          cp assets/kart/menu/fleet/*.webp intake/current_fleet/
 
+      - name: Audit GLB containers and build immutable manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib, struct
+          root=pathlib.Path('intake')
+          tasks={}
+          for line in (root/'task_ids.txt').read_text().splitlines():
+              n, task=line.split()
+              tasks[n]=task
+          rows=[]
+          for n,task in sorted(tasks.items()):
+              glb=root/'models'/f'vehicle_{n}.glb'
+              img=root/'source_images'/f'vehicle_{n}.png'
+              data=glb.read_bytes()
+              assert len(data) > 1000, (glb, len(data))
+              assert data[:4] == b'glTF', (glb, data[:4])
+              _,version,total=struct.unpack('<4sII',data[:12])
+              assert version==2 and total==len(data), (glb,version,total,len(data))
+              image=img.read_bytes()
+              assert image.startswith(b'\x89PNG\r\n\x1a\n'), img
+              rows.append({
+                  'index':int(n),'task_id':task,
+                  'glb':str(glb),'glb_bytes':len(data),
+                  'glb_sha256':hashlib.sha256(data).hexdigest(),
+                  'source_image':str(img),'source_image_bytes':len(image),
+                  'source_image_sha256':hashlib.sha256(image).hexdigest()
+              })
+          assert len(rows)==14, len(rows)
+          (root/'manifest.json').write_text(json.dumps({
+              'batch':'LUMO Meshy vehicle-body candidates 2026-11-23',
+              'count':len(rows),
+              'identity_policy':'index + Meshy task_id only; no guessed Kart name',
+              'items':rows
+          },indent=2,ensure_ascii=False)+'\n')
+          print('GLB intake PASS',len(rows))
+          PY
+          cat intake/manifest.json
+
+      - name: Save review artifact with current fleet references
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-meshy-vehicle-intake-review
+          path: intake/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Commit durable incoming binaries without guessed identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p art/lumo_kart/meshy_incoming/models art/lumo_kart/meshy_incoming/source_images
+          cp intake/models/*.glb art/lumo_kart/meshy_incoming/models/
+          cp intake/source_images/*.png art/lumo_kart/meshy_incoming/source_images/
+          cp intake/manifest.json art/lumo_kart/meshy_incoming/manifest.json
+          git config user.name "LUMO Asset Intake"
+          git config user.email "64243701+Ullmann27@users.noreply.github.com"
+          git add art/lumo_kart/meshy_incoming
+          git commit -m "assets(kart): preserve 14 Meshy vehicle candidates by task identity"
+          git push origin HEAD:asset/lumo-meshy-intake-20261123
