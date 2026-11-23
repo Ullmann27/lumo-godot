@@ -1,0 +1,59 @@
+name: LUMO Meshy productionize assets
+on:
+  push:
+    branches: [asset/lumo-meshy-intake-20261123]
+    paths: [.github/workflows/lumo-meshy-productionize.yml]
+permissions:
+  contents: write
+jobs:
+  productionize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy verified staged assets into production paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/kart/production/meshy assets/kart/production/garage
+          declare -A MAP=(
+            [01]=comet [02]=gecko_velo [03]=boru_rally [04]=glider
+            [05]=nala_comet [06]=noa_tide [07]=iva_aurora [08]=turbo
+            [09]=zuri_volt [10]=blitz [11]=terra [12]=koloss
+            [13]=phantom [14]=stella
+          )
+          for idx in "${!MAP[@]}"; do
+            src="art/lumo_kart/meshy_incoming/models/vehicle_${idx}.glb"
+            dst="assets/kart/production/meshy/${MAP[$idx]}.glb"
+            test -s "$src"
+            cp "$src" "$dst"
+          done
+          cp art/lumo_kart/meshy_incoming/garage_models/garage_01.glb assets/kart/production/garage/meshy_tool_workbench.glb
+          cp art/lumo_kart/meshy_incoming/garage_models/garage_02.glb assets/kart/production/garage/meshy_turntable.glb
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path("assets/kart/production")
+          rows=[]
+          for path in sorted((root/"meshy").glob("*.glb")):
+              data=path.read_bytes()
+              assert data[:4]==b"glTF"
+              rows.append({"id":path.stem,"path":str(path),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+          garage=[]
+          for path in sorted((root/"garage").glob("meshy_*.glb")):
+              data=path.read_bytes()
+              assert data[:4]==b"glTF"
+              garage.append({"id":path.stem,"path":str(path),"bytes":len(data),"sha256":hashlib.sha256(data).hexdigest()})
+          assert len(rows)==14 and len(garage)==2
+          manifest={"schema_version":1,"vehicles":rows,"garage":garage,
+                    "runtime_policy":"Meshy shells are close-range visual layers only; original mechanical chassis, anchors, collisions and fallback LODs remain authoritative."}
+          (root/"meshy"/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
+          print("productionize PASS",len(rows),len(garage))
+          PY
+      - name: Commit production assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "LUMO Asset Integration"
+          git config user.email "64243701+Ullmann27@users.noreply.github.com"
+          git add assets/kart/production/meshy assets/kart/production/garage
+          git commit -m "assets(kart): install verified Meshy shells and garage props"
+          git push origin HEAD:asset/lumo-meshy-intake-20261123
