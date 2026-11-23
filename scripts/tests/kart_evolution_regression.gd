@@ -24,6 +24,7 @@ var sampled := 0
 var pairwise := 0
 var envelopes: Array[Dictionary] = []
 var actual_drive: Array[Dictionary] = []
+var single_part_results: Array[Dictionary] = []
 var game
 var output := ""
 
@@ -132,8 +133,13 @@ func _catalogue_and_combinations() -> void:
     _check(not CATALOG.limit_notes(saturated, FINE.changes({"pressure": -2, "wing_angle": 2})).is_empty(),
         "visible explanation of a saturated combination")
     var before := DYNO.measure(base)
+    single_part_results.append({"slot": "stock", "part": "serie", "factors": base, "dyno": before})
+    print("[KartEvolutionPart] ", JSON.stringify(single_part_results[-1]))
     for slot in NEW_PARTS:
-        var after := DYNO.measure(CATALOG.apply(base, {slot: NEW_PARTS[slot]}))
+        var combined := CATALOG.apply(base, {slot: NEW_PARTS[slot]})
+        var after := DYNO.measure(combined)
+        single_part_results.append({"slot": slot, "part": NEW_PARTS[slot], "factors": combined, "dyno": after})
+        print("[KartEvolutionPart] ", JSON.stringify(single_part_results[-1]))
         var better := false
         var worse := false
         for metric in DYNO.METRICS:
@@ -275,7 +281,8 @@ func _run() -> void:
             "engine": Engine.get_version_info().string, "checks": checks, "failures": failures,
             "total_catalogue_loadouts": CATALOG.combination_count(), "factor_extrema": envelopes,
             "pairwise_cases": pairwise, "sampled_complete_loadouts": sampled,
-            "real_race_setups": actual_drive, "android_fps_verified": false}, "  "))
+            "real_race_setups": actual_drive, "single_part_comet": single_part_results,
+            "android_fps_verified": false}, "  "))
         file.close()
     print("[KartEvolution] %s checks=%d pairwise=%d sampled=%d actual_race_setups=%d" %
         ["PASS" if failures.is_empty() else "FAIL", checks, pairwise, sampled, actual_drive.size()])

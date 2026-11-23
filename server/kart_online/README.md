@@ -4,6 +4,8 @@
 
 1. Das Kind öffnet **Spielen → Lumo Kart → Online-Rennen**.
 2. Beim ersten Mal wählt es einen eigenen festen Spielernamen, beispielsweise `Alina_04`. Der Name des Lernprofils wird nicht übernommen.
+Nach der ersten Registrierung verbindet sich das freigegebene Profil beim nächsten Öffnen von Lumo Kart automatisch. Eingehende Anfragen erscheinen am Online-Knopf bereits im Kart-Hauptmenü.
+
 3. Unter **Freund hinzufügen** gibt es den Spielernamen des anderen Kindes ein. Das andere Kind erhält eine **Freundschaftsanfrage** und nimmt sie ausdrücklich an.
 4. Die bestätigte Freundschaft erscheint auf beiden Geräten. Die Liste zeigt **online** oder **offline**.
 5. Ein online angezeigter Freund kann separat **zum Rennen eingeladen** werden. Nach Annahme sehen beide den Rennraum. Erst wenn beide bereit sind und dieselbe Strecke geladen haben, gibt der Server die gemeinsame Startzeit vor.

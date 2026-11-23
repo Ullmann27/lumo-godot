@@ -31,6 +31,7 @@ var _configured: bool = false
 var _refresh_queued: bool = false
 var _ready_ids: Array = []
 var _typed_friend_name: String = ""
+var _offered_setup: Dictionary = {}
 
 
 func setup(owner_island: Node, url: String, child_key: String = "standalone") -> void:
@@ -43,7 +44,7 @@ func setup(owner_island: Node, url: String, child_key: String = "standalone") ->
 	session.friends_changed.connect(_queue_refresh)
 	session.friend_requests_changed.connect(_queue_refresh)
 	session.invitation_expired.connect(_on_invitation_expired)
-	session.room_joined.connect(func(_room: Dictionary): pending_invites.clear(); _queue_refresh())
+	session.room_joined.connect(func(_room: Dictionary): pending_invites.clear(); _ready_ids.clear(); _queue_refresh())
 	session.ready_changed.connect(func(ids: Array): _ready_ids = ids; _queue_refresh())
 	session.race_prepare.connect(_on_prepare)
 	session.race_start.connect(_on_start)
@@ -64,6 +65,12 @@ func setup(owner_island: Node, url: String, child_key: String = "standalone") ->
 	entry.offset_bottom = 82.0
 	entry.pressed.connect(open_lobby)
 	island.safe_ui.add_child(entry)
+	connect_if_registered.call_deferred()
+
+
+func connect_if_registered() -> void:
+	if _configured and session.registered and session.state == "offline":
+		session.connect_online()
 
 
 func _process(_delta: float) -> void:
@@ -87,6 +94,7 @@ func _process(_delta: float) -> void:
 
 func _info() -> Dictionary:
 	var selection: Dictionary = island.garage.setup if is_instance_valid(island.garage) else island.setup_snapshot
+	_offered_setup = selection.duplicate(true)
 	var kart: String = str(selection.get("kart", "comet"))
 	var look: Dictionary = {}
 	var full_look: Dictionary = island._ensure_workshop().look(kart)
@@ -95,7 +103,11 @@ func _info() -> Dictionary:
 		var value: Variant = full_look[key]
 		if value is String and pattern.search(str(key)) != null and pattern.search(value) != null:
 			look[str(key)] = value
-	return {"driver": str(selection.get("driver", "fox")), "kart": kart, "look": look}
+	var colors: Dictionary = {}
+	for key in ["paint", "trim", "accent", "neon", "rim", "two_tone", "cockpit"]:
+		if full_look.get(key) is Color:
+			colors[key] = (full_look[key] as Color).to_html(true)
+	return {"driver": str(selection.get("driver", "fox")), "kart": kart, "look": look, "colors": colors}
 
 
 func _stop_lan() -> void:
@@ -116,6 +128,7 @@ func open_lobby() -> void:
 	if is_instance_valid(overlay):
 		return
 	_stop_lan()
+	connect_if_registered()
 	overlay = Control.new()
 	overlay.name = "KartOnlineLobby"
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -144,6 +157,9 @@ func open_lobby() -> void:
 
 
 func close_lobby() -> void:
+	if session != null and session.state == "lobby" and session.my_id in _ready_ids:
+		session.leave_room()
+		_ready_ids.clear()
 	if is_instance_valid(overlay):
 		overlay.queue_free()
 	overlay = null
@@ -193,7 +209,7 @@ func _refresh_lobby() -> void:
 		_text("Strecke: " + _track_name(str(session.track)), 26, true)
 		_text("Mit " + str(session.friend.get("handle", "")), 23)
 		_text("Online sind zwei echte Fahrer unterwegs. Eure eigenen Bauteile wirken wie im Einzelrennen.", 21)
-		var ready_button := _button("Ich bin bereit", func(): session.ready_for_race())
+		var ready_button := _button("Ich bin bereit", func(): session.ready_for_race(_info()))
 		ready_button.name = "KartOnlineReady"
 		ready_button.disabled = session.my_id in _ready_ids
 		if ready_button.disabled:
@@ -311,7 +327,7 @@ func _on_prepare(selected_track: String) -> void:
 	active = true
 	_start_pending = true
 	result_row = null
-	var selection: Dictionary = island.garage.setup.duplicate(true)
+	var selection: Dictionary = _offered_setup.duplicate(true) if not _offered_setup.is_empty() else island.garage.setup.duplicate(true)
 	selection["mode"] = "time_trial"
 	selection["track"] = selected_track
 	# Same assist setting on both clients; their selected parts remain their own.
@@ -355,8 +371,15 @@ func build_remote(race_island: Node) -> LumoRaceKart:
 	if not _known(CATALOG.KARTS, kart_id):
 		kart_id = "comet"
 	var kart: LumoRaceKart = VEHICLE.new()
-	if info.get("look") is Dictionary:
-		kart.set_look(info.look)
+	var remote_look: Dictionary = info.get("look", {}).duplicate(true) if info.get("look") is Dictionary else {}
+	if info.get("colors") is Dictionary:
+		var allowed_colors: Array[String] = ["paint", "trim", "accent", "neon", "rim", "two_tone", "cockpit"]
+		var hex: RegEx = RegEx.create_from_string("^[0-9a-f]{8}$")
+		for key in info.colors:
+			var value: String = str(info.colors[key])
+			if str(key) in allowed_colors and hex.search(value) != null:
+				remote_look[str(key)] = Color.from_string("#" + value, Color.WHITE)
+	kart.set_look(remote_look)
 	kart.set_animated_lumo_enabled(driver == "fox")
 	kart.configure(driver, Color("8fd3ff"), kart_id)
 	kart.name = "OnlineFriendKart"
@@ -428,6 +451,31 @@ func add_result_rows(column_control: Control) -> void:
 	result_row = RESULT_WIDGETS.Row.new().setup("record", _result_text(), "", 0, Color("8fd3ff"))
 	result_row.name = "OnlineRaceResult"
 	column_control.add_child(result_row)
+	var local_row: Node = column_control.get_node_or_null("ResultRecord")
+	if local_row != null:
+		local_row.label.text = "Deine lokale Fahrzeit: %.2f s" % float(island.elapsed)
+	var return_row := HBoxContainer.new()
+	return_row.name = "OnlineReturnRow"
+	return_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	column_control.add_child(return_row)
+	var back: Button = RESULT_WIDGETS.Action.new().setup("Zur Online-Lobby", _return_to_online, "primary", "next")
+	back.name = "OnlineReturnToLobby"
+	return_row.add_child(back)
+	_label_offline_restart.call_deferred()
+
+
+func _return_to_online() -> void:
+	leave_race()
+	island._leave_race_for_menu()
+	open_lobby.call_deferred()
+
+
+func _label_offline_restart() -> void:
+	if not active or not is_instance_valid(island.modal_column):
+		return
+	var restart: Button = island.modal_column.find_child("ResultPrimary", true, false)
+	if restart != null:
+		restart.text = "Allein noch einmal"
 
 
 func _result_text() -> String:

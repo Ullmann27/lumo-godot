@@ -12,6 +12,7 @@ extends RefCounted
 ## deck vertex is the road surface point at the same lateral offset, the
 ## tangent is the road tangent and the banking is the road banking.
 const ROAD_SURFACES = preload("res://scripts/games/kart_road_surfaces.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const RADIUS: float = 6.5
 const ADVANCE: float = 7.0
 const LENGTH: float = TAU * RADIUS + ADVANCE * 0.2
@@ -38,6 +39,9 @@ var layout: Dictionary = {}
 var failed: bool = false
 var _arc_lengths: PackedFloat32Array = PackedFloat32Array()
 var _distance_along: float = 0.0
+## Cached at entry: acceleration, braking and bounded lateral response. No per-tick
+## dictionaries or gear-specific duplicate formulas are needed in the contact solver.
+var control_scales: Vector3 = Vector3.ONE
 
 
 static func radius_of(data: Dictionary) -> float:
@@ -184,9 +188,18 @@ func enter(
 	momentum: float,
 	cumulative: float,
 	lane_offset: float = 0.0,
-	entry_offset: float = 0.0
+	entry_offset: float = 0.0,
+	factors: Dictionary = {}
 ) -> void:
 	layout = data.duplicate()
+	var reference_speed: float = maxf(absf(momentum), 16.0)
+	var turn: float = POWERTRAIN.turn_rate(factors, reference_speed, false, false) / POWERTRAIN.turn_rate({}, reference_speed, false, false)
+	var grip: float = POWERTRAIN.grip_rate(factors, false) / POWERTRAIN.grip_rate({}, false)
+	control_scales = Vector3(
+		POWERTRAIN.acceleration(factors, false) / POWERTRAIN.acceleration({}, false),
+		POWERTRAIN.acceleration(factors, true) / POWERTRAIN.acceleration({}, true),
+		clampf(turn * 0.75 + grip * 0.25, 0.65, 1.40)
+	)
 	progress = 0
 	speed = momentum
 	entry_progress = cumulative
@@ -215,9 +228,11 @@ func advance(world, delta: float, steering: float, braking: float, throttle: boo
 		progress = _progress_at_distance(_distance_along)
 	var basis := frame_at(world, layout, progress)
 	var slope: float = (-basis.z).y
-	speed += (-GRAVITY * slope - braking * 13.0 + (0.9 if throttle else -0.2)) * delta
+	# Preserve the original arcade loop with a stock setup. Combined vehicle,
+	# upgrade and mounted-part factors change only the corresponding controls.
+	speed += (-GRAVITY * slope - braking * 13.0 * control_scales.y + (0.9 * control_scales.x if throttle else -0.2)) * delta
 	var limit: float = float(layout.get("lateral_limit", LATERAL_LIMIT))
-	lateral += steering * delta * 1.5
+	lateral += steering * delta * 1.5 * control_scales.z
 	if absf(lateral) > limit:
 		lateral = move_toward(lateral, signf(lateral) * limit, LATERAL_EASE * delta)
 	if speed < 4:

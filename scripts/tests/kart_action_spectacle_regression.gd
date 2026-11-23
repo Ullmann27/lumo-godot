@@ -27,6 +27,8 @@ func _check(condition: bool, description: String) -> void:
 func _sequence(world, entry: Dictionary) -> void:
 	var label: String = str(world.track_id) + "/" + str(entry.kind)
 	var begin: float = float(entry.start)
+	var lead: float = float(entry.get("lead_m", 34.0))
+	_check(SPECTACLE._free(begin, float(entry.end) - begin, SPECTACLE.of(world).get("base_blocked", []), lead), label + " keeps its complete geometry and approach outside every protected experience")
 	_check(begin > 80.0 and float(entry.end) < world.length - 75.0, label + " protects start and finish")
 	match str(entry.kind):
 		"crest":
@@ -130,6 +132,8 @@ func _run() -> void:
 		var actions: Array = report.get("actions", [])
 		var sites: Array = report.get("sites", [])
 		_check(actions.size() >= 2, str(track) + " gains at least two real action sequences")
+		if actions.size() < 2:
+			printerr("[KartSpectacle] planning ", track, " ", JSON.stringify({"length": world.length, "actions": actions, "blocked": report.get("base_blocked", [])}))
 		_check(sites.size() >= 6, str(track) + " gains multiple distinct scenery clusters")
 		_check(bool(report.get("built", false)), str(track) + " actually executes the renderer hook")
 		_check(int(report.get("added_instances", 0)) >= 100, str(track) + " actually adds rendered geometry")

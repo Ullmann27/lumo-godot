@@ -78,6 +78,15 @@ def clean_info(raw: Any) -> dict[str, Any] | None:
                 or not isinstance(value, str) or not ID_RE.fullmatch(value)):
             return None
         result["look"][key] = value
+    colors = raw.get("colors", {})
+    allowed_colors = {"paint", "trim", "accent", "neon", "rim", "two_tone", "cockpit"}
+    if not isinstance(colors, dict) or len(colors) > len(allowed_colors):
+        return None
+    result["colors"] = {}
+    for key, value in colors.items():
+        if key not in allowed_colors or not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{8}", value) is None:
+            return None
+        result["colors"][key] = value
     return result
 
 
@@ -252,7 +261,7 @@ class Relay:
                 self.invites.pop(invitation.key, None)
                 await self.send(invitation.sender, {"t": "declined", "handle": peer.handle})
         elif kind == "ready":
-            await self.ready(peer)
+            await self.ready(peer, message)
         elif kind == "loaded":
             await self.loaded(peer, message)
         elif kind == "state":
@@ -405,16 +414,24 @@ class Relay:
                                     "players": [{"id": p.uid, "handle": p.handle,
                                                  **room.info[p.uid]} for p in room.peers]})
 
-    async def ready(self, peer: Peer) -> None:
+    async def ready(self, peer: Peer, message: dict[str, Any]) -> None:
         room = self.rooms.get(peer.room)
         if room is None or room.state != "lobby":
             await self.error(peer, "not_in_lobby")
             return
+        if "info" in message:
+            info = clean_info(message["info"])
+            if info is None:
+                await self.bad(peer, "invalid_loadout")
+                return
+            room.info[peer.uid] = info
         room.ready.add(peer.uid)
         await self.broadcast(room, {"t": "ready", "ids": sorted(room.ready)})
         if len(room.ready) == 2 and room.state == "lobby":
             room.state = "loading"
-            await self.broadcast(room, {"t": "prepare", "room": room.key, "track": room.track})
+            await self.broadcast(room, {"t": "prepare", "room": room.key, "track": room.track,
+                                        "players": [{"id": p.uid, "handle": p.handle,
+                                                     **room.info[p.uid]} for p in room.peers]})
 
     async def loaded(self, peer: Peer, message: dict[str, Any]) -> None:
         room = self.rooms.get(peer.room)

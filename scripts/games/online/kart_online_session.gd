@@ -291,9 +291,12 @@ func decline(invite_id: String) -> void:
 	_send({"t": "decline", "invite": invite_id})
 
 
-func ready_for_race() -> void:
+func ready_for_race(info: Dictionary = {}) -> void:
 	if state == "lobby":
-		_send({"t": "ready"})
+		var packet: Dictionary = {"t": "ready"}
+		if not info.is_empty():
+			packet["info"] = info
+		_send(packet)
 
 
 func course_loaded(version: String, length: float, laps: int) -> void:
@@ -445,6 +448,11 @@ func _handle(message: Dictionary) -> void:
 				ready_changed.emit(ids)
 		"prepare":
 			if str(message.get("room", "")) == room_id and not room_id.is_empty():
+				var participants: Variant = message.get("players", [])
+				if participants is Array:
+					for participant in participants:
+						if participant is Dictionary and str(participant.get("id", "")) == str(friend.get("id", "")):
+							friend = participant.duplicate(true)
 				_set_status("loading", "Beide Karts werden an den Start gestellt …")
 				race_prepare.emit(track)
 		"start":

@@ -93,7 +93,25 @@ func _run() -> void:
 		return
 	_check(str(friend.friend_requests[0].username) == "QaAlina", "request shows sender username")
 	_check(str(online.session.room_id).is_empty(), "friendship request does not start race room")
-	friend.accept_friend(str(friend.friend_requests[0].request_id))
+	friend.decline_friend(str(friend.friend_requests[0].request_id))
+	if not await _until(func(): return friend.friend_requests.is_empty()):
+		_check(false, "friendship decline is independent of a race")
+		await _complete()
+		return
+	online.close_lobby()
+	friend.request_friend("QaAlina")
+	if not await _until(func(): return online.session.friend_requests.size() == 1):
+		_check(false, "incoming friendship request reaches the kart main menu")
+		await _complete()
+		return
+	await _settle(3)
+	_check(online.entry.visible and online.entry.text.contains("Anfragen"), "incoming request is visible in the kart main menu")
+	_check(not is_instance_valid(online.overlay), "incoming request does not cover the kart menu")
+	online.open_lobby()
+	await _settle(3)
+	var accept_friend_button: Button = online.column.find_child("KartOnlineAcceptFriend", true, false)
+	_check(accept_friend_button != null, "incoming friendship has explicit accept button")
+	accept_friend_button.pressed.emit()
 	if not await _until(func(): return online.session.friends.size() == 1 and friend.friends.size() == 1):
 		_check(false, "accepted friendship on both clients")
 		await _complete()
@@ -183,6 +201,13 @@ func _run() -> void:
 	_check(await _until(func(): return str(online.session.room_id).is_empty()), "disconnect closes online room")
 	_check(await _until(func(): return online.session.friends.size() == 1 and not bool(online.session.friends[0].online)), "accepted friend retained with offline presence")
 	_check(not remote.visible, "no AI opponent masquerades as disconnected friend")
+	online.session.disconnect_online("")
+	await _settle(4)
+	online._configured = online.session.configure(url, "online-qa-alina")
+	_check(online.session.registered and online.session.username == "QaAlina", "fixed username reloads from the profile identity")
+	online.connect_if_registered()
+	_check(await _until(func(): return online.session.state == "online"), "returning registered player connects without a connect button")
+	_check(await _until(func(): return online.session.friends.size() == 1), "accepted friendship reloads after reconnection")
 	await _complete()
 
 

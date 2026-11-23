@@ -61,19 +61,22 @@ static func _busy(world) -> Array:
 	return result
 
 
-static func _free(start: float, span: float, busy: Array) -> bool:
+static func _free(start: float, span: float, busy: Array, lead: float = 34.0) -> bool:
 	for zone in busy:
-		if start - 34.0 < float(zone.y) + 6.0 and start + span > float(zone.x) - 6.0:
+		if start - lead < float(zone.y) + 6.0 and start + span > float(zone.x) - 6.0:
 			return false
 	return true
 
 
-static func _choose(world, wish: float, span: float, busy: Array, jump: bool) -> float:
+static func _choose(world, wish: float, span: float, busy: Array, jump: bool, lead: float = 34.0) -> float:
 	var length: float = float(world.length)
-	for i in range(ceili(length / 6.0)):
-		var step: float = floorf(float(i + 1) / 2.0) * 6.0 * (1.0 if i % 2 == 0 else -1.0)
+	# Compact flat turbo lines need no jump/bottleneck warning run-up. A 2 m
+	# search finds narrow free intervals without changing any protected corridor.
+	var stride: float = 2.0 if lead < 12.0 else 6.0
+	for i in range(ceili(length / stride) * 2):
+		var step: float = floorf(float(i + 1) / 2.0) * stride * (1.0 if i % 2 == 0 else -1.0)
 		var at: float = wish + step
-		if at < 95.0 or at + span > length - 85.0 or not _free(at, span, busy):
+		if at < 95.0 or at + span > length - 85.0 or not _free(at, span, busy, lead):
 			continue
 		if jump:
 			var direction: Vector3 = world.forward(at + 14.0)
@@ -109,6 +112,7 @@ static func plan(world) -> void:
 	if bool(world.get_meta(OFF_META, false)) or not THEMES.has(str(world.track_id)):
 		return
 	var busy: Array = _busy(world)
+	report.base_blocked = busy.duplicate()
 	var target: int = clampi(ceili(float(world.length) / 650.0), 3, 6)
 	for i in range(target):
 		var wish: float = float(world.length) * (float(i) + 0.7) / float(target)
@@ -116,14 +120,16 @@ static func plan(world) -> void:
 		if str(world.track_id) == "riesengarten_2400":
 			kind = "turbo"
 		var span: float = 88.0 if kind == "crest" else (28.0 if kind == "narrow" else 32.0)
-		var chosen: float = _choose(world, wish, span, busy, kind == "crest")
+		var lead: float = 18.0 if kind == "turbo" else 34.0
+		var chosen: float = _choose(world, wish, span, busy, kind == "crest", lead)
 		if chosen < 0.0:
 			kind = "turbo"
 			span = 16.0
-			chosen = _choose(world, wish, span, busy, false)
+			lead = 6.0
+			chosen = _choose(world, wish, span, busy, false, lead)
 		if chosen < 0.0:
 			continue
-		var entry: Dictionary = {"kind": kind, "start": chosen, "end": chosen + span, "index": i}
+		var entry: Dictionary = {"kind": kind, "start": chosen, "end": chosen + span, "index": i, "lead_m": lead}
 		if kind == "crest":
 			world.action.kickers.append({
 				"start": chosen, "take_off": chosen + 14.0, "length": 14.0,
@@ -142,7 +148,7 @@ static func plan(world) -> void:
 				world.action.pads.append({"start": d, "end": d + 6.0,
 					"lateral": -2.2 if pad_index % 2 == 0 else 2.2, "spectacle": true})
 		report.actions.append(entry)
-		busy.append(Vector2(chosen - 34.0, chosen + span + 12.0))
+		busy.append(Vector2(chosen - lead, chosen + span + 12.0))
 	report.sites = _sites(world)
 	world.set_meta(META, report)
 
@@ -216,7 +222,8 @@ static func _put(world, site: Dictionary, shape: String, local: Vector3, size: V
 
 
 static func _action_gate(world, entry: Dictionary, theme: Array) -> void:
-	var at: float = float(entry.start) - 10.0
+	var lead: float = float(entry.get("lead_m", 34.0))
+	var at: float = float(entry.start) - minf(10.0, lead - 2.0)
 	var basis: Basis = world.frame(at)
 	var half: float = float(world.road_width_at(at)) * 0.5 + 1.5
 	var accent: Color = theme[2]
@@ -228,8 +235,9 @@ static func _action_gate(world, entry: Dictionary, theme: Array) -> void:
 	world._prop("box", world.position_at(at) + basis.y * 7.2, Vector3(half * 2.0 + 0.6, 0.55, 0.7), theme[1], basis)
 	var label: String = "PANORAMA-SPRUNG" if entry.kind == "crest" else ("SCHMALE LINIE" if entry.kind == "narrow" else str(theme[4]))
 	world._sign(world.position_at(at) + basis.y * 7.2 + basis.z * 0.4, basis, label, 0.014)
-	for n in range(6):
-		var d: float = at - 25.0 + float(n) * 4.0
+	var count: int = 3 if lead < 12.0 else 6
+	for n in range(count):
+		var d: float = lerpf(float(entry.start) - lead + 1.0, float(entry.start) - 1.0, float(n) / float(count - 1))
 		for side in [-1.0, 1.0]:
 			world._prop("box", world.position_at(d, side * (half - 0.8)) + world.frame(d).y * 0.12,
 				Vector3(0.25, 0.06, 1.8), accent, world.frame(d), true)

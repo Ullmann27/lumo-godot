@@ -2396,7 +2396,9 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 		# kart forward before entry and discarded its lateral position.
 		if entry_offset < 0.0 or entry_offset > maxf(window, speed * delta + 0.2) or off_lane or too_slow or airborne:
 			return false
-		loop_state.enter(layout, speed, distance - entry_offset, float(road.lateral) - float(layout.lane), entry_offset)
+		if kart_factors.is_empty():
+			_refresh_kart_factors()
+		loop_state.enter(layout, speed, distance - entry_offset, float(road.lateral) - float(layout.lane), entry_offset, kart_factors)
 		airborne = false
 		message.text = "Loop! Halte deinen Schwung."
 	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())

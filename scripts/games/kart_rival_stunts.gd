@@ -74,7 +74,8 @@ static func update_loop(game, index: int, delta: float) -> bool:
 			float(rival.motion_speed),
 			game.opponent_distances[index] - offset,
 			lane_offset,
-			offset
+			offset,
+			game.RIVAL_RACECRAFT.factors(rival.kart_style, index, game.difficulty)
 		)
 		rival.set_meta(STATE_KEY, state)
 	game._update_rival_item_tactics(index, game.player.position - rival.position, delta)

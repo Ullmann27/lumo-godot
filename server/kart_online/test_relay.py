@@ -172,6 +172,20 @@ class RelayIntegration(unittest.IsolatedAsyncioTestCase):
         a, b = await first.receive("start"), await second.receive("start")
         self.assertEqual(a["start_ms"], b["start_ms"])
 
+    async def test_ready_synchronizes_current_real_parts_and_paint(self) -> None:
+        first, second = await self.room_pair()
+        changed = {"driver": "cat", "kart": "comet",
+                   "look": {"engine": "axial", "wing": "venturi"},
+                   "colors": {"paint": "ff5533ff"}}
+        await first.send(t="ready", info=changed)
+        await second.send(t="ready")
+        a, b = await first.receive("prepare"), await second.receive("prepare")
+        self.assertEqual(a["players"], b["players"])
+        actual = next(player for player in a["players"] if player["id"] == first.uid)
+        self.assertEqual(actual["driver"], "cat")
+        self.assertEqual(actual["look"]["engine"], "axial")
+        self.assertEqual(actual["colors"]["paint"], "ff5533ff")
+
     async def test_decline_never_creates_a_room(self) -> None:
         first, second, invitation = await self.invite_pair()
         await second.send(t="decline", invite=invitation["invite"])
@@ -381,6 +395,8 @@ class BoundaryTests(unittest.TestCase):
         self.assertIsNone(clean_info({"driver": "../a", "kart": "comet"}))
         self.assertIsNone(clean_info({"driver": "fox", "kart": "comet", "look": {"engine": {}}}))
         self.assertIsNone(clean_info({"driver": "fox", "kart": "comet", "look": {str(i): "a" for i in range(25)}}))
+        self.assertIsNone(clean_info({"driver": "fox", "kart": "comet", "colors": {"shader": "ffffffff"}}))
+        self.assertIsNone(clean_info({"driver": "fox", "kart": "comet", "colors": {"paint": "invalid"}}))
 
 
 if __name__ == "__main__":
