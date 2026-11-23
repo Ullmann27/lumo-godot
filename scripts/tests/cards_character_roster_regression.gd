@@ -3,6 +3,7 @@ extends SceneTree
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const SEAT = preload("res://scripts/games/cards/cards_seat.gd")
 const TABLE = preload("res://scripts/games/cards/cards_table.gd")
+const HUD = preload("res://scripts/games/cards/cards_hud.gd")
 
 var checks := 0
 var failures: Array[String] = []
@@ -34,6 +35,7 @@ func _run() -> void:
 		_check(table_ids.has(id), "Cards table can select " + id)
 		_check(SEAT.NAMES.has(id), "Cards has a visible name for " + id)
 		_check(SEAT.PERSONALITIES.has(id), "Cards has a personality for " + id)
+		_check(ResourceLoader.exists(HUD.portrait_path(id)), "Cards HUD has the matching portrait for " + id)
 
 	var stage := Node3D.new()
 	root.add_child(stage)
