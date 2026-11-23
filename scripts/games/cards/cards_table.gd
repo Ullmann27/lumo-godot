@@ -24,7 +24,9 @@ const LUMO_ANGLE := -96.0
 ## Plätze so verteilt, dass von der Kamera aus keine Figur eine andere verdeckt:
 ## nie direkt hinter Lumo (links), bei drei Mitspielern einer rechts gegenüber.
 const OPPONENT_ANGLES := {1: [180.0], 2: [-152.0, 128.0], 3: [-156.0, 156.0, 104.0]}
-const ROSTER: Array[String] = ["squirrel", "owl", "turtle", "lion", "rabbit"]
+const ROSTER: Array[String] = [
+	"squirrel", "owl", "turtle", "lion", "rabbit", "frog", "otter", "badger", "cat",
+]
 const GOLD := Color(1.0, 0.78, 0.25, 0.95)
 const CYAN := Color(0.35, 0.9, 1.0, 0.95)
 const OFF := Color(0, 0, 0, 0)
@@ -140,7 +142,8 @@ func _ready() -> void:
 	hud.name = "Hud"
 	layer.add_child(hud)
 	hud.chosen.connect(_on_chosen)
-	_seat_ids = ["squirrel", "owl", "turtle"]
+	# Opening table deliberately shows members of the expanded production cast.
+	_seat_ids = ["otter", "frog", "cat"]
 	_build_seats(_seat_ids)
 	get_viewport().size_changed.connect(_resize)
 	MobileRuntime.safe_area_changed.connect(_resize)
@@ -1365,6 +1368,12 @@ func _react(player: int, mood: String) -> void:
 		seats[player].react(mood)
 
 
+func _winner_reaction(player: int) -> void:
+	# Lumo celebrates warmly with the child. AI friends get a longer,
+	# deliberately playful "I knew I'd win" posture without mocking anyone.
+	_react(player, "happy" if player == 0 else "smug")
+
+
 func _show_play(event: Dictionary) -> void:
 	var player := int(event.p)
 	var card := int(event.card)
@@ -1392,10 +1401,8 @@ func _show_trick(event: Dictionary) -> void:
 		cards[best].set_glow(GOLD)
 	_sfx("trick_win")
 	_burst_at(Vector3(0.14, ROOM.TABLE_Y + 0.1, 0))
-	if winner == 0:
-		seats[0].react("happy")
-	else:
-		_react(winner, "happy")
+	_winner_reaction(winner)
+	if winner != 0:
 		# Wer knapp verloren hat, ärgert sich kurz – freundlich, ohne Häme.
 		var sore: int = (winner + 1 + int(rules.s.r.trick_no)) % rules.players()
 		if sore != winner and sore != 0:
@@ -1428,7 +1435,7 @@ func _show_lay(event: Dictionary) -> void:
 	_refresh_hud()
 	await _wait(0.6)
 	if int(event.left) == 0:
-		_react(player, "happy")
+		_winner_reaction(player)
 		_burst_at(cards[card].global_position + Vector3(0, 0.1, 0))
 
 
@@ -1539,7 +1546,7 @@ func _show_set(event: Dictionary) -> void:
 	var set_index: int = rules.s.r.sets[player].find(int(event.rank))
 	hud.set_hint("%s ein Quartett: vier Mal %s!" % ["Du hast" if player == 0 else seats[player].display_name + " hat",
 		DECK.rank_label(int(event.rank))])
-	_react(player, "happy")
+	_winner_reaction(player)
 	_sfx("quartet")
 	for index in range(set_cards.size()):
 		var card := int(set_cards[index])
@@ -1698,7 +1705,8 @@ func _show_round() -> void:
 	_sfx("round_win" if won else "card_pass")
 	seats[0].react("happy" if won else "nod")
 	for player: int in entry.winners:
-		_react(player, "happy")
+		if player != 0:
+			_winner_reaction(player)
 	var title := "Runde %d geschafft!" % rules.round_number()
 	var text := _winner_text(entry.winners)
 	hud.set_hint("")
@@ -1754,7 +1762,7 @@ func _finish_match() -> void:
 	seats[0].react("happy" if place == 1 else "wave")
 	for player in range(1, seats.size()):
 		if int(places[player]) == 1:
-			seats[player].react("happy")
+			_winner_reaction(player)
 	hud.set_hint("")
 	hud.set_action("")
 	hud.set_stars(ProgressStore.total_stars())
