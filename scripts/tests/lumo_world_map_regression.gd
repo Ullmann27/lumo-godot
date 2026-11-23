@@ -1,6 +1,7 @@
 extends SceneTree
 ## Real Control layout and input checks for the read-only World atlas.
-## Runs without the 3D world, its assets, autoloads or any profile saves.
+## Uses the real creative viewport, safe-area path and project autoloads.
+## Does not instantiate the 3D world or write profile saves.
 
 const MAP = preload("res://scripts/creative/lumo_world_map.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
@@ -9,6 +10,9 @@ var checks := 0
 var failures: Array[String] = []
 var atlas: VBoxContainer
 var scroll: ScrollContainer
+var runtime_host: Node
+var safe_ui: Control
+var runtime: Script
 
 
 func _initialize() -> void:
@@ -23,6 +27,8 @@ func _check(condition: bool, description: String) -> void:
 
 
 func _run() -> void:
+	# The scripted SceneTree is parsed before the autoloads are registered.
+	runtime = load("res://scripts/creative/creative_runtime.gd")
 	var original_mission := {"id": "meet_nelli", "title": "Ein neues Zuhause", "at": Vector3(90, 0, 20)}
 	var original_completed: Array = []
 	var original_missions: Array = [original_mission, {"id": "school_numbers", "title": "Der Plan für den Garten", "at": Vector3(110, 0, -24)}]
@@ -31,10 +37,21 @@ func _run() -> void:
 		{"game": "cards", "at": Vector3(218, 0, -17)},
 		{"game": "settlement", "at": Vector3(500, 0, 6)}]
 	var original_bytes := var_to_bytes([original_mission, original_completed, original_missions, original_portals])
+	runtime_host = Node.new()
+	root.add_child(runtime_host)
+	var previous_runtime: Dictionary = runtime.enter(runtime_host, true)
+	var layer := CanvasLayer.new()
+	runtime_host.add_child(layer)
+	safe_ui = Control.new()
+	safe_ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(safe_ui)
 	scroll = ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	root.add_child(scroll)
+	safe_ui.add_child(scroll)
+	root.size_changed.connect(_layout)
+	runtime.watch_safe_area(runtime_host, _layout)
+	_layout()
 	atlas = MAP.new()
 	scroll.add_child(atlas)
 	# Configure after entering the tree as well as before is supported.
@@ -46,12 +63,16 @@ func _run() -> void:
 	_check(atlas.view_bounds.size.x <= 330, "nearby view keeps original towns readable beside the much larger village")
 	for dimensions in [Vector2i(280, 640), Vector2i(360, 800), Vector2i(640, 360), Vector2i(720, 840), Vector2i(1280, 720)]:
 		root.size = dimensions
-		scroll.size = Vector2(dimensions)
 		scroll.scroll_vertical = 0
 		await _frames(4)
+		var density: float = root.get_node("MobileRuntime").get_ui_density()
+		_check(root.get_visible_rect().size.is_equal_approx(Vector2(dimensions) / density), "logical viewport follows real World density layout at %s" % dimensions)
+		_check(scroll.size.is_equal_approx(safe_ui.size), "map scroll area fills the safe viewport at %s" % dimensions)
+		var pixels_per_ui_unit := root.get_final_transform().get_scale()
 		var buttons: Array = atlas.focus_buttons.values() + atlas.place_buttons.values()
 		for button in buttons:
-			_check(button.size.x >= 48 and button.size.y >= 48, "48px target %s at %s" % [button.name, dimensions])
+			var target_dp: Vector2 = button.size * pixels_per_ui_unit / density
+			_check(target_dp.x >= 47.99 and target_dp.y >= 47.99, "rendered 48dp target %s at %s" % [button.name, dimensions])
 			_check(button.get_global_rect().position.x >= -0.1 and button.get_global_rect().end.x <= dimensions.x + 0.1, "no horizontal clipping %s at %s" % [button.name, dimensions])
 		_check(atlas.canvas.size.x <= dimensions.x, "map fits available width at %s" % dimensions)
 		for legend_item in atlas.get_node("WorldMapLegend").get_children():
@@ -95,11 +116,18 @@ func _run() -> void:
 	_check(horizontal.size() == 2 and horizontal[0].is_equal_approx(Vector2(10, 50)) and horizontal[1].is_equal_approx(Vector2(210, 50)), "road clipping keeps both visible ends inside map")
 	_check(atlas._clip_segment(Vector2(-50, 0), Vector2(400, 0), rect).is_empty(), "outside parallel road is not drawn")
 	await _capture_if_requested(original_missions, original_portals)
-	scroll.queue_free()
+	root.size_changed.disconnect(_layout)
+	runtime.restore(runtime_host, previous_runtime)
+	runtime_host.queue_free()
 	await _frames(3)
 	_check(await TEARDOWN.release_audio(self, root, "[WorldMap]"), "UI click audio is released before the probe ends")
 	print("[WorldMap] %s %d checks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)
+
+
+func _layout() -> void:
+	if is_instance_valid(safe_ui):
+		runtime.safe_area(runtime_host, safe_ui)
 
 
 func _tap(button: Button) -> void:
@@ -125,13 +153,16 @@ func _capture_if_requested(mission_list: Array, portals: Array) -> void:
 	if target.is_empty() or DisplayServer.get_name() == "headless":
 		return
 	root.size = Vector2i(600, 590)
-	scroll.size = Vector2(600, 590)
 	scroll.scroll_vertical = 0
 	mission_list[0].title = "Ein neues Zuhause"
 	atlas.configure(BOUNDS, Vector3(70, 0, 18), PI * 0.5, mission_list[0], [], mission_list, portals, true)
 	await _frames(5)
 	await RenderingServer.frame_post_draw
 	var frame := root.get_texture().get_image()
+	var canvas_pixels := root.get_final_transform().basis_xform(atlas.canvas.size)
+	_check(frame.get_size() == root.size, "capture renders the actual window dimensions")
+	_check(canvas_pixels.x >= frame.get_width() * 0.9, "rendered map fills the capture window instead of shrinking into its corner")
+	print("[WorldMap] capture window=%s logical=%s map_pixels=%s scale=%s" % [root.size, root.get_visible_rect().size, canvas_pixels, root.get_final_transform().get_scale()])
 	_check(frame.save_png(target) == OK, "renderer screenshot is saved")
 
 
