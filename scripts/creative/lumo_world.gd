@@ -364,6 +364,8 @@ func _build_ui() -> void:
 	safe_ui.add_child(run_button)
 	map_button = KIT.button("Weltkarte", _map_dialog, 104)
 	safe_ui.add_child(map_button)
+	build_button = KIT.button("Bauen", _toggle_build_mode, 104, Color("6652b8"))
+	safe_ui.add_child(build_button)
 	exit_button = KIT.button("Pause", _pause_menu, 80)
 	safe_ui.add_child(exit_button)
 	modal = PanelContainer.new()
@@ -378,13 +380,168 @@ func _build_ui() -> void:
 	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_scroll.add_child(modal_box)
 	modal.hide()
+	_build_build_ui()
 	# The interaction label changes while walking. Godot may grow a Button to
 	# its text minimum after this frame; keep its right edge fixed and then
 	# recalculate the whole column from the actual themed minimum sizes.
-	for button in [action_button, vehicle_button, run_button, map_button, exit_button]:
+	for button in [action_button, vehicle_button, run_button, map_button, build_button, exit_button]:
 		button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 		button.minimum_size_changed.connect(func(): _layout.call_deferred())
 	mission_panel.minimum_size_changed.connect(func(): _layout.call_deferred())
+
+
+func _build_build_ui() -> void:
+	build_panel = PanelContainer.new()
+	build_panel.name = "WorldBuildPanel"
+	build_panel.add_theme_stylebox_override(
+		"panel", KIT.tinted_panel(Color("132944"), Color("b692ff"), 18)
+	)
+	safe_ui.add_child(build_panel)
+	build_box = VBoxContainer.new()
+	build_box.add_theme_constant_override("separation", 8)
+	build_panel.add_child(build_box)
+	build_status = KIT.label("", 16)
+	build_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	build_box.add_child(build_status)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size.y = 64
+	build_box.add_child(scroll)
+	build_buttons = HBoxContainer.new()
+	build_buttons.add_theme_constant_override("separation", 8)
+	scroll.add_child(build_buttons)
+	for option in own_village.build_options():
+		var kind := str(option.kind)
+		var title := str(option.title)
+		var button := KIT.button(title, _choose_build_kind.bind(kind), 138)
+		button.custom_minimum_size.y = 54
+		build_buttons.add_child(button)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	build_box.add_child(actions)
+	actions.add_child(KIT.button("Freier Platz", _next_build_plot, 132))
+	actions.add_child(KIT.button("Nächster Tag", _village_next_day, 132))
+	actions.add_child(KIT.button("Land erweitern", _village_expand, 142))
+	build_marker = MeshInstance3D.new()
+	build_marker.name = "WorldBuildMarker"
+	var marker_mesh := CylinderMesh.new()
+	marker_mesh.top_radius = 2.25
+	marker_mesh.bottom_radius = 2.25
+	marker_mesh.height = 0.08
+	marker_mesh.radial_segments = 40
+	build_marker.mesh = marker_mesh
+	build_marker.material_override = kit.material(Color("b692ff"), true)
+	add_child(build_marker)
+	build_marker.hide()
+	build_panel.hide()
+	_refresh_build_ui()
+
+
+func _refresh_build_ui(message := "") -> void:
+	if not is_instance_valid(build_status):
+		return
+	var plot_text := "kein freier Platz"
+	if build_plot >= 0:
+		plot_text = "Bauplatz %d" % (build_plot + 1)
+	var title := build_kind
+	for option in own_village.build_options():
+		if str(option.kind) == build_kind:
+			title = str(option.title)
+			break
+	build_status.text = (
+		own_village.resource_text()
+		+ "\n"
+		+ plot_text
+		+ " · "
+		+ title
+		+ ("" if message.is_empty() else " · " + message)
+	)
+	if is_instance_valid(build_marker):
+		build_marker.visible = build_mode and build_plot >= 0
+		if build_plot >= 0:
+			build_marker.position = own_village.plot_world(build_plot) + Vector3.UP * 0.12
+
+
+func _toggle_build_mode() -> void:
+	if paused or driving:
+		return
+	build_mode = not build_mode
+	camera_contacts.clear()
+	gesture_index = -1
+	player.velocity = Vector3.ZERO
+	if build_mode:
+		if build_plot < 0:
+			build_plot = own_village.next_free_plot()
+		if build_plot >= 0:
+			build_focus = own_village.plot_world(build_plot)
+		else:
+			build_focus = own_village.doorway()
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		build_button.text = "Zu Lumo"
+		build_panel.show()
+		joystick.set_enabled(false)
+		action_button.hide()
+		vehicle_button.hide()
+		run_button.hide()
+		fox.think(2.8)
+		camera_clearance.restore_all()
+		_update_camera(10.0)
+		_refresh_build_ui("Bauansicht")
+	else:
+		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		build_button.text = "Bauen"
+		build_panel.hide()
+		build_marker.hide()
+		joystick.set_enabled(true)
+		action_button.show()
+		vehicle_button.show()
+		run_button.show()
+		_update_camera(10.0)
+	_layout.call_deferred()
+
+
+func _choose_build_kind(kind: String) -> void:
+	if not build_mode or not STATE.BOUNDS.has_point(Vector2(player.position.x, player.position.z)):
+		return
+	build_kind = kind
+	if build_plot < 0:
+		build_plot = own_village.next_free_plot()
+	if build_plot < 0:
+		_refresh_build_ui("Kein freier Bauplatz")
+		return
+	var result: Dictionary = own_village.try_build(build_kind, build_plot)
+	if bool(result.get("ok", false)):
+		build_focus = own_village.plot_world(build_plot)
+		build_plot = own_village.next_free_plot(build_plot)
+		_save()
+	_refresh_build_ui(str(result.get("message", "")))
+
+
+func _next_build_plot() -> void:
+	if not build_mode:
+		return
+	build_plot = own_village.next_free_plot(build_plot)
+	if build_plot >= 0:
+		build_focus = own_village.plot_world(build_plot)
+	_refresh_build_ui()
+
+
+func _village_next_day() -> void:
+	if not build_mode:
+		return
+	var report: Dictionary = own_village.advance_day()
+	var message := str(report.get("message", ""))
+	if bool(report.get("advanced", false)):
+		message = "Dorftag %d" % int(report.get("day", own_village.model.day))
+	_refresh_build_ui(message)
+
+
+func _village_expand() -> void:
+	if not build_mode:
+		return
+	var result: Dictionary = own_village.expand_town()
+	_refresh_build_ui(str(result.get("message", "")))
 
 
 func _layout() -> void:
