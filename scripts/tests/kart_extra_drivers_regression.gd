@@ -109,19 +109,27 @@ func _run() -> void:
 				identity + ": usable card " + str(dimensions)
 			)
 		card.pressed.emit()
-		# Selection refresh is deferred. Observe the real imported driver's nod
-		# immediately after that refresh; then let the rest of the UI settle.
-		await settle(1)
+		# Selection replacement is intentionally deferred so the old 3D preview
+		# is never mutated while its button signal is still dispatching. Observe
+		# the real imported actor over a short bounded window instead of sampling
+		# before the deferred refresh has necessarily run. Eight frames are far
+		# shorter than the authored 1.46 s agree_nod clip, so this stays a strict
+		# runtime assertion rather than accepting a later fallback animation.
+		var garage_actor = null
+		var saw_selection_nod := false
+		for attempt in range(8):
+			await settle(1)
+			if is_instance_valid(menu.preview_kart):
+				garage_actor = menu.preview_kart.production_driver
+			if (
+				menu.setup.driver == identity
+				and is_instance_valid(garage_actor)
+				and garage_actor.current_behavior == &"agree_nod"
+			):
+				saw_selection_nod = true
+				break
 		check(menu.setup.driver == identity, identity + ": real selection action")
-		var garage_actor = (
-			menu.preview_kart.production_driver
-			if is_instance_valid(menu.preview_kart)
-			else null
-		)
-		check(
-			is_instance_valid(garage_actor) and garage_actor.current_behavior == &"agree_nod",
-			identity + ": visible production driver runs authored agree_nod"
-		)
+		check(saw_selection_nod, identity + ": visible production driver runs authored agree_nod")
 		await settle(5)
 		check_model(menu.preview_kart, identity, identity + " garage")
 		check(
