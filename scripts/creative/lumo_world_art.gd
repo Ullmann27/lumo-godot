@@ -18,6 +18,8 @@ var kit := KIT.new()
 var zones: Dictionary = {}
 var signs: Array[Label3D] = []
 var sign_extents: Dictionary = {}
+## Ground kept free of the authored tree scatter (open-world places and paths).
+var clear_areas: Array[Rect2] = []
 
 
 func build(root: Node3D) -> void:
@@ -267,6 +269,8 @@ func _foliage(root: Node3D) -> void:
 		var z: float = -98.0 + fposmod(float(index) * 29.37, 165.0)
 		if absf(z) < 11.0 or (z > -80 and z < 42 and x < 162) or (z > -78 and z < 42 and x > 175):
 			continue
+		if _cleared(Vector2(x, z)):
+			continue
 		trees.append(Transform3D(Basis(Vector3.UP, float(index) * 1.71).scaled(Vector3.ONE * (1.7 + float(index % 3) * 0.4)), Vector3(x, 0, z)))
 	for x in range(78, 267, 11):
 		for z in [-12.0, 13.0]:
@@ -278,6 +282,13 @@ func _foliage(root: Node3D) -> void:
 	VILLAGE.batch(root, "TownTreeCanopy", "tree_oak", trees, 140, true)
 	VILLAGE.batch(root, "TownFlowerBeds", "flowers", flowers, 85, false)
 	VILLAGE.batch(root, "TownHedges", "bush", bushes, 100, false)
+
+
+func _cleared(at: Vector2) -> bool:
+	for area in clear_areas:
+		if area.has_point(at):
+			return true
+	return false
 
 
 func _vehicle(root: Node3D, id: String, at: Vector3, yaw: float) -> Node3D:

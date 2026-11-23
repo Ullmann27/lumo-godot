@@ -11,6 +11,7 @@ const TARGET_COLOR := Color("c4ff98")
 const PORTAL_COLOR := Color("8ceaf1")
 const KART_COLOR := Color("ffe48a")
 const FRIEND_COLOR := Color("f6a8d8")
+const QUEST_COLOR := Color("c9a7ff")
 const MIN_TOUCH := 48.0
 
 class AtlasCanvas extends Control:
@@ -45,6 +46,10 @@ var focus_label: Label
 var places_grid: GridContainer
 var _built := false
 var _places: Array[Dictionary] = []
+var extra_paths: Array[Dictionary] = []
+## Open-world computer figures, kept apart from the three story residents.
+var world_figures: Array[Dictionary] = []
+var quest_target: Dictionary = {}
 
 
 func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dictionary, completed_missions: Array, all_missions: Array, portals: Array, reduce_motion := false) -> void:
@@ -54,6 +59,9 @@ func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dict
 	player_heading = heading
 	kart_available = false
 	friends.clear()
+	extra_paths.clear()
+	world_figures.clear()
+	quest_target = {}
 	active_mission = current_mission.duplicate(true)
 	completed = completed_missions.duplicate(true)
 	missions = all_missions.duplicate(true)
@@ -130,7 +138,7 @@ func _build_ui() -> void:
 	legend.add_theme_constant_override("h_separation", 16)
 	legend.add_theme_constant_override("v_separation", 5)
 	add_child(legend)
-	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR], ["Dein Kart", KART_COLOR], ["Computerfigur", FRIEND_COLOR]]:
+	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR], ["Dein Kart", KART_COLOR], ["Computerfigur", FRIEND_COLOR], ["Mission", QUEST_COLOR]]:
 		var line := HBoxContainer.new()
 		line.add_theme_constant_override("separation", 6)
 		var swatch := ColorRect.new()
@@ -329,6 +337,8 @@ func draw_atlas(surface: Control) -> void:
 	_draw_road(surface, Vector3(271, 0, 6), Vector3(497.2, 0, 6), 3)
 	for x in [90.0, 110.0, 135.0, 192.0, 218.0, 239.0]:
 		_draw_road(surface, Vector3(x, 0, -65), Vector3(x, 0, -7), 2)
+	for path in extra_paths:
+		_draw_road(surface, path.from, path.to, 2)
 	_draw_road(surface, Vector3(73, 0, 18), Vector3(147, 0, 18), 2)
 	_draw_road(surface, Vector3(182, 0, -45), Vector3(254, 0, -45), 2)
 	_draw_place_names(surface, rect)
@@ -354,6 +364,11 @@ func draw_atlas(surface: Control) -> void:
 	for friend in friends:
 		if _inside(friend.at):
 			_draw_friend_marker(surface, friend)
+	for figure in world_figures:
+		if _inside(figure.at):
+			_draw_friend_marker(surface, figure)
+	if not quest_target.is_empty():
+		_draw_quest_marker(surface, quest_target.at)
 	if kart_available:
 		_draw_kart_marker(surface)
 	_draw_marker(surface, player_at, PLAYER_COLOR, false)
@@ -536,6 +551,75 @@ func _clip_segment(first: Vector2, last: Vector2, rect: Rect2) -> PackedVector2A
 		if lower > upper:
 			return PackedVector2Array()
 	return PackedVector2Array([first + lower * direction, first + upper * direction])
+
+
+## Open-world places join the place buttons; each keeps its own local view.
+func add_places(entries: Array) -> void:
+	for entry in entries:
+		if not entry is Dictionary or not entry.get("at") is Vector3 or not entry.get("view") is Rect2 or str(entry.get("id", "")).is_empty():
+			continue
+		var exists := false
+		for place in _places:
+			exists = exists or str(place.id) == str(entry.id)
+		if not exists and world_bounds.has_point(Vector2(entry.at.x, entry.at.z)):
+			_places.append({"id": str(entry.id), "title": str(entry.get("title", "")), "at": entry.at, "view": entry.view})
+	_build_ui()
+	_refresh_places()
+
+
+## Open-world computer figures; same marker style as the story residents.
+func set_world_figures(entries: Array) -> void:
+	world_figures.clear()
+	for entry in entries:
+		if entry is Dictionary and entry.get("at") is Vector3 and not str(entry.get("name", "")).is_empty() and entry.at.is_finite() and world_bounds.has_point(Vector2(entry.at.x, entry.at.z)):
+			world_figures.append({"name": str(entry.name), "at": entry.at})
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+## Walkable open-world paths drawn like the authored footpaths.
+func add_paths(entries: Array) -> void:
+	for entry in entries:
+		if entry is Dictionary and entry.get("from") is Vector3 and entry.get("to") is Vector3 and entry.from.is_finite() and entry.to.is_finite():
+			extra_paths.append({"from": entry.from, "to": entry.to})
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+## The followed open-world mission step; drawn as its own diamond marker.
+func set_quest_marker(target: Dictionary) -> void:
+	quest_target = {}
+	if target.get("at") is Vector3 and target.at.is_finite() and world_bounds.has_point(Vector2(target.at.x, target.at.z)):
+		quest_target = {"at": target.at, "title": str(target.get("title", "Mission"))}
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+## Exact inside the view, otherwise clipped to the edge like the kart marker.
+func quest_marker_point(viewport_size: Vector2) -> Variant:
+	if quest_target.is_empty():
+		return null
+	var projected := project_position(quest_target.at, viewport_size)
+	if _inside(quest_target.at):
+		return projected
+	var clipped := _clip_segment(atlas_rect(viewport_size).grow(-10).get_center(), projected, atlas_rect(viewport_size).grow(-10))
+	return clipped[1] if clipped.size() == 2 else null
+
+
+func _draw_quest_marker(surface: Control, at: Vector3) -> void:
+	var marker_point: Variant = quest_marker_point(surface.size)
+	if marker_point == null:
+		return
+	var point: Vector2 = marker_point
+	var diamond := PackedVector2Array([point + Vector2(0, -10), point + Vector2(10, 0), point + Vector2(0, 10), point + Vector2(-10, 0)])
+	surface.draw_colored_polygon(diamond, Color("092a36"))
+	surface.draw_polyline(PackedVector2Array([diamond[0], diamond[1], diamond[2], diamond[3], diamond[0]]), QUEST_COLOR, 2.5, true)
+	surface.draw_circle(point, 3.5, QUEST_COLOR)
+	if not _inside(at):
+		var direction := (project_position(at, surface.size) - point).normalized()
+		var side := Vector2(-direction.y, direction.x)
+		var tip := point + direction * 17
+		surface.draw_polyline(PackedVector2Array([tip - direction * 5 + side * 4, tip, tip - direction * 5 - side * 4]), QUEST_COLOR, 2, true)
 
 
 ## Text-only context for an unsolved delivery; never creates a target marker.

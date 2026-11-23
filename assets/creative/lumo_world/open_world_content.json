@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "note": "Lumo World open-world content. Positions are World-local metres (x, y, z). Places with material 'prototype' are self-built placeholder geometry, not final art. Figures marked source 'roster' use the original production models from assets/characters/rivals/roster.json; they are computer-controlled figures, not online players.",
+  "places": [
+    {
+      "id": "buecherei", "title": "Bücherei Sonnendorf", "kind": "walk_in", "material": "prototype",
+      "at": [100, 0, 57], "size": [14, 10], "door": "-z", "accent": "8fd3ff",
+      "props": "library", "region": "Nordwiesen",
+      "description": "Eine kleine Bücherei mit Leseecke. Die Eule leiht hier Bücher aus."
+    },
+    {
+      "id": "kartenclub", "title": "Kartenclub", "kind": "walk_in", "material": "prototype",
+      "at": [160, 0, 57], "size": [14, 10], "door": "-z", "accent": "ffb3d9",
+      "props": "card_tables", "region": "Nordwiesen",
+      "description": "Hier treffen sich die Figuren aus Lumo Cards zum Plaudern und Üben."
+    },
+    {
+      "id": "kart_treff", "title": "Kart-Treff", "kind": "plaza", "material": "prototype",
+      "at": [232, 0, 58], "size": [18, 12], "accent": "ffe48a",
+      "props": "kart_garage", "region": "Nordwiesen",
+      "description": "Der Treffpunkt der Kart-Fahrerinnen und Kart-Fahrer aus Lumo Kart."
+    },
+    {
+      "id": "hafensteg", "title": "Hafensteg", "kind": "plaza", "material": "original",
+      "at": [165, 0, -90], "size": [16, 9], "accent": "7fe0ff",
+      "props": "harbour", "region": "Südufer",
+      "description": "Am Steg kommen Boote und manchmal eine Flaschenpost an."
+    },
+    {
+      "id": "bauernhof", "title": "Bauernhof", "kind": "plaza", "material": "original",
+      "at": [232, 0, -90], "size": [24, 10], "accent": "b9ef9a",
+      "props": "farm", "region": "Südufer",
+      "description": "Ein Hof mit Brunnen, Feld und Tieren. Hier wachsen die Äpfel für den Markt."
+    },
+    {
+      "id": "markt", "title": "Marktplatz", "kind": "plaza", "material": "original",
+      "at": [205, 0, -16], "size": [8, 5], "accent": "ffda91",
+      "props": "none", "region": "Sternenstadt",
+      "description": "Vor der Markthalle von Sternenstadt verkauft der Löwe Obst und Gemüse."
+    },
+    {
+      "id": "kartensalon", "title": "Kartensalon-Tor", "kind": "landmark", "material": "original",
+      "at": [218, 0, -17], "size": [6, 6], "accent": "b6ffdf",
+      "props": "none", "region": "Sternenstadt",
+      "description": "Das Tor zum vorhandenen 3D-Kartentisch."
+    }
+  ],
+  "paths": [
+    {"id": "nordweg", "title": "Nordweg", "points": [[106, 8], [106, 46]], "width": 4.0},
+    {"id": "wiesenpromenade", "title": "Wiesenpromenade", "points": [[98, 46], [236, 46]], "width": 4.4},
+    {"id": "sternenweg", "title": "Sternenweg", "points": [[229, 8], [229, 46]], "width": 4.0},
+    {"id": "buecherei_eingang", "title": "Büchereiweg", "points": [[100, 46], [100, 53]], "width": 3.4},
+    {"id": "kartenclub_eingang", "title": "Clubweg", "points": [[160, 46], [160, 53]], "width": 3.4},
+    {"id": "kart_treff_zufahrt", "title": "Kart-Treff-Zufahrt", "points": [[232, 46], [232, 52]], "width": 5.0},
+    {"id": "werkstattpfad", "title": "Werkstattpfad", "points": [[137, -45], [148, -45], [148, -84]], "width": 4.0},
+    {"id": "uferweg", "title": "Uferweg", "points": [[148, -84], [245, -84]], "width": 4.4},
+    {"id": "parkpfad", "title": "Parkpfad", "points": [[245, -45], [245, -84]], "width": 4.0}
+  ],
+  "figures": [
+    {"id": "owl", "source": "roster", "role": "Bibliothekarin", "place": "buecherei", "at": [96, 0, 58.5], "yaw": 2.6, "card": "card_owl"},
+    {"id": "cat", "source": "roster", "role": "Kartenclub-Leiterin", "place": "kartenclub", "at": [156, 0, 58], "yaw": 3.14, "card": "card_cat"},
+    {"id": "rabbit", "source": "roster", "role": "Kartenspielerin", "place": "kartenclub", "at": [164, 0, 58], "yaw": 3.14, "card": "card_rabbit"},
+    {"id": "otter", "source": "roster", "role": "Kart-Mechaniker", "place": "kart_treff", "at": [227, 0, 58], "yaw": 3.14, "card": "card_otter"},
+    {"id": "frog", "source": "roster", "role": "Streckenwart", "place": "kart_treff", "at": [237, 0, 58], "yaw": 3.14, "card": "card_frog"},
+    {"id": "turtle", "source": "roster", "role": "Hafenmeisterin", "place": "hafensteg", "at": [160, 0, -89], "yaw": 0.0, "card": "card_turtle"},
+    {"id": "badger", "source": "roster", "role": "Bauer", "place": "bauernhof", "at": [225, 0, -89], "yaw": 0.0, "card": "card_badger"},
+    {"id": "squirrel", "source": "roster", "role": "Apfelpflückerin", "place": "bauernhof", "at": [232, 0, -88.5], "yaw": 0.0, "card": "card_squirrel"},
+    {"id": "lion", "source": "roster", "role": "Marktmeister", "place": "markt", "at": [205, 0, -17], "yaw": 0.0, "card": "card_lion"}
+  ],
+  "cards": [
+    {"id": "card_owl", "figure": "owl", "trait": "Kennt jedes Buch der Bücherei", "power": "Lesen", "text": "Die Eule liest gern laut vor und hilft beim Finden der richtigen Seite."},
+    {"id": "card_turtle", "figure": "turtle", "trait": "Ruhig und geduldig", "power": "Geduld", "text": "Die Schildkröte wartet am Steg auf jedes Boot, egal wie lange es dauert."},
+    {"id": "card_cat", "figure": "cat", "trait": "Erklärt Spielregeln freundlich", "power": "Fairness", "text": "Mika achtet darauf, dass beim Kartenspiel alle mitmachen dürfen."},
+    {"id": "card_rabbit", "figure": "rabbit", "trait": "Übt so lange, bis es klappt", "power": "Mut", "text": "Nova verliert manchmal und spielt trotzdem gern weiter."},
+    {"id": "card_otter", "figure": "otter", "trait": "Repariert jedes Kart", "power": "Werkzeug", "text": "Milo prüft Reifen und Lenkung, bevor jemand losfährt."},
+    {"id": "card_frog", "figure": "frog", "trait": "Kennt alle Wege", "power": "Orientierung", "text": "Der Frosch zeigt, wo man langsam und sicher fahren kann."},
+    {"id": "card_badger", "figure": "badger", "trait": "Fleißig auf dem Feld", "power": "Ausdauer", "text": "Der Dachs bringt jeden Morgen die Ernte in die Scheune."},
+    {"id": "card_squirrel", "figure": "squirrel", "trait": "Zählt blitzschnell", "power": "Rechnen", "text": "Das Eichhörnchen weiß immer, wie viele Äpfel im Korb liegen."},
+    {"id": "card_lion", "figure": "lion", "trait": "Teilt gerecht", "power": "Teilen", "text": "Der Löwe sorgt dafür, dass auf dem Markt jeder etwas bekommt."}
+  ],
+  "missions": [
+    {
+      "id": "flaschenpost", "title": "Die Flaschenpost am Hafen", "subject": "Lesen", "giver": "owl",
+      "summary": "Die Eule schickt dich zum Hafensteg. Dort ist eine Flaschenpost angekommen.",
+      "steps": [
+        {"id": "ask_owl", "kind": "talk", "figure": "owl", "lead": "Sprich mit der Eule in der Bücherei.", "dialog": "owl_bottle_start"},
+        {"id": "reach_harbour", "kind": "visit", "place": "hafensteg", "lead": "Gehe über den Uferweg zum Hafensteg im Süden."},
+        {"id": "read_bottle", "kind": "talk", "figure": "turtle", "lead": "Lies die Flaschenpost mit der Schildkröte.", "dialog": "turtle_bottle_read", "rewardCards": ["card_turtle"]},
+        {"id": "return_owl", "kind": "talk", "figure": "owl", "lead": "Bring die Nachricht zurück zur Eule in die Bücherei.", "dialog": "owl_bottle_end", "rewardCards": ["card_owl"]}
+      ]
+    },
+    {
+      "id": "kartenclub", "title": "Das Treffen im Kartenclub", "subject": "Miteinander", "giver": "cat",
+      "summary": "Mika sammelt Geschichten vom Hafen. Zeig ihr die Karte der Schildkröte.",
+      "steps": [
+        {"id": "show_turtle", "kind": "show_card", "figure": "cat", "requiresCard": "card_turtle", "lead": "Zeig Mika im Kartenclub die Karte der Schildkröte.", "dialog": "cat_show_card"},
+        {"id": "cheer_nova", "kind": "talk", "figure": "rabbit", "lead": "Nova ist traurig. Sprich mit ihr im Kartenclub.", "dialog": "rabbit_cheer"},
+        {"id": "visit_salon", "kind": "visit", "place": "kartensalon", "lead": "Geh zum Kartensalon-Tor in Sternenstadt und schau es dir an."},
+        {"id": "report_mika", "kind": "talk", "figure": "cat", "lead": "Erzähle Mika im Kartenclub vom Kartensalon.", "dialog": "cat_report", "rewardCards": ["card_cat", "card_rabbit"]}
+      ]
+    },
+    {
+      "id": "kart_kurier", "title": "Kart-Kurier zum Bauernhof", "subject": "Kart", "giver": "otter",
+      "summary": "Milo braucht eine Fahrerin oder einen Fahrer, der Erntekörbe mit dem Kart zum Bauernhof bringt.",
+      "steps": [
+        {"id": "ask_milo", "kind": "talk", "figure": "otter", "lead": "Sprich mit Milo am Kart-Treff.", "dialog": "otter_courier_start"},
+        {"id": "drive_farm", "kind": "drive", "place": "bauernhof", "lead": "Fahre mit deinem Kart zum Bauernhof im Süden. Langsam auf den Wegen!"},
+        {"id": "unload_badger", "kind": "talk", "figure": "badger", "lead": "Steig aus und gib dem Dachs die Körbe.", "dialog": "badger_baskets", "rewardCards": ["card_badger"]},
+        {"id": "drive_back", "kind": "drive", "place": "kart_treff", "lead": "Fahre mit dem Kart zurück zum Kart-Treff.", "rewardCards": ["card_otter", "card_frog"]}
+      ]
+    },
+    {
+      "id": "markt_aepfel", "title": "Äpfel für den Markt", "subject": "Mathematik", "giver": "lion",
+      "summary": "Der Löwe braucht Äpfel vom Bauernhof für seinen Marktstand.",
+      "steps": [
+        {"id": "ask_lion", "kind": "talk", "figure": "lion", "lead": "Sprich mit dem Löwen am Marktplatz.", "dialog": "lion_market_start"},
+        {"id": "count_apples", "kind": "talk", "figure": "squirrel", "lead": "Hilf dem Eichhörnchen am Bauernhof beim Äpfelzählen.", "dialog": "squirrel_count", "rewardCards": ["card_squirrel"]},
+        {"id": "deliver_lion", "kind": "talk", "figure": "lion", "lead": "Bring die Äpfel zum Löwen auf den Marktplatz.", "dialog": "lion_market_end", "rewardCards": ["card_lion"]}
+      ]
+    }
+  ],
+  "dialogs": {
+    "owl_bottle_start": {"start": "hello", "nodes": {
+      "hello": {"text": "Hallo Lumo! Am Hafensteg ist eine Flaschenpost angekommen. Die Schildkröte passt auf sie auf. Holst du die Nachricht für die Bücherei?", "choices": [
+        {"label": "Ja, ich gehe zum Hafen!", "action": "complete"},
+        {"label": "Wo ist der Hafensteg?", "next": "where"},
+        {"label": "Vielleicht später", "action": "close"}]},
+      "where": {"text": "Geh zur Hauptstraße, dann über den Werkstattpfad nach Süden bis zum Wasser. Auf der Weltkarte siehst du den Hafensteg.", "choices": [
+        {"label": "Danke, ich gehe los!", "action": "complete"},
+        {"label": "Vielleicht später", "action": "close"}]}}},
+    "turtle_bottle_read": {"start": "found", "nodes": {
+      "found": {"text": "Schön, dass du da bist. Hier ist die Flaschenpost. Lies die Nachricht ganz in Ruhe.", "choices": [
+        {"label": "Nachricht lesen", "next": "question"}]},
+      "question": {"byGrade": {
+        "1": {"text": "Auf dem Zettel steht ein Wort: BUCH. Welches Wort ist das?", "choices": [
+          {"label": "BACH", "next": "retry1"}, {"label": "BUCH", "action": "complete"}, {"label": "BAUCH", "next": "retry1"}]},
+        "2": {"text": "Auf dem Zettel steht: Bring diese Flasche zur Bücherei. Wohin gehört die Flasche?", "choices": [
+          {"label": "Zum Bauernhof", "next": "retry2"}, {"label": "Zum Kart-Treff", "next": "retry2"}, {"label": "Zur Bücherei", "action": "complete"}]},
+        "3": {"text": "Auf dem Zettel steht: Zeig die Nachricht zuerst der Eule und danach dem ganzen Kartenclub. Wem zeigst du sie zuerst?", "choices": [
+          {"label": "Der Eule", "action": "complete"}, {"label": "Dem Kartenclub", "next": "retry3"}, {"label": "Dem Löwen", "next": "retry3"}]},
+        "4": {"text": "Auf dem Zettel steht: Ich habe hundert Geschichten, aber keine Beine. Wer liebt mich und passt in der Bücherei auf mich auf? Was ist mit 'mich' gemeint?", "choices": [
+          {"label": "Ein Boot", "next": "retry4"}, {"label": "Ein Buch", "action": "complete"}, {"label": "Ein Kart", "next": "retry4"}]}}},
+      "retry1": {"text": "Schau genau: B – U – C – H. Sprich jeden Laut einzeln und versuche es noch einmal.", "choices": [{"label": "Noch einmal lesen", "next": "question"}]},
+      "retry2": {"text": "Lies das letzte Wort im Satz noch einmal. Dort steht, wohin die Flasche gehört.", "choices": [{"label": "Noch einmal lesen", "next": "question"}]},
+      "retry3": {"text": "Achte auf die Wörter 'zuerst' und 'danach'. Sie verraten die Reihenfolge.", "choices": [{"label": "Noch einmal lesen", "next": "question"}]},
+      "retry4": {"text": "Es hat viele Geschichten, wohnt in der Bücherei und hat Seiten statt Beine.", "choices": [{"label": "Noch einmal lesen", "next": "question"}]}}},
+    "owl_bottle_end": {"start": "thanks", "nodes": {
+      "thanks": {"text": "Du hast die Flaschenpost gelesen und zurückgebracht! Die Nachricht kommt in unser großes Hafenbuch. Möchtest du meine Figurenkarte?", "choices": [
+        {"label": "Ja, gern!", "action": "complete"},
+        {"label": "Was ist eine Figurenkarte?", "next": "explain"}]},
+      "explain": {"text": "Jede Figur dieser Welt hat eine Karte. Du sammelst sie in deinem Album, wenn du gemeinsam einen Auftrag schaffst.", "choices": [
+        {"label": "Ja, gern!", "action": "complete"}]}}},
+    "cat_show_card": {"start": "ask", "nodes": {
+      "ask": {"text": "Willkommen im Kartenclub! Ich sammle Geschichten vom Hafen. Hast du schon die Figurenkarte der Schildkröte?", "choices": [
+        {"label": "Karte der Schildkröte zeigen", "requiresCard": "card_turtle", "next": "shown"},
+        {"label": "Wo bekomme ich die Karte?", "next": "where"},
+        {"label": "Tschüss, Mika", "action": "close"}]},
+      "where": {"text": "Die Eule in der Bücherei hat einen Auftrag mit einer Flaschenpost. Wenn du ihn erledigst, schenkt dir die Schildkröte ihre Karte.", "choices": [
+        {"label": "Ich schaue bei der Eule vorbei", "action": "close"}]},
+      "shown": {"text": "Wie schön! Die Schildkröte wartet geduldig am Steg. Kannst du Nova aufmuntern? Sie hat gerade ein Spiel verloren.", "choices": [
+        {"label": "Ich spreche mit Nova", "action": "complete"}]}}},
+    "rabbit_cheer": {"start": "sad", "nodes": {
+      "sad": {"text": "Ich habe schon wieder verloren. Vielleicht spiele ich nie mehr mit.", "choices": [
+        {"label": "Verlieren gehört dazu. Spielst du noch eine Runde mit mir?", "next": "better"},
+        {"label": "Du bist eben schlecht.", "next": "kinder"},
+        {"label": "Ich sage gar nichts.", "next": "kinder"}]},
+      "kinder": {"text": "Nova schaut auf den Boden. Überleg noch einmal: Welche Worte würden dir helfen, wenn du traurig bist?", "choices": [
+        {"label": "Noch einmal überlegen", "next": "sad"}]},
+      "better": {"text": "Danke! Mit dir macht es Spaß, auch wenn ich nicht gewinne. Mika möchte, dass du dir noch den Kartensalon in Sternenstadt ansiehst.", "choices": [
+        {"label": "Ich gehe zum Kartensalon", "action": "complete"}]}}},
+    "cat_report": {"start": "report", "nodes": {
+      "report": {"text": "Du warst beim Kartensalon? Dort steht der große Kartentisch. Danke, dass du Nova geholfen hast. Nova und ich schenken dir unsere Figurenkarten.", "choices": [
+        {"label": "Danke, Mika und Nova!", "action": "complete"}]}}},
+    "otter_courier_start": {"start": "hello", "nodes": {
+      "hello": {"text": "Hey Lumo! Der Dachs am Bauernhof braucht diese Erntekörbe. Die Kiste ist schwer. Kannst du sie mit deinem Kart hinbringen?", "choices": [
+        {"label": "Ja, ich fahre hin!", "next": "safety"},
+        {"label": "Wo ist der Bauernhof?", "next": "where"},
+        {"label": "Vielleicht später", "action": "close"}]},
+      "where": {"text": "Ganz im Süden am Uferweg, hinter dem Freundschaftspark. Fahr über den Sternenweg zur Straße und dann nach Süden.", "choices": [
+        {"label": "Ich fahre hin!", "next": "safety"}]},
+      "safety": {"text": "Super! Fahr langsam und halte auf den Wegen an, wenn jemand vor dir ist. Die Kiste ist schon in deinem Kart.", "choices": [
+        {"label": "Verstanden, ich fahre vorsichtig", "action": "complete"}]}}},
+    "badger_baskets": {"start": "arrive", "nodes": {
+      "arrive": {"text": "Da sind ja meine Erntekörbe! Hilfst du mir kurz beim Zählen?", "choices": [
+        {"label": "Ja, ich zähle mit", "next": "count"}]},
+      "count": {"byGrade": {
+        "1": {"text": "In der Kiste sind 3 rote und 2 gelbe Körbe. Wie viele Körbe sind es zusammen?", "choices": [
+          {"label": "4", "next": "retry"}, {"label": "5", "action": "complete"}, {"label": "6", "next": "retry"}]},
+        "2": {"text": "Ich habe 4 Körbe. In jeden Korb kommen 5 Äpfel. Wie viele Äpfel sind das?", "choices": [
+          {"label": "9", "next": "retry"}, {"label": "25", "next": "retry"}, {"label": "20", "action": "complete"}]},
+        "3": {"text": "Ich habe 48 Äpfel und verteile sie gleichmäßig auf 6 Körbe. Wie viele Äpfel kommen in jeden Korb?", "choices": [
+          {"label": "8", "action": "complete"}, {"label": "6", "next": "retry"}, {"label": "9", "next": "retry"}]},
+        "4": {"text": "Heute ernte ich 125 Äpfel, morgen doppelt so viele. Wie viele Äpfel sind es an beiden Tagen zusammen?", "choices": [
+          {"label": "250", "next": "retry"}, {"label": "375", "action": "complete"}, {"label": "350", "next": "retry"}]}}},
+      "retry": {"text": "Fast! Rechne Schritt für Schritt. Du kannst die Körbe auch mit den Fingern zählen.", "choices": [
+        {"label": "Noch einmal rechnen", "next": "count"}]}}},
+    "lion_market_start": {"start": "hello", "nodes": {
+      "hello": {"text": "Willkommen auf dem Markt! Meine Apfelkiste ist leer. Das Eichhörnchen am Bauernhof hat frische Äpfel. Hilfst du ihm beim Zählen?", "choices": [
+        {"label": "Ja, ich helfe!", "action": "complete"},
+        {"label": "Wo ist der Bauernhof?", "next": "where"},
+        {"label": "Vielleicht später", "action": "close"}]},
+      "where": {"text": "Geh über den Parkpfad hinter dem Freundschaftspark nach Süden bis zum Uferweg.", "choices": [
+        {"label": "Ich gehe hin!", "action": "complete"}]}}},
+    "squirrel_count": {"start": "hello", "nodes": {
+      "hello": {"text": "Hallo! Der Löwe wartet auf seine Äpfel. Ich habe gepflückt, aber jetzt muss gezählt werden.", "choices": [
+        {"label": "Ich zähle mit dir", "next": "count"}]},
+      "count": {"byGrade": {
+        "1": {"text": "Im Korb liegen 6 Äpfel. Ich lege noch 2 dazu. Wie viele Äpfel sind es jetzt?", "choices": [
+          {"label": "8", "action": "complete"}, {"label": "7", "next": "retry"}, {"label": "9", "next": "retry"}]},
+        "2": {"text": "Ich habe 35 Äpfel gepflückt. 12 davon sind grün, der Rest ist rot. Wie viele rote Äpfel sind es?", "choices": [
+          {"label": "13", "next": "retry"}, {"label": "23", "action": "complete"}, {"label": "47", "next": "retry"}]},
+        "3": {"text": "In 7 Kisten liegen je 9 Äpfel. Wie viele Äpfel sind das zusammen?", "choices": [
+          {"label": "56", "next": "retry"}, {"label": "72", "next": "retry"}, {"label": "63", "action": "complete"}]},
+        "4": {"text": "Der Löwe braucht 400 Äpfel. Ich habe schon 3 Kisten mit je 120 Äpfeln. Wie viele fehlen noch?", "choices": [
+          {"label": "40", "action": "complete"}, {"label": "80", "next": "retry"}, {"label": "160", "next": "retry"}]}}},
+      "retry": {"text": "Noch nicht ganz. Rechne in kleinen Schritten und prüfe dein Ergebnis.", "choices": [
+        {"label": "Noch einmal rechnen", "next": "count"}]}}},
+    "lion_market_end": {"start": "thanks", "nodes": {
+      "thanks": {"text": "Frische Äpfel für meinen Stand! Ich teile sie gerecht mit allen Nachbarn. Hier ist meine Figurenkarte für dich.", "choices": [
+        {"label": "Danke, Löwe!", "action": "complete"}]}}}
+  },
+  "smalltalk": {
+    "owl": "Psst, in der Bücherei ist es gemütlich leise. Ich mag Geschichten über das Meer.",
+    "cat": "Im Kartenclub spielen wir fair: Jeder kommt dran, und alle dürfen mitmachen.",
+    "rabbit": "Ich übe gerade neue Kartentricks. Beim nächsten Mal klappt es bestimmt!",
+    "otter": "Reifen prüfen, Lenkung prüfen, losfahren! So mache ich jedes Kart startklar.",
+    "frog": "Ich kenne alle Wege der Welt. Auf der Wiesenpromenade fährt man besonders langsam.",
+    "turtle": "Am Steg ist es ruhig. Ich zähle die Wellen, bis das nächste Boot kommt.",
+    "badger": "Auf dem Feld wächst heute viel. Morgen bringe ich alles in die Scheune.",
+    "squirrel": "Ich klettere auf die Apfelbäume und zähle jeden Apfel.",
+    "lion": "Auf meinem Markt bekommt jeder etwas. Teilen macht alle satt und froh."
+  }
+}

@@ -15,6 +15,7 @@ const OWN_VILLAGE = preload("res://scripts/creative/lumo_world_village.gd")
 const WORLD_MAP = preload("res://scripts/creative/lumo_world_map.gd")
 const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
+const OPEN_WORLD = preload("res://scripts/creative/lumo_world_open_world.gd")
 
 const PERSON_ZOOM_MIN := 3.2
 const PERSON_ZOOM_MAX := 13.0
@@ -94,6 +95,8 @@ var own_village: Node3D
 var portals: Array[Dictionary] = []
 var friend_post: Node3D
 var friend_post_original: Variant = {}
+var open_world: Node3D
+var open_world_original: Variant = {}
 var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
 var build_mode := false
@@ -130,12 +133,14 @@ func _ready() -> void:
 			save_blocked = read_error != OK or parser.parse(text) != OK or not parser.data is Dictionary
 			if not save_blocked:
 				friend_post_original = parser.data.get("friendPost", {})
+				open_world_original = parser.data.get("openWorld", {})
 				save_blocked = not model.restore(parser.data)
 		if save_blocked:
 			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
 	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
+	art.clear_areas = OPEN_WORLD.clear_areas()
 	art.build(self)
 	_create_owned_village(profile)
 	_create_player()
@@ -149,6 +154,10 @@ func _ready() -> void:
 	add_child(friend_post)
 	if not friend_post.setup(self, friend_post_original) and not save_blocked:
 		checkpoint_message = "Deine Freundepost konnte nicht geladen werden. Der gespeicherte Nebenauftrag bleibt erhalten; du kannst deine Welt weiter erkunden."
+	open_world = OPEN_WORLD.new()
+	add_child(open_world)
+	if not open_world.setup(self, open_world_original) and not save_blocked:
+		checkpoint_message = "Deine Missionen konnten nicht geladen werden. Der gespeicherte Stand bleibt erhalten; du kannst deine Welt weiter erkunden."
 	var vegetation_roots: Array[Node3D] = [art.zones.Gartenlandschaft, own_village.region]
 	camera_clearance.attach(vegetation_roots)
 	wonder = WISPS.new()
@@ -674,11 +683,14 @@ func _physics_process(delta: float) -> void:
 		wonder.set_routes(at, [{"at": kart_body.position}])
 	elif not mission.is_empty():
 		wonder.set_routes(at, [mission])
+	elif not open_world.tracked_route().is_empty():
+		wonder.set_routes(at, [open_world.tracked_route()])
 	_update_camera(delta)
 	var portal := _near_portal()
 	var friend_available: bool = friend_post.available(at)
+	var figure_available: bool = open_world.available(at)
 	var crossing_available := _near_crossing_button(at)
-	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not crossing_available)
+	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not figure_available and not crossing_available)
 	if crossing_available or str(mission.get("id", "")) == "safe_crossing":
 		action_button.text = "Ampelknopf"
 	elif str(mission.get("id", "")) == "school_numbers":
@@ -688,9 +700,12 @@ func _physics_process(delta: float) -> void:
 	if not model.near_current(at) and not crossing_available:
 		if friend_available:
 			action_button.text = "Freundepost"
+		elif figure_available:
+			action_button.text = "Ansprechen"
 		elif not portal.is_empty():
 			action_button.text = "Ort öffnen"
 	_refresh_vehicle_button()
+	open_world.tick(at, driving, delta)
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
 	for friend in residents:
@@ -1062,6 +1077,8 @@ func _interact() -> void:
 	if not model.near_current(player.position):
 		if friend_post.interact(player.position):
 			return
+		if open_world.interact(player.position):
+			return
 		var portal := _near_portal()
 		if not portal.is_empty():
 			_open_dialog(str(portal.title), str(portal.description))
@@ -1176,6 +1193,9 @@ func _update_mission() -> void:
 		var post_briefing: String = friend_post.briefing()
 		if not post_briefing.is_empty():
 			mission_label.text = post_briefing
+	var quest_line: String = open_world.hud_line() if is_instance_valid(open_world) else ""
+	if not quest_line.is_empty():
+		mission_label.text += "\n" + quest_line
 
 
 func _map_dialog() -> void:
@@ -1196,6 +1216,10 @@ func _map_dialog() -> void:
 	for friend in residents:
 		friends.append({"name": str(friend.name), "at": friend.position})
 	overview.set_friends(friends)
+	overview.set_world_figures(open_world.map_figures())
+	overview.add_places(open_world.map_places())
+	overview.add_paths(open_world.map_paths())
+	overview.set_quest_marker(open_world.tracked_route())
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
@@ -1205,12 +1229,20 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden, mit Kart suchen hinführen lassen und in der Nähe einsteigen\nNelli, Bruno und Tilda sind Computerfiguren dieser Welt, keine Online-Mitspieler", 16))
+	var journal_button := KIT.button("Aufträge & Figurenkarten", _open_journal_from_dialog, 180, Color("7b5cc4"))
+	journal_button.name = "WorldJournalButton"
+	modal_box.add_child(journal_button)
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden, mit Kart suchen hinführen lassen und in der Nähe einsteigen\nNelli, Bruno, Tilda und alle Figuren mit dem Schild Computerfigur gehören zu dieser Welt, keine Online-Mitspieler", 16))
 	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(village_summary)
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_dialog, 160))
+
+
+func _open_journal_from_dialog() -> void:
+	_close_dialog()
+	open_world.open_journal()
 
 
 func _open_build_from_dialog() -> void:
@@ -1225,6 +1257,7 @@ func _pause_menu() -> void:
 	_save()
 	_open_dialog("Deine Welt wartet auf dich", "Deine Aufträge und dein Platz bleiben gespeichert. Du kannst in Ruhe weiter erkunden oder zur Spielewelt zurückgehen.")
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_dialog, 160, Color("1b7d63")))
+	modal_box.add_child(KIT.button("Aufträge & Figurenkarten", _open_journal_from_dialog, 160))
 	modal_box.add_child(KIT.button("Zur Spielewelt", _leave, 160))
 
 
@@ -1247,6 +1280,7 @@ func _save() -> bool:
 	var data: Dictionary = model.to_data()
 	# Keep unreadable or future sidequest data unchanged in the original profile save.
 	data["friendPost"] = friend_post.to_data() if friend_post.save_valid else friend_post_original
+	data["openWorld"] = open_world.to_data() if open_world.save_valid else open_world_original
 	file.store_string(JSON.stringify(data))
 	file.flush()
 	var result := file.get_error()
@@ -1297,6 +1331,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_vehicle()
 			KEY_M:
 				_map_dialog()
+			KEY_J:
+				if not paused and not save_blocked:
+					open_world.open_journal()
 			KEY_B, KEY_TAB:
 				_toggle_build_mode()
 			_:
