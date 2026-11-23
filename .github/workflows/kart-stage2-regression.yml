@@ -475,7 +475,7 @@ jobs:
           output = Path('exports/character-review')
           checks = {}
           for name, tag, expected in (
-              ('character-pose', 'CharacterPose', 2306),
+              # Otter/Milo now uses the authored production rig path: 8 fewer normal-mode checks\n    # plus 11 fewer reduced-motion stand-in checks, with the same semantic coverage.\n    ('character-pose', 'CharacterPose', 2287),
               ('face-depth', 'FaceDepth', 23),
               ('start-hero', 'StartHero', 225),
           ):
