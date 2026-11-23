@@ -112,7 +112,9 @@ func _process(delta: float) -> void:
 			teacher_pose.advance(self, delta)
 		_advance_face(delta)
 		return
-	if walking and not platform_active and not suspended and not reduced_motion and locomotion != null:
+	# Reduced-motion suppresses decorative idle/facial motion, but locomotion is
+	# essential feedback: a moving character must still articulate its gait.
+	if walking and not platform_active and not suspended and locomotion != null:
 		locomotion.advance(delta, walk_speed_mps)
 	_advance_face(delta)
 
@@ -147,10 +149,23 @@ func set_locomotion_speed(speed_mps: float) -> bool:
 var platform_style: Dictionary = {}
 
 
+func _effective_platform_style() -> Dictionary:
+	if not reduced_motion:
+		return platform_style
+	# Walking/running is functional motion, not decorative motion. Keep the gait
+	# readable in calm/reduced mode while lowering the amount of body movement.
+	return {
+		"limb_gain": minf(float(platform_style.get("limb_gain", 1.0)), 0.72),
+		"bounce_gain": minf(float(platform_style.get("bounce_gain", 1.0)), 0.55),
+		"run_floor": 0.0,
+		"response": clampf(float(platform_style.get("response", 22.0)), 14.0, 22.0),
+	}
+
+
 func set_platform_style(style: Dictionary) -> void:
 	platform_style = style.duplicate()
 	if platform_active and platform_pose != null:
-		platform_pose.set_style(platform_style)
+		platform_pose.set_style(_effective_platform_style())
 
 
 func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> bool:
@@ -180,13 +195,12 @@ func set_platform_motion(velocity: Vector3, grounded: bool, delta: float) -> boo
 		if not platform_pose.bind(skeleton):
 			player.play("idle")
 			return false
-		platform_pose.set_style(platform_style)
+		platform_pose.set_style(_effective_platform_style())
 		platform_active = true
 	walking = grounded and speed > 0.06
 	walk_speed_mps = speed
-	if reduced_motion:
-		platform_pose.stop()
-		return true
+	# Never freeze the skeleton while the body is translating. That produced
+	# the visible "gliding Lumo" regression in Lumo World.
 	platform_pose.advance(velocity, grounded, delta)
 	current_behavior = platform_pose.state
 	return true
@@ -356,9 +370,8 @@ func set_reduced_motion(value: bool) -> void:
 	if value and facial_pose != null:
 		facial_pose.reset()
 		apply_speech_sample(0.0, 0.0, false)
-	if platform_active:
-		if value:
-			platform_pose.stop()
+	if platform_active and platform_pose != null:
+		platform_pose.set_style(_effective_platform_style())
 		return
 	if not suspended:
 		play_behavior(current_behavior)
