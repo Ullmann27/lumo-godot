@@ -73,20 +73,21 @@ func _loop_shots(game, prefix: String) -> void:
 	# Exit: look back onto the descending deck where it meets the road.
 	_look(
 		game,
-		world.position_at(start + LOOP.ADVANCE + 8.0, exit_lane - 2.8) + up * 1.5,
-		world.position_at(start + LOOP.ADVANCE - 1.0, exit_lane) + up * 0.5
+		world.position_at(start + LOOP.advance_of(layout) + 8.0, exit_lane - 2.8) + up * 1.5,
+		world.position_at(start + LOOP.advance_of(layout) - 1.0, exit_lane) + up * 0.5
 	)
 	await _capture(game, prefix + "_loop_exit_closeup")
 	# Side: the whole ring from the opposite road edge, shows any self-crossing.
-	var middle: float = start + LOOP.ADVANCE * 0.5
+	var middle: float = LOOP.road_distance_at(layout, 0.5)
+	var hub: Vector3 = LOOP.ring_center(world, layout)
 	_look(
 		game,
-		world.position_at(middle, -15.0) + up * 3.0,
-		world.position_at(middle, (entry_lane + exit_lane) * 0.5) + up * radius * 0.7,
+		hub - world.frame(middle).x * radius * 3.4 + up * 2.0,
+		hub,
 		62.0
 	)
 	await _capture(game, prefix + "_loop_side")
-	# Axis: straight down the road through the ring (symmetry with the road).
+	# Axis: the main road remains visible beside the exterior branch.
 	_look(
 		game,
 		world.position_at(start - 26.0, 0.0) + up * 3.2,

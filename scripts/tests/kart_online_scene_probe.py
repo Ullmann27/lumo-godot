@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 from pathlib import Path
+import signal
 import socket
 import sys
 import tempfile
@@ -28,10 +29,14 @@ async def run(godot: str, output: Path, shots: bool) -> None:
                "LUMO_ONLINE_QA_URL": f"ws://127.0.0.1:{port}/ws",
                "LUMO_ONLINE_QA_OUTPUT": str(output.absolute()),
                "LUMO_ONLINE_QA_SHOTS": "1" if shots else "0"}
+        # A rendered probe has an outer 240-second CI budget. Its own shorter
+        # deadline leaves time to stop both private process groups cleanly.
+        process_groups = shots and os.name == "posix"
+        subprocess_options = {"start_new_session": True} if process_groups else {}
         with (output / "scene-relay.log").open("wb") as server_log:
             server = await asyncio.create_subprocess_exec(
                 sys.executable, str(repo / "server/kart_online/relay.py"), env=env,
-                stdout=server_log, stderr=asyncio.subprocess.STDOUT)
+                stdout=server_log, stderr=asyncio.subprocess.STDOUT, **subprocess_options)
             child = None
             try:
                 async with aiohttp.ClientSession() as http:
@@ -48,14 +53,17 @@ async def run(godot: str, output: Path, shots: bool) -> None:
                     else:
                         raise RuntimeError("Relay health timeout")
                 command = [godot]
-                if not shots:
+                if shots:
+                    command += ["--rendering-method", "gl_compatibility",
+                                "--audio-driver", "Dummy", "--resolution", "1280x720"]
+                else:
                     command.append("--headless")
                 command += ["--path", str(repo), "--max-fps", "60",
                             "--script", "res://scripts/tests/kart_online_race_regression.gd"]
                 with (output / "godot-online-scene.log").open("wb") as client_log:
                     child = await asyncio.create_subprocess_exec(*command, env=env,
-                        stdout=client_log, stderr=asyncio.subprocess.STDOUT)
-                    code = await asyncio.wait_for(child.wait(), timeout=300)
+                        stdout=client_log, stderr=asyncio.subprocess.STDOUT, **subprocess_options)
+                    code = await asyncio.wait_for(child.wait(), timeout=210 if shots else 300)
                 if code != 0:
                     raise AssertionError(f"Godot real-scene probe returned {code}; see original log")
                 report = json.loads((output / "online-scene.json").read_text())
@@ -66,12 +74,30 @@ async def run(godot: str, output: Path, shots: bool) -> None:
                 print(json.dumps(report))
             finally:
                 for process in (child, server):
-                    if process is not None and process.returncode is None:
-                        process.terminate()
+                    if process is None:
+                        continue
+                    if process_groups:
+                        # Terminate the whole private group, including helpers
+                        # that could otherwise outlive their original parent.
                         try:
+                            os.killpg(process.pid, signal.SIGTERM)
+                        except ProcessLookupError:
+                            pass
+                    elif process.returncode is None:
+                        process.terminate()
+                    try:
+                        if process.returncode is None:
                             await asyncio.wait_for(process.wait(), 5)
-                        except TimeoutError:
+                    except TimeoutError:
+                        if not process_groups:
                             process.kill()
+                    finally:
+                        if process_groups:
+                            try:
+                                os.killpg(process.pid, signal.SIGKILL)
+                            except ProcessLookupError:
+                                pass
+                        if process.returncode is None:
                             await process.wait()
 
 

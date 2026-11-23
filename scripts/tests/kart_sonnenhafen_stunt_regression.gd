@@ -1,5 +1,5 @@
 extends SceneTree
-## Sonnenhafen stunt loop (Position A, 108 m before the crystal tunnel):
+## Sonnenhafen exterior loop, marked braking approach and precision jump:
 ## layout on the real road, then real driving through _physics_process with
 ## gas and steering only: boost pad, loop entry, full 360 degrees on the
 ## rendered path, stars collected, safe exit and onward drive into the
@@ -10,6 +10,7 @@ const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const WORLD = preload("res://scripts/games/kart_world.gd")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
 const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const STEP: float = 1.0 / 60.0
 var game
@@ -36,7 +37,7 @@ func _check_layout() -> void:
 		not layout.is_empty() and bool(layout.get("stunt", false)), "Sonnenhafen has the stunt loop"
 	)
 	assert(
-		float(layout.start) <= tunnel - STUNT.LOOP_LEAD_M and float(layout.start) >= tunnel - STUNT.LOOP_LEAD_M - LOOP.advance_of(layout), "Branch stays near authored Position A within one checkpoint sector"
+		float(layout.start) + LOOP.advance_of(layout) + STUNT.LOOP_SETTLE_M <= float(STUNT.SPEED_ZONE.of(world).start) + 0.001, "Branch returns before the entire physical braking approach"
 	)
 	var structure_end: float = float(layout.start) + LOOP.advance_of(layout) + STUNT.LOOP_RADIUS + 2.0
 	assert(structure_end < tunnel - 80.0, "Loop ends well before the tunnel mouth")
@@ -84,12 +85,12 @@ func _check_layout() -> void:
 	)
 
 
-func _start() -> void:
+func _start(kart_id: String = "comet") -> void:
 	game._start_selected_race(
 		{
 			"mode": "training",
 			"driver": "fox",
-			"kart": "comet",
+			"kart": kart_id,
 			"track": "sonnenhafen",
 			"difficulty": "flott"
 		}
@@ -257,7 +258,7 @@ func _check_stunt_jump() -> void:
 			jump = kicker
 	assert(not jump.is_empty(), "Stunt jump exists")
 	var tunnel: float = STUNT.tunnel_start(game.world)
-	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m()), "Jump at Position B")
+	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m(game.world)), "Jump at Position B")
 	assert(
 		float(jump.start) > float(game.world.loop_layout.start) + LOOP.advance_of(game.world.loop_layout),
 		"Ramp after the loop exit"
@@ -432,6 +433,81 @@ func _check_precision_speeds() -> void:
 	)
 
 
+
+## Actual production road + _physics_process. The strongest joint boost setup,
+## its unupgraded brakes and the weakest stock braking kart traverse the marked
+## approach. A legal boost pulse is applied again just before the ramp so the
+## check also catches accidental boost acceleration during precision flight.
+func _check_boosted_approach() -> void:
+	var original_workshop = game.workshop
+	var setups: Array[Dictionary] = [
+		{"kart": "stella", "upgrades": true, "brakes_level": TUNING.MAX_LEVEL, "name": "full_stella"},
+		{"kart": "stella", "upgrades": true, "brakes_level": 0, "name": "stella_light_brakes"},
+		{"kart": "gecko_velo", "upgrades": false, "brakes_level": 0, "name": "weakest_stock_brakes"},
+	]
+	for setup in setups:
+		var fixture = TUNING.new("__kart_precision_probe__", 100000)
+		fixture.save_enabled = false
+		fixture.levels = {}
+		fixture.looks = {}
+		fixture.tunes = {}
+		var kart_id: String = str(setup.kart)
+		if bool(setup.upgrades):
+			var levels: Dictionary = {}
+			for part in TUNING.PARTS:
+				levels[str(part.id)] = int(setup.brakes_level) if str(part.id) == "bremsen" else TUNING.MAX_LEVEL
+			fixture.levels[kart_id] = levels
+			fixture.looks[kart_id] = {"engine": "lader", "tires": "slick", "wing": "flach",
+				"booster": "kurz", "gearbox": "lang", "brakes": "leicht"}
+			fixture.tunes[kart_id] = {"pressure": 2, "wing_angle": -2, "gear": 2}
+		else:
+			fixture.looks[kart_id] = {"brakes": "leicht"}
+		game.workshop = fixture
+		await _start(kart_id)
+		var zone: Dictionary = STUNT.SPEED_ZONE.of(game.world)
+		var factors: Dictionary = game.kart_factors
+		var boosted: float = POWERTRAIN.top_speed(factors, POWERTRAIN.race_pace()) * POWERTRAIN.boost_scale(factors)
+		_place(float(zone.start) - 1.0, 0.0, boosted)
+		game.boost_time = game._boost_for(3.2)
+		var extra_pulse: bool = false
+		var launched: bool = false
+		var landing: bool = false
+		var lip_speed: float = 0.0
+		var air_low: float = INF
+		var air_high: float = -INF
+		var resets: int = game.reset_count
+		var saw_braking: bool = false
+		for frame in range(1800):
+			_steer_to(0.0)
+			if not extra_pulse and game.previous_road_distance >= float(zone.take_off) - STUNT.JUMP_RAMP_LENGTH - 42.0:
+				game.boost_time = game._boost_for(3.2)
+				extra_pulse = true
+			var previous_speed: float = game.speed
+			game._physics_process(STEP)
+			if game.speed < previous_speed - 0.001 and not game.airborne:
+				saw_braking = true
+			if game.airborne and not game.precision_kicker.is_empty():
+				if not launched:
+					lip_speed = game.speed
+				launched = true
+				air_low = minf(air_low, game.speed)
+				air_high = maxf(air_high, game.speed)
+			elif launched and not game.airborne:
+				landing = true
+				break
+		assert(saw_braking and extra_pulse, "%s exercises the real braking approach and active ramp boost" % setup.name)
+		assert(launched and landing, "%s completes the physical precision flight" % setup.name)
+		assert(lip_speed <= float(zone.limit) + 0.15, "%s obeys the visible approach before takeoff (%.3f)" % [setup.name, lip_speed])
+		assert(air_high - air_low < 0.001, "%s boost never changes the ballistic flight momentum" % setup.name)
+		assert(game.reset_count == resets, "%s lands without a rescue" % setup.name)
+		assert(game.previous_road_distance < float(zone.tunnel) - 5.0, "%s lands on open road before the tunnel" % setup.name)
+		print("[SonnenhafenStunt] boosted ", setup.name, " entry=", snappedf(boosted, 0.001),
+			" brake=", snappedf(POWERTRAIN.acceleration(factors, true), 0.001),
+			" lip=", snappedf(lip_speed, 0.001), " tunnel_clearance=", snappedf(float(zone.tunnel) - game.previous_road_distance, 0.01))
+	game.workshop = original_workshop
+	completed_checks += 1
+
+
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
 	await _check_layout()
@@ -444,6 +520,7 @@ func _run() -> void:
 	await _check_too_slow()
 	await _check_stunt_jump()
 	await _check_precision_speeds()
+	await _check_boosted_approach()
 	# Quitting with the race still mounted left "resources still in use at exit"
 	# on some runs, which the probe runner rightly rejects. Release it first.
 	game.abandoned = true
@@ -452,8 +529,8 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
-	if completed_checks != 5:
-		print("[SonnenhafenStunt] FAIL: %d of 5 checks completed" % completed_checks)
+	if completed_checks != 6:
+		print("[SonnenhafenStunt] FAIL: %d of 6 checks completed" % completed_checks)
 		quit(1)
 		return
 	print("[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure")

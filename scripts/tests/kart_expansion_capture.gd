@@ -85,7 +85,7 @@ func _run() -> void:
 			_place(float(data.start), 22, float(data.lane))
 			var completed: int = game.loop_count
 			game._drive_player(1.0 / 60, 0, 0)
-			assert(game.loop_state.active, "Right lane enters an actual physical loop")
+			assert(game.loop_state.active, "Selected exterior lane enters the actual physical branch")
 			var captured_loop: bool = false
 			for i in range(500):
 				if not game.loop_state.active:
@@ -100,7 +100,7 @@ func _run() -> void:
 			assert(
 				(
 					game.player.position.y
-					< game.world.position_at(float(data.start) + LOOP.ADVANCE).y + 0.2
+					< game.world.position_at(float(data.start) + LOOP.advance_of(data), LOOP.exit_lane(data)).y + 0.2
 				)
 			)
 			_place(float(data.start), 17, float(data.lane))

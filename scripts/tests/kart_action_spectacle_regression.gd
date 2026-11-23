@@ -6,6 +6,10 @@ const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
 const PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
+const PARTS = preload("res://scripts/games/kart_part_catalog.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SPEED_ZONE = preload("res://scripts/games/kart_stunt_speed_zone.gd")
 var failures: Array[String] = []
 var results: Array = []
 var output: String = "/tmp/kart-action-coverage.json"
@@ -122,6 +126,102 @@ func _loop(world) -> Dictionary:
 		"peak_y": highest, "contact_completed": not state.active and not state.failed, "braking_returned": braking.failed}
 
 
+
+## Real mounted parts enter the actual contact integrator. All runners start at
+## the same seam with the same momentum; no fabricated progress or mock physics.
+func _loop_parts(world) -> void:
+	var data: Dictionary = world.loop_layout
+	if data.is_empty():
+		return
+	var base: Dictionary = FLEET.multipliers(FLEET.base_stats("comet"), FLEET.entry("comet").traits)
+	var engine: Dictionary = PARTS.apply(base, {"engine": "axial"})
+	var brakes: Dictionary = PARTS.apply(base, {"brakes": "keramik"})
+	var handling: Dictionary = PARTS.apply(base, {"steering": "vector", "tires": "performance"})
+	var stock = LOOP.new()
+	var series = LOOP.new()
+	var drive = LOOP.new()
+	var stop_stock = LOOP.new()
+	var stop_parts = LOOP.new()
+	var steer_stock = LOOP.new()
+	var steer_parts = LOOP.new()
+	stock.enter(data, 30.0, 0.0)
+	series.enter(data, 30.0, 0.0, 0.0, 0.0, base)
+	drive.enter(data, 30.0, 0.0, 0.0, 0.0, engine)
+	stop_stock.enter(data, 30.0, 0.0)
+	stop_parts.enter(data, 30.0, 0.0, 0.0, 0.0, brakes)
+	steer_stock.enter(data, 30.0, 0.0)
+	steer_parts.enter(data, 30.0, 0.0, 0.0, 0.0, handling)
+	var step: float = 1.0 / 120.0
+	for tick in range(60):
+		var before: float = stock.speed
+		var slope: float = (-LOOP.frame_at(world, data, stock.progress).z).y
+		var a: Transform3D = stock.advance(world, step, 0.0, 0.0, true)
+		var b: Transform3D = series.advance(world, step, 0.0, 0.0, true)
+		_check(absf(stock.speed - (before + (-LOOP.GRAVITY * slope + 0.9) * step)) < 0.00001, "stock loop keeps the original gravity and throttle equation")
+		_check(absf(stock.speed - series.speed) < 0.00001 and a.origin.distance_to(b.origin) < 0.00001, "empty and stock workshop factors drive identically")
+		drive.advance(world, step, 0.0, 0.0, true)
+		stop_stock.advance(world, step, 0.0, 1.0, false)
+		stop_parts.advance(world, step, 0.0, 1.0, false)
+		if tick < 12:
+			steer_stock.advance(world, step, 0.5, 0.0, true)
+			steer_parts.advance(world, step, 0.5, 0.0, true)
+	_check(drive.speed > stock.speed + 0.02 and drive.progress > stock.progress, "mounted axial engine gains real loop momentum and distance")
+	_check(stop_parts.speed < stop_stock.speed - 0.25 and stop_parts.progress < stop_stock.progress, "mounted ceramic brakes shorten the travelled loop distance")
+	_check(steer_parts.lateral > steer_stock.lateral + 0.004, "mounted steering and tires change actual lateral contact")
+	var maximum: Dictionary = {}
+	for key in PARTS.PART_LIMITS:
+		maximum[key] = PARTS.PART_LIMITS[key][1]
+	var bounded = LOOP.new()
+	bounded.enter(data, 35.0, 0.0, 0.0, 0.0, maximum)
+	var elapsed: float = 0.0
+	while bounded.active and elapsed < 10.0:
+		bounded.advance(world, step, 1.0, 0.0, true)
+		_check(absf(bounded.lateral) <= float(data.get("lateral_limit", LOOP.LATERAL_LIMIT)) + 0.0001, "combined controls stay inside the rendered loop deck")
+		elapsed += step
+	_check(not bounded.active and not bounded.failed, "strongest combined controls still traverse the complete branch")
+	print("[KartSpectacle] loop controls stock=", snappedf(stock.speed, 0.001), " engine=", snappedf(drive.speed, 0.001),
+		" brake_stock=", snappedf(stop_stock.speed, 0.001), " brake_parts=", snappedf(stop_parts.speed, 0.001),
+		" steering_stock=", snappedf(steer_stock.lateral, 0.001), " steering_parts=", snappedf(steer_parts.lateral, 0.001))
+
+
+
+## Stress the complete real approach with ordinary brake integration, including
+## a carried-in speed higher than any simultaneous catalogue setup can sustain.
+func _precision_approach(world) -> void:
+	var zone: Dictionary = SPEED_ZONE.of(world)
+	_check(not zone.is_empty(), "Sonnenhafen has a planned visible precision approach")
+	if zone.is_empty():
+		return
+	_check(float(zone.start) > 80.0, "braking approach leaves the start corridor clear")
+	_check(float(zone.take_off) + float(zone.landing_reserve) <= float(zone.tunnel) - 7.999, "all real road elevations fit inside the reserved landing corridor")
+	_check(float(world.loop_layout.start) + LOOP.advance_of(world.loop_layout) + 24.999 <= float(zone.start), "loop returns and settles before the braking approach")
+	for kicker in world.action.kickers:
+		if not bool(kicker.get("stunt", false)):
+			_check(float(kicker.take_off) < float(zone.start) or float(kicker.start) > float(zone.tunnel), "ordinary ramps do not interrupt precision braking")
+	var profiles: Array[Dictionary] = []
+	for kart in FLEET.KARTS:
+		profiles.append(PARTS.apply(FLEET.multipliers(FLEET.base_stats(str(kart.id)), kart.traits), {"brakes": "leicht"}))
+	for factors in profiles:
+		var d: float = float(zone.start)
+		var speed: float = float(zone.max_entry)
+		var step: float = 1.0 / 120.0
+		var count: int = 0
+		while d < float(zone.take_off) and count < 3600:
+			var limit: float = SPEED_ZONE.speed_limit(world, d, factors)
+			var brake: float = POWERTRAIN.acceleration(factors, true)
+			var previous: float = speed
+			var target: float = minf(float(zone.max_entry), limit)
+			speed = move_toward(speed, target, brake * step)
+			_check(previous - speed <= brake * step + 0.00001, "precision approach uses normal brakes without a speed snap")
+			d += speed * step
+			count += 1
+		_check(count < 3600 and speed <= float(zone.limit) + 0.01, "every stock fleet kart with light brakes reaches the ramp inside its physical speed envelope")
+	print("[KartSpectacle] precision max_entry=", snappedf(float(zone.max_entry), 0.001),
+		" min_brake=", snappedf(float(zone.minimum_brake), 0.001), " lip_limit=", snappedf(float(zone.limit), 0.001),
+		" approach_m=", snappedf(float(zone.safe_at) - float(zone.start), 0.1),
+		" landing_reserve_m=", snappedf(float(zone.landing_reserve), 0.1))
+
+
 func _run() -> void:
 	_check(TRACKS.IDS.size() == 15, "all 15 production circuits are covered")
 	for track in TRACKS.IDS:
@@ -142,6 +242,9 @@ func _run() -> void:
 		for site in sites:
 			_check(not world._near_road(site.position, world.road_width_at(float(site.distance)) * 0.5 + float(site.radius) + 3.9), str(track) + " scenic footprint clears the whole road")
 		var loop_report: Dictionary = _loop(world)
+		if str(track) == "sonnenhafen":
+			_loop_parts(world)
+			_precision_approach(world)
 		var before: int = world.decoration_count
 		SPECTACLE.build(world)
 		_check(world.decoration_count == before, str(track) + " render hook is idempotent")

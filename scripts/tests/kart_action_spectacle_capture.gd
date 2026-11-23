@@ -4,6 +4,7 @@ const WORLD = preload("res://scripts/games/kart_world.gd")
 const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
+const SPEED_ZONE = preload("res://scripts/games/kart_stunt_speed_zone.gd")
 var track: String = "sonnenhafen"
 var output: String = "/tmp/lumo-kart-views"
 var views: PackedStringArray = PackedStringArray(["course", "landscape"])
@@ -46,6 +47,13 @@ func _camera_for(view: String) -> bool:
 			target = world.position_at(start + LOOP.advance_of(data) + 12.0, LOOP.exit_lane(data)) + Vector3.UP * 1.4
 		else:
 			return false
+	elif view == "precision_braking":
+		var zone: Dictionary = SPEED_ZONE.of(world)
+		if zone.is_empty():
+			return false
+		var at: float = float(zone.safe_at) - 55.0
+		eye = world.position_at(at - 24.0, -1.8) + Vector3.UP * 3.7
+		target = world.position_at(at + 28.0) + Vector3.UP * 2.8
 	elif view == "landscape":
 		var sites: Array = report.get("sites", [])
 		if sites.is_empty():

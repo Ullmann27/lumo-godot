@@ -89,6 +89,15 @@ jobs:
           set -euo pipefail
           godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-first.log 2>&1 \
             || godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-retry.log 2>&1
+      - name: Prepare genuine offscreen renderer
+        id: renderer_setup
+        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb xauth libgl1-mesa-dri
+          python3 -m pip install Pillow==12.3.0
       - name: Verify two actual Godot clients across relay restart
         if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
         shell: bash
@@ -110,7 +119,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json, os, pathlib, re, subprocess, time
+          import json, os, pathlib, re, signal, subprocess, time
           config = json.loads(pathlib.Path('config/kart-action-qa.json').read_text())
           markers = ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:')
           results = []
@@ -118,7 +127,7 @@ jobs:
           def checked(command, log, seconds):
               error = None
               with log.open('a') as stream:
-                  process = subprocess.Popen(command,env=proof_environment,stdout=stream,stderr=subprocess.STDOUT)
+                  process = subprocess.Popen(command,env=proof_environment,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
                   deadline = time.monotonic() + seconds
                   while process.poll() is None:
                       output = log.read_text(errors='replace')
@@ -127,11 +136,11 @@ jobs:
                       elif time.monotonic() >= deadline:
                           error = 'timeout'
                       if error:
-                          process.terminate()
+                          os.killpg(process.pid,signal.SIGTERM)
                           try:
                               process.wait(timeout=5)
                           except subprocess.TimeoutExpired:
-                              process.kill()
+                              os.killpg(process.pid,signal.SIGKILL)
                               process.wait()
                           break
                       time.sleep(0.25)
@@ -146,6 +155,10 @@ jobs:
               command = ['godot','--headless','--path','.','--script','res://' + str(target)]
               code, error = checked(command + ['--check-only'], log, 60)
               if code == 0 and not error and not any(marker in log.read_text(errors='replace') for marker in markers):
+                  if name in config.get('renderer_probes', []):
+                      command = ['xvfb-run','-a','godot','--path','.',
+                          '--rendering-method','gl_compatibility','--audio-driver','Dummy',
+                          '--resolution','1280x720','--script','res://' + str(target)]
                   code, error = checked(command, log, 360)
               output = log.read_text(errors='replace')
               failed = code != 0 or error is not None or any(marker in output for marker in markers + ('] FAIL',))
@@ -158,15 +171,6 @@ jobs:
           if not results or not all(row['passed'] for row in results):
               raise SystemExit(1)
           PY
-      - name: Prepare genuine offscreen renderer
-        id: renderer_setup
-        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get -o Acquire::Retries=2 update -qq
-          sudo apt-get -o Acquire::Retries=2 install -y xvfb xauth libgl1-mesa-dri
-          python3 -m pip install Pillow==12.3.0
       - name: Render actual vehicles, workshop and all fifteen courses
         if: ${{ !cancelled() && steps.renderer_setup.outcome == 'success' }}
         shell: bash
@@ -184,7 +188,7 @@ jobs:
           for track in tracks:
               views = 'course,landscape'
               if track == 'sonnenhafen':
-                  views += ',loop_approach,loop_side,loop_exit'
+                  views += ',loop_approach,loop_side,loop_exit,precision_braking'
               jobs.append((track,'kart_action_spectacle_capture',[
                   '--track='+track, '--out='+str(root/track), '--views='+views]))
           results = []
@@ -219,7 +223,7 @@ jobs:
                   text = log.read_text(errors='replace')
                   pngs = list(output.rglob('*.png'))
                   passed = run.returncode == 0 and bool(pngs) and not any(marker in text
-                      for marker in ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:'))
+                      for marker in ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', 'SHADER ERROR:'))
                   results.append({'case':label,'passed':passed,'exit':run.returncode,'pngs':len(pngs)})
                   print(label, json.dumps(results[-1]), flush=True)
                   if not passed: print(text[-20000:],flush=True)
