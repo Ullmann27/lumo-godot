@@ -82,6 +82,37 @@ func _run() -> void:
 	check(CATALOG.DRIVERS.size() == 10, "ten playable drivers")
 	check(int(CATALOG.entry(CATALOG.DRIVERS, "rabbit").unlock) == 6, "Nova unlock retained")
 	check(int(CATALOG.entry(CATALOG.DRIVERS, "otter").unlock) == 12, "Milo unlock retained")
+
+	# The five grid slots rotate through every other finished driver without
+	# duplicating the player's identity. This is pure lineup logic: no race
+	# needs to be rendered fifteen times just to prove roster coverage.
+	var lineup_probe = await create_game()
+	lineup_probe.mode = "race"
+	lineup_probe.selected_driver = "fox"
+	var seen_rivals := {}
+	for track: Dictionary in CATALOG.TRACKS:
+		lineup_probe.track_id = str(track.id)
+		var lineup: Array[Dictionary] = lineup_probe._rival_driver_lineup()
+		check(lineup.size() == 5, "five rivals on " + lineup_probe.track_id)
+		var track_ids := {}
+		for entry: Dictionary in lineup:
+			var rival_id := str(entry.id)
+			track_ids[rival_id] = true
+			seen_rivals[rival_id] = true
+			check(rival_id != "fox", "player identity excluded on " + lineup_probe.track_id)
+		check(track_ids.size() == lineup.size(), "no duplicate rival on " + lineup_probe.track_id)
+	check(
+		seen_rivals.size() == CATALOG.DRIVERS.size() - 1,
+		"track rotation reaches every non-player driver"
+	)
+	lineup_probe.track_id = "jungle_emerald_3600"
+	var jungle_lineup: Array[Dictionary] = lineup_probe._rival_driver_lineup()
+	var jungle_ids: Array[String] = []
+	for entry: Dictionary in jungle_lineup:
+		jungle_ids.append(str(entry.id))
+	check(jungle_ids.has("frog"), "Dschungelherz keeps Frosch in the rival lineup")
+	await TEARDOWN.release_scene(self, lineup_probe, "[ExtraDriversLineup]")
+
 	for identity: String in EXTRA:
 		DirAccess.remove_absolute(SESSION)
 		var game = await create_game()
@@ -140,7 +171,15 @@ func _run() -> void:
 		menu.next_button.pressed.emit()
 		await settle()
 		check(not game.menu_active and game.mode == "race", identity + ": real race start button")
-		check(game.opponents.size() == 5, identity + ": original five-opponent field")
+		check(game.opponents.size() == 5, identity + ": five-opponent field retained")
+		var live_rival_ids: Array[String] = []
+		for rival in game.opponents:
+			live_rival_ids.append(str(rival.animal))
+		var unique_live_rivals := {}
+		for rival_id in live_rival_ids:
+			unique_live_rivals[rival_id] = true
+		check(not live_rival_ids.has(identity), identity + ": player is never duplicated as AI rival")
+		check(unique_live_rivals.size() == 5, identity + ": five unique live rivals")
 		check_model(game.player, identity, identity + " race")
 		var race_actor = game.player.production_driver
 		if is_instance_valid(race_actor):
