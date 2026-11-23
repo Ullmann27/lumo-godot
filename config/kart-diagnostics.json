@@ -1,0 +1,4 @@
+{
+  "request": 1,
+  "purpose": "Identify actual mesh sight occlusions and exercise true unlocked/mounted tuning on Godot 4.6.3 OpenGL"
+}

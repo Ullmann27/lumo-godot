@@ -42,7 +42,7 @@ Referenz ist ausschließlich **Comet, ohne Ausbaustufen, andere Leistungsteile o
 
 Die ungerundeten Werte bleiben in `vehicle-evolution-regression.json::single_part_comet` erhalten. Beispiel: Serien-Comet erreicht **172,692 km/h**, mit Axial-Antrieb **165,78432 km/h**. Diese Arcade-Spielwerte sind keine Messungen eines realen Autos.
 
-Die zwei Balken auf den Fahrzeugkarten werden zusätzlich an `workshop.multipliers(id)` angeschlossen: Endtempo und tatsächliche Lenkrate ändern sich nach dem Montieren mit. Eine halbe Balkenlänge entspricht dem neutralen Serien-Comet; die Karten zeigen keine erfundenen neuen Stat-Punkte. Der Tooltip nennt das montierte Endtempo und die Lenkrate ausdrücklich.
+Die zwei Balken auf den Fahrzeugkarten verwenden zusätzlich `workshop.multipliers(id)`: Endtempo und tatsächliche Lenkrate ändern sich nach dem Montieren mit. Eine halbe Balkenlänge entspricht dem neutralen Serien-Comet; die Karten zeigen keine erfundenen neuen Stat-Punkte. Der Tooltip nennt das montierte Endtempo und die Lenkrate ausdrücklich.
 
 
 ## Kombinationen und Grenzen
@@ -74,13 +74,37 @@ Additive Änderungen sind für Gelände auf **−0,15 bis +0,18** und Stabilitä
 - Vier Konfigurationen fahren tatsächlich durch `kart_island._drive_player`; Beschleunigung, Bremsen, Lenken und Drift-Ladung werden gegen die gemeinsamen Formeln geprüft.
 - Alle 14 Produktionsfahrzeuge werden mit den neuen Teilen aufgebaut; Montage, Geometrie, Farbzuordnung, Distanzstufen und Speicherung werden geprüft.
 
-Belegter aktueller Fahrzeugstand: Im nativen Job von [Lauf 45133703768](https://github.com/Ullmann27/lumo-godot/actions/runs/45133703768) auf `447ff8956a2942bafae775a9be62edb339f64cca` bestehen `KartEvolution PASS checks=112145 pairwise=1877 sampled=5760 actual_race_setups=4` und `KartDynoParts PASS 921 checks`. Dieser Stand enthält die mechanisch korrigierte Geometrie `d84631b45eeb7a1f14b5237efb20cf37a5803dfd`. Zwei gesonderte Streckenregressionen scheitern in diesem Lauf; der Gesamtstatus ist daher rot.
+Belegter Fahrzeugstand: Im nativen Job von [Lauf 45136673872](https://github.com/Ullmann27/lumo-godot/actions/runs/45136673872) auf `9368a325c508a1c2f0bd2da596ff17300d0d52fa` bestehen `KartEvolution PASS checks=112196 pairwise=1877 sampled=5760 actual_race_setups=4 boundary_race_setups=3`, `KartDynoParts PASS 921 checks` und die bestehende Produktionsfahrzeug-Regression. Dieser Stand enthält die mechanisch korrigierte Geometrie `d84631b45eeb7a1f14b5237efb20cf37a5803dfd`, die angeschlossenen Kartenbalken und die Touchkorrektur. Zwei gesonderte Streckenregressionen scheitern in diesem Lauf; der Gesamtstatus ist deshalb rot. Diese Dokumentation behauptet keine Freigabe des gesamten Projekts.
 
-**Echter Bildnachweis:** Alle sechs Aufnahmen aus `kart_evolution_capture.gd` wurden in Godot gerendert und anschließend visuell geprüft. Serienkart, Kurventechnik- und Sprung-/Rallye-Aufbau unterscheiden sich sichtbar. Axialmotor, Venturi-Flügel, Räder, Carbon-Seitenteile und Diffusor sitzen am Kart. Die zwölf Vergleichswerte überlappen horizontal nicht; Zusatzinformationen sind im Schubfach scrollbar, Montieren und Zurück bleiben erreichbar. Artefaktpfade: `vehicles/vehicle-01-serie.png` bis `vehicles/vehicle-06-jump-rally.png`.
+### Tatsächlich gefahrene Grenzfälle
 
-Als begrenzte Folgereparatur verwenden die Fahrzeugkarten ihre tatsächlichen Werkstattfaktoren; Kategorie-Popupzeilen werden anhand der echten Font-Höhe auf mindestens **48 dp** angehoben. Aktionsbuttons erhalten eine explizite **48 × 48 dp**-Untergrenze. Montieren/Zurück sind im Layout 52 dp hoch, die Kategorienwahl 48 dp, Teilekacheln mindestens 108 × 84 dp. Der Capture prüft die gemessenen Control-Flächen und die echten Kartendaten.
+Die drei zusätzlichen Grenzproben verwenden dieselben echten Werkstatt-APIs wie das Spiel: Sterne gutschreiben, Teile freischalten, Teile montieren und Feinregler setzen. Ein direkt gesetzter Teilewunsch ohne Besitz würde bei kostenpflichtigen Teilen korrekt auf die Serie zurückfallen.
 
-Drei zusätzliche Fahrgrenzproben prüfen den maximal ausgebauten Stella-Boostsatz, den gleichen schnellen Aufbau ohne Bremsen-Ausbaustufen sowie die tatsächlich schwächste erreichbare Bremse. Das gemeinsame stärkste Tempo-/Boostziel beträgt **107,84237129825121 m/s**, die drei Bremsverzögerungen betragen **83,664 / 71,904 / 62,496 m/s²**. Karten-/Touchkorrektur und diese zusätzlichen Grenzproben sind nach dem obigen Bildnachweis hinzugekommen; ihr eigener Folgelauf ist gesondert nachzuweisen.
+| Gefahrene Konfiguration | Erreichtes Boosttempo | Gemessene Bremsverzögerung |
+|---|---:|---:|
+| Stella, alle vier Ausbaustufen auf 5, stärkster gemeinsamer Tempo-/Boostsatz, leichte Bremse | 107,842371298251 m/s | 83,664 m/s² |
+| Derselbe schnelle Stella ohne Bremsen-Ausbaustufen | 107,842371298251 m/s | 71,904 m/s² |
+| Gecko Velo ohne Ausbaustufen, tatsächlich schwächste erreichbare Bremse | 68,70829446 m/s | 62,496 m/s² |
+
+Der Stella-Satz lautet Motor `lader`, Reifen `slick`, Flügel `flach`, Booster `kurz`, Bremse `leicht`, Getriebe `lang`, übrige Steckplätze Serie; Feinregler Druck +2, Flügelwinkel −2, Übersetzung +2. Für Gecko Velo bleiben die übrigen Teile und Feinregler neutral. Der Test stellt den Ausgangszustand nahe dem jeweiligen Tempoziel her und prüft anschließend echte Fahrintegrationsschritte sowie vier Bremszeitschritte. Das ist eine Prüfung der wirksamen Grenzen und Bremskräfte, keine vollständige Beschleunigungsfahrt vom Stillstand bis zum Boostmaximum.
+
+### Echter Bild- und Bedienungsnachweis
+
+Alle sechs Aufnahmen desselben Laufs wurden in **Godot 4.6.3 mit gl_compatibility, 1280 × 720** gerendert und anschließend visuell geprüft. Der Capture meldet `PASS`, sechs Bilder und keine Fehler. Serienkart, Kurventechnik- und Sprung-/Rallye-Aufbau unterscheiden sich sichtbar. Axialmotor, Venturi-Flügel, Räder, Carbon-Seitenteile und Diffusor sitzen am Kart. Die zwölf Vergleichswerte überlappen horizontal nicht; Zusatzinformationen sind im Schubfach scrollbar, Montieren und Zurück bleiben sichtbar. Artefaktpfade: `vehicles/vehicle-01-serie.png` bis `vehicles/vehicle-06-jump-rally.png`.
+
+Die Kartenbalken verwenden nachweislich dieselben montierten Faktoren wie die Physik. Für Tempo/Lenken ergeben sich Serie **6,00/6,00**, Kurventechnik **5,04/7,08**, Sprung-/Rallye **5,43847239936/5,82**. Die Tooltips zeigen entsprechend **173 km/h · 2,84 rad/s**, **145 km/h · 3,35 rad/s** und **157 km/h · 2,75 rad/s**.
+
+Die tatsächlichen Control-Rechtecke wurden nach dem Layout gemessen, nicht lediglich aus Mindestgrößen abgelesen:
+
+| Bedienelement | Gemessene Breite × Höhe |
+|---|---:|
+| Montieren/Freischalten | 426 × 52 dp |
+| Zurück | 74 × 52 dp |
+| Kategorieauswahl | 150 × 48 dp |
+| Motorteil-Auswahlkacheln | jeweils 152 × 132 dp |
+| Popup-Kategoriezeile | Höhe 48 dp |
+
+Diese Messung gilt für den ausgeführten Desktop-Render mit `dp_scale = 1,0`; sie ist kein Nachweis aller physischen Android-Displaydichten. Der vollständige Messbericht einschließlich Kartendaten und Bild-SHA-256 liegt in `vehicles/vehicle-evolution-capture.json` im Artefakt `kart-native-proof-45136673872` (ID **14800437958**, ZIP-SHA-256 `dc2e7efc7b4dbfea9cba9531f23ce0bd461021aac04b164b79245c7a9b3724af`).
 
 **Eine 60-FPS-Messung auf physischer Android-Hardware ist damit nicht nachgewiesen.**
 

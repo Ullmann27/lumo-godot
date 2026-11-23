@@ -112,6 +112,8 @@ func _run() -> void:
 			return
 		for i in range(10):
 			await process_frame
+		if track in ["zauberwald", "galaxy_ringway"]:
+			_diagnose_view(view)
 		await RenderingServer.frame_post_draw
 		var image: Image = root.get_texture().get_image()
 		if image.is_empty() or image.get_width() != 1280 or image.get_height() != 720:
@@ -135,3 +137,111 @@ func _run() -> void:
 	file.close()
 	print("[KartCapture] PASS ", track, " views=", captures.size())
 	quit(0)
+
+
+
+## Read-only picking against actual production meshes, without collision proxies.
+## The capture and normal chase sightline are logged together to identify a real
+## decorative obstruction instead of hiding it by moving the screenshot camera.
+func _segment_hits_box(box: AABB, from: Vector3, to: Vector3) -> bool:
+	var direction: Vector3 = to - from
+	var begin: float = 0.0
+	var end: float = 1.0
+	for axis in range(3):
+		if absf(direction[axis]) < 0.0000001:
+			if from[axis] < box.position[axis] or from[axis] > box.end[axis]:
+				return false
+			continue
+		var low: float = (box.position[axis] - from[axis]) / direction[axis]
+		var high: float = (box.end[axis] - from[axis]) / direction[axis]
+		begin = maxf(begin, minf(low, high))
+		end = minf(end, maxf(low, high))
+		if begin > end:
+			return false
+	return true
+
+
+func _triangle_hit(from: Vector3, direction: Vector3, a: Vector3, b: Vector3, c: Vector3) -> float:
+	var edge_b: Vector3 = b - a
+	var edge_c: Vector3 = c - a
+	var p: Vector3 = direction.cross(edge_c)
+	var determinant: float = edge_b.dot(p)
+	if absf(determinant) < 0.00000001:
+		return INF
+	var inverse: float = 1.0 / determinant
+	var offset: Vector3 = from - a
+	var u: float = offset.dot(p) * inverse
+	if u < 0.0 or u > 1.0:
+		return INF
+	var q: Vector3 = offset.cross(edge_b)
+	var v: float = direction.dot(q) * inverse
+	if v < 0.0 or u + v > 1.0:
+		return INF
+	var along: float = edge_c.dot(q) * inverse
+	return along if along >= 0.0 and along <= 1.0 else INF
+
+
+func _instance_hit(node: Node3D, mesh: Mesh, transform: Transform3D, index: int,
+		from: Vector3, to: Vector3, faces_cache: Dictionary, hits: Array, tint: Color = Color.WHITE) -> void:
+	if mesh == null:
+		return
+	var inverse: Transform3D = transform.affine_inverse()
+	var local_from: Vector3 = inverse * from
+	var local_to: Vector3 = inverse * to
+	if not _segment_hits_box(mesh.get_aabb(), local_from, local_to):
+		return
+	var key: int = mesh.get_instance_id()
+	if not faces_cache.has(key):
+		faces_cache[key] = mesh.get_faces()
+	var vertices: PackedVector3Array = faces_cache[key]
+	var closest: float = INF
+	for i in range(0, vertices.size(), 3):
+		closest = minf(closest, _triangle_hit(local_from, local_to - local_from, vertices[i], vertices[i + 1], vertices[i + 2]))
+	if not is_finite(closest):
+		return
+	hits.append({"node": str(node.get_path()), "instance": index, "distance": closest * from.distance_to(to),
+		"at": [transform.origin.x, transform.origin.y, transform.origin.z],
+		"scale": [transform.basis.x.length(), transform.basis.y.length(), transform.basis.z.length()],
+		"tint": [tint.r, tint.g, tint.b], "mesh": mesh.resource_path})
+
+
+func _mesh_hits(node: Node, from: Vector3, to: Vector3, cache: Dictionary, hits: Array) -> void:
+	if node is MeshInstance3D and node.visible:
+		_instance_hit(node, node.mesh, node.global_transform, -1, from, to, cache, hits)
+	elif node is MultiMeshInstance3D and node.visible and node.multimesh != null:
+		var mm: MultiMesh = node.multimesh
+		for i in range(mm.instance_count):
+			_instance_hit(node, mm.mesh, node.global_transform * mm.get_instance_transform(i), i,
+				from, to, cache, hits, mm.get_instance_color(i) if mm.use_colors else Color.WHITE)
+	for child in node.get_children():
+		_mesh_hits(child, from, to, cache, hits)
+
+
+func _sight_hits(from: Vector3, to: Vector3) -> Array:
+	var hits: Array = []
+	_mesh_hits(world, from, to, {}, hits)
+	hits.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return float(a.distance) < float(b.distance))
+	return hits.slice(0, 8)
+
+
+func _diagnose_view(view: String) -> void:
+	var entry: Dictionary = captures[captures.size() - 1]
+	var target: Vector3 = Vector3(entry.target[0], entry.target[1], entry.target[2])
+	var road: Dictionary = world.sample_road(camera.position, 0.0)
+	var d: float = float(road.distance)
+	var chase_eye: Vector3 = world.position_at(d - 8.0) + Vector3.UP * 3.5
+	var chase_target: Vector3 = world.position_at(d + 18.0) + Vector3.UP * 1.2
+	var info: Dictionary = {"track": track, "view": view, "road_distance": d,
+		"capture": _sight_hits(camera.position, target), "chase": _sight_hits(chase_eye, chase_target)}
+	entry["mesh_diagnostics"] = info
+	print("[KartMeshSight] ", JSON.stringify(info))
+	if track == "galaxy_ringway" and view == views[0]:
+		for child in world.get_children():
+			if child is MultiMeshInstance3D and str(child.name).begins_with("Decor_torus"):
+				var mm: MultiMesh = child.multimesh
+				if mm.instance_count > 0:
+					var first: Transform3D = mm.get_instance_transform(0)
+					var tint: Color = mm.get_instance_color(0)
+					print("[KartPlanetMesh] ", JSON.stringify({"node": str(child.name), "count": mm.instance_count,
+						"size": [first.basis.x.length(), first.basis.y.length(), first.basis.z.length()],
+						"tint": [tint.r, tint.g, tint.b]}))

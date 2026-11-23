@@ -451,17 +451,20 @@ func _check_boosted_approach() -> void:
 		fixture.levels = {}
 		fixture.looks = {}
 		fixture.tunes = {}
+		fixture.owned.clear()
 		var kart_id: String = str(setup.kart)
+		var mounted_parts: Dictionary = {"brakes": "leicht"}
 		if bool(setup.upgrades):
 			var levels: Dictionary = {}
 			for part in TUNING.PARTS:
 				levels[str(part.id)] = int(setup.brakes_level) if str(part.id) == "bremsen" else TUNING.MAX_LEVEL
 			fixture.levels[kart_id] = levels
-			fixture.looks[kart_id] = {"engine": "lader", "tires": "slick", "wing": "flach",
+			mounted_parts = {"engine": "lader", "tires": "slick", "wing": "flach",
 				"booster": "kurz", "gearbox": "lang", "brakes": "leicht"}
-			fixture.tunes[kart_id] = {"pressure": 2, "wing_angle": -2, "gear": 2}
-		else:
-			fixture.looks[kart_id] = {"brakes": "leicht"}
+			fixture.set_tune(kart_id, {"pressure": 2, "wing_angle": -2, "gear": 2})
+		# The real workshop ignores paid parts that were never unlocked.
+		assert(fixture.unlock_parts(mounted_parts), "probe can buy the actual catalogue combination")
+		assert(fixture.mount_parts(kart_id, mounted_parts), "probe can mount its owned combination")
 		game.workshop = fixture
 		await _start(kart_id)
 		var zone: Dictionary = STUNT.SPEED_ZONE.of(game.world)
@@ -477,13 +480,22 @@ func _check_boosted_approach() -> void:
 		var air_high: float = -INF
 		var resets: int = game.reset_count
 		var saw_braking: bool = false
+		var trace: Array = []
+		var frames_driven: int = 0
 		for frame in range(1800):
+			frames_driven = frame + 1
 			_steer_to(0.0)
 			if not extra_pulse and game.previous_road_distance >= float(zone.take_off) - STUNT.JUMP_RAMP_LENGTH - 42.0:
 				game.boost_time = game._boost_for(3.2)
 				extra_pulse = true
 			var previous_speed: float = game.speed
 			game._physics_process(STEP)
+			if frame % 60 == 0:
+				trace.append({"frame": frame, "road": game.previous_road_distance, "speed": game.speed,
+					"lane": game.lane, "air": game.airborne, "racing": game.racing,
+					"reset": game.reset_count, "gap_falls": game.gap_falls, "kicker": not game.precision_kicker.is_empty()})
+				if trace.size() > 8:
+					trace.pop_front()
 			if game.speed < previous_speed - 0.001 and not game.airborne:
 				saw_braking = true
 			if game.airborne and not game.precision_kicker.is_empty():
@@ -495,6 +507,9 @@ func _check_boosted_approach() -> void:
 			elif launched and not game.airborne:
 				landing = true
 				break
+		print("[KartBoostApproach] ", JSON.stringify({"setup": setup.name, "parts": fixture.mounted(kart_id),
+			"factors": factors, "zone": zone, "entry": boosted, "frames": frames_driven,
+			"launched": launched, "landing": landing, "trace": trace}))
 		assert(saw_braking and extra_pulse, "%s exercises the real braking approach and active ramp boost" % setup.name)
 		assert(launched and landing, "%s completes the physical precision flight" % setup.name)
 		assert(lip_speed <= float(zone.limit) + 0.15, "%s obeys the visible approach before takeoff (%.3f)" % [setup.name, lip_speed])
