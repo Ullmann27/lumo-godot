@@ -132,6 +132,7 @@ func _real_scene() -> void:
 	_check(FileAccess.get_file_as_string(village_path) == bytes, "World never modifies the village economy save")
 	_check(scene.portals.size() == 3, "Kart Cards and village portals are present")
 	_check(scene.traffic.size() == 4, "Blender traffic vehicle models load")
+	await _visibility_and_school(scene)
 	for dimensions in [Vector2i(360, 800), Vector2i(640, 360), Vector2i(720, 840), Vector2i(1280, 720)]:
 		root.size = dimensions
 		await _frames(3)
@@ -193,6 +194,107 @@ func _real_scene() -> void:
 	DirAccess.remove_absolute(world_path)
 	DirAccess.remove_absolute(village_path)
 	scene_test_finished = true
+
+
+func _visibility_and_school(scene: Node3D) -> void:
+	scene.paused = true
+	var clearance = scene.camera_clearance
+	_check(clearance.entries.size() > 0, "real World vegetation is indexed for camera clearance")
+	var views := [
+		{"at": Vector3(77, -0.1198708, -23.22345), "drive": true},
+		{"at": scene.own_village.doorway(), "drive": false}
+	]
+	for view in views:
+		scene.driving = view.drive
+		if view.drive:
+			scene.kart_body.position = view.at
+		else:
+			scene.player.position = view.at
+		scene.own_village.update_focus(view.at, 0.0)
+		scene._update_camera(10.0)
+		_check(clearance.hidden.size() > 0, "actual recorded %s camera pose clears foreground foliage" % ("kart" if view.drive else "village"))
+		var hidden_ids: Array = clearance.hidden.keys()
+		for id in hidden_ids:
+			var entry: Dictionary = clearance.entries[id]
+			var owner: Dictionary = clearance.owners[entry.owner]
+			var node = owner.node.get_ref()
+			if node is MultiMeshInstance3D:
+				_check(owner.source.get_instance_transform(entry.index).is_equal_approx(entry.original), "source vegetation transforms remain unchanged")
+				_check(node.visible and node.get_parent().visible, "clearance does not switch off a whole visible vegetation/LOD group")
+				_check(node.multimesh.get_instance_transform(entry.index).origin.y < -90000, "only the obstructing draw is parked outside the view")
+		scene.camera.position = Vector3(-2000, 6, -2000)
+		var away := Vector3(-2000, 1, -2010)
+		scene.camera.look_at(away)
+		clearance.update(scene.camera, away, 0, 1.0 / 60.0)
+		_check(clearance.hidden.is_empty(), "turning the normal camera away restores all cleared vegetation")
+		for id in hidden_ids:
+			var entry: Dictionary = clearance.entries[id]
+			var node = clearance.owners[entry.owner].node.get_ref()
+			if node is MultiMeshInstance3D:
+				_check(node.multimesh.get_instance_transform(entry.index).is_equal_approx(entry.original), "restored tree draw has its exact original transform")
+	# A real tree at the near-plane edge must be cleared even though the
+	# camera-to-Lumo centre segment does not touch its protected bounds.
+	scene.camera.position = Vector3(3000, 3, 0)
+	var focus := Vector3(3000, 2, -10)
+	scene.camera.look_at(focus)
+	clearance.update(scene.camera, focus, 1, 1.0 / 60.0)
+	var base_count: int = clearance.entries.size()
+	var tree_mesh: Mesh = VILLAGE.ART.main_mesh("tree_oak")
+	var local_box := tree_mesh.get_aabb()
+	var near_edge: float = clearance.last_near_volume.end.x - scene.camera.position.x
+	var edge_x := (clearance.BODY_RADIUS + near_edge) * 0.5
+	var real_tree := MultiMeshInstance3D.new()
+	real_tree.name = "CameraRegressionTree"
+	var source := MultiMesh.new()
+	source.transform_format = MultiMesh.TRANSFORM_3D
+	source.mesh = tree_mesh
+	source.instance_count = 1
+	var placed := Transform3D(Basis.IDENTITY, Vector3(3000 + edge_x - local_box.position.x, 0, -1.6 - local_box.position.z))
+	source.set_instance_transform(0, placed)
+	real_tree.multimesh = source
+	scene.art.zones.Gartenlandschaft.add_child(real_tree)
+	await _frames(3)
+	clearance.update(scene.camera, focus, 1, 0.6)
+	var actual_box: AABB = placed * local_box
+	_check(actual_box.grow(clearance.BODY_RADIUS).intersects_segment(scene.camera.position, focus) == null, "near-plane fixture does not intersect the protected centre ray")
+	_check(actual_box.intersects(clearance.last_near_volume), "actual tree canopy intersects the camera near volume")
+	_check(clearance.hidden.size() == 1, "near-plane foliage is cleared without relying on a centre-ray hit")
+	var replacement := source.duplicate() as MultiMesh
+	real_tree.multimesh = replacement
+	clearance.update(scene.camera, focus, 2, 0.6)
+	_check(clearance.entries.size() == base_count + 1, "rebuilt vegetation buffer replaces its old registry entries")
+	_check(clearance.owners[real_tree.get_instance_id()].source == replacement, "replacement MultiMesh keeps its own restoration source")
+	real_tree.queue_free()
+	await _frames(3)
+	_check(clearance.entries.size() == base_count and clearance.hidden.is_empty(), "freed vegetation is removed without stale hidden instances")
+	# The school uses its authored y=0 ground plane. Its original below-ground
+	# stone skirt must not become a metre-high wall in front of the doorway.
+	var village: Node3D = scene.art.zones.Sonnendorf
+	var school: Node3D = village.get_node("school_110_-35")
+	_check(is_zero_approx(school.get_child(0).position.y), "school keeps the original authored ground plane")
+	_check(village.has_node("SchoolEntranceRamp") and village.has_node("SchoolEntranceLanding"), "school has a physical entrance ramp and landing")
+	var entry: Vector3 = village.get_meta("school_entrance")
+	scene.driving = false
+	scene.player.position = Vector3(110, 0.2, -20)
+	scene.player.velocity = Vector3.ZERO
+	scene.kart_body.position = Vector3(77, 0.2, 18)
+	scene.drive_speed = 0.0
+	scene.paused = false
+	scene.joystick.target = Vector2(0, -1)
+	for index in range(240):
+		await physics_frame
+		if scene.player.position.z <= entry.z + 0.2:
+			break
+	scene.joystick.target = Vector2.ZERO
+	scene.joystick.axis = Vector2.ZERO
+	_check(scene.player.position.z <= entry.z + 0.3, "Lumo can actually walk from the unchanged school capture point to the entrance")
+	_check(scene.player.position.y >= entry.y - 0.2, "Lumo reaches the raised doorway landing without jumping through a foundation")
+	var direction: Label3D = scene.get_node("OriginalTreasureIsland/TreasureVillageWayfinder/Direction")
+	_check(direction.text == "Sonnendorf →" and direction.billboard == BaseMaterial3D.BILLBOARD_DISABLED, "treasure entry uses a physical directional sign")
+	_check(direction.font_size <= 28 and direction.pixel_size <= 0.006, "treasure direction no longer spans the avatar's central view")
+	scene.player.position = Vector3(0, 0.1, 6)
+	scene.player.velocity = Vector3.ZERO
+	scene._update_camera(10.0)
 
 
 func _frames(count: int) -> void:

@@ -81,7 +81,26 @@ func _treasure_island(root: Node3D) -> void:
 			var lamp := LANTERN.instantiate() as Node3D
 			lamp.position = Vector3(x, 0, z)
 			island.add_child(lamp)
-	_sign(island, "Die Schatzinsel · dein Abenteuer beginnt hier", Vector3(1, 3.6, 10), Color("ffe2a2"))
+	_treasure_wayfinder(island)
+
+
+func _treasure_wayfinder(root: Node3D) -> void:
+	# A readable roadside direction, outside the avatar's central sightline.
+	# This is local World dressing; the original Treasure Island is untouched.
+	var sign := Node3D.new()
+	sign.name = "TreasureVillageWayfinder"
+	sign.position = Vector3(6.0, 0, 5.0)
+	root.add_child(sign)
+	var post := kit.box(sign, Vector3(0, 0.95, 0), Vector3(0.16, 1.9, 0.16), Color.WHITE)
+	post.material_override = ADVENTURE.material("wood_dark")
+	kit.box(sign, Vector3(0, 1.95, 0), Vector3(2.7, 0.72, 0.12), Color("193d48"))
+	var label := _sign(sign, "Sonnendorf →", Vector3(0, 1.95, 0.08), Color("c8ffe0"))
+	label.name = "Direction"
+	label.font_size = 28
+	label.pixel_size = 0.006
+	label.outline_size = 4
+	label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+	label.visibility_range_end = 34.0
 
 
 func _bridge(root: Node3D) -> void:
@@ -122,10 +141,10 @@ func _roads(root: Node3D) -> void:
 	kit.box(root, Vector3(218, 0.026, -45), Vector3(72, 0.04, 5.5), Color("ddc8a0"))
 
 
-func _building(root: Node3D, model_name: String, at: Vector3, width: float, yaw := 0.0) -> void:
+func _building(root: Node3D, model_name: String, at: Vector3, width: float, yaw := 0.0) -> StaticBody3D:
 	var entry = VILLAGE.bundle(model_name)
 	if entry.aabb.size.x <= 0.01:
-		return
+		return null
 	var factor: float = width / entry.aabb.size.x
 	var body := StaticBody3D.new()
 	body.name = model_name + "_" + str(int(at.x)) + "_" + str(int(at.z))
@@ -134,23 +153,66 @@ func _building(root: Node3D, model_name: String, at: Vector3, width: float, yaw 
 	root.add_child(body)
 	var visual: Node3D = VILLAGE.instance(model_name, true)
 	visual.scale = Vector3.ONE * factor
-	visual.position.y = -entry.aabb.position.y * factor
+	# Original village models are authored at ground y=0. Their stone skirts
+	# extend to y=-0.9 for hills; lifting the AABB floor exposed those skirts
+	# as metre-high barriers and raised every doorway above the walking path.
+	visual.position.y = 0.0
 	body.add_child(visual)
 	var collision_size: Vector3 = entry.aabb.size * factor * Vector3(0.84, 0.72, 0.84)
 	var center: Vector3 = (entry.aabb.position + entry.aabb.size * 0.5) * factor
+	if model_name == "school":
+		# Match the authored hall, not its decorative tree/window-box AABB.
+		collision_size = Vector3(4.0, 2.8, 3.2) * factor
+		center = Vector3.ZERO
 	center.y = collision_size.y * 0.5
 	kit.collision(body, center, collision_size)
+	body.set_meta("authored_scale", factor)
+	return body
+
+
+func _school_entrance(root: Node3D, school: StaticBody3D) -> void:
+	if school == null:
+		return
+	var factor: float = school.get_meta("authored_scale")
+	# Blender source: school door at (0, .22, 1.5), its step tops at .34.
+	var landing_height := 0.34 * factor + 0.035
+	var landing_center := school.position + Vector3(0, 0, 1.96 * factor)
+	var landing_depth := 0.70 * factor
+	var width := 1.55 * factor
+	var porch := StaticBody3D.new()
+	porch.name = "SchoolEntranceLanding"
+	root.add_child(porch)
+	var at := landing_center + Vector3.UP * (landing_height - 0.08)
+	var slab := kit.box(porch, at, Vector3(width, 0.16, landing_depth), Color.WHITE)
+	slab.material_override = ADVENTURE.material("stone_block")
+	kit.collision(porch, at, Vector3(width, 0.16, landing_depth))
+	var top_z := landing_center.z + landing_depth * 0.5 - 0.06
+	var bottom_z := -22.8
+	var run := bottom_z - top_z
+	var ramp := StaticBody3D.new()
+	ramp.name = "SchoolEntranceRamp"
+	ramp.position = Vector3(school.position.x, landing_height * 0.5, (bottom_z + top_z) * 0.5)
+	ramp.rotation.x = atan2(landing_height, run)
+	root.add_child(ramp)
+	var length := sqrt(run * run + landing_height * landing_height) + 0.12
+	var surface := kit.box(ramp, Vector3(0, -0.08, 0), Vector3(width, 0.16, length), Color.WHITE)
+	surface.material_override = ADVENTURE.material("stone_block")
+	kit.collision(ramp, Vector3(0, -0.08, 0), Vector3(width, 0.16, length))
+	for side in [-1.0, 1.0]:
+		kit.box(ramp, Vector3(side * (width * 0.5 - 0.07), 0.04, 0), Vector3(0.10, 0.08, length), Color("9ed8bd"))
+	root.set_meta("school_entrance", Vector3(school.position.x, landing_height, landing_center.z))
 
 
 func _buildings(village: Node3D, city: Node3D) -> void:
 	_building(village, "house_a", Vector3(90, 0, 29), 11, PI)
 	_building(village, "house_b", Vector3(116, 0, 30), 11, PI)
 	_building(village, "house_c", Vector3(143, 0, 29), 12, PI)
-	_building(village, "school", Vector3(110, 0, -35), 18)
+	var school := _building(village, "school", Vector3(110, 0, -35), 18)
+	_school_entrance(village, school)
 	_building(village, "bakery", Vector3(82, 0, -29), 12)
 	_building(village, "workshop", Vector3(151, 0, -29), 12)
 	_sign(village, "Nellis Zuhause", Vector3(90, 3.1, 22), Color("ffe8b4"))
-	_sign(village, "LUMO SCHULE", Vector3(110, 5.3, -25), Color("7be6ff"))
+	_sign(village, "LUMO SCHULE", Vector3(110, 3.1, -25.0), Color("7be6ff"))
 	_sign(village, "Brunos Werkstatt", Vector3(151, 3.8, -22), Color("b9ef9a"))
 	for index in range(5):
 		_building(city, ["house_b", "house_c", "house_a"][index % 3], Vector3(184 + index * 18, 0, 25), 14, PI)
@@ -224,7 +286,7 @@ func _vehicle(root: Node3D, id: String, at: Vector3, yaw: float) -> Node3D:
 	return visual
 
 
-func _sign(root: Node3D, text: String, at: Vector3, color: Color) -> void:
+func _sign(root: Node3D, text: String, at: Vector3, color: Color) -> Label3D:
 	var label := Label3D.new()
 	label.text = text
 	label.font_size = 40
@@ -236,3 +298,4 @@ func _sign(root: Node3D, text: String, at: Vector3, color: Color) -> void:
 	label.no_depth_test = false
 	label.position = at
 	root.add_child(label)
+	return label
