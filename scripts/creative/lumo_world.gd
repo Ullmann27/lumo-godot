@@ -553,17 +553,20 @@ func _layout() -> void:
 	var margin := 12.0
 	exit_button.size = Vector2(maxf(80, exit_button.get_combined_minimum_size().x), maxf(50, exit_button.get_combined_minimum_size().y))
 	map_button.size = Vector2(maxf(104, map_button.get_combined_minimum_size().x), maxf(50, map_button.get_combined_minimum_size().y))
+	build_button.size = Vector2(maxf(104, build_button.get_combined_minimum_size().x), maxf(50, build_button.get_combined_minimum_size().y))
 	exit_button.position = Vector2(size.x - exit_button.size.x - margin, margin)
 	map_button.position = Vector2(exit_button.position.x - map_button.size.x - margin, margin)
+	build_button.position = Vector2(map_button.position.x - build_button.size.x - margin, margin)
 	var mission_width := maxf(48, size.x - margin * 2)
 	if not portrait:
-		mission_width = minf(610, maxf(48, map_button.position.x - margin * 2))
+		mission_width = minf(610, maxf(48, build_button.position.x - margin * 2))
 	mission_panel.position = Vector2(margin, margin)
 	mission_panel.size = Vector2(mission_width, maxf(138 if portrait else 110, mission_panel.get_combined_minimum_size().y))
 	if portrait:
 		var top_actions_y := mission_panel.position.y + mission_panel.size.y + 6
 		exit_button.position.y = top_actions_y
 		map_button.position.y = top_actions_y
+		build_button.position.y = top_actions_y
 	var buttons: Array[Button] = [action_button, vehicle_button, run_button]
 	var heights := [54.0, 50.0, 50.0]
 	var button_width := 132.0
@@ -591,6 +594,11 @@ func _layout() -> void:
 		status_label.add_theme_font_size_override("font_size", 14)
 	else:
 		status_label.add_theme_font_size_override("font_size", 16)
+	if is_instance_valid(build_panel):
+		var build_width := minf(820.0, maxf(260.0, size.x - 24.0))
+		var build_height := minf(196.0, maxf(152.0, size.y * 0.31))
+		build_panel.size = Vector2(build_width, build_height)
+		build_panel.position = Vector2((size.x - build_width) * 0.5, size.y - build_height - 12.0)
 	_layout_modal()
 
 
@@ -612,6 +620,13 @@ func _physics_process(delta: float) -> void:
 		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
 	axis = axis.limit_length(1.0)
 	_traffic_tick(delta)
+	if build_mode:
+		player.velocity = Vector3.ZERO
+		fox.drive(Vector3.ZERO, player.is_on_floor(), delta, time)
+		own_village.update_focus(build_focus, delta)
+		_update_camera(delta)
+		ADVENTURE.set_focus(build_focus + Vector3.UP * 1.5)
+		return
 	if driving:
 		_drive_tick(axis, delta)
 	else:
@@ -657,7 +672,10 @@ func _physics_process(delta: float) -> void:
 
 func _walk_tick(axis: Vector2, delta: float) -> void:
 	var speed := 7.2 if walking_fast or Input.is_physical_key_pressed(KEY_SHIFT) else 4.2
-	var target := Vector3(axis.x, 0, axis.y) * speed
+	# Movement follows the freely orbiting camera, like the Imperathen person mode:
+	# forward always means away from the camera / into the view.
+	var direction := Vector3(axis.x, 0, axis.y).rotated(Vector3.UP, camera_yaw)
+	var target := direction * speed
 	# Exponential turning and distinct acceleration/deceleration avoid abrupt
 	# walk/run changes; the rig consumes actual post-collision velocity.
 	var acceleration := 16.0 if target.length_squared() > 0.02 else 23.0
@@ -675,12 +693,19 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 		player.position.z = 4.6 if entering_from_south else -4.6
 		player.velocity.z = 0
 		status_label.text = "Die Ampel ist rot. Bleib am Rand und drücke den Ampelknopf."
-	if player.is_on_floor() and absf(player.position.z) > 6.0:
-		last_safe = player.position
-	if player.position.y < -6.0:
-		player.position = last_safe + Vector3.UP * 0.2
+	if player.is_on_floor():
+		airborne_time = 0.0
+		if player.position.y > -1.5:
+			last_safe = player.position
+	else:
+		airborne_time += delta
+	# Open World may never dump the child into the void. A missed seam or shore
+	# returns quickly to the last actual floor contact instead of allowing a fall.
+	if player.position.y < -3.0 or (airborne_time > 1.35 and player.velocity.y < -2.0):
+		player.position = last_safe + Vector3.UP * 0.25
 		player.velocity = Vector3.ZERO
-		status_label.text = "Hier ist Wasser. Über die Brücke kommst du sicher weiter."
+		airborne_time = 0.0
+		status_label.text = "Lumo ist wieder auf sicherem Boden."
 	_clamp_body(player)
 	var motion := Vector2(player.velocity.x, player.velocity.z)
 	if motion.length() > 0.12:
@@ -724,21 +749,39 @@ func _active_position() -> Vector3:
 
 
 func _update_camera(delta: float) -> void:
+	if build_mode:
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		camera.size = build_zoom
+		var desired_build := build_focus + Vector3(18.0, 56.0, 42.0)
+		camera.position = camera.position.lerp(desired_build, 1.0 - exp(-8.0 * delta))
+		camera.look_at(build_focus, Vector3.UP)
+		return
+	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	var at := _active_position()
 	var portrait := get_viewport().get_visible_rect().size.y > get_viewport().get_visible_rect().size.x
-	var scale_factor := 1.3 if portrait else 1.0
-	var offset := Vector3(4.6, 5.0, 10.0) * scale_factor
+	var scale_factor := 1.18 if portrait else 1.0
+	var focus := at + Vector3.UP * (1.3 if driving else 1.45)
+	var desired: Vector3
+	var look_target := focus
 	if driving:
-		offset = kart_body.global_basis * Vector3(0, 5.0, 10.5) * scale_factor
-	var focus := at + Vector3.UP * (1.3 if driving else 1.6)
-	var desired := at + offset
+		desired = at + kart_body.global_basis * Vector3(0, 5.0, 10.5) * scale_factor
+	else:
+		var distance := person_zoom * scale_factor
+		var offset := Vector3(
+			0.36,
+			sin(camera_pitch) * distance + 0.25,
+			cos(camera_pitch) * distance
+		).rotated(Vector3.UP, camera_yaw)
+		desired = focus + offset
+		# Look a little ahead of Lumo, not down at his feet.
+		look_target += Vector3(0.28, 0.06, -3.6).rotated(Vector3.UP, camera_yaw)
 	var query := PhysicsRayQueryParameters3D.create(focus, desired, 1, [player.get_rid(), kart_body.get_rid()])
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
-		desired = hit.position + hit.normal * 0.35
-	camera.position = camera.position.lerp(desired, 1.0 - exp(-5.2 * delta))
-	if camera.position.distance_to(focus) > 0.2:
-		camera.look_at(focus, Vector3.UP)
+		desired = hit.position + hit.normal * 0.38
+	camera.position = camera.position.lerp(desired, 1.0 - exp(-9.0 * delta))
+	if camera.position.distance_to(look_target) > 0.2:
+		camera.look_at(look_target, Vector3.UP)
 	camera_clearance.update(camera, focus, kart_body.get_instance_id() if driving else player.get_instance_id(), delta)
 
 
