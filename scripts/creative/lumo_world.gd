@@ -385,14 +385,18 @@ func _layout() -> void:
 		var top_actions_y := mission_panel.position.y + mission_panel.size.y + 6
 		exit_button.position.y = top_actions_y
 		map_button.position.y = top_actions_y
-	var stick_size: float = clampf(minf(size.x * 0.39, size.y * 0.44), 120, 180)
-	joystick.position = Vector2(margin, size.y - stick_size - margin)
-	joystick.size = Vector2.ONE * stick_size
 	var buttons: Array[Button] = [action_button, vehicle_button, run_button]
 	var heights := [54.0, 50.0, 50.0]
 	var button_width := 132.0
 	for button in buttons:
 		button_width = maxf(button_width, ceilf(button.get_combined_minimum_size().x))
+	var stick_space := maxf(48, size.x - button_width - margin * 3)
+	var stick_size := minf(clampf(minf(size.x * 0.39, size.y * 0.44), 120, 180), stick_space)
+	# This shared Kart control starts with a 188px minimum. Adapt only this
+	# World instance so its real touch rectangle fits beside the action column.
+	joystick.custom_minimum_size = Vector2.ONE * 48
+	joystick.size = Vector2.ONE * stick_size
+	joystick.position = Vector2(margin, size.y - joystick.size.y - margin)
 	var button_bottom := size.y - 14
 	for index in range(buttons.size() - 1, -1, -1):
 		var button: Button = buttons[index]

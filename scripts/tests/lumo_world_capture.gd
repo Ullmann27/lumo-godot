@@ -131,9 +131,13 @@ func _capture(view: Dictionary) -> bool:
 		return false
 	durations.sort()
 	var at: Vector3 = scene._active_position()
+	var clearance: Dictionary = scene.camera_clearance.observation()
+	if not clearance.rendererVerified:
+		_fail("Foreground draw buffer differs from its verified source in " + str(view.name))
+		return false
 	captures.append({"file": filename, "view": view.name, "width": view.size.x, "height": view.size.y,
 		"position": [at.x, at.y, at.z], "driving": scene.driving, "camera": "normal gameplay follow camera",
-		"vegetationClearance": scene.camera_clearance.observation(),
+		"vegetationClearance": clearance,
 		"frames": durations.size(), "frameMsMedian": durations[30], "frameMsP95": durations[56], "frameMsMax": durations[59],
 		"drawCalls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
 		"primitives": Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME), "sampledColors": colors.size()})

@@ -97,14 +97,13 @@ func _register(node: Node) -> void:
 		owner["source"] = node.multimesh
 		# MultiMesh is a Resource: retain a private draw buffer even if a future
 		# region implementation shares a resource with another presentation.
-		var working := node.multimesh.duplicate() as MultiMesh
-		working.custom_aabb = node.multimesh.get_aabb()
+		var working := _copy_draw_buffer(node.multimesh)
 		node.multimesh = working
 		owner["working"] = working
 		owners[owner_id] = owner
 		var mesh_bounds := working.mesh.get_aabb()
 		for index in range(working.instance_count):
-			var original := working.get_instance_transform(index)
+			var original: Transform3D = working.get_meta("authored_transforms")[index]
 			_add_entry(owner_id, index, original, node.global_transform * original * mesh_bounds)
 	else:
 		if node.mesh == null:
@@ -112,6 +111,34 @@ func _register(node: Node) -> void:
 		owner["visible"] = node.visible
 		owners[owner_id] = owner
 		_add_entry(owner_id, -1, Transform3D.IDENTITY, node.global_transform * node.get_aabb())
+
+
+func _copy_draw_buffer(source: MultiMesh) -> MultiMesh:
+	var working := MultiMesh.new()
+	working.transform_format = source.transform_format
+	working.use_colors = source.use_colors
+	working.use_custom_data = source.use_custom_data
+	working.mesh = source.mesh
+	working.instance_count = source.instance_count
+	working.visible_instance_count = source.visible_instance_count
+	var authored: Array = source.get_meta("authored_transforms", [])
+	var transforms: Array[Transform3D] = []
+	var bounds := AABB()
+	for index in range(source.instance_count):
+		var original: Transform3D = authored[index] if authored.size() == source.instance_count else source.get_instance_transform(index)
+		transforms.append(original)
+		working.set_instance_transform(index, original)
+		if source.use_colors:
+			working.set_instance_color(index, source.get_instance_color(index))
+		if source.use_custom_data:
+			working.set_instance_custom_data(index, source.get_instance_custom_data(index))
+		var instance_bounds := original * source.mesh.get_aabb()
+		bounds = instance_bounds if index == 0 else bounds.merge(instance_bounds)
+	working.set_meta("authored_transforms", transforms)
+	# The original bounds must stay fixed when a foreground draw is parked.
+	# Building them from authoring data also avoids a renderer/GPU readback.
+	working.custom_aabb = bounds
+	return working
 
 
 func _add_entry(owner_id: int, index: int, original: Transform3D, bounds: AABB) -> void:
@@ -221,7 +248,7 @@ func update(camera: Camera3D, focus: Vector3, target_id: int, delta: float) -> v
 		if not is_instance_valid(node):
 			_set_hidden(id, false)
 			continue
-		var parent_visible := node.get_parent() is Node3D and node.get_parent().is_visible_in_tree()
+		var parent_visible: bool = node.get_parent() is Node3D and node.get_parent().is_visible_in_tree()
 		var local_visible: bool = node.visible if node is MultiMeshInstance3D else bool(owner.visible)
 		var margin := RESTORE_MARGIN if hidden.has(id) else 0.0
 		var bounds: AABB = entry.bounds
@@ -241,15 +268,21 @@ func _near_volume(camera: Camera3D) -> AABB:
 
 func observation() -> Dictionary:
 	var cleared: Array[Dictionary] = []
+	var renderer_verified := DisplayServer.get_name() != "headless"
 	for id in hidden:
 		var entry: Dictionary = entries[id]
-		var node = owners[entry.owner].node.get_ref()
+		var owner: Dictionary = owners[entry.owner]
+		var node = owner.node.get_ref()
 		if not is_instance_valid(node):
 			continue
+		if renderer_verified and node is MultiMeshInstance3D:
+			var parked: Transform3D = entry.original
+			parked.origin.y -= PARK_DEPTH
+			renderer_verified = node.multimesh == owner.working and node.multimesh.get_instance_transform(entry.index).is_equal_approx(parked) and owner.source.get_instance_transform(entry.index).is_equal_approx(entry.original)
 		var bounds: AABB = entry.bounds
 		cleared.append({"node": str(node.get_path()), "instance": entry.index,
 			"center": [bounds.get_center().x, bounds.get_center().y, bounds.get_center().z]})
-	return {"method": "foreground draw visibility, Compatibility supported", "registered": entries.size(),
+	return {"method": "foreground draw visibility, Compatibility supported", "registered": entries.size(), "rendererVerified": renderer_verified,
 		"candidates": last_candidates, "clearedCount": hidden.size(), "cleared": cleared,
 		"nearVolume": [last_near_volume.position.x, last_near_volume.position.y, last_near_volume.position.z,
 			last_near_volume.size.x, last_near_volume.size.y, last_near_volume.size.z]}
