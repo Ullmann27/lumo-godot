@@ -1,4 +1,4 @@
 {
-  "request": 1,
-  "purpose": "Identify actual mesh sight occlusions and exercise true unlocked/mounted tuning on Godot 4.6.3 OpenGL"
+  "request": 2,
+  "purpose": "Verify swept ramp take-off, complete planet footprints and true Feensee water/camera geometry on pinned OpenGL"
 }

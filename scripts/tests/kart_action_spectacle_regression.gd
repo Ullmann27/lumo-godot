@@ -254,7 +254,10 @@ func _backdrop_clearance(world) -> void:
 				var transform: Transform3D = child.transform * mesh.get_instance_transform(i)
 				var radius: float = maxf(transform.basis.x.length(), transform.basis.z.length()) * 0.5
 				var tint: Color = mesh.get_instance_color(i)
-				if not tint.is_equal_approx(Color("edbd91")) or radius < 11.99:
+				var expected: Color = Color("edbd91")
+				# GPU MultiMesh colors use half-float storage, including in realGL.
+				var tint_error: float = maxf(absf(tint.r - expected.r), maxf(absf(tint.g - expected.g), absf(tint.b - expected.b)))
+				if tint_error > 1.0 / 1024.0 or radius < 11.99:
 					continue
 				_check(not world._near_road(transform.origin, radius + float(world.WIDTH) * 0.5 + 3.9),
 					"Galaxy's actual planet rings clear the entire driving corridor")
@@ -265,9 +268,53 @@ func _backdrop_clearance(world) -> void:
 				checked += 1
 		_check(checked >= 5, "Galaxy retains its full roadside planet sequence")
 		print("[KartSpectacle] galaxy complete planet ring footprints=", checked)
+		var giants: int = 0
+		for child in world.get_children():
+			if not child is MultiMeshInstance3D or not str(child.name).begins_with("Decor_ball"):
+				continue
+			var mesh: MultiMesh = child.multimesh
+			for i in range(mesh.instance_count):
+				var transform: Transform3D = child.transform * mesh.get_instance_transform(i)
+				var radius: float = maxf(transform.basis.x.length(), maxf(transform.basis.y.length(), transform.basis.z.length()))
+				if radius < 29.99:
+					continue
+				_check(not world._near_road(transform.origin, radius + float(world.WIDTH) * 0.5 + 3.9),
+					"Galaxy's full60m hero planet clears every driving lane")
+				for n in range(65):
+					var at: Vector3 = LOOP.point(world, world.loop_layout, float(n) / 64.0)
+					_check(Vector2(at.x - transform.origin.x, at.z - transform.origin.z).length() >= radius + 3.5,
+						"Galaxy's full60m hero planet clears the exterior loop")
+				giants += 1
+		_check(giants >= 3, "Galaxy keeps all three giant curve planets")
+		var visible_orbits: int = 0
+		for child in world.get_children():
+			if not child is MultiMeshInstance3D or not str(child.name).begins_with("Decor_torus"):
+				continue
+			var mesh: MultiMesh = child.multimesh
+			for i in range(mesh.instance_count):
+				var transform: Transform3D = child.transform * mesh.get_instance_transform(i)
+				var radius: float = maxf(transform.basis.x.length(), transform.basis.z.length()) * 0.5
+				if radius < 41.99:
+					continue
+				_check(radius > 30.0 + 10.0, "the hero orbit remains visibly outside its30m sphere")
+				_check(not world._near_road(transform.origin, radius + float(world.WIDTH) * 0.5 + 3.9),
+					"the full visible hero orbit clears every driving lane")
+				for n in range(65):
+					var at: Vector3 = LOOP.point(world, world.loop_layout, float(n) / 64.0)
+					_check(Vector2(at.x - transform.origin.x, at.z - transform.origin.z).length() >= radius + 3.5,
+						"the full visible hero orbit clears the optional loop")
+				visible_orbits += 1
+		_check(visible_orbits == giants, "every giant planet retains its visible outer orbit")
+		print("[KartSpectacle] galaxy giant planet footprints=", giants, " visible orbits=", visible_orbits)
 
 
 func _run() -> void:
+	# Dummy rendering returns identity transforms and black colors for MultiMesh.
+	# The geometry checks require the same real renderer as the capture.
+	if DisplayServer.get_name() == "headless":
+		printerr("[KartSpectacle] FAIL actual MultiMesh readback requires GL/Vulkan, use Xvfb")
+		quit(1)
+		return
 	_check(TRACKS.IDS.size() == 15, "all 15 production circuits are covered")
 	for track in TRACKS.IDS:
 		var world = WORLD.new()

@@ -706,12 +706,15 @@ static func _build_line_curve(world, entry: Dictionary) -> void:
 						world.position_at(d, edge * (half + 0.8)), top, 0.6, Color("ffc2e4")
 					)
 			"galaxy":
-				var planet: Vector3 = world.position_at(d, inside * (half + 26.0)) + basis.y * 12.0
+				# The sphere mesh has unit RADIUS: scale30 means a60m diameter.
+				# Its visible orbital ring has42m outer radius; reserve that entire footprint.
+				var initial: Vector3 = world.position_at(d, inside * (half + 26.0)) + basis.y * 12.0
+				var planet: Vector3 = world.EXPANSION._planet_at(world, d, initial, inside, 42.0, 0.0)
 				world._prop("ball", planet, Vector3(30.0, 30.0, 30.0), Color("6a7dff"), basis, true)
 				world._prop(
 					"torus",
 					planet,
-					Vector3(26.0, 2.0, 26.0),
+					Vector3(84.0, 2.0, 84.0),
 					Color("ffd27a"),
 					basis.rotated(basis.x, 0.35),
 					true

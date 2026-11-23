@@ -410,7 +410,7 @@ static func _build_dive(world, dive: Dictionary) -> void:
 			var wall: Vector3 = world.position_at(along, side * 6.4) + basis.y * 2.1
 			world._prop("box", wall, Vector3(0.18, 4.2, 4.05), water.darkened(0.25 if ring % 2 == 0 else 0.15), basis, true)
 			world._prop("box", world.position_at(along, side * 6.25) + basis.y * 2.1, Vector3(0.12, 4.3, 0.18), Color("dff8ff"), basis, true)
-		world._prop("box", centre + basis.y * 4.3, Vector3(13.0, 0.2, 4.05), water.darkened(0.35), basis, true)
+		world._prop("dive_water", centre + basis.y * 4.3, Vector3(13.0, 0.2, 4.05), water, basis, true)
 		world._prop("box", centre + basis.y * 4.18, Vector3(12.8, 0.06, 0.2), Color("dff8ff"), basis, true)
 		if ring % 2 == 0:
 			# Fische und Luftblasen an den Wänden, nie in der Fahrspur.

@@ -2464,13 +2464,6 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 	var leap_gap: bool = mode != "arena" and THRILLS.lane_gap(world, road_distance, lane)
 	if not airborne:
 		_leap_take_off(road, road_distance)
-	if not airborne and (world.in_gap(road_distance) or leap_gap):
-		# Rolled or reversed into a gap without take-off: there is no road here.
-		airborne = true
-		air_trick = {}
-		current_jump_gravity = JUMP_GRAVITY
-		vertical_speed = 0.0
-		air_time = 0.0
 	if not airborne:
 		var kicker: Dictionary = ACTION.kicker_crossed(
 			world.action, fposmod(previous_road_distance, track_length), fposmod(road_distance, track_length)
@@ -2494,6 +2487,16 @@ func _move_vertically(road: Dictionary, road_distance: float, delta: float) -> b
 			vertical_speed = minf(lift, float(kicker.get("max_lift", JUMP_MAX_LIFT)))
 			message.text = "Panorama-Flug!" if bool(kicker.get("hero_flight", false)) else "Schanze!"
 			return true
+	# Swept ramp take-off above takes priority when one normal physics step
+	# crosses BOTH the lip and the first0.5m of the road gap. Only a kart that
+	# did not leave a ramp should fall into the opening without launch momentum.
+	if not airborne and (world.in_gap(road_distance) or leap_gap):
+		# Rolled or reversed into a gap without take-off: there is no road here.
+		airborne = true
+		air_trick = {}
+		current_jump_gravity = JUMP_GRAVITY
+		vertical_speed = 0.0
+		air_time = 0.0
 	if not airborne:
 		player.position.y = ground
 		return true

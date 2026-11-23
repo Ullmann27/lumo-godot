@@ -85,13 +85,13 @@ func _check_layout() -> void:
 	)
 
 
-func _start(kart_id: String = "comet") -> void:
+func _start(kart_id: String = "comet", track_id: String = "sonnenhafen") -> void:
 	game._start_selected_race(
 		{
 			"mode": "training",
 			"driver": "fox",
 			"kart": kart_id,
-			"track": "sonnenhafen",
+			"track": track_id,
 			"difficulty": "flott"
 		}
 	)
@@ -438,6 +438,80 @@ func _check_precision_speeds() -> void:
 ## its unupgraded brakes and the weakest stock braking kart traverse the marked
 ## approach. A legal boost pulse is applied again just before the ramp so the
 ## check also catches accidental boost acceleration during precision flight.
+
+## A normal60Hz step may cross both the lip and the gap beginning0.5m later.
+## Real input integration must launch in every phase, while a separate gap entry falls.
+func _check_takeoff_phases() -> void:
+	await _start("gecko_velo")
+	game.auto_gas = false
+	game.gas_held = false
+	game.brake = 0.0
+	game.control_brake = 0.0
+	var jump: Dictionary = {}
+	for candidate in game.world.action.kickers:
+		if bool(candidate.get("precision_jump", false)):
+			jump = candidate
+	assert(not jump.is_empty())
+	var simultaneous: int = 0
+	for offset in [0.05, 0.25, 0.49, 0.75, 0.99]:
+		_place(float(jump.take_off) - offset, 0.0, 61.78536)
+		game.precision_kicker = {}
+		game.vertical_speed = 0.0
+		var before: int = game.action_kicker_jumps
+		game._physics_process(STEP)
+		assert(game.airborne and not game.precision_kicker.is_empty(), "lip phase%.2f must launch before testing gap occupancy" % offset)
+		assert(game.action_kicker_jumps == before + 1, "one crossed lip creates exactly one launch")
+		assert(absf(game.vertical_speed - PRECISION.launch_vertical(game.speed, jump)) < 0.00001,
+			"the crossed lip keeps the normal ballistic launch momentum")
+		if game.previous_road_distance >= float(jump.gap_start):
+			simultaneous += 1
+	assert(simultaneous >= 2, "at least two cases cross lip and gap_start within one60Hz step")
+	for already_airborne in [false, true]:
+		_place(float(jump.gap_start) + 2.0, 0.0, 18.0)
+		game.precision_kicker = {}
+		game.airborne = already_airborne
+		game.vertical_speed = 0.0
+		game.current_jump_gravity = game.JUMP_GRAVITY
+		var before: int = game.action_kicker_jumps
+		game._physics_process(STEP)
+		assert(game.airborne and game.precision_kicker.is_empty(), "entering the gap without crossing a ramp remains a fall")
+		assert(game.action_kicker_jumps == before and game.vertical_speed < 0.0,
+			"a gap never invents an extra launch, including an already airborne kart")
+	completed_checks += 1
+	print("[SonnenhafenStunt] swept lip:5 phases, ", simultaneous, " simultaneous lip/gap crossings, both independent falls preserved")
+
+
+## Run the real production camera method through the entire aquarium section.
+## This distinguishes an elevated landscape shot looking at the roof from the
+## normal driving camera below it; no camera or water geometry is modified.
+func _check_aquarium_camera() -> void:
+	await _start("comet", "zauberwald")
+	var dives: Array = game.world.action.dives
+	assert(dives.size() == 1, "the real forest aquarium remains present")
+	var dive: Dictionary = dives[0]
+	var minimum_roof_clearance: float = INF
+	var maximum_lateral: float = 0.0
+	var samples: int = 0
+	for index in range(15):
+		var d: float = lerpf(float(dive.start) + 10.0, float(dive.end) - 10.0, float(index) / 14.0)
+		for lateral in [-3.0, 0.0, 3.0]:
+			_place(d, lateral, 50.0)
+			game.precision_kicker = {}
+			game.steering = 0.0
+			game._update_camera(STEP, true)
+			var road: Dictionary = game.world.sample_road(game.camera.position, d)
+			var up: Vector3 = (road.basis as Basis).y
+			var height: float = (game.camera.position - (road.position as Vector3)).dot(up)
+			minimum_roof_clearance = minf(minimum_roof_clearance, 4.2 - height)
+			maximum_lateral = maxf(maximum_lateral, absf(float(road.lateral)))
+			assert(height > 0.5 and height < 4.0, "the real chase camera stays above the road and below the aquarium roof")
+			assert(absf(float(road.lateral)) < 6.1, "the real chase camera stays inside the aquarium side walls")
+			samples += 1
+	completed_checks += 1
+	print("[SonnenhafenStunt] forest real camera: samples=", samples,
+		" roof_clearance=", snappedf(minimum_roof_clearance, 0.001), " lateral=", snappedf(maximum_lateral, 0.001))
+
+
 func _check_boosted_approach() -> void:
 	var original_workshop = game.workshop
 	var setups: Array[Dictionary] = [
@@ -535,7 +609,9 @@ func _run() -> void:
 	await _check_too_slow()
 	await _check_stunt_jump()
 	await _check_precision_speeds()
+	await _check_takeoff_phases()
 	await _check_boosted_approach()
+	await _check_aquarium_camera()
 	# Quitting with the race still mounted left "resources still in use at exit"
 	# on some runs, which the probe runner rightly rejects. Release it first.
 	game.abandoned = true
@@ -544,8 +620,8 @@ func _run() -> void:
 		quit(1)
 		return
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
-	if completed_checks != 6:
-		print("[SonnenhafenStunt] FAIL: %d of 6 checks completed" % completed_checks)
+	if completed_checks != 8:
+		print("[SonnenhafenStunt] FAIL: %d of 8 checks completed" % completed_checks)
 		quit(1)
 		return
 	print("[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure")

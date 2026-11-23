@@ -390,29 +390,29 @@ static func _volcano(world) -> void:
 			world._prop("ball", spray, Vector3.ONE * 0.22, Color("ffb955"), Basis.IDENTITY, true)
 
 
-## Include the ring's 12 m radius, the whole circuit and the exterior loop.
+## Include the full supplied planet/ring radius, the whole circuit and the exterior loop.
 ## Nearby planets must frame the road without engulfing a crest or its camera.
-static func _planet_clear(world, at: Vector3) -> bool:
-	if world._near_road(at, 12.0 + float(world.WIDTH) * 0.5 + 4.0):
+static func _planet_clear(world, at: Vector3, radius: float = 12.0) -> bool:
+	if world._near_road(at, radius + float(world.WIDTH) * 0.5 + 4.0):
 		return false
 	if not world.loop_layout.is_empty():
 		for i in range(49):
 			var p: Vector3 = LOOP.point(world, world.loop_layout, float(i) / 48.0)
-			if Vector2(p.x - at.x, p.z - at.z).length() < 16.0:
+			if Vector2(p.x - at.x, p.z - at.z).length() < radius + 4.0:
 				return false
 	return true
 
 
-static func _planet_at(world, distance: float, original: Vector3, side: float) -> Vector3:
+static func _planet_at(world, distance: float, original: Vector3, side: float, radius: float = 12.0, height: float = 16.0) -> Vector3:
 	var lateral: Vector3 = world.frame(distance).x
 	lateral.y = 0.0
 	lateral = lateral.normalized()
 	for attempt in range(20):
-		var candidate: Vector3 = original + lateral * side * float(attempt) * 12.0 + Vector3.UP * 16.0
-		if _planet_clear(world, candidate):
+		var candidate: Vector3 = original + lateral * side * float(attempt) * 12.0 + Vector3.UP * height
+		if _planet_clear(world, candidate, radius):
 			return candidate
 	# A very tight future layout still retains its planet outside all route bounds.
 	var outside_x: float = 0.0
 	for sample in world._road_samples:
 		outside_x = maxf(outside_x, absf(sample.x))
-	return Vector3(outside_x + 128.0, original.y + 16.0, original.z)
+	return Vector3(outside_x + radius + 128.0, original.y + height, original.z)

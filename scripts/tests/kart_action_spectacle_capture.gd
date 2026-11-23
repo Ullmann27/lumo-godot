@@ -231,8 +231,17 @@ func _diagnose_view(view: String) -> void:
 	var d: float = float(road.distance)
 	var chase_eye: Vector3 = world.position_at(d - 8.0) + Vector3.UP * 3.5
 	var chase_target: Vector3 = world.position_at(d + 18.0) + Vector3.UP * 1.2
+	var screen_rays: Array = []
+	for uv in [Vector2(0.5, 0.8), Vector2(0.75, 0.55), Vector2(0.25, 0.55)]:
+		var pixel: Vector2 = uv * Vector2(root.size)
+		var origin: Vector3 = camera.project_ray_origin(pixel)
+		var direction: Vector3 = camera.project_ray_normal(pixel)
+		screen_rays.append({"uv": [uv.x, uv.y], "hits": _sight_hits(origin, origin + direction * 160.0)})
 	var info: Dictionary = {"track": track, "view": view, "road_distance": d,
-		"capture": _sight_hits(camera.position, target), "chase": _sight_hits(chase_eye, chase_target)}
+		"capture": _sight_hits(camera.position, target), "chase_reference": _sight_hits(chase_eye, chase_target),
+		"screen_rays": screen_rays}
+	if track == "zauberwald":
+		info["eye_above_terrain"] = camera.position.y - world._ground_height(camera.position.x, camera.position.z)
 	entry["mesh_diagnostics"] = info
 	print("[KartMeshSight] ", JSON.stringify(info))
 	if track == "galaxy_ringway" and view == views[0]:
