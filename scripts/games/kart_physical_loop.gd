@@ -17,7 +17,7 @@ const ADVANCE: float = 7.0
 const LENGTH: float = TAU * RADIUS + ADVANCE * 0.2
 const GRAVITY: float = 6.0
 const LATERAL_LIMIT: float = 0.7
-const ARC_SEGMENTS: int = 256
+const ARC_SEGMENTS: int = 512
 const DECK_HALF_WIDTH: float = 1.2
 ## The deck floats this far above the asphalt: no depth fighting, no visible step.
 const DECK_LIFT: float = 0.012
@@ -25,7 +25,7 @@ const DECK_LIFT: float = 0.012
 const APRON_M: float = 6.0
 const WALL_HEIGHT: float = 0.55
 const WALL_THICKNESS: float = 0.22
-const DECK_SEGMENTS: int = 160
+const DECK_SEGMENTS: int = 384
 const APRON_SEGMENTS: int = 12
 ## Lateral steering offsets beyond the limit are eased back, never snapped.
 const LATERAL_EASE: float = 2.5

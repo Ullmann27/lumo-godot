@@ -565,6 +565,7 @@ func _build_world() -> void:
 				arena_pickup_timers.append(0.0)
 	else:
 		world = WORLD.new()
+		world.set_meta("reduce_motion", reduced_motion)
 		race_root.add_child(world)
 		world.build(lightweight, track_id)
 		if is_instance_valid(kart_audio):
@@ -4236,6 +4237,8 @@ func _append_preferences() -> void:
 		func():
 			preferred_reduced_motion = not preferred_reduced_motion
 			reduced_motion = preferred_reduced_motion or host_reduce_motion
+			if is_instance_valid(world):
+				WORLD.SPECTACLE.set_reduced_motion(world, reduced_motion)
 			if is_instance_valid(player):
 				player.reduced_motion = reduced_motion
 			if is_instance_valid(garage):
@@ -5003,6 +5006,8 @@ func _load_preferences() -> void:
 	host_sound_enabled = bool(host_options.get("soundEnabled", true))
 	host_reduce_motion = bool(host_options.get("reduceAnimations", false))
 	reduced_motion = preferred_reduced_motion or host_reduce_motion
+	if is_instance_valid(world):
+		WORLD.SPECTACLE.set_reduced_motion(world, reduced_motion)
 	# Without hardware graphics (emulator, very weak device) the race starts light.
 	lightweight = bool(
 		config.get_value(

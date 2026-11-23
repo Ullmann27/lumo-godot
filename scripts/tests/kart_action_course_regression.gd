@@ -24,7 +24,7 @@ func _settle() -> void:
 ## Elemente aus dem Aktionsplan (ohne die von Höhepunkten oder dem Garten ergänzten).
 func _plan_items(items: Array) -> Array:
 	return items.filter(
-		func(item): return not (item.has("thrill") or item.has("highlight") or item.has("garden"))
+		func(item): return not (item.has("thrill") or item.has("highlight") or item.has("garden") or item.has("spectacle"))
 	)
 
 
@@ -86,7 +86,7 @@ func _check_plans() -> void:
 				# loop exit closely, but nothing may touch the ring itself.
 				var clearance: float = 60.0
 				if bool(world.loop_layout.get("stunt", false)):
-					clearance = LOOP.ADVANCE + LOOP.radius_of(world.loop_layout)
+					clearance = LOOP.advance_of(world.loop_layout) + LOOP.radius_of(world.loop_layout)
 				assert(span.y < loop_start or span.x > loop_start + clearance, "%s: nicht im Looping" % track)
 		for a in range(spans.size()):
 			for b in range(a + 1, spans.size()):
@@ -103,7 +103,7 @@ func _check_plans() -> void:
 	# Sonnenhafen: Panorama-Schanze plus genau das Turbo-Feld der Stunt-Looping-Spur vor dem Tunnel.
 	var stunt_pads: Array = ACTION.STUNT.pads(plain)
 	assert(plain.action.gates.is_empty(), "Sonnenhafen hat keine Slalom-Tore")
-	assert(plain.action.pads.size() == 1 and stunt_pads.size() == 1, "Nur das Stunt-Turbo-Feld")
+	assert(_plan_items(plain.action.pads).size() == 1 and stunt_pads.size() == 1, "Originaler Stunt-Plan bleibt erhalten")
 	assert(is_equal_approx(float(plain.action.pads[0].lateral), float(plain.loop_layout.lane)), "Turbo-Feld liegt auf der Looping-Spur")
 	plain.free()
 	completed_checks += 1
@@ -235,7 +235,7 @@ func _check_kicker_and_dive() -> void:
 func _check_sonnenhafen_long_flight() -> void:
 	await _start("sonnenhafen")
 	var course: Dictionary = game.world.action
-	assert(course.kickers.size() == 4, "Sonnenhafen: panorama, stunt and two additional road kickers")
+	assert(_plan_items(course.kickers).size() == 4, "Sonnenhafen: original panorama, stunt and two road kickers retained")
 	var kicker: Dictionary = course.kickers[0]
 	assert(bool(kicker.hero_flight) and float(kicker.length) > ACTION.KICKER_LENGTH)
 	assert(float(kicker.flight_gravity) < game.JUMP_GRAVITY)

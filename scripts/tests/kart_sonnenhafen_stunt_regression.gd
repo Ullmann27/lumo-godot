@@ -36,16 +36,16 @@ func _check_layout() -> void:
 		not layout.is_empty() and bool(layout.get("stunt", false)), "Sonnenhafen has the stunt loop"
 	)
 	assert(
-		is_equal_approx(float(layout.start), tunnel - STUNT.LOOP_LEAD_M), "Loop sits at Position A"
+		float(layout.start) <= tunnel - STUNT.LOOP_LEAD_M and float(layout.start) >= tunnel - STUNT.LOOP_LEAD_M - LOOP.advance_of(layout), "Branch stays near authored Position A within one checkpoint sector"
 	)
-	var structure_end: float = float(layout.start) + LOOP.ADVANCE + STUNT.LOOP_RADIUS + 2.0
+	var structure_end: float = float(layout.start) + LOOP.advance_of(layout) + STUNT.LOOP_RADIUS + 2.0
 	assert(structure_end < tunnel - 80.0, "Loop ends well before the tunnel mouth")
 	assert(LOOP.radius_of(layout) > LOOP.RADIUS, "Stunt loop is larger than the side loops")
-	var pads: Array = world.action.pads
+	var pads: Array = world.action.pads.filter(func(pad): return bool(pad.get("stunt_pad", false)))
 	assert(pads.size() == 1, "Exactly one stunt boost pad")
 	var pad: Dictionary = pads[0]
 	assert(float(pad.end) < float(layout.start) - 10.0, "Pad ends before the loop entry")
-	assert(is_equal_approx(float(pad.lateral), STUNT.LOOP_LANE), "Pad lies on the loop lane")
+	assert(is_equal_approx(float(pad.lateral), float(layout.lane)), "Pad lies on the loop lane")
 	var kicker: Dictionary = world.action.kickers[0]
 	assert(float(pad.start) > float(kicker.take_off) + 40.0, "Panorama jump stays untouched")
 	# Riding line: continuous, closed circle, upside down at the top.
@@ -53,12 +53,12 @@ func _check_layout() -> void:
 	assert(top.y.dot(Vector3.UP) < -0.95, "Kart is upside down at the top of the loop")
 	var previous: Vector3 = LOOP.point(world, layout, 0.0)
 	var longest: float = 0.0
-	for i in range(1, 201):
-		var p: Vector3 = LOOP.point(world, layout, float(i) / 200.0)
+	for i in range(1, 601):
+		var p: Vector3 = LOOP.point(world, layout, float(i) / 600.0)
 		longest = maxf(longest, p.distance_to(previous))
 		previous = p
 	assert(longest < 0.4, "Riding line has no gaps (%.2f m)" % longest)
-	var peak: float = LOOP.point(world, layout, 0.5).y - world.position_at(float(layout.start)).y
+	var peak: float = LOOP.point(world, layout, 0.5).y - world.position_at(LOOP.road_distance_at(layout, 0.5), LOOP.lane_at(layout, 0.5)).y
 	assert(peak > 2.0 * STUNT.LOOP_RADIUS - 0.5, "Loop height %.1f m" % peak)
 	var star_count: int = STUNT.STAR_FRACTIONS.size() + 4 + STUNT.ARC_STARS.size()
 	assert(STUNT.star_positions(world).size() == star_count)
@@ -136,7 +136,7 @@ func _check_full_loop() -> void:
 	await _start()
 	var layout: Dictionary = game.world.loop_layout
 	var pad: Dictionary = game.world.action.pads[0]
-	_place(float(pad.start) - 14.0, STUNT.LOOP_LANE, 15.0)
+	_place(float(pad.start) - 14.0, float(layout.lane), 15.0)
 	var pads_before: int = game.action_pads_triggered
 	var loops_before: int = game.loop_count
 	var resets_before: int = game.reset_count
@@ -148,7 +148,7 @@ func _check_full_loop() -> void:
 	var last_distance: float = game.distance
 	for frame in range(900):
 		if not game.loop_state.active:
-			_steer_to(STUNT.LOOP_LANE)
+			_steer_to(float(layout.lane))
 		else:
 			game.steering = 0.0
 		game._physics_process(STEP)
@@ -180,8 +180,8 @@ func _check_full_loop() -> void:
 	# Onward: back on the road, fast, and into the tunnel without a reset.
 	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
 	assert(
-		absf(float(road.lateral) - STUNT.LOOP_LANE - STUNT.LOOP_EXIT_SHIFT) < 0.6,
-		"Exit on the loop's exit lane beside the entry"
+		absf(float(road.lateral) - LOOP.exit_lane(layout)) < 0.6,
+		"Exit on the branch's continuous return lane"
 	)
 	assert(absf(game.player.position.y - float(road.height)) < 0.3, "Exit on the road surface")
 	assert(game.speed > 12.0, "Kart keeps speed after the loop (%.1f)" % game.speed)
@@ -213,7 +213,7 @@ func _check_too_slow() -> void:
 	# one physical step before the lip, with enough momentum for that step.
 	var minimum: float = float(layout.min_entry_speed)
 	var coast_loss: float = POWERTRAIN.acceleration(game.kart_factors, false) * STEP
-	_place(float(layout.start) - minimum * STEP * 0.5, STUNT.LOOP_LANE, minimum + coast_loss * 1.5)
+	_place(float(layout.start) - minimum * STEP * 0.5, float(layout.lane), minimum + coast_loss * 1.5)
 	game.auto_gas = false
 	game.gas_held = false
 	var loops_before: int = game.loop_count
@@ -259,7 +259,7 @@ func _check_stunt_jump() -> void:
 	var tunnel: float = STUNT.tunnel_start(game.world)
 	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m()), "Jump at Position B")
 	assert(
-		float(jump.start) > float(game.world.loop_layout.start) + LOOP.ADVANCE,
+		float(jump.start) > float(game.world.loop_layout.start) + LOOP.advance_of(game.world.loop_layout),
 		"Ramp after the loop exit"
 	)
 	# Use the speed shown by the precision hint for this safe-landing run.

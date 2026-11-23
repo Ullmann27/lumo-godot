@@ -97,8 +97,8 @@ func _measure(track: String) -> void:
 	var joins: Array = [
 		[rows[0], start - LOOP.APRON_M, entry_lane, "apron-in"],
 		[rows[first_ring], start, entry_lane, "entry"],
-		[rows[last_ring], start + LOOP.ADVANCE, exit_lane, "exit"],
-		[rows[rows.size() - 1], start + LOOP.ADVANCE + LOOP.APRON_M, exit_lane, "apron-out"],
+		[rows[last_ring], start + LOOP.advance_of(layout), exit_lane, "exit"],
+		[rows[rows.size() - 1], start + LOOP.advance_of(layout) + LOOP.APRON_M, exit_lane, "apron-out"],
 	]
 	var worst: Dictionary = {"gap": 0.0, "offset": 0.0, "bank": 0.0}
 	for join in joins:
@@ -115,7 +115,7 @@ func _measure(track: String) -> void:
 		- (rows[last_ring - 1].left + rows[last_ring - 1].right)
 	)
 	var entry_kink: float = _angle_deg(entry_dir, world.forward(start))
-	var exit_kink: float = _angle_deg(exit_dir, world.forward(start + LOOP.ADVANCE))
+	var exit_kink: float = _angle_deg(exit_dir, world.forward(start + LOOP.advance_of(layout)))
 	_check(entry_kink <= KINK_LIMIT_DEG, "%s entry kink %.2f deg" % [track, entry_kink])
 	_check(exit_kink <= KINK_LIMIT_DEG, "%s exit kink %.2f deg" % [track, exit_kink])
 	# 4) Continuous surface: no row jumps, constant width through the ring.
@@ -155,7 +155,7 @@ func _measure(track: String) -> void:
 				var separation: float = maxf(b.low - a.high, a.low - b.high)
 				crossing = minf(crossing, separation)
 	_check(crossing >= CROSSING_CLEARANCE, "%s climbing/descending clearance %.3f m" % [track, crossing])
-	# 6) Both decks stay on the asphalt, inside the edge paint.
+	# 6) Both road joins stay on asphalt; the ring itself is on the exterior branch.
 	var edge: float = float(world.road_width) * 0.5 - 0.15
 	for lane in [entry_lane, exit_lane]:
 		_check(absf(lane) + half <= edge, "%s deck at lane %.2f inside road edge" % [track, lane])

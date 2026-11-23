@@ -117,7 +117,7 @@ static func pads(world) -> Array:
 	if not applies(world):
 		return []
 	var end: float = loop_start(world) - PAD_GAP_M
-	return [{"start": end - PAD_LENGTH, "end": end, "lateral": float(world.loop_layout.get("lane", LOOP_LANE))}]
+	return [{"start": end - PAD_LENGTH, "end": end, "lateral": float(world.loop_layout.get("lane", LOOP_LANE)), "stunt_pad": true}]
 
 
 ## Take-off distance before the tunnel mouth. The model flight of the reference
@@ -288,7 +288,7 @@ static func _add_mesh(world, mesh_name: String, tool: SurfaceTool, material: Mat
 static func _supports(world, layout: Dictionary) -> void:
 	var start: float = float(layout.start)
 	var right: float = float(world.RAIL_LATERAL) + 1.4
-	for u in [0.25, 0.75]:
+	for u in ([0.375, 0.625] if bool(layout.get("branch", false)) else [0.25, 0.75]):
 		var flank: Vector3 = LOOP.point(world, layout, u, DECK_HALF_WIDTH + 0.3)
 		var d: float = LOOP.road_distance_at(layout, u) + (LOOP_RADIUS if u < 0.5 else -LOOP_RADIUS)
 		var foot: Vector3 = world.position_at(d, LOOP.lane_at(layout, u) + signf(float(layout.lane)) * 2.4 if bool(layout.get("branch", false)) else right)
@@ -306,9 +306,7 @@ static func _supports(world, layout: Dictionary) -> void:
 ## Decorative gold stars inside the ring, like the reference loops.
 static func _inner_stars(world, layout: Dictionary) -> void:
 	var start: float = float(layout.start)
-	var center_distance: float = LOOP.road_distance_at(layout, 0.5)
 	var basis: Basis = world.frame(LOOP.road_distance_at(layout, 0.25))
-	var middle_lane: float = LOOP.lane_at(layout, 0.5)
 	var center: Vector3 = LOOP.ring_center(world, layout)
 	var facing := Basis(-basis.z, basis.y, basis.x)
 	for i in range(8):
@@ -356,10 +354,11 @@ static func _entry_guidance(world, layout: Dictionary) -> void:
 
 ## Tall light beacons beside the loop: the setpiece reads from far away.
 static func _beacons(world, layout: Dictionary) -> void:
-	var start: float = float(layout.start)
+	var start: float = LOOP.road_distance_at(layout, 0.5)
+	var outside: float = LOOP.lane_at(layout, 0.5) + signf(float(layout.lane)) * 6.0
 	for entry in [
-		[start - 4.0, float(world.RAIL_LATERAL) + 3.5],
-		[start + 12.0, float(world.RAIL_LATERAL) + 3.5]
+		[start - 12.0, outside],
+		[start + 12.0, outside]
 	]:
 		var d: float = float(entry[0])
 		var basis: Basis = world.frame(d)
