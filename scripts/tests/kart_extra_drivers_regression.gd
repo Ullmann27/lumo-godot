@@ -4,7 +4,14 @@ extends SceneTree
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const SCENE := "res://scenes/games/kart_island.tscn"
-const EXTRA := {\n\t"badger": "Borin",\n\t"cat": "Yuki",\n\t"lion": "Löwe",\n\t"owl": "Eule",\n\t"squirrel": "Eichhörnchen",\n\t"turtle": "Schildkröte",\n}
+const EXTRA := {
+	"badger": "Borin",
+	"cat": "Yuki",
+	"lion": "Löwe",
+	"owl": "Eule",
+	"squirrel": "Eichhörnchen",
+	"turtle": "Schildkröte",
+}
 const SESSION := "user://kart_sonnenhafen_session.cfg"
 var checks := 0
 var failures: Array[String] = []
