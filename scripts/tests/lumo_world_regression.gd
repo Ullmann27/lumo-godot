@@ -140,9 +140,30 @@ func _real_scene() -> void:
 	scene.own_village.update_focus(VILLAGE.ORIGIN + Vector3(-100, 0, 0), 0.0)
 	for building in original.player().buildings:
 		_check(scene.own_village.facilities.has(str(building.id)), "saved string building ID remains a separate walkable building: " + str(building.id))
-	_check(FileAccess.get_file_as_string(village_path) == bytes, "World never modifies the village economy save")
-	_check(scene.portals.size() == 3, "Kart Cards and village portals are present")
+	_check(FileAccess.get_file_as_string(village_path) == bytes, "opening World alone does not mutate the village economy save")
+	_check(scene.portals.size() == 2, "Kart and Cards remain portals while village building is native to World")
 	_check(scene.traffic.size() == 4, "Blender traffic vehicle models load")
+	_check(scene.own_village.model != null, "authoritative living-village model is loaded inside World")
+	var camera_before: Vector3 = scene.camera.position
+	scene.camera_yaw += 0.72
+	scene._update_camera(10.0)
+	_check(scene.camera.position.distance_to(camera_before) > 0.5, "person camera orbits freely around Lumo")
+	scene._toggle_build_mode()
+	_check(scene.build_mode and scene.camera.projection == Camera3D.PROJECTION_ORTHOGONAL, "zoomed build view is part of the same World scene")
+	_check(scene.build_panel.visible and not scene.joystick.visible, "build HUD replaces walking controls without launching another game")
+	var build_plot: int = scene.own_village.next_free_plot()
+	_check(build_plot >= 0, "existing village has a buildable free plot")
+	var building_count := scene.own_village.model.player().buildings.size()
+	var built_result: Dictionary = scene.own_village.try_build("well", build_plot)
+	_check(bool(built_result.get("ok", false)), "explicit World build uses the existing village economy")
+	_check(scene.own_village.model.player().buildings.size() == building_count + 1, "same authoritative village model gains the building")
+	var village_after_build := FileAccess.get_file_as_string(village_path)
+	_check(village_after_build != bytes, "explicit World build persists to the existing village save")
+	var parsed_after_build: Dictionary = JSON.parse_string(village_after_build)
+	var restored_after_build = VILLAGE.restore_existing(parsed_after_build, PROFILE, 1)
+	_check(restored_after_build != null and restored_after_build.player().buildings.size() == building_count + 1, "saved building round-trips through the original village schema")
+	scene._toggle_build_mode()
+	_check(not scene.build_mode and scene.camera.projection == Camera3D.PROJECTION_PERSPECTIVE, "build view returns directly behind walking Lumo")
 	await _visibility_and_school(scene)
 	for dimensions in [Vector2i(360, 800), Vector2i(640, 360), Vector2i(720, 840), Vector2i(1280, 720)]:
 		root.size = dimensions
@@ -171,7 +192,7 @@ func _real_scene() -> void:
 	for traffic_entry in scene.traffic:
 		_check(absf(traffic_entry.node.position.x - 110.0) >= 7.5, "green starts only after traffic has cleared")
 	_check(scene._save(), "World progress saves atomically")
-	_check(FileAccess.get_file_as_string(village_path) == bytes, "walking driving traffic and World save never advance village state")
+	_check(FileAccess.get_file_as_string(village_path) == village_after_build, "walking driving traffic and World save do not change village economy after the explicit build")
 	scene.model.completed.assign(["meet_nelli", "safe_crossing"])
 	scene.player.position = Vector3(110, 0.2, -24)
 	var old_request: Dictionary = scene.model.begin_school_request("persisted-grade-two-request", 2, scene.player.position)

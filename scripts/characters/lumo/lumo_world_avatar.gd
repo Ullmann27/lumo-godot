@@ -10,6 +10,7 @@ extends Node3D
 ## die alte Grundformen-Figur und es wird eine Warnung ausgegeben.
 const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
 const STAND_IN = preload("res://scripts/games/kart_vehicle.gd")
+const IDLE_LIFE = preload("res://scripts/characters/lumo/lumo_world_idle_life.gd")
 ## Höhe des Modells in Ruhepose (Fußsohle bis Ohrspitze) bei Maßstab 1.
 const MODEL_HEIGHT := 1.70
 
@@ -18,6 +19,7 @@ var stand_in: Node3D
 var height := 2.0
 var reduced_motion := false
 var _gesture := ""
+var idle_life: Node
 
 
 ## Baut den echten Lumo. Muss aufgerufen werden, wenn dieser Knoten bereits im
@@ -34,6 +36,13 @@ func setup(target_height: float, reduce_motion := false) -> bool:
 		rig.position.y = 0.0
 		rig.set_reduced_motion(reduced_motion)
 		rig.behavior_finished.connect(_on_behavior_finished)
+		idle_life = IDLE_LIFE.new()
+		add_child(idle_life)
+		if idle_life.bind(rig.skeleton):
+			idle_life.set_reduced_motion(reduced_motion)
+		else:
+			idle_life.queue_free()
+			idle_life = null
 		return true
 	push_warning("[LumoWorldAvatar] Echter Lumo nicht ladbar; Notfall-Ersatzfigur aktiv")
 	rig.queue_free()
@@ -60,7 +69,10 @@ func current_behavior() -> String:
 func drive(velocity: Vector3, grounded: bool, delta: float, time: float) -> void:
 	if is_real():
 		var speed := Vector2(velocity.x, velocity.z).length()
-		if not _gesture.is_empty() and grounded and speed <= 0.06:
+		var stationary := grounded and speed <= 0.06
+		if is_instance_valid(idle_life):
+			idle_life.set_active(stationary and _gesture.is_empty())
+		if not _gesture.is_empty() and stationary:
 			return
 		_gesture = ""
 		# Schrittfrequenz in Modellmetern, damit die Füße bei jeder Größe
@@ -75,6 +87,8 @@ func drive(velocity: Vector3, grounded: bool, delta: float, time: float) -> void
 func gesture(behavior: String) -> bool:
 	if not is_real():
 		return false
+	if is_instance_valid(idle_life):
+		idle_life.set_active(false)
 	if not rig.play_behavior(behavior):
 		return false
 	_gesture = "" if behavior == "idle" else behavior
@@ -82,14 +96,23 @@ func gesture(behavior: String) -> bool:
 
 
 func set_suspended(value: bool) -> void:
+	if is_instance_valid(idle_life):
+		idle_life.set_suspended(value)
 	if is_real():
 		rig.set_suspended(value)
 
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
+	if is_instance_valid(idle_life):
+		idle_life.set_reduced_motion(value)
 	if is_real():
 		rig.set_reduced_motion(value)
+
+
+func think(seconds := 2.4) -> void:
+	if is_instance_valid(idle_life):
+		idle_life.think(seconds)
 
 
 ## Stimmung für die Ersatzfigur (nur im Notfall sichtbar).

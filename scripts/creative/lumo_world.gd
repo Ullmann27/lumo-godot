@@ -16,6 +16,13 @@ const WORLD_MAP = preload("res://scripts/creative/lumo_world_map.gd")
 const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 
+const PERSON_ZOOM_MIN := 3.2
+const PERSON_ZOOM_MAX := 13.0
+const BUILD_ZOOM_MIN := 28.0
+const BUILD_ZOOM_MAX := 155.0
+const PERSON_PITCH_MIN := 0.16
+const PERSON_PITCH_MAX := 1.02
+
 var model = STATE.new()
 var art = ART.new()
 var kit = KIT.new()
@@ -34,7 +41,13 @@ var action_button: Button
 var vehicle_button: Button
 var run_button: Button
 var map_button: Button
+var build_button: Button
 var exit_button: Button
+var build_panel: PanelContainer
+var build_box: VBoxContainer
+var build_status: Label
+var build_buttons: HBoxContainer
+var build_marker: MeshInstance3D
 var modal: PanelContainer
 var modal_box: VBoxContainer
 var modal_scroll: ScrollContainer
@@ -69,6 +82,19 @@ var friend_post: Node3D
 var friend_post_original: Variant = {}
 var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
+var build_mode := false
+var build_kind := "house"
+var build_plot := -1
+var build_focus := OWN_VILLAGE.ORIGIN + Vector3(-100.0, 0, 0)
+var camera_yaw := 0.0
+var camera_pitch := 0.48
+var person_zoom := 7.2
+var build_zoom := 76.0
+var camera_contacts: Dictionary = {}
+var gesture_index := -1
+var gesture_start := Vector2.ZERO
+var gesture_moved := false
+var airborne_time := 0.0
 
 
 func _ready() -> void:
@@ -275,10 +301,10 @@ func _create_owned_village(profile: String) -> void:
 
 
 func _create_portals() -> void:
+	# Dorfwirtschaft und Bauen sind Bestandteil dieser Welt, kein Portalspiel.
 	portals = [
 		{"game": "kart", "title": "Lumo Kart · Rennstrecken", "at": Vector3(77, 0, 11), "description": "Fahre auf deinen vorhandenen Lumo-Kart-Strecken. Danach kommst du hierher zurück."},
-		{"game": "cards", "title": "Lumos Kartensalon", "at": Vector3(218, 0, -17), "description": "Hier wartet der vorhandene 3D-Kartentisch mit deinen gespeicherten Partien. Die bisherigen Spiele bleiben erhalten."},
-		{"game": "settlement", "title": "Dein Dorf weiterbauen", "at": own_village.doorway(), "description": own_village.summary()}
+		{"game": "cards", "title": "Lumos Kartensalon", "at": Vector3(218, 0, -17), "description": "Hier wartet der vorhandene 3D-Kartentisch mit deinen gespeicherten Partien. Die bisherigen Spiele bleiben erhalten."}
 	]
 	for portal in portals:
 		var ring := TorusMesh.new()
@@ -299,13 +325,9 @@ func _near_portal() -> Dictionary:
 
 
 func _launch_portal(game: String) -> void:
-	if game not in ["kart", "cards", "settlement"] or not _save():
+	if game not in ["kart", "cards"] or not _save():
 		return
 	SceneRouter.launch_options["worldPortalOrigin"] = "world"
-	if game == "settlement":
-		SceneRouter.launch_options["livingVillage"] = true
-		SceneRouter.launch_options["settlementMode"] = "settlement"
-		SceneRouter.launch_options["buildSlot"] = own_village.slot
 	SceneRouter.goto(game)
 
 
@@ -342,6 +364,8 @@ func _build_ui() -> void:
 	safe_ui.add_child(run_button)
 	map_button = KIT.button("Weltkarte", _map_dialog, 104)
 	safe_ui.add_child(map_button)
+	build_button = KIT.button("Bauen", _toggle_build_mode, 104, Color("6652b8"))
+	safe_ui.add_child(build_button)
 	exit_button = KIT.button("Pause", _pause_menu, 80)
 	safe_ui.add_child(exit_button)
 	modal = PanelContainer.new()
@@ -356,13 +380,170 @@ func _build_ui() -> void:
 	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_scroll.add_child(modal_box)
 	modal.hide()
+	_build_build_ui()
 	# The interaction label changes while walking. Godot may grow a Button to
 	# its text minimum after this frame; keep its right edge fixed and then
 	# recalculate the whole column from the actual themed minimum sizes.
-	for button in [action_button, vehicle_button, run_button, map_button, exit_button]:
+	for button in [action_button, vehicle_button, run_button, map_button, build_button, exit_button]:
 		button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 		button.minimum_size_changed.connect(func(): _layout.call_deferred())
 	mission_panel.minimum_size_changed.connect(func(): _layout.call_deferred())
+
+
+func _build_build_ui() -> void:
+	build_panel = PanelContainer.new()
+	build_panel.name = "WorldBuildPanel"
+	build_panel.add_theme_stylebox_override(
+		"panel", KIT.tinted_panel(Color("132944"), Color("b692ff"), 18)
+	)
+	safe_ui.add_child(build_panel)
+	build_box = VBoxContainer.new()
+	build_box.add_theme_constant_override("separation", 8)
+	build_panel.add_child(build_box)
+	build_status = KIT.label("", 16)
+	build_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	build_box.add_child(build_status)
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size.y = 64
+	build_box.add_child(scroll)
+	build_buttons = HBoxContainer.new()
+	build_buttons.add_theme_constant_override("separation", 8)
+	scroll.add_child(build_buttons)
+	for option in own_village.build_options():
+		var kind := str(option.kind)
+		var title := str(option.title)
+		var button := KIT.button(title, _choose_build_kind.bind(kind), 138)
+		button.custom_minimum_size.y = 54
+		build_buttons.add_child(button)
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 8)
+	build_box.add_child(actions)
+	actions.add_child(KIT.button("Freier Platz", _next_build_plot, 132))
+	actions.add_child(KIT.button("Nächster Tag", _village_next_day, 132))
+	actions.add_child(KIT.button("Land erweitern", _village_expand, 142))
+	build_marker = MeshInstance3D.new()
+	build_marker.name = "WorldBuildMarker"
+	var marker_mesh := CylinderMesh.new()
+	marker_mesh.top_radius = 2.25
+	marker_mesh.bottom_radius = 2.25
+	marker_mesh.height = 0.08
+	marker_mesh.radial_segments = 40
+	build_marker.mesh = marker_mesh
+	build_marker.material_override = kit.material(Color("b692ff"), true)
+	add_child(build_marker)
+	build_marker.hide()
+	build_panel.hide()
+	_refresh_build_ui()
+
+
+func _refresh_build_ui(message := "") -> void:
+	if not is_instance_valid(build_status):
+		return
+	var plot_text := "kein freier Platz"
+	if build_plot >= 0:
+		plot_text = "Bauplatz %d" % (build_plot + 1)
+	var title := build_kind
+	for option in own_village.build_options():
+		if str(option.kind) == build_kind:
+			title = str(option.title)
+			break
+	build_status.text = (
+		own_village.resource_text()
+		+ "\n"
+		+ plot_text
+		+ " · "
+		+ title
+		+ ("" if message.is_empty() else " · " + message)
+	)
+	if is_instance_valid(build_marker):
+		build_marker.visible = build_mode and build_plot >= 0
+		if build_plot >= 0:
+			build_marker.position = own_village.plot_world(build_plot) + Vector3.UP * 0.12
+
+
+func _toggle_build_mode() -> void:
+	if paused or driving:
+		return
+	build_mode = not build_mode
+	camera_contacts.clear()
+	gesture_index = -1
+	player.velocity = Vector3.ZERO
+	if build_mode:
+		if build_plot < 0:
+			build_plot = own_village.next_free_plot()
+		if build_plot >= 0:
+			build_focus = own_village.plot_world(build_plot)
+		else:
+			build_focus = own_village.doorway()
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		build_button.text = "Zu Lumo"
+		build_panel.show()
+		joystick.set_enabled(false)
+		joystick.hide()
+		action_button.hide()
+		vehicle_button.hide()
+		run_button.hide()
+		fox.think(2.8)
+		camera_clearance.restore_all()
+		_update_camera(10.0)
+		_refresh_build_ui("Bauansicht")
+	else:
+		camera.projection = Camera3D.PROJECTION_PERSPECTIVE
+		build_button.text = "Bauen"
+		build_panel.hide()
+		build_marker.hide()
+		joystick.show()
+		joystick.set_enabled(true)
+		action_button.show()
+		vehicle_button.show()
+		run_button.show()
+		_update_camera(10.0)
+	_layout.call_deferred()
+
+
+func _choose_build_kind(kind: String) -> void:
+	if not build_mode or not STATE.BOUNDS.has_point(Vector2(player.position.x, player.position.z)):
+		return
+	build_kind = kind
+	if build_plot < 0:
+		build_plot = own_village.next_free_plot()
+	if build_plot < 0:
+		_refresh_build_ui("Kein freier Bauplatz")
+		return
+	var result: Dictionary = own_village.try_build(build_kind, build_plot)
+	if bool(result.get("ok", false)):
+		build_focus = own_village.plot_world(build_plot)
+		build_plot = own_village.next_free_plot(build_plot)
+		_save()
+	_refresh_build_ui(str(result.get("message", "")))
+
+
+func _next_build_plot() -> void:
+	if not build_mode:
+		return
+	build_plot = own_village.next_free_plot(build_plot)
+	if build_plot >= 0:
+		build_focus = own_village.plot_world(build_plot)
+	_refresh_build_ui()
+
+
+func _village_next_day() -> void:
+	if not build_mode:
+		return
+	var report: Dictionary = own_village.advance_day()
+	var message := str(report.get("message", ""))
+	if bool(report.get("advanced", false)):
+		message = "Dorftag %d" % int(report.get("day", own_village.model.day))
+	_refresh_build_ui(message)
+
+
+func _village_expand() -> void:
+	if not build_mode:
+		return
+	var result: Dictionary = own_village.expand_town()
+	_refresh_build_ui(str(result.get("message", "")))
 
 
 func _layout() -> void:
@@ -374,17 +555,20 @@ func _layout() -> void:
 	var margin := 12.0
 	exit_button.size = Vector2(maxf(80, exit_button.get_combined_minimum_size().x), maxf(50, exit_button.get_combined_minimum_size().y))
 	map_button.size = Vector2(maxf(104, map_button.get_combined_minimum_size().x), maxf(50, map_button.get_combined_minimum_size().y))
+	build_button.size = Vector2(maxf(104, build_button.get_combined_minimum_size().x), maxf(50, build_button.get_combined_minimum_size().y))
 	exit_button.position = Vector2(size.x - exit_button.size.x - margin, margin)
 	map_button.position = Vector2(exit_button.position.x - map_button.size.x - margin, margin)
+	build_button.position = Vector2(map_button.position.x - build_button.size.x - margin, margin)
 	var mission_width := maxf(48, size.x - margin * 2)
 	if not portrait:
-		mission_width = minf(610, maxf(48, map_button.position.x - margin * 2))
+		mission_width = minf(610, maxf(48, build_button.position.x - margin * 2))
 	mission_panel.position = Vector2(margin, margin)
 	mission_panel.size = Vector2(mission_width, maxf(138 if portrait else 110, mission_panel.get_combined_minimum_size().y))
 	if portrait:
 		var top_actions_y := mission_panel.position.y + mission_panel.size.y + 6
 		exit_button.position.y = top_actions_y
 		map_button.position.y = top_actions_y
+		build_button.position.y = top_actions_y
 	var buttons: Array[Button] = [action_button, vehicle_button, run_button]
 	var heights := [54.0, 50.0, 50.0]
 	var button_width := 132.0
@@ -412,6 +596,11 @@ func _layout() -> void:
 		status_label.add_theme_font_size_override("font_size", 14)
 	else:
 		status_label.add_theme_font_size_override("font_size", 16)
+	if is_instance_valid(build_panel):
+		var build_width := minf(820.0, maxf(260.0, size.x - 24.0))
+		var build_height := minf(196.0, maxf(152.0, size.y * 0.31))
+		build_panel.size = Vector2(build_width, build_height)
+		build_panel.position = Vector2((size.x - build_width) * 0.5, size.y - build_height - 12.0)
 	_layout_modal()
 
 
@@ -433,6 +622,13 @@ func _physics_process(delta: float) -> void:
 		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
 	axis = axis.limit_length(1.0)
 	_traffic_tick(delta)
+	if build_mode:
+		player.velocity = Vector3.ZERO
+		fox.drive(Vector3.ZERO, player.is_on_floor(), delta, time)
+		own_village.update_focus(build_focus, delta)
+		_update_camera(delta)
+		ADVENTURE.set_focus(build_focus + Vector3.UP * 1.5)
+		return
 	if driving:
 		_drive_tick(axis, delta)
 	else:
@@ -478,7 +674,10 @@ func _physics_process(delta: float) -> void:
 
 func _walk_tick(axis: Vector2, delta: float) -> void:
 	var speed := 7.2 if walking_fast or Input.is_physical_key_pressed(KEY_SHIFT) else 4.2
-	var target := Vector3(axis.x, 0, axis.y) * speed
+	# Movement follows the freely orbiting camera, like the Imperathen person mode:
+	# forward always means away from the camera / into the view.
+	var direction := Vector3(axis.x, 0, axis.y).rotated(Vector3.UP, camera_yaw)
+	var target := direction * speed
 	# Exponential turning and distinct acceleration/deceleration avoid abrupt
 	# walk/run changes; the rig consumes actual post-collision velocity.
 	var acceleration := 16.0 if target.length_squared() > 0.02 else 23.0
@@ -496,12 +695,19 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 		player.position.z = 4.6 if entering_from_south else -4.6
 		player.velocity.z = 0
 		status_label.text = "Die Ampel ist rot. Bleib am Rand und drücke den Ampelknopf."
-	if player.is_on_floor() and absf(player.position.z) > 6.0:
-		last_safe = player.position
-	if player.position.y < -6.0:
-		player.position = last_safe + Vector3.UP * 0.2
+	if player.is_on_floor():
+		airborne_time = 0.0
+		if player.position.y > -1.5:
+			last_safe = player.position
+	else:
+		airborne_time += delta
+	# Open World may never dump the child into the void. A missed seam or shore
+	# returns quickly to the last actual floor contact instead of allowing a fall.
+	if player.position.y < -3.0 or (airborne_time > 1.35 and player.velocity.y < -2.0):
+		player.position = last_safe + Vector3.UP * 0.25
 		player.velocity = Vector3.ZERO
-		status_label.text = "Hier ist Wasser. Über die Brücke kommst du sicher weiter."
+		airborne_time = 0.0
+		status_label.text = "Lumo ist wieder auf sicherem Boden."
 	_clamp_body(player)
 	var motion := Vector2(player.velocity.x, player.velocity.z)
 	if motion.length() > 0.12:
@@ -545,21 +751,39 @@ func _active_position() -> Vector3:
 
 
 func _update_camera(delta: float) -> void:
+	if build_mode:
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		camera.size = build_zoom
+		var desired_build := build_focus + Vector3(18.0, 56.0, 42.0)
+		camera.position = camera.position.lerp(desired_build, 1.0 - exp(-8.0 * delta))
+		camera.look_at(build_focus, Vector3.UP)
+		return
+	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	var at := _active_position()
 	var portrait := get_viewport().get_visible_rect().size.y > get_viewport().get_visible_rect().size.x
-	var scale_factor := 1.3 if portrait else 1.0
-	var offset := Vector3(4.6, 5.0, 10.0) * scale_factor
+	var scale_factor := 1.18 if portrait else 1.0
+	var focus := at + Vector3.UP * (1.3 if driving else 1.45)
+	var desired: Vector3
+	var look_target := focus
 	if driving:
-		offset = kart_body.global_basis * Vector3(0, 5.0, 10.5) * scale_factor
-	var focus := at + Vector3.UP * (1.3 if driving else 1.6)
-	var desired := at + offset
+		desired = at + kart_body.global_basis * Vector3(0, 5.0, 10.5) * scale_factor
+	else:
+		var distance := person_zoom * scale_factor
+		var offset := Vector3(
+			0.36,
+			sin(camera_pitch) * distance + 0.25,
+			cos(camera_pitch) * distance
+		).rotated(Vector3.UP, camera_yaw)
+		desired = focus + offset
+		# Look a little ahead of Lumo, not down at his feet.
+		look_target += Vector3(0.28, 0.06, -3.6).rotated(Vector3.UP, camera_yaw)
 	var query := PhysicsRayQueryParameters3D.create(focus, desired, 1, [player.get_rid(), kart_body.get_rid()])
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
-		desired = hit.position + hit.normal * 0.35
-	camera.position = camera.position.lerp(desired, 1.0 - exp(-5.2 * delta))
-	if camera.position.distance_to(focus) > 0.2:
-		camera.look_at(focus, Vector3.UP)
+		desired = hit.position + hit.normal * 0.38
+	camera.position = camera.position.lerp(desired, 1.0 - exp(-9.0 * delta))
+	if camera.position.distance_to(look_target) > 0.2:
+		camera.look_at(look_target, Vector3.UP)
 	camera_clearance.update(camera, focus, kart_body.get_instance_id() if driving else player.get_instance_id(), delta)
 
 
@@ -822,7 +1046,12 @@ func _update_mission() -> void:
 
 
 func _map_dialog() -> void:
-	_open_dialog("Deine Lumo World", "Von der Schatzinsel führt die Brücke ins Sonnendorf, weiter nach Sternenstadt und zu deinem eigenen, bereits aufgebauten Dorf. Kart, Kartensalon und Dorfstrategie öffnen sich direkt an ihren Orten.")
+	_open_dialog(
+		"Deine Lumo World",
+		"Schatzinsel, Sonnendorf, Sternenstadt und dein eigenes Bauland sind eine zusammenhängende Welt. "
+		+ "Zu Fuß drehst und zoomst du die Kamera frei hinter Lumo. Mit Bauen zoomst du in die Dorfansicht, "
+		+ "setzt Gebäude mit derselben Dorfwirtschaft und kehrst danach direkt zu Lumo zurück."
+	)
 	overview = WORLD_MAP.new()
 	var map_mission: Dictionary = model.current()
 	if map_mission.is_empty():
@@ -838,11 +1067,17 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Rennen: Umschalten\nKart: Zum Parkplatz gehen und einsteigen", 16))
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: am Parkplatz einsteigen", 16))
+	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(village_summary)
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_dialog, 160))
+
+
+func _open_build_from_dialog() -> void:
+	_close_dialog()
+	_toggle_build_mode()
 
 
 func _pause_menu() -> void:
@@ -900,11 +1135,143 @@ func _notification(what: int) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		_pause_menu()
+		if build_mode:
+			_toggle_build_mode()
+		else:
+			_pause_menu()
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventScreenTouch:
+		_handle_world_touch(event as InputEventScreenTouch)
+		return
+	if event is InputEventScreenDrag:
+		_handle_world_drag(event as InputEventScreenDrag)
+		return
+	# Android touch can emit a duplicate mouse event; the touch path already owns it.
+	if event is InputEventMouse and event.device == -1:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_E:
-			_interact()
-		elif event.keycode == KEY_F:
-			_toggle_vehicle()
-		elif event.keycode == KEY_M:
-			_map_dialog()
+		match event.keycode:
+			KEY_E:
+				_interact()
+			KEY_F:
+				_toggle_vehicle()
+			KEY_M:
+				_map_dialog()
+			KEY_B, KEY_TAB:
+				_toggle_build_mode()
+			_:
+				return
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton:
+		var mouse := event as InputEventMouseButton
+		if mouse.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and mouse.pressed:
+			var direction := -1.0 if mouse.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0
+			if build_mode:
+				build_zoom = clampf(build_zoom + direction * 6.0, BUILD_ZOOM_MIN, BUILD_ZOOM_MAX)
+			else:
+				person_zoom = clampf(person_zoom + direction * 0.75, PERSON_ZOOM_MIN, PERSON_ZOOM_MAX)
+			get_viewport().set_input_as_handled()
+		elif build_mode and mouse.button_index == MOUSE_BUTTON_LEFT and not mouse.pressed:
+			_select_build_plot_at(mouse.position)
+			get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion:
+		var motion := event as InputEventMouseMotion
+		if not build_mode and not driving and (motion.button_mask & MOUSE_BUTTON_MASK_RIGHT):
+			camera_yaw -= motion.relative.x * 0.006
+			camera_pitch = clampf(camera_pitch + motion.relative.y * 0.004, PERSON_PITCH_MIN, PERSON_PITCH_MAX)
+			get_viewport().set_input_as_handled()
+		elif build_mode and (motion.button_mask & MOUSE_BUTTON_MASK_LEFT):
+			_pan_build_camera(motion.position - motion.relative, motion.position)
+			get_viewport().set_input_as_handled()
+
+
+func _handle_world_touch(event: InputEventScreenTouch) -> void:
+	if paused:
+		return
+	if event.pressed:
+		if camera_contacts.size() >= 2:
+			return
+		camera_contacts[event.index] = event.position
+		if camera_contacts.size() == 1:
+			gesture_index = event.index
+			gesture_start = event.position
+			gesture_moved = false
+		get_viewport().set_input_as_handled()
+		return
+	if not camera_contacts.has(event.index):
+		return
+	var was_primary := event.index == gesture_index
+	camera_contacts.erase(event.index)
+	if build_mode and was_primary and not event.canceled and not gesture_moved:
+		_select_build_plot_at(event.position)
+	if camera_contacts.is_empty():
+		gesture_index = -1
+	else:
+		gesture_index = int(camera_contacts.keys()[0])
+		gesture_start = camera_contacts[gesture_index]
+		gesture_moved = false
+	get_viewport().set_input_as_handled()
+
+
+func _handle_world_drag(event: InputEventScreenDrag) -> void:
+	if paused or not camera_contacts.has(event.index):
+		return
+	gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 12.0
+	if camera_contacts.size() == 2:
+		var keys: Array = camera_contacts.keys()
+		var other_index := int(keys[0] if int(keys[0]) != event.index else keys[1])
+		var anchor: Vector2 = camera_contacts[other_index]
+		var before := anchor.distance_to(camera_contacts[event.index])
+		var after := anchor.distance_to(event.position)
+		if minf(before, after) >= 12.0:
+			var ratio := before / after
+			if build_mode:
+				build_zoom = clampf(build_zoom * ratio, BUILD_ZOOM_MIN, BUILD_ZOOM_MAX)
+			else:
+				person_zoom = clampf(person_zoom * ratio, PERSON_ZOOM_MIN, PERSON_ZOOM_MAX)
+		camera_contacts[event.index] = event.position
+		get_viewport().set_input_as_handled()
+		return
+	var previous: Vector2 = camera_contacts[event.index]
+	camera_contacts[event.index] = event.position
+	if build_mode:
+		_pan_build_camera(previous, event.position)
+	elif not driving:
+		camera_yaw -= event.relative.x * 0.006
+		camera_pitch = clampf(camera_pitch + event.relative.y * 0.004, PERSON_PITCH_MIN, PERSON_PITCH_MAX)
+	get_viewport().set_input_as_handled()
+
+
+func _screen_ground(pixel: Vector2) -> Variant:
+	if not is_instance_valid(camera):
+		return null
+	var plane := Plane(Vector3.UP, 0.0)
+	return plane.intersects_ray(camera.project_ray_origin(pixel), camera.project_ray_normal(pixel))
+
+
+func _pan_build_camera(previous_pixel: Vector2, current_pixel: Vector2) -> void:
+	var previous = _screen_ground(previous_pixel)
+	var current = _screen_ground(current_pixel)
+	if previous is Vector3 and current is Vector3:
+		var offset: Vector3 = current - previous
+		build_focus -= Vector3(offset.x, 0, offset.z)
+		var min_x := OWN_VILLAGE.ORIGIN.x - 182.0
+		var max_x := OWN_VILLAGE.ORIGIN.x + 12.0
+		build_focus.x = clampf(build_focus.x, min_x, max_x)
+		build_focus.z = clampf(build_focus.z, -178.0, 178.0)
+
+
+func _select_build_plot_at(pixel: Vector2) -> void:
+	if not build_mode:
+		return
+	var world = _screen_ground(pixel)
+	if not world is Vector3:
+		return
+	var plot := own_village.plot_from_world(world)
+	if plot < 0 or not own_village.plot_buildable(plot):
+		_refresh_build_ui("Hier kann nicht gebaut werden.")
+		return
+	build_plot = plot
+	build_focus = own_village.plot_world(plot)
+	_refresh_build_ui("Bauplatz gewählt")

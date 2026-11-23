@@ -1,6 +1,7 @@
 extends Node3D
-## Read-only view of the existing village save. There is no second economy,
-## duplicated save or automatic day advancement in World.
+## The existing living-village economy projected directly into Lumo World.
+## This is the single authoritative village model/save: World does not create
+## a second economy. Building, production and expansion operate on this model.
 const STATE = preload("res://scripts/creative/build_settlement_state.gd")
 const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
@@ -20,6 +21,7 @@ var source_status := "empty"
 var child_key := "standalone"
 var slot := 1
 var last_focus := Vector3.INF
+var village_meta: Dictionary = {}
 
 
 static func save_path_for(child: String, project_slot: int) -> String:
@@ -57,10 +59,20 @@ func setup(child: String, project_slot: int) -> void:
 	water_material.set_shader_parameter("depth_rect", depth_rect)
 	if FileAccess.file_exists(source_path):
 		var parser := JSON.new()
-		if parser.parse(FileAccess.get_file_as_string(source_path)) == OK:
+		if parser.parse(FileAccess.get_file_as_string(source_path)) == OK and parser.data is Dictionary:
 			model = restore_existing(parser.data, child_key, slot)
-		source_status = "loaded" if model != null else "invalid"
+			if parser.data.get("village_meta", {}) is Dictionary:
+				village_meta = parser.data.get("village_meta", {}).duplicate(true)
+			source_status = "loaded" if model != null else "invalid"
+		else:
+			source_status = "invalid"
+	if model == null and source_status != "invalid":
+		# First Open-World entry creates the official living-village model in
+		# memory. It is persisted only after an explicit build/day/expand action.
+		model = STATE.new("settlement", true)
+		source_status = "new"
 	if model == null:
+		# Never replace unreadable/foreign village bytes with a new economy.
 		region.set_unlocked_plots(0, false)
 		return
 	var town: Dictionary = model.player()
@@ -93,7 +105,7 @@ func update_focus(world_position: Vector3, delta: float) -> void:
 	if model == null or local.distance_squared_to(last_focus) < 100.0:
 		return
 	last_focus = local
-	var buildings: Array = model.player().buildings
+	var buildings: Array = model.player().buildings.duplicate(true)
 	var distances: Dictionary = {}
 	for building in buildings:
 		distances[str(building.id)] = YARDS.building_at(building).distance_squared_to(local)
@@ -133,6 +145,154 @@ func update_focus(world_position: Vector3, delta: float) -> void:
 		var node: MultiMeshInstance3D = ART.batch(self, "SavedFar_" + model_name, model_name, far[model_name], 0.0, false)
 		if node != null:
 			far_nodes.append(node)
+
+
+func save() -> bool:
+	if model == null or source_status == "invalid":
+		return false
+	var file := FileAccess.open(source_path + ".tmp", FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_string(JSON.stringify({
+		"version": 1,
+		"child": child_key,
+		"settlement": model.snapshot(),
+		"mode": "settlement",
+		"slot": slot,
+		"village_meta": village_meta
+	}))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error != OK or DirAccess.rename_absolute(source_path + ".tmp", source_path) != OK:
+		return false
+	source_status = "loaded"
+	return true
+
+
+func _refresh_projection() -> void:
+	if model == null:
+		return
+	var town: Dictionary = model.player()
+	region.set_unlocked_plots(int(town.plots), false)
+	region.set_far_bank_open(bool(town.get("city_projects", {}).get("bridge", false)))
+	var built: Array = []
+	for building in town.buildings:
+		built.append(int(building.plot))
+	region.set_built_plots(built, false)
+	if is_instance_valid(residents):
+		residents.sync(town)
+	last_focus = Vector3.INF
+	update_focus(ORIGIN + Vector3(-REGION.TOWN_CENTER, 0, 0), 0.0)
+	set_meta("projected_buildings", town.buildings.size())
+
+
+func town() -> Dictionary:
+	return model.player() if model != null else {}
+
+
+func build_options() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if model == null:
+		return result
+	for kind in STATE.BUILDINGS.keys():
+		var spec: Dictionary = STATE.BUILDINGS[kind]
+		result.append({
+			"kind": str(kind),
+			"title": str(spec.title),
+			"cost": model.building_cost(str(kind))
+		})
+	return result
+
+
+func plot_world(plot: int) -> Vector3:
+	if model == null or plot < 0 or plot >= int(model.player().plots):
+		return ORIGIN
+	var local := REGION.plot_position(plot, false)
+	return ORIGIN + local
+
+
+func plot_from_world(world_position: Vector3) -> int:
+	if model == null:
+		return -1
+	var local := world_position - ORIGIN
+	var coordinate := Vector2i(
+		roundi((local.x + REGION.TOWN_CENTER) / REGION.SPACING),
+		roundi(local.z / REGION.SPACING)
+	)
+	var plot := REGION.plot_index_at(coordinate)
+	return plot if plot >= 0 and plot < int(model.player().plots) else -1
+
+
+func plot_buildable(plot: int) -> bool:
+	return model != null and plot >= 0 and plot < int(model.player().plots) and model.plot_buildable(plot)
+
+
+func next_free_plot(after := -1) -> int:
+	if model == null:
+		return -1
+	var town_state: Dictionary = model.player()
+	var used: Dictionary = {}
+	for building in town_state.buildings:
+		used[int(building.plot)] = true
+	var count := int(town_state.plots)
+	for offset in range(count):
+		var plot := posmod(after + 1 + offset, count)
+		if not used.has(plot) and model.plot_buildable(plot) and model.site_available(town_state, plot):
+			return plot
+	return -1
+
+
+func try_build(kind: String, plot: int) -> Dictionary:
+	if model == null or source_status == "invalid":
+		return {"ok": false, "message": "Der Dorfspielstand ist nicht verfügbar."}
+	if not model.try_build(kind, plot):
+		return {"ok": false, "message": model.last_error}
+	if not save():
+		model.undo()
+		return {"ok": false, "message": "Das Gebäude konnte nicht sicher gespeichert werden."}
+	_refresh_projection()
+	var spec: Dictionary = STATE.BUILDINGS.get(kind, {})
+	return {"ok": true, "message": "%s gebaut." % str(spec.get("title", kind))}
+
+
+func advance_day() -> Dictionary:
+	if model == null or source_status == "invalid":
+		return {"advanced": false, "message": "Der Dorfspielstand ist nicht verfügbar."}
+	var report: Dictionary = model.next_day()
+	if bool(report.get("advanced", false)):
+		if not save():
+			model.undo()
+			return {"advanced": false, "message": "Der neue Tag konnte nicht sicher gespeichert werden."}
+		_refresh_projection()
+	return report
+
+
+func expand_town() -> Dictionary:
+	if model == null or source_status == "invalid":
+		return {"ok": false, "message": "Der Dorfspielstand ist nicht verfügbar."}
+	if not model.expand():
+		return {"ok": false, "message": model.last_error}
+	if not save():
+		model.undo()
+		return {"ok": false, "message": "Die Erweiterung konnte nicht sicher gespeichert werden."}
+	_refresh_projection()
+	return {"ok": true, "message": "Neues Bauland freigeschaltet."}
+
+
+func resource_text() -> String:
+	if model == null:
+		return "Dorfwirtschaft nicht geladen"
+	var state: Dictionary = model.player()
+	var resources: Dictionary = state.resources
+	return "Tag %d · Holz %d · Stein %d · Essen %d · Münzen %d · Bewohner %d" % [
+		model.day,
+		int(resources.wood),
+		int(resources.stone),
+		int(resources.food),
+		int(resources.coins),
+		int(state.population)
+	]
 
 
 func doorway() -> Vector3:
