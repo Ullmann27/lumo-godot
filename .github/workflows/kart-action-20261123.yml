@@ -37,7 +37,7 @@ jobs:
           path: kart-proof/
   native:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 75
     env:
       GODOT_SILENCE_ROOT_WARNING: '1'
       LIBGL_ALWAYS_SOFTWARE: 'true'
@@ -93,6 +93,73 @@ jobs:
           pathlib.Path('kart-proof/native-results.json').write_text(json.dumps(results,indent=2))
           if not results or not all(row['passed'] for row in results):
               raise SystemExit(1)
+          PY
+      - name: Prepare genuine offscreen renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb xauth libgl1-mesa-dri
+          python3 -m pip install Pillow==12.3.0
+      - name: Render actual vehicles, workshop and all fifteen courses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, io, json, os, pathlib, subprocess
+          from PIL import Image
+          root = pathlib.Path('kart-proof').resolve()
+          tracks = ['sonnenhafen','zauberwald','bergwelt','holo_city',
+              'crystal_canyon','jungle_temple','candy_cloud','volcano_night',
+              'winter_sprint','galaxy_ringway','desert_drift','learning_lab',
+              'jungle_emerald_3600','riesengarten_2400','windwerk_3000']
+          jobs = [('vehicles','kart_evolution_capture',[])]
+          for track in tracks:
+              views = 'course,landscape'
+              if track == 'sonnenhafen':
+                  views += ',loop_approach,loop_side,loop_exit'
+              jobs.append((track,'kart_action_spectacle_capture',[
+                  '--track='+track, '--out='+str(root/track), '--views='+views]))
+          results = []
+          for label,script,args in jobs:
+              output = root/label
+              output.mkdir(parents=True,exist_ok=True)
+              environment = dict(os.environ)
+              environment['LUMO_KART_ACTION_PROOF_DIR'] = str(output)
+              command = ['xvfb-run','-a','godot','--path','.',
+                  '--rendering-method','gl_compatibility','--audio-driver','Dummy',
+                  '--resolution','1280x720','--script','res://scripts/tests/'+script+'.gd']
+              if args: command += ['--'] + args
+              log = root/(label+'-render.log')
+              try:
+                  with log.open('w') as stream:
+                      run = subprocess.run(command,env=environment,stdout=stream,
+                          stderr=subprocess.STDOUT,timeout=240)
+                  text = log.read_text(errors='replace')
+                  pngs = list(output.rglob('*.png'))
+                  passed = run.returncode == 0 and bool(pngs) and not any(marker in text
+                      for marker in ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:'))
+                  results.append({'case':label,'passed':passed,'exit':run.returncode,'pngs':len(pngs)})
+                  print(label, json.dumps(results[-1]), flush=True)
+                  if not passed: print(text[-20000:],flush=True)
+              except subprocess.TimeoutExpired:
+                  results.append({'case':label,'passed':False,'error':'timeout'})
+          manifest = []
+          for path in sorted(root.rglob('*.png')):
+              data = path.read_bytes()
+              manifest.append({'path':str(path.relative_to(root)),'bytes':len(data),
+                  'sha256':hashlib.sha256(data).hexdigest()})
+              with Image.open(path) as picture:
+                  picture = picture.convert('RGB')
+                  picture.thumbnail((800,450))
+                  buffer = io.BytesIO()
+                  picture.save(buffer,format='JPEG',quality=78)
+              print('KART_RENDER_PREVIEW '+json.dumps({'path':str(path.relative_to(root)),
+                  'source_sha256':hashlib.sha256(data).hexdigest(),
+                  'jpeg_base64':base64.b64encode(buffer.getvalue()).decode()}),flush=True)
+          (root/'render-results.json').write_text(json.dumps(results,indent=2))
+          (root/'render-manifest.json').write_text(json.dumps(manifest,indent=2))
+          if not all(row['passed'] for row in results): raise SystemExit(1)
           PY
       - uses: actions/upload-artifact@v4
         if: always()
