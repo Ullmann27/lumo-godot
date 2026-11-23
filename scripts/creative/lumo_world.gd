@@ -481,6 +481,7 @@ func _toggle_build_mode() -> void:
 		build_button.text = "Zu Lumo"
 		build_panel.show()
 		joystick.set_enabled(false)
+		joystick.hide()
 		action_button.hide()
 		vehicle_button.hide()
 		run_button.hide()
@@ -493,6 +494,7 @@ func _toggle_build_mode() -> void:
 		build_button.text = "Bauen"
 		build_panel.hide()
 		build_marker.hide()
+		joystick.show()
 		joystick.set_enabled(true)
 		action_button.show()
 		vehicle_button.show()
