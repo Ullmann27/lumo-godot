@@ -9,6 +9,9 @@ const FIRST_KEY_SECONDS := 1.0 / 24.0
 const VISUAL_TICK_SECONDS := 1.0 / 30.0
 const MAX_VISUAL_STEP_SECONDS := 0.1
 const CLIPS := [&"idle", &"kart_seated", &"kart_steer_left", &"kart_steer_right", &"kart_jump", &"celebrate"]
+const MENU_CLIPS := [&"greeting_wave", &"agree_nod", &"point_portal", &"celebrate"]
+const HIT_CLIP := &"kart_hit"
+const FINISH_CLIP := &"kart_celebrate"
 const BONES := [
 	"Root", "Pelvis", "Spine", "Chest", "Neck", "Head", "Tail",
 	"UpperArm.L", "Forearm.L", "Hand.L", "Thigh.L", "Shin.L", "Foot.L", "Ear.L",
@@ -42,6 +45,10 @@ var _requested_lod := 0
 var _tick := 0.0
 var _jump_elapsed := 0.0
 var _celebration_elapsed := 0.0
+var _hit_elapsed := 0.0
+var _hit_reaction := false
+var _menu_behavior: StringName = &""
+var _menu_elapsed := 0.0
 var _arms: Array[PackedInt32Array] = []
 var _ready_for_pose := false
 
@@ -186,7 +193,7 @@ func _valid_rig(candidate: Skeleton3D, animator: AnimationPlayer) -> bool:
 
 
 func apply_vehicle_sample(
-	velocity: float, steer: float, in_air: bool, _hit: bool = false,
+	velocity: float, steer: float, in_air: bool, hit: bool = false,
 	boost: bool = false, drift: bool = false
 ) -> void:
 	speed = absf(velocity) if is_finite(velocity) else 0.0
@@ -196,8 +203,13 @@ func apply_vehicle_sample(
 	airborne = in_air
 	boosting = boost
 	drifting = drift
-	# This rig has no authored hit/boost/drift clip. Those states remain with
-	# the existing vehicle effects; only real flight starts kart_jump.
+	if hit and not reduced_motion and _has_clip(HIT_CLIP):
+		_hit_reaction = true
+		_hit_elapsed = 0.0
+		_menu_behavior = &""
+		_menu_elapsed = 0.0
+	# Boost and drift remain vehicle effects. A real impact now consumes the
+	# authored kart_hit clip instead of silently dropping the event.
 
 
 func set_suspended(value: bool) -> void:
@@ -214,6 +226,10 @@ func set_reduced_motion(value: bool) -> void:
 	if value:
 		victory = false
 		_celebration_elapsed = 0.0
+		_hit_reaction = false
+		_hit_elapsed = 0.0
+		_menu_behavior = &""
+		_menu_elapsed = 0.0
 	if _ready_for_pose and not suspended and is_usable():
 		_sample_pose()
 
@@ -223,6 +239,10 @@ func celebrate_finished_race(_place: int = 1) -> void:
 		return
 	victory = true
 	_celebration_elapsed = 0.0
+	_hit_reaction = false
+	_hit_elapsed = 0.0
+	_menu_behavior = &""
+	_menu_elapsed = 0.0
 	if _ready_for_pose:
 		_sample_pose()
 
@@ -230,6 +250,32 @@ func celebrate_finished_race(_place: int = 1) -> void:
 func clear_celebration() -> void:
 	victory = false
 	_celebration_elapsed = 0.0
+	if _ready_for_pose and not suspended and is_usable():
+		_sample_pose()
+
+
+func play_menu_behavior(behavior: String) -> bool:
+	if not is_usable() or suspended or reduced_motion:
+		return false
+	var clip := StringName(behavior)
+	if clip not in MENU_CLIPS or not _has_clip(clip):
+		return false
+	victory = false
+	_celebration_elapsed = 0.0
+	_hit_reaction = false
+	_hit_elapsed = 0.0
+	_menu_behavior = clip
+	_menu_elapsed = 0.0
+	if _ready_for_pose:
+		_sample_pose()
+	return true
+
+
+func clear_menu_behavior() -> void:
+	if _menu_behavior.is_empty():
+		return
+	_menu_behavior = &""
+	_menu_elapsed = 0.0
 	if _ready_for_pose and not suspended and is_usable():
 		_sample_pose()
 
@@ -264,9 +310,19 @@ func advance_tick(delta: float) -> void:
 			elapsed += step
 			if airborne:
 				_jump_elapsed += step
+			if _hit_reaction:
+				_hit_elapsed += step
+				if _hit_elapsed >= _active_span(HIT_CLIP):
+					_hit_reaction = false
+					_hit_elapsed = 0.0
+			if not _menu_behavior.is_empty():
+				_menu_elapsed += step
+				if _menu_elapsed >= _active_span(_menu_behavior):
+					_menu_behavior = &""
+					_menu_elapsed = 0.0
 			if victory:
 				_celebration_elapsed += step
-				if _celebration_elapsed >= _active_span(&"celebrate"):
+				if _celebration_elapsed >= _active_span(_finish_clip()):
 					victory = false
 		_sample_pose()
 	else:
@@ -274,16 +330,32 @@ func advance_tick(delta: float) -> void:
 		_follow_wheel()
 
 
+func _has_clip(clip: StringName) -> bool:
+	return is_instance_valid(player) and player.has_animation(clip)
+
+
+func _finish_clip() -> StringName:
+	return FINISH_CLIP if _has_clip(FINISH_CLIP) else &"celebrate"
+
+
 func _active_span(clip: StringName) -> float:
-	return player.get_animation(clip).length - FIRST_KEY_SECONDS
+	if not _has_clip(clip):
+		return FIRST_KEY_SECONDS
+	return maxf(FIRST_KEY_SECONDS, player.get_animation(clip).length - FIRST_KEY_SECONDS)
 
 
 func _sample_pose() -> void:
 	var clip: StringName = &"kart_seated"
 	var sample_time := FIRST_KEY_SECONDS
-	if victory and not reduced_motion:
-		clip = &"celebrate"
+	if not _menu_behavior.is_empty() and _has_clip(_menu_behavior) and not reduced_motion:
+		clip = _menu_behavior
+		sample_time += minf(_menu_elapsed, _active_span(clip))
+	elif victory and not reduced_motion:
+		clip = _finish_clip()
 		sample_time += minf(_celebration_elapsed, _active_span(clip))
+	elif _hit_reaction and _has_clip(HIT_CLIP) and not reduced_motion:
+		clip = HIT_CLIP
+		sample_time += minf(_hit_elapsed, _active_span(clip))
 	elif airborne and not reduced_motion:
 		clip = &"kart_jump"
 		sample_time += minf(_jump_elapsed, _active_span(clip))

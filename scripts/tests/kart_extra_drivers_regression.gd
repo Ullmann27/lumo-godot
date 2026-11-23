@@ -47,6 +47,8 @@ func check_model(kart, identity: String, context: String) -> void:
 	check(actor.species == identity, context + ": matching authored species")
 	check(actor.model_path.contains("/" + identity + "/"), context + ": matching GLB path")
 	check(actor.player.has_animation("kart_seated"), context + ": seated animation")
+	for clip in ["greeting_wave", "agree_nod", "kart_hit", "kart_celebrate"]:
+		check(actor.player.has_animation(clip), context + ": authored " + clip)
 	check(
 		not actor.visual.find_children("*", "MeshInstance3D", true, false).is_empty(),
 		context + ": real 3D meshes"
@@ -107,9 +109,36 @@ func _run() -> void:
 				identity + ": usable card " + str(dimensions)
 			)
 		card.pressed.emit()
-		await settle(6)
+		# Selection replacement is intentionally deferred so the old 3D preview
+		# is never mutated while its button signal is still dispatching. Observe
+		# the real imported actor over a short bounded window instead of sampling
+		# before the deferred refresh has necessarily run. Eight frames are far
+		# shorter than the authored 1.46 s agree_nod clip, so this stays a strict
+		# runtime assertion rather than accepting a later fallback animation.
+		var garage_actor = null
+		var saw_selection_nod := false
+		for attempt in range(8):
+			await settle(1)
+			if is_instance_valid(menu.preview_kart):
+				garage_actor = menu.preview_kart.production_driver
+			if (
+				menu.setup.driver == identity
+				and is_instance_valid(garage_actor)
+				and garage_actor.current_behavior == &"agree_nod"
+			):
+				saw_selection_nod = true
+				break
 		check(menu.setup.driver == identity, identity + ": real selection action")
+		check(saw_selection_nod, identity + ": visible production driver runs authored agree_nod")
+		await settle(5)
 		check_model(menu.preview_kart, identity, identity + " garage")
+		check(
+			is_instance_valid(garage_actor) and garage_actor.play_menu_behavior("greeting_wave"),
+			identity + ": imported driver accepts greeting"
+		)
+		if is_instance_valid(garage_actor):
+			garage_actor.advance_tick(1.0 / 30.0)
+			check(garage_actor.current_behavior == &"greeting_wave", identity + ": authored greeting is visible")
 		await capture(identity + "-garage")
 		menu.setup.mode = "race"
 		menu.setup.track = "windwerk_3000"
@@ -121,6 +150,18 @@ func _run() -> void:
 		check(not game.menu_active and game.mode == "race", identity + ": real race start button")
 		check(game.opponents.size() == 5, identity + ": original five-opponent field")
 		check_model(game.player, identity, identity + " race")
+		var race_actor = game.player.production_driver
+		if is_instance_valid(race_actor):
+			race_actor.apply_vehicle_sample(12.0, 0.0, false, true)
+			race_actor.advance_tick(1.0 / 30.0)
+			check(race_actor.current_behavior == &"kart_hit", identity + ": real hit uses authored kart_hit")
+			race_actor.celebrate_finished_race(1)
+			race_actor.advance_tick(1.0 / 30.0)
+			check(
+				race_actor.current_behavior == &"kart_celebrate",
+				identity + ": finish uses authored kart_celebrate"
+			)
+			race_actor.clear_celebration()
 		game._end_preview()
 		game.countdown = 0.0
 		game.racing = true

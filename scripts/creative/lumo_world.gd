@@ -12,6 +12,8 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ADVENTURE = preload("res://scripts/creative/adventure_kit.gd")
 const OWN_VILLAGE = preload("res://scripts/creative/lumo_world_village.gd")
+const WORLD_MAP = preload("res://scripts/creative/lumo_world_map.gd")
+const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 
 var model = STATE.new()
@@ -63,6 +65,9 @@ var lesson_index := 0
 var lesson_answers := 0
 var own_village: Node3D
 var portals: Array[Dictionary] = []
+var friend_post: Node3D
+var friend_post_original: Variant = {}
+var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
 
 
@@ -84,6 +89,7 @@ func _ready() -> void:
 			var parser := JSON.new()
 			save_blocked = read_error != OK or parser.parse(text) != OK or not parser.data is Dictionary
 			if not save_blocked:
+				friend_post_original = parser.data.get("friendPost", {})
 				save_blocked = not model.restore(parser.data)
 		if save_blocked:
 			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
@@ -97,6 +103,10 @@ func _ready() -> void:
 	_create_residents()
 	_create_traffic()
 	_create_portals()
+	friend_post = FRIEND_POST.new()
+	add_child(friend_post)
+	if not friend_post.setup(self, friend_post_original) and not save_blocked:
+		checkpoint_message = "Deine Freundepost konnte nicht geladen werden. Der gespeicherte Nebenauftrag bleibt erhalten; du kannst deine Welt weiter erkunden."
 	var vegetation_roots: Array[Node3D] = [art.zones.Gartenlandschaft, own_village.region]
 	camera_clearance.attach(vegetation_roots)
 	wonder = WISPS.new()
@@ -436,15 +446,20 @@ func _physics_process(delta: float) -> void:
 		marker.rotate_y(0.0 if reduced_motion else delta)
 		wonder.set_routes(at, [mission])
 	var portal := _near_portal()
-	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty())
-	if str(mission.get("id", "")) == "safe_crossing":
+	var friend_available: bool = friend_post.available(at)
+	var crossing_available := _near_crossing_button(at)
+	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not crossing_available)
+	if crossing_available or str(mission.get("id", "")) == "safe_crossing":
 		action_button.text = "Ampelknopf"
 	elif str(mission.get("id", "")) == "school_numbers":
 		action_button.text = "Zur Schule"
 	else:
 		action_button.text = "Ansprechen"
-	if not model.near_current(at) and not portal.is_empty():
-		action_button.text = "Ort öffnen"
+	if not model.near_current(at) and not crossing_available:
+		if friend_available:
+			action_button.text = "Freundepost"
+		elif not portal.is_empty():
+			action_button.text = "Ort öffnen"
 	vehicle_button.disabled = not driving and player.position.distance_to(kart_body.position) > 5.0
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
@@ -457,7 +472,7 @@ func _physics_process(delta: float) -> void:
 	save_clock += delta
 	if save_clock > 4.0:
 		save_clock = 0.0
-		if at.distance_to(last_saved) > 0.8:
+		if save_pending or at.distance_to(last_saved) > 0.8:
 			_save()
 
 
@@ -475,8 +490,10 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 		player.velocity.y = -0.5
 	var old_position := player.position
 	player.move_and_slide()
-	if absf(player.position.x - 110.0) < 2.4 and old_position.z >= 4.6 and player.position.z < 4.6 and not signal_green:
-		player.position.z = 4.6
+	var entering_from_south := old_position.z >= 4.6 and player.position.z < 4.6
+	var entering_from_north := old_position.z <= -4.6 and player.position.z > -4.6
+	if absf(player.position.x - 110.0) < 2.4 and (entering_from_south or entering_from_north) and not signal_green:
+		player.position.z = 4.6 if entering_from_south else -4.6
 		player.velocity.z = 0
 		status_label.text = "Die Ampel ist rot. Bleib am Rand und drücke den Ampelknopf."
 	if player.is_on_floor() and absf(player.position.z) > 6.0:
@@ -489,7 +506,10 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 	var motion := Vector2(player.velocity.x, player.velocity.z)
 	if motion.length() > 0.12:
 		fox.rotation.y = lerp_angle(fox.rotation.y, atan2(-motion.x, -motion.y), 1.0 - exp(-10.0 * delta))
-	fox.drive(player.get_real_velocity(), player.is_on_floor(), delta, time)
+	# Match the proven Treasure-world locomotion feed: CharacterBody3D.velocity
+	# remains stable across floor snap and collision correction, so the skeleton
+	# cannot lose its walk cycle while the body still translates.
+	fox.drive(player.velocity, player.is_on_floor(), delta, time)
 
 
 func _drive_tick(axis: Vector2, delta: float) -> void:
@@ -661,10 +681,30 @@ func _close_dialog() -> void:
 	kart_visual.set_driver_runtime_state(false, false, not driving)
 
 
+func _near_crossing_button(at: Vector3) -> bool:
+	if not is_finite(at.x) or not is_finite(at.y) or not is_finite(at.z):
+		return false
+	return at.distance_to(Vector3(110, 0, 7)) <= 3.2 or at.distance_to(Vector3(110, 0, -7)) <= 3.2
+
+
+func _request_crossing() -> void:
+	if driving or save_blocked or not _near_crossing_button(player.position):
+		return
+	if not signal_requested and not signal_green:
+		signal_clock = 0.0
+	signal_requested = true
+	status_label.text = "Grün für dich. Schau auf den Verkehr und gehe über den Zebrastreifen." if signal_green else "Die Ampel hat deinen Wunsch gespeichert. Warte am Rand, bis es Grün wird."
+
+
 func _interact() -> void:
-	if paused or driving:
+	if paused or driving or save_blocked:
+		return
+	if _near_crossing_button(player.position):
+		_request_crossing()
 		return
 	if not model.near_current(player.position):
+		if friend_post.interact(player.position):
+			return
 		var portal := _near_portal()
 		if not portal.is_empty():
 			_open_dialog(str(portal.title), str(portal.description))
@@ -677,9 +717,7 @@ func _interact() -> void:
 			_open_dialog("Nelli · Willkommen im Sonnendorf", "Du bist von der Schatzinsel herübergekommen! Ich wohne im Haus mit dem warmen Dach. Heute planen wir einen Garten. Kommst du mit zur Schule?")
 			modal_box.add_child(KIT.button("Ja, ich helfe mit", _meet_nelli, 180, Color("1b7d63")))
 		"crossing":
-			signal_requested = true
-			signal_clock = 0.0 if not signal_green else signal_clock
-			status_label.text = "Die Ampel hat deinen Wunsch gespeichert. Warte am Rand, bis es Grün wird."
+			_request_crossing()
 			return
 		"lesson":
 			_open_dialog("Lumo geht zur Schule", "Wir brauchen einen Plan für Brunos Garten. Eine Mathe-Lernrunde in deiner Schulstufe hilft euch dabei. Danach geht dein Abenteuer genau hier weiter.")
@@ -759,7 +797,7 @@ func _completed_step(message: String) -> void:
 	wonder.celebrate(player.position + Vector3.UP * 1.6)
 	if model.is_complete() and saved:
 		var accepted := _report_completed_reward()
-		_open_dialog("Eine Welt voller Freunde", "Du hast Nelli kennengelernt, den Schulweg geübt, gelernt und deinen Freunden geholfen. Jetzt kannst du frei weiter erkunden. Deine Welt bleibt gespeichert.")
+		_open_dialog("Eine Welt voller Freunde", "Du hast Nelli kennengelernt, den Schulweg geübt, gelernt und deinen Freunden geholfen. Jetzt kannst du frei weiter erkunden. Nelli hat neue Freundepost für dich: Besuche sie vor ihrem Haus und entdecke drei Lieferaufträge. Deine Welt bleibt gespeichert.")
 		if not accepted:
 			status_label.text = "Dein Abenteuer ist geschafft. Die Belohnung wird beim nächsten Wechsel erneut gespeichert."
 		modal_box.add_child(KIT.star_row(3))
@@ -778,50 +816,33 @@ func _update_mission() -> void:
 	mission_label.text = "LUMO WORLD · %d / %d Aufträge\n%s\n%s" % [model.completed.size(), STATE.MISSIONS.size(), str(mission.get("title", "Deine Welt voller Freunde")), str(mission.get("lead", "Schatzinsel, Sonnendorf und Sternenstadt stehen dir offen."))]
 	if mission.is_empty():
 		wonder.set_routes(_active_position(), [])
+		var post_briefing: String = friend_post.briefing()
+		if not post_briefing.is_empty():
+			mission_label.text = post_briefing
 
 
 func _map_dialog() -> void:
 	_open_dialog("Deine Lumo World", "Von der Schatzinsel führt die Brücke ins Sonnendorf, weiter nach Sternenstadt und zu deinem eigenen, bereits aufgebauten Dorf. Kart, Kartensalon und Dorfstrategie öffnen sich direkt an ihren Orten.")
-	overview = Control.new()
-	overview.custom_minimum_size = Vector2(240, 200)
-	overview.draw.connect(_draw_map)
+	overview = WORLD_MAP.new()
+	var map_mission: Dictionary = model.current()
+	if map_mission.is_empty():
+		# The delivery address is revealed only when the child requests help.
+		map_mission = friend_post.guidance()
+	overview.configure(STATE.BOUNDS, _active_position(), kart_body.rotation.y if driving else fox.rotation.y, map_mission, model.completed, STATE.MISSIONS, portals, reduced_motion)
+	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
+		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
+	if friend_post.unlocked() and not friend_post.model.is_complete():
+		var clue := KIT.label(friend_post.model.clue(grade) if friend_post.model.carrying() else friend_post.briefing(), 18)
+		clue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		modal_box.add_child(clue)
+		if friend_post.model.carrying() and map_mission.is_empty():
+			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
 	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Rennen: Umschalten\nKart: Zum Parkplatz gehen und einsteigen", 16))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	modal_box.add_child(village_summary)
 	modal_box.add_child(KIT.button("Weiter erkunden", _close_dialog, 160))
-
-
-func _draw_map() -> void:
-	if not is_instance_valid(overview):
-		return
-	var size: Vector2 = overview.size
-	var map_rect := Rect2(Vector2(8, 8), size - Vector2(16, 16))
-	overview.draw_rect(map_rect, Color("1c5973"))
-	var scale := map_rect.size / STATE.BOUNDS.size
-	var island := Rect2((Vector2(-35, -72) - STATE.BOUNDS.position) * scale + map_rect.position, Vector2(72, 86) * scale)
-	var mainland := Rect2((Vector2(62, -98) - STATE.BOUNDS.position) * scale + map_rect.position, Vector2(214, 174) * scale)
-	overview.draw_rect(island, Color("6d9c5f"))
-	overview.draw_rect(mainland, Color("78a969"))
-	var saved_land := Rect2((Vector2(280, -238) - STATE.BOUNDS.position) * scale + map_rect.position, Vector2(640, 476) * scale)
-	overview.draw_rect(saved_land, Color("658e5f"))
-	var bridge_start := _map_point(Vector3(34, 0, 6), map_rect)
-	var bridge_end := _map_point(Vector3(64, 0, 6), map_rect)
-	overview.draw_line(bridge_start, bridge_end, Color("deb988"), 6)
-	overview.draw_line(_map_point(Vector3(68, 0, 0), map_rect), _map_point(Vector3(270, 0, 0), map_rect), Color("d7d1ae"), 5)
-	for mission in STATE.MISSIONS:
-		overview.draw_circle(_map_point(mission.at, map_rect), 4, Color("a6f58c") if mission.id in model.completed else Color("ffe5a2"))
-	overview.draw_circle(_map_point(_active_position(), map_rect), 6, Color("ff9c49"))
-	for portal in portals:
-		overview.draw_circle(_map_point(portal.at, map_rect), 4, Color("83eafa"))
-	var current: Dictionary = model.current()
-	if not current.is_empty():
-		overview.draw_arc(_map_point(current.at, map_rect), 8, 0, TAU, 24, Color("bcff8f"), 2)
-
-
-func _map_point(at: Vector3, rect: Rect2) -> Vector2:
-	return rect.position + (Vector2(at.x, at.z) - STATE.BOUNDS.position) / STATE.BOUNDS.size * rect.size
 
 
 func _pause_menu() -> void:
@@ -837,6 +858,7 @@ func _pause_menu() -> void:
 func _save() -> bool:
 	if save_blocked or not is_instance_valid(player):
 		return false
+	save_pending = true
 	var at := player.position
 	if driving:
 		at = kart_body.position + Vector3(0, 0.1, 6)
@@ -848,7 +870,10 @@ func _save() -> bool:
 	var file := FileAccess.open(save_path + ".tmp", FileAccess.WRITE)
 	if file == null:
 		return false
-	file.store_string(JSON.stringify(model.to_data()))
+	var data: Dictionary = model.to_data()
+	# Keep unreadable or future sidequest data unchanged in the original profile save.
+	data["friendPost"] = friend_post.to_data() if friend_post.save_valid else friend_post_original
+	file.store_string(JSON.stringify(data))
 	file.flush()
 	var result := file.get_error()
 	file.close()
@@ -857,6 +882,7 @@ func _save() -> bool:
 			status_label.text = "Speichern hat noch nicht geklappt. Dein Abenteuer bleibt geöffnet."
 		return false
 	last_saved = _active_position()
+	save_pending = false
 	return true
 
 

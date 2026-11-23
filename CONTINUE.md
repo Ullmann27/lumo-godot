@@ -1,3 +1,19 @@
+# LUMO World — Unterstützung für den gemeinsamen Kandidaten 2070
+
+23.11.2026. Weltkarte, drei Freundepost-Lieferungen und dauerhafte Fußgängerampel sind integriert. Produktcode-Basis ist `51084c8424fcf5c753f3c72ad1503c3c208518eb`; die aktuelle Ergänzung korrigiert ausschließlich den Karten-Testaufbau auf den echten Density-/Safe-Area-Pfad.
+
+Im realen CI bestanden World 169, Freundepost 289, Controller 22 und die 27 tatsächlichen World-Anschlussprüfungen. Der korrigierte Kartenaufbau besteht lokal 149 Prüfungen mit Godot 4.6.3; der vollständige Renderer prüft zusätzlich Bildgröße und mindestens 90 % Kartenbreite. Die endgültige neue Aufnahme muss noch im CI gesichtet werden.
+
+Gemeinsamer Flutter-/APK-Kandidat: [lumo-lernen#539](https://github.com/Ullmann27/lumo-lernen/pull/539), Version 0.14.1+2070. Der maßgebliche finale native Pin steht dort in `config/godot-source.json`; Build, Signatur, installierte Android-Tour und Backup sind verpflichtend. Keine fertige APK oder physische 60-FPS-Freigabe wird allein durch diese Quellen bestätigt. Dieser PR #211 richtet sich ausschließlich an den bestehenden Entwicklungszweig; main bleibt unverändert.
+
+## Frühere Projektaufzeichnungen
+
+# LUMO World — Unterstützung durch drei zusätzliche Agents
+
+23.11.2026. Eigener Zweig `support/logic-world-team-b-20261123`, PR-Ziel `feature/logic-world-20261123`. Neue Karte, Freundepost und dauerhafter Ampelknopf sind angeschlossen. Hauptchat-Basis `9decd8eb59b03f31cdc7b2a33b0703a1e0d9b8c2` ist erhalten. Stand und konkrete Prüfgrenzen: [Team-B-Übergabe](docs/agent-network/TEAM_B_LOGIC_WORLD_20261123.md). Lokale Umgebung fiel aus; abschließende Integration und Android sind noch nicht abgenommen. Der eigenständige Unterstützungs-Prüflauf liegt im Flutter-Repository. Keine Änderung an main.
+
+## Bisherige Projektaufzeichnungen
+
 # Continue the Native Village and Minimap V2 activation
 
 Checkpoint: `4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b`; tree `4d50f5652b43846516f759be300d9b50a960f692`;
