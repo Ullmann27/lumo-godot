@@ -82,21 +82,21 @@ static func update_loop(game, index: int, delta: float) -> bool:
 	var braking: float = 0.25 if game.opponent_stuns[index] > 0.0 else 0.0
 	rival.transform = state.advance(game.world, delta, 0.0, braking, true)
 	game.opponent_distances[index] = maxf(
-		game.opponent_distances[index], state.entry_progress + state.progress * LOOP.ADVANCE
+		game.opponent_distances[index], state.entry_progress + LOOP.road_distance_at(layout, state.progress) - float(layout.start)
 	)
 	game.opponent_lanes[index] = (
-		float(layout.lane) + LOOP.exit_shift_of(layout) * LOOP.shift_fraction(state.progress) + state.lateral
+		LOOP.lane_at(layout, state.progress) + state.lateral
 	)
 	rival.set_motion(state.speed, 0.0, false, false)
 	if not state.active:
-		var exit_distance: float = float(layout.start) + (0.0 if state.failed else LOOP.ADVANCE)
+		var exit_distance: float = float(layout.start) + (0.0 if state.failed else LOOP.advance_of(layout))
 		var exit_lane: float = (
 			float(layout.get("fail_lane", 0.0))
 			if state.failed
 			else LOOP.exit_lane(layout) + state.lateral
 		)
 		game.opponent_distances[index] = (
-			state.entry_progress + (0.0 if state.failed else LOOP.ADVANCE)
+			state.entry_progress + (0.0 if state.failed else LOOP.advance_of(layout))
 		)
 		game.opponent_headings[index] = game._heading(exit_distance)
 		game.opponent_lanes[index] = exit_lane

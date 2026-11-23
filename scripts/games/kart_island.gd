@@ -2401,17 +2401,16 @@ func _drive_loop(delta: float, axis: float, braking: float) -> bool:
 	player.transform = loop_state.advance(world, delta, axis, braking, _gas_active())
 	speed = loop_state.speed
 	if loop_state.active:
-		previous_road_distance = float(layout.start) + loop_state.progress * PHYSICAL_LOOP.ADVANCE
-		distance = maxf(distance, loop_state.entry_progress + loop_state.progress * PHYSICAL_LOOP.ADVANCE)
+		previous_road_distance = PHYSICAL_LOOP.road_distance_at(layout, loop_state.progress)
+		distance = maxf(distance, loop_state.entry_progress + PHYSICAL_LOOP.road_distance_at(layout, loop_state.progress) - float(layout.start))
 		lane = (
-			float(layout.lane)
-			+ PHYSICAL_LOOP.exit_shift_of(layout) * PHYSICAL_LOOP.shift_fraction(loop_state.progress)
+			PHYSICAL_LOOP.lane_at(layout, loop_state.progress)
 			+ loop_state.lateral
 		)
 		physical_velocity = -player.basis.z * speed
 		return true
-	var exit_distance: float = float(layout.start) + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
-	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.ADVANCE)
+	var exit_distance: float = float(layout.start) + (0 if loop_state.failed else PHYSICAL_LOOP.advance_of(layout))
+	distance = loop_state.entry_progress + (0 if loop_state.failed else PHYSICAL_LOOP.advance_of(layout))
 	previous_road_distance = exit_distance
 	player_heading = _heading(exit_distance)
 	var exit_lane: float = float(layout.get("fail_lane", layout.lane)) if loop_state.failed else PHYSICAL_LOOP.exit_lane(layout) + loop_state.lateral
@@ -3694,17 +3693,13 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		var origin: Vector3 = world.position_at(float(world.loop_layout.start), float(world.loop_layout.lane))
 		var entry_basis: Basis = world.frame(float(world.loop_layout.start))
 		var radius: float = PHYSICAL_LOOP.radius_of(world.loop_layout)
-		var desired_loop: Vector3 = origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
+		var desired_loop: Vector3 = player.position + player.basis.z * 9.0 + Vector3.UP * 5.0 if bool(world.loop_layout.get("branch", false)) else origin + entry_basis.x * 12 + entry_basis.z * 15 + Vector3.UP * 11
 		var focus: Vector3 = player.position + Vector3.UP * 0.6
-		if bool(world.loop_layout.get("stunt", false)):
+		if (bool(world.loop_layout.get("stunt", false)) or bool(world.loop_layout.get("branch", false))) and loop_state.progress >= 0.25 and loop_state.progress <= 0.75:
 			# Cinematic side view through the open ring: the kart stays visible
 			# on the inner deck all the way round, also upside down at the top.
 			var hub: Vector3 = (
-				world.position_at(
-					float(world.loop_layout.start) + PHYSICAL_LOOP.ADVANCE * 0.5,
-					float(world.loop_layout.lane) + PHYSICAL_LOOP.exit_shift_of(world.loop_layout) * 0.5
-				)
-				+ entry_basis.y * radius
+				PHYSICAL_LOOP.ring_center(world, world.loop_layout)
 			)
 			desired_loop = (
 				hub - entry_basis.x * radius * 2.7 + entry_basis.z * radius * 0.45

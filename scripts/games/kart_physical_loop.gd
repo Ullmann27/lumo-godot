@@ -4,7 +4,8 @@ extends RefCounted
 ## A layout may set "radius", "lateral_limit", "fail_lane", "exit_shift" and
 ## "deck_half_width" (see Sonnenhafen stunt sequence and expansion tracks).
 ##
-## Seamless road integration: entry and exit lie side by side on the road
+## Seamless road integration: optional side-road approaches carry the ring outside
+## the main racing corridor. Legacy layouts can still join side by side on the road
 ## ("exit_shift"), so the climbing and the descending track never cross. The
 ## shift follows u - sin(2 pi u) / (2 pi): zero slope at both road joins, the
 ## whole sideways move happens high up in the ring. At u = 0 and u = 1 every
@@ -64,27 +65,118 @@ static func shift_fraction(u: float) -> float:
 
 ## Approximate design length only; driving uses the measured distance table.
 static func path_length(data: Dictionary) -> float:
-	return TAU * radius_of(data) + ADVANCE * 0.2
+	return TAU * radius_of(data) + advance_of(data) - ADVANCE * 0.8
 
 
-static func point(world, data: Dictionary, u: float, offset: float = 0.0) -> Vector3:
-	var basis: Basis = world.frame(float(data.start))
-	var advance: float = u * ADVANCE
-	var lateral: float = float(data.lane) + offset + exit_shift_of(data) * shift_fraction(u)
-	var base: Vector3 = world.position_at(float(data.start) + advance, lateral)
-	var theta: float = clampf(u, 0, 1) * TAU
+## Route metres consumed by this optional branch, including actual approach and return.
+static func advance_of(data: Dictionary) -> float:
+	if not bool(data.get("branch", false)):
+		return ADVANCE
+	return float(data.get("approach_m", 26.0)) + ADVANCE + float(data.get("return_m", 30.0))
+
+
+static func road_distance_at(data: Dictionary, u: float) -> float:
+	var t: float = clampf(u, 0.0, 1.0)
+	if not bool(data.get("branch", false)):
+		return float(data.start) + t * ADVANCE
+	var approach: float = float(data.get("approach_m", 26.0))
+	if t < 0.25:
+		return float(data.start) + approach * t * 4.0
+	if t <= 0.75:
+		return float(data.start) + approach + ADVANCE * (t - 0.25) * 2.0
+	return float(data.start) + approach + ADVANCE + float(data.get("return_m", 30.0)) * (t - 0.75) * 4.0
+
+
+static func lane_at(data: Dictionary, u: float) -> float:
+	var t: float = clampf(u, 0.0, 1.0)
+	if not bool(data.get("branch", false)):
+		return float(data.lane) + exit_shift_of(data) * shift_fraction(t)
+	var outer: float = float(data.get("outer_lane", 20.0))
+	var ring_shift: float = float(data.get("ring_shift", 3.0))
+	if t < 0.25:
+		return lerpf(float(data.lane), outer, smoothstep(0.0, 1.0, t * 4.0))
+	if t <= 0.75:
+		return outer + ring_shift * shift_fraction((t - 0.25) * 2.0)
+	return lerpf(outer + ring_shift, exit_lane(data), smoothstep(0.0, 1.0, (t - 0.75) * 4.0))
+
+
+static func _center_point(world, data: Dictionary, u: float) -> Vector3:
+	var t: float = clampf(u, 0.0, 1.0)
+	var branch: bool = bool(data.get("branch", false))
+	var ring_t: float = clampf((t - 0.25) * 2.0, 0.0, 1.0) if branch else t
+	var ring_start: float = float(data.start) + (float(data.get("approach_m", 26.0)) if branch else 0.0)
+	var basis: Basis = world.frame(ring_start)
+	var theta: float = ring_t * TAU
 	var radius: float = radius_of(data)
+	var base: Vector3 = world.position_at(road_distance_at(data, t), lane_at(data, t))
 	return base + basis.y * radius * (1.0 - cos(theta)) - basis.z * radius * sin(theta)
 
 
+static func point(world, data: Dictionary, u: float, offset: float = 0.0) -> Vector3:
+	var center: Vector3 = _center_point(world, data, u)
+	if is_zero_approx(offset):
+		return center
+	# Lateral offsets follow the actual branch tangent, including both merging bends.
+	var right: Vector3 = frame_at(world, data, u).x if bool(data.get("branch", false)) else world.frame(road_distance_at(data, u)).x
+	return center + right * offset
+
+
 static func frame_at(world, data: Dictionary, u: float) -> Basis:
-	var a: float = maxf(0, u - 0.001)
-	var b: float = minf(1, u + 0.001)
-	var forward: Vector3 = (point(world, data, b) - point(world, data, a)).normalized()
-	var right: Vector3 = world.frame(float(data.start) + clampf(u, 0.0, 1.0) * ADVANCE).x
+	if u <= 0.0 or u >= 1.0:
+		return world.frame(road_distance_at(data, u))
+	var a: float = maxf(0, u - 0.0005)
+	var b: float = minf(1, u + 0.0005)
+	var forward: Vector3 = (_center_point(world, data, b) - _center_point(world, data, a)).normalized()
+	var right: Vector3 = world.frame(road_distance_at(data, u)).x
 	var up: Vector3 = right.cross(forward).normalized()
 	right = forward.cross(up).normalized()
 	return Basis(right, up, -forward).orthonormalized()
+
+
+static func ring_center(world, data: Dictionary) -> Vector3:
+	var ring_start: float = float(data.start) + (float(data.get("approach_m", 26.0)) if bool(data.get("branch", false)) else 0.0)
+	return point(world, data, 0.5) - world.frame(ring_start).y * radius_of(data)
+
+
+## The guardrail opens only where the branch actually crosses it. The normal
+## road collision remains protective; a chosen branch uses its contact solver.
+static func rail_open(data: Dictionary, distance: float, side: float) -> bool:
+	if data.is_empty() or not bool(data.get("branch", false)) or side != signf(float(data.lane)):
+		return false
+	var d: float = distance - float(data.start)
+	var approach: float = float(data.get("approach_m", 26.0))
+	var leave: float = advance_of(data)
+	return (d >= -1.0 and d <= approach * 0.65) or (d >= leave - float(data.get("return_m", 30.0)) * 0.65 and d <= leave + 1.0)
+
+
+## Check every nearby primary road, including parallel and stacked sections.
+## Keep the entire branch in one checkpoint sector: a failed climb can return
+## to its entrance without awarding a checkpoint and then moving behind it.
+static func configure_branch(world, data: Dictionary) -> Dictionary:
+	var result: Dictionary = data.duplicate(true)
+	result.merge({"branch": true, "approach_m": 26.0, "return_m": 30.0,
+		"exit_shift": 0.0, "ring_shift": 3.0, "outer_lane": 20.0}, true)
+	var sector: float = float(world.length) / 8.0
+	var sector_end: float = (floorf(float(data.start) / sector) + 1.0) * sector
+	result.start = minf(float(data.start), sector_end - advance_of(result) - 12.0)
+	var preferred: float = signf(float(result.lane))
+	if is_zero_approx(preferred):
+		preferred = 1.0
+	for side in [preferred, -preferred]:
+		result.lane = side * absf(float(data.lane))
+		result.ring_shift = side * 3.0
+		for outer in [18.0, 22.0, 26.0, 30.0, 36.0]:
+			result.outer_lane = side * outer
+			var clear: bool = true
+			for i in range(33):
+				var u: float = 0.25 + float(i) / 64.0
+				if world._near_road(_center_point(world, result, u), float(world.road_width) * 0.5 + half_width_of(result) + 2.5):
+					clear = false
+					break
+			if clear:
+				return result
+	push_error("[KartLoop] No exterior road corridor for %s" % str(world.track_id))
+	return {}
 
 
 func enter(
@@ -263,7 +355,7 @@ static func deck_rows(world, data: Dictionary) -> Array:
 		along += center.distance_to(previous)
 		previous = center
 		var on_road: bool = i == 0 or i == DECK_SEGMENTS
-		var up: Vector3 = world.frame(start + u * ADVANCE).y if on_road else basis.y
+		var up: Vector3 = world.frame(road_distance_at(data, u)).y if on_road else basis.y
 		rows.append(
 			{
 				"left": point(world, data, u, -half) + up * DECK_LIFT,
@@ -275,7 +367,7 @@ static func deck_rows(world, data: Dictionary) -> Array:
 				"u": u,
 			}
 		)
-	var exit_start: float = start + ADVANCE
+	var exit_start: float = start + advance_of(data)
 	for i in range(1, APRON_SEGMENTS + 1):
 		var d: float = exit_start + APRON_M * float(i) / float(APRON_SEGMENTS)
 		var row: Dictionary = _road_row(
@@ -346,7 +438,7 @@ static func build(world, data: Dictionary, color: Color) -> void:
 			"wall_glow": color,
 		}
 	)
-	var at: Vector3 = world.position_at(float(data.start) - 7, 7.2)
+	var at: Vector3 = world.position_at(float(data.start) - 7, signf(float(data.lane)) * 7.2)
 	var basis: Basis = world.frame(float(data.start))
 	world._prop("box", at + Vector3.UP * 2.2, Vector3(3.1, 1.4, 0.1), Color("17354e"), basis)
-	world._sign(at + Vector3.UP * 2.2 + basis.z * 0.1, basis, "LOOP RECHTS\nSchwung holen!", 0.012)
+	world._sign(at + Vector3.UP * 2.2 + basis.z * 0.1, basis, ("LOOP RECHTS" if float(data.lane) > 0.0 else "LOOP LINKS") + "\nAbzweigung", 0.012)

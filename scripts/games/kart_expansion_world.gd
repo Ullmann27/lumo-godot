@@ -20,6 +20,7 @@ static func prepare(world) -> void:
 			"lateral_limit": 0.3,
 			"lane_tolerance": 1.3,
 		}
+		world.loop_layout = LOOP.configure_branch(world, world.loop_layout)
 	if (
 		world.track_id
 		in ["crystal_canyon", "candy_cloud", "volcano_night", "winter_sprint", "galaxy_ringway"]

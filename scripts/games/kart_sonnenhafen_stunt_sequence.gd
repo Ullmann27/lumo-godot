@@ -89,7 +89,7 @@ static func tunnel_start(world) -> float:
 
 
 static func loop_start(world) -> float:
-	return tunnel_start(world) - LOOP_LEAD_M
+	return float(world.loop_layout.start) if not world.loop_layout.is_empty() else tunnel_start(world) - LOOP_LEAD_M
 
 
 ## Called before the road is built, so the action course keeps its distance.
@@ -109,6 +109,7 @@ static func prepare(world) -> void:
 		"fail_lane": 0.0,
 		"stunt": true,
 	}
+	world.loop_layout = LOOP.configure_branch(world, world.loop_layout)
 
 
 ## Real boost pad(s) for the action course (same rules as every Turbo-Feld).
@@ -116,7 +117,7 @@ static func pads(world) -> Array:
 	if not applies(world):
 		return []
 	var end: float = loop_start(world) - PAD_GAP_M
-	return [{"start": end - PAD_LENGTH, "end": end, "lateral": LOOP_LANE}]
+	return [{"start": end - PAD_LENGTH, "end": end, "lateral": float(world.loop_layout.get("lane", LOOP_LANE))}]
 
 
 ## Take-off distance before the tunnel mouth. The model flight of the reference
@@ -185,7 +186,7 @@ static func star_positions(world) -> Array[Vector3]:
 	var start: float = loop_start(world)
 	for i in range(4):
 		var d: float = start - PAD_GAP_M - PAD_LENGTH - 2.0 + float(i) * 4.5
-		result.append(world.position_at(d, LOOP_LANE) + world.frame(d).y * 0.95)
+		result.append(world.position_at(d, float(layout.lane)) + world.frame(d).y * 0.95)
 	var take_off: float = jump_take_off(world)
 	var kicker: Dictionary = kickers(world)[0]
 	for along in ARC_STARS:
@@ -289,8 +290,8 @@ static func _supports(world, layout: Dictionary) -> void:
 	var right: float = float(world.RAIL_LATERAL) + 1.4
 	for u in [0.25, 0.75]:
 		var flank: Vector3 = LOOP.point(world, layout, u, DECK_HALF_WIDTH + 0.3)
-		var d: float = start + u * LOOP.ADVANCE + (LOOP_RADIUS if u < 0.5 else -LOOP_RADIUS)
-		var foot: Vector3 = world.position_at(d, right)
+		var d: float = LOOP.road_distance_at(layout, u) + (LOOP_RADIUS if u < 0.5 else -LOOP_RADIUS)
+		var foot: Vector3 = world.position_at(d, LOOP.lane_at(layout, u) + signf(float(layout.lane)) * 2.4 if bool(layout.get("branch", false)) else right)
 		foot.y -= 2.0
 		var cap: Vector3 = flank + (flank - foot).normalized() * 0.2
 		world._beam(foot, flank, 0.42, Color("e9eef2"))
@@ -305,10 +306,10 @@ static func _supports(world, layout: Dictionary) -> void:
 ## Decorative gold stars inside the ring, like the reference loops.
 static func _inner_stars(world, layout: Dictionary) -> void:
 	var start: float = float(layout.start)
-	var center_distance: float = start + LOOP.ADVANCE * 0.5
-	var basis: Basis = world.frame(start)
-	var middle_lane: float = LOOP_LANE + LOOP_EXIT_SHIFT * 0.5
-	var center: Vector3 = world.position_at(center_distance, middle_lane) + basis.y * LOOP_RADIUS
+	var center_distance: float = LOOP.road_distance_at(layout, 0.5)
+	var basis: Basis = world.frame(LOOP.road_distance_at(layout, 0.25))
+	var middle_lane: float = LOOP.lane_at(layout, 0.5)
+	var center: Vector3 = LOOP.ring_center(world, layout)
 	var facing := Basis(-basis.z, basis.y, basis.x)
 	for i in range(8):
 		var angle: float = TAU * float(i) / 8.0
@@ -320,15 +321,17 @@ static func _inner_stars(world, layout: Dictionary) -> void:
 ## Overhead sign on a cantilever outside the right rail plus cyan lane arrows.
 static func _entry_guidance(world, layout: Dictionary) -> void:
 	var start: float = float(layout.start)
+	var entry_lane: float = float(layout.lane)
+	var side_sign: float = signf(entry_lane)
 	var sign_distance: float = start - 9.0
 	var basis: Basis = world.frame(sign_distance)
-	var post: Vector3 = world.position_at(sign_distance, float(world.RAIL_LATERAL) + 1.0)
+	var post: Vector3 = world.position_at(sign_distance, side_sign * (float(world.RAIL_LATERAL) + 1.0))
 	world._prop("box", post + basis.y * 3.1, Vector3(0.45, 6.2, 0.45), NAVY, basis)
-	var beam_center: Vector3 = world.position_at(sign_distance, LOOP_LANE + 1.6) + basis.y * 6.0
+	var beam_center: Vector3 = world.position_at(sign_distance, entry_lane + side_sign * 1.6) + basis.y * 6.0
 	world._prop("box", beam_center, Vector3(5.4, 1.5, 0.35), NAVY, basis)
 	world._prop("box", beam_center + basis.y * 0.82, Vector3(5.6, 0.12, 0.42), ORANGE, basis, true)
 	world._prop("box", beam_center - basis.y * 0.82, Vector3(5.6, 0.12, 0.42), CYAN, basis, true)
-	world._sign(beam_center + basis.z * 0.2, basis, "LUMO-LOOPING\nSchwung holen!", 0.016)
+	world._sign(beam_center + basis.z * 0.2, basis, "LOOP-ABZWEIGUNG\nSchwung holen!", 0.016)
 	# Arrows on the loop lane, starting before the boost pad.
 	var pad_start: float = start - PAD_GAP_M - PAD_LENGTH
 	for i in range(7):
@@ -336,7 +339,7 @@ static func _entry_guidance(world, layout: Dictionary) -> void:
 		var arrow_basis: Basis = world.frame(d)
 		for side in [-1.0, 1.0]:
 			var tilted: Basis = arrow_basis.rotated(arrow_basis.y, side * 0.70)
-			var at: Vector3 = world.position_at(d, LOOP_LANE + side * 0.48) + arrow_basis.y * 0.03
+			var at: Vector3 = world.position_at(d, entry_lane + side * 0.48) + arrow_basis.y * 0.03
 			world._prop("box", at, Vector3(0.3, 0.03, 1.3), CYAN, tilted, true)
 	# Dashed divider between main lane and loop lane.
 	for i in range(14):
@@ -344,7 +347,7 @@ static func _entry_guidance(world, layout: Dictionary) -> void:
 		var divider_basis: Basis = world.frame(d)
 		world._prop(
 			"box",
-			world.position_at(d, LOOP_LANE - DECK_HALF_WIDTH - 0.2) + divider_basis.y * 0.025,
+			world.position_at(d, entry_lane - side_sign * (DECK_HALF_WIDTH + 0.2)) + divider_basis.y * 0.025,
 			Vector3(0.14, 0.02, 1.6),
 			WHITE,
 			divider_basis
