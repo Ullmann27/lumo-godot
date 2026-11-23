@@ -53,6 +53,8 @@ func _run() -> void:
 			_check(seat.mood == "smug", id + " has the playful winner-pride state.")
 			_check(seat._mood_left >= 3.5, id + " winner reaction is deliberately held, not a twitch.")
 			_check(seat._clip_rate <= 0.90, id + " winner animation is slowed below robotic playback.")
+			if seat.player.has_animation("kart_celebrate"):
+				_check(seat._clip == "kart_celebrate", id + " Cards uses the authored production victory clip.")
 			var start_rotation: Vector3 = seat._pivot.rotation
 			for frame in range(75):
 				seat.advance(1.0 / 60.0)
