@@ -1,7 +1,7 @@
 name: Lumo Kart action and live network verification
 on:
   push:
-    branches: [integration/kart-action-20261123, chatgpt/lumo-ten-playable-drivers-20261123]
+    branches: [integration/kart-action-20261123]
     paths:
       - config/kart-action-qa.json
       - .github/workflows/kart-action-20261123.yml
