@@ -320,6 +320,10 @@ func _visibility_and_school(scene: Node3D) -> void:
 	scene.driving = false
 	scene.player.position = Vector3(110, 0.2, -20)
 	scene.player.velocity = Vector3.ZERO
+	# Earlier in this regression we deliberately orbit the person camera.
+	# Walking is camera-relative, so restore the authored forward direction
+	# before probing the school ramp instead of drifting sideways past it.
+	scene.camera_yaw = 0.0
 	scene.kart_body.position = Vector3(77, 0.2, 18)
 	scene.drive_speed = 0.0
 	scene.paused = false
