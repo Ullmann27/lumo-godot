@@ -1,9 +1,10 @@
 {
-  "request": 9,
+  "request": 13,
   "probes": [
     "lumo_run_loop_regression",
     "kart_dyno_parts_regression",
     "kart_vehicle_regression",
+    "kart_extra_drivers_regression",
     "kart_evolution_regression",
     "kart_action_spectacle_regression",
     "kart_loop_seam_regression",
