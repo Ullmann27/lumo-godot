@@ -1,6 +1,8 @@
 extends RefCounted
 const COURSE = preload("res://scripts/games/windwerk/kart_windwerk_course.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
+const PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const DECK = preload("res://assets/shaders/kart_windwerk_deck.gdshader")
 const ART_PATH := "res://scripts/games/kart_windwerk_art.gd"
 const HALF := COURSE.WIDTH * .5
@@ -14,6 +16,8 @@ static func build(world, geometry_only: bool) -> void:
 	world.add_child(road_root)
 	world.action = COURSE.action_plan()
 	world.set_meta("item_zone_hazards", {COURSE.ID: COURSE.TRIALS})
+	SPECTACLE.plan(world)
+	PIECES.plan(world, world._piece_markers + SPECTACLE.markers(world))
 	var deck := ShaderMaterial.new()
 	deck.shader = DECK
 	for section in range(20):
@@ -44,6 +48,8 @@ static func build(world, geometry_only: bool) -> void:
 		world._lighting()
 		_valley(world)
 		load(ART_PATH).build(world)
+	PIECES.build(world)
+	SPECTACLE.build(world)
 	world._flush_instances()
 
 

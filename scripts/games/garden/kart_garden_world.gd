@@ -2,6 +2,8 @@ extends RefCounted
 ## Aufbau von Lumos Riesengarten in kart_world.gd (ein Einhängepunkt: build()).
 ## Reihenfolge wie Dschungelherz: Fahrbahn + Kollision → Passagen → Umgebung → Instanzen.
 const COURSE = preload("res://scripts/games/garden/kart_garden_course.gd")
+const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
+const PIECES = preload("res://scripts/games/track_pieces/kart_track_pieces.gd")
 const EDGES = preload("res://scripts/games/garden/kart_garden_edges.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
 const ROAD_SHADER = preload("res://assets/shaders/garden/kart_garden_road.gdshader")
@@ -30,6 +32,8 @@ static func build(world: Node3D, geometry_only: bool) -> void:
 	world.road_width = 13.0
 	world.action = COURSE.action_plan(world)
 	world.set_meta("item_zone_hazards", {COURSE.ID: COURSE.item_hazards()})
+	SPECTACLE.plan(world)
+	PIECES.plan(world, world._piece_markers + SPECTACLE.markers(world))
 	_road(world)
 	EDGES.build(world, geometry_only)
 	PASSAGE_ART.build(world)
@@ -41,6 +45,9 @@ static func build(world: Node3D, geometry_only: bool) -> void:
 		environment.name = "RiesengartenEnvironment"
 		world.add_child(environment)
 		environment.build(world)
+	SPECTACLE.build_new_action(world)
+	PIECES.build(world)
+	SPECTACLE.build(world)
 	world._flush_instances()
 	world.set_meta("garden_sections", COURSE.SECTIONS.size())
 	world.set_meta("garden_length_m", world.length)

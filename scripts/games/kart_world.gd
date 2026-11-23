@@ -42,6 +42,7 @@ const HIGHLIGHTS = preload("res://scripts/games/kart_track_highlights.gd")
 const PASSAGE_ART = preload("res://scripts/games/kart_passage_art.gd")
 const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const THRILL_ART = preload("res://scripts/games/kart_track_thrill_art.gd")
+const SPECTACLE = preload("res://scripts/games/kart_course_spectacle.gd")
 ## Strukturierte Kulissen-Pflanzen (Art -> transforms/custom), instanziert von SCENERY.
 var scenery_plants: Dictionary = {}
 var _piece_markers: Array = []
@@ -105,6 +106,7 @@ func build(
 		child.queue_free()
 	groups.clear()
 	set_meta(TRACK_PIECES.PIECES_META, [])
+	set_meta(SPECTACLE.META, {})
 	production_tunnels = null
 	production_tunnel_layout = {}
 	if has_meta("production_tunnel"):
@@ -149,7 +151,10 @@ func build(
 			action = ACTION.plan(self)
 			THRILLS.extend_action(self)
 			HIGHLIGHTS.extend_action(self)
+			SPECTACLE.plan(self)
+			TRACK_PIECES.plan(self, _piece_markers + SPECTACLE.markers(self))
 			ACTION.build(self)
+			TRACK_PIECES.build(self)
 			THRILL_ART.build(self)
 			HIGHLIGHTS.build(self)
 		PASSAGE_ART.build(self)
@@ -165,6 +170,7 @@ func build(
 			jungle_environment.build(self)
 		if not geometry_only:
 			ADVENTURE_DRESSING.build(self)
+		SPECTACLE.build(self)
 		_flush_instances()
 		if not geometry_only:
 			SCENERY.build(self)
@@ -184,6 +190,7 @@ func build(
 		ADVENTURE_TUNNELS.build(self)
 		if not geometry_only:
 			ADVENTURE_DRESSING.build(self)
+		SPECTACLE.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -205,6 +212,7 @@ func build(
 		ADVENTURE_TUNNELS.build(self)
 		if not geometry_only:
 			ADVENTURE_DRESSING.build(self)
+		SPECTACLE.build(self)
 		_flush_instances()
 		if not geometry_only:
 			AAA_GATES.decorate(self)
@@ -250,6 +258,7 @@ func build(
 		ADVENTURE_DRESSING.build(self)
 	if staged_classic:
 		await get_tree().process_frame
+	SPECTACLE.build(self)
 	_flush_instances()
 	if not geometry_only:
 		AAA_GATES.decorate(self)
@@ -325,16 +334,18 @@ func road_width_at(distance: float) -> float:
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
+	var base_wall: float = WALL_LATERAL
 	if track_id == TRACKS.WINDWERK.ID:
-		return TRACKS.WINDWERK.WIDTH * .5 - .9
-	var deck_wall: float = PASSAGES.rival_wall(self, distance)
-	if deck_wall < INF:
-		return deck_wall
-	if track_id == JUNGLE.ID:
-		return JUNGLE.wall_at(distance)
-	if track_id == GARDEN.ID:
-		return GARDEN.wall_at(distance)
-	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), WALL_LATERAL)
+		base_wall = TRACKS.WINDWERK.WIDTH * .5 - .9
+	else:
+		var deck_wall: float = PASSAGES.rival_wall(self, distance)
+		if deck_wall < INF:
+			base_wall = deck_wall
+		elif track_id == JUNGLE.ID:
+			base_wall = JUNGLE.wall_at(distance)
+		elif track_id == GARDEN.ID:
+			base_wall = GARDEN.wall_at(distance)
+	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), base_wall)
 
 
 func forward(distance: float) -> Vector3:
@@ -1091,7 +1102,8 @@ func _road() -> void:
 	PASSAGES.extend_action(self)
 	THRILLS.extend_action(self)
 	HIGHLIGHTS.extend_action(self)
-	TRACK_PIECES.plan(self, _piece_markers)
+	SPECTACLE.plan(self)
+	TRACK_PIECES.plan(self, _piece_markers + SPECTACLE.markers(self))
 	_install_production_tunnel()
 	var asphalt := ShaderMaterial.new()
 	asphalt.shader=preload("res://assets/shaders/kart_asphalt.gdshader")
@@ -1140,7 +1152,7 @@ func _road() -> void:
 		var bridge: bool=_is_bridge(d)
 		var open_side: float=ACTION.open_side(action,d)
 		for side in [-1.0,1.0]:
-			if side==open_side or THRILLS.cuts_side(self, d, side): continue
+			if side==open_side or THRILLS.cuts_side(self, d, side) or STUNT.LOOP.rail_open(loop_layout, d, side): continue
 			var curb: Color=Color("eff3e5") if i%4<2 else edge_color.darkened(0.16)
 			if track_id in ["sonnenhafen", "candy_cloud"]:
 				curb=Color("f7f4ea") if i%4<2 else Color("e84f45")

@@ -16,6 +16,7 @@ const MODAL_STYLE = preload("res://scripts/games/kart_modal_style.gd")
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const EXPORT_DIR: String = "user://kart_geister"
 const LAN_RACE = preload("res://scripts/games/kart_friends/kart_lan_race.gd")
+const ONLINE_RACE = preload("res://scripts/games/online/kart_online_race.gd")
 const FRIEND_TINT := Color(1.0, 0.8, 0.36, 0.42)
 
 ## Geladener Freundes-Geist ({} wenn keiner) und Grund, falls die Datei abgelehnt wurde.
@@ -28,6 +29,8 @@ var last_share_note: String = ""
 var invitation: Control
 ## „Zusammen fahren“ im WLAN – nur mit Elternfreigabe (Startoption friendsLan).
 var lan: Node
+## Separate parent permission for Internet racing, never inherited from local WLAN consent.
+var online: Node
 ## Elternfreigabe „Geister-Duell erlauben“ (Startoption friendsGhostShare, Vorgabe aus):
 ## ohne sie kein Freundes-Geist, kein Teilen-Knopf und keine Geist-Datei zum Verschicken.
 var share_allowed: bool = false
@@ -75,6 +78,11 @@ func attach(island: Node) -> void:
 		lan.name = "KartLanRace"
 		island.add_child(lan)
 		lan.setup(island, player_name)
+	if options.get("friendsOnline", false) == true and online == null:
+		online = ONLINE_RACE.new()
+		online.name = "KartOnlineRace"
+		island.add_child(online)
+		online.setup(island, str(options.get("kartOnlineEndpoint", "")))
 	# Die App hat die Einladung schon gezeigt und das Kind hat „Gegen Mia fahren“ getippt.
 	if has_friend() and options.get("kartFriendStart", false) == true:
 		(func(): _start_duel(island)).call_deferred()
@@ -154,6 +162,10 @@ func _start_duel(island: Node) -> void:
 ## dieses Rennens. Rückgabe: der Geist (LumoRaceKart) oder null (dann gilt der eigene).
 func build_ghost(island: Node) -> LumoRaceKart:
 	race_state = ""
+	if online != null:
+		var online_remote: LumoRaceKart = online.build_remote(island)
+		if online_remote != null:
+			return online_remote
 	if lan != null:
 		var remote: LumoRaceKart = lan.build_remote(island)
 		if remote != null:
@@ -229,12 +241,16 @@ func _tint(node: Node) -> void:
 
 ## Jedes Rennbild im Zeitfahren (nach dem eigenen Geist): WLAN-Freund bewegen.
 func tick(island: Node, delta: float) -> void:
+	if online != null:
+		online.tick(island, delta)
 	if lan != null:
 		lan.tick(island, delta)
 
 
 ## Ziellinie im Zeitfahren: Zeit an den WLAN-Freund melden.
 func on_finish(island: Node) -> void:
+	if online != null:
+		online.on_finish(island)
 	if lan != null:
 		lan.on_finish(island)
 
@@ -258,6 +274,8 @@ static func format_time(seconds: float) -> String:
 
 ## Ergebnis Zeitfahren: Duell-Satz und der Knopf zum Verschicken des eigenen Geists.
 func add_result_rows(island: Node, column: Control) -> void:
+	if online != null:
+		online.add_result_rows(column)
 	if lan != null:
 		lan.add_result_rows(column)
 	if race_state == "racing":

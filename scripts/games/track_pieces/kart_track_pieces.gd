@@ -277,7 +277,7 @@ static func _build_narrow(world, piece: Dictionary) -> void:
 	while along <= start + length:
 		var basis: Basis = world.frame(along)
 		var wall: float = wall_lateral(world, along, float(world.WALL_LATERAL))
-		var outer: float = float(world.RAIL_LATERAL)
+		var outer: float = float(world.road_width_at(along)) * 0.5 + 0.65
 		for side in [-1.0, 1.0]:
 			var width: float = maxf(0.2, outer - wall)
 			var center: float = side * (wall + width * 0.5)
