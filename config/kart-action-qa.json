@@ -1,5 +1,5 @@
 {
-  "request": 5,
+  "request": 6,
   "probes": [
     "kart_dyno_parts_regression",
     "kart_vehicle_regression",
@@ -11,6 +11,7 @@
   ],
   "renderer_probes": [
     "kart_sonnenhafen_stunt_regression",
-    "kart_action_course_regression"
+    "kart_action_course_regression",
+    "kart_action_spectacle_regression"
   ]
 }

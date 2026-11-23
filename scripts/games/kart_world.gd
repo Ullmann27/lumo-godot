@@ -702,11 +702,11 @@ func _flush_instances() -> void:
 		if group.kind == "dive_water":
 			# Same sealed aquarium geometry, using the existing continuous
 			# world-space water shader instead of a flat unlit roof color.
-			var water_key: String = "action_aquarium_water"
+			var water_tint: Color = group.colors[0]
+			var water_key: String = "action_aquarium_water_" + water_tint.to_html()
 			if not materials.has(water_key):
 				var surface_water := ShaderMaterial.new()
 				surface_water.shader = preload("res://assets/shaders/kart_water.gdshader")
-				var water_tint: Color = group.colors[0]
 				surface_water.set_shader_parameter("deep_water", water_tint.darkened(0.45))
 				surface_water.set_shader_parameter("shallow_water", water_tint.lightened(0.15))
 				surface_water.set_shader_parameter("coastal_foam", 0.0)
