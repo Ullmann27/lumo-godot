@@ -2216,7 +2216,9 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		target *= 0.68
 		if difficulty == "gemuetlich":
 			target *= 1.0 - absf(axis) * 0.24
-	var boost_active: bool = boost_time > 0
+	# A precision flight keeps the launch momentum used by its speed hint.
+	# Boost remains available on the road and resumes after touchdown.
+	var boost_active: bool = boost_time > 0 and precision_kicker.is_empty()
 	if boost_active:
 		target *= POWERTRAIN.boost_scale(kart_factors)
 	# Explicit gas prevents accidental reverse; passive Auto-Gas must not block it.
@@ -2251,8 +2253,13 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
 			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
 		axis = _passage_steer_assist(axis, road)
-	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1)
-	if hit_timer > 0.0 and braking <= 0.1 and target >= 0.0 and target < speed:
+	var precision_limit: float = STUNT.SPEED_ZONE.speed_limit(world, previous_road_distance, kart_factors) if mode != "arena" and not airborne else INF
+	var approach_braking: bool = is_finite(precision_limit) and speed > precision_limit
+	target = minf(target, precision_limit)
+	var acceleration: float = POWERTRAIN.acceleration(kart_factors, braking > 0.1 or approach_braking)
+	if approach_braking:
+		message.text = "Präzisionssprung: Bremshilfe hält den Tunnel frei."
+	if hit_timer > 0.0 and braking <= 0.1 and not approach_braking and target >= 0.0 and target < speed:
 		acceleration = POWERTRAIN.contact_deceleration(kart_factors)
 	if boost_active and target > speed:
 		acceleration *= BOOST_ACCELERATION_MULTIPLIER
@@ -3238,6 +3245,12 @@ func _drive_opponents(delta: float) -> void:
 			# Brake, wait and pull away again smoothly at a LUMO passage.
 			target_speed = minf(target_speed, float(passage_rule.speed))
 			target_speed = minf(target_speed, absf(rival.motion_speed) + 30.0 * delta)
+		var precision_factors: Dictionary = RIVAL_RACECRAFT.factors(rival.kart_style, i, difficulty)
+		var precision_limit: float = STUNT.SPEED_ZONE.speed_limit(world, float(sampled.distance), precision_factors)
+		if is_finite(precision_limit):
+			var limited_target: float = minf(target_speed, precision_limit)
+			var braking_now: bool = float(rival.motion_speed) > limited_target
+			target_speed = move_toward(float(rival.motion_speed), limited_target, POWERTRAIN.acceleration(precision_factors, braking_now) * delta)
 		var drive_velocity: Vector3 = world.surface_velocity(sampled, forward, target_speed)
 		rival.position += drive_velocity * delta
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))

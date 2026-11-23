@@ -1,14 +1,7 @@
 extends RefCounted
-## Sonnenhafen stunt sequence in front of the crystal tunnel (dark ride at
-## 69 % of the lap). Position A, about 100 m before the tunnel mouth, gets a
-## real, drivable 360° loop on the right lane:
-## - the kart follows the same 3D path that is rendered (kart_physical_loop),
-##   gravity slows the climb and a too-slow kart is set back to the main lane;
-## - a boost pad on the loop lane gives the needed speed;
-## - the loop entry stands about 80 m before the precision ramp (was 28 m), so the
-##   kart leaves the loop, settles and has a straight run-up to the ramp;
-## - gold stars on the riding line are collected while looping.
-## Everything else (main lane, rails, checkpoints, lap length) stays unchanged.
+## Sonnenhafen combo: an exterior loop branch, a visible braking approach and
+## the physical precision jump before the crystal tunnel. Every kart retains its
+## own drive/brake factors; the envelope protects the tunnel at legal boost speeds.
 
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
@@ -17,14 +10,16 @@ const BALLOON_SHADER = preload("res://assets/shaders/kart_balloon.gdshader")
 const EMBLEM = preload("res://assets/kart/stunt/lumo_balloon_emblem.png")
 const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const SPEED_ZONE = preload("res://scripts/games/kart_stunt_speed_zone.gd")
 
 const TUNNEL_FRACTION: float = 0.690
 ## Loop entry this many metres before the tunnel mouth (Position A).
 const LOOP_LEAD_M: float = 180.0
-## Entry lane (outer right) and the sideways move to the exit lane (inner
-## right). Both decks fit inside the right road half and never cross.
+## Preferred entry side. configure_branch chooses a clear exterior corridor
+## and returns continuously to the same main-road lane.
 const LOOP_LANE: float = 4.0
-const LOOP_EXIT_SHIFT: float = -2.75
+const LOOP_EXIT_SHIFT: float = 0.0
+const LOOP_SETTLE_M: float = 25.0
 const LOOP_RADIUS: float = 8.0
 const DECK_HALF_WIDTH: float = 1.2
 ## Half width of the precision ramp deck (old kicker slabs were 9.2 m wide).
@@ -89,13 +84,20 @@ static func tunnel_start(world) -> float:
 
 
 static func loop_start(world) -> float:
-	return float(world.loop_layout.start) if not world.loop_layout.is_empty() else tunnel_start(world) - LOOP_LEAD_M
+	if not world.loop_layout.is_empty():
+		return float(world.loop_layout.start)
+	var zone: Dictionary = SPEED_ZONE.of(world)
+	var branch_span: float = LOOP.advance_of({"branch": true})
+	return minf(tunnel_start(world) - LOOP_LEAD_M, float(zone.start) - LOOP_SETTLE_M - branch_span) if not zone.is_empty() else tunnel_start(world) - LOOP_LEAD_M
 
 
 ## Called before the road is built, so the action course keeps its distance.
 static func prepare(world) -> void:
+	world.set_meta(SPEED_ZONE.META, {})
 	if not applies(world):
 		return
+	SPEED_ZONE.configure(world, tunnel_start(world), JUMP_RAMP_LENGTH, JUMP_RAMP_HEIGHT,
+		atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH), PRECISION_GRAVITY)
 	world.loop_layout = {
 		"start": loop_start(world),
 		"lane": LOOP_LANE,
@@ -120,26 +122,20 @@ static func pads(world) -> Array:
 	return [{"start": end - PAD_LENGTH, "end": end, "lateral": float(world.loop_layout.get("lane", LOOP_LANE)), "stunt_pad": true}]
 
 
-## Take-off distance before the tunnel mouth. The model flight of the reference
-## kart at full race pace (kart_powertrain.gd) plus a margin, never below
-## JUMP_LEAD_M. With the old 1.0 pace that stayed at 80 m; with the full pace on
-## every level (1.17) a full-throttle kart flew about 85 m and touched down inside
-## the tunnel mouth.
-static func jump_lead_m() -> float:
-	var flat: Dictionary = {
-		"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
-		"height": JUMP_RAMP_HEIGHT,
-		"flight_gravity": PRECISION_GRAVITY,
-		"lift_bonus": 0.0,
-	}
-	var full_throttle: float = POWERTRAIN.top_speed({}, POWERTRAIN.race_pace())
-	var flown: float = PRECISION.landing_distance(full_throttle, flat)
-	return maxf(JUMP_LEAD_M, ceilf(flown + JUMP_TUNNEL_MARGIN_M))
+## Compatibility query without a world uses the flat road envelope. A built
+## circuit additionally reserves its real elevation range through SPEED_ZONE.
+static func jump_lead_m(world = null) -> float:
+	var zone: Dictionary = SPEED_ZONE.of(world)
+	if not zone.is_empty():
+		return float(zone.tunnel) - float(zone.take_off)
+	var flat: Dictionary = {"angle": atan2(JUMP_RAMP_HEIGHT, JUMP_RAMP_LENGTH),
+		"height": JUMP_RAMP_HEIGHT, "flight_gravity": PRECISION_GRAVITY, "lift_bonus": 0.0}
+	return maxf(JUMP_LEAD_M, ceilf(PRECISION.landing_distance(
+		float(SPEED_ZONE.hardware_limits().cruise), flat) + JUMP_TUNNEL_MARGIN_M))
 
 
 static func jump_take_off(world) -> float:
-	return tunnel_start(world) - jump_lead_m()
-
+	return tunnel_start(world) - jump_lead_m(world)
 
 static func kickers(world) -> Array:
 	if not applies(world):
@@ -209,6 +205,7 @@ static func build(world) -> void:
 	_beacons(world, layout)
 	_tunnel_portal(world)
 	_balloons(world)
+	SPEED_ZONE.build(world)
 
 
 ## Deck, side walls and the chunky outer spine as continuous meshes that use

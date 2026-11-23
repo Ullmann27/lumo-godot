@@ -96,7 +96,21 @@ static func plan(world) -> Dictionary:
 		var ramp_length: float = 12.0 if panorama else KICKER_LENGTH
 		var ramp_height: float = 2.2 if panorama else KICKER_HEIGHT
 		var reserved_span: float = ramp_length + (34.0 if panorama else 10.0)
-		var start: float = _free_start(float(course.kicker) * length, reserved_span, length, blocked, taken)
+		if panorama and STUNT.applies(world):
+			var maximum: float = float(STUNT.SPEED_ZONE.hardware_limits().cruise)
+			var flight: Dictionary = {"height": ramp_height, "angle": atan2(ramp_height, ramp_length),
+				"flight_gravity": 14.0, "lift_bonus": 5.0, "max_lift": 11.0}
+			reserved_span = ramp_length + ceilf(STUNT.PRECISION.landing_distance(maximum, flight)) + 16.0
+		var wish: float = float(course.kicker) * length
+		var ramp_blocked: Array = blocked
+		if panorama and not world.loop_layout.is_empty():
+			# Keep the full physical panorama landing before the branch's boost
+			# pad. Moving the precision approach must not move this jump into it.
+			var before_loop: float = float(world.loop_layout.start) - STUNT.PAD_GAP_M - STUNT.PAD_LENGTH - CLEARANCE
+			ramp_blocked = blocked.duplicate()
+			ramp_blocked.append(Vector2(before_loop, length))
+			wish = minf(wish, before_loop - reserved_span - CLEARANCE)
+		var start: float = _free_start(wish, reserved_span, length, ramp_blocked, taken)
 		if start >= 0.0:
 			result.kickers.append({
 				"start": start, "take_off": start + ramp_length,
@@ -105,7 +119,7 @@ static func plan(world) -> Dictionary:
 				"flight_gravity": 14.0 if panorama else 30.0,
 				"lift_bonus": 5.0 if panorama else 1.6,
 				"max_lift": 11.0 if panorama else 4.0,
-				"hero_flight": panorama
+				"hero_flight": panorama, "landing_road_end": start + reserved_span
 			})
 			taken.append(Vector2(start, start + reserved_span))
 	# The stunt sequence adds its own panorama kicker after the loop exit.
@@ -163,6 +177,9 @@ static func _extra_kicker_start(world, wish: float, blocked: Array, taken: Array
 
 static func _blocked_ranges(world, length: float) -> Array:
 	var blocked: Array = [Vector2(length - 30.0, length), Vector2(0.0, 35.0)]
+	var precision_zone: Dictionary = STUNT.SPEED_ZONE.of(world)
+	if not precision_zone.is_empty():
+		blocked.append(Vector2(float(precision_zone.start) - CLEARANCE, float(precision_zone.tunnel) + CLEARANCE))
 	var tunnel: Dictionary = world.get_meta("adventure_tunnel_plan", {})
 	if not tunnel.is_empty():
 		blocked.append(Vector2(float(tunnel.start) - CLEARANCE, float(tunnel.end) + CLEARANCE))

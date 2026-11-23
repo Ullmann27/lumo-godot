@@ -25,6 +25,7 @@ var pairwise := 0
 var envelopes: Array[Dictionary] = []
 var actual_drive: Array[Dictionary] = []
 var single_part_results: Array[Dictionary] = []
+var boundary_drive: Array[Dictionary] = []
 var game
 var output := ""
 
@@ -210,6 +211,95 @@ func _reset_drive(factors: Dictionary, initial: float = 0.0) -> void:
     game.player.set_meta("roadside_speed_factor", 1.0)
 
 
+
+func _record_boundary_drive(workshop, kart_id: String, label: String) -> void:
+    game.workshop = workshop
+    game.selected_kart = kart_id
+    game._refresh_kart_factors()
+    var factors: Dictionary = game.kart_factors.duplicate()
+    _check(factors == workshop.multipliers(kart_id), label + " reads actual workshop factors")
+    var peak := POWERTRAIN.top_speed(factors, POWERTRAIN.race_pace()) * POWERTRAIN.boost_scale(factors)
+    _reset_drive(factors, peak - 0.5)
+    game.boost_time = 1.0
+    game._drive_player(STEP, 0.0, 0.0)
+    var expected_peak := move_toward(peak - 0.5, peak,
+        STEP * POWERTRAIN.acceleration(factors, false) * POWERTRAIN.BOOST_ACCELERATION)
+    _check(absf(game.speed - expected_peak) < 0.01, label + " actual boosted target")
+    var measured_peak: float = game.speed
+    _reset_drive(factors, peak)
+    for tick in range(4):
+        game._drive_player(STEP, 0.0, 1.0)
+    var brake_rate := POWERTRAIN.acceleration(factors, true)
+    var expected_braked := peak - brake_rate * STEP * 4.0
+    _check(absf(game.speed - expected_braked) < 0.01, label + " actual full-speed braking")
+    var record := {"case": label, "kart": kart_id, "parts": workshop.mounted(kart_id),
+        "levels": workshop.levels.get(kart_id, {}).duplicate(), "fine": workshop.tune(kart_id),
+        "factors": factors, "boost_target_mps": peak, "actual_boost_mps": measured_peak,
+        "brake_deceleration_mps2": brake_rate, "speed_after_four_brake_ticks_mps": game.speed}
+    boundary_drive.append(record)
+    print("[KartEvolutionBoundary] ", JSON.stringify(record))
+
+
+func _high_speed_boundaries(workshop) -> void:
+    workshop.report_lifetime(10000)
+    var fastest: Dictionary = {
+        "engine": "lader", "tires": "slick", "wing": "flach", "booster": "kurz",
+        "suspension": "serie", "steering": "serie", "brakes": "leicht",
+        "gearbox": "lang", "ballast": "serie",
+    }
+    _check(workshop.unlock_parts(fastest), "boundary parts unlocked through real workshop")
+    _check(workshop.mount_parts("stella", fastest), "fastest joint speed/boost selection mounted")
+    workshop.set_tune("stella", {"pressure": 2, "wing_angle": -2, "gear": 2})
+    for upgrade in TUNING.PARTS:
+        for level_index in range(TUNING.MAX_LEVEL):
+            _check(workshop.upgrade("stella", str(upgrade.id)), "full Stella upgrade")
+    var full: Dictionary = workshop.multipliers("stella")
+    var full_peak := POWERTRAIN.top_speed(full, POWERTRAIN.race_pace()) * POWERTRAIN.boost_scale(full)
+    _check(absf(full_peak - 107.84237129825121) < 0.00001, "catalogue joint maximum boosted Stella")
+    _check(absf(POWERTRAIN.acceleration(full, true) - 83.664) < 0.00001, "full Stella with light brakes")
+    _record_boundary_drive(workshop, "stella", "full_stella_light_brakes")
+
+    # Keep the fastest engine/turbo upgrades but deliberately omit brake upgrades.
+    # This is the more demanding legal fast-build braking case.
+    workshop.refund("stella")
+    for upgrade in TUNING.PARTS:
+        if str(upgrade.id) == "bremsen":
+            continue
+        for level_index in range(TUNING.MAX_LEVEL):
+            _check(workshop.upgrade("stella", str(upgrade.id)), "fast Stella without brake upgrades")
+    var fast_weak: Dictionary = workshop.multipliers("stella")
+    _check(absf(POWERTRAIN.acceleration(fast_weak, true) - 71.904) < 0.00001,
+        "fastest build without brake upgrades uses its real weaker brakes")
+    _record_boundary_drive(workshop, "stella", "fast_stella_unupgraded_light_brakes")
+
+    # Per-slot positive minima yield the actual weakest catalogue brake, rather
+    # than assuming the 0.65 safety clamp is necessarily reachable.
+    var weakest: Dictionary = {}
+    for slot in CATALOG.SLOTS:
+        var chosen := "serie"
+        var best := INF
+        for part in CATALOG.options(slot):
+            var value := float(part.mul.get("brake", 1.0))
+            if value < best:
+                best = value
+                chosen = str(part.id)
+        weakest[slot] = chosen
+    var weakest_kart := ""
+    var lowest_brake := INF
+    for kart_id in FLEET.ids():
+        var factory := FLEET.multipliers(FLEET.base_stats(kart_id), FLEET.entry(kart_id).traits)
+        var candidate := POWERTRAIN.acceleration(CATALOG.apply(factory, weakest), true)
+        if candidate < lowest_brake:
+            lowest_brake = candidate
+            weakest_kart = kart_id
+    _check(absf(lowest_brake - 62.496) < 0.00001, "actual weakest reachable brake across fleet")
+    workshop.refund(weakest_kart)
+    workshop.reset_tune(weakest_kart)
+    _check(workshop.unlock_parts(weakest) and workshop.mount_parts(weakest_kart, weakest),
+        "weakest brake configuration mounted")
+    _record_boundary_drive(workshop, weakest_kart, "weakest_reachable_factory_brakes")
+
+
 func _actual_race() -> void:
     game = load("res://scenes/games/kart_island.tscn").instantiate()
     root.add_child(game)
@@ -265,6 +355,7 @@ func _actual_race() -> void:
         actual_drive.append({"parts": selected, "speed_after_18_ticks_mps": measured_accel,
             "turn_after_6_ticks_rad": turned, "drift_charge_after_6_ticks": game.drift_charge,
             "dyno": DYNO.measure(factors)})
+    _high_speed_boundaries(workshop)
     _check(await TEARDOWN.release_scene(self, game, "[KartEvolution]"), "scene and audio released")
     game = null
 
@@ -281,9 +372,10 @@ func _run() -> void:
             "engine": Engine.get_version_info().string, "checks": checks, "failures": failures,
             "total_catalogue_loadouts": CATALOG.combination_count(), "factor_extrema": envelopes,
             "pairwise_cases": pairwise, "sampled_complete_loadouts": sampled,
-            "real_race_setups": actual_drive, "single_part_comet": single_part_results,
+            "real_race_setups": actual_drive, "boundary_race_setups": boundary_drive,
+            "single_part_comet": single_part_results,
             "android_fps_verified": false}, "  "))
         file.close()
-    print("[KartEvolution] %s checks=%d pairwise=%d sampled=%d actual_race_setups=%d" %
-        ["PASS" if failures.is_empty() else "FAIL", checks, pairwise, sampled, actual_drive.size()])
+    print("[KartEvolution] %s checks=%d pairwise=%d sampled=%d actual_race_setups=%d boundary_race_setups=%d" %
+        ["PASS" if failures.is_empty() else "FAIL", checks, pairwise, sampled, actual_drive.size(), boundary_drive.size()])
     quit(0 if failures.is_empty() else 1)
