@@ -97,6 +97,11 @@ func _play_scene() -> void:
 	release.pressed = false
 	release.position = press.position
 	game.joystick._gui_input(release)
+	# InputEventScreenTouch inherits Resource. Drop both synthetic touch resources
+	# before the coroutine finishes so Godot's strict headless teardown has no
+	# test-owned resources alive when the process exits.
+	press = null
+	release = null
 	_check(game.player.position.distance_to(from) > 1.8, "live joystick and character collision move along the choice area")
 	await _capture("treasure_choose_route")
 	await _answer_at(game, 4)
