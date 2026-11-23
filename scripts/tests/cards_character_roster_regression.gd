@@ -41,7 +41,7 @@ func _run() -> void:
 	root.add_child(stage)
 	for index in range(expected.size()):
 		var id: String = expected[index]
-		var seat: Node3D = SEAT.new()
+		var seat = SEAT.new()
 		seat.name = "Seat_" + id
 		stage.add_child(seat)
 		var placed := Transform3D(Basis.IDENTITY, Vector3(float(index) * 2.5, 0, 0))
