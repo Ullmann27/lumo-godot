@@ -1,0 +1,119 @@
+extends SceneTree
+
+const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
+const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const GARAGE = preload("res://scripts/games/kart_garage_interior.gd")
+
+var checks := 0
+var failures: Array[String] = []
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _check(value: bool, label: String) -> void:
+	checks += 1
+	if not value:
+		failures.append(label)
+		print("[MeshyKart] FAIL: ", label)
+
+
+func _close_vec(a: Vector3, b: Vector3, epsilon := 0.002) -> bool:
+	return (
+		absf(a.x - b.x) <= epsilon
+		and absf(a.y - b.y) <= epsilon
+		and absf(a.z - b.z) <= epsilon
+	)
+
+
+func _vehicle(id: String) -> void:
+	var stock: Dictionary = FLEET.entry(id).look.duplicate(true)
+	var kart = PRODUCTION.new()
+	root.add_child(kart)
+	_check(kart.build(id, stock, stock), id + " production build")
+	_check(kart.design == id, id + " identity preserved")
+	_check(kart.variant == PRODUCTION.body_of(id), id + " mechanical platform preserved")
+	_check(kart.wheel_pivots.size() == 4, id + " four wheel pivots")
+	_check(kart.wheel_rotors.size() == 4, id + " four wheel rotors")
+	_check(kart.wheel_rest_grips.size() == 2, id + " driver grip anchors")
+	_check(kart.boost_positions.size() == 2, id + " boost anchors")
+	_check(is_instance_valid(kart.steering_wheel), id + " steering wheel")
+	_check(is_instance_valid(kart.meshy_close_mesh), id + " Meshy close shell")
+	_check(is_instance_valid(kart.stock_close_mesh), id + " stock close fallback")
+	_check(kart.meshy_shell_path == "res://assets/kart/production/meshy/%s.glb" % id,
+		id + " exact Meshy path")
+	_check(kart.source_paths.has(kart.meshy_shell_path), id + " source provenance")
+	if is_instance_valid(kart.meshy_close_mesh):
+		var source_size: Vector3 = kart.meshy_close_mesh.get_meta("fit_source_size", Vector3.ZERO)
+		var target_size: Vector3 = kart.meshy_close_mesh.get_meta("fit_target_size", Vector3.ZERO)
+		var fit_scale: Vector3 = kart.meshy_close_mesh.get_meta("fit_scale", Vector3.ZERO)
+		_check(source_size.x > 0.001 and source_size.y > 0.001 and source_size.z > 0.001,
+			id + " source bounds")
+		_check(target_size.x > 0.001 and target_size.y > 0.001 and target_size.z > 0.001,
+			id + " target bounds")
+		_check(fit_scale.x > 0.0 and fit_scale.y > 0.0 and fit_scale.z > 0.0,
+			id + " positive fit")
+		_check(
+			is_finite(fit_scale.x) and is_finite(fit_scale.y) and is_finite(fit_scale.z),
+			id + " finite fit"
+		)
+		var fitted := Vector3(
+			source_size.z * fit_scale.z,
+			source_size.y * fit_scale.y,
+			source_size.x * fit_scale.x
+		)
+		_check(_close_vec(fitted, target_size * PRODUCTION.MESHY_CLOSE_MARGIN, 0.003),
+			id + " fits proven body envelope")
+		_check(bool(kart.meshy_close_mesh.get_meta("mechanics_preserved", false)),
+			id + " visual-only mechanics marker")
+	kart.set_lod(0)
+	_check(kart.meshy_close_mesh.visible, id + " new shell visible at LOD0")
+	_check(not kart.stock_close_mesh.visible, id + " old LOD0 hidden under new shell")
+	_check(kart.visible_surface_count() > 0, id + " close surfaces")
+	kart.set_lod(1)
+	_check(not kart.meshy_close_mesh.visible, id + " Meshy shell leaves far LOD")
+	_check(kart.visible_surface_count() > 0, id + " proven LOD1 fallback")
+	kart.set_lod(2)
+	_check(kart.visible_surface_count() > 0, id + " proven LOD2 fallback")
+	kart.free()
+
+
+func _garage(profile: String) -> void:
+	var stage := Node3D.new()
+	var platter_parent := Node3D.new()
+	stage.add_child(platter_parent)
+	root.add_child(stage)
+	var result: Dictionary = GARAGE.build(stage, platter_parent, profile)
+	_check(result.has("root") and is_instance_valid(result.root), profile + " garage root")
+	if profile == "high":
+		_check(is_instance_valid(result.get("meshy_tool_bench")), "high Meshy tool workbench")
+		_check(is_instance_valid(result.get("meshy_turntable")), "high Meshy presentation turntable")
+		if is_instance_valid(result.get("meshy_tool_bench")):
+			_check(
+				str(result.meshy_tool_bench.get_meta("source_path", "")).ends_with("meshy_tool_workbench.glb"),
+				"high workbench source"
+			)
+		if is_instance_valid(result.get("meshy_turntable")):
+			_check(
+				str(result.meshy_turntable.get_meta("source_path", "")).ends_with("meshy_turntable.glb"),
+				"high turntable source"
+			)
+		var old_cabinet := result.root.find_child("ToolCabinet", true, false) as Node3D
+		_check(old_cabinet == null or not old_cabinet.visible, "high old cabinet hidden")
+	else:
+		_check(not is_instance_valid(result.get("meshy_tool_bench")), "low omits Meshy workbench")
+		_check(not is_instance_valid(result.get("meshy_turntable")), "low omits Meshy turntable")
+	stage.free()
+
+
+func _run() -> void:
+	_check(FLEET.ids().size() == 14, "fourteen canonical Karts")
+	for id in FLEET.ids():
+		_vehicle(id)
+	_garage("high")
+	_garage("low")
+	print("[MeshyKart] checks=", checks, " failures=", failures.size())
+	if failures.is_empty():
+		print("[MeshyKart] PASS: 14 fitted close shells, preserved chassis/LODs and high-detail garage props")
+	quit(0 if failures.is_empty() else 1)
