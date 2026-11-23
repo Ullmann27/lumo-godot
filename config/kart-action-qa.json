@@ -1,5 +1,5 @@
 {
-  "request": 10,
+  "request": 12,
   "probes": [
     "lumo_run_loop_regression",
     "kart_dyno_parts_regression",
