@@ -8,9 +8,17 @@ signal chosen(id: String, payload: Dictionary)
 const KIT = preload("res://scripts/games/cards/cards_ui_kit.gd")
 const ART = preload("res://scripts/games/cards/cards_deck_art.gd")
 const PORTRAITS := "res://assets/cards_table/portraits/%s.webp"
+const SHARED_DRIVER_PORTRAITS := "res://assets/kart/menu/drivers/%s.webp"
+const DRIVER_PORTRAIT_IDS := ["frog", "otter", "badger", "cat"]
 const SUIT_ICONS := "res://assets/cards_table/ui/suit_%s.webp"
 const ICONS := "res://assets/kart/ui3d/"
 const TILE_COLORS := {"stich": Color("956139"), "leiter": Color("34736c"), "quartett": Color("735982"), "ziel": Color("486a97")}
+
+static func portrait_path(id: String) -> String:
+	var shared := SHARED_DRIVER_PORTRAITS % id
+	if id in DRIVER_PORTRAIT_IDS and ResourceLoader.exists(shared):
+		return shared
+	return PORTRAITS % id
 
 var density := 1.0
 var compact := false
@@ -329,7 +337,7 @@ func set_plates(data: Array) -> void:
 	for player in range(data.size()):
 		var plate: Button = me_plate if player == 0 else plates[player - 1]
 		var entry: Dictionary = data[player]
-		plate.get_node("Row/Face").texture = KIT.texture(PORTRAITS % str(entry.get("portrait", "lumo")))
+		plate.get_node("Row/Face").texture = KIT.texture(portrait_path(str(entry.get("portrait", "lumo"))))
 		plate.get_node("Row/Text/Name").text = str(entry.get("name", ""))
 		plate.get_node("Row/Text/Info").text = str(entry.get("info", ""))
 		var extra: Label = plate.get_node("Row/Text/Extra")
@@ -944,7 +952,7 @@ func _score_rows(column: VBoxContainer, rows: Array) -> void:
 		var items := HBoxContainer.new()
 		items.add_theme_constant_override("separation", int(dp(8)))
 		line.add_child(items)
-		items.add_child(KIT.picture(PORTRAITS % str(row.portrait), 40 if not compact else 30, density))
+		items.add_child(KIT.picture(portrait_path(str(row.portrait)), 40 if not compact else 30, density))
 		var names := VBoxContainer.new()
 		names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		names.add_theme_constant_override("separation", -int(dp(2)))
