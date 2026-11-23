@@ -8,6 +8,7 @@ extends RefCounted
 
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
 const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 
 const START_S: float = 14.0
 const FINISH_MARGIN: float = 12.0
@@ -307,17 +308,26 @@ func _adopt_loop(layout: Dictionary) -> void:
 	var start: float = float(layout.start)
 	var lane: float = float(layout.lane)
 	var half: float = float(layout.get("deck_half_width", 1.2))
-	var exit_lane: float = lane + float(layout.get("exit_shift", 0.0))
+	var exit_lane: float = LOOP.exit_lane(layout)
+	var exit_s: float = LOOP.road_distance_at(layout, 1.0)
 	loop = {
 		"start": start,
 		"lane": lane,
 		"tolerance": half + 0.35,
-		"exit_s": start + 7.0,
+		"exit_s": exit_s,
 		"exit_lane": exit_lane,
 		"layout": layout,
 	}
-	_reserve(start - 52.0, start + 34.0)
-	# Rising quarter above the entry lane and descending quarter above the exit lane.
+	_reserve(start - 52.0, exit_s + 27.0)
+	if bool(layout.get("branch", false)):
+		# The exterior ring is reached by a separate approach and returns to
+		# the main road later. A child passing on the road must not be deflected
+		# into an invisible barrier where there is no physical loop foot.
+		_trail(start - 46.0, start - 3.0, 0.0, lane)
+		_star(exit_s + 1.2, exit_lane, STAR_HEIGHT, TUNING.GOLD_STAR_VALUE)
+		_trail(exit_s + 5.0, exit_s + 23.0, exit_lane, 0.0)
+		return
+	# On-road legacy rings still protect the main road from both loop feet.
 	zones.append(
 		{"s0": start - 0.5, "s1": start + 9.0, "lat0": lane - half - 0.45, "lat1": 99.0, "lead": 0.0, "rider": true}
 	)

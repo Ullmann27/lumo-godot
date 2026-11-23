@@ -455,8 +455,10 @@ func _step_loop(delta: float) -> void:
 	speed = move_toward(speed, TUNING.CRUISE + 2.0, TUNING.ACCELERATION * delta)
 	loop_u += speed * delta / LOOP.path_length(layout)
 	var u: float = clampf(loop_u, 0.0, 1.0)
-	s = float(loop.start) + (float(loop.exit_s) - float(loop.start)) * u
-	lat = float(loop.lane) + LOOP.exit_shift_of(layout) * LOOP.shift_fraction(u)
+	# Follow the same physical road-space geometry as the rendered Kart loop,
+	# including the exterior approach and its return (not a seven-metre hop).
+	s = LOOP.road_distance_at(layout, u)
+	lat = LOOP.lane_at(layout, u)
 	if loop_u >= 1.0:
 		loop_u = -1.0
 		s = float(loop.exit_s) + 0.3

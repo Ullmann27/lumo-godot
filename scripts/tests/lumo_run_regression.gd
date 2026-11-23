@@ -15,6 +15,7 @@ const COURSES = preload("res://scripts/games/run/run_courses.gd")
 const PLAN = preload("res://scripts/games/run/run_course_plan.gd")
 const SESSION = preload("res://scripts/games/run/run_session.gd")
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const ROUTES = preload("res://scripts/games/game_hub_routes.gd")
 const STEP: float = 1.0 / 60.0
 const CHILD: String = "lumo-run-regression"
@@ -625,6 +626,8 @@ func _test_obstacles_and_gaps() -> void:
 		_check(track.kept == kept, "a broken crate gives nothing the second time")
 	# The stunt loop.
 	if not plan.loop.is_empty():
+		_check(absf(float(plan.loop.exit_s) - LOOP.road_distance_at(plan.loop.layout, 1.0)) < 0.001,
+			"runner exits at the real loop branch's returned road position")
 		_teleport(game, float(plan.loop.start) - 12.0, float(plan.loop.lane), TUNING.CRUISE)
 		_until(game, func() -> bool: return player.loop_u >= 0.0, null, 200)
 		_check(player.loop_u >= 0.0, "arriving in the loop lane starts the loop")
@@ -639,7 +642,12 @@ func _test_obstacles_and_gaps() -> void:
 		_check(player.loop_u < 0.0 and player.grounded and player.s >= float(plan.loop.exit_s), "Lumo leaves the loop on the road")
 		_teleport(game, float(plan.loop.start) - 30.0, 1.0, TUNING.CRUISE)
 		_until(game, func() -> bool: return player.s > float(plan.loop.start) + 12.0, null, 400)
-		_check(player.loop_u < 0.0 and player.lat < 0.0, "Lumo is guided past the loop when he is not in its lane")
+		if bool(plan.loop.layout.get("branch", false)):
+			_check(player.loop_u < 0.0 and absf(player.lat - 1.0) < 0.3,
+				"Lumo stays on the open main-road lane beside the exterior ring")
+		else:
+			_check(player.loop_u < 0.0 and player.lat < 0.0,
+				"Lumo is guided past the on-road loop when he is not in its lane")
 	await _free_game(game)
 
 
