@@ -12,6 +12,7 @@ const STICK = preload("res://scripts/games/kart_joystick.gd")
 const WISPS = preload("res://scripts/creative/treasure_wisps.gd")
 const ADVENTURE = preload("res://scripts/creative/adventure_kit.gd")
 const OWN_VILLAGE = preload("res://scripts/creative/lumo_world_village.gd")
+const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 
 var model = STATE.new()
 var art = ART.new()
@@ -62,6 +63,7 @@ var lesson_index := 0
 var lesson_answers := 0
 var own_village: Node3D
 var portals: Array[Dictionary] = []
+var camera_clearance = CAMERA_CLEARANCE.new()
 
 
 func _ready() -> void:
@@ -95,6 +97,8 @@ func _ready() -> void:
 	_create_residents()
 	_create_traffic()
 	_create_portals()
+	var vegetation_roots: Array[Node3D] = [art.zones.Gartenlandschaft, own_village.region]
+	camera_clearance.attach(vegetation_roots)
 	wonder = WISPS.new()
 	wonder.name = "WorldGuidance"
 	wonder.set_reduced_motion(reduced_motion)
@@ -128,6 +132,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	camera_clearance.detach()
 	RUNTIME.restore(self, previous)
 
 
@@ -341,6 +346,13 @@ func _build_ui() -> void:
 	modal_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	modal_scroll.add_child(modal_box)
 	modal.hide()
+	# The interaction label changes while walking. Godot may grow a Button to
+	# its text minimum after this frame; keep its right edge fixed and then
+	# recalculate the whole column from the actual themed minimum sizes.
+	for button in [action_button, vehicle_button, run_button, map_button, exit_button]:
+		button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		button.minimum_size_changed.connect(func(): _layout.call_deferred())
+	mission_panel.minimum_size_changed.connect(func(): _layout.call_deferred())
 
 
 func _layout() -> void:
@@ -350,26 +362,35 @@ func _layout() -> void:
 	var size: Vector2 = safe_ui.size
 	var portrait := size.y > size.x
 	var margin := 12.0
-	var mission_width := maxf(240, size.x - 24)
+	exit_button.size = Vector2(maxf(80, exit_button.get_combined_minimum_size().x), maxf(50, exit_button.get_combined_minimum_size().y))
+	map_button.size = Vector2(maxf(104, map_button.get_combined_minimum_size().x), maxf(50, map_button.get_combined_minimum_size().y))
+	exit_button.position = Vector2(size.x - exit_button.size.x - margin, margin)
+	map_button.position = Vector2(exit_button.position.x - map_button.size.x - margin, margin)
+	var mission_width := maxf(48, size.x - margin * 2)
 	if not portrait:
-		mission_width = minf(610, size.x - 224)
+		mission_width = minf(610, maxf(48, map_button.position.x - margin * 2))
 	mission_panel.position = Vector2(margin, margin)
-	mission_panel.size = Vector2(mission_width, 138 if portrait else 110)
-	exit_button.position = Vector2(size.x - 92, 156 if portrait else 12)
-	exit_button.size = Vector2(80, 50)
-	map_button.position = Vector2(size.x - 208, 156 if portrait else 12)
-	map_button.size = Vector2(104, 50)
+	mission_panel.size = Vector2(mission_width, maxf(138 if portrait else 110, mission_panel.get_combined_minimum_size().y))
+	if portrait:
+		var top_actions_y := mission_panel.position.y + mission_panel.size.y + 6
+		exit_button.position.y = top_actions_y
+		map_button.position.y = top_actions_y
 	var stick_size: float = clampf(minf(size.x * 0.39, size.y * 0.44), 120, 180)
 	joystick.position = Vector2(margin, size.y - stick_size - margin)
 	joystick.size = Vector2.ONE * stick_size
+	var buttons: Array[Button] = [action_button, vehicle_button, run_button]
+	var heights := [54.0, 50.0, 50.0]
 	var button_width := 132.0
-	action_button.position = Vector2(size.x - button_width - margin, size.y - 180)
-	action_button.size = Vector2(button_width, 54)
-	vehicle_button.position = Vector2(size.x - button_width - margin, size.y - 120)
-	vehicle_button.size = Vector2(button_width, 50)
-	run_button.position = Vector2(size.x - button_width - margin, size.y - 64)
-	run_button.size = Vector2(button_width, 50)
-	status_label.position = Vector2(margin, 218 if portrait else 130)
+	for button in buttons:
+		button_width = maxf(button_width, ceilf(button.get_combined_minimum_size().x))
+	var button_bottom := size.y - 14
+	for index in range(buttons.size() - 1, -1, -1):
+		var button: Button = buttons[index]
+		button.size = Vector2(button_width, maxf(heights[index], button.get_combined_minimum_size().y))
+		button.position = Vector2(size.x - button.size.x - margin, button_bottom - button.size.y)
+		button_bottom = button.position.y - 6
+	var status_y := map_button.position.y + maxf(map_button.size.y, exit_button.size.y) + 12 if portrait else mission_panel.position.y + mission_panel.size.y + 8
+	status_label.position = Vector2(margin, status_y)
 	status_label.size = Vector2(size.x - 24, 70)
 	if size.y < 420:
 		status_label.position = Vector2(stick_size + 24, size.y - 82)
@@ -515,6 +536,7 @@ func _update_camera(delta: float) -> void:
 	camera.position = camera.position.lerp(desired, 1.0 - exp(-5.2 * delta))
 	if camera.position.distance_to(focus) > 0.2:
 		camera.look_at(focus, Vector3.UP)
+	camera_clearance.update(camera, focus, kart_body.get_instance_id() if driving else player.get_instance_id(), delta)
 
 
 func _traffic_tick(delta: float) -> void:
