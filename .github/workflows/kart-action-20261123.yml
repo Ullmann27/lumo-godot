@@ -1,0 +1,101 @@
+name: Lumo Kart action and live network verification
+on:
+  push:
+    branches: [integration/kart-action-20261123]
+    paths:
+      - config/kart-action-qa.json
+      - .github/workflows/kart-action-20261123.yml
+permissions:
+  contents: read
+concurrency:
+  group: kart-action-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  relay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact relay dependency
+        run: python -m pip install -r server/kart_online/requirements.txt
+      - name: Exercise actual WebSocket clients and server boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p kart-proof
+          git rev-parse HEAD > kart-proof/SOURCE-COMMIT.txt
+          python -m unittest discover -s server/kart_online -p test_relay.py -v 2>&1 | tee kart-proof/relay.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-relay-proof-${{ github.run_id }}
+          path: kart-proof/
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: 'true'
+      GALLIUM_DRIVER: llvmpipe
+      LP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lumo-kart-godot" kart-proof
+          curl --fail --location --retry 3 --max-time 180 \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            --output "$RUNNER_TEMP/lumo-kart-godot/engine.zip"
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/lumo-kart-godot/engine.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/lumo-kart-godot/engine.zip" -d "$RUNNER_TEMP/lumo-kart-godot"
+          mv "$RUNNER_TEMP/lumo-kart-godot/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/lumo-kart-godot/godot"
+          echo "$RUNNER_TEMP/lumo-kart-godot" >> "$GITHUB_PATH"
+          git rev-parse HEAD > kart-proof/SOURCE-COMMIT.txt
+      - name: Import actual complete project
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-first.log 2>&1 \
+            || godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-retry.log 2>&1
+      - name: Run selected physics and vehicle checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re, subprocess
+          config = json.loads(pathlib.Path('config/kart-action-qa.json').read_text())
+          results = []
+          for name in config['probes']:
+              assert re.fullmatch(r'[a-z0-9_]+', name), name
+              target = pathlib.Path('scripts/tests') / (name + '.gd')
+              assert target.is_file(), target
+              log = pathlib.Path('kart-proof') / (name + '.log')
+              try:
+                  with log.open('w') as stream:
+                      run = subprocess.run(['godot','--headless','--path','.','--script',
+                          'res://' + str(target)],stdout=stream,stderr=subprocess.STDOUT,timeout=360)
+                  output = log.read_text(errors='replace')
+                  failed = run.returncode != 0 or any(marker in output for marker in
+                      ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', '] FAIL'))
+                  results.append({'probe':name,'exit':run.returncode,'passed':not failed})
+                  print(output[-16000:],flush=True)
+              except subprocess.TimeoutExpired:
+                  results.append({'probe':name,'passed':False,'error':'timeout'})
+          pathlib.Path('kart-proof/native-results.json').write_text(json.dumps(results,indent=2))
+          if not results or not all(row['passed'] for row in results):
+              raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-native-proof-${{ github.run_id }}
+          path: kart-proof/
