@@ -418,6 +418,18 @@ func _order_flow() -> void:
 	await _idle(game)
 	_check(game.bubble_text.text.contains("Wer tut etwas?"), "order twin tip fits Satzbau")
 	_check(not game.bubble_text.text.contains("Was tut"), "order twin tip is not the verb question")
+	for word_index in [0, 2, 1, 3]:
+		game.tap_card(word_index)
+	_check(game.confirm() == "wrong", "twin order can be retried")
+	_check(game.feedback.text == "So stimmt der Satz noch nicht.", "order retry gives feedback")
+	_check(game.fox.teacher_pose.reaction == "encourage", "order retry encourages with the real rig")
+	_check(
+		_sentence_rail_contains(game, game.fox.teacher_pose.target),
+		"order retry directs Lumo to the sentence rail"
+	)
+	_check(game.plan.placed == [0, 2, 1, 3], "order retry preserves the child's sentence")
+	for word_index in [0, 2, 1, 3]:
+		game.tap_card(word_index)
 	for word_index in [0, 1, 2, 3]:
 		game.tap_card(word_index)
 	_check(game.confirm() == "correct", "Mia malt ein Bild.")
@@ -647,12 +659,23 @@ func _layouts() -> void:
 ## Eine falsche Antwort je Deutsch-Variante (löst die erste Hilfe aus).
 func _wrong_sentence(game: Node3D) -> void:
 	if game.plan.mode == "order":
+		_check(
+			_sentence_rail_contains(game, game.word_room.field_spot()),
+			"order feedback targets its real rail in every screen layout"
+		)
 		for index in game.plan.shuffled:
 			game.tap_card(index)
 	else:
 		game.tap_card(1)
 	game.confirm()
 	await process_frame
+
+
+func _sentence_rail_contains(game: Node3D, target: Vector3) -> bool:
+	var bounds := AABB(game.word_room.slots[0], Vector3.ZERO)
+	for slot: Vector3 in game.word_room.slots:
+		bounds = bounds.expand(slot)
+	return bounds.grow(0.01).has_point(target)
 
 
 ## Die 3D-Fläche bleibt gleich groß, egal wie lang Lumos Text oder die

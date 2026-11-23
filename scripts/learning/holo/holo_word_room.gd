@@ -462,7 +462,10 @@ func clear_highlights() -> void:
 		_glow(index, 0.0)
 
 
+## Lokales Antwortziel: Beim Satzbau ersetzt die Satzleiste das einzelne Feld.
 func field_spot() -> Vector3:
+	if mode == "order":
+		return Vector3(0.0, REST_Y, (slots[0].z + slots[-1].z) * 0.5)
 	var x := _field_width * 0.5 - _widest() * 0.5 - 0.2
 	return answer_field.position + Vector3(x, 0.66, 0.0)
 
