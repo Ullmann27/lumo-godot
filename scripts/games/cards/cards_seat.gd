@@ -13,10 +13,30 @@ const EMOTES := {
 	"idea": "res://assets/cards_table/ui/emote_idea.webp",
 	"ask": "res://assets/cards_table/ui/emote_ask.webp",
 }
-const NAMES := {"lumo": "Lumo", "lion": "Leo", "owl": "Eule Ella", "rabbit": "Nova", "squirrel": "Fips", "turtle": "Toni"}
+const NAMES := {
+	"lumo": "Lumo", "lion": "Leo", "owl": "Eule Ella", "rabbit": "Nova",
+	"squirrel": "Fips", "turtle": "Toni", "frog": "Frosch",
+	"otter": "Milo", "badger": "Dachs Bruno", "cat": "Mika",
+}
 const TINTS := {
 	"lumo": Color("ff9a3d"), "lion": Color("f4ae52"), "owl": Color("c7a585"),
 	"rabbit": Color("c0abff"), "squirrel": Color("f39154"), "turtle": Color("8fd16a"),
+	"frog": Color("64c987"), "otter": Color("75e6ce"), "badger": Color("8397b0"),
+	"cat": Color("d4b396"),
+}
+## Same game events, different personalities. Values intentionally stay subtle:
+## character identity comes from timing, gaze and posture rather than caricature.
+const PERSONALITIES := {
+	"lumo": {"tempo": 0.82, "sway": 0.75, "look": 0.78, "pride": 0.25},
+	"lion": {"tempo": 0.68, "sway": 0.72, "look": 0.72, "pride": 1.00},
+	"owl": {"tempo": 0.60, "sway": 0.45, "look": 0.62, "pride": 0.45},
+	"rabbit": {"tempo": 0.82, "sway": 0.82, "look": 0.92, "pride": 0.65},
+	"squirrel": {"tempo": 0.88, "sway": 0.90, "look": 0.90, "pride": 0.72},
+	"turtle": {"tempo": 0.54, "sway": 0.38, "look": 0.48, "pride": 0.52},
+	"frog": {"tempo": 0.78, "sway": 0.86, "look": 0.88, "pride": 0.76},
+	"otter": {"tempo": 0.62, "sway": 0.55, "look": 0.68, "pride": 0.58},
+	"badger": {"tempo": 0.58, "sway": 0.42, "look": 0.52, "pride": 0.70},
+	"cat": {"tempo": 0.66, "sway": 0.58, "look": 0.76, "pride": 0.96},
 }
 
 var kind := ""
@@ -49,7 +69,9 @@ var _bubble: Sprite3D
 var _bubble_tween: Tween
 var _clip := ""
 var _clip_left := 0.0
+var _clip_rate := 1.0
 var _hop := 0.0
+var _personality: Dictionary = PERSONALITIES.lumo
 
 
 ## Setzt die Figur auf ihren Platz. `seat` hat den Ursprung am Boden und
@@ -59,6 +81,7 @@ func setup(id: String, seat: Transform3D, index: int) -> bool:
 	seat_index = index
 	display_name = str(NAMES.get(id, id.capitalize()))
 	tint = TINTS.get(id, Color.WHITE)
+	_personality = PERSONALITIES.get(id, PERSONALITIES.lumo)
 	_is_lumo = id == "lumo"
 	transform = seat
 	_pivot = Node3D.new()
@@ -130,6 +153,9 @@ func _setup_lumo() -> bool:
 
 func _lumo_finished(_behavior: String) -> void:
 	if is_instance_valid(model) and not suspended:
+		_clip = ""
+		_clip_left = 0.0
+		_clip_rate = float(_personality.get("tempo", 0.72))
 		model.play_behavior("kart_seated")
 
 
@@ -162,7 +188,7 @@ func emote(what: String, seconds: float = 1.6) -> void:
 	_bubble.scale = Vector3.ONE * (1.0 if reduced_motion else 0.2)
 	_bubble_tween = create_tween()
 	if not reduced_motion:
-		_bubble_tween.tween_property(_bubble, "scale", Vector3.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		_bubble_tween.tween_property(_bubble, "scale", Vector3.ONE, 0.34).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_bubble_tween.tween_interval(seconds)
 	_bubble_tween.tween_callback(func() -> void: _bubble.visible = false)
 
@@ -183,43 +209,54 @@ func look_home() -> void:
 	_has_look = false
 
 
-## Stimmung: idle, think, happy, grumpy, play, wave, nod, point.
+## Stimmung: idle, think, happy, smug, grumpy, play, wave, nod, point.
+## "smug" ist der freundliche Siegerstolz der Mitspieler: kurz zurücklehnen,
+## Seitenblick, langsamer Jubel – selbstbewusst und lustig, nicht gehässig.
 func react(what: String) -> void:
 	if suspended:
 		return
 	mood = what
+	var tempo := float(_personality.get("tempo", 0.72))
 	match what:
 		"think":
 			_mood_left = 30.0
-			emote("think", 30.0)
+			emote("think", 2.8)
 		"happy":
-			_mood_left = 1.9
+			_mood_left = 2.8
 			_hop = 1.0
-			emote("happy", 1.5)
-			_play_clip("celebrate", 1.9)
+			emote("happy", 1.9)
+			_play_clip("celebrate", 2.8, maxf(0.58, tempo))
+		"smug":
+			_mood_left = 3.8
+			_hop = 0.35
+			emote("happy", 2.2)
+			_play_clip("celebrate", 3.6, maxf(0.48, tempo * 0.86))
 		"grumpy":
-			_mood_left = 1.5
-			emote("grumpy", 1.3)
+			_mood_left = 2.3
+			emote("grumpy", 1.7)
 		"play":
-			_mood_left = 0.55
+			_mood_left = 0.95
 			hide_emote()
 			# Mitspieler haben eine eigene „Karte legen"-Bewegung; Lumo lenkt kurz.
 			if not _is_lumo and player.has_animation("card_play"):
-				_play_clip("card_play", 0.9)
+				_play_clip("card_play", 1.15, maxf(0.62, tempo))
 			else:
-				_play_clip("kart_steer_right" if seat_index % 2 == 0 else "kart_steer_left", 0.55)
+				_play_clip("kart_steer_right" if seat_index % 2 == 0 else "kart_steer_left", 0.95, maxf(0.58, tempo))
 		"wave":
-			_mood_left = 1.8
-			_play_clip("greeting_wave", 1.8)
+			_mood_left = 2.4
+			_play_clip("greeting_wave", 2.4, maxf(0.55, tempo))
 		"nod":
-			_mood_left = 1.1
-			_play_clip("agree_nod", 1.1)
+			_mood_left = 1.55
+			_play_clip("agree_nod", 1.55, maxf(0.58, tempo))
 		"point":
-			_mood_left = 1.6
-			_play_clip("point_portal", 1.6)
+			_mood_left = 2.1
+			_play_clip("point_portal", 2.1, maxf(0.58, tempo))
 		_:
 			mood = "idle"
 			_mood_left = 0.0
+			_clip = ""
+			_clip_left = 0.0
+			_clip_rate = tempo
 			hide_emote()
 
 
@@ -230,18 +267,22 @@ func calm() -> void:
 		hide_emote()
 
 
-func _play_clip(clip: String, seconds: float) -> void:
+func _play_clip(clip: String, seconds: float, rate := 1.0) -> void:
 	if not usable() or reduced_motion:
 		return
+	_clip = clip
+	_clip_left = seconds
+	_clip_rate = clampf(rate, 0.45, 1.0)
 	if _is_lumo:
 		if model.CLIPS.has(clip):
 			model.play_behavior(clip)
 		return
 	if not player.has_animation(clip):
+		_clip = ""
+		_clip_left = 0.0
+		_clip_rate = float(_personality.get("tempo", 0.72))
 		return
-	_clip = clip
-	_clip_left = seconds
-	player.play(clip, 0.15)
+	player.play(clip, 0.28)
 
 
 func set_suspended(value: bool) -> void:
@@ -264,12 +305,18 @@ func advance(delta: float) -> void:
 		_mood_left -= step
 		if _mood_left <= 0.0:
 			mood = "idle"
-	player.advance(step)
-	if not _is_lumo and not _clip.is_empty():
+	var idle_rate := float(_personality.get("tempo", 0.72))
+	var animation_rate := _clip_rate if not _clip.is_empty() else idle_rate
+	player.advance(step * animation_rate)
+	if not _clip.is_empty():
 		_clip_left -= step
 		if _clip_left <= 0.0:
 			_clip = ""
-			player.play("kart_seated", 0.25)
+			_clip_rate = idle_rate
+			if not _is_lumo:
+				player.play("kart_seated", 0.35)
+			elif is_instance_valid(model):
+				model.play_behavior("kart_seated")
 	if _is_lumo:
 		for bone: int in _legs:
 			skeleton.set_bone_pose_rotation(bone, _legs[bone])
@@ -292,15 +339,25 @@ func _apply_look(step: float) -> void:
 		var flat := Vector2(local.x, local.z).length()
 		goal.x = clampf(atan2(-local.x, -local.z), -1.0, 1.0)
 		goal.y = clampf(atan2(local.y, maxf(flat, 0.001)), -0.5, 0.35)
+	var look_gain := float(_personality.get("look", 0.72))
+	# Slow micro-saccades keep seated characters alive even between turns.
+	if mood == "idle":
+		goal += Vector2(
+			0.045 * sin(_clock * 0.43 + seat_index * 0.8),
+			0.022 * sin(_clock * 0.31 + seat_index)
+		) * look_gain
 	match mood:
 		"think":
-			goal += Vector2(0.22 * sin(_clock * 0.9), 0.16 + 0.05 * sin(_clock * 1.7))
+			goal += Vector2(0.16 * sin(_clock * 0.55), 0.13 + 0.035 * sin(_clock * 0.85)) * look_gain
 		"grumpy":
-			goal += Vector2(0.28 * sin(_clock * 15.0), -0.32)
+			goal += Vector2(0.10 * sin(_clock * 2.2), -0.20) * look_gain
 		"happy":
-			goal.y += 0.2
+			goal += Vector2(0.04 * sin(_clock * 1.4), 0.13) * look_gain
+		"smug":
+			var side := -1.0 if seat_index % 2 == 0 else 1.0
+			goal += Vector2(side * (0.18 + 0.04 * sin(_clock * 0.8)), 0.10) * look_gain
 	_look_goal = goal
-	var blend := 1.0 if reduced_motion else clampf(step * 7.0, 0.0, 1.0)
+	var blend := 1.0 if reduced_motion else clampf(step * (3.8 + look_gain * 1.4), 0.0, 1.0)
 	_look = _look.lerp(_look_goal, blend)
 	# Drehung im Raum der Figur, verteilt auf Hals und Kopf.
 	var to_skeleton := (skeleton.global_basis.inverse() * global_basis).orthonormalized()
@@ -333,25 +390,44 @@ func _apply_look(step: float) -> void:
 func _apply_body(step: float) -> void:
 	var lean := 0.0
 	var sway := 0.0
+	var turn := 0.0
 	var lift := 0.0
-	var breath := 0.012 * sin(_clock * 1.6)
+	var sway_gain := float(_personality.get("sway", 0.7))
+	var pride := float(_personality.get("pride", 0.5))
+	var breath := 0.008 * sin(_clock * 1.05 + seat_index * 0.4)
+	# A tiny weight shift is always present; reactions then grow from it.
+	if mood == "idle":
+		sway = 0.012 * sin(_clock * 0.64 + seat_index) * sway_gain
+		turn = 0.010 * sin(_clock * 0.41 + seat_index * 0.7) * sway_gain
 	match mood:
 		"think":
-			lean = -0.05
-			sway = 0.035 * sin(_clock * 1.1)
+			lean = -0.045
+			sway = 0.020 * sin(_clock * 0.65) * sway_gain
+			turn = 0.018 * sin(_clock * 0.42 + seat_index)
 		"grumpy":
-			lean = -0.09
-			sway = 0.05 * sin(_clock * 17.0) * clampf(_mood_left, 0.0, 1.0)
+			lean = -0.055
+			sway = 0.024 * sin(_clock * 2.25) * sway_gain
+			turn = -0.035 * sin(_clock * 1.05 + seat_index)
 		"play":
-			lean = -0.16 * sin(clampf(_mood_left / 0.55, 0.0, 1.0) * PI)
+			lean = -0.11 * sin(clampf(_mood_left / 0.95, 0.0, 1.0) * PI)
 		"happy":
-			lift = 0.10 * absf(sin(_clock * 9.0)) * clampf(_mood_left / 1.2, 0.0, 1.0)
+			lift = 0.050 * absf(sin(_clock * 3.2)) * clampf(_mood_left / 1.8, 0.0, 1.0)
+			sway = 0.030 * sin(_clock * 1.7) * sway_gain
+		"smug":
+			# Comedic winner confidence: lean back, turn a shoulder, hold the pose.
+			var side := -1.0 if seat_index % 2 == 0 else 1.0
+			lean = 0.045 + 0.035 * pride
+			sway = side * (0.025 + 0.025 * pride) + 0.012 * sin(_clock * 1.15)
+			turn = side * (0.055 + 0.075 * pride)
+			lift = 0.018 * absf(sin(_clock * 1.7))
 	if reduced_motion:
 		lift = 0.0
 		sway = 0.0
+		turn = 0.0
 		breath = 0.0
-	var blend := 1.0 if reduced_motion else clampf(step * 9.0, 0.0, 1.0)
+	var blend := 1.0 if reduced_motion else clampf(step * 4.4, 0.0, 1.0)
 	_pivot.rotation.x = lerpf(_pivot.rotation.x, lean, blend)
+	_pivot.rotation.y = lerp_angle(_pivot.rotation.y, turn, blend)
 	_pivot.rotation.z = lerpf(_pivot.rotation.z, sway, blend)
 	_pivot.position.y = lerpf(_pivot.position.y, lift, blend)
 	_pivot.scale = Vector3(1.0 - breath * 0.5, 1.0 + breath, 1.0 - breath * 0.5)
