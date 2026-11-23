@@ -655,14 +655,28 @@ func _build_world() -> void:
 	var colors: Array[Color] = [Color("75d7f1"), Color("a696ee"), Color("83dab9"), Color("c8d8ef"), Color("6987db")]
 	var reference_rivals: bool = OPPONENT_ROSTER.ready_for_race()
 	if reference_rivals:
-		var roster := OPPONENT_ROSTER.for_game("kart")
-		var frog_index := roster.find_custom(func(entry: Dictionary) -> bool: return entry.id == "frog")
-		if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog" and frog_index >= animals.size():
-			# Keep the five starting positions and the cup lineup stable.
-			roster[animals.size() - 1] = roster[frog_index]
-		for index in range(animals.size()):
-			animals[index] = str(roster[index].id)
-			colors[index] = Color(str(roster[index].color))
+		# Five opponents stay the race budget, but the larger shared cast rotates
+		# deterministically by track instead of silently using the first five forever.
+		var roster := OPPONENT_ROSTER.rotation("kart", int(track_id.hash()))
+		var chosen: Array[Dictionary] = []
+		for entry: Dictionary in roster:
+			if str(entry.id) == selected_driver:
+				continue
+			chosen.append(entry)
+			if chosen.size() == animals.size():
+				break
+		if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog":
+			var has_frog := chosen.any(func(entry: Dictionary) -> bool: return str(entry.id) == "frog")
+			if not has_frog:
+				var frog_index := roster.find_custom(func(entry: Dictionary) -> bool: return str(entry.id) == "frog")
+				if frog_index >= 0 and not chosen.is_empty():
+					chosen[chosen.size() - 1] = roster[frog_index]
+		if chosen.size() == animals.size():
+			for index in range(animals.size()):
+				animals[index] = str(chosen[index].id)
+				colors[index] = Color(str(chosen[index].color))
+		else:
+			reference_rivals = false
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
@@ -4588,10 +4602,13 @@ func _show_result() -> void:
 	var primary: Button
 	var secondary: Button
 	if mode == "cup":
-		var names: Array[String] = [str(CATALOG.entry(CATALOG.DRIVERS, selected_driver).name), "Milo", "Nova", "Borin", "Yuki", "Fynn"]
+		var names: Array[String] = [str(CATALOG.entry(CATALOG.DRIVERS, selected_driver).name)]
+		for rival_index in range(opponents.size()):
+			names.append(_rival_display_name(rival_index))
 		var standings: Array[Dictionary] = []
 		for i in range(cup_points.size()):
-			standings.append({"name": names[i], "points": cup_points[i], "id": i, "me": i == 0})
+			var standing_name := names[i] if i < names.size() else "Rivale"
+			standings.append({"name": standing_name, "points": cup_points[i], "id": i, "me": i == 0})
 		standings.sort_custom(func(a: Dictionary, b: Dictionary): return int(a.points) > int(b.points))
 		modal_column.add_child(RESULT_WIDGETS.Standings.new().setup(standings))
 	if pending_cup_next:
