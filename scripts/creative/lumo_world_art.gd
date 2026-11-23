@@ -187,13 +187,8 @@ func _school_entrance(root: Node3D, school: StaticBody3D) -> void:
 	slab.material_override = ADVENTURE.material("stone_block")
 	kit.collision(porch, at, Vector3(width, 0.16, landing_depth))
 	var top_z := landing_center.z + landing_depth * 0.5 - 0.06
-	# Keep the school entrance comfortably walkable for the CharacterBody.
-	# A fixed world Z made the slope depend on the imported model's AABB scale
-	# and could push the ramp beyond the normal floor angle. Derive its run
-	# from the actual landing height so every authored scale stays gentle.
-	var ramp_run: float = maxf(5.0, landing_height * 4.0)
-	var bottom_z: float = top_z + ramp_run
-	var run: float = bottom_z - top_z
+	var bottom_z := -22.8
+	var run := bottom_z - top_z
 	var ramp := StaticBody3D.new()
 	ramp.name = "SchoolEntranceRamp"
 	ramp.position = Vector3(school.position.x, landing_height * 0.5, (bottom_z + top_z) * 0.5)
