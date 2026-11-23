@@ -1,7 +1,8 @@
 """Authenticated, bounded two-player WebSocket relay for Lumo Kart.
 
-Only active sessions are kept. A public Alias#ID comes from a random 256-bit
-device key; every connection proves possession of that key over TLS.
+Names and mutually accepted friendships are stored in SQLite on a durable
+volume. A random 256-bit device key proves identity over TLS; its one-way hash
+identifies the account internally. Only active race sessions are in memory.
 No credentials, payloads or IP addresses are written to application logs.
 
 The server owns invitations, course agreement, the shared clock and result
@@ -24,6 +25,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from aiohttp import WSMsgType, web
+from storage import Store, StoreError
 
 PROTOCOL = 1
 MAX_PACKET = 4096
@@ -39,8 +41,7 @@ TRACKS = frozenset((
     "galaxy_ringway", "desert_drift", "learning_lab", "jungle_emerald_3600",
     "riesengarten_2400", "windwerk_3000",
 ))
-ALIAS_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]{2,15}\Z")
-HANDLE_RE = re.compile(r"([A-Za-z][A-Za-z0-9_]{2,15})#([0-9a-f]{16})\Z")
+ALIAS_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]{2,19}\Z")
 KEY_RE = re.compile(r"[0-9a-f]{64}\Z")
 ID_RE = re.compile(r"[a-z0-9_]{1,40}\Z")
 VERSION_RE = re.compile(r"[a-z0-9_:.-]{1,64}\Z")
@@ -52,7 +53,7 @@ def now_ms() -> int:
 
 
 def device_id(key: str) -> str:
-    return hashlib.sha256(bytes.fromhex(key)).hexdigest()[:16]
+    return hashlib.sha256(bytes.fromhex(key)).hexdigest()
 
 
 def finite(value: Any, low: float, high: float) -> bool:
@@ -84,6 +85,7 @@ def clean_info(raw: Any) -> dict[str, Any] | None:
 class Peer:
     ws: web.WebSocketResponse
     uid: str = ""
+    address: str = ""
     handle: str = ""
     room: str = ""
     started: float = field(default_factory=time.monotonic)
@@ -128,7 +130,9 @@ class Room:
 
 
 class Relay:
-    def __init__(self, *, start_delay_ms: int = 4500) -> None:
+    def __init__(self, database_path: str, *, start_delay_ms: int = 4500) -> None:
+        self.store = Store(database_path)
+        self.registrations: dict[str, deque[float]] = defaultdict(deque)
         self.peers: dict[str, Peer] = {}
         self.sockets: set[Peer] = set()
         self.invites: dict[str, Invitation] = {}
@@ -161,7 +165,7 @@ class Relay:
         ws = web.WebSocketResponse(max_msg_size=MAX_PACKET, heartbeat=15.0, autoping=True,
                                    compress=False, receive_timeout=45.0)
         await ws.prepare(request)
-        peer = Peer(ws)
+        peer = Peer(ws, address=address)
         self.sockets.add(peer)
         self.ip_connections[address] += 1
         try:
@@ -219,6 +223,25 @@ class Relay:
                 await self.send(peer, {"t": "pong", "client_ms": stamp, "server_ms": now_ms()})
             else:
                 await self.bad(peer, "invalid_packet")
+        elif kind == "friend_request":
+            await self.request_friend(peer, message)
+        elif kind == "friend_accept":
+            await self.accept_friend(peer, message)
+        elif kind == "friend_decline":
+            self.store.decline_friend(peer.uid, str(message.get("request", "")))
+            await self.send_friend_requests(peer)
+        elif kind == "friends":
+            await self.send_friends(peer)
+            await self.send_friend_requests(peer)
+        elif kind == "friend_remove":
+            target = str(message.get("id", ""))
+            if peer.room:
+                await self.error(peer, "already_in_room")
+                return
+            self.store.remove_friend(peer.uid, target)
+            await self.send_friends(peer)
+            if target in self.peers:
+                await self.send_friends(self.peers[target])
         elif kind == "invite":
             await self.invite(peer, message)
         elif kind == "accept":
@@ -253,25 +276,84 @@ class Relay:
             await self.error(peer, "identity_already_online")
             await peer.ws.close(code=1008)
             return
+        if self.store.account(uid) is None:
+            recent = self.registrations[peer.address]
+            now = time.monotonic()
+            while recent and recent[0] < now - 3600.0:
+                recent.popleft()
+            if len(recent) >= 10:
+                await self.error(peer, "registration_limited")
+                return
+            recent.append(now)
+        try:
+            account = self.store.register(uid, alias)
+        except StoreError as error:
+            await self.error(peer, str(error))
+            return
         peer.uid = uid
-        peer.handle = f"{alias}#{uid}"
+        peer.handle = account["username"]
         self.peers[uid] = peer
         await self.send(peer, {"t": "welcome", "v": PROTOCOL, "id": uid,
                                "handle": peer.handle, "server_ms": now_ms()})
+        await self.send_friends(peer)
+        await self.send_friend_requests(peer)
+        await self.notify_presence(peer.uid)
+
+    async def send_friends(self, peer: Peer) -> None:
+        friends = [{**account, "online": account["uid"] in self.peers}
+                   for account in self.store.friends(peer.uid)]
+        await self.send(peer, {"t": "friends", "friends": friends})
+
+    async def send_friend_requests(self, peer: Peer) -> None:
+        await self.send(peer, {"t": "friend_requests", "requests": self.store.requests(peer.uid)})
+
+    async def notify_presence(self, uid: str) -> None:
+        for friend in self.store.friends(uid):
+            if friend["uid"] in self.peers:
+                await self.send_friends(self.peers[friend["uid"]])
+
+    async def request_friend(self, peer: Peer, message: dict[str, Any]) -> None:
+        username = message.get("username")
+        if not isinstance(username, str) or not ALIAS_RE.fullmatch(username):
+            await self.error(peer, "invalid_username")
+            return
+        if not peer.allowed("friend_request", 5, 60.0):
+            await self.error(peer, "invite_limit")
+            return
+        try:
+            request = self.store.request_friend(peer.uid, username)
+        except StoreError as error:
+            await self.error(peer, str(error))
+            return
+        await self.send(peer, {"t": "friend_request_sent", "username": request["username"]})
+        target = self.peers.get(request["uid"])
+        if target is not None:
+            await self.send_friend_requests(target)
+
+    async def accept_friend(self, peer: Peer, message: dict[str, Any]) -> None:
+        try:
+            sender_id = self.store.accept_friend(peer.uid, str(message.get("request", "")))
+        except StoreError as error:
+            await self.error(peer, str(error))
+            return
+        await self.send_friend_requests(peer)
+        await self.send_friends(peer)
+        if sender_id in self.peers:
+            await self.send_friend_requests(self.peers[sender_id])
+            await self.send_friends(self.peers[sender_id])
 
     async def invite(self, peer: Peer, message: dict[str, Any]) -> None:
-        handle = message.get("to")
-        match = HANDLE_RE.fullmatch(handle) if isinstance(handle, str) else None
+        uid = message.get("to")
         info, track = clean_info(message.get("info")), message.get("track")
-        if match is None or info is None or not isinstance(track, str) or track not in TRACKS:
+        if (not isinstance(uid, str) or not KEY_RE.fullmatch(uid) or info is None
+                or not isinstance(track, str) or track not in TRACKS):
             await self.bad(peer, "invalid_invitation")
             return
         if peer.room:
             await self.error(peer, "already_in_room")
             return
-        uid = match[2]
-        if uid == peer.uid:
-            await self.error(peer, "cannot_invite_self")
+        if not self.store.is_friend(peer.uid, uid):
+            await self.error(peer, "not_friends")
             return
         target = self.peers.get(uid)
         if target is None:
@@ -435,6 +517,8 @@ class Relay:
         if peer.uid and self.peers.get(peer.uid) is peer:
             del self.peers[peer.uid]
         await self.leave_room(peer, "connection_lost")
+        if peer.uid:
+            await self.notify_presence(peer.uid)
         for key, invitation in tuple(self.invites.items()):
             if invitation.sender is peer or invitation.target is peer:
                 del self.invites[key]
@@ -443,6 +527,12 @@ class Relay:
 
     async def sweep(self) -> None:
         now = time.monotonic()
+        for address, recent in tuple(self.registrations.items()):
+            while recent and recent[0] < now - 3600.0:
+                recent.popleft()
+            if not recent:
+                del self.registrations[address]
+        self.store.expire_requests()
         for peer in tuple(self.sockets):
             if not peer.uid and now - peer.started > 10.0:
                 await peer.ws.close(code=1008, message=b"authentication timeout")
@@ -472,9 +562,9 @@ class Relay:
         await asyncio.gather(*(p.ws.close(code=1001, message=b"server restart") for p in tuple(self.sockets)))
 
 
-def make_app(*, start_delay_ms: int = 4500) -> web.Application:
+def make_app(*, database_path: str = ":memory:", start_delay_ms: int = 4500) -> web.Application:
     app = web.Application(client_max_size=MAX_PACKET)
-    relay = Relay(start_delay_ms=start_delay_ms)
+    relay = Relay(database_path, start_delay_ms=start_delay_ms)
     app[APP_RELAY] = relay
     app.router.add_get("/ws", relay.websocket)
 
@@ -484,10 +574,18 @@ def make_app(*, start_delay_ms: int = 4500) -> web.Application:
     app.router.add_get("/health", health)
     app.on_startup.append(relay.start)
     app.on_shutdown.append(relay.stop)
+
+    async def close_store(_app: web.Application) -> None:
+        relay.store.close()
+
+    app.on_cleanup.append(close_store)
     return app
 
 
 if __name__ == "__main__":
     # Local by default. Public hosting must set HOST and terminate HTTPS/WSS.
-    web.run_app(make_app(), host=os.environ.get("HOST", "127.0.0.1"),
+    database = os.environ.get("LUMO_DATABASE_PATH", "data/lumo-kart.sqlite3")
+    if database == ":memory:":
+        raise SystemExit("Production requires a persistent LUMO_DATABASE_PATH")
+    web.run_app(make_app(database_path=database), host=os.environ.get("HOST", "127.0.0.1"),
                 port=int(os.environ.get("PORT", "8765")), access_log=None)

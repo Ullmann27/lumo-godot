@@ -23,6 +23,7 @@ var status_label: Label
 var alias_edit: LineEdit
 var target_edit: LineEdit
 var result_row: Control
+var online_caption: Label
 var pending_invites: Array[Dictionary] = []
 var _start_pending: bool = false
 var _race_result_id: String = ""
@@ -31,13 +32,15 @@ var _refresh_queued: bool = false
 var _ready_ids: Array = []
 
 
-func setup(owner_island: Node, url: String) -> void:
+func setup(owner_island: Node, url: String, child_key: String = "standalone") -> void:
 	island = owner_island
 	session = SESSION.new()
 	session.name = "KartOnlineSession"
 	add_child(session)
 	session.status_changed.connect(_on_status)
 	session.invitation_received.connect(_on_invitation)
+	session.friends_changed.connect(_queue_refresh)
+	session.friend_requests_changed.connect(_queue_refresh)
 	session.invitation_expired.connect(_on_invitation_expired)
 	session.room_joined.connect(func(_room: Dictionary): pending_invites.clear(); _queue_refresh())
 	session.ready_changed.connect(func(ids: Array): _ready_ids = ids; _queue_refresh())
@@ -46,7 +49,7 @@ func setup(owner_island: Node, url: String) -> void:
 	session.friend_finished.connect(func(_time: float): _refresh_result())
 	session.result_received.connect(func(_result: Dictionary): _refresh_result())
 	session.friend_left.connect(_on_friend_left)
-	_configured = session.configure(url)
+	_configured = session.configure(url, child_key)
 	entry = Button.new()
 	entry.name = "KartOnlineEntry"
 	entry.text = "Online-Rennen"
@@ -68,7 +71,8 @@ func _process(_delta: float) -> void:
 	if is_instance_valid(entry):
 		var landing: Variant = island.get("reference_landing")
 		entry.visible = bool(island.menu_active) and not is_instance_valid(overlay) and is_instance_valid(landing) and bool(landing.visible)
-		entry.text = "Einladung (%d)" % pending_invites.size() if not pending_invites.is_empty() else "Online-Rennen"
+		var count: int = pending_invites.size() + session.friend_requests.size()
+		entry.text = "Anfragen (%d)" % count if count > 0 else "Online-Rennen"
 	if active and bool(island.menu_active):
 		leave_race()
 	if active and not bool(island.menu_active):
@@ -77,6 +81,7 @@ func _process(_delta: float) -> void:
 			island.elapsed = session.race_seconds()
 		if bool(island.finished) or bool(island.paused):
 			_update_remote()
+		_push_online_hud()
 
 
 func _info() -> Dictionary:
@@ -160,8 +165,8 @@ func _refresh_lobby() -> void:
 		column.remove_child(child)
 		child.queue_free()
 	_text("Online-Rennen", 34, true)
-	_text("Fahre live mit einem Freund: Name eingeben, Einladung annehmen, beide bereit – los!", 22)
-	_text("Dein Spielername: " + str(session.username), 24, true)
+	_text("Verknüpfe dich mit deinen Freunden und fahrt live gegeneinander.", 22)
+	_text("Dein Spielername: " + str(session.username) if not str(session.username).is_empty() else "Wähle einmal deinen festen Spielernamen.", 24, true)
 	status_label = _text(str(session.status_text), 23)
 	status_label.name = "KartOnlineStatus"
 	if not _configured:
@@ -171,12 +176,14 @@ func _refresh_lobby() -> void:
 		alias_edit.name = "KartOnlineAlias"
 		alias_edit.text = session.alias
 		alias_edit.placeholder_text = "Dein Fantasiename"
-		alias_edit.max_length = 16
+		alias_edit.max_length = 20
+		alias_edit.editable = not session.registered
 		alias_edit.custom_minimum_size = Vector2(0, 68)
 		alias_edit.add_theme_font_size_override("font_size", 26)
 		column.add_child(alias_edit)
-		_text("3–16 Buchstaben, Ziffern oder Unterstriche. Die Kennung nach # bleibt auf diesem Gerät gleich.", 20)
-		_button("Verbinden", _connect)
+		_text("3–20 Buchstaben, Ziffern oder Unterstriche. Dein Online-Name ist unabhängig von deinem Lernprofil und wird fest reserviert.", 20)
+		_button("Verbinden" if session.registered else "Spielername anlegen und verbinden", _connect)
+		_show_friend_list(false)
 	elif session.state == "connecting":
 		_button("Verbindung abbrechen", func(): session.disconnect_online())
 	elif session.state == "lobby":
@@ -199,28 +206,19 @@ func _refresh_lobby() -> void:
 		_button("Jetzt nicht", func(): session.decline(invite_id); _on_invitation_expired(invite_id))
 	else:
 		_text("Gewählte Strecke: " + _track_name(_selected_track()), 25, true)
+		_text("Freund hinzufügen", 24, true)
 		target_edit = LineEdit.new()
 		target_edit.name = "KartOnlineFriendName"
-		target_edit.placeholder_text = "Name#Kennung deines Freundes"
-		target_edit.max_length = 33
+		target_edit.placeholder_text = "Spielername, z. B. Zoe_04"
+		target_edit.max_length = 20
 		target_edit.custom_minimum_size = Vector2(0, 68)
 		target_edit.add_theme_font_size_override("font_size", 25)
 		column.add_child(target_edit)
-		var invite_button := _button("Zum Rennen einladen", _invite_typed)
-		invite_button.name = "KartOnlineInvite"
-		if not session.friends.is_empty():
-			_text("Deine verknüpften Freunde", 24, true)
-			for handle in session.friends:
-				var friend_handle: String = str(handle)
-				var row := HBoxContainer.new()
-				row.add_theme_constant_override("separation", 12)
-				column.add_child(row)
-				var invite_friend := _make_button(friend_handle, func(): session.invite(friend_handle, _selected_track(), _info()))
-				invite_friend.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-				row.add_child(invite_friend)
-				var remove_friend := _make_button("Entfernen", func(): session.forget_friend(friend_handle); _queue_refresh())
-				row.add_child(remove_friend)
-		_text("Beide bleiben hier online. Nur wer deinen vollständigen Namen kennt, kann dich einladen. Kein Chat.", 20)
+		var request_button := _button("Freundschaftsanfrage senden", _request_typed)
+		request_button.name = "KartOnlineFriendRequest"
+		_show_friend_requests()
+		_show_friend_list(true)
+		_text("Erst nehmt ihr die Freundschaft an. Danach wählt ihr ein Rennen. Es gibt keinen Chat.", 20)
 		_button("Verbindung trennen", func(): session.disconnect_online())
 	_button("Zurück zu Lumo Kart", close_lobby)
 
@@ -234,9 +232,48 @@ func _connect() -> void:
 	session.connect_online()
 
 
-func _invite_typed() -> void:
+func _request_typed() -> void:
 	if is_instance_valid(target_edit):
-		session.invite(target_edit.text.strip_edges(), _selected_track(), _info())
+		session.request_friend(target_edit.text.strip_edges())
+
+
+func _show_friend_requests() -> void:
+	if session.friend_requests.is_empty():
+		return
+	_text("Freundschaftsanfragen", 24, true)
+	for request in session.friend_requests:
+		var request_id: String = str(request.request_id)
+		var username: String = str(request.username)
+		_text(username + " möchte dein Freund sein.", 22)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 12)
+		column.add_child(row)
+		var accept_button := _make_button("Annehmen", func(): session.accept_friend(request_id))
+		accept_button.name = "KartOnlineAcceptFriend"
+		row.add_child(accept_button)
+		row.add_child(_make_button("Ablehnen", func(): session.decline_friend(request_id)))
+
+
+func _show_friend_list(connected: bool) -> void:
+	_text("Deine Freunde", 24, true)
+	if session.friends.is_empty():
+		_text("Hier erscheinen eure bestätigten Freundschaften.", 21)
+		return
+	for friend_info in session.friends:
+		var friend_id: String = str(friend_info.uid)
+		var friend_name: String = str(friend_info.username)
+		var available: bool = connected and bool(friend_info.get("online", false))
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 12)
+		column.add_child(row)
+		var invite_button := _make_button(friend_name + (" · ONLINE · Rennen einladen" if available else " · OFFLINE"),
+			func(): session.invite(friend_id, _selected_track(), _info()))
+		invite_button.name = "KartOnlineInviteFriend"
+		invite_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		invite_button.disabled = not available
+		row.add_child(invite_button)
+		if connected:
+			row.add_child(_make_button("Entfernen", func(): session.forget_friend(friend_id)))
 
 
 func _on_status(_state: String, text: String) -> void:
@@ -335,6 +372,17 @@ func build_remote(race_island: Node) -> LumoRaceKart:
 	kart.add_child(tag)
 	kart.visible = false
 	remote = kart
+	if race_island.player.get_node_or_null("OwnOnlineName") == null:
+		var own_tag := Label3D.new()
+		own_tag.name = "OwnOnlineName"
+		own_tag.text = str(session.username)
+		own_tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		own_tag.fixed_size = true
+		own_tag.pixel_size = 0.0022
+		own_tag.font_size = 32
+		own_tag.outline_size = 12
+		own_tag.position = Vector3(0, 2.2, 0)
+		race_island.player.add_child(own_tag)
 	return kart
 
 
@@ -412,12 +460,54 @@ func leave_race() -> void:
 	_start_pending = false
 	remote = null
 	_ready_ids.clear()
+	if is_instance_valid(online_caption):
+		online_caption.queue_free()
+	online_caption = null
 	if not str(session.room_id).is_empty():
 		session.leave_room()
 
 
+func _push_online_hud() -> void:
+	if not is_instance_valid(island.hud) or str(session.room_id).is_empty():
+		return
+	var own_distance: float = float(island.distance)
+	var gap: float = own_distance - float(session.friend_distance)
+	var place: int = 1 if gap >= 0.0 else 2
+	if float(session.own_time) > 0.0:
+		place = 1 if float(session.friend_time) < 0.0 or float(session.own_time) <= float(session.friend_time) else 2
+	elif float(session.friend_time) > 0.0:
+		place = 2
+	var bar: Node = island.hud.get_parent().get_node_or_null("KartRaceBar")
+	var lap: int = mini(int(island.TOTAL_LAPS), int(own_distance / maxf(0.001, float(island.track_length))) + 1)
+	if bar != null:
+		var data: Dictionary = bar.values.duplicate(true)
+		data["mode"] = "online"
+		data["field"] = 2
+		data["place"] = place
+		data["lap"] = lap
+		bar.show_values(data, 0.0)
+	island.hud.text = "ONLINE · PLATZ %d / 2 · RUNDE %d / %d · %s" % [place, lap, island.TOTAL_LAPS, _friend_alias()]
+	if not is_instance_valid(online_caption):
+		online_caption = Label.new()
+		online_caption.name = "OnlinePositionCaption"
+		online_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		online_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		online_caption.add_theme_color_override("font_color", Color("e8faff"))
+		online_caption.add_theme_color_override("font_outline_color", Color("061430"))
+		online_caption.add_theme_constant_override("outline_size", 4)
+		island.hud.add_child(online_caption)
+	var scale: float = float(bar.k) if bar != null else 1.0
+	online_caption.position = Vector2(0, island.hud.size.y + 4.0 * scale)
+	online_caption.size = Vector2(island.hud.size.x, 30.0 * scale)
+	online_caption.add_theme_font_size_override("font_size", maxi(15, roundi(20.0 * scale)))
+	var position_text: String = "%.0f m vor dir" % -gap if gap < -1.0 else "%.0f m hinter dir" % gap
+	if absf(gap) <= 1.0:
+		position_text = "auf gleicher Höhe"
+	online_caption.text = "ONLINE · " + _friend_alias() + " · " + position_text
+
+
 func _friend_alias() -> String:
-	return str(session.friend.get("handle", "Freund")).get_slice("#", 0)
+	return str(session.friend.get("handle", "Freund"))
 
 
 static func _known(items: Array, id: String) -> bool:

@@ -82,7 +82,7 @@ func attach(island: Node) -> void:
 		online = ONLINE_RACE.new()
 		online.name = "KartOnlineRace"
 		island.add_child(online)
-		online.setup(island, str(options.get("kartOnlineEndpoint", "")))
+		online.setup(island, str(options.get("kartOnlineEndpoint", "")), str(options.get("childKey", "standalone")))
 	# Die App hat die Einladung schon gezeigt und das Kind hat „Gegen Mia fahren“ getippt.
 	if has_friend() and options.get("kartFriendStart", false) == true:
 		(func(): _start_duel(island)).call_deferred()

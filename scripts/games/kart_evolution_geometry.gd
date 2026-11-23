@@ -35,15 +35,15 @@ static func vehicle_trim(variant: String) -> Node3D:
     if not _meshes.has(key):
         var shapes: Array[Dictionary] = []
         var width := 0.91 if variant == "glider" else (1.10 if variant == "turbo" else 1.0)
-        _add(shapes, "box", Vector3(1.32 * width, 0.042, 0.19), Vector3(0, 0.19, -1.10), "carbon")
-        _add(shapes, "box", Vector3(1.17 * width, 0.014, 0.022), Vector3(0, 0.218, -1.202), "light")
+        _add(shapes, "box", Vector3(1.32 * width, 0.042, 0.20), Vector3(0, 0.16, -1.23), "carbon")
+        _add(shapes, "box", Vector3(1.17 * width, 0.014, 0.022), Vector3(0, 0.188, -1.337), "light")
         for side in [-1.0, 1.0]:
-            _add(shapes, "box", Vector3(0.045, 0.065, 0.91), Vector3(side * 0.66 * width, 0.22, -0.02), "carbon")
-            _add(shapes, "box", Vector3(0.014, 0.014, 0.68), Vector3(side * 0.69 * width, 0.258, -0.02), "light")
-            _add(shapes, "box", Vector3(0.22, 0.025, 0.15), Vector3(side * 0.44 * width, 0.25, -0.98), "paint", Basis(Vector3.FORWARD, side * 0.09))
+            _add(shapes, "box", Vector3(0.025, 0.065, 0.48), Vector3(side * 0.835 * width, 0.10, 0), "carbon")
+            _add(shapes, "box", Vector3(0.012, 0.012, 0.40), Vector3(side * 0.854 * width, 0.128, 0), "light")
+            _add(shapes, "box", Vector3(0.22, 0.025, 0.15), Vector3(side * 0.44 * width, 0.19, -1.19), "paint", Basis(Vector3.FORWARD, side * 0.09))
         for index in range(5):
-            _add(shapes, "box", Vector3(0.025, 0.11, 0.26), Vector3((index - 2) * 0.145 * width, 0.185, 0.99), "carbon", Basis(Vector3.RIGHT, -0.18))
-        _add(shapes, "box", Vector3(0.78 * width, 0.027, 0.08), Vector3(0, 0.25, 1.10), "metal")
+            _add(shapes, "box", Vector3(0.025, 0.11, 0.26), Vector3((index - 2) * 0.145 * width, 0.14, 1.15), "carbon", Basis(Vector3.RIGHT, -0.18))
+        _add(shapes, "box", Vector3(0.78 * width, 0.027, 0.08), Vector3(0, 0.22, 1.27), "metal")
         _meshes[key] = _bake(shapes)
     var result := Node3D.new()
     result.name = "EvolutionCoachwork"
@@ -98,30 +98,38 @@ static func _shapes(component: String) -> Array[Dictionary]:
                     _add(s, "torus", Vector3(0.036, 0.045, 0), Vector3(offset, 0.085, band), "paint", axle_z)
             _add(s, "box", Vector3(0.12, 0.016, 0.06), Vector3(0, 0.13, 0.03), "light")
         "Damper_Adaptive":
-            _add(s, "cylinder", Vector3(0.024, 0.24, 0), Vector3(-0.16, 0.06, 0.10), "metal")
-            _add(s, "cylinder", Vector3(0.043, 0.14, 0), Vector3(-0.16, 0.02, 0.10), "paint")
+            # The same wheel-carrier endpoints used by the authored production suspension.
+            var low := Vector3(-0.215, 0.10, 0.0)
+            var high := Vector3(-0.40, 0.29, 0.0)
+            var damper_axis := Basis(Quaternion(Vector3.UP, (high - low).normalized()))
+            _add(s, "cylinder", Vector3(0.024, low.distance_to(high), 0), low.lerp(high, 0.5), "metal", damper_axis)
+            _add(s, "cylinder", Vector3(0.040, 0.14, 0), low.lerp(high, 0.58), "paint", damper_axis)
             for index in range(7):
-                _add(s, "torus", Vector3(0.038, 0.048, 0), Vector3(-0.16, -0.035 + index * 0.020, 0.10), "metal")
-            _add(s, "box", Vector3(0.05, 0.10, 0.055), Vector3(-0.10, 0.06, 0.10), "carbon")
-            _add(s, "box", Vector3(0.055, 0.014, 0.035), Vector3(-0.10, 0.116, 0.10), "light")
+                _add(s, "torus", Vector3(0.038, 0.048, 0), low.lerp(high, 0.23 + index * 0.10), "metal", damper_axis)
+            for endpoint in [low, high]:
+                _add(s, "torus", Vector3(0.015, 0.028, 0), endpoint, "metal", axle_z)
+            var controller := low.lerp(high, 0.68) + Vector3(0.055, 0.020, 0.0)
+            _add(s, "box", Vector3(0.05, 0.075, 0.055), controller, "carbon", damper_axis)
+            _add(s, "box", Vector3(0.014, 0.050, 0.058), controller + Vector3(0.018, 0, 0), "light", damper_axis)
         "Steer_Vector":
-            _add(s, "cylinder", Vector3(0.026, 1.15, 0), Vector3(0, 0.06, 0), "metal", axle_x)
-            _add(s, "box", Vector3(0.25, 0.09, 0.14), Vector3(0, 0.06, 0), "carbon")
+            _add(s, "cylinder", Vector3(0.026, 1.15, 0), Vector3(0, -0.015, 0.075), "metal", axle_x)
+            _add(s, "box", Vector3(0.25, 0.09, 0.14), Vector3(0, -0.015, 0.075), "carbon")
             for side in [-1.0, 1.0]:
-                _add(s, "cylinder", Vector3(0.052, 0.13, 0), Vector3(side * 0.31, 0.06, 0), "paint", axle_x)
-                _add(s, "torus", Vector3(0.045, 0.056, 0), Vector3(side * 0.31, 0.06, 0), "light", axle_x)
+                _add(s, "cylinder", Vector3(0.052, 0.13, 0), Vector3(side * 0.31, -0.015, 0.075), "paint", axle_x)
+                _add(s, "torus", Vector3(0.045, 0.056, 0), Vector3(side * 0.31, -0.015, 0.075), "light", axle_x)
         "Brake_Ceramic":
-            _add(s, "capsule", Vector3(0.043, 0.19, 0.82), Vector3(0.214, 0.10, 0), "paint")
-            _add(s, "box", Vector3(0.065, 0.12, 0.044), Vector3(0.216, 0.10, 0), "carbon")
+            # Fixed caliper behind the rim; the separate disc follows the spinning rotor.
+            _add(s, "capsule", Vector3(0.034, 0.14, 0.82), Vector3(0.103, 0.12, 0.10), "paint")
+            _add(s, "box", Vector3(0.055, 0.095, 0.040), Vector3(0.103, 0.12, 0.10), "carbon")
             for index in range(3):
-                _add(s, "box", Vector3(0.012, 0.014, 0.053), Vector3(0.252, 0.060 + index * 0.033, 0), "light")
+                _add(s, "box", Vector3(0.012, 0.012, 0.045), Vector3(0.134, 0.090 + index * 0.030, 0.10), "light")
         "Brake_CeramicDisc":
-            _add(s, "cylinder", Vector3(0.228, 0.018, 0), Vector3(0.205, 0, 0), "carbon", axle_x)
-            _add(s, "torus", Vector3(0.202, 0.225, 0), Vector3(0.216, 0, 0), "metal", axle_x)
-            _add(s, "cylinder", Vector3(0.072, 0.027, 0), Vector3(0.213, 0, 0), "metal", axle_x)
+            _add(s, "cylinder", Vector3(0.192, 0.018, 0), Vector3(0.085, 0, 0), "carbon", axle_x)
+            _add(s, "torus", Vector3(0.175, 0.190, 0), Vector3(0.096, 0, 0), "metal", axle_x)
+            _add(s, "cylinder", Vector3(0.072, 0.027, 0), Vector3(0.093, 0, 0), "metal", axle_x)
             for index in range(18):
                 var a := index * TAU / 18.0
-                _add(s, "box", Vector3(0.003, 0.007, 0.043), Vector3(0.218, sin(a) * 0.165, cos(a) * 0.165), "metal", Basis(Vector3.RIGHT, -a))
+                _add(s, "box", Vector3(0.003, 0.007, 0.034), Vector3(0.098, sin(a) * 0.145, cos(a) * 0.145), "metal", Basis(Vector3.RIGHT, -a))
         "Gear_Dual":
             _add(s, "capsule", Vector3(0.105, 0.42, 0.86), Vector3(0, 0.045, 0), "paint", axle_x)
             for side in [-1.0, 1.0]:
@@ -130,13 +138,15 @@ static func _shapes(component: String) -> Array[Dictionary]:
             for index in range(4):
                 _add(s, "box", Vector3(0.29, 0.018, 0.016), Vector3(0, 0.13, -0.07 + index * 0.045), "carbon")
         "Ballast_Carbon":
+            # External sills between the wheels, scaled by the production platform's stance.
             for side in [-1.0, 1.0]:
-                _add(s, "box", Vector3(0.065, 0.085, 1.28), Vector3(side * 0.40, 0.19, 0), "carbon")
-                _add(s, "box", Vector3(0.012, 0.016, 0.88), Vector3(side * 0.436, 0.23, 0), "light")
+                _add(s, "box", Vector3(0.020, 0.10, 0.48), Vector3(side * 0.843, 0.16, 0), "carbon")
+                _add(s, "box", Vector3(0.010, 0.014, 0.40), Vector3(side * 0.859, 0.201, 0), "light")
                 for index in range(5):
-                    _add(s, "box", Vector3(0.085, 0.012, 0.028), Vector3(side * 0.40, 0.238, -0.50 + index * 0.25), "metal")
-            _add(s, "box", Vector3(0.77, 0.04, 0.08), Vector3(0, 0.19, -0.54), "paint")
-            _add(s, "box", Vector3(0.77, 0.04, 0.08), Vector3(0, 0.19, 0.54), "paint")
+                    _add(s, "box", Vector3(0.024, 0.014, 0.024), Vector3(side * 0.846, 0.12, -0.20 + index * 0.10), "metal")
+            _add(s, "box", Vector3(1.2, 0.025, 0.48), Vector3(0, 0.07, 0), "carbon")
+            _add(s, "box", Vector3(1.2, 0.025, 0.045), Vector3(0, 0.088, -0.23), "paint")
+            _add(s, "box", Vector3(1.2, 0.025, 0.045), Vector3(0, 0.088, 0.23), "paint")
     return s
 
 

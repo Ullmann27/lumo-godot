@@ -4,6 +4,8 @@ extends Node
 
 signal status_changed(state: String, text: String)
 signal invitation_received(invitation: Dictionary)
+signal friends_changed
+signal friend_requests_changed
 signal invitation_expired(invite_id: String)
 signal room_joined(room: Dictionary)
 signal ready_changed(ids: Array)
@@ -19,7 +21,17 @@ const SEND_HZ: float = 20.0
 const IDENTITY_FILE: String = "user://lumo_kart_online_identity.cfg"
 const FRIENDS_FILE: String = "user://lumo_kart_online_friends.cfg"
 const ERROR_TEXT: Dictionary = {
-	"invalid_identity": "Der Spielername passt nicht. Nutze 3–16 Buchstaben, Ziffern oder Unterstriche.",
+	"invalid_identity": "Der Spielername passt nicht. Nutze 3–20 Buchstaben, Ziffern oder Unterstriche.",
+	"invalid_username": "Bitte gib den Spielernamen deines Freundes ein.",
+	"username_taken": "Dieser Spielername ist schon vergeben. Wähle einen anderen Namen.",
+	"username_not_found": "Dieser Spielername wurde noch nicht angelegt. Dein Freund verbindet sich zuerst einmal mit Lumo.",
+	"not_friends": "Nehmt zuerst eure Freundschaftsanfrage an.",
+	"already_friends": "Ihr seid bereits Freunde.",
+	"friends_full": "Die Freundeliste ist voll.",
+	"friend_requests_full": "Es sind noch zu viele Freundschaftsanfragen offen.",
+	"friend_request_expired": "Diese Freundschaftsanfrage ist nicht mehr offen.",
+	"registration_limited": "Heute wurden gerade zu viele neue Spieler angelegt. Versuche es später erneut.",
+	"registration_unavailable": "Ein neuer Spieler kann gerade nicht angelegt werden.",
 	"identity_already_online": "Dieser Spieler ist bereits verbunden. Schließe zuerst die andere Verbindung.",
 	"friend_offline": "Dieser Freund ist gerade nicht online. Beide öffnen zuerst Online-Rennen.",
 	"friend_busy": "Dein Freund ist gerade in einem anderen Rennen.",
@@ -44,9 +56,13 @@ var friend: Dictionary = {}
 var room_id: String = ""
 var track: String = ""
 var friend_time: float = -1.0
+var friend_distance: float = 0.0
+var friend_checkpoint: int = 0
 var own_time: float = -1.0
 var result: Dictionary = {}
-var friends: Array[String] = []
+var friends: Array[Dictionary] = []
+var friend_requests: Array[Dictionary] = []
+var registered: bool = false
 var start_server_ms: int = 0
 ## QA can only opt into local loopback, never clear-text Internet transport.
 var allow_loopback_for_tests: bool = false
@@ -67,11 +83,11 @@ var _last_snapshot_sequence: int = -1
 
 
 static func valid_alias(value: String) -> bool:
-	return RegEx.create_from_string("^[A-Za-z][A-Za-z0-9_]{2,15}$").search(value) != null
+	return RegEx.create_from_string("^[A-Za-z][A-Za-z0-9_]{2,19}$").search(value) != null
 
 
 static func valid_handle(value: String) -> bool:
-	return RegEx.create_from_string("^[A-Za-z][A-Za-z0-9_]{2,15}#[0-9a-f]{16}$").search(value) != null
+	return valid_alias(value)
 
 
 static func id_for_key(value: String) -> String:
@@ -80,11 +96,16 @@ static func id_for_key(value: String) -> String:
 	var hash := HashingContext.new()
 	hash.start(HashingContext.HASH_SHA256)
 	hash.update(value.hex_decode())
-	return hash.finish().hex_encode().substr(0, 16)
+	return hash.finish().hex_encode()
 
 
-func configure(url: String) -> bool:
+func configure(url: String, child_key: String = "standalone") -> bool:
 	endpoint = url.strip_edges()
+	var scope: String = child_key.sha256_text()
+	if identity_path == IDENTITY_FILE:
+		identity_path = "user://lumo_kart_online_identity_" + scope + ".cfg"
+	if friends_path == FRIENDS_FILE:
+		friends_path = "user://lumo_kart_online_friends_" + scope + ".cfg"
 	_load_friends()
 	if not _load_identity():
 		_set_status("offline", "Der Online-Spieler konnte auf diesem Gerät nicht gespeichert werden.")
@@ -112,18 +133,20 @@ func _load_identity() -> bool:
 	if loaded == OK:
 		_key = str(config.get_value("identity", "key", ""))
 		alias = str(config.get_value("identity", "alias", ""))
-		if id_for_key(_key).is_empty() or not valid_alias(alias):
+		registered = config.get_value("identity", "registered", false) == true
+		if id_for_key(_key).is_empty() or (registered and not valid_alias(alias)):
 			return false
 	elif loaded == ERR_FILE_NOT_FOUND:
 		_key = Crypto.new().generate_random_bytes(32).hex_encode()
 		my_id = id_for_key(_key)
-		alias = "Lumo" + my_id.substr(0, 6)
+		alias = ""
+		registered = false
 		if not _save_identity():
 			return false
 	else:
 		return false
 	my_id = id_for_key(_key)
-	username = alias + "#" + my_id
+	username = alias
 	return not my_id.is_empty()
 
 
@@ -131,6 +154,7 @@ func _save_identity() -> bool:
 	var config := ConfigFile.new()
 	config.set_value("identity", "key", _key)
 	config.set_value("identity", "alias", alias)
+	config.set_value("identity", "registered", registered)
 	var staging: String = identity_path + ".new"
 	if config.save(staging) != OK:
 		return false
@@ -138,14 +162,14 @@ func _save_identity() -> bool:
 
 
 func set_alias(value: String) -> bool:
-	if _socket != null or not valid_alias(value):
+	if _socket != null or not valid_alias(value) or (registered and value != alias):
 		return false
 	var previous: String = alias
 	alias = value
 	if not _save_identity():
 		alias = previous
 		return false
-	username = alias + "#" + my_id
+	username = alias
 	return true
 
 
@@ -154,41 +178,45 @@ func _load_friends() -> void:
 	var config := ConfigFile.new()
 	if config.load(friends_path) != OK:
 		return
-	var saved: Variant = config.get_value("friends", "handles", [])
-	if saved is Array or saved is PackedStringArray:
+	var saved: Variant = config.get_value("friends", "entries", [])
+	if saved is Array:
 		for item in saved:
-			var value: String = str(item)
-			if valid_handle(value) and value not in friends and friends.size() < 32:
-				friends.append(value)
-
-
-func _remember_friend(handle: String) -> void:
-	if not valid_handle(handle):
-		return
-	var suffix: String = handle.get_slice("#", 1)
-	for i in range(friends.size() - 1, -1, -1):
-		if friends[i].get_slice("#", 1) == suffix:
-			friends.remove_at(i)
-	friends.push_front(handle)
-	if friends.size() > 32:
-		friends.resize(32)
-	_save_friends()
-
-
-func forget_friend(handle: String) -> void:
-	friends.erase(handle)
-	_save_friends()
+			if item is Dictionary and valid_alias(str(item.get("username", ""))) and str(item.get("uid", "")).length() == 64:
+				if friends.size() < 64:
+					friends.append({"uid": str(item.uid), "username": str(item.username), "online": false})
 
 
 func _save_friends() -> void:
 	var config := ConfigFile.new()
-	config.set_value("friends", "handles", friends)
+	var cache: Array[Dictionary] = []
+	for entry in friends:
+		cache.append({"uid": str(entry.uid), "username": str(entry.username)})
+	config.set_value("friends", "entries", cache)
 	if config.save(friends_path + ".new") == OK:
 		DirAccess.rename_absolute(friends_path + ".new", friends_path)
 
 
+func request_friend(value: String) -> void:
+	if state not in ["online", "inviting"] or not valid_alias(value):
+		_set_status(state, "Gib den festen Spielernamen deines Freundes ein.")
+		return
+	_send({"t": "friend_request", "username": value})
+
+
+func accept_friend(request_id: String) -> void:
+	_send({"t": "friend_accept", "request": request_id})
+
+
+func decline_friend(request_id: String) -> void:
+	_send({"t": "friend_decline", "request": request_id})
+
+
+func forget_friend(uid: String) -> void:
+	_send({"t": "friend_remove", "id": uid})
+
+
 func connect_online() -> bool:
-	if not _valid_endpoint(endpoint) or my_id.is_empty():
+	if not _valid_endpoint(endpoint) or my_id.is_empty() or not valid_alias(alias):
 		_set_status("offline", "Online ist noch nicht eingerichtet.")
 		return false
 	disconnect_online("")
@@ -215,6 +243,8 @@ func disconnect_online(message: String = "Verbindung beendet.") -> void:
 			_send({"t": "leave"})
 		_socket.close(1000, "player left")
 	_socket = null
+	for entry in friends:
+		entry.online = false
 	_clear_room()
 	if not message.is_empty():
 		_set_status("offline", message)
@@ -233,6 +263,8 @@ func _clear_room() -> void:
 	friend = {}
 	track = ""
 	friend_time = -1.0
+	friend_distance = 0.0
+	friend_checkpoint = 0
 	own_time = -1.0
 	result = {}
 	start_server_ms = 0
@@ -242,11 +274,11 @@ func _clear_room() -> void:
 	_sequence = 0
 
 
-func invite(handle: String, selected_track: String, info: Dictionary) -> void:
-	if state not in ["online", "inviting"] or not valid_handle(handle):
-		_set_status(state, "Trage den vollständigen Spielernamen mit # und Kennung ein.")
+func invite(uid: String, selected_track: String, info: Dictionary) -> void:
+	if state not in ["online", "inviting"] or uid.length() != 64:
+		_set_status(state, "Wähle einen verbundenen Freund aus deiner Liste.")
 		return
-	_send({"t": "invite", "to": handle, "track": selected_track, "info": info})
+	_send({"t": "invite", "to": uid, "track": selected_track, "info": info})
 
 
 func accept(invite_id: String, info: Dictionary) -> void:
@@ -353,6 +385,16 @@ func _handle(message: Dictionary) -> void:
 			if str(message.get("id", "")) != my_id or int(message.get("v", 0)) != PROTOCOL:
 				_lost("Die Online-Anmeldung konnte nicht bestätigt werden.")
 				return
+			var confirmed_name: String = str(message.get("handle", ""))
+			if not valid_alias(confirmed_name):
+				_lost("Der Online-Spielername konnte nicht bestätigt werden.")
+				return
+			alias = confirmed_name
+			username = confirmed_name
+			registered = true
+			if not _save_identity():
+				_lost("Dein Online-Spieler konnte auf diesem Gerät nicht gespeichert werden.")
+				return
 			_server_offset_ms = float(message.get("server_ms", 0)) - Time.get_ticks_msec()
 			_set_status("online", "Du bist online. Lade einen Freund ein.")
 		"pong":
@@ -363,6 +405,25 @@ func _handle(message: Dictionary) -> void:
 			if sent >= 0.0 and stamp >= 0.0 and rtt >= 0.0 and rtt < 10000.0 and rtt <= _best_rtt_ms + 5.0:
 				_best_rtt_ms = minf(_best_rtt_ms, rtt)
 				_server_offset_ms = stamp + rtt * 0.5 - now
+		"friends":
+			var entries: Variant = message.get("friends", [])
+			if entries is Array and entries.size() <= 64:
+				friends.clear()
+				for item in entries:
+					if item is Dictionary and valid_alias(str(item.get("username", ""))) and str(item.get("uid", "")).length() == 64:
+						friends.append({"uid": str(item.uid), "username": str(item.username), "online": item.get("online", false) == true})
+				_save_friends()
+				friends_changed.emit()
+		"friend_requests":
+			var requests: Variant = message.get("requests", [])
+			if requests is Array and requests.size() <= 32:
+				friend_requests.clear()
+				for item in requests:
+					if item is Dictionary and valid_alias(str(item.get("username", ""))) and str(item.get("request_id", "")).length() == 32:
+						friend_requests.append(item.duplicate(true))
+				friend_requests_changed.emit()
+		"friend_request_sent":
+			_set_status(state, "Freundschaftsanfrage an %s gesendet." % str(message.get("username", "")))
 		"invitation":
 			var incoming: Dictionary = message.duplicate(true)
 			if valid_handle(str(incoming.get("from", ""))) and str(incoming.get("invite", "")).length() == 32:
@@ -421,7 +482,10 @@ func _handle(message: Dictionary) -> void:
 		"error":
 			var code: String = str(message.get("code", ""))
 			var text: String = str(ERROR_TEXT.get(code, "Diese Online-Aktion konnte nicht ausgeführt werden."))
-			_set_status("online" if state == "inviting" else state, text)
+			if code in ["username_taken", "invalid_identity", "identity_already_online", "registration_limited", "registration_unavailable"]:
+				disconnect_online(text)
+			else:
+				_set_status("online" if state == "inviting" else state, text)
 
 
 func _on_room(message: Dictionary) -> void:
@@ -443,7 +507,6 @@ func _on_room(message: Dictionary) -> void:
 	room_id = str(message.get("room", ""))
 	track = str(message.get("track", ""))
 	friend = other.duplicate(true)
-	_remember_friend(str(friend.handle))
 	_set_status("lobby", "Dein Freund ist da. Wenn beide bereit sind, startet das Rennen.")
 	room_joined.emit(message)
 
@@ -468,6 +531,8 @@ func _on_snapshot(message: Dictionary) -> void:
 	if not orientation.is_finite() or orientation.length_squared() < 0.9 or orientation.length_squared() > 1.1:
 		return
 	_last_snapshot_sequence = sequence
+	friend_distance = _number(message.get("distance"), friend_distance)
+	friend_checkpoint = int(_number(message.get("checkpoint"), friend_checkpoint))
 	_samples.append({"k": stamp, "p": position, "q": orientation.normalized(),
 		"v": clampf(_number(message.get("speed"), 0.0), -80.0, 180.0),
 		"st": clampf(_number(message.get("steer"), 0.0), -1.0, 1.0)})
@@ -503,6 +568,8 @@ func _lost(text: String) -> void:
 	if _socket != null:
 		_socket.close()
 	_socket = null
+	for entry in friends:
+		entry.online = false
 	room_id = ""
 	_samples.clear()
 	_set_status("offline", text)

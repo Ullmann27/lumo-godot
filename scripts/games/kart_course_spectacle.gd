@@ -174,7 +174,7 @@ static func _sites(world) -> Array:
 		var found: bool = false
 		for extra in [0.0, 9.0, 18.0, 30.0]:
 			var at: Vector3 = world.position_at(d, sign_side * (24.0 + extra))
-			var radius: float = 7.0
+			var radius: float = 8.0
 			if world._near_road(at, float(world.road_width_at(d)) * 0.5 + radius + 4.0):
 				continue
 			if PASSAGES.in_view_corridor(world, at) or not _away_from_loop(world, at, radius):
@@ -242,7 +242,7 @@ static func _landmark(world, site: Dictionary, theme: Array) -> void:
 	var leaf: Color = theme[3]
 	var index: int = int(site.index)
 	# An actual terraced support mass makes distant structures read as places.
-	_put(world, site, "rock", Vector3(0, -2.7, 0), Vector3(6.2, 8.0, 6.1), stone.darkened(0.25))
+	_put(world, site, "rock", Vector3(0, -6.5, 0), Vector3(6.2, 8.0, 6.1), stone.darkened(0.25))
 	_put(world, site, "box", Vector3(0, 0.1, 0), Vector3(9.2, 0.7, 8.5), stone)
 	match style:
 		"forest", "garden":

@@ -7,6 +7,8 @@ import json
 import secrets
 import time
 import unittest
+import tempfile
+from pathlib import Path
 from collections import deque
 
 import aiohttp
@@ -14,6 +16,7 @@ from aiohttp import WSMsgType
 from aiohttp.test_utils import TestServer
 
 from relay import APP_RELAY, clean_info, device_id, finite, make_app
+from storage import Store
 
 INFO = {"driver": "fox", "kart": "comet", "look": {"engine": "serie"}}
 
@@ -67,11 +70,21 @@ class RelayIntegration(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(welcome["id"], client.uid)
         self.assertNotIn("key", welcome)
         client.handle = welcome["handle"]
+        await client.receive("friends")
+        await client.receive("friend_requests")
         return client
 
     async def invite_pair(self) -> tuple[Client, Client, dict]:
         first, second = await self.connect("LumoAlpha"), await self.connect("LumoBeta")
-        await first.send(t="invite", to=second.handle, track="sonnenhafen", info=INFO)
+        await first.send(t="friend_request", username=second.handle)
+        await first.receive("friend_request_sent")
+        requests = await second.receive("friend_requests")
+        self.assertEqual(len(requests["requests"]), 1)
+        await second.send(t="friend_accept", request=requests["requests"][0]["request_id"])
+        await first.receive("friends")
+        await second.receive("friends")
+        await second.receive("friend_requests")
+        await first.send(t="invite", to=second.uid, track="sonnenhafen", info=INFO)
         invitation = await second.receive("invitation")
         sent = await first.receive("invite_sent")
         self.assertEqual(invitation["invite"], sent["invite"])
@@ -114,15 +127,19 @@ class RelayIntegration(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(await response.json(),
                              {"service": "lumo-kart-online", "protocol": 1, "status": "ok"})
 
-    async def test_same_alias_has_distinct_stable_device_identity(self) -> None:
-        first, second = await self.connect("SameAlias"), await self.connect("SameAlias")
-        self.assertNotEqual(first.handle, second.handle)
-        self.assertEqual(first.uid, hashlib.sha256(bytes.fromhex(first.key)).hexdigest()[:16])
-        key, old_handle = first.key, first.handle
+    async def test_username_is_unique_case_insensitive_and_reconnect_is_stable(self) -> None:
+        first = await self.connect("Alina_04")
+        self.assertEqual(first.handle, "Alina_04")
+        self.assertEqual(first.uid, hashlib.sha256(bytes.fromhex(first.key)).hexdigest())
+        other = Client(await self.http.ws_connect(self.server.make_url("/ws")), secrets.token_hex(32))
+        self.clients.append(other)
+        await other.send(t="hello", v=1, alias="alina_04", key=other.key)
+        self.assertEqual((await other.receive("error"))["code"], "username_taken")
         await first.ws.close()
         await asyncio.sleep(0.02)
-        again = await self.connect("SameAlias", key)
-        self.assertEqual(again.handle, old_handle)
+        again = await self.connect("Alina_04", first.key)
+        self.assertEqual(again.handle, first.handle)
+        self.assertEqual(again.uid, first.uid)
 
     async def test_live_identity_cannot_be_taken_over(self) -> None:
         first = await self.connect("LumoAlpha")
@@ -265,10 +282,92 @@ class RelayIntegration(unittest.IsolatedAsyncioTestCase):
 
     async def test_bad_track_type_is_a_protocol_error_not_a_server_crash(self) -> None:
         first, second = await self.connect("LumoAlpha"), await self.connect("LumoBeta")
-        await first.send(t="invite", to=second.handle, track={}, info=INFO)
+        await first.send(t="invite", to=second.uid, track={}, info=INFO)
         self.assertEqual((await first.receive("error"))["code"], "invalid_invitation")
         await first.send(t="ping", client_ms=9)
         self.assertEqual((await first.receive("pong"))["client_ms"], 9)
+
+    async def test_friendship_and_race_invitation_are_distinct(self) -> None:
+        first, second = await self.connect("Alina_04"), await self.connect("Zoe_04")
+        await first.send(t="invite", to=second.uid, track="sonnenhafen", info=INFO)
+        self.assertEqual((await first.receive("error"))["code"], "not_friends")
+        await first.send(t="friend_request", username="Zoe_04")
+        await first.receive("friend_request_sent")
+        incoming = await second.receive("friend_requests")
+        self.assertEqual(incoming["requests"][0]["username"], "Alina_04")
+        self.assertFalse(self.app[APP_RELAY].rooms)
+        self.assertFalse(self.app[APP_RELAY].store.is_friend(first.uid, second.uid))
+        await second.send(t="friend_accept", request=incoming["requests"][0]["request_id"])
+        friends = await first.receive("friends")
+        self.assertEqual(friends["friends"][0]["username"], "Zoe_04")
+        self.assertTrue(friends["friends"][0]["online"])
+        self.assertTrue(self.app[APP_RELAY].store.is_friend(first.uid, second.uid))
+        self.assertFalse(self.app[APP_RELAY].rooms)
+
+    async def test_friend_presence_changes_on_disconnect_and_reconnect(self) -> None:
+        first, second, invitation = await self.invite_pair()
+        await first.ws.close()
+        await second.receive("invitation_expired")
+        offline = await second.receive("friends")
+        self.assertFalse(offline["friends"][0]["online"])
+        first_again = await self.connect("LumoAlpha", first.key)
+        online = await second.receive("friends")
+        self.assertTrue(online["friends"][0]["online"])
+        self.assertEqual(online["friends"][0]["uid"], first_again.uid)
+
+    async def _restart(self, database: str) -> None:
+        for client in self.clients:
+            await client.ws.close()
+        self.clients.clear()
+        await self.http.close()
+        await self.server.close()
+        self.app = make_app(database_path=database, start_delay_ms=30)
+        self.server = TestServer(self.app)
+        await self.server.start_server()
+        self.http = aiohttp.ClientSession()
+
+    async def test_reserved_names_and_accepted_friends_survive_server_restart(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = str(Path(directory) / "accounts.sqlite3")
+            await self._restart(path)
+            first, second, invitation = await self.invite_pair()
+            first_key, second_key = first.key, second.key
+            first_uid, second_uid = first.uid, second.uid
+            await self._restart(path)
+            self.assertEqual(self.app[APP_RELAY].store.account(first_uid)["username"], "LumoAlpha")
+            self.assertTrue(self.app[APP_RELAY].store.is_friend(first_uid, second_uid))
+            first_again = await self.connect("LumoAlpha", first_key)
+            second_again = await self.connect("LumoBeta", second_key)
+            self.assertEqual(first_again.uid, first_uid)
+            self.assertEqual(second_again.uid, second_uid)
+            await first_again.send(t="friends")
+            result = await first_again.receive("friends")
+            self.assertEqual(result["friends"][0]["username"], "LumoBeta")
+            self.assertTrue(result["friends"][0]["online"])
+            # Close the SQLite file before the temporary directory is removed.
+            await self._restart(":memory:")
+
+    async def test_offline_friend_request_survives_server_restart(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = str(Path(directory) / "accounts.sqlite3")
+            await self._restart(path)
+            first, second = await self.connect("Alina_04"), await self.connect("Zoe_04")
+            second_key, second_uid = second.key, second.uid
+            await second.ws.close()
+            await asyncio.sleep(0.02)
+            await first.send(t="friend_request", username="Zoe_04")
+            await first.receive("friend_request_sent")
+            await self._restart(path)
+            waiting = self.app[APP_RELAY].store.requests(second_uid)
+            self.assertEqual(waiting[0]["username"], "Alina_04")
+            websocket = await self.http.ws_connect(self.server.make_url("/ws"))
+            returning = Client(websocket, second_key)
+            self.clients.append(returning)
+            await returning.send(t="hello", v=1, alias="Zoe_04", key=second_key)
+            await returning.receive("welcome")
+            incoming = await returning.receive("friend_requests")
+            self.assertEqual(incoming["requests"][0]["username"], "Alina_04")
+            await self._restart(":memory:")
 
 
 class BoundaryTests(unittest.TestCase):

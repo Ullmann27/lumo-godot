@@ -81,8 +81,13 @@ jobs:
               log = pathlib.Path('kart-proof') / (name + '.log')
               try:
                   with log.open('w') as stream:
-                      run = subprocess.run(['godot','--headless','--path','.','--script',
-                          'res://' + str(target)],stdout=stream,stderr=subprocess.STDOUT,timeout=360)
+                      preflight = subprocess.run(['godot','--headless','--path','.','--script',
+                          'res://' + str(target),'--check-only'],stdout=stream,stderr=subprocess.STDOUT,timeout=60)
+                      if preflight.returncode:
+                          run = preflight
+                      else:
+                          run = subprocess.run(['godot','--headless','--path','.','--script',
+                              'res://' + str(target)],stdout=stream,stderr=subprocess.STDOUT,timeout=360)
                   output = log.read_text(errors='replace')
                   failed = run.returncode != 0 or any(marker in output for marker in
                       ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', '] FAIL'))
@@ -94,6 +99,13 @@ jobs:
           if not results or not all(row['passed'] for row in results):
               raise SystemExit(1)
           PY
+      - name: Verify two actual Godot clients across relay restart
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -r server/kart_online/requirements.txt
+          python3 scripts/tests/kart_online_two_process.py --godot "$(command -v godot)" \
+            --output "$PWD/kart-proof/online-two-process" 2>&1 | tee kart-proof/online-two-process.log
       - name: Prepare genuine offscreen renderer
         shell: bash
         run: |
