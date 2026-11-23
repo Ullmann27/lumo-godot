@@ -85,7 +85,7 @@ var camera_clearance = CAMERA_CLEARANCE.new()
 var build_mode := false
 var build_kind := "house"
 var build_plot := -1
-var build_focus := OWN_VILLAGE.ORIGIN + Vector3(-OWN_VILLAGE.REGION.TOWN_CENTER, 0, 0)
+var build_focus := OWN_VILLAGE.ORIGIN + Vector3(-100.0, 0, 0)
 var camera_yaw := 0.0
 var camera_pitch := 0.48
 var person_zoom := 7.2
@@ -1122,11 +1122,143 @@ func _notification(what: int) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		_pause_menu()
+		if build_mode:
+			_toggle_build_mode()
+		else:
+			_pause_menu()
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventScreenTouch:
+		_handle_world_touch(event as InputEventScreenTouch)
+		return
+	if event is InputEventScreenDrag:
+		_handle_world_drag(event as InputEventScreenDrag)
+		return
+	# Android touch can emit a duplicate mouse event; the touch path already owns it.
+	if event is InputEventMouse and event.device == -1:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_E:
-			_interact()
-		elif event.keycode == KEY_F:
-			_toggle_vehicle()
-		elif event.keycode == KEY_M:
-			_map_dialog()
+		match event.keycode:
+			KEY_E:
+				_interact()
+			KEY_F:
+				_toggle_vehicle()
+			KEY_M:
+				_map_dialog()
+			KEY_B, KEY_TAB:
+				_toggle_build_mode()
+			_:
+				return
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton:
+		var mouse := event as InputEventMouseButton
+		if mouse.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and mouse.pressed:
+			var direction := -1.0 if mouse.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0
+			if build_mode:
+				build_zoom = clampf(build_zoom + direction * 6.0, BUILD_ZOOM_MIN, BUILD_ZOOM_MAX)
+			else:
+				person_zoom = clampf(person_zoom + direction * 0.75, PERSON_ZOOM_MIN, PERSON_ZOOM_MAX)
+			get_viewport().set_input_as_handled()
+		elif build_mode and mouse.button_index == MOUSE_BUTTON_LEFT and not mouse.pressed:
+			_select_build_plot_at(mouse.position)
+			get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion:
+		var motion := event as InputEventMouseMotion
+		if not build_mode and not driving and (motion.button_mask & MOUSE_BUTTON_MASK_RIGHT):
+			camera_yaw -= motion.relative.x * 0.006
+			camera_pitch = clampf(camera_pitch + motion.relative.y * 0.004, PERSON_PITCH_MIN, PERSON_PITCH_MAX)
+			get_viewport().set_input_as_handled()
+		elif build_mode and (motion.button_mask & MOUSE_BUTTON_MASK_LEFT):
+			_pan_build_camera(motion.position - motion.relative, motion.position)
+			get_viewport().set_input_as_handled()
+
+
+func _handle_world_touch(event: InputEventScreenTouch) -> void:
+	if paused:
+		return
+	if event.pressed:
+		if camera_contacts.size() >= 2:
+			return
+		camera_contacts[event.index] = event.position
+		if camera_contacts.size() == 1:
+			gesture_index = event.index
+			gesture_start = event.position
+			gesture_moved = false
+		get_viewport().set_input_as_handled()
+		return
+	if not camera_contacts.has(event.index):
+		return
+	var was_primary := event.index == gesture_index
+	camera_contacts.erase(event.index)
+	if build_mode and was_primary and not event.canceled and not gesture_moved:
+		_select_build_plot_at(event.position)
+	if camera_contacts.is_empty():
+		gesture_index = -1
+	else:
+		gesture_index = int(camera_contacts.keys()[0])
+		gesture_start = camera_contacts[gesture_index]
+		gesture_moved = false
+	get_viewport().set_input_as_handled()
+
+
+func _handle_world_drag(event: InputEventScreenDrag) -> void:
+	if paused or not camera_contacts.has(event.index):
+		return
+	gesture_moved = gesture_moved or event.position.distance_to(gesture_start) > 12.0
+	if camera_contacts.size() == 2:
+		var keys: Array = camera_contacts.keys()
+		var other_index := int(keys[0] if int(keys[0]) != event.index else keys[1])
+		var anchor: Vector2 = camera_contacts[other_index]
+		var before := anchor.distance_to(camera_contacts[event.index])
+		var after := anchor.distance_to(event.position)
+		if minf(before, after) >= 12.0:
+			var ratio := before / after
+			if build_mode:
+				build_zoom = clampf(build_zoom * ratio, BUILD_ZOOM_MIN, BUILD_ZOOM_MAX)
+			else:
+				person_zoom = clampf(person_zoom * ratio, PERSON_ZOOM_MIN, PERSON_ZOOM_MAX)
+		camera_contacts[event.index] = event.position
+		get_viewport().set_input_as_handled()
+		return
+	var previous: Vector2 = camera_contacts[event.index]
+	camera_contacts[event.index] = event.position
+	if build_mode:
+		_pan_build_camera(previous, event.position)
+	elif not driving:
+		camera_yaw -= event.relative.x * 0.006
+		camera_pitch = clampf(camera_pitch + event.relative.y * 0.004, PERSON_PITCH_MIN, PERSON_PITCH_MAX)
+	get_viewport().set_input_as_handled()
+
+
+func _screen_ground(pixel: Vector2) -> Variant:
+	if not is_instance_valid(camera):
+		return null
+	var plane := Plane(Vector3.UP, 0.0)
+	return plane.intersects_ray(camera.project_ray_origin(pixel), camera.project_ray_normal(pixel))
+
+
+func _pan_build_camera(previous_pixel: Vector2, current_pixel: Vector2) -> void:
+	var previous = _screen_ground(previous_pixel)
+	var current = _screen_ground(current_pixel)
+	if previous is Vector3 and current is Vector3:
+		var offset: Vector3 = current - previous
+		build_focus -= Vector3(offset.x, 0, offset.z)
+		var min_x := OWN_VILLAGE.ORIGIN.x - 182.0
+		var max_x := OWN_VILLAGE.ORIGIN.x + 12.0
+		build_focus.x = clampf(build_focus.x, min_x, max_x)
+		build_focus.z = clampf(build_focus.z, -178.0, 178.0)
+
+
+func _select_build_plot_at(pixel: Vector2) -> void:
+	if not build_mode:
+		return
+	var world = _screen_ground(pixel)
+	if not world is Vector3:
+		return
+	var plot := own_village.plot_from_world(world)
+	if plot < 0 or not own_village.plot_buildable(plot):
+		_refresh_build_ui("Hier kann nicht gebaut werden.")
+		return
+	build_plot = plot
+	build_focus = own_village.plot_world(plot)
+	_refresh_build_ui("Bauplatz gewählt")
