@@ -277,12 +277,22 @@ func _play_clip(clip: String, seconds: float, rate := 1.0) -> void:
 		if model.CLIPS.has(clip):
 			model.play_behavior(clip)
 		return
-	if not player.has_animation(clip):
+	var actual_clip := clip
+	if not player.has_animation(actual_clip):
+		var aliases := {
+			"celebrate": "kart_celebrate",
+			"greeting_wave": "kart_celebrate",
+			"agree_nod": "kart_seated",
+			"point_portal": "kart_steer_right" if seat_index % 2 == 0 else "kart_steer_left",
+		}
+		actual_clip = str(aliases.get(clip, ""))
+	if actual_clip.is_empty() or not player.has_animation(actual_clip):
 		_clip = ""
 		_clip_left = 0.0
 		_clip_rate = float(_personality.get("tempo", 0.72))
 		return
-	player.play(clip, 0.28)
+	_clip = actual_clip
+	player.play(actual_clip, 0.28)
 
 
 func set_suspended(value: bool) -> void:
