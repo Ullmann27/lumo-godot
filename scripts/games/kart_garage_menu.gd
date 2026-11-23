@@ -1517,7 +1517,9 @@ func _apply_selected_preview() -> void:
 		AudioManager.play_sfx("ui_confirm")
 	if _selection_reaction_pending and step != 3 and is_instance_valid(preview_kart):
 		var actor = preview_kart.lumo_animation
-		if is_instance_valid(actor):
+		if not is_instance_valid(actor):
+			actor = preview_kart.production_driver
+		if is_instance_valid(actor) and actor.has_method("play_menu_behavior"):
 			actor.play_menu_behavior("agree_nod")
 			if actor.has_method("set_attention_target"):
 				actor.set_attention_target(preview_kart.to_global(Vector3(0.55, 0.55, -0.60)))
@@ -1601,8 +1603,11 @@ func _refresh_preview() -> void:
 		else (Viewport.MSAA_2X if graphics_profile == "medium" else Viewport.MSAA_DISABLED)
 	)
 	preview_pivot.add_child(preview_kart)
-	if not _welcomed and step == 0 and is_instance_valid(preview_kart.lumo_animation):
-		preview_kart.lumo_animation.play_menu_behavior("greeting_wave")
+	var welcome_actor = preview_kart.lumo_animation
+	if not is_instance_valid(welcome_actor):
+		welcome_actor = preview_kart.production_driver
+	if not _welcomed and step == 0 and is_instance_valid(welcome_actor) and welcome_actor.has_method("play_menu_behavior"):
+		welcome_actor.play_menu_behavior("greeting_wave")
 		_welcomed = true
 	preview_kart.visible = step != 3
 	view_choice.disabled = step == 3
