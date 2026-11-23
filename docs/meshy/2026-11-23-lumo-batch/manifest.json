@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "project": "LUMO",
+  "captured_at": "2026-11-23",
+  "source": "Meshy connected account task metadata",
+  "safety": {
+    "project_boundary": "Imperathen/Roman text-to-3d tasks are explicitly excluded.",
+    "naming_policy": "Do not assign animal, kart or prop identity until the source image/model is visually verified.",
+    "integration_policy": "A Meshy result does not replace a current production GLB unless geometry, materials, LOD/runtime fit and required animation/rig behavior pass."
+  },
+  "batch_summary": {
+    "total_image_to_3d": 29,
+    "upright_character_candidates": 10,
+    "vehicle_body_candidates": 14,
+    "environment_or_garage_candidates": 4,
+    "unresolved_outliers": 1
+  },
+  "tasks": [
+    {
+      "task_id": "01a208f1-dc5a-76c1-bb5a-de37af413136",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446399310,
+      "created_at_iso": "2026-11-23T15:06:39.310Z",
+      "size_normalized": [
+        0.6450200080871582,
+        0.9506840109825134,
+        0.41113200783729553
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f1-fadb-7712-9573-e442c381a995",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446406655,
+      "created_at_iso": "2026-11-23T15:06:46.655Z",
+      "size_normalized": [
+        0.45458999276161194,
+        0.9506840109825134,
+        0.1801760047674179
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f2-16ba-7472-93a3-d99c4062e1f2",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446414036,
+      "created_at_iso": "2026-11-23T15:06:54.036Z",
+      "size_normalized": [
+        0.6127920150756836,
+        0.9501959979534149,
+        0.28027400374412537
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-521a-74ee-b3c7-d141335b0d6a",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446560481,
+      "created_at_iso": "2026-11-23T15:09:20.481Z",
+      "size_normalized": [
+        0.5454099774360657,
+        0.9506840109825134,
+        0.28027400374412537
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-7093-7622-a4cd-0bc3f65a3835",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446568357,
+      "created_at_iso": "2026-11-23T15:09:28.357Z",
+      "size_normalized": [
+        0.6489259898662567,
+        0.9506840109825134,
+        0.3935539871454239
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-8987-7645-b995-cbfdbdf4da43",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446574381,
+      "created_at_iso": "2026-11-23T15:09:34.381Z",
+      "size_normalized": [
+        0.5869139730930328,
+        0.9516599774360657,
+        0.39306600391864777
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-a0c6-7268-afe9-ccf417b38e39",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446580307,
+      "created_at_iso": "2026-11-23T15:09:40.307Z",
+      "size_normalized": [
+        0.7514640092849731,
+        0.9511719942092896,
+        0.38085900247097015
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-b791-7137-8267-65bec9ad74bf",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446586062,
+      "created_at_iso": "2026-11-23T15:09:46.062Z",
+      "size_normalized": [
+        0.6069340109825134,
+        0.9501959979534149,
+        0.5029290020465851
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f4-cc5c-724e-af02-a3dead4905b2",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446591449,
+      "created_at_iso": "2026-11-23T15:09:51.449Z",
+      "size_normalized": [
+        0.6694340109825134,
+        0.9506840109825134,
+        0.2661139965057373
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f5-e2ae-7524-9771-191ff2260646",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446662847,
+      "created_at_iso": "2026-11-23T15:11:02.847Z",
+      "size_normalized": [
+        0.4721679985523224,
+        0.9506840109825134,
+        0.20165999978780746
+      ],
+      "category": "upright_character_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f5-fa88-71aa-b7b8-ef546d0992ea",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446668870,
+      "created_at_iso": "2026-11-23T15:11:08.870Z",
+      "size_normalized": [
+        0.9526370167732239,
+        0.22119099646806717,
+        0.4448240101337433
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f6-1513-72af-a6dd-0c9cbd47aa43",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446675504,
+      "created_at_iso": "2026-11-23T15:11:15.504Z",
+      "size_normalized": [
+        0.9541009962558746,
+        0.27831999957561493,
+        0.46240198612213135
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f6-2bd1-717d-9048-bca34d55b133",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446681312,
+      "created_at_iso": "2026-11-23T15:11:21.312Z",
+      "size_normalized": [
+        0.9550780057907104,
+        0.3881840109825134,
+        0.5209959745407104
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f6-40c3-761e-9e63-8f3c35ac38a6",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446686818,
+      "created_at_iso": "2026-11-23T15:11:26.818Z",
+      "size_normalized": [
+        0.9521490037441254,
+        0.23584000021219254,
+        0.4067379981279373
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f6-5696-756a-b2fb-c8cf4b032d25",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446692173,
+      "created_at_iso": "2026-11-23T15:11:32.173Z",
+      "size_normalized": [
+        0.9516600072383881,
+        0.24316400289535522,
+        0.4760740101337433
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f8-fdfc-7211-b08e-9beb07d1c7d2",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446866148,
+      "created_at_iso": "2026-11-23T15:14:26.148Z",
+      "size_normalized": [
+        0.950683981180191,
+        0.24511700123548508,
+        0.4135740101337433
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f9-1360-76eb-9cf8-f0b5130304f2",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446871598,
+      "created_at_iso": "2026-11-23T15:14:31.598Z",
+      "size_normalized": [
+        0.953125,
+        0.24413999915122986,
+        0.3974609971046448
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f9-2c4a-7417-8aa5-9a932ab4fb4d",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446878174,
+      "created_at_iso": "2026-11-23T15:14:38.174Z",
+      "size_normalized": [
+        0.948731005191803,
+        0.20849599689245224,
+        0.3666999936103821
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f9-4430-72fc-ae88-8efb9b9bea3f",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446884090,
+      "created_at_iso": "2026-11-23T15:14:44.090Z",
+      "size_normalized": [
+        0.950683981180191,
+        0.2382809966802597,
+        0.4995119869709015
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f9-599e-76a8-b2ae-177c5cc55edf",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446889563,
+      "created_at_iso": "2026-11-23T15:14:49.563Z",
+      "size_normalized": [
+        0.9521490037441254,
+        0.29150399565696716,
+        0.44775399565696716
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208fa-7a36-74e9-9692-c46231c84fd2",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446963493,
+      "created_at_iso": "2026-11-23T15:16:03.493Z",
+      "size_normalized": [
+        0.9570310115814209,
+        0.3876960128545761,
+        0.6123050153255463
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208fa-920a-7050-a321-6ea885205e9b",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446969520,
+      "created_at_iso": "2026-11-23T15:16:09.520Z",
+      "size_normalized": [
+        0.9521479904651642,
+        0.28125,
+        0.5561519861221313
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208fa-a8d5-728e-a575-56a6a71e2c58",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446975389,
+      "created_at_iso": "2026-11-23T15:16:15.389Z",
+      "size_normalized": [
+        0.9492189884185791,
+        0.21386700123548508,
+        0.4145510047674179
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208fa-c002-7308-a7be-f87bb90f9658",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446981337,
+      "created_at_iso": "2026-11-23T15:16:21.337Z",
+      "size_normalized": [
+        0.9526360034942627,
+        0.23486299812793732,
+        0.5117180049419403
+      ],
+      "category": "vehicle_body_candidate",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208f9-5601-7111-8751-e447499039dc",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446891364,
+      "created_at_iso": "2026-11-23T15:14:51.364Z",
+      "size_normalized": [
+        0.47412198781967163,
+        0.9501949846744537,
+        0.17871099710464478
+      ],
+      "category": "unresolved_outlier",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a208fa-dabd-70a4-8096-f01b82f614b6",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446988392,
+      "created_at_iso": "2026-11-23T15:16:28.392Z",
+      "size_normalized": [
+        0.998183012008667,
+        1,
+        0.6089549958705902
+      ],
+      "category": "environment_or_garage_candidate",
+      "ai_model": "meshy-t2"
+    },
+    {
+      "task_id": "01a208fa-f574-746a-bd10-34f286262996",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795446994895,
+      "created_at_iso": "2026-11-23T15:16:34.895Z",
+      "size_normalized": [
+        1,
+        0.16415300220251083,
+        1
+      ],
+      "category": "environment_or_garage_candidate",
+      "ai_model": "meshy-t2"
+    },
+    {
+      "task_id": "01a208fb-0f07-75e3-bf4d-fe3d76ad3c96",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795447001649,
+      "created_at_iso": "2026-11-23T15:16:41.649Z",
+      "size_normalized": [
+        0.9801560044288635,
+        1,
+        0.9327900111675262
+      ],
+      "category": "environment_or_garage_candidate",
+      "ai_model": "meshy-t2"
+    },
+    {
+      "task_id": "01a208fb-255d-7770-a1e7-c5e76d827ffa",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795447007276,
+      "created_at_iso": "2026-11-23T15:16:47.276Z",
+      "size_normalized": [
+        1,
+        1,
+        0.8989840149879456
+      ],
+      "category": "environment_or_garage_candidate",
+      "ai_model": "meshy-t2"
+    }
+  ],
+  "later_rework_candidates": [
+    {
+      "task_id": "01a20913-d021-722f-a1e0-10095201c6da",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795448624124,
+      "created_at_iso": "2026-11-23T15:43:44.124Z",
+      "size_normalized": [
+        0.4999999850988388,
+        0.9506840109825134,
+        0.17675799876451492
+      ],
+      "category": "later_character_rework_candidate_unmapped",
+      "ai_model": "meshy-t2.5"
+    },
+    {
+      "task_id": "01a20913-e8fb-7039-9639-f72d1d54cfdd",
+      "task_type": "image-to-3d",
+      "status": "SUCCEEDED",
+      "textured": true,
+      "created_at_ms": 1795448630394,
+      "created_at_iso": "2026-11-23T15:43:50.394Z",
+      "size_normalized": [
+        0.47460900247097015,
+        0.9511719942092896,
+        0.16162100434303284
+      ],
+      "category": "later_character_rework_candidate_unmapped",
+      "ai_model": "meshy-t2.5"
+    }
+  ]
+}
