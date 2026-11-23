@@ -278,6 +278,13 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 	visual.name = "MeshyLOD0_" + design
 	visual.mesh = source_mesh.mesh
 	visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	var fallback_finish := StandardMaterial3D.new()
+	fallback_finish.albedo_color = Color("9aa8b8")
+	fallback_finish.metallic = 0.28
+	fallback_finish.roughness = 0.46
+	for surface in range(visual.mesh.get_surface_count()):
+		if visual.mesh.surface_get_material(surface) == null:
+			visual.set_surface_override_material(surface, fallback_finish)
 	shell.add_child(visual)
 	source_root.free()
 
