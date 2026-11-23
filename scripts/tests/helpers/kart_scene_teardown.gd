@@ -36,6 +36,28 @@ static func release_scene(tree: SceneTree, scene: Node, label: String) -> bool:
 	return false
 
 
+## UI probes can leave click sounds in autoloads after their controls are freed.
+static func release_audio(tree: SceneTree, owner: Node, label: String) -> bool:
+	var playbacks: Array[WeakRef] = []
+	for player: Node in owner.find_children("*", "AudioStreamPlayer", true, false):
+		if player.has_stream_playback():
+			playbacks.append(weakref(player.get_stream_playback()))
+		player.stop()
+		player.stream = null
+	var started := Time.get_ticks_msec()
+	while true:
+		var pending := _pending_playbacks(playbacks)
+		var elapsed := Time.get_ticks_msec() - started
+		if elapsed >= RELEASE_LIMIT_MS:
+			printerr("%s audio teardown retained=%s elapsed_ms=%d" % [label, pending, elapsed])
+			return false
+		if pending.is_empty():
+			print("%s audio teardown tracked=%d audio_released=true elapsed_ms=%d" % [label, playbacks.size(), elapsed])
+			return true
+		await tree.process_frame
+	return false
+
+
 static func _pending_playbacks(references: Array[WeakRef]) -> Array[String]:
 	# Keep temporary strong references inside this synchronous call, never
 	# across the process_frame await in the caller.

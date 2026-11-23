@@ -121,7 +121,7 @@ jobs:
           python3 - <<'PY'
           import json, os, pathlib, re, signal, subprocess, time
           config = json.loads(pathlib.Path('config/kart-action-qa.json').read_text())
-          markers = ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:')
+          markers = ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', 'ERROR: Condition "p_size <= 0"')
           results = []
           proof_environment = dict(os.environ, LUMO_KART_ACTION_PROOF_DIR=str(pathlib.Path('kart-proof/vehicles').resolve()))
           def checked(command, log, seconds):
@@ -164,6 +164,8 @@ jobs:
                       command = ['xvfb-run','-a','godot','--path','.',
                           '--rendering-method','gl_compatibility','--audio-driver','Dummy',
                           '--resolution','1280x720','--script','res://' + str(target)]
+                  extra_args = config.get('probe_arguments', {}).get(name, [])
+                  if extra_args: command += ['--'] + extra_args
                   code, error = checked(command, log, 360)
               output = log.read_text(errors='replace')
               failed = code != 0 or error is not None or any(marker in output for marker in markers + ('] FAIL',))
@@ -189,7 +191,8 @@ jobs:
               'crystal_canyon','jungle_temple','candy_cloud','volcano_night',
               'winter_sprint','galaxy_ringway','desert_drift','learning_lab',
               'jungle_emerald_3600','riesengarten_2400','windwerk_3000']
-          jobs = [('vehicles','kart_evolution_capture',[])]
+          jobs = [('vehicles','kart_evolution_capture',[]),
+                  ('run-loop','lumo_run_loop_regression',[])]
           for track in tracks:
               views = 'course,landscape'
               if track == 'sonnenhafen':
@@ -216,6 +219,8 @@ jobs:
               output.mkdir(parents=True,exist_ok=True)
               environment = dict(os.environ)
               environment['LUMO_KART_ACTION_PROOF_DIR'] = str(output)
+              if label == 'run-loop':
+                  environment['LUMO_RUN_LOOP_PROOF_DIR'] = str(output)
               command = ['xvfb-run','-a','godot','--path','.',
                   '--rendering-method','gl_compatibility','--audio-driver','Dummy',
                   '--resolution','1280x720','--script','res://scripts/tests/'+script+'.gd']

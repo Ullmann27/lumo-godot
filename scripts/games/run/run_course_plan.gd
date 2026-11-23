@@ -302,32 +302,41 @@ func _adopt_big_jump(kicker: Dictionary) -> void:
 		_star(launch_s + speed * t, lane, maxf(STAR_HEIGHT, above + 0.6), value)
 
 
-## Sonnenhafen's stunt loop. Whoever arrives in its lane runs the loop; everybody
-## else is guided past the two feet of the structure.
+## Adopt the complete shared path, including the exterior approach and return.
+## Legacy in-road loops still need their two feet kept clear; a branch only
+## needs a choice of entry lane and a free main-road bypass.
 func _adopt_loop(layout: Dictionary) -> void:
 	var start: float = float(layout.start)
 	var lane: float = float(layout.lane)
-	var half: float = float(layout.get("deck_half_width", 1.2))
+	var half: float = LOOP.half_width_of(layout)
 	var exit_lane: float = LOOP.exit_lane(layout)
 	var exit_s: float = LOOP.road_distance_at(layout, 1.0)
+	var branch: bool = bool(layout.get("branch", false))
+	var distances := PackedFloat32Array()
+	distances.resize(LOOP.ARC_SEGMENTS + 1)
+	distances[0] = 0.0
+	var previous: Vector3 = LOOP.point(_world, layout, 0.0)
+	for index in range(1, LOOP.ARC_SEGMENTS + 1):
+		var current: Vector3 = LOOP.point(_world, layout, float(index) / LOOP.ARC_SEGMENTS)
+		distances[index] = distances[index - 1] + previous.distance_to(current)
+		previous = current
 	loop = {
 		"start": start,
 		"lane": lane,
-		"tolerance": half + 0.35,
+		"tolerance": maxf(0.1, half - TUNING.BODY_RADIUS - 0.08) if branch else half + 0.35,
 		"exit_s": exit_s,
 		"exit_lane": exit_lane,
 		"layout": layout,
+		"branch": branch,
+		"arc_lengths": distances,
 	}
 	_reserve(start - 52.0, exit_s + 27.0)
-	if bool(layout.get("branch", false)):
-		# The exterior ring is reached by a separate approach and returns to
-		# the main road later. A child passing on the road must not be deflected
-		# into an invisible barrier where there is no physical loop foot.
-		_trail(start - 46.0, start - 3.0, 0.0, lane)
-		_star(exit_s + 1.2, exit_lane, STAR_HEIGHT, TUNING.GOLD_STAR_VALUE)
-		_trail(exit_s + 5.0, exit_s + 23.0, exit_lane, 0.0)
+	_trail(start - 46.0, start - 3.0, 0.0, lane)
+	_star(exit_s + 1.2, exit_lane, STAR_HEIGHT, TUNING.GOLD_STAR_VALUE)
+	_trail(exit_s + 5.0, exit_s + 23.0, exit_lane, 0.0)
+	if branch:
 		return
-	# On-road legacy rings still protect the main road from both loop feet.
+	# Rising quarter above the entry lane and descending quarter above the exit lane.
 	zones.append(
 		{"s0": start - 0.5, "s1": start + 9.0, "lat0": lane - half - 0.45, "lat1": 99.0, "lead": 0.0, "rider": true}
 	)
@@ -341,9 +350,6 @@ func _adopt_loop(layout: Dictionary) -> void:
 			"rider": false,
 		}
 	)
-	_trail(start - 46.0, start - 3.0, 0.0, lane)
-	_star(start + 8.2, exit_lane, STAR_HEIGHT, TUNING.GOLD_STAR_VALUE)
-	_trail(start + 12.0, start + 30.0, exit_lane, 0.0)
 
 
 # ------------------------------------------------------------------ checkpoints
@@ -610,6 +616,10 @@ func _span_of(kind: String) -> float:
 
 func _pick(along: float, last: String) -> String:
 	var progress: float = (along - start_s) / maxf(1.0, finish_s - start_s)
+	# Reserving a complete exterior loop can remove a procedural beat. Keep
+	# the established four jump-practice hurdles on the remaining main road.
+	if bool(loop.get("branch", false)) and progress > 0.55 and hurdles.size() < 4 and last != "hurdle":
+		return "hurdle"
 	var roofed: bool = _is_covered(along - 4.0, along + 48.0)
 	var bend: float = acos(
 		clampf(_world.forward(along + 6.0).dot(_world.forward(along + 26.0)), -1.0, 1.0)

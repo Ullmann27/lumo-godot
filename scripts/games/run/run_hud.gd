@@ -350,6 +350,8 @@ func _draw_pause() -> void:
 
 
 func _draw_top() -> void:
+	if top.size.x <= 0.0 or top.size.y <= 0.0:
+		return
 	var u: float = _unit
 	var row: float = 52.0 * u
 	var font: Font = THEME.HEADING
@@ -384,19 +386,22 @@ func _draw_top() -> void:
 			step = minf(step, (counter_left - 6.0 * u - x) / maxf(1.0, float(letter_chars.size())))
 			y = star_pill.position.y + (star_pill.size.y - step * 0.87) * 0.5
 		var side: float = step * 0.87
-		for index in range(letter_chars.size()):
-			var found: bool = (letter_mask & (1 << index)) != 0
-			var cell := Rect2(x + float(index) * step, y, side, side)
-			var style := StyleBoxFlat.new()
-			style.bg_color = Color(0.25, 0.75, 0.95, 0.9) if found else Color(0.02, 0.09, 0.22, 0.7)
-			style.border_color = Color(0.6, 0.95, 1.0, 0.9)
-			style.set_border_width_all(maxi(1, roundi(1.5 * u)))
-			style.set_corner_radius_all(roundi(6.0 * u))
-			top.draw_style_box(style, cell)
-			top.draw_string(
-				font, cell.position + Vector2(0, side * 0.73), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
-				cell.size.x, roundi(side * 0.65), UI.WHITE if found else Color(1, 1, 1, 0.35)
-			)
+		var letter_font_size: int = roundi(side * 0.65)
+		# A pending resize can leave no glyph space between the two counters.
+		if letter_font_size > 0:
+			for index in range(letter_chars.size()):
+				var found: bool = (letter_mask & (1 << index)) != 0
+				var cell := Rect2(x + float(index) * step, y, side, side)
+				var style := StyleBoxFlat.new()
+				style.bg_color = Color(0.25, 0.75, 0.95, 0.9) if found else Color(0.02, 0.09, 0.22, 0.7)
+				style.border_color = Color(0.6, 0.95, 1.0, 0.9)
+				style.set_border_width_all(maxi(1, roundi(1.5 * u)))
+				style.set_corner_radius_all(roundi(6.0 * u))
+				top.draw_style_box(style, cell)
+				top.draw_string(
+					font, cell.position + Vector2(0, side * 0.73), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
+					cell.size.x, letter_font_size, UI.WHITE if found else Color(1, 1, 1, 0.35)
+				)
 	# Learning stops solved.
 	var tasks: String = "%d/%d" % [solved, question_total]
 	var tasks_width: float = font.get_string_size(tasks, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x

@@ -33,6 +33,8 @@ var air_time: float = 0.0
 ## 0..1 while Lumo runs the stunt loop, -1 otherwise.
 var loop_u: float = -1.0
 var loop: Dictionary = {}
+var loop_offset: float = 0.0
+var _loop_distance: float = 0.0
 ## Feel of the course: the kart roads use the defaults, the adventure path its own.
 var cruise: float = TUNING.CRUISE
 var lateral_speed: float = TUNING.LATERAL_SPEED
@@ -91,6 +93,8 @@ func place(distance: float, lateral: float, start_speed: float) -> void:
 	boost_time = 0.0
 	stumble_time = 0.0
 	loop_u = -1.0
+	loop_offset = 0.0
+	_loop_distance = 0.0
 	air_time = 0.0
 	air_dash_ready = true
 	ride = {}
@@ -194,7 +198,12 @@ func respawn(distance: float, lateral: float) -> void:
 
 func begin_loop(data: Dictionary) -> void:
 	loop = data
-	loop_u = 0.0
+	loop_offset = lat - float(loop.lane)
+	# Carry the metres already covered past the entrance through this tick.
+	_loop_distance = maxf(0.0, s - float(loop.start))
+	loop_u = _loop_progress(_loop_distance)
+	s = LOOP.road_distance_at(loop.layout, loop_u)
+	lat = LOOP.lane_at(loop.layout, loop_u) + loop_offset
 	speed = maxf(speed, cruise)
 	grounded = true
 	h = 0.0
@@ -453,15 +462,16 @@ func _end_ride(release_vy: float) -> void:
 func _step_loop(delta: float) -> void:
 	var layout: Dictionary = loop.layout
 	speed = move_toward(speed, TUNING.CRUISE + 2.0, TUNING.ACCELERATION * delta)
-	loop_u += speed * delta / LOOP.path_length(layout)
+	_loop_distance += speed * delta
+	loop_u = _loop_progress(_loop_distance)
 	var u: float = clampf(loop_u, 0.0, 1.0)
-	# Follow the same physical road-space geometry as the rendered Kart loop,
-	# including the exterior approach and its return (not a seven-metre hop).
+	loop_offset = move_toward(loop_offset, 0.0, LOOP.LATERAL_EASE * delta)
 	s = LOOP.road_distance_at(layout, u)
-	lat = LOOP.lane_at(layout, u)
+	lat = LOOP.lane_at(layout, u) + loop_offset
 	if loop_u >= 1.0:
 		loop_u = -1.0
-		s = float(loop.exit_s) + 0.3
+		var distances: PackedFloat32Array = loop.arc_lengths
+		s = float(loop.exit_s) + maxf(0.0, _loop_distance - distances[distances.size() - 1])
 		lat = float(loop.exit_lane)
 		h = 0.0
 		vy = 0.0
@@ -470,11 +480,29 @@ func _step_loop(delta: float) -> void:
 		events.append(&"loop_end")
 
 
+## Invert the shared path's measured arc length. Parameter u is not metres:
+## each approach occupies a quarter, while the actual ring occupies half.
+func _loop_progress(distance: float) -> float:
+	var distances: PackedFloat32Array = loop.arc_lengths
+	if distance >= distances[distances.size() - 1]:
+		return 1.0
+	var low: int = 0
+	var high: int = distances.size() - 1
+	while high - low > 1:
+		var middle: int = (low + high) / 2
+		if distances[middle] <= distance:
+			low = middle
+		else:
+			high = middle
+	var share: float = (distance - distances[low]) / maxf(0.0001, distances[high] - distances[low])
+	return (float(low) + share) / float(distances.size() - 1)
+
+
 ## Position on the stunt loop while `loop_u` runs from 0 to 1.
 func loop_transform(world) -> Transform3D:
 	var layout: Dictionary = loop.layout
 	var u: float = clampf(loop_u, 0.0, 1.0)
-	return Transform3D(LOOP.frame_at(world, layout, u), LOOP.point(world, layout, u))
+	return Transform3D(LOOP.frame_at(world, layout, u), LOOP.point(world, layout, u, loop_offset))
 
 
 func is_dashing() -> bool:

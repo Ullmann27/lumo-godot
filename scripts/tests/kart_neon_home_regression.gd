@@ -4,6 +4,7 @@ const HUB = preload("res://scripts/games/kart_neon_hub.gd")
 const ARENA = preload("res://scripts/games/kart_neon_arena.gd")
 const PATH = preload("res://scripts/games/kart_star_path.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var checks := 0
 var failures: Array[String] = []
 var routes: Array[String] = []
@@ -171,5 +172,6 @@ func _run() -> void:
 	_check(arena.elapsed > 0 and arena.get_node_or_null("KartTurntable") != null, "echter 3D-Showroom")
 	_check(arena.find_children("*", "CollisionObject3D", true, false).is_empty(), "Showroom ändert keine Fahrphysik")
 	arena.free()
+	_check(await TEARDOWN.release_audio(self, root, "[NeonHome]"), "UI-Klick und Mixer vor Prozessende freigegeben")
 	print("[NeonHome] ", JSON.stringify({"checks": checks, "failures": failures, "status": "PASS" if failures.is_empty() else "FAIL"}))
 	quit(0 if failures.is_empty() else 1)

@@ -1,6 +1,7 @@
 {
-  "request": 8,
+  "request": 9,
   "probes": [
+    "lumo_run_loop_regression",
     "kart_dyno_parts_regression",
     "kart_vehicle_regression",
     "kart_evolution_regression",
@@ -8,11 +9,21 @@
     "kart_loop_seam_regression",
     "kart_sonnenhafen_stunt_regression",
     "kart_action_course_regression",
-    "lumo_run_regression"
+    "lumo_run_regression",
+    "learning_holo_lesson_regression",
+    "lumo_run_stunt_relay_regression",
+    "lumo_run_flow_regression",
+    "quiz_studio_escape_regression",
+    "learning_tutor_regression"
   ],
   "renderer_probes": [
     "kart_sonnenhafen_stunt_regression",
     "kart_action_course_regression",
     "kart_action_spectacle_regression"
-  ]
+  ],
+  "probe_arguments": {
+    "learning_tutor_regression": [
+      "--part=validation,invalid,return,voice"
+    ]
+  }
 }

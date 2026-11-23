@@ -4,6 +4,7 @@ extends Camera3D
 ## every bend and climb without ever dipping into the terrain or losing him.
 
 const TUNING = preload("res://scripts/games/run/run_tuning.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 
 var reduced_motion: bool = false
 var _look := Vector3.ZERO
@@ -68,18 +69,22 @@ func follow(world, player, feet: Vector3, delta: float, snap: bool = false) -> v
 	if player.loop_u >= 0.0:
 		# Side view through the open ring, as in Lumo Kart: Lumo stays visible on
 		# the inner deck all the way round, also upside down at the top.
-		var start: float = float(player.loop.start)
-		var lane: float = float(player.loop.lane)
-		var radius: float = float(player.loop.layout.get("radius", 6.5))
-		var basis: Basis = world.frame(start)
-		var hub: Vector3 = (
-			world.position_at(
-				(start + float(player.loop.exit_s)) * 0.5, (lane + float(player.loop.exit_lane)) * 0.5
-			)
-			+ basis.y * radius
-		)
+		var layout: Dictionary = player.loop.layout
+		var radius: float = LOOP.radius_of(layout)
+		var basis: Basis = world.frame(LOOP.road_distance_at(layout, 0.5))
+		var hub: Vector3 = LOOP.ring_center(world, layout)
 		desired = hub - basis.x * radius * 2.7 + basis.z * radius * 0.45 - basis.y * radius * 0.15
 		look = (feet + Vector3.UP * 0.9).lerp(hub, 0.35)
+		if bool(layout.get("branch", false)):
+			# Follow the real side road at both joins, then reveal the open ring.
+			# The road's old centreline hub no longer describes this exterior loop.
+			var u: float = clampf(player.loop_u, 0.0, 1.0)
+			var local_frame: Basis = LOOP.frame_at(world, layout, u)
+			var ring_view: float = smoothstep(0.12, 0.28, u) * (1.0 - smoothstep(0.70, 0.90, u))
+			var chase_eye: Vector3 = feet + local_frame.z * back + Vector3.UP * height
+			var chase_look: Vector3 = feet - local_frame.z * 4.0 + Vector3.UP
+			desired = chase_eye.lerp(desired, ring_view)
+			look = chase_look.lerp(look, ring_view)
 	elif _front > 0.0:
 		desired = world.position_at(player.s + 5.6, clampf(player.lat + 2.2, -wall, wall)) + Vector3.UP * 2.0
 		# Leave room for the result card: Lumo stands in the free part of the screen.

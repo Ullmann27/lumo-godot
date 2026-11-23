@@ -37,6 +37,11 @@ func check(ok: bool, label: String) -> void:
 
 
 func _run() -> void:
+	# Headless starts at 64 x 64; lay out the actual race HUD at a usable size.
+	if DisplayServer.get_name() == "headless":
+		root.size = Vector2i(1280, 720)
+		await process_frame
+		await process_frame
 	if not shots.is_empty():
 		root.msaa_3d = Viewport.MSAA_DISABLED
 		RenderingServer.render_loop_enabled = false
