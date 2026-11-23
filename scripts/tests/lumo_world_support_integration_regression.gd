@@ -1,6 +1,5 @@
 extends SceneTree
 ## Production World methods: persistent crossing controls and sidequest save hooks.
-const WORLD = preload("res://scripts/creative/lumo_world.gd")
 const POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 var checks := 0
 var failures: Array[String] = []
@@ -21,7 +20,7 @@ func _check(value: bool, label: String) -> void:
 		push_error("[WorldSupport] " + label)
 
 func _run() -> void:
-	var world = WORLD.new()
+	var world = load("res://scripts/creative/lumo_world.gd").new()
 	world.player = CharacterBody3D.new()
 	world.add_child(world.player)
 	world.status_label = Label.new()
@@ -78,6 +77,7 @@ func _run() -> void:
 	_check(restored.completed.size() == 6, "optional delivery preserves all main mission records")
 	_check(not world.save_pending, "successful save clears the pending retry")
 	var original: Variant = {"version": 99, "completed": ["future-delivery"], "futurePayload": {"keep": "unchanged"}}
+	original = JSON.parse_string(JSON.stringify(original))
 	_check(not world.friend_post.setup(world, original), "unknown sidequest format is unavailable")
 	world.friend_post_original = original
 	_check(world._save(), "valid main-world progress still saves beside an unknown sidequest version")
