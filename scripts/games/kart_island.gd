@@ -2183,7 +2183,11 @@ func _rival_driver_lineup() -> Array[Dictionary]:
 	# nicht selbst Frosch fährt. Die fünf Startplätze bleiben unverändert.
 	if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog":
 		var frog := CATALOG.entry(CATALOG.DRIVERS, "frog")
-		var has_frog := result.any(func(entry: Dictionary) -> bool: return str(entry.id) == "frog")
+		var has_frog := false
+		for entry in result:
+			if str(entry.id) == "frog":
+				has_frog = true
+				break
 		if not has_frog and str(frog.get("id", "")) == "frog":
 			result[result.size() - 1] = frog
 	return result
