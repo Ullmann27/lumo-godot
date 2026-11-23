@@ -659,7 +659,7 @@ func _build_world() -> void:
 		if lineup.size() == animals.size():
 			for index in range(animals.size()):
 				animals[index] = str(lineup[index].id)
-				colors[index] = Color(lineup[index].color)
+				colors[index] = lineup[index].color
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
