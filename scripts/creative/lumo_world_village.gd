@@ -59,10 +59,20 @@ func setup(child: String, project_slot: int) -> void:
 	water_material.set_shader_parameter("depth_rect", depth_rect)
 	if FileAccess.file_exists(source_path):
 		var parser := JSON.new()
-		if parser.parse(FileAccess.get_file_as_string(source_path)) == OK:
+		if parser.parse(FileAccess.get_file_as_string(source_path)) == OK and parser.data is Dictionary:
 			model = restore_existing(parser.data, child_key, slot)
-		source_status = "loaded" if model != null else "invalid"
+			if parser.data.get("village_meta", {}) is Dictionary:
+				village_meta = parser.data.get("village_meta", {}).duplicate(true)
+			source_status = "loaded" if model != null else "invalid"
+		else:
+			source_status = "invalid"
+	if model == null and source_status != "invalid":
+		# First Open-World entry creates the official living-village model in
+		# memory. It is persisted only after an explicit build/day/expand action.
+		model = STATE.new("settlement", true)
+		source_status = "new"
 	if model == null:
+		# Never replace unreadable/foreign village bytes with a new economy.
 		region.set_unlocked_plots(0, false)
 		return
 	var town: Dictionary = model.player()
