@@ -16,6 +16,13 @@ const WORLD_MAP = preload("res://scripts/creative/lumo_world_map.gd")
 const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 
+const PERSON_ZOOM_MIN := 3.2
+const PERSON_ZOOM_MAX := 13.0
+const BUILD_ZOOM_MIN := 28.0
+const BUILD_ZOOM_MAX := 155.0
+const PERSON_PITCH_MIN := 0.16
+const PERSON_PITCH_MAX := 1.02
+
 var model = STATE.new()
 var art = ART.new()
 var kit = KIT.new()
@@ -34,7 +41,13 @@ var action_button: Button
 var vehicle_button: Button
 var run_button: Button
 var map_button: Button
+var build_button: Button
 var exit_button: Button
+var build_panel: PanelContainer
+var build_box: VBoxContainer
+var build_status: Label
+var build_buttons: HBoxContainer
+var build_marker: MeshInstance3D
 var modal: PanelContainer
 var modal_box: VBoxContainer
 var modal_scroll: ScrollContainer
@@ -69,6 +82,19 @@ var friend_post: Node3D
 var friend_post_original: Variant = {}
 var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
+var build_mode := false
+var build_kind := "house"
+var build_plot := -1
+var build_focus := OWN_VILLAGE.ORIGIN + Vector3(-OWN_VILLAGE.REGION.TOWN_CENTER, 0, 0)
+var camera_yaw := 0.0
+var camera_pitch := 0.48
+var person_zoom := 7.2
+var build_zoom := 76.0
+var camera_contacts: Dictionary = {}
+var gesture_index := -1
+var gesture_start := Vector2.ZERO
+var gesture_moved := false
+var airborne_time := 0.0
 
 
 func _ready() -> void:
@@ -275,10 +301,10 @@ func _create_owned_village(profile: String) -> void:
 
 
 func _create_portals() -> void:
+	# Dorfwirtschaft und Bauen sind Bestandteil dieser Welt, kein Portalspiel.
 	portals = [
 		{"game": "kart", "title": "Lumo Kart · Rennstrecken", "at": Vector3(77, 0, 11), "description": "Fahre auf deinen vorhandenen Lumo-Kart-Strecken. Danach kommst du hierher zurück."},
-		{"game": "cards", "title": "Lumos Kartensalon", "at": Vector3(218, 0, -17), "description": "Hier wartet der vorhandene 3D-Kartentisch mit deinen gespeicherten Partien. Die bisherigen Spiele bleiben erhalten."},
-		{"game": "settlement", "title": "Dein Dorf weiterbauen", "at": own_village.doorway(), "description": own_village.summary()}
+		{"game": "cards", "title": "Lumos Kartensalon", "at": Vector3(218, 0, -17), "description": "Hier wartet der vorhandene 3D-Kartentisch mit deinen gespeicherten Partien. Die bisherigen Spiele bleiben erhalten."}
 	]
 	for portal in portals:
 		var ring := TorusMesh.new()
@@ -299,13 +325,9 @@ func _near_portal() -> Dictionary:
 
 
 func _launch_portal(game: String) -> void:
-	if game not in ["kart", "cards", "settlement"] or not _save():
+	if game not in ["kart", "cards"] or not _save():
 		return
 	SceneRouter.launch_options["worldPortalOrigin"] = "world"
-	if game == "settlement":
-		SceneRouter.launch_options["livingVillage"] = true
-		SceneRouter.launch_options["settlementMode"] = "settlement"
-		SceneRouter.launch_options["buildSlot"] = own_village.slot
 	SceneRouter.goto(game)
 
 
