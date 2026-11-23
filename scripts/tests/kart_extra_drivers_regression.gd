@@ -147,22 +147,14 @@ func _run() -> void:
 				identity + ": usable card " + str(dimensions)
 			)
 		card.pressed.emit()
-		# Selection refresh is deferred. Verify the authored nod immediately
-		# after that deferred refresh, before this intentionally short gesture
-		# naturally returns to the seated loop.
-		await settle(1)
+		await settle(6)
 		check(menu.setup.driver == identity, identity + ": real selection action")
-		var garage_actor = (
-			menu.preview_kart.production_driver
-			if is_instance_valid(menu.preview_kart)
-			else null
-		)
+		check_model(menu.preview_kart, identity, identity + " garage")
+		var garage_actor = menu.preview_kart.production_driver
 		check(
 			is_instance_valid(garage_actor) and garage_actor.current_behavior == &"agree_nod",
-			identity + ": selection drives authored agree_nod"
+			identity + ": visible production driver runs authored agree_nod"
 		)
-		await settle(5)
-		check_model(menu.preview_kart, identity, identity + " garage")
 		check(
 			is_instance_valid(garage_actor) and garage_actor.play_menu_behavior("greeting_wave"),
 			identity + ": imported driver accepts greeting"
