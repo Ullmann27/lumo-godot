@@ -655,14 +655,11 @@ func _build_world() -> void:
 	var colors: Array[Color] = [Color("75d7f1"), Color("a696ee"), Color("83dab9"), Color("c8d8ef"), Color("6987db")]
 	var reference_rivals: bool = OPPONENT_ROSTER.ready_for_race()
 	if reference_rivals:
-		var roster := OPPONENT_ROSTER.for_game("kart")
-		var frog_index := roster.find_custom(func(entry: Dictionary) -> bool: return entry.id == "frog")
-		if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog" and frog_index >= animals.size():
-			# Keep the five starting positions and the cup lineup stable.
-			roster[animals.size() - 1] = roster[frog_index]
-		for index in range(animals.size()):
-			animals[index] = str(roster[index].id)
-			colors[index] = Color(str(roster[index].color))
+		var lineup := _rival_driver_lineup()
+		if lineup.size() == animals.size():
+			for index in range(animals.size()):
+				animals[index] = str(lineup[index].id)
+				colors[index] = lineup[index].color
 	var rival_count: int = 0 if mode in ["time_trial", "training"] else 5
 	var rival_karts: Array[String] = _rival_karts()
 	for i in range(rival_count):
@@ -2158,6 +2155,42 @@ func _ensure_workshop():
 		workshop = TUNING.new(child, ProgressStore.lifetime_stars())
 	workshop.report_lifetime(ProgressStore.lifetime_stars())
 	return workshop
+
+
+## Fünf unterschiedliche Fahrer aus dem vollständigen spielbaren Pool.
+## Der gewählte Fahrer wird nie dupliziert; die Streckenreihenfolge rotiert
+## deterministisch durch alle übrigen Identitäten, damit gespeicherte Rennen
+## beim erneuten Öffnen dieselbe Startaufstellung behalten.
+func _rival_driver_lineup() -> Array[Dictionary]:
+	var pool: Array[Dictionary] = []
+	for entry in CATALOG.DRIVERS:
+		var identity := str(entry.id)
+		if identity == selected_driver:
+			continue
+		if identity != "fox" and OPPONENT_ROSTER.racing_model_path(identity).is_empty():
+			continue
+		pool.append(entry)
+	if pool.size() < 5:
+		return []
+	var track_index := CATALOG.TRACKS.find_custom(
+		func(entry: Dictionary) -> bool: return str(entry.id) == track_id
+	)
+	var offset := posmod(maxi(track_index, 0), pool.size())
+	var result: Array[Dictionary] = []
+	for index in range(5):
+		result.append(pool[(offset + index) % pool.size()])
+	# Dschungelherz bekommt weiterhin einen sichtbaren Frosch, sofern das Kind
+	# nicht selbst Frosch fährt. Die fünf Startplätze bleiben unverändert.
+	if mode == "race" and track_id == "jungle_emerald_3600" and selected_driver != "frog":
+		var frog := CATALOG.entry(CATALOG.DRIVERS, "frog")
+		var has_frog := false
+		for entry in result:
+			if str(entry.id) == "frog":
+				has_frog = true
+				break
+		if not has_frog and str(frog.get("id", "")) == "frog":
+			result[result.size() - 1] = frog
+	return result
 
 
 ## Fünf verschiedene Karts für die Gegner: nie das eigene, je Strecke eine andere Mischung.
