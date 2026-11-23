@@ -1,0 +1,147 @@
+{
+  "batch": "LUMO Meshy vehicle-body candidates 2026-11-23",
+  "count": 14,
+  "identity_policy": "index + Meshy task_id only; no guessed Kart name",
+  "items": [
+    {
+      "index": 1,
+      "task_id": "01a208f5-fa88-71aa-b7b8-ef546d0992ea",
+      "glb": "intake/models/vehicle_01.glb",
+      "glb_bytes": 4038768,
+      "glb_sha256": "8feb17e921ee2c64a1cfafdb2fff305701d24256ffdc054726d7d743f0669381",
+      "source_image": "intake/source_images/vehicle_01.png",
+      "source_image_bytes": 1248626,
+      "source_image_sha256": "45abb2063730d39cf242c6b74a2b5c88628fc6a659663e61b181e2dce8d55457"
+    },
+    {
+      "index": 2,
+      "task_id": "01a208f6-1513-72af-a6dd-0c9cbd47aa43",
+      "glb": "intake/models/vehicle_02.glb",
+      "glb_bytes": 4162172,
+      "glb_sha256": "a939ce258d2a4774f1337c5050df291e616abce5eae4521b363e8bde028fbc13",
+      "source_image": "intake/source_images/vehicle_02.png",
+      "source_image_bytes": 1260362,
+      "source_image_sha256": "fa5aa2ffac59923d28f5fb2847a00ceba4eaf3c89523509638081ba80e79b0d7"
+    },
+    {
+      "index": 3,
+      "task_id": "01a208f6-2bd1-717d-9048-bca34d55b133",
+      "glb": "intake/models/vehicle_03.glb",
+      "glb_bytes": 4128408,
+      "glb_sha256": "f5bffd23d3a95dbe002fccca5c1f0a591f2efb28d0957e48201661273a0bb107",
+      "source_image": "intake/source_images/vehicle_03.png",
+      "source_image_bytes": 1243013,
+      "source_image_sha256": "eb99e845d3cb7f40a966d38175bd6fe8add08f73850e619806f04e05bb85d2cd"
+    },
+    {
+      "index": 4,
+      "task_id": "01a208f6-40c3-761e-9e63-8f3c35ac38a6",
+      "glb": "intake/models/vehicle_04.glb",
+      "glb_bytes": 3220640,
+      "glb_sha256": "7bfd4d5358f84d9648dd920c3ff30bbdb2655814f91b67ce9f70fe5aff888000",
+      "source_image": "intake/source_images/vehicle_04.png",
+      "source_image_bytes": 1065249,
+      "source_image_sha256": "42a519085b40f687beb36ad8fec3c7d5e8e35cca65d3a075687319f032ec32cd"
+    },
+    {
+      "index": 5,
+      "task_id": "01a208f6-5696-756a-b2fb-c8cf4b032d25",
+      "glb": "intake/models/vehicle_05.glb",
+      "glb_bytes": 3704176,
+      "glb_sha256": "bf1891545681b6ae1ce368de2f4a2837fe0145f511fdf4bdcdd6c2192779f99f",
+      "source_image": "intake/source_images/vehicle_05.png",
+      "source_image_bytes": 1130556,
+      "source_image_sha256": "96dbef3badb9c57ca54d1c1d1b53e1151917b6415f83d9ada3fc75481e8ef7ab"
+    },
+    {
+      "index": 6,
+      "task_id": "01a208f8-fdfc-7211-b08e-9beb07d1c7d2",
+      "glb": "intake/models/vehicle_06.glb",
+      "glb_bytes": 3278228,
+      "glb_sha256": "06bb5b26551146fc82b4decb47cee26948765e4a43d2ca8004255209a1126d1d",
+      "source_image": "intake/source_images/vehicle_06.png",
+      "source_image_bytes": 1137506,
+      "source_image_sha256": "0723c3623fbe2b9340dd0e2a3ef5ed4721c22e32b7660b046005c1f4ee3ddf45"
+    },
+    {
+      "index": 7,
+      "task_id": "01a208f9-1360-76eb-9cf8-f0b5130304f2",
+      "glb": "intake/models/vehicle_07.glb",
+      "glb_bytes": 4446488,
+      "glb_sha256": "adf80a9760556277ce334ebe7e210926fef0cc9576eba6a8ba3b54a21c57451c",
+      "source_image": "intake/source_images/vehicle_07.png",
+      "source_image_bytes": 1227082,
+      "source_image_sha256": "7c2978562b649f17334fb34bd523c24f6cc8e83ff9c88e566b9fe3c1fadab57a"
+    },
+    {
+      "index": 8,
+      "task_id": "01a208f9-2c4a-7417-8aa5-9a932ab4fb4d",
+      "glb": "intake/models/vehicle_08.glb",
+      "glb_bytes": 4205864,
+      "glb_sha256": "67ab2519fab0fdc080af68efcb269d50332bb0398a233e06fab48e2f44ce0f13",
+      "source_image": "intake/source_images/vehicle_08.png",
+      "source_image_bytes": 1152750,
+      "source_image_sha256": "ef9757d3af34ea91fc62e2923eeccae8b8ecda1f254a1e1e3b8de81e5612bfa6"
+    },
+    {
+      "index": 9,
+      "task_id": "01a208f9-4430-72fc-ae88-8efb9b9bea3f",
+      "glb": "intake/models/vehicle_09.glb",
+      "glb_bytes": 3712420,
+      "glb_sha256": "5a26928fa92938b38a6081251331e31f8700fbd235995d2e197a69ed0b7fe2c6",
+      "source_image": "intake/source_images/vehicle_09.png",
+      "source_image_bytes": 1091941,
+      "source_image_sha256": "e64cc1d19083ff728241c97f176b963f7b1e09ce3de089d9129406f75588e698"
+    },
+    {
+      "index": 10,
+      "task_id": "01a208f9-599e-76a8-b2ae-177c5cc55edf",
+      "glb": "intake/models/vehicle_10.glb",
+      "glb_bytes": 3771340,
+      "glb_sha256": "90bb0b38c788c32b5ec7169df12a08d898eb09c09dd8a0cb5bfe7165a025860f",
+      "source_image": "intake/source_images/vehicle_10.png",
+      "source_image_bytes": 1143072,
+      "source_image_sha256": "b899024b03b9da8f8676de40ab8aabf4a55d8e9301d0418fffa3f96adfb380cf"
+    },
+    {
+      "index": 11,
+      "task_id": "01a208fa-7a36-74e9-9692-c46231c84fd2",
+      "glb": "intake/models/vehicle_11.glb",
+      "glb_bytes": 3986076,
+      "glb_sha256": "4ba213e5cb6a57f4eb7ccfc19f35f9a5a17053c80bee6fe9aabb424064edef28",
+      "source_image": "intake/source_images/vehicle_11.png",
+      "source_image_bytes": 1150767,
+      "source_image_sha256": "dec4fff424cabceb32cb408cf65f331303af6c35e3920c2835e1ab293d67f7c5"
+    },
+    {
+      "index": 12,
+      "task_id": "01a208fa-920a-7050-a321-6ea885205e9b",
+      "glb": "intake/models/vehicle_12.glb",
+      "glb_bytes": 4659856,
+      "glb_sha256": "9f2a475faed1f2dbac01254508ae5f6ed6c9c373828341caa72cc79cefbdae1a",
+      "source_image": "intake/source_images/vehicle_12.png",
+      "source_image_bytes": 1122103,
+      "source_image_sha256": "a7c7ccb0ff0c221358e4b0ac833b188d5dc5fff460e0aff824b0ad73181be997"
+    },
+    {
+      "index": 13,
+      "task_id": "01a208fa-a8d5-728e-a575-56a6a71e2c58",
+      "glb": "intake/models/vehicle_13.glb",
+      "glb_bytes": 4623304,
+      "glb_sha256": "6b1bdb9e2d9348719ebb30a866bb8f40daeba8f2f4a89ca9f3fb73cd1b8f6a8d",
+      "source_image": "intake/source_images/vehicle_13.png",
+      "source_image_bytes": 1302776,
+      "source_image_sha256": "233b456007edb99355b8012802a5a8b88d66feb6d759ccccffea1a7e8a5fa2e3"
+    },
+    {
+      "index": 14,
+      "task_id": "01a208fa-c002-7308-a7be-f87bb90f9658",
+      "glb": "intake/models/vehicle_14.glb",
+      "glb_bytes": 3541772,
+      "glb_sha256": "ea9cd38d226a3d8394fb7156b9bf980d5d64585adf112e7dd067ed14c92d2ab0",
+      "source_image": "intake/source_images/vehicle_14.png",
+      "source_image_bytes": 1377072,
+      "source_image_sha256": "ac864c156abedb982f74ed7698a8f83fa910420641bc752cf1e877b486a47c9f"
+    }
+  ]
+}
