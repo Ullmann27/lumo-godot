@@ -72,6 +72,20 @@ func bind_visual(review_kart: Node3D) -> bool:
 	return true
 
 
+func release_for_rebuild() -> void:
+	# The adapter itself is a lightweight owner, but the rig beneath it contains
+	# MeshInstance3D/material RIDs. Detach that render tree so the owner can be
+	# invalidated immediately while the renderer retires the heavy nodes safely
+	# at the end of the frame.
+	set_process(false)
+	kart = null
+	if is_instance_valid(actor):
+		remove_child(actor)
+		actor.queue_free()
+	actor = null
+	_seated_leg_rotations.clear()
+
+
 func _behavior_finished(behavior: String) -> void:
 	if behavior == celebration_clip and victory:
 		victory = false
