@@ -9,6 +9,7 @@ const ENTRIES: Array[Dictionary] = [
 	{"destination": "skypost", "title": "STERNENPOST", "subtitle": "Fliegen, Liefern, Rätseln", "accent": "7fd8ff", "featured": false},
 	{"destination": "puzzle", "title": "PUZZLE-ATELIER", "subtitle": "Bilder zum Leben erwecken", "accent": "c4a7ff", "featured": false},
 	{"destination": "treasure", "title": "SCHATZSUCHE", "subtitle": "Das Inselgeheimnis", "accent": "ffd18d", "featured": false},
+	{"destination": "world", "title": "LUMO WORLD", "subtitle": "Schatzinsel, Dorf & Stadt", "accent": "9af3b4", "featured": false},
 	{"destination": "rhythm", "title": "RHYTHM PARTY", "subtitle": "Spielen zum Beat", "accent": "ff9fd2", "featured": false},
 	{"destination": "build", "title": "BAUWELT", "subtitle": "Bauen & Gestalten", "accent": "88eeb2", "featured": false},
 	{"destination": "stars", "title": "STERNENJAGD", "subtitle": "Sterne fangen mit Lumo", "accent": "b99bff", "featured": false},

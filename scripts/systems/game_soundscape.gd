@@ -58,6 +58,7 @@ const ROUTES: Dictionary = {
 		"music": "treasure", "ambience": "island", "layers": ["discovery"],
 		"ambience_layer": "waterfall",
 	},
+	"world": {"music": "treasure", "ambience": "village_day", "layers": ["discovery"]},
 	"rhythm": {"music": "", "ambience": "stage", "ambience_db": 2.0},
 	"puzzle": {"music": "puzzle", "ambience": "playroom", "ambience_db": -3.0},
 	"build": {"music": "build"},
