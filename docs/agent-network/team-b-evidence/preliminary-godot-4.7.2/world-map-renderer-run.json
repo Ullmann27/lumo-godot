@@ -1,0 +1,12 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 3.7400047130031453,
+  "display": 126,
+  "project": "/workspace/scratch/6c693af2cebc/design-stage",
+  "godot_arguments": [
+    "--script",
+    "res://scripts/tests/lumo_world_map_regression.gd"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}
