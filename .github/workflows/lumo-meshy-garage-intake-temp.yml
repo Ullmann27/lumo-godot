@@ -1,0 +1,73 @@
+name: LUMO Meshy garage intake temporary
+on:
+  push:
+    branches: [asset/lumo-meshy-intake-20261123]
+    paths: [.github/workflows/lumo-meshy-garage-intake-temp.yml]
+permissions:
+  contents: write
+concurrency:
+  group: lumo-meshy-garage-intake-temp
+  cancel-in-progress: true
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and validate four garage-world candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p garage_intake/models garage_intake/source_images
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-dabd-70a4-8096-f01b82f614b6/01a208fe-0e2e-71cc-999f-9b3142524ce3/Meshy_AI__1123151957_image-to-3d-texture.glb?Expires=1795564800&Signature=brh4cuvxqgfOC~JquGmeV4dG6gL31Xey-0h2OKS46n~EUj7VpN02jVorHfoWj6UKLraEsoassQV4xwEBPrEusMWzaDexPp-5L9xFjabEKMrN8Pw3RyCbLUbpI3JPWRbiUzILi-e96K80BAzof9xrARqyoX-n-xY9wiCqP~Lz4LMUjYBZDd-XVQUHlbMFzsdlVpQtx5qOrq7Di4XJduzVldwCWm6SAIcfPMIHeTkEnOdDEk0V~XZ~becb~ZHI~sTiUUfP0UrveAVybSx3QR15pMxY1GLHKEZVf36qJt7kVRGAuQ4t3kN0AXlhtHmVkcv5Vrd51YpANWwMpNJA6NvRjA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/models/garage_01.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-dabd-70a4-8096-f01b82f614b6.png?Expires=1795564800&Signature=lyJvNaCT9X3YHb7Y422~DaTOMf-1dtBiH8FyGLA5rOWPKAbuSyeYx3wO2ZJPFpfTk9PwB8gHXEA9OPG~bYNqmI76rJG5iVx7O-lcipN9XUq3dXhn~5UEyEvn3jPerEOlDvH-5sVEI32yCJ5TR-Sglq5J-qEV9gKhttqHnFMHpMfS5TnaCz1-O2fTi3vhzk515lcQEWlrmxMXz3HP0d6B12aDXHVyxVrLSyKrynC1Y~WT8gXxJdNkVziV3yFCqXECZV6xdwzfPUNAZ3FFU44mSQNzjxc8Ncepjl3k-uHfh~u2RPueptN5M84jtyruOt9pA6HblH4G5e~aak4RxPICeQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/source_images/garage_01.png"
+          echo "01 01a208fa-dabd-70a4-8096-f01b82f614b6" >> garage_intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fa-f574-746a-bd10-34f286262996/01a208fd-f116-74f8-b3ac-3495234e2bb5/Meshy_AI__1123151949_image-to-3d-texture.glb?Expires=1795564800&Signature=XD1SwW4toJwJ2zaaP1A7XYG79ESvqMe1pNObRlXEP33G78hbvmiLZ2UFjCeVvvsUDNg4IDvoKoyFl0KwjHdEedMD20chZrCUUhoPCIPGDyC~SkQpZpl--HfJJP~QG5V5TByxjErbviXR4AIxEm5f-0CnxIhZHnA0~FoqieMQVdLdRT3tJydfDt5XUt5KytYck~llhIGHBWjSlYCb9Cg0kGNRMLXWD0Sl68KUqpKgyp9zPQa67yg~MpHS3r6~mBXIdPWqOpunQ-gUmA7GWsx7-R2rJ7yJEDkpEdagrf~WZpd4YHBFhyrOxoIqDhrZSaioq6-Sb7x8aOXVzwnoHyXdbg__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/models/garage_02.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fa-f574-746a-bd10-34f286262996.png?Expires=1795564800&Signature=O7dux-yfdY8uJZ0hF3DVZ7k9gIDLNLvXSntZ68yTYDa5yVgI-fLf2CQGjFsiylW5GWgkL2ttnjpdV1r3cfAMrtR48nn8dmb74xfc49S56J1I3wvLu7T73nsqZETbHSgXwiylppOXI3ZK2pomMKPkRYBG5DLji-5raSot2Gco2L8jDCkE5XPzseBS9RBx11yjynPCeh6IyxO9jcOfz6vHNuIFzF8ZE1P25u~my3lpFwhrdT-1OnK~rwD2e5uQpSOAtUlEjbLoWOFDenzjOwkKz2nZ7iqsVhesaaJ7Zh74CqUkxg3M36XRfQnMZ3nL01tGMzRM5UTowjFBQhL74Nv1sA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/source_images/garage_02.png"
+          echo "02 01a208fa-f574-746a-bd10-34f286262996" >> garage_intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fb-0f07-75e3-bf4d-fe3d76ad3c96/01a208fe-4ec7-72ab-b390-4a33ba7e1d01/Meshy_AI__1123152013_image-to-3d-texture.glb?Expires=1795564800&Signature=llevh2BER33Vtqu2FKWCBottF9tJ51g33S5Q7eaa2k3vH5~ro6LNqCSVZUuNhlhDLQC7AupiTLdLJLg343Bt0eunnK~eF9AXwQBi423fZoGrt4Ov~KYx4-Ts3DMB-L-qHqfAiOmYrcS99qmEOAaF1HAQ2rax8aP2NrbIPxS30kQp0Hgt2BF2iEnbq3ziLSap68XPLHafCl8x-z2mN5-aOF0yTLPv7AcwnvInCl6MuwPkkJsUpITwl4ft5Sep4FR2qkTyncuam40~QeLfPPr-8fsv16ds7OGAeUIRub2rhXqm7dnzcRYKvK3E7hSaU9o7mWfIqYdQy1hDgZ-MxiWCSg__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/models/garage_03.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fb-0f07-75e3-bf4d-fe3d76ad3c96.png?Expires=1795564800&Signature=P07A40sukcfMyNY1y3U2pSGvBTFM3Hxfn53Kq7PyhHMG5IEhUe1eIEbKsXh9xegE6uwh-TMu7yz4Xje0aRjCIkx9uWDv~Nb0Va-PIeYEsjCPFO2mnaX7LgyzQV4da6AWGMOCIr-WejYmTTJx-npvbeFpHsFn1Ffsx~Bm-ZThhh~A5wcP9~puiqb4U~H3VqARg46m7xc4-eaFf8ZPewEcCHBQ2wCr1YAQ6Hy-2HG5GXTWqNOfJKlZg0yLQTy7py0TT63dxwDKIO3jxfFOkd709rj-Go4DRXHZCzM42QTWAKH7-v98Wo8o9soyYsWdENDz6C~c-MShQ20O3FvFvjQZPA__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/source_images/garage_03.png"
+          echo "03 01a208fb-0f07-75e3-bf4d-fe3d76ad3c96" >> garage_intake/task_ids.txt
+          curl --fail --location --retry 3 'https://assets.meshy.ai/uploads/converted/01a208fb-255d-7770-a1e7-c5e76d827ffa/01a208fd-c012-74b3-9df6-643794566050/Meshy_AI__1123151937_image-to-3d-texture.glb?Expires=1795564800&Signature=er9iafopBhTgvv6T2MpTNIhgIfkp93BZM4JIOjQyVuUmWqGQqIeRCf24RwU0k3lQ6diY7Fcf-sDEbMf8CerYR7CKfvBmx9F7AeuE2GxAT~zgzTCi1Pe5Tg0A2FF4y5IhEwp2MkYeqKyUJtjGabDhvgYxFTvdHA7Z0MtRoMY4RowkGczVAu-DBGrhH4CJzQYBXVhujP8M1~iuS8K1fwYnOTU8~vFmd2-anITIXXrNuQyxAZRDaM4R8QGdTMdGBMedNFeZG~Xb275IyII152-6VBszPZZvXb1OYgjyZK2p1HA3fU~D9uZxVaWY76FLsA~dd4MrcEBfrfr8aHqSg4DLoQ__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/models/garage_04.glb"
+          curl --fail --location --retry 3 'https://assets.meshy.ai/c6ee2938-3d64-4646-b735-df759a3ecaed/uploads/0_01a208fb-255d-7770-a1e7-c5e76d827ffa.png?Expires=1795564800&Signature=MZzYOJs62Ygg75nGOiW1WR-ChAMWj0Brgl-XiXsYcFM3q8Vt4Ju74SaXBLdlF8ql7fYPawDlC4wpKLHoHINabdJ5pMZDyS6G2RMRJjHTfKeGSU2O7gjeCb9ydNfSSgYtRXbooVqb-ZF7LjteOWqZ58Ai7v7DTw~rykA6vGzyg528R145zTK7fdyN87yIS7B3hB~AUEq9grD~rS2tCMHsYjJj7eevS8EaenoTRhzJ9sJ-BYAbBdZ1f~wyER8mbfT3uJevlZvUBmq-FmvXPWjVkNLUJl~RRQwdNKI4KsoSASvfNd0XTd-otPCkKctJ3Uq68RRjqB7Hja0cXkcSoDrwgw__&Key-Pair-Id=K1VGYTHIYLM9UM' -o "garage_intake/source_images/garage_04.png"
+          echo "04 01a208fb-255d-7770-a1e7-c5e76d827ffa" >> garage_intake/task_ids.txt
+          python3 - <<'PY'
+          import hashlib,json,pathlib,struct
+          root=pathlib.Path("garage_intake")
+          tasks={}
+          for line in (root/"task_ids.txt").read_text().splitlines():
+              n,task=line.split()
+              tasks[n]=task
+          rows=[]
+          for n,task in sorted(tasks.items()):
+              glb=root/"models"/f"garage_{n}.glb"
+              png=root/"source_images"/f"garage_{n}.png"
+              data=glb.read_bytes()
+              assert data[:4]==b"glTF" and len(data)>1000
+              _,version,total=struct.unpack("<4sII",data[:12])
+              assert version==2 and total==len(data)
+              image=png.read_bytes()
+              assert image.startswith(b"\x89PNG\r\n\x1a\n")
+              rows.append({"index":int(n),"task_id":task,"glb_bytes":len(data),"glb_sha256":hashlib.sha256(data).hexdigest(),"source_sha256":hashlib.sha256(image).hexdigest()})
+          assert len(rows)==4
+          (root/"manifest.json").write_text(json.dumps({"count":4,"identity_policy":"task identity only; classify after visual review","items":rows},indent=2)+"\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lumo-meshy-garage-intake-review
+          path: garage_intake/
+          retention-days: 14
+          compression-level: 0
+      - name: Commit durable garage-world candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p art/lumo_kart/meshy_incoming/garage_models art/lumo_kart/meshy_incoming/garage_source_images
+          cp garage_intake/models/*.glb art/lumo_kart/meshy_incoming/garage_models/
+          cp garage_intake/source_images/*.png art/lumo_kart/meshy_incoming/garage_source_images/
+          cp garage_intake/manifest.json art/lumo_kart/meshy_incoming/garage_manifest.json
+          git config user.name "LUMO Asset Intake"
+          git config user.email "64243701+Ullmann27@users.noreply.github.com"
+          git add art/lumo_kart/meshy_incoming
+          git commit -m "assets(kart): preserve four Meshy garage-world candidates"
+          git push origin HEAD:asset/lumo-meshy-intake-20261123
