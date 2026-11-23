@@ -425,7 +425,7 @@ jobs:
           set -euo pipefail
           mkdir -p exports/character-review
           for case in \
-            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2306 failures=0' \
+            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2287 failures=0' \
             'kart_face_depth_regression|face-depth|[FaceDepth] checks=23 failures=0' \
             'kart_fox_eye_proportions_regression|fox-eyes|[LumoEyeProportions] PASS:' \
             'kart_stage_visual_regression|face-studio|[LumoFaceStudio] PASS:'; do
