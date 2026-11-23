@@ -65,6 +65,34 @@ const DRIVERS: Array[Dictionary] = [
 		"tag": "DEINE FLINKE KATZE",
 		"color": Color("c8d8ef"),
 		"unlock": 0
+	},
+	{
+		"id": "lion",
+		"name": "Löwe",
+		"tag": "STARK UND MUTIG",
+		"color": Color("f4ae52"),
+		"unlock": 0
+	},
+	{
+		"id": "owl",
+		"name": "Eule",
+		"tag": "KLUG UND RUHIG",
+		"color": Color("c7a585"),
+		"unlock": 0
+	},
+	{
+		"id": "squirrel",
+		"name": "Eichhörnchen",
+		"tag": "SCHNELL UND WENDIG",
+		"color": Color("f39154"),
+		"unlock": 0
+	},
+	{
+		"id": "turtle",
+		"name": "Schildkröte",
+		"tag": "RUHIG UND AUSDAUERND",
+		"color": Color("95c661"),
+		"unlock": 0
 	}
 ]
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
