@@ -15,7 +15,7 @@ const COVER_BY_SCENE: Dictionary = {
 	"puzzle": "res://assets/creative/covers/puzzle.png",
 	"rhythm": "res://assets/creative/covers/rhythm.png",
 	"treasure": "res://assets/creative/covers/treasure.png",
-	"world": "res://assets/creative/covers/treasure.png",
+	"world": "res://assets/games/hub/world.webp",
 	"jump": "res://assets/kart/menu/lumo-world.webp",
 	"run": "res://assets/kart/menu/lumo-world.webp",
 	"skypost": "res://assets/skypost/cover.webp",

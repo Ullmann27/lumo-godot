@@ -1,3 +1,9 @@
+# LUMO World — Unterstützung durch drei zusätzliche Agents
+
+23.11.2026. Eigener Zweig `support/logic-world-team-b-20261123`, PR-Ziel `feature/logic-world-20261123`. Neue Karte, Freundepost und dauerhafter Ampelknopf sind angeschlossen. Hauptchat-Basis `9decd8eb59b03f31cdc7b2a33b0703a1e0d9b8c2` ist erhalten. Stand und konkrete Prüfgrenzen: [Team-B-Übergabe](docs/agent-network/TEAM_B_LOGIC_WORLD_20261123.md). Lokale Umgebung fiel aus; abschließende Integration und Android sind noch nicht abgenommen. Der eigenständige Unterstützungs-Prüflauf liegt im Flutter-Repository. Keine Änderung an main.
+
+## Bisherige Projektaufzeichnungen
+
 # Current Native Discovery activation — 2026-11-14
 
 The source checkpoint is `4d2cbb6ea235c7bf519aa5f3873a16f6b177be2b`, tree `4d50f5652b43846516f759be300d9b50a960f692`,

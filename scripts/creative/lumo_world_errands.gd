@@ -127,18 +127,17 @@ func guidance(chapter_complete: bool) -> Dictionary:
 	return {"id": str(delivery.id), "at": FRIENDS[id].at, "title": str(FRIENDS[id].name)}
 
 
-func summary(grade: int, chapter_complete: bool) -> String:
+func summary(_grade: int, chapter_complete: bool) -> String:
 	if not chapter_complete:
 		return ""
-	var heading := "FREUNDEPOST · %d / %d Stempel" % [completed.size(), ERRANDS.size()]
+	var heading := "FREUNDEPOST · %d/%d Stempel" % [completed.size(), ERRANDS.size()]
 	if is_complete():
-		return heading + "\nDrei Lieferungen, drei Freunde. Danke, Lumo!"
+		return heading + "\nAlle Lieferungen sind da.\nDanke, Lumo!"
 	var delivery := current()
 	if carrying():
-		return heading + "\n" + str(delivery.parcel) + "\n" + clue(grade)
+		return heading + "\n" + str(delivery.parcel) + " unterwegs\nWeltkarte: Hinweis lesen."
 	var sender: Dictionary = FRIENDS[str(delivery.sender)]
-	return heading + "\n" + str(delivery.title) + "\nBesuche " + str(sender.name) + " " + str(sender.place) + "."
-
+	return heading + "\nBesuche " + str(sender.name) + ".\nWeltkarte: Ort ansehen."
 
 func stamps() -> Array[String]:
 	var result: Array[String] = []

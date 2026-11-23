@@ -81,6 +81,11 @@ func _run() -> void:
 	atlas.focus_objective()
 	_check(atlas.view_bounds == complete_view, "objective action cannot change a completed chapter's view")
 	_check(atlas.objective_label.text.contains("Alle Aufträge geschafft"), "completed chapter has an explicit readable state")
+	atlas.set_objective_note("Freundepost: Lies deinen Hinweis.")
+	_check(atlas.objective_label.text == "Freundepost: Lies deinen Hinweis.", "an unsolved delivery has honest text without a target location")
+	_check(atlas.active_mission.is_empty() and atlas.focus_buttons["objective"].disabled, "text-only delivery context never reveals a destination")
+	atlas.set_objective_note("  ")
+	_check(atlas.objective_label.text == "Freundepost: Lies deinen Hinweis.", "empty context cannot erase the readable delivery hint")
 	# A later caller mutation cannot alter the map's isolated input snapshot.
 	original_missions[0]["title"] = "CHANGED OUTSIDE"
 	_check(str(atlas.missions[0].title) == "Ein neues Zuhause", "nested mission data is copied rather than held by mutable reference")

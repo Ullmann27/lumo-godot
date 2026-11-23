@@ -7,6 +7,7 @@ const SETTLEMENT = preload("res://scripts/creative/build_settlement_state.gd")
 const PROFILE := "lumo_world_regression_20261123"
 var checks := 0
 var failures: Array[String] = []
+var scene_test_finished := false
 
 
 func _initialize() -> void:
@@ -93,6 +94,7 @@ func _run() -> void:
 	router.launch_options.erase("worldPortalOrigin")
 	_check(not router.should_return_to_world("games"), "ordinary games retain their previous exit behavior")
 	await _real_scene()
+	_check(scene_test_finished, "the full scene and file-preservation regression completed")
 	print("[LumoWorld] %s %d checks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	quit(0 if failures.is_empty() else 1)
 
@@ -103,8 +105,10 @@ func _real_scene() -> void:
 	DirAccess.remove_absolute(world_path)
 	var original = SETTLEMENT.new("settlement", true)
 	for plot in range(9):
-		if original.try_build("house", plot):
+		original.try_build("house", plot)
+		if original.player().buildings.size() >= 3:
 			break
+	_check(original.player().buildings.size() >= 2, "real village fixture has multiple independent building IDs")
 	var envelope := {"version": 1, "child": PROFILE, "mode": "settlement", "slot": 1, "settlement": original.snapshot(), "village_meta": {}}
 	var bytes := JSON.stringify(envelope)
 	var file := FileAccess.open(village_path, FileAccess.WRITE)
@@ -122,6 +126,9 @@ func _real_scene() -> void:
 	_check(scene.art.zones.has("OriginalTreasureIsland"), "original terrain and nature are the World foundation")
 	_check(scene.own_village.source_status == "loaded", "the real existing village envelope is loaded")
 	_check(scene.own_village.model.player().buildings == original.player().buildings, "saved village building identity and plots are identical")
+	scene.own_village.update_focus(VILLAGE.ORIGIN + Vector3(-100, 0, 0), 0.0)
+	for building in original.player().buildings:
+		_check(scene.own_village.facilities.has(str(building.id)), "saved string building ID remains a separate walkable building: " + str(building.id))
 	_check(FileAccess.get_file_as_string(village_path) == bytes, "World never modifies the village economy save")
 	_check(scene.portals.size() == 3, "Kart Cards and village portals are present")
 	_check(scene.traffic.size() == 4, "Blender traffic vehicle models load")
@@ -153,10 +160,39 @@ func _real_scene() -> void:
 		_check(absf(traffic_entry.node.position.x - 110.0) >= 7.5, "green starts only after traffic has cleared")
 	_check(scene._save(), "World progress saves atomically")
 	_check(FileAccess.get_file_as_string(village_path) == bytes, "walking driving traffic and World save never advance village state")
+	scene.model.completed.assign(["meet_nelli", "safe_crossing"])
+	scene.player.position = Vector3(110, 0.2, -24)
+	var old_request: Dictionary = scene.model.begin_school_request("persisted-grade-two-request", 2, scene.player.position)
+	_check(scene._save(), "pending old-school-year mission is persisted")
 	scene.queue_free()
 	await _frames(3)
+	root.get_node("SceneRouter").launch_options = {"childKey": PROFILE, "grade": 3, "reduceAnimations": true, "worldLearningReceipt": _receipt(old_request)}
+	scene = load("res://scenes/creative/lumo_world.tscn").instantiate()
+	root.add_child(scene)
+	await _frames(5)
+	_check(scene.model.completed.size() == 2, "actual World restart refuses an old-school-year receipt")
+	_check(scene.model.pending_lesson.grade == 3 and scene.model.pending_lesson.requestId != old_request.requestId, "actual World restart rotates the pending school request")
+	var reloaded: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(world_path))
+	_check(reloaded.pendingLesson.grade == 3, "new-school-year request is durable before leaving World")
+	scene.queue_free()
+	await _frames(3)
+	for broken in ["{invalid-json", "[]", JSON.stringify({"version": 1, "completed": ["school_numbers"], "position": [0, 0, 0]})]:
+		file = FileAccess.open(world_path, FileAccess.WRITE)
+		file.store_string(broken)
+		file.close()
+		scene = load("res://scenes/creative/lumo_world.tscn").instantiate()
+		root.add_child(scene)
+		await _frames(4)
+		_check(scene.save_blocked and scene.modal.visible, "invalid persisted World opens a safe return dialog")
+		_check(not scene._save(), "invalid persisted World blocks autosave and explicit save")
+		_check(not scene._report_completed_reward(), "invalid persisted World cannot report a completion reward")
+		_check(scene.model.pending_lesson.is_empty(), "invalid persisted World does not consume or replace a school receipt")
+		_check(FileAccess.get_file_as_string(world_path) == broken, "invalid persisted World bytes are preserved exactly")
+		scene.queue_free()
+		await _frames(3)
 	DirAccess.remove_absolute(world_path)
 	DirAccess.remove_absolute(village_path)
+	scene_test_finished = true
 
 
 func _frames(count: int) -> void:

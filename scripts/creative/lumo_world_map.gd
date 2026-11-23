@@ -445,3 +445,9 @@ func _clip_segment(first: Vector2, last: Vector2, rect: Rect2) -> PackedVector2A
 		if lower > upper:
 			return PackedVector2Array()
 	return PackedVector2Array([first + lower * direction, first + upper * direction])
+
+
+## Text-only context for an unsolved delivery; never creates a target marker.
+func set_objective_note(message: String) -> void:
+	if is_instance_valid(objective_label) and not message.strip_edges().is_empty():
+		objective_label.text = message

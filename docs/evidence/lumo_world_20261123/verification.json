@@ -1,0 +1,57 @@
+{
+  "recordedUtc": "2026-11-23T12:18:13.442899+00:00",
+  "baselineCommit": "c9619c589e3a9faa0b56f190fb38a61bf44bb1d6",
+  "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+  "tests": [
+    {
+      "script": "scripts/tests/lumo_world_regression.gd",
+      "result": "PASS",
+      "checks": 169,
+      "log": "world-regression.log"
+    },
+    {
+      "script": "scripts/tests/host_bridge_regression.gd",
+      "result": "PASS",
+      "log": "host-bridge-regression.log"
+    },
+    {
+      "script": "scripts/tests/treasure_exploration_regression.gd",
+      "result": "PASS",
+      "checks": 92,
+      "log": "treasure-exploration-regression.log"
+    },
+    {
+      "script": "scripts/tests/lumo_world_capture.gd",
+      "mode": "--check-only",
+      "result": "PASS",
+      "log": "capture-parse.log"
+    }
+  ],
+  "runtimeCapture": {
+    "localStatus": "NOT RUN",
+    "reason": "Local display server cannot bind AF_UNIX sockets in this environment; no restriction bypass attempted. Real renderer capture is prepared for CI."
+  },
+  "androidDeviceAcceptance": "NOT RUN",
+  "fps60Acceptance": "NOT CLAIMED",
+  "sourceSha256": {
+    "scripts/creative/lumo_world.gd": "49ffca26c890fb4aaf71b86bd2ff130f7fd04c0fb1b1d32cc35a6150e8b08d7a",
+    "scripts/creative/lumo_world_state.gd": "89ec1581345627a9ac981ec48b871a6bcfe765449a4d59b77d27bca53ab2f843",
+    "scripts/creative/lumo_world_village.gd": "ee0a0c42e1c01a5cc9699e411cf1ea1be90325fbc320975ca96d90d86bd39401",
+    "scripts/creative/lumo_world_art.gd": "6f226f9cbc8b8bcb2296efcbbaa877c15f93fe29d50ca23a54d21dec0bc9beb3",
+    "scripts/tests/lumo_world_regression.gd": "bbf98c6fc146c96b83ddd7c8b94eebfc64b3dac911b44a2bd7e7ea76a594924a",
+    "scripts/tests/lumo_world_capture.gd": "d0ff2d8c9cc09685a075615dd4a5edc519d219e2d8a5804cea3eeeffd8fd8123"
+  },
+  "preexistingHubIssue": {
+    "test": "game_hub_tiles_regression.gd",
+    "failures": 4,
+    "checks": 105,
+    "reason": "Baseline lacks assets/games/hub/settlement.webp and assets/games/hub/stars.webp; World was not in that legacy test ROUTES list."
+  },
+  "previewArt": {
+    "result": "PASS",
+    "renderer": "Blender 4.3.2 Cycles CPU",
+    "visualReview": "Original village textures, original Lumo, production kart and no rig helper geometry verified visually",
+    "path": "assets/games/hub/world.webp",
+    "notGameplayEvidence": true
+  }
+}

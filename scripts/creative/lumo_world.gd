@@ -51,6 +51,7 @@ var paused := false
 var time := 0.0
 var save_clock := 0.0
 var save_path := ""
+var save_blocked := false
 var last_safe := STATE.SPAWN
 var last_saved := STATE.SPAWN
 var drive_speed := 0.0
@@ -76,11 +77,20 @@ func _ready() -> void:
 	var profile: String = str(SceneRouter.launch_options.get("childKey", "standalone"))
 	save_path = "user://lumo_world_" + profile.sha256_text().substr(0, 32) + ".json"
 	if FileAccess.file_exists(save_path):
-		var saved = JSON.parse_string(FileAccess.get_file_as_string(save_path))
-		if saved is Dictionary:
-			friend_post_original = saved.get("friendPost", {})
-			if not model.restore(saved):
-				checkpoint_message = "Der gespeicherte Stand konnte nicht gelesen werden. Die Schatzsuche bleibt erhalten."
+		var saved_file := FileAccess.open(save_path, FileAccess.READ)
+		if saved_file == null or saved_file.get_length() > 65536:
+			save_blocked = true
+		else:
+			var text := saved_file.get_as_text()
+			var read_error := saved_file.get_error()
+			saved_file.close()
+			var parser := JSON.new()
+			save_blocked = read_error != OK or parser.parse(text) != OK or not parser.data is Dictionary
+			if not save_blocked:
+				friend_post_original = parser.data.get("friendPost", {})
+				save_blocked = not model.restore(parser.data)
+		if save_blocked:
+			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
 	if model.result_id.is_empty():
 		model.result_id = HostBridge.new_result_id()
 	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
@@ -93,7 +103,7 @@ func _ready() -> void:
 	_create_portals()
 	friend_post = FRIEND_POST.new()
 	add_child(friend_post)
-	if not friend_post.setup(self, friend_post_original):
+	if not friend_post.setup(self, friend_post_original) and not save_blocked:
 		checkpoint_message = "Deine Freundepost konnte nicht geladen werden. Der gespeicherte Nebenauftrag bleibt erhalten; du kannst deine Welt weiter erkunden."
 	wonder = WISPS.new()
 	wonder.name = "WorldGuidance"
@@ -103,7 +113,7 @@ func _ready() -> void:
 	marker.name = "WorldMissionMarker"
 	marker.scale = Vector3.ONE * 0.65
 	_build_ui()
-	if not model.pending_lesson.is_empty() and int(model.pending_lesson.get("grade", 0)) != grade:
+	if not save_blocked and not model.pending_lesson.is_empty() and int(model.pending_lesson.get("grade", 0)) != grade:
 		# A profile may move to the next school year while a lesson is open.
 		# Rotate the request before consuming a returning receipt: an old-grade
 		# completion cannot unlock the replacement mission, even after restart.
@@ -111,17 +121,20 @@ func _ready() -> void:
 		checkpoint_message = "Die Schulmission passt jetzt zu deiner Schulstufe. Deine Freunde warten auf dich."
 		_save()
 	var receipt = SceneRouter.launch_options.get("worldLearningReceipt", {})
-	if receipt is Dictionary and model.consume_learning_receipt(receipt):
+	if not save_blocked and receipt is Dictionary and model.consume_learning_receipt(receipt):
 		checkpoint_message = "Deine Lernrunde ist geschafft! Bruno wartet im Garten."
 		_save()
 	_update_mission()
-	if model.is_complete():
+	if not save_blocked and model.is_complete():
 		_report_completed_reward()
 	if not checkpoint_message.is_empty():
 		status_label.text = checkpoint_message
 	RUNTIME.watch_safe_area(self, _layout)
 	get_viewport().size_changed.connect(_layout)
 	_layout.call_deferred()
+	if save_blocked:
+		_open_dialog("Deine gespeicherte Welt bleibt erhalten", checkpoint_message)
+		modal_box.add_child(KIT.button("Zur Spielewelt", _leave, 180))
 
 
 func _exit_tree() -> void:
@@ -409,14 +422,15 @@ func _physics_process(delta: float) -> void:
 		wonder.set_routes(at, [mission])
 	var portal := _near_portal()
 	var friend_available: bool = friend_post.available(at)
-	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available)
-	if str(mission.get("id", "")) == "safe_crossing":
+	var crossing_available := _near_crossing_button(at)
+	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not crossing_available)
+	if crossing_available or str(mission.get("id", "")) == "safe_crossing":
 		action_button.text = "Ampelknopf"
 	elif str(mission.get("id", "")) == "school_numbers":
 		action_button.text = "Zur Schule"
 	else:
 		action_button.text = "Ansprechen"
-	if not model.near_current(at):
+	if not model.near_current(at) and not crossing_available:
 		if friend_available:
 			action_button.text = "Freundepost"
 		elif not portal.is_empty():
@@ -451,8 +465,10 @@ func _walk_tick(axis: Vector2, delta: float) -> void:
 		player.velocity.y = -0.5
 	var old_position := player.position
 	player.move_and_slide()
-	if absf(player.position.x - 110.0) < 2.4 and old_position.z >= 4.6 and player.position.z < 4.6 and not signal_green:
-		player.position.z = 4.6
+	var entering_from_south := old_position.z >= 4.6 and player.position.z < 4.6
+	var entering_from_north := old_position.z <= -4.6 and player.position.z > -4.6
+	if absf(player.position.x - 110.0) < 2.4 and (entering_from_south or entering_from_north) and not signal_green:
+		player.position.z = 4.6 if entering_from_south else -4.6
 		player.velocity.z = 0
 		status_label.text = "Die Ampel ist rot. Bleib am Rand und drücke den Ampelknopf."
 	if player.is_on_floor() and absf(player.position.z) > 6.0:
@@ -636,8 +652,26 @@ func _close_dialog() -> void:
 	kart_visual.set_driver_runtime_state(false, false, not driving)
 
 
+func _near_crossing_button(at: Vector3) -> bool:
+	if not is_finite(at.x) or not is_finite(at.y) or not is_finite(at.z):
+		return false
+	return at.distance_to(Vector3(110, 0, 7)) <= 3.2 or at.distance_to(Vector3(110, 0, -7)) <= 3.2
+
+
+func _request_crossing() -> void:
+	if driving or save_blocked or not _near_crossing_button(player.position):
+		return
+	if not signal_requested and not signal_green:
+		signal_clock = 0.0
+	signal_requested = true
+	status_label.text = "Grün für dich. Schau auf den Verkehr und gehe über den Zebrastreifen." if signal_green else "Die Ampel hat deinen Wunsch gespeichert. Warte am Rand, bis es Grün wird."
+
+
 func _interact() -> void:
-	if paused or driving:
+	if paused or driving or save_blocked:
+		return
+	if _near_crossing_button(player.position):
+		_request_crossing()
 		return
 	if not model.near_current(player.position):
 		if friend_post.interact(player.position):
@@ -654,9 +688,7 @@ func _interact() -> void:
 			_open_dialog("Nelli · Willkommen im Sonnendorf", "Du bist von der Schatzinsel herübergekommen! Ich wohne im Haus mit dem warmen Dach. Heute planen wir einen Garten. Kommst du mit zur Schule?")
 			modal_box.add_child(KIT.button("Ja, ich helfe mit", _meet_nelli, 180, Color("1b7d63")))
 		"crossing":
-			signal_requested = true
-			signal_clock = 0.0 if not signal_green else signal_clock
-			status_label.text = "Die Ampel hat deinen Wunsch gespeichert. Warte am Rand, bis es Grün wird."
+			_request_crossing()
 			return
 		"lesson":
 			_open_dialog("Lumo geht zur Schule", "Wir brauchen einen Plan für Brunos Garten. Eine Mathe-Lernrunde in deiner Schulstufe hilft euch dabei. Danach geht dein Abenteuer genau hier weiter.")
@@ -744,7 +776,7 @@ func _completed_step(message: String) -> void:
 
 
 func _report_completed_reward() -> bool:
-	if not model.is_complete():
+	if save_blocked or not model.is_complete():
 		return false
 	return HostBridge.reward({"resultId": model.result_id, "game": "world", "status": "completed", "stars": 3, "xp": 42})
 
@@ -768,7 +800,15 @@ func _map_dialog() -> void:
 		# The delivery address is revealed only when the child requests help.
 		map_mission = friend_post.guidance()
 	overview.configure(STATE.BOUNDS, _active_position(), kart_body.rotation.y if driving else fox.rotation.y, map_mission, model.completed, STATE.MISSIONS, portals, reduced_motion)
+	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
+		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
+	if friend_post.unlocked() and not friend_post.model.is_complete():
+		var clue := KIT.label(friend_post.model.clue(grade) if friend_post.model.carrying() else friend_post.briefing(), 18)
+		clue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		modal_box.add_child(clue)
+		if friend_post.model.carrying() and map_mission.is_empty():
+			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
 	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Rennen: Umschalten\nKart: Zum Parkplatz gehen und einsteigen", 16))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -787,7 +827,7 @@ func _pause_menu() -> void:
 
 
 func _save() -> bool:
-	if not is_instance_valid(player):
+	if save_blocked or not is_instance_valid(player):
 		return false
 	save_pending = true
 	var at := player.position
@@ -802,8 +842,7 @@ func _save() -> bool:
 	if file == null:
 		return false
 	var data: Dictionary = model.to_data()
-	# Preserve unknown or damaged sidequest data verbatim while the main world
-	# stays usable. A future save version must never be silently reset here.
+	# Keep unreadable or future sidequest data unchanged in the original profile save.
 	data["friendPost"] = friend_post.to_data() if friend_post.save_valid else friend_post_original
 	file.store_string(JSON.stringify(data))
 	file.flush()
@@ -819,7 +858,7 @@ func _save() -> bool:
 
 
 func _leave() -> void:
-	if _save():
+	if save_blocked or _save():
 		SceneRouter.goto("games")
 
 
