@@ -73,7 +73,7 @@ func _run() -> void:
 				shown_plus >= 1 and shown_minus >= 1,
 				"%s/%s: Vorteil und Nachteil stehen in der Prüfstand-Anzeige" % [slot, entry.id]
 			)
-		_check(free == 2, "%s: Serie und genau eine Variante frei" % slot)
+		_check(free == 3, "%s: Serie, bisherige freie Variante und neues Evolution-Teil frei" % slot)
 	# Rounding and physical limits can differ between chassis. Check every
 	# purchasable mechanical part against its own stock vehicle.
 	for kart_id in FLEET.ids():

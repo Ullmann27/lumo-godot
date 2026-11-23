@@ -276,7 +276,7 @@ func _on_open() -> void:
 func _on_stats() -> void:
 	if menu.workshop == null:
 		return
-	stats_title.text = "Fahrwerte · %s" % str(FLEET.entry(_kart_id()).get("name", ""))
+	stats_title.text = "Grundprofil · %s" % str(FLEET.entry(_kart_id()).get("name", ""))
 	stats_bars.set_values(FLEET.base_stats(_kart_id()), menu.workshop.bonus(_kart_id()), true)
 	stats_panel.visible = not stats_panel.visible
 
@@ -329,7 +329,7 @@ func _build_tiles() -> void:
 		picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		picture.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var node_name: String = str(option.get("node", ""))
-		var path := THUMBS % (node_name if not node_name.is_empty() else ("Serie_" + slot))
+		var path: String = str(option.get("thumb", THUMBS % (node_name if not node_name.is_empty() else ("Serie_" + slot))))
 		if ResourceLoader.exists(path):
 			picture.texture = load(path)
 		box.add_child(picture)
@@ -426,7 +426,12 @@ func _refresh_dyno() -> void:
 	var before: Dictionary = DYNO.measure(workshop.multipliers(_kart_id()))
 	var after: Dictionary = DYNO.measure(workshop.multipliers_with(_kart_id(), pending))
 	dyno_title.text = "Prüfstand · Montiert → Vorschau" if has_performance_change else "Prüfstand · Montiert"
-	for metric in DYNO.display_metrics(defaults, before, after):
+	var metrics: Array[String] = []
+	# The full combination stays inspectable; significant changes come first.
+	for metric in DYNO.display_metrics(defaults, before, after, DYNO.METRICS.size()) + DYNO.METRICS:
+		if not metrics.has(metric):
+			metrics.append(metric)
+	for metric in metrics:
 		var old_value := float(before[metric])
 		var new_value := float(after[metric])
 		dyno_values[metric] = [old_value, new_value]
@@ -443,8 +448,17 @@ func _refresh_dyno() -> void:
 		value_label.name = "DynoAfter_" + metric
 		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		dyno_grid.add_child(value_label)
-		dyno_grid.add_child(_label(DYNO.change_word(metric, old_value, new_value), 13, colour))
+		var difference := DYNO.change_word(metric, old_value, new_value)
+		if verdict != 0 and absf(old_value) > 0.00001:
+			difference = ("%+.1f %%" % ((new_value / old_value - 1.0) * 100.0)).replace(".", ",")
+		dyno_grid.add_child(_label(difference, 13, colour))
 	dyno_text.text = str(option.name) + " · " + str(option.get("text", "Ändert nur das Aussehen."))
+	var combination: Dictionary = workshop.mounted(_kart_id())
+	combination.merge(pending, true)
+	var notes := PART_CATALOG.limit_notes(combination, TUNING.FINE.changes(workshop.tune(_kart_id())))
+	if not notes.is_empty():
+		dyno_text.text += "\n" + "\n".join(notes)
+	dyno_text.text += "\nAlle Werte gelten für die ganze Kombination, einschließlich Ausbaustufen und Feineinstellung."
 	_apply_dyno_font()
 	_sync_action()
 

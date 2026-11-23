@@ -1,5 +1,5 @@
 extends RefCounted
-## Leistungsteile der Garage: neun Steckplätze mit Serie und je fünf Varianten.
+## Leistungsteile der Garage: neun Steckplätze mit 65 Optionen inklusive Serie.
 ##
 ## Jede Variante hat einen klaren Charakter und eine Abwägung – keine ist nur „besser“.
 ## Sie verändert die Fahrfaktoren aus kart_fleet.multipliers(): „mul“ multipliziert,
@@ -56,17 +56,17 @@ const SLOT_METRICS: Dictionary = {
 ## Spanne je Fahrfaktor, die Teile UND Feineinstellung zusammen erreichen dürfen
 ## (mul: Faktor gegenüber dem Kart ohne Teile, add: Summe der Zuschläge).
 const PART_LIMITS: Dictionary = {
-	"speed": [0.94, 1.035],
-	"accel": [0.72, 1.24],
-	"brake": [0.72, 1.32],
-	"turn": [0.85, 1.15],
-	"grip": [0.80, 1.22],
-	"drift_charge": [0.70, 1.40],
-	"drift_grip": [0.85, 1.20],
+	"speed": [0.84, 1.12],
+	"accel": [0.65, 1.45],
+	"brake": [0.65, 1.45],
+	"turn": [0.75, 1.30],
+	"grip": [0.65, 1.40],
+	"drift_charge": [0.65, 1.60],
+	"drift_grip": [0.75, 1.35],
 	"air_turn": [0.70, 2.00],
 	"landing": [0.30, 1.80],
-	"boost_power": [0.75, 1.30],
-	"boost_time": [0.70, 1.40],
+	"boost_power": [0.70, 1.45],
+	"boost_time": [0.65, 1.55],
 }
 const ADD_LIMITS: Dictionary = {
 	"offroad": [-0.15, 0.18],
@@ -692,6 +692,9 @@ static func _build() -> Dictionary:
 static func catalog() -> Dictionary:
 	if _catalog.is_empty():
 		_catalog = _build()
+		var additions := _evolution_parts()
+		for slot in SLOTS:
+			_catalog[slot].append(additions[slot])
 	return _catalog
 
 
@@ -726,7 +729,7 @@ static func files() -> Array[String]:
 
 ## Faktor-Änderungen der gewählten Teile ({slot: id}) und einer Feineinstellung
 ## ({"mul": {}, "add": {}}, siehe kart_fine_tuning.gd), begrenzt auf PART_LIMITS.
-static func changes(chosen: Dictionary, extra: Dictionary = {}) -> Dictionary:
+static func changes(chosen: Dictionary, extra: Dictionary = {}, bounded: bool = true) -> Dictionary:
 	var mul: Dictionary = {}
 	var add: Dictionary = {}
 	var sources: Array[Dictionary] = []
@@ -738,6 +741,8 @@ static func changes(chosen: Dictionary, extra: Dictionary = {}) -> Dictionary:
 			mul[key] = float(mul.get(key, 1.0)) * float(entry.mul[key])
 		for key in entry.get("add", {}):
 			add[key] = float(add.get(key, 0.0)) + float(entry.add[key])
+	if not bounded:
+		return {"mul": mul, "add": add}
 	for key in mul:
 		if PART_LIMITS.has(key):
 			mul[key] = clampf(float(mul[key]), PART_LIMITS[key][0], PART_LIMITS[key][1])
@@ -769,3 +774,77 @@ static func rival_parts(index: int, difficulty: String) -> Dictionary:
 	if index < 0 or difficulty in ["", "gemuetlich"]:
 		return {}
 	return RIVAL_SETS[posmod(index, RIVAL_SETS.size())].duplicate()
+
+
+## The original IDs, prices and saves remain valid. Nine additional components
+## are freely selectable; their benefit always has a measurable trade-off.
+static func _evolution_parts() -> Dictionary:
+	return {
+		"engine": _evolution("engine", "axial", "Axial-Antrieb", "Engine_Axial",
+			{"accel": 1.22, "speed": 0.96, "boost_power": 0.95}, {},
+			"Zieht kräftig aus Kurven; weniger Endtempo und etwas sanfterer Boost.", "Kraftvoll aus Kurven"),
+		"tires": _evolution("tires", "performance", "Performance-Reifen", "Tire_Performance",
+			{"grip": 1.14, "brake": 1.06}, {"offroad": -0.11},
+			"Mehr Kurvenhaftung und kürzerer Bremsweg; langsamer auf Gras und Sand.", "Haftet und bremst"),
+		"wing": _evolution("wing", "venturi", "Venturi-Flügel", "Wing_Venturi",
+			{"grip": 1.20, "speed": 0.95, "air_turn": 0.88}, {},
+			"Viel Halt am Boden; weniger Endtempo und ruhigere Lenkung im Sprung.", "Stark in Bodenkurven"),
+		"booster": _evolution("booster", "kondensator", "Superkondensator", "Booster_Capacitor",
+			{"boost_time": 1.42, "boost_power": 0.88, "drift_charge": 1.07, "speed": 0.98}, {},
+			"Langer Boost und früherer Drift-Turbo; weniger Schub und etwas weniger Endtempo.", "Lange Energie"),
+		"suspension": _evolution("suspension", "adaptiv", "Adaptive Dämpfer", "Damper_Adaptive",
+			{"landing": 0.50, "grip": 1.08, "accel": 0.94}, {},
+			"Schneller ruhig nach Landungen und mehr Kurvenhalt; etwas langsamerer Antritt.", "Landet ruhig"),
+		"steering": _evolution("steering", "vector", "Vector-Lenkung", "Steer_Vector",
+			{"turn": 1.18, "drift_grip": 1.10, "speed": 0.975}, {},
+			"Enges Einlenken und kontrollierter Drift; etwas weniger Endtempo.", "Eng und kontrolliert"),
+		"brakes": _evolution("brakes", "keramik", "Keramikbremse", "Brake_Ceramic",
+			{"brake": 1.30, "grip": 1.03, "accel": 0.96}, {},
+			"Kräftige Bremsen mit stabiler Spur; die Zusatztechnik kostet Antritt.", "Spät bremsen"),
+		"gearbox": _evolution("gearbox", "doppelkupplung", "Doppelkupplung", "Gear_Dual",
+			{"accel": 1.16, "drift_charge": 1.08, "speed": 0.96}, {},
+			"Flotter Antritt und frühere Drift-Turbos; etwas weniger Endtempo.", "Flott weiterschalten"),
+		"ballast": _evolution("ballast", "carbon", "Carbon-Chassis", "Ballast_Carbon",
+			{"accel": 1.12, "air_turn": 1.20, "landing": 1.12}, {"stability": -0.10},
+			"Leicht und flink beim Start und im Flug; Treffer und harte Landungen wirken stärker.", "Leicht und modern"),
+	}
+
+
+static func _evolution(slot: String, id: String, title: String, model: String,
+		mul: Dictionary, add: Dictionary, text: String, short: String) -> Dictionary:
+	var result := _part(slot, id, title, 0, model, mul, add, text, short)
+	result["file"] = "res://assets/kart/production/parts/parts_evolution.tscn"
+	result["thumb"] = "res://assets/kart/production/parts/thumbs/evolution_%s.svg" % slot
+	result["generation"] = "evolution"
+	return result
+
+
+## Describe only the caps that change this exact combined selection. The live
+## dyno measures after the cap; this text explains why another part can plateau.
+static func limit_notes(chosen: Dictionary, extra: Dictionary = {}) -> PackedStringArray:
+	var raw := changes(chosen, extra, false)
+	var limited := changes(chosen, extra)
+	var names := {
+		"speed": "Endtempo", "accel": "Antritt", "brake": "Bremskraft",
+		"turn": "Lenken", "grip": "Straßenhaftung", "drift_charge": "Drift-Ladung",
+		"drift_grip": "Drift-Haftung", "air_turn": "Fluglenkung", "landing": "Landung",
+		"boost_power": "Boost-Schub", "boost_time": "Boost-Dauer",
+		"offroad": "Geländetempo", "stability": "Trefferfestigkeit",
+	}
+	var result := PackedStringArray()
+	for factor in raw.mul:
+		if not is_equal_approx(float(raw.mul[factor]), float(limited.mul[factor])):
+			result.append("%s: Kombinationsgrenze %+.0f %%" % [names.get(factor, factor),
+				(float(limited.mul[factor]) - 1.0) * 100.0])
+	for factor in raw.add:
+		if not is_equal_approx(float(raw.add[factor]), float(limited.add[factor])):
+			result.append("%s: Kombinationsgrenze %+.0f Punkte" % [names.get(factor, factor),
+				float(limited.add[factor]) * 100.0])
+	return result
+
+
+static func combination_count() -> int:
+	var count: int = 1
+	for slot in SLOTS:
+		count *= options(slot).size()
+	return count

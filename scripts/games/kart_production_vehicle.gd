@@ -26,6 +26,7 @@ const SHELL_DIRECTORY := "res://assets/kart/production/fleet/"
 const LOD_HYSTERESIS := 2.0
 ## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
 const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
+const EVOLUTION = preload("res://scripts/games/kart_evolution_geometry.gd")
 static var _scenes: Dictionary = {}
 
 var variant := ""
@@ -196,6 +197,16 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	var dressed_look: Dictionary = stock.duplicate()
 	dressed_look.merge(look, true)
 	_dressing = FINISH.dress(asset_root, design, dressed_look)
+	var modern_trim: Node3D = EVOLUTION.vehicle_trim(variant)
+	asset_root.add_child(modern_trim)
+	_dressing.append(modern_trim)
+	for mesh: MeshInstance3D in modern_trim.find_children("*", "MeshInstance3D", true, false):
+		for surface in range(mesh.mesh.get_surface_count()):
+			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+			if original != null and original.resource_name == "PartPaint":
+				var tinted := original.duplicate() as StandardMaterial3D
+				tinted.albedo_color = dressed_look.get("paint", Color("e8eef6"))
+				mesh.set_surface_override_material(surface, tinted)
 	set_lod(0)
 	set_braking(0.0)
 	_refresh_finish()
