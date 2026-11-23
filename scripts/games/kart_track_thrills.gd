@@ -415,6 +415,17 @@ const SPECS: Dictionary = {
 		},
 		{"kind": "crest", "id": "oasenfinale", "at": 1880.0, "name": "Oasen-Finale"},
 	],
+	"windwerk_3000":
+	[
+		{
+			"kind": "bank",
+			"id": "viaduktkurve",
+			"at": 1356.0,
+			"length": 90.0,
+			"window": 20.0,
+			"name": "Viadukt-Steilkurve"
+		},
+	],
 	"learning_lab":
 	[
 		{"kind": "crest", "id": "laborbuckel", "at": 200.0, "name": "Laborbuckel"},
