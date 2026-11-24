@@ -1,0 +1,51 @@
+name: LUMO World quest and dialogue integrity
+on:
+  push:
+    branches: [feature/world-quest-integrity-20261124]
+  pull_request:
+    paths:
+      - 'scripts/creative/lumo_world_quests.gd'
+      - 'scripts/creative/lumo_world_dialog.gd'
+      - 'assets/creative/lumo_world/open_world_content.json'
+      - 'scripts/tests/lumo_world_quest_integrity_regression.gd'
+      - '.github/workflows/lumo-world-quest-integrity-qa.yml'
+permissions:
+  contents: read
+concurrency:
+  group: world-quest-integrity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  quest-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install verified Godot 4.6.3
+        run: |
+          set -euo pipefail
+          mkdir -p quest-proof
+          git rev-parse HEAD > quest-proof/commit.txt
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import exact source
+        run: |
+          set -euo pipefail
+          godot --headless --editor --import --quit 2>&1 | tee quest-proof/import.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' quest-proof/import.log; then exit 1; fi
+      - name: Execute authored quest and dialogue regression
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --log quest-proof/quests.log --timeout 240 --required '[LumoWorldQuestIntegrity] PASS' -- godot --headless --path . --script scripts/tests/lumo_world_quest_integrity_regression.gd
+      - name: Preserve logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-quest-integrity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: quest-proof/
+          if-no-files-found: error
+          retention-days: 30

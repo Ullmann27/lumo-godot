@@ -61,6 +61,14 @@ static func validate_content(raw: Variant) -> Array[String]:
 	var found: Array[String] = []
 	if not raw is Dictionary or raw.get("schemaVersion") != 1:
 		return ["content schema version 1 required"]
+	# Reject malformed containers before iterating or indexing them.
+	for field in ["places", "paths", "figures", "cards", "missions"]:
+		if not raw.get(field) is Array or raw[field].is_empty():
+			found.append("%s must be a nonempty array" % field)
+	if not raw.get("dialogs") is Dictionary or not raw.get("smalltalk", {}) is Dictionary:
+		found.append("dialogs and smalltalk must be objects")
+	if not found.is_empty():
+		return found
 	var places: Dictionary = {}
 	for place in raw.get("places", []):
 		if not place is Dictionary or str(place.get("id", "")).is_empty() or places.has(str(place.id)):
@@ -116,7 +124,7 @@ static func validate_content(raw: Variant) -> Array[String]:
 		if not steps is Array or steps.is_empty() or str(mission.get("title", "")).is_empty():
 			found.append("mission %s needs title and steps" % str(mission.id))
 			continue
-		if not figures.has(str(mission.get("giver", ""))) or str(steps[0].get("figure", "")) != str(mission.giver):
+		if not steps[0] is Dictionary or not figures.has(str(mission.get("giver", ""))) or str(steps[0].get("figure", "")) != str(mission.get("giver", "")):
 			found.append("mission %s must start with its giver" % str(mission.id))
 		var step_ids: Dictionary = {}
 		for step in steps:
@@ -137,6 +145,9 @@ static func validate_content(raw: Variant) -> Array[String]:
 				found.append("step %s needs a known place" % str(step.id))
 			if kind == "show_card" and not cards.has(str(step.get("requiresCard", ""))):
 				found.append("step %s requires an unknown card" % str(step.id))
+			if not step.get("rewardCards", []) is Array:
+				found.append("step %s rewards must be an array" % str(step.id))
+				continue
 			for card_id in step.get("rewardCards", []):
 				if not cards.has(str(card_id)) or rewarded.has(str(card_id)):
 					found.append("card %s is unknown or rewarded twice" % str(card_id))
@@ -392,9 +403,9 @@ func restore(raw: Variant) -> bool:
 	var checked: Dictionary = {}
 	for mission_id in mission_ids():
 		var value = saved_progress.get(mission_id, 0)
-		if typeof(value) not in [TYPE_INT, TYPE_FLOAT] or float(value) != floorf(float(value)):
+		if typeof(value) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(value)) or float(value) != floorf(float(value)):
 			return false
-		if int(value) < 0 or int(value) > mission(mission_id).steps.size():
+		if float(value) < 0.0 or float(value) > float(mission(mission_id).steps.size()):
 			return false
 		checked[mission_id] = int(value)
 	for key in saved_progress:
@@ -422,9 +433,12 @@ func restore(raw: Variant) -> bool:
 	if not saved_cards is Array or saved_cards.size() != derived.size():
 		consistent = false
 	else:
+		var seen_cards: Dictionary = {}
 		for card_id in saved_cards:
-			if not card_id is String or card_id not in derived:
+			if not card_id is String or card_id not in derived or seen_cards.has(card_id):
 				consistent = false
+			else:
+				seen_cards[card_id] = true
 	var saved_tracked = raw.get("tracked", "")
 	if not saved_tracked is String or (not saved_tracked.is_empty() and state(saved_tracked) not in ["active", "available"]):
 		consistent = false
