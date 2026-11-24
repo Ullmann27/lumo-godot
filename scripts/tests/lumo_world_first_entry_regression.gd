@@ -132,6 +132,18 @@ func _drive_park_and_reopen(scene: Node) -> void:
 	_check(reopened != scene and reopened.kart_body.position.is_equal_approx(parked), "re-entry restores the kart at the bridge parking place")
 	_check(is_equal_approx(reopened.kart_body.rotation.y, heading), "re-entry restores the kart heading")
 	_check(reopened.kart_in_reach() and reopened.vehicle_button.text == "Ins Kart", "the reopened child can enter the parked kart directly")
+	for dimensions in [VIEWS[1], VIEWS[0]]:
+		root.size = dimensions
+		await _frames(60)
+		var camera: Camera3D = reopened.camera
+		var view: Rect2 = root.get_visible_rect().grow(-4.0)
+		var kart_point: Vector3 = reopened.kart_body.global_position + Vector3.UP * 0.7
+		var tag := "%sx%s" % [dimensions.x, dimensions.y]
+		_check(not camera.is_position_behind(kart_point) and view.has_point(camera.unproject_position(kart_point)), "the resumed follow view shows the parked kart at " + tag)
+		_check(view.has_point(camera.unproject_position(reopened.player.global_position + Vector3.UP * 1.2)), "the resumed follow view keeps Lumo in view at " + tag)
+		if dimensions == VIEWS[0]:
+			await _capture("03b_wiedereintritt_kart_720x1280")
+	root.size = VIEWS[1]
 	await _frames(30)
 	await _capture("03_wiedereintritt_kart_am_parkplatz")
 

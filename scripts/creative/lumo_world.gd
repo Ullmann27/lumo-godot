@@ -31,6 +31,9 @@ const RESIDENT_SPECS := [
 	["tilda_duck", Vector3(218, 0, -34), "Tilda"]
 ]
 const RESIDENT_ROLE := "Computerfigur"
+## On re-entry the follow camera turns by this angle away from the parked
+## kart, so the kart appears beside Lumo instead of behind the camera.
+const RESUME_VIEW_OFFSET := 0.5
 
 var model = STATE.new()
 var art = ART.new()
@@ -137,6 +140,8 @@ func _ready() -> void:
 	_create_owned_village(profile)
 	_create_player()
 	_create_kart()
+	if FileAccess.file_exists(save_path) and not save_blocked:
+		camera_yaw = _resume_view_yaw()
 	_create_residents()
 	_create_traffic()
 	_create_portals()
@@ -769,6 +774,13 @@ func _drive_tick(axis: Vector2, delta: float) -> void:
 		status_label.text = "Zurück am sicheren Parkplatz. Bleib mit dem Kart auf den Wegen."
 	_clamp_body(kart_body)
 	kart_visual.set_motion(drive_speed, axis.x, false, false)
+
+
+func _resume_view_yaw() -> float:
+	var toward := kart_body.position - player.position
+	if not kart_in_reach() or Vector2(toward.x, toward.z).length() < 0.5:
+		return 0.0
+	return wrapf(atan2(-toward.x, -toward.z) + RESUME_VIEW_OFFSET, -PI, PI)
 
 
 func kart_in_reach() -> bool:
