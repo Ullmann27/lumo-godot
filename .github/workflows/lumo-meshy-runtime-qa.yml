@@ -1,7 +1,7 @@
 name: LUMO Meshy production runtime QA
 on:
   push:
-    branches: [asset/lumo-meshy-intake-20261123]
+    branches: [asset/lumo-meshy-intake-20261123, fix/lumo-2077-driver-lod-qa-20261124]
     paths:
       - assets/kart/production/meshy/**
       - assets/kart/production/garage/meshy_*.glb
@@ -29,6 +29,7 @@ on:
       - scripts/tests/kart_meshy_assets_regression.gd
       - config/kart-action-qa.json
       - .github/workflows/lumo-meshy-runtime-qa.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -142,31 +143,7 @@ jobs:
               exit 1
             fi
           done
-          grep -E '^EXTRA_DRIVERS_PASS checks=[1-9][0-9]* failures=0
-      - name: Verify immutable production asset manifest
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import hashlib,json,pathlib
-          m=json.loads(pathlib.Path('assets/kart/production/meshy/manifest.json').read_text())
-          assert len(m['vehicles'])==14
-          assert len(m['garage'])==2
-          for row in m['vehicles']+m['garage']:
-              p=pathlib.Path(row['path'])
-              data=p.read_bytes()
-              assert data[:4]==b'glTF'
-              assert len(data)==row['bytes']
-              assert hashlib.sha256(data).hexdigest()==row['sha256']
-          print('[MeshyManifest] PASS: 14 vehicle shells + 2 garage props')
-          PY
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lumo-meshy-runtime-proof-${{ github.run_id }}
-          path: meshy-proof/
-          retention-days: 14
- meshy-proof/kart_extra_drivers_regression.log
+          grep -E '^EXTRA_DRIVERS_PASS checks=[1-9][0-9]* failures=0$' meshy-proof/kart_extra_drivers_regression.log
           grep -F '[MeshyKart] PASS: 14 fitted close shells, preserved chassis/LODs and high-detail garage props' meshy-proof/kart_meshy_assets_regression.log
       - name: Verify immutable production asset manifest
         shell: bash
