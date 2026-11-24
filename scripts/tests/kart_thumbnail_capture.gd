@@ -87,9 +87,13 @@ func _initialize() -> void:
 func _place() -> void:
 	var driver: Dictionary = CATALOG.entry(CATALOG.DRIVERS, "fox")
 	kart.call("configure", "fox", driver.color, str(ids[index]))
+	kart.call("set_preview_detail", true)
 	kart.call("set_motion", 0.0, 0.0, false, false)
-	if not with_driver and kart.get("driver") != null:
-		(kart.get("driver") as Node3D).hide()
+	if not with_driver:
+		for property in ["driver", "lumo_animation", "production_driver", "rival_visual"]:
+			var actor: Variant = kart.get(property)
+			if is_instance_valid(actor) and actor is Node3D:
+				actor.hide()
 	camera.look_at_from_position(Vector3(-3.6, 1.9, -4.7), Vector3(0, 0.55, 0.05))
 	wait = 0
 
@@ -128,6 +132,7 @@ func _process(_delta: float) -> bool:
 	canvas.resize(OUTPUT.x, OUTPUT.y, Image.INTERPOLATE_LANCZOS)
 	var path: String = "%s/%s.png" % [out_dir, ids[index]]
 	assert(canvas.save_png(path) == OK)
+	assert(canvas.save_webp("%s/%s.webp" % [out_dir, ids[index]], true) == OK)
 	index += 1
 	if index >= ids.size():
 		print("[KartThumbnails] PASS: ", out_dir, " ", ids)
