@@ -47,6 +47,38 @@ func _window(dimensions: Vector2i, density: float) -> void:
 		"echte Android-Dichte: " + str(density))
 
 
+func _track_controls(hub, pixels_per_canvas: Vector2, density: float, tag: String) -> void:
+	var hero: Control = hub._highlight_pick
+	var hero_rect := hero.get_global_rect()
+	var k: float = hero.ui_scale
+	var has_play := hero.size.y >= 110.0 * k
+	# Independent of arrow placement: _draw_thumb draws a 40dp Play square,
+	# inset 8dp from the lower-right edge of each sufficiently tall picture.
+	var play_rect := hero.get_global_transform() * Rect2(
+		hero.size - Vector2(48, 48) * k, Vector2(40, 40) * k)
+	var arrows: Array[Control] = [hub._thumb_prev, hub._thumb_next]
+	for arrow in arrows:
+		var rect := arrow.get_global_rect()
+		var touch_dp := rect.size * pixels_per_canvas / density
+		_check(arrow.is_visible_in_tree(), "Streckenpfeil sichtbar: %s %s" % [tag, arrow.name])
+		_check(touch_dp.x >= 47.99 and touch_dp.y >= 47.99,
+			"Streckenpfeil mindestens 48x48 dp: %s %s %s" % [tag, arrow.name, touch_dp])
+		_check(hero_rect.grow(0.01).encloses(rect),
+			"Streckenpfeil vollständig im großen Bild: %s %s" % [tag, arrow.name])
+		if has_play:
+			_check(not rect.intersects(play_rect.grow(4.0 * k)),
+				"Streckenpfeil hält 4dp Abstand zum Play-Symbol: %s %s" % [tag, arrow.name])
+	_check(is_equal_approx(arrows[0].position.y, arrows[1].position.y),
+		"Streckenpfeile auf gleicher Höhe: " + tag)
+	_check(not arrows[0].get_global_rect().intersects(arrows[1].get_global_rect()),
+		"Streckenpfeile sind getrennt: " + tag)
+	print("[NeonHomeControls] ", JSON.stringify({"window": root.size, "density": density,
+		"hero_canvas": hero_rect, "next_canvas": arrows[1].get_global_rect(),
+		"play_canvas": play_rect if has_play else Rect2(),
+		"play_gap_dp": (play_rect.position.y - arrows[1].get_global_rect().end.y)
+			* pixels_per_canvas.y / density if has_play else -1.0}))
+
+
 func _track_layouts() -> void:
 	for config in [
 		{"size": Vector2i(412, 915), "density": 1.0},
@@ -63,6 +95,7 @@ func _track_layouts() -> void:
 		var pixels_per_canvas := Vector2(root.size) / viewport.size
 		var tag := "%s @ %s dp" % [root.size, config.density]
 		_check(hub.size.is_equal_approx(viewport.size), "Menü füllt den tatsächlichen Viewport: " + tag)
+		_track_controls(hub, pixels_per_canvas, float(config.density), tag)
 		var seen := {}
 		for step in range(CATALOG.TRACKS.size()):
 			seen[hub._featured_track] = true

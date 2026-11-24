@@ -211,8 +211,14 @@ static func _thumb_row(hub: Control, others: Array, area: Rect2, gap: float, k: 
 
 ## Pfeile links und rechts auf dem großen Streckenbild: vorige / nächste Strecke.
 static func _track_arrows(hub: Control, big: Rect2, k: float) -> void:
-	var b := clampf(minf(big.size.x * 0.28, big.size.y - 8.0), 36.0, MIN_TOUCH)
+	# _place reserves at least 48dp, so position the full touch target as well.
+	var b := MIN_TOUCH
 	var y := big.position.y + (big.size.y - b) * 0.5
+	if hub._highlight_pick.size.y >= 110.0 * k:
+		# The thumbnail's 40dp Play icon ends 8dp above its lower edge.
+		# Keep 8dp clear above it; tall pictures retain their centered arrows.
+		var play_top: float = hub._highlight_pick.position.y + hub._highlight_pick.size.y - 48.0 * k
+		y = minf(y, (play_top - ceilf(b * k)) / k - 8.0)
 	_place(hub._thumb_prev, Rect2(big.position.x + 4.0, y, b, b), k)
 	_place(hub._thumb_next, Rect2(big.end.x - b - 4.0, y, b, b), k)
 	for arrow: Button in [hub._thumb_prev, hub._thumb_next]:
