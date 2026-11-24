@@ -4,7 +4,14 @@ extends SceneTree
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 const SCENE := "res://scenes/games/kart_island.tscn"
-const EXTRA := {"badger": "Borin", "cat": "Yuki"}
+const EXTRA := {
+	"badger": "Borin",
+	"cat": "Yuki",
+	"lion": "Löwe",
+	"owl": "Eule",
+	"squirrel": "Eichhörnchen",
+	"turtle": "Schildkröte",
+}
 const SESSION := "user://kart_sonnenhafen_session.cfg"
 var checks := 0
 var failures: Array[String] = []
@@ -72,7 +79,7 @@ func _run() -> void:
 	root.size = Vector2i(1280, 720)
 	var router := root.get_node("SceneRouter")
 	router.launch_options = {}
-	check(CATALOG.DRIVERS.size() == 6, "six playable drivers")
+	check(CATALOG.DRIVERS.size() == 10, "ten playable drivers")
 	check(int(CATALOG.entry(CATALOG.DRIVERS, "rabbit").unlock) == 6, "Nova unlock retained")
 	check(int(CATALOG.entry(CATALOG.DRIVERS, "otter").unlock) == 12, "Milo unlock retained")
 	for identity: String in EXTRA:

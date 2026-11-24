@@ -114,6 +114,8 @@ var production_vehicle
 var production_driver
 var production_lumo_seat
 var _preview_detail := false
+var _menu_driver_behavior: StringName = &""
+var _menu_driver_behavior_remaining := 0.0
 ## Procedural rival-driver reactions (Lumo uses his rigged animation adapter).
 var hit_reaction: float = 0.0
 var brief_cheer_time: float = 0.0
@@ -398,6 +400,34 @@ func set_speaking(amount: float) -> void:
 	speaking_amount = clampf(amount, 0.0, 1.0)
 
 
+func play_driver_menu_behavior(behavior: String, hold_seconds: float = 0.70) -> bool:
+	var actor = production_driver
+	if not is_instance_valid(actor):
+		actor = lumo_animation
+	if not is_instance_valid(actor) or not actor.has_method("play_menu_behavior"):
+		return false
+	if not bool(actor.play_menu_behavior(behavior)):
+		return false
+	_menu_driver_behavior = StringName(behavior)
+	_menu_driver_behavior_remaining = maxf(0.0, hold_seconds)
+	return true
+
+
+func _maintain_driver_menu_behavior(delta: float) -> void:
+	if _menu_driver_behavior_remaining <= 0.0 or _menu_driver_behavior.is_empty():
+		return
+	_menu_driver_behavior_remaining = maxf(0.0, _menu_driver_behavior_remaining - maxf(0.0, delta))
+	var actor = production_driver
+	if not is_instance_valid(actor):
+		actor = lumo_animation
+	if is_instance_valid(actor) and actor.has_method("play_menu_behavior"):
+		var current: StringName = actor.get("current_behavior") if actor.get("current_behavior") != null else &""
+		if current != _menu_driver_behavior:
+			actor.play_menu_behavior(String(_menu_driver_behavior))
+	if _menu_driver_behavior_remaining <= 0.0:
+		_menu_driver_behavior = &""
+
+
 func set_graphics_quality(profile: String) -> void:
 	detail_distance = 14.0 if profile in ["light", "low"] else (22.0 if profile == "medium" else FAR_DETAIL_DISTANCE)
 	detail_check_time = 0.0
@@ -454,6 +484,8 @@ func _rebuild() -> void:
 	production_vehicle = null
 	production_driver = null
 	production_lumo_seat = null
+	_menu_driver_behavior = &""
+	_menu_driver_behavior_remaining = 0.0
 	steering_wheel = null
 	driver = null
 	rival_visual = null
@@ -2631,6 +2663,7 @@ func _process(delta: float) -> void:
 			driver_hit_pending, motion_boost, motion_drift)
 		driver_hit_pending = false
 		production_driver.advance_tick(delta)
+		_maintain_driver_menu_behavior(delta)
 	elif is_instance_valid(rival_visual):
 		steering_wheel.rotation.z = -motion_steer * 0.40
 		rival_visual.set_reduced_motion(reduced_motion)

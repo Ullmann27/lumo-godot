@@ -12,6 +12,8 @@ const GOLD := Color("ffc14a")
 const CYAN := Color("3ae0ff")
 const AMBER := Color("ff9a3c")
 const SHOWROOM = preload("res://scripts/games/kart_garage_showroom.gd")
+const MESHY_TOOL_BENCH := "res://assets/kart/production/garage/meshy_tool_workbench.glb"
+const MESHY_TURNTABLE := "res://assets/kart/production/garage/meshy_turntable.glb"
 
 
 static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "high") -> Dictionary:
@@ -197,10 +199,89 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 		"back": _action_button(root, "back", "Zurück", Vector3(-2.15, 0.52, -1.05), Color("c4d5df")),
 	}
 	root.set_meta("garage_material_families", materials.size())
+	# HIGH/VERY HIGH receives the verified Meshy workshop furniture and presentation
+	# platter. LOW retains only the lightweight procedural bay above.
+	var meshy_tool_bench: MeshInstance3D
+	var meshy_turntable: MeshInstance3D
+	if rich:
+		meshy_tool_bench = _meshy_visual(
+			root, MESHY_TOOL_BENCH, "MeshyToolWorkbench",
+			Vector3(1.62, 1.72, 0.92), Vector3(-3.95, 0.52, 2.62)
+		)
+		meshy_turntable = _meshy_visual(
+			turntable_parent, MESHY_TURNTABLE, "MeshyPresentationTurntable",
+			Vector3(3.82, 0.30, 3.82), Vector3(0.0, -0.35, 0.0)
+		)
+		if meshy_tool_bench != null:
+			for old_name in [
+				"ToolCabinet", "ToolCabinetDoor", "CabinetDrawerDetails",
+				"CabinetWorktop", "Toolbox", "ToolboxHandle"
+			]:
+				var old := root.find_child(old_name, true, false) as Node3D
+				if old != null:
+					old.visible = false
+		if meshy_turntable != null:
+			turntable.visible = false
+			plinth.visible = false
+			lip.visible = false
+			var old_marks := turntable_parent.find_child("TurntableGuideMarks", true, false) as Node3D
+			if old_marks != null:
+				old_marks.visible = false
+
 	# Farbiger Konzeptbild-Raum (Neon, Holz, Werkzeugkiste, Hebebühne, Boden-Details, Licht).
 	var showroom: Dictionary = SHOWROOM.build(root, materials, profile)
-	return {"showroom": showroom, "root": root, "sign": sign, "sign_board": sign_board, "turntable": turntable,
-		"hero": hero, "buttons": buttons, "rich": rich, "materials": materials}
+	return {
+		"showroom": showroom, "root": root, "sign": sign, "sign_board": sign_board,
+		"turntable": turntable, "meshy_turntable": meshy_turntable,
+		"meshy_tool_bench": meshy_tool_bench, "hero": hero, "buttons": buttons,
+		"rich": rich, "materials": materials
+	}
+
+
+static func _meshy_visual(
+	parent: Node3D,
+	path: String,
+	visual_name: String,
+	target_size: Vector3,
+	target_center: Vector3
+) -> MeshInstance3D:
+	if not ResourceLoader.exists(path):
+		return null
+	var packed := ResourceLoader.load(path, "PackedScene") as PackedScene
+	if packed == null:
+		return null
+	var source := packed.instantiate() as Node3D
+	if source == null:
+		return null
+	var imported := source as MeshInstance3D
+	if imported == null:
+		var meshes := source.find_children("*", "MeshInstance3D", true, false)
+		if not meshes.is_empty():
+			imported = meshes[0] as MeshInstance3D
+	if imported == null or imported.mesh == null:
+		source.free()
+		return null
+	var visual := MeshInstance3D.new()
+	visual.name = visual_name
+	visual.mesh = imported.mesh
+	visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	var box := visual.get_aabb()
+	if box.size.x <= 0.001 or box.size.y <= 0.001 or box.size.z <= 0.001:
+		source.free()
+		visual.free()
+		return null
+	visual.scale = Vector3(
+		target_size.x / box.size.x,
+		target_size.y / box.size.y,
+		target_size.z / box.size.z
+	)
+	visual.position = target_center - visual.scale * box.get_center()
+	visual.set_meta("meshy_visual_only", true)
+	visual.set_meta("source_path", path)
+	visual.set_meta("target_size", target_size)
+	parent.add_child(visual)
+	source.free()
+	return visual
 
 
 static func _box_transform(size: Vector3, position: Vector3) -> Transform3D:

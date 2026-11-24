@@ -23,6 +23,8 @@ const BODY_OF: Dictionary = {
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
 const SHELL_DIRECTORY := "res://assets/kart/production/fleet/"
+const MESHY_SHELL_DIRECTORY := "res://assets/kart/production/meshy/"
+const MESHY_CLOSE_MARGIN := Vector3(0.96, 0.96, 0.96)
 const LOD_HYSTERESIS := 2.0
 ## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
 const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
@@ -58,6 +60,9 @@ var _dressing: Array[Node3D] = []
 ## Material details from the selected shell are visible in close-up previews.
 var _showcase_meshes: Array[MeshInstance3D] = []
 var shell_path := ""
+var meshy_shell_path := ""
+var meshy_close_mesh: MeshInstance3D
+var stock_close_mesh: MeshInstance3D
 ## Austauschbare Anbauteile (Radaufsätze, Auspuffblenden), siehe kart_tuning.gd und
 ## tools/lumo_kart_art/karts/build_parts.py. Wurzel jedes Teils = sein Montagepunkt.
 const PARTS_PATH := "res://assets/kart/production/parts/kart_parts.glb"
@@ -219,17 +224,100 @@ func _install_shell(look: Dictionary, stock: Dictionary) -> bool:
 	if packed == null:
 		return false
 	var shell := packed.instantiate() as Node3D
+	if shell == null:
+		return false
 	asset_root.add_child(shell)
+	stock_close_mesh = shell.find_child("LOD0", true, false) as MeshInstance3D
+	if stock_close_mesh == null:
+		return false
+	var meshy_ready := _install_meshy_close_shell(shell, stock_close_mesh)
 	for level in range(3):
 		var mesh := shell.find_child("LOD%d" % level, true, false) as MeshInstance3D
 		if mesh == null:
 			return false
+		if level == 0 and meshy_ready:
+			# Keep the proven authored shell in the tree as an immediate fallback,
+			# but never draw it underneath the new close-range Meshy shell.
+			mesh.visible = false
+			continue
 		_lod_meshes[level].append(mesh)
 		_apply_appearance(mesh, look, stock)
 	var detail := shell.find_child("ShowroomDetail", true, false) as MeshInstance3D
 	if detail != null:
 		detail.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_showcase_meshes.append(detail)
+	return true
+
+
+func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> bool:
+	meshy_shell_path = MESHY_SHELL_DIRECTORY + design + ".glb"
+	if not ResourceLoader.exists(meshy_shell_path):
+		meshy_shell_path = ""
+		return false
+	var packed := _scene(meshy_shell_path)
+	if packed == null:
+		meshy_shell_path = ""
+		return false
+	var source_root := packed.instantiate() as Node3D
+	if source_root == null:
+		meshy_shell_path = ""
+		return false
+	var source_mesh := source_root as MeshInstance3D
+	if source_mesh == null:
+		var imported_meshes := source_root.find_children("*", "MeshInstance3D", true, false)
+		if not imported_meshes.is_empty():
+			source_mesh = imported_meshes[0] as MeshInstance3D
+	if source_mesh == null or source_mesh.mesh == null:
+		source_root.free()
+		meshy_shell_path = ""
+		return false
+
+	# Copy only the imported render mesh. Mechanical nodes, wheels, steering,
+	# seat, driver anchors, collision and tuning stay on the proven chassis.
+	var visual := MeshInstance3D.new()
+	visual.name = "MeshyLOD0_" + design
+	visual.mesh = source_mesh.mesh
+	visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	var fallback_finish := StandardMaterial3D.new()
+	fallback_finish.albedo_color = Color("9aa8b8")
+	fallback_finish.metallic = 0.28
+	fallback_finish.roughness = 0.46
+	for surface in range(visual.mesh.get_surface_count()):
+		if visual.mesh.surface_get_material(surface) == null:
+			visual.set_surface_override_material(surface, fallback_finish)
+	shell.add_child(visual)
+	source_root.free()
+
+	var target_box := target_mesh.get_aabb()
+	var source_box := visual.get_aabb()
+	if (
+		target_box.size.x <= 0.001 or target_box.size.y <= 0.001 or target_box.size.z <= 0.001
+		or source_box.size.x <= 0.001 or source_box.size.y <= 0.001 or source_box.size.z <= 0.001
+	):
+		visual.queue_free()
+		meshy_shell_path = ""
+		return false
+
+	# Meshy normalizes these vehicle bodies with their longitudinal axis on X.
+	# LUMO's mechanical platform drives forward on -Z. A -90° yaw therefore
+	# maps the low/nose end of the incoming body to the existing forward axis.
+	var local_scale := Vector3(
+		target_box.size.z / source_box.size.x,
+		target_box.size.y / source_box.size.y,
+		target_box.size.x / source_box.size.z
+	) * MESHY_CLOSE_MARGIN
+	visual.basis = Basis(Vector3.UP, -PI / 2.0).scaled(local_scale)
+	visual.position = target_box.get_center() - visual.basis * source_box.get_center()
+	visual.set_meta("meshy_visual_only", true)
+	visual.set_meta("mechanics_preserved", true)
+	visual.set_meta("fit_target_size", target_box.size)
+	visual.set_meta("fit_source_size", source_box.size)
+	visual.set_meta("fit_scale", local_scale)
+	visual.set_meta("fit_yaw", -PI / 2.0)
+	visual.set_meta("source_path", meshy_shell_path)
+	meshy_close_mesh = visual
+	_lod_meshes[0].append(visual)
+	source_paths.append(meshy_shell_path)
 	return true
 
 
