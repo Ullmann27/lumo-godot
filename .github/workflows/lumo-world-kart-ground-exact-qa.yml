@@ -1,0 +1,55 @@
+name: LUMO World exact kart-ground acceptance
+on:
+  push:
+    branches: [support/world-kart-ground-qa-20261124]
+permissions:
+  contents: read
+concurrency:
+  group: world-kart-ground-qa-20261124
+  cancel-in-progress: false
+jobs:
+  ground-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Record exact source and install Godot 4.6.3
+        run: |
+          set -euo pipefail
+          mkdir -p world-ground-proof
+          git rev-parse HEAD > world-ground-proof/commit.txt
+          git diff --exit-code 6c8371aa46ac2cb30113a5bc25b80f557e5cba92 HEAD -- scripts scenes assets project.godot export_presets.cfg
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import the original WIP source
+        id: import
+        run: |
+          set -euo pipefail
+          godot --version | tee world-ground-proof/engine.txt
+          godot --headless --editor --import --quit 2>&1 | tee world-ground-proof/import.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' world-ground-proof/import.log; then exit 1; fi
+      - name: First-entry and navigation regression
+        if: ${{ !cancelled() && steps.import.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          XDG_DATA_HOME="$RUNNER_TEMP/world-first-entry" python3 tools/run_godot_probe.py --log world-ground-proof/first-entry.log --timeout 480 --required '[LumoWorldFirstEntry] PASS' -- godot --headless --path . --script scripts/tests/lumo_world_first_entry_regression.gd
+      - name: Real kart grounding and legacy-save regression
+        if: ${{ !cancelled() && steps.import.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          XDG_DATA_HOME="$RUNNER_TEMP/world-kart-ground" python3 tools/run_godot_probe.py --log world-ground-proof/kart-ground.log --timeout 480 --required '[LumoWorldKartGround] PASS' -- godot --headless --path . --script scripts/tests/lumo_world_kart_ground_regression.gd
+      - name: Preserve original QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-kart-ground-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: world-ground-proof/
+          if-no-files-found: error
+          retention-days: 30
