@@ -995,7 +995,7 @@ def posed_points(bones, clip, t):
     return p, c
 
 
-def animate(rig, bones, lid_rest=2.6):
+def animate(rig, bones, lid_rest=2.6, max_eye_gaze=None, lid_shown=LID_SHOWN):
     global design_lid_rest
     design_lid_rest = lid_rest
     rig.animation_data_create()
@@ -1037,10 +1037,14 @@ def animate(rig, bones, lid_rest=2.6):
                 target[ear] = head_delta @ Matrix.Translation(eh) @ wiggle @ Matrix.Translation(-eh) @ rests[ear]
                 yaw, pitch = c['look']
                 eye = rests['Eye.' + side]
-                target['Eye.' + side] = head_delta @ eye @ Matrix.Rotation(-yaw * .35, 4, 'Z') @ Matrix.Rotation(pitch * .35, 4, 'X')
+                eye_yaw, eye_pitch = -yaw*.35, pitch*.35
+                if max_eye_gaze is not None:
+                    eye_yaw = max(-max_eye_gaze, min(max_eye_gaze, eye_yaw))
+                    eye_pitch = max(-max_eye_gaze, min(max_eye_gaze, eye_pitch))
+                target['Eye.' + side] = head_delta @ eye @ Matrix.Rotation(eye_yaw, 4, 'Z') @ Matrix.Rotation(eye_pitch, 4, 'X')
                 close = min(1.0, c['blink'])
                 lid_angle = design_lid_rest * close - .25 * c.get('lid_open', 0.0)
-                grow = 1.0 + (LID_SHOWN / LID_HIDDEN - 1.0) * smooth(close / .25)
+                grow = 1.0 + (lid_shown / LID_HIDDEN - 1.0) * smooth(close / .25)
                 target['Lid.' + side] = head_delta @ rests['Lid.' + side] @ Matrix.Rotation(-lid_angle, 4, 'X') @ Matrix.Scale(grow, 4)
             target['Jaw'] = head_delta @ rests['Jaw'] @ Matrix.Rotation(-.22 * c['jaw'], 4, 'X')
             tail_h = Vector(bones['Tail'][0])

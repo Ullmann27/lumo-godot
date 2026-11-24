@@ -141,7 +141,7 @@ func _ready() -> void:
 	add_child(wonder)
 	marker = kit.mesh(self, kit.SHAPES.star(), Vector3.ZERO, Color("baff8d"), true)
 	marker.name = "WorldMissionMarker"
-	marker.scale = Vector3.ONE * 0.65
+	marker.scale = Vector3.ONE * ART.MARKER_SCALE
 	_build_ui()
 	if not save_blocked and not model.pending_lesson.is_empty() and int(model.pending_lesson.get("grade", 0)) != grade:
 		# A profile may move to the next school year while a lesson is open.
@@ -643,7 +643,6 @@ func _physics_process(delta: float) -> void:
 		_drive_tick(axis, delta)
 	else:
 		_walk_tick(axis, delta)
-	_update_camera(delta)
 	var at := _active_position()
 	ADVENTURE.set_focus(at + Vector3.UP * 1.5)
 	var mission: Dictionary = model.current()
@@ -651,6 +650,7 @@ func _physics_process(delta: float) -> void:
 		marker.position = mission.at + Vector3.UP * (3.5 + (0.0 if reduced_motion else sin(time * 2.0) * 0.18))
 		marker.rotate_y(0.0 if reduced_motion else delta)
 		wonder.set_routes(at, [mission])
+	_update_camera(delta)
 	var portal := _near_portal()
 	var friend_available: bool = friend_post.available(at)
 	var crossing_available := _near_crossing_button(at)
@@ -767,6 +767,7 @@ func _update_camera(delta: float) -> void:
 		var desired_build := build_focus + Vector3(18.0, 56.0, 42.0)
 		camera.position = camera.position.lerp(desired_build, 1.0 - exp(-8.0 * delta))
 		camera.look_at(build_focus, Vector3.UP)
+		art.fit_camera_hints(camera, marker, MobileRuntime.get_ui_density())
 		return
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
 	var at := _active_position()
@@ -774,7 +775,7 @@ func _update_camera(delta: float) -> void:
 	var scale_factor := 1.18 if portrait else 1.0
 	var focus := at + Vector3.UP * (1.3 if driving else 1.45)
 	var desired: Vector3
-	var look_target := focus
+	var look_ahead := Vector3.ZERO
 	if driving:
 		desired = at + kart_body.global_basis * Vector3(0, 5.0, 10.5) * scale_factor
 	else:
@@ -786,15 +787,21 @@ func _update_camera(delta: float) -> void:
 		).rotated(Vector3.UP, camera_yaw)
 		desired = focus + offset
 		# Look a little ahead of Lumo, not down at his feet.
-		look_target += Vector3(0.28, 0.06, -3.6).rotated(Vector3.UP, camera_yaw)
+		look_ahead = Vector3(0.28, 0.06, -3.6).rotated(Vector3.UP, camera_yaw)
+	var requested_distance := focus.distance_to(desired)
 	var query := PhysicsRayQueryParameters3D.create(focus, desired, 1, [player.get_rid(), kart_body.get_rid()])
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
 		desired = hit.position + hit.normal * 0.38
 	camera.position = camera.position.lerp(desired, 1.0 - exp(-9.0 * delta))
+	# A full 3.6m look-ahead at a wall-compressed distance clips Lumo's feet.
+	# Ease the target back towards him using the actual, smoothed camera distance.
+	var room := minf(1.0, camera.position.distance_to(focus) / requested_distance)
+	var look_target := focus + look_ahead * room * room
 	if camera.position.distance_to(look_target) > 0.2:
 		camera.look_at(look_target, Vector3.UP)
 	camera_clearance.update(camera, focus, kart_body.get_instance_id() if driving else player.get_instance_id(), delta)
+	art.fit_camera_hints(camera, marker, MobileRuntime.get_ui_density())
 
 
 func _traffic_tick(delta: float) -> void:

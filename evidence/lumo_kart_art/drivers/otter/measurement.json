@@ -1,5 +1,8 @@
 {
   "species": "otter",
+  "source_file": "art/lumo_kart/meshy/20261123/drivers/otter.glb",
+  "source_sha256": "3243698db47a4e42354acbf7bf456e733817de9aa3e28861726cc08cc3eed27c",
+  "task_id": "01a208f4-b791-7137-8267-65bec9ad74bf",
   "bones": [
     "Root",
     "Pelvis",
@@ -39,25 +42,25 @@
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 6.343065695104826e-07
+      "sampled_max_hand_origin_error_m": 6.145712920219088e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+      "sampled_max_hand_origin_error_m": 6.809031759974875e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+      "sampled_max_hand_origin_error_m": 6.809031759974875e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 5.094802676820385e-07
+      "sampled_max_hand_origin_error_m": 4.935412157082318e-07
     },
     "celebrate": {
       "frames": 72,
@@ -104,51 +107,72 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 12195,
-      "triangles": 24148,
-      "materials": 6,
-      "max_weight_sum_error": 4.470348358154297e-08,
+      "vertices": 16015,
+      "triangles": 24166,
+      "materials": 3,
+      "max_weight_sum_error": 3.725290298461914e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7953,
-        1.0751,
-        1.1236
+        0.7975,
+        0.9728,
+        1.4357
       ],
       "file": "assets/kart/production/drivers/otter/driver.glb",
-      "bytes": 1431244,
-      "sha256": "aba1d7bf1ff1ccf4d967e1a6350a1a6966ed295c3f2934185a09bc2173b13dd5"
+      "bytes": 2500480,
+      "sha256": "7939814b0c973311209994212b8dd3ae51e30c093bd005ca171ce38b811cb155"
     },
     "lod1": {
-      "vertices": 7944,
-      "triangles": 15646,
-      "materials": 6,
+      "vertices": 11413,
+      "triangles": 15368,
+      "materials": 3,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7953,
-        1.0751,
-        1.1238
+        0.7966,
+        0.9719,
+        1.4359
       ],
       "file": "assets/kart/production/drivers/otter/driver_lod1.glb",
-      "bytes": 1105184,
-      "sha256": "334ee9ab0b5a08204839051f9633baf991100c61df9db1fc7015089e9078870f"
+      "bytes": 2208396,
+      "sha256": "e091b19d163cc51ed5a1c929cfe92a6cdd17675bb729d659d41d0190922eeb69"
     },
     "lod2": {
-      "vertices": 5820,
-      "triangles": 11398,
-      "materials": 6,
+      "vertices": 8596,
+      "triangles": 10970,
+      "materials": 3,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7953,
-        1.0751,
-        1.1239
+        0.7983,
+        0.9759,
+        1.4347
       ],
       "file": "assets/kart/production/drivers/otter/driver_lod2.glb",
-      "bytes": 942156,
-      "sha256": "ae20c03934f0c9688407ce4731257c9549f088f24d66dc3fb7dce606ee4b977c"
+      "bytes": 2034372,
+      "sha256": "b357089becd75ff4222148f295f953ad1309e2d2467993a901ccc1490872a7e6"
     }
   },
-  "build_seconds": 10.8,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "textures": [
+    {
+      "name": "Image_0",
+      "source_size": [
+        2048,
+        2048
+      ],
+      "runtime_size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "anatomy_file": "tools/lumo_kart_art/drivers/meshy_anatomy.json",
+  "anatomy_sha256": "55972ff1efb14d52e58351bba999573e37efe0a41c1fa778384916231de4af1c",
+  "blender_version": "4.3.2",
+  "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+  "portrait": {
+    "file": "assets/kart/menu/drivers/otter.webp",
+    "sha256": "d7fa204ee61bd37ebfa7dd1ec0b702a2728247725b644c3aecd50df601a185f2",
+    "bytes": 22372,
+    "source": "Rendered from this rigged Meshy mesh"
+  }
 }

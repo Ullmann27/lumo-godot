@@ -1,5 +1,8 @@
 {
   "species": "badger",
+  "source_file": "art/lumo_kart/meshy/20261123/drivers/badger.glb",
+  "source_sha256": "14ed9030b5328de7ebb2d5d44cddad33a890a092c201453b0bcb623272d68157",
+  "task_id": "01a208f4-cc5c-724e-af02-a3dead4905b2",
   "bones": [
     "Root",
     "Pelvis",
@@ -39,25 +42,25 @@
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 6.343065695104826e-07
+      "sampled_max_hand_origin_error_m": 6.145712920219088e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+      "sampled_max_hand_origin_error_m": 6.809031759974875e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 5.63098300328588e-07
+      "sampled_max_hand_origin_error_m": 6.809031759974875e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 5.094802676820385e-07
+      "sampled_max_hand_origin_error_m": 4.935412157082318e-07
     },
     "celebrate": {
       "frames": 72,
@@ -104,51 +107,72 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 12194,
-      "triangles": 24148,
-      "materials": 6,
-      "max_weight_sum_error": 4.0978193283081055e-08,
-      "max_influences": 4,
+      "vertices": 15544,
+      "triangles": 24174,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 3,
       "dimensions_blender_m": [
-        0.7953,
-        0.8365,
-        1.1619
+        0.8245,
+        0.7196,
+        1.1807
       ],
       "file": "assets/kart/production/drivers/badger/driver.glb",
-      "bytes": 1431252,
-      "sha256": "ec367de489fed078b38b1da3f2d80f4b00ea4d00fc38d0102ed97b344b3fd98e"
+      "bytes": 2509920,
+      "sha256": "378bbc73c0893037105383726ea2f79316bf86769d4b1d7a3c1152227a1aea46"
     },
     "lod1": {
-      "vertices": 7943,
-      "triangles": 15646,
-      "materials": 6,
-      "max_weight_sum_error": 3.725290298461914e-08,
+      "vertices": 10557,
+      "triangles": 14675,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7953,
-        0.8365,
-        1.1618
+        0.8253,
+        0.7195,
+        1.1807
       ],
       "file": "assets/kart/production/drivers/badger/driver_lod1.glb",
-      "bytes": 1105132,
-      "sha256": "fde798e29e2bb7c5c35cbce3595ba4552b57b756e7565a4cedc84f592740a354"
+      "bytes": 2193608,
+      "sha256": "cc1057f340ce5d76c3e555ff2d02e8f5e522a5429d7e45ea725c29119e610181"
     },
     "lod2": {
-      "vertices": 5819,
-      "triangles": 11398,
-      "materials": 6,
-      "max_weight_sum_error": 4.0745362639427185e-08,
+      "vertices": 7629,
+      "triangles": 9927,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.7953,
-        0.8365,
-        1.1628
+        0.8217,
+        0.7224,
+        1.1804
       ],
       "file": "assets/kart/production/drivers/badger/driver_lod2.glb",
-      "bytes": 942552,
-      "sha256": "9d3262f14f9e2f7a09a34dd9fdcef1ec8b9a04e8a305c34b9211ffc5fb4d2d9c"
+      "bytes": 2011924,
+      "sha256": "6ea576808b7ebbf3daa4a903ef17954432985ed3ac5f4ea69d774697fae28e93"
     }
   },
-  "build_seconds": 15.6,
-  "authoring": "Local Blender Python: one signed-distance body (suit, fur, head, ears, tail), sparse surface nets, decimation, per-vertex colours and weights; separate eye, lid and jaw parts on their own bones. No downloads, no generators."
+  "textures": [
+    {
+      "name": "Image_0",
+      "source_size": [
+        2048,
+        2048
+      ],
+      "runtime_size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "anatomy_file": "tools/lumo_kart_art/drivers/meshy_anatomy.json",
+  "anatomy_sha256": "55972ff1efb14d52e58351bba999573e37efe0a41c1fa778384916231de4af1c",
+  "blender_version": "4.3.2",
+  "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+  "portrait": {
+    "file": "assets/kart/menu/drivers/badger.webp",
+    "sha256": "4d51a2bfe1d5b17b5df657ee7858681257926d849b7d20fb3bf766485469e6fc",
+    "bytes": 26662,
+    "source": "Rendered from this rigged Meshy mesh"
+  }
 }

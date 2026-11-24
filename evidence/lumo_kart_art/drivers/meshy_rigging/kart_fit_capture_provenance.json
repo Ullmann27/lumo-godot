@@ -1,0 +1,14 @@
+{
+  "original_capture": "scripts/tests/kart_driver_fit_capture.gd",
+  "original_sha256": "1694a913cbbcae1305d221c0fcbc40073c76c3abb35af90364430abe796c30ac",
+  "temporary_capture": "kart_driver_fit_runtime_capture.gd",
+  "temporary_sha256": "6ab02dfb851ca67e537cfb3d706ddaea9b21ace0534841c5e242d00af513ee7c",
+  "changes": [
+    "Require actual imported Comet chassis and Meshy shell; reject fallback renderer.",
+    "Record exact vehicle GLB hashes.",
+    "Measure both hands against the real Comet steering-wheel grips; enforce the existing 1 mm threshold.",
+    "Advance actual production chassis/driver APIs for six 1/30-second samples and freeze using existing runtime suspension.",
+    "Frame the close-up from actual eye-bone midpoint for the nine rivals, and original Lumo Head/Crown midpoint because his eyes are surface morphs; preserve original side and rear cockpit cameras."
+  ],
+  "staged_runtime_sources_modified_for_capture": false
+}

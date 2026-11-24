@@ -10,9 +10,14 @@ const VILLAGE = preload("res://scripts/creative/build_village_art.gd")
 const CHEST = preload("res://assets/creative/models/lumo_treasure_chest.glb")
 const LANTERN = preload("res://assets/creative/models/lumo_lantern.glb")
 const VEHICLE_DIR := "res://assets/creative/lumo_world/vehicles/"
+const SIGN_MAX_DP := Vector2(320.0, 34.0)
+const MARKER_MAX_DP := 48.0
+const MARKER_SCALE := 0.65
 
 var kit := KIT.new()
 var zones: Dictionary = {}
+var signs: Array[Label3D] = []
+var sign_extents: Dictionary = {}
 
 
 func build(root: Node3D) -> void:
@@ -298,4 +303,53 @@ func _sign(root: Node3D, text: String, at: Vector3, color: Color) -> Label3D:
 	label.no_depth_test = false
 	label.position = at
 	root.add_child(label)
+	signs.append(label)
 	return label
+
+
+func fit_camera_hints(camera: Camera3D, marker: MeshInstance3D, density: float) -> void:
+	# World-space labels must not grow across Lumo's face when a wall compresses
+	# the follow camera. Cap only their near perspective size; distant signs keep
+	# their authored dimensions, and the physical roadside board is untouched.
+	var viewport := camera.get_viewport()
+	var view := viewport.get_visible_rect().size
+	var canvas_per_dp := view * density / Vector2(viewport.get_window().size).max(Vector2.ONE)
+	var limit := SIGN_MAX_DP * canvas_per_dp
+	limit.x = minf(limit.x, view.x * 0.55)
+	var camera_space := camera.get_camera_transform().affine_inverse()
+	var focal := (view.y if camera.keep_aspect == Camera3D.KEEP_HEIGHT else view.x) / (2.0 * tan(deg_to_rad(camera.fov) * 0.5))
+	var perspective := camera.projection == Camera3D.PROJECTION_PERSPECTIVE
+	for label in signs:
+		if label.billboard == BaseMaterial3D.BILLBOARD_DISABLED:
+			continue
+		var factor := 1.0
+		if perspective:
+			var extent := _sign_extent(label)
+			var depth := maxf(camera.near, -(camera_space * label.global_position).z)
+			factor = minf(1.0, minf(limit.x / extent.x, limit.y / extent.y) * depth / focal)
+		var fitted := Vector3.ONE * factor
+		if not label.scale.is_equal_approx(fitted):
+			label.scale = fitted
+	var marker_factor := MARKER_SCALE
+	if perspective:
+		var diameter := marker.get_aabb().size.length() * MARKER_SCALE
+		var depth := maxf(camera.near, -(camera_space * marker.global_position).z - diameter * 0.5)
+		marker_factor *= minf(1.0, MARKER_MAX_DP * minf(canvas_per_dp.x, canvas_per_dp.y) * depth / (focal * diameter))
+	var fitted_marker := Vector3.ONE * marker_factor
+	if not marker.scale.is_equal_approx(fitted_marker):
+		marker.scale = fitted_marker
+
+
+func _sign_extent(label: Label3D) -> Vector2:
+	var id := label.get_instance_id()
+	if not sign_extents.has(id):
+		# Label3D's billboard AABB is a cube. Its generated rectangle gives the
+		# actual text height and width; cache it once, not on every camera tick.
+		var minimum := Vector2(INF, INF)
+		var maximum := Vector2(-INF, -INF)
+		for vertex in label.generate_triangle_mesh().get_faces():
+			var point := Vector2(vertex.x, vertex.y)
+			minimum = minimum.min(point)
+			maximum = maximum.max(point)
+		sign_extents[id] = (maximum - minimum).max(Vector2.ONE * 0.001)
+	return sign_extents[id]

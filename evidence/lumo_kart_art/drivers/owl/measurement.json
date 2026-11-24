@@ -1,5 +1,8 @@
 {
   "species": "owl",
+  "source_file": "art/lumo_kart/meshy/20261123/drivers/owl.glb",
+  "source_sha256": "45843bab81456b9c35e318453d5a9fd1f0598e49ed26e9c3eee66332ab026bac",
+  "task_id": "01a208f4-7093-7622-a4cd-0bc3f65a3835",
   "bones": [
     "Root",
     "Pelvis",
@@ -39,25 +42,25 @@
       "frames": 72,
       "fps": 24,
       "duration_s": 2.9583333333333335,
-      "sampled_max_hand_origin_error_m": 2.5463115409962923e-07
+      "sampled_max_hand_origin_error_m": 3.7726726833498965e-07
     },
     "kart_steer_left": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 3.625608998714816e-07
+      "sampled_max_hand_origin_error_m": 3.816559456248789e-07
     },
     "kart_steer_right": {
       "frames": 48,
       "fps": 24,
       "duration_s": 1.9583333333333333,
-      "sampled_max_hand_origin_error_m": 3.625608998714816e-07
+      "sampled_max_hand_origin_error_m": 3.816559456248789e-07
     },
     "kart_jump": {
       "frames": 36,
       "fps": 24,
       "duration_s": 1.4583333333333333,
-      "sampled_max_hand_origin_error_m": 3.8310766614027146e-07
+      "sampled_max_hand_origin_error_m": 3.8426509375058493e-07
     },
     "celebrate": {
       "frames": 72,
@@ -104,51 +107,72 @@
   },
   "lods": {
     "lod0": {
-      "vertices": 15829,
-      "triangles": 31320,
-      "materials": 6,
+      "vertices": 21072,
+      "triangles": 24168,
+      "materials": 3,
       "max_weight_sum_error": 4.470348358154297e-08,
-      "max_influences": 4,
+      "max_influences": 3,
       "dimensions_blender_m": [
-        0.8005,
-        0.7064,
-        1.2799
+        0.7636,
+        0.8144,
+        1.4753
       ],
       "file": "assets/kart/production/drivers/owl/driver.glb",
-      "bytes": 1735588,
-      "sha256": "21f395930bb2e81b07af5c556c7607eed77954447267fcbd933c6801f69a20ec"
+      "bytes": 3205288,
+      "sha256": "413b037709909387b224b46f3becebaf71c71b947e50523546ed7f30c23c445b"
     },
     "lod1": {
-      "vertices": 10108,
-      "triangles": 19878,
-      "materials": 6,
+      "vertices": 15212,
+      "triangles": 14700,
+      "materials": 3,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.8005,
-        0.7064,
-        1.2799
+        0.7636,
+        0.8164,
+        1.4741
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
-      "bytes": 1283332,
-      "sha256": "86d41c7d07c8f6e7871e4bc7fed03f209839d8319bc557580d92cc55cd75ca65"
+      "bytes": 2837268,
+      "sha256": "7853f311502831c19ebf0390b76f94b42ba2082890aff4cfdce0c4f8c3287915"
     },
     "lod2": {
-      "vertices": 7247,
-      "triangles": 14156,
-      "materials": 6,
+      "vertices": 11187,
+      "triangles": 9966,
+      "materials": 3,
       "max_weight_sum_error": 4.470348358154297e-08,
       "max_influences": 4,
       "dimensions_blender_m": [
-        0.8005,
-        0.7064,
-        1.2799
+        0.7687,
+        0.8138,
+        1.4722
       ],
       "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
-      "bytes": 1057404,
-      "sha256": "309eac638f5ffb7426b0b8dd15ae65322fe780a5fab760317daaf018369fe675"
+      "bytes": 2573612,
+      "sha256": "944b3d78b435cf085435f6fe091fb34b882070dd295c4deff0d770c7d8577a0e"
     }
   },
-  "build_seconds": 82.4,
-  "authoring": "Original seated sculpt, fitted race garment, species-specific modeled coat or scales and weighted facial detailing; 26 bones and 12 authored clips."
+  "textures": [
+    {
+      "name": "Image_0",
+      "source_size": [
+        2048,
+        2048
+      ],
+      "runtime_size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "anatomy_file": "tools/lumo_kart_art/drivers/meshy_anatomy.json",
+  "anatomy_sha256": "55972ff1efb14d52e58351bba999573e37efe0a41c1fa778384916231de4af1c",
+  "blender_version": "4.3.2",
+  "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+  "portrait": {
+    "file": "assets/kart/menu/drivers/owl.webp",
+    "sha256": "2593afece7a83fd16a67076313b73992e09b07258b544f4a56b4d207f13a7a33",
+    "bytes": 30670,
+    "source": "Rendered from this rigged Meshy mesh"
+  }
 }

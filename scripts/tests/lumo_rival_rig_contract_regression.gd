@@ -21,7 +21,13 @@ const CLIPS := [
 	"card_play",
 ]
 const FACE_BONES := ["Jaw", "Eye.L", "Eye.R", "Lid.L", "Lid.R"]
-const MAX_FILE_BYTES := 1572864
+const SPECIES := ["lion", "owl", "rabbit", "squirrel", "turtle", "frog", "otter", "badger", "cat"]
+# The former 1.5 MiB total limit covered untextured procedural figures.
+# Meshy keeps one original albedo atlas, reduced to 1024 square for mobile.
+# Bound that image separately from the mesh, skin and all twelve keyed clips.
+const MAX_STRUCTURE_BYTES := 2097152
+const MAX_IMAGE_BYTES := 1572864
+const MAX_TEXTURE_EDGE := 1024
 var checks := 0
 var failures: Array[String] = []
 
@@ -69,17 +75,65 @@ func _enclosed_volume(mesh: Mesh) -> float:
 	return total / 6.0
 
 
+func _file_budget(file: FileAccess, path: String) -> void:
+	var total := file.get_length()
+	if total < 28 or file.get_32() != 0x46546C67 or file.get_32() != 2 or file.get_32() != total:
+		_check(false, "Valid GLB header: " + path)
+		return
+	var json_size := file.get_32()
+	if file.get_32() != 0x4E4F534A or json_size > total - 28:
+		_check(false, "Valid GLB JSON chunk: " + path)
+		return
+	var parsed: Variant = JSON.parse_string(file.get_buffer(json_size).get_string_from_utf8())
+	if not parsed is Dictionary:
+		_check(false, "Readable GLB metadata: " + path)
+		return
+	var images: Variant = parsed.get("images", [])
+	if not images is Array or images.size() != 1 or not images[0] is Dictionary:
+		_check(false, "Exactly one embedded Meshy albedo image: " + path)
+		return
+	var image: Dictionary = images[0]
+	var views: Variant = parsed.get("bufferViews", [])
+	var view_index := int(image.get("bufferView", -1))
+	if not views is Array or view_index < 0 or view_index >= views.size() or not views[view_index] is Dictionary:
+		_check(false, "Image has an embedded buffer view: " + path)
+		return
+	var view: Dictionary = views[view_index]
+	var image_bytes := int(view.get("byteLength", 0))
+	var image_offset := int(view.get("byteOffset", 0))
+	var bin_bytes := file.get_32()
+	if file.get_32() != 0x004E4942 or file.get_position() + bin_bytes != total or image_offset < 0 or image_bytes < 24 or image_offset + image_bytes > bin_bytes:
+		_check(false, "Image lies inside the GLB binary chunk: " + path)
+		return
+	_check(image.get("mimeType") == "image/png" and int(view.get("buffer", -1)) == 0,
+		"One embedded PNG in the GLB buffer: " + path)
+	_check(image_bytes <= MAX_IMAGE_BYTES,
+		"Albedo PNG within 1.5 MiB: %s (%d bytes)" % [path, image_bytes])
+	_check(total - image_bytes <= MAX_STRUCTURE_BYTES,
+		"Geometry, skin and twelve clips within 2 MiB: %s (%d bytes)" % [path, total - image_bytes])
+	file.seek(file.get_position() + image_offset)
+	var header := StreamPeerBuffer.new()
+	header.big_endian = true
+	header.data_array = file.get_buffer(24)
+	if header.data_array.slice(0, 8) != PackedByteArray([137, 80, 78, 71, 13, 10, 26, 10]):
+		_check(false, "PNG signature: " + path)
+		return
+	header.seek(16)
+	var width := header.get_u32()
+	var height := header.get_u32()
+	_check(width > 0 and height > 0 and width <= MAX_TEXTURE_EDGE and height <= MAX_TEXTURE_EDGE,
+		"Albedo resolution within 1024 square: %s (%d x %d)" % [path, width, height])
+
+
 func _level(id: String, level: int) -> int:
 	var path := ROSTER.racing_model_path(id, level)
 	_check(not path.is_empty(), "Authored LOD path: %s/%d" % [id, level])
 	if path.is_empty():
 		return -1
 	var file := FileAccess.open(path, FileAccess.READ)
+	_check(file != null, "Readable production GLB: " + path)
 	if file != null:
-		_check(
-			file.get_length() <= MAX_FILE_BYTES,
-			"File within 1.5 MB: %s (%d bytes)" % [path, file.get_length()]
-		)
+		_file_budget(file, path)
 		file.close()
 	var packed := load(path) as PackedScene
 	_check(packed != null, "Imported scene: " + path)
@@ -122,6 +176,7 @@ func _level(id: String, level: int) -> int:
 				_bone_moves(player.get_animation("celebrate"), prefix2 + ":Jaw"),
 				"Celebration opens the mouth: " + path
 			)
+		var textured_surfaces := 0
 		for mesh: MeshInstance3D in model.find_children("*", "MeshInstance3D", true, false):
 			var volume := _enclosed_volume(mesh.mesh)
 			_check(
@@ -133,6 +188,11 @@ func _level(id: String, level: int) -> int:
 					material != null and material.cull_mode == BaseMaterial3D.CULL_BACK,
 					"Single-sided surfaces: " + path
 				)
+				if material != null and material.albedo_texture != null:
+					textured_surfaces += 1
+					_check(material.albedo_texture.get_width() <= MAX_TEXTURE_EDGE and material.albedo_texture.get_height() <= MAX_TEXTURE_EDGE,
+						"Imported albedo respects the mobile texture size: " + path)
+		_check(textured_surfaces > 0, "Imported Meshy surfaces retain their albedo texture: " + path)
 	model.free()
 	return triangles
 
@@ -141,7 +201,7 @@ func _run() -> void:
 	var ids: Array[String] = []
 	for entry in ROSTER.all():
 		ids.append(str(entry.id))
-	_check(ids == ["lion", "owl", "rabbit", "squirrel", "turtle", "frog"], "Six roster animals")
+	_check(ids == SPECIES, "Nine roster animals")
 	for id in ids:
 		var counts: Array[int] = []
 		for level in range(3):

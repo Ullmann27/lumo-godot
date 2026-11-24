@@ -12,12 +12,15 @@ var captures: Array[Dictionary] = []
 var world_path := ""
 var village_path := ""
 var fixture_bytes := ""
+var selected_views: PackedStringArray = []
 
 
 func _initialize() -> void:
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--out="):
 			output = argument.trim_prefix("--out=")
+		elif argument.begins_with("--views="):
+			selected_views = argument.trim_prefix("--views=").split(",", false)
 	_run.call_deferred()
 
 
@@ -65,8 +68,13 @@ func _run() -> void:
 		{"name": "fold_village_entry", "size": Vector2i(1384, 1400), "at": Vector3(286.6, scene.own_village.surface_height(286.6, 6.0) + 0.2, 6), "drive": false, "yaw": -PI * 0.5}
 	]
 	for view in views:
+		if not selected_views.is_empty() and not str(view.name) in selected_views:
+			continue
 		if not await _capture(view):
 			return
+	if captures.is_empty() or (not selected_views.is_empty() and captures.size() != selected_views.size()):
+		_fail("Unknown or repeated selected view")
+		return
 	if FileAccess.get_file_as_string(village_path) != fixture_bytes:
 		_fail("Capture changed the projected village save")
 		return

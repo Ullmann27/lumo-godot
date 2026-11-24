@@ -1,0 +1,50 @@
+{
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "source_inventory": "staged_sources.json",
+  "tests": [
+    {
+      "name": "lumo_rival_rig_contract_regression",
+      "command": [
+        "/tmp/lumo-2078/runtime/Godot_v4.6.3-stable_linux.x86_64",
+        "--headless",
+        "--path",
+        "/tmp/lumo-meshy-runtime-check",
+        "--script",
+        "res://scripts/tests/lumo_rival_rig_contract_regression.gd"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.219
+    },
+    {
+      "name": "lumo_kart_production_driver_regression",
+      "command": [
+        "/tmp/lumo-2078/runtime/Godot_v4.6.3-stable_linux.x86_64",
+        "--headless",
+        "--path",
+        "/tmp/lumo-meshy-runtime-check",
+        "--script",
+        "res://scripts/tests/lumo_kart_production_driver_regression.gd",
+        "--",
+        "/tmp/lumo-meshy-runtime-check/production-runtime-report.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.669
+    },
+    {
+      "name": "cards_character_roster_regression",
+      "command": [
+        "/tmp/lumo-2078/runtime/Godot_v4.6.3-stable_linux.x86_64",
+        "--headless",
+        "--path",
+        "/tmp/lumo-meshy-runtime-check",
+        "--script",
+        "res://scripts/tests/cards_character_roster_regression.gd"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.767
+    }
+  ],
+  "method": "Normal Godot editor imports; exact production GLBs and actual runtime sources.",
+  "physical_android": false,
+  "rendered_visual_review": false
+}

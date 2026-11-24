@@ -156,9 +156,13 @@ func _adapter(identity: String) -> void:
 	_sample(host, adapter, 0.0, false, 1.0 / 30.0)
 	_check(adapter.current_behavior == &"kart_seated", "Real landing restores seated clip.")
 	_contacts(host, adapter)
+	adapter.apply_vehicle_sample(18.0, 0.0, false, false, true, true)
+	adapter.advance_tick(1.0 / 30.0)
+	_check(adapter.current_behavior == &"kart_seated", "Boost and drift do not invent a physical jump.")
 	adapter.apply_vehicle_sample(18.0, 0.0, false, true, true, true)
 	adapter.advance_tick(1.0 / 30.0)
-	_check(adapter.current_behavior == &"kart_seated", "Hit/boost/drift cannot invent a physical jump.")
+	_check(adapter.current_behavior == &"kart_hit", "A real impact plays the authored hit reaction.")
+	_contacts(host, adapter)
 	adapter.set_suspended(true)
 	var before := _pose(adapter)
 	var elapsed_before: float = adapter.elapsed
@@ -186,7 +190,7 @@ func _adapter(identity: String) -> void:
 	adapter.celebrate_finished_race(1)
 	for index in range(45):
 		adapter.advance_tick(1.0 / 30.0)
-	_check(adapter.current_behavior == &"celebrate" and adapter.victory, "Finish event plays authored celebration.")
+	_check(adapter.current_behavior == &"kart_celebrate" and adapter.victory, "Finish event plays authored race celebration.")
 	var hand_height: float = adapter.skeleton.get_bone_global_pose(adapter.skeleton.find_bone("Hand.R")).origin.y
 	_check(hand_height > 1.4, "Stopped finish celebration actually raises a hand.")
 	for index in range(50):
@@ -215,7 +219,7 @@ func _adapter(identity: String) -> void:
 
 
 func _run() -> void:
-	_check(ROSTER.ready_for_race(), "Six production identities have all imported LODs.")
+	_check(ROSTER.ready_for_race(), "Nine production identities have all imported LODs.")
 	for identity in SPECIES:
 		for level in range(3):
 			_imported_scene(identity, level)
