@@ -5,6 +5,7 @@ const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const LANDSCAPE = preload("res://scripts/creative/build_village_landscape.gd")
 const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const VILLAGE = preload("res://scripts/creative/lumo_world_village.gd")
+const WORLD_STATE = preload("res://scripts/creative/lumo_world_state.gd")
 const PROFILE := "lumo_world_device_regression_2078"
 var checks := 0
 var failures: Array[String] = []
@@ -197,6 +198,51 @@ func _vehicle_transition() -> void:
 	scene._toggle_vehicle()
 	_check(not scene.driving, "removing the obstruction restores a normal exit")
 	_check(not FileAccess.file_exists(village_path), "walking and kart transitions do not create or overwrite a village economy save")
+	# Follow the actual save/re-entry path, without relocating the kart after load.
+	var parked_in_city := Vector3(218, 0.2, 8)
+	var parked_heading := -1.1
+	scene.kart_body.position = parked_in_city
+	scene.kart_body.rotation.y = parked_heading
+	scene.kart_body.velocity = Vector3.ZERO
+	for index in range(30):
+		await physics_frame
+		scene._drive_tick(Vector2.ZERO, 1.0 / 60.0)
+	_check(scene.kart_body.is_on_floor(), "city parking pose has real post-movement ground contact")
+	parked_in_city = scene.kart_body.position
+	scene.player.position = Vector3(parked_in_city.x + 2, 0.2, parked_in_city.z)
+	scene.last_safe = scene.player.position
+	_check(scene._save(), "parking away from the original village writes the actual World save")
+	scene.queue_free()
+	await _settle()
+	scene = load("res://scenes/creative/lumo_world.tscn").instantiate()
+	root.add_child(scene)
+	scene.set_physics_process(false)
+	await _settle()
+	_check(scene.kart_body.position.is_equal_approx(parked_in_city), "re-entry restores the kart at its saved parking place, not the original spawn")
+	_check(is_equal_approx(scene.kart_body.rotation.y, parked_heading), "re-entry restores the saved kart heading")
+	_check(scene.player.position.distance_to(scene.kart_body.position) < 5.0, "the restored player can reach the parked kart immediately")
+	_check(scene.kart_visual.is_visible_in_tree(), "the restored kart visual is attached and visible")
+	_check(scene.residents.size() == 3, "all three local story residents are loaded on re-entry")
+	scene._map_dialog()
+	_check(scene.overview.kart_at.is_equal_approx(parked_in_city), "the production map receives the current parked kart, not the racing portal")
+	scene.overview.focus_kart()
+	_check(scene.overview.view_bounds.has_point(Vector2(parked_in_city.x, parked_in_city.z)), "the kart map action reveals its saved parking place")
+	scene._close_dialog()
+	scene._toggle_vehicle()
+	_check(scene.driving, "the child can enter the restored kart through the normal production action")
+	# Pause immediately after leaving an edge: the height is still plausible,
+	# but the actual motion has lost its floor contact.
+	scene.kart_body.position = Vector3(0, 0.2, 70)
+	scene.kart_body.velocity = Vector3.ZERO
+	await physics_frame
+	scene._drive_tick(Vector2.ZERO, 1.0 / 60.0)
+	_check(not scene.kart_body.is_on_floor() and scene.kart_body.position.y > -0.5, "the early-fall fixture is airborne while its numeric height is still in range")
+	_check(scene._save(), "pausing during an early fall still saves the world")
+	var falling_save: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(world_path))
+	var resumed = WORLD_STATE.new()
+	_check(resumed.restore(falling_save), "the early-fall save restores normally")
+	_check(resumed.kart_position.is_equal_approx(parked_in_city), "falling cannot replace the last grounded kart pose")
+	_check(resumed.position.is_equal_approx(scene.last_safe), "falling resumes the child at the last safe walking point")
 	scene.queue_free()
 	await _settle()
 	DirAccess.remove_absolute(world_path)

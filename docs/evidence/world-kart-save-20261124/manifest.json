@@ -1,0 +1,59 @@
+{
+  "base_commit": "c3f459eca88f659da1a9e4af1c990c804e715528",
+  "base_tree": "6b7c47a3010cec04736f9cd495adf34ad0ec2e6f",
+  "recorded_at": "2026-11-24T12:20:07.463706+01:00",
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/tmp/lumo-world-kart-persistence-20261124",
+    "--script",
+    "res://scripts/tests/lumo_world_kart_persistence_regression.gd"
+  ],
+  "exit_code": 0,
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "scope": "state_and_atlas; isolated fixture using unchanged production state/map scripts",
+  "checks": 63,
+  "not_executed": [
+    "complete lumo_world_device_regression.gd",
+    "Godot 4.6.3",
+    "renderer screenshot",
+    "APK build",
+    "Android device re-entry"
+  ],
+  "files": {
+    "scripts/creative/lumo_world.gd": {
+      "bytes": 55207,
+      "sha256": "366262401182e4e7f975d28ee06d3548f572836c3a10138e8ddfb589fc617d0f"
+    },
+    "scripts/creative/lumo_world_state.gd": {
+      "bytes": 10538,
+      "sha256": "75e2b441394191f45e0bc181ecdc44bf24b9e4c0ab972f64a3eae3ab987fd116"
+    },
+    "scripts/creative/lumo_world_map.gd": {
+      "bytes": 20062,
+      "sha256": "b17480571895b0a57f7d0502c7035bf03ba422fb17c4af56f7839445eef04225"
+    },
+    "scripts/tests/lumo_world_device_regression.gd": {
+      "bytes": 12944,
+      "sha256": "c87929ec4af2889459addf2e5cd11f825abfd3490ee26ba5d515cabad110d5e3"
+    },
+    "scripts/tests/lumo_world_kart_persistence_regression.gd": {
+      "bytes": 6167,
+      "sha256": "65554f77481d12d28b058294c69ab04c1b2bed5379d55a0fb13cb45b1cabe102"
+    },
+    "docs/handoffs/LUMO_WORLD_KART_SAVE_20261124.md": {
+      "bytes": 4406,
+      "sha256": "be9d6f7b9ce669b9af8b80bb9a898682f68d367c73db39952a30f91e5d6f0da7"
+    },
+    "STATUS.md": {
+      "bytes": 10203,
+      "sha256": "7ea9fb680ea633c530687d792de4289c74759f325dee89204f646328d1cff351"
+    },
+    "CONTINUE.md": {
+      "bytes": 15961,
+      "sha256": "9d16314e2cd5e3400b439c4414d873c226247fd3e5b051666d4d69b5b0a0ca82"
+    }
+  },
+  "log_sha256": "4cf6a514326b7dd9884a15b6ac97587efbd9aaa902d56516b611f10d6ea8e835"
+}

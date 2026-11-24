@@ -1,3 +1,28 @@
+# Lumo World: Kart-Fortsetzung — 24.11.2026
+
+Der begrenzte Folgefix auf `fix/world-kart-save-20261124` basiert auf
+`c3f459eca88f659da1a9e4af1c990c804e715528`. Er speichert die letzte tatsächlich
+geerdete Kartpose im vorhandenen Version-1-Weltstand und zeigt den aktuellen
+Kartstandort mit **Mein Kart zeigen** auf der Weltkarte. Alte Weltstände bleiben
+lesbar; eine Pause während eines Sturzes überschreibt weder die letzte sichere
+Kartpose noch den sicheren Fußpunkt.
+
+Lokal ausgeführt: **63 Zustands-/Kartenprüfungen mit Godot 4.7.2**, einschließlich
+echter JSON-Dateien und Kartkarten-Klicks bei vier Fensterbreiten.
+`git diff --check` ist sauber. Der erweiterte Produktionsszenen-Test enthält
+Parken mit echtem Bodenkontakt, Speichern, Neustart, Einsteigen und frühes Fallen.
+Dieser vollständige Test ist hier noch nicht ausgeführt; keine Renderer-,
+Godot-4.6.3-, APK- oder Android-Gerätefreigabe wird behauptet.
+
+Als nächstes den erweiterten `scripts/tests/lumo_world_device_regression.gd`
+mit vollständigen Assets und Godot 4.6.3 ausführen, tatsächliche Kart-/NPC-Bilder
+nach dem normalen Wiedereinstieg sichten und danach den Android-Kandidaten auf
+diesen geprüften Native-Stand binden. Noch keine Änderung am Flutter-Pin oder
+an main. Befund und Prüfgrenzen:
+[World-Kart-Übergabe](docs/handoffs/LUMO_WORLD_KART_SAVE_20261124.md).
+
+## Vorherige Fortsetzungsnotizen
+
 # LUMO World — Unterstützung für den gemeinsamen Kandidaten 2070
 
 23.11.2026. Weltkarte, drei Freundepost-Lieferungen und dauerhafte Fußgängerampel sind integriert. Produktcode-Basis ist `51084c8424fcf5c753f3c72ad1503c3c208518eb`; die aktuelle Ergänzung korrigiert ausschließlich den Karten-Testaufbau auf den echten Density-/Safe-Area-Pfad.

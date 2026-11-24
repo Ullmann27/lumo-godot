@@ -1,3 +1,23 @@
+# Lumo World: Kart wiederfinden — 24.11.2026
+
+Ein bestätigter Fortsetzungsfehler ist im isolierten Folgefix korrigiert:
+Spielerpositionen wurden gespeichert, das Kart hingegen bei jedem Einstieg zum
+ursprünglichen Parkplatz zurückgesetzt. Die letzte durch echten Bodenkontakt
+bestätigte Kartpose bleibt jetzt erhalten. Die Weltkarte zeigt das Kart und
+bietet **Mein Kart zeigen**; bisherige Version-1-Spielstände bleiben lesbar.
+
+**63 lokale Zustands-/Kartenprüfungen bestanden mit Godot 4.7.2.** Die neue
+vollständige Szene-Neustart-/Fallprüfung ist ergänzt, aber hier noch nicht
+mit den vollständigen Assets ausgeführt. Projektversion Godot 4.6.3, Renderer
+und Android/APK sind weiterhin gesondert zu prüfen. Nelli, Bruno, Tilda und
+Dorfbewohner sind lokale Spielfiguren; ihre tatsächliche Geräte-Sichtbarkeit
+ist durch diesen Speicher-/Kartenfix nicht pauschal bestätigt.
+
+Basis ist `c3f459eca88f659da1a9e4af1c990c804e715528`; Details und konkrete
+Fortsetzung: [Übergabe](docs/handoffs/LUMO_WORLD_KART_SAVE_20261124.md).
+
+## Vorheriger Status
+
 # LUMO World — Unterstützung für den gemeinsamen Kandidaten 2070
 
 23.11.2026. Weltkarte, drei Freundepost-Lieferungen und dauerhafte Fußgängerampel sind integriert. Produktcode-Basis ist `51084c8424fcf5c753f3c72ad1503c3c208518eb`; die aktuelle Ergänzung korrigiert ausschließlich den Karten-Testaufbau auf den echten Density-/Safe-Area-Pfad.

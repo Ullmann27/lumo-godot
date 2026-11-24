@@ -203,7 +203,8 @@ func _create_player() -> void:
 func _create_kart() -> void:
 	kart_body = CharacterBody3D.new()
 	kart_body.name = "LumoWorldKart"
-	kart_body.position = Vector3(77, 0.2, 18)
+	kart_body.position = model.kart_position
+	kart_body.rotation.y = model.kart_yaw
 	kart_body.floor_snap_length = 0.3
 	add_child(kart_body)
 	var shape_node := CollisionShape3D.new()
@@ -220,7 +221,7 @@ func _create_kart() -> void:
 	kart_visual.set_preview_detail(true)
 	kart_visual.reduced_motion = reduced_motion
 	_set_kart_driver(false)
-	art._sign(self, "Dein Lumo Kart · Einsteigen", Vector3(77, 3.2, 18), Color("9aefff"))
+	art._sign(self, "Lumo Kart · Parkplatz", Vector3(77, 3.2, 18), Color("9aefff"))
 
 
 func _set_kart_driver(visible_driver: bool) -> void:
@@ -739,12 +740,13 @@ func _drive_tick(axis: Vector2, delta: float) -> void:
 	kart_body.velocity.z = forward.z * drive_speed
 	kart_body.velocity.y = -0.5 if kart_body.is_on_floor() else kart_body.velocity.y - 22 * delta
 	kart_body.move_and_slide()
+	model.remember_kart(kart_body.position, kart_body.rotation.y, kart_body.is_on_floor())
 	if kart_body.get_slide_collision_count() > 0:
 		for index in range(kart_body.get_slide_collision_count()):
 			if absf(kart_body.get_slide_collision(index).get_normal().y) < 0.5:
 				drive_speed *= 0.2
 	if kart_body.position.y < -6.0:
-		kart_body.position = Vector3(77, 0.2, 18)
+		kart_body.position = STATE.KART_SPAWN
 		drive_speed = 0.0
 		status_label.text = "Zurück am sicheren Parkplatz. Bleib mit dem Kart auf den Wegen."
 	_clamp_body(kart_body)
@@ -1121,6 +1123,7 @@ func _map_dialog() -> void:
 		# The delivery address is revealed only when the child requests help.
 		map_mission = friend_post.guidance()
 	overview.configure(STATE.BOUNDS, _active_position(), kart_body.rotation.y if driving else fox.rotation.y, map_mission, model.completed, STATE.MISSIONS, portals, reduced_motion)
+	overview.set_kart_position(kart_body.position)
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
@@ -1130,7 +1133,7 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: am Parkplatz einsteigen", 16))
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden und in der Nähe einsteigen", 16))
 	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -1159,9 +1162,10 @@ func _save() -> bool:
 	save_pending = true
 	var at := player.position
 	if driving:
-		at = kart_body.position + Vector3(0, 0.1, 6)
-		at.x = clampf(at.x, STATE.BOUNDS.position.x + 1, STATE.BOUNDS.end.x - 1)
-		at.z = clampf(at.z, STATE.BOUNDS.position.y + 1, STATE.BOUNDS.end.y - 1)
+		# Resume on an actual walking surface. A pause during a fall must not
+		# save the child above water or move the last grounded kart pose.
+		var exit_at: Variant = _safe_vehicle_exit() if kart_body.is_on_floor() else null
+		at = exit_at if exit_at != null else last_safe
 	if at.y < -0.5 or at.y > 180:
 		at = last_safe
 	model.position = at
