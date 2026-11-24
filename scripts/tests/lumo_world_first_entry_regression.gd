@@ -270,5 +270,6 @@ func _frames(count: int) -> void:
 
 
 func _finish() -> void:
+	_check(await preload("res://scripts/tests/lumo_scene_teardown.gd").release(self, "[LumoWorldFirstEntry]"), "production scene and audio playbacks are released")
 	print("[LumoWorldFirstEntry] %s %d checks engine=%s" % ["PASS" if failures.is_empty() else "FAIL", checks, Engine.get_version_info().string])
 	quit(0 if failures.is_empty() else 1)

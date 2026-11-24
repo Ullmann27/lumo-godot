@@ -96,11 +96,11 @@ func _expect_grounded(scene: Node, tag: String) -> void:
 
 
 func _settle_parked(scene: Node, frames: int) -> void:
+	scene.joystick.target = Vector2.ZERO
+	scene.joystick.axis = Vector2.ZERO
 	scene.kart_body.velocity = Vector3.ZERO
 	scene.drive_speed = 0.0
-	for index in range(frames):
-		await physics_frame
-		scene._drive_tick(Vector2.ZERO, 1.0 / 60.0)
+	await _frames(frames)
 
 
 func _drive_to_bridge(scene: Node) -> void:
@@ -155,17 +155,21 @@ func _slopes(scene: Node) -> void:
 
 func _decoration(scene: Node) -> void:
 	# Push into the compass pedestal from the west and into the right arch
-	# pillar from the south; both must stop the kart outside the stone.
-	var pushes := [[Vector3(-0.8, 0.0, 4.55), -PI * 0.5, "compass pedestal"], [Vector3(2.55, 0.0, 5.0), 0.0, "welcome arch pillar"]]
+	# pillar from the north; the old southern fixture started inside the
+	# adjacent compass pedestal instead of in a clear approach lane.
+	var pushes := [[Vector3(-0.8, 0.0, 4.55), -PI * 0.5, "compass pedestal"], [Vector3(2.55, 0.0, -2.0), PI, "welcome arch pillar"]]
 	for push in pushes:
 		scene.kart_body.position = push[0]
 		scene.kart_body.rotation.y = push[1]
 		await _settle_parked(scene, 20)
 		scene.drive_speed = 0.0
 		var start: Vector3 = scene.kart_body.position
-		for index in range(150):
-			await physics_frame
-			scene._drive_tick(Vector2(0, -1), 1.0 / 60.0)
+		_check(_box_overlaps(scene) == 0, "the approach starts outside solid geometry: " + str(push[2]))
+		# Use the same input path as the first-entry journey. Calling _drive_tick
+		# manually while the scene also runs physics applied brake and throttle
+		# in the same frame and never reproduced the child's actual driving.
+		scene.joystick.target = Vector2(0, -1)
+		await _frames(150)
 		await _settle_parked(scene, 30)
 		var moved: float = start.distance_to(scene.kart_body.position)
 		_check(moved > 0.3 and moved < 3.0, "the kart drives up to the %s and is stopped by it (%.2f m)" % [push[2], moved])
@@ -215,5 +219,6 @@ func _frames(count: int) -> void:
 
 
 func _finish() -> void:
+	_check(await preload("res://scripts/tests/lumo_scene_teardown.gd").release(self, "[LumoWorldKartGround]"), "production scene and audio playbacks are released")
 	print("[LumoWorldKartGround] %s %d checks engine=%s" % ["PASS" if failures.is_empty() else "FAIL", checks, Engine.get_version_info().string])
 	quit(0 if failures.is_empty() else 1)

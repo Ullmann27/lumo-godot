@@ -1,3 +1,9 @@
+# Lumo 2081: World-Gesamtintegration — 24.11.2026
+
+Die vorhandenen World-Dialoge, sieben Orte, neun Figurenkarten und vier Missionsketten sind mit dem jüngsten Kart-Speicher/Bodenkontakt und den nativen CI-Korrekturen zusammengeführt. Zehn tatsächliche Godot-4.6.3-Prüfungen bestanden; neun davon zählen zusammen 1098 Prüfpunkte, dazu der 65-Knochen-Gangtest. Main unverändert; Android-/APK-Abnahme folgt im Flutter-Integrationszweig.
+
+[Exakter Umfang, Quellenabgleich, Prüfungen und Grenzen](docs/handoffs/LUMO_2081_NATIVE_INTEGRATION_20261124.md).
+
 # Lumo World: Kart beim Ersteintritt sichtbar — 24.11.2026
 
 Folgezweig `grok/lumo-world-kart-20261124` auf PR #226: Ein neues Spiel stellt

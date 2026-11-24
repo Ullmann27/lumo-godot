@@ -1,7 +1,7 @@
 name: LUMO Meshy production runtime QA
 on:
   push:
-    branches: [asset/lumo-meshy-intake-20261123]
+    branches: [asset/lumo-meshy-intake-20261123, fix/lumo-2077-driver-lod-qa-20261124]
     paths:
       - assets/kart/production/meshy/**
       - assets/kart/production/garage/meshy_*.glb
@@ -10,6 +10,26 @@ on:
       - scripts/tests/kart_meshy_assets_regression.gd
       - config/kart-action-qa.json
       - .github/workflows/lumo-meshy-runtime-qa.yml
+  pull_request:
+    paths:
+      - assets/kart/production/drivers/**
+      - assets/characters/rivals/roster.json
+      - assets/kart/production/meshy/**
+      - assets/kart/production/garage/meshy_*.glb
+      - scripts/games/kart_catalog.gd
+      - scripts/games/kart_island.gd
+      - scripts/games/kart_garage_menu.gd
+      - scripts/games/kart_garage_interior.gd
+      - scripts/games/kart_production_driver.gd
+      - scripts/games/kart_production_vehicle.gd
+      - scripts/games/kart_vehicle.gd
+      - scripts/games/lumo_opponent_roster.gd
+      - scripts/games/kart_rival_model_contract.gd
+      - scripts/tests/kart_extra_drivers_regression.gd
+      - scripts/tests/kart_meshy_assets_regression.gd
+      - config/kart-action-qa.json
+      - .github/workflows/lumo-meshy-runtime-qa.yml
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -22,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Install pinned Godot 4.6.3
         shell: bash
@@ -41,6 +62,66 @@ jobs:
           set -euo pipefail
           godot --headless --single-threaded-scene --path . --editor --import --quit > meshy-proof/import.log 2>&1
           python3 tools/validate_project.py | tee meshy-proof/validator.log
+      - name: Verify complete driver roster and all 27 imported LOD source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import struct
+          import subprocess
+          from pathlib import Path
+
+          root = Path('assets/kart/production/drivers')
+          roster = json.loads(Path('assets/characters/rivals/roster.json').read_text())
+          manifest = json.loads((root / 'manifest.json').read_text())
+          expected = {'lion', 'owl', 'rabbit', 'squirrel', 'turtle', 'frog',
+                      'otter', 'badger', 'cat'}
+          entries = [row for row in roster['opponents'] if 'kart' in row['games']]
+          assert len(entries) == len(expected)
+          assert {row['id'] for row in entries} == expected
+          proof = []
+          for row in entries:
+              assert row['runtimeReady'] is True, row['id']
+              identity = row['id']
+              filenames = ('driver.glb', 'driver_lod1.glb', 'driver_lod2.glb')
+              paths = [root / identity / name for name in filenames]
+              assert row['godotLods'] == ['res://' + p.as_posix() for p in paths], identity
+              for level, path in enumerate(paths):
+                  assert path.is_file() and not path.is_symlink(), path
+                  raw = path.read_bytes()
+                  assert len(raw) >= 20, path
+                  magic, version, length = struct.unpack_from('<4sII', raw)
+                  assert (magic, version, length) == (b'glTF', 2, len(raw)), path
+                  json_length, chunk = struct.unpack_from('<I4s', raw, 12)
+                  assert chunk == b'JSON' and 20 + json_length <= len(raw), path
+                  gltf = json.loads(raw[20:20 + json_length])
+                  assert gltf['asset']['version'] == '2.0', path
+                  assert gltf.get('meshes') and gltf.get('skins') and gltf.get('animations'), path
+                  proof.append({'id': identity, 'lod': level, 'path': path.as_posix(),
+                                'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
+          by_path = {row['path']: row for row in proof}
+          assert len(proof) == len(by_path) == 27
+          # Since 19113a97 the checksum manifest covers all nine delivered drivers
+          # (six authored originals plus otter, badger and cat); verify every one.
+          assert {row['id'] for row in manifest['drivers']} == expected
+          for row in manifest['drivers']:
+              assert len(row['lods']) == 3, row['id']
+              assert {lod['file'] for lod in row['lods']} == {
+                  p['path'] for p in proof if p['id'] == row['id']}
+              for lod in row['lods']:
+                  actual = by_path[lod['file']]
+                  assert actual['bytes'] == lod['bytes'], lod['file']
+                  assert actual['sha256'] == lod['sha256'], lod['file']
+          Path('meshy-proof/driver-lod-source.json').write_text(json.dumps({
+              'status': 'PASS',
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'scope': 'GLB source integrity and roster mapping, not a render or device test',
+              'models': proof,
+          }, indent=2) + '\n')
+          print('[DriverLOD] PASS: 9 imported rival identities and 27 GLB sources')
+          PY
       - name: Run Meshy and preserved-Kart regressions
         shell: bash
         run: |
@@ -61,6 +142,7 @@ jobs:
               exit 1
             fi
           done
+          grep -E '^EXTRA_DRIVERS_PASS checks=[1-9][0-9]* failures=0$' meshy-proof/kart_extra_drivers_regression.log
           grep -F '[MeshyKart] PASS: 14 fitted close shells, preserved chassis/LODs and high-detail garage props' meshy-proof/kart_meshy_assets_regression.log
       - name: Verify immutable production asset manifest
         shell: bash

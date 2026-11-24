@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-24",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "engine_zip_sha256": "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3",
+  "source_inputs": [
+    "c3f459eca88f659da1a9e4af1c990c804e715528",
+    "e0f70a3afa134df895989fbab132470419f70341",
+    "34ccd80da414085fb3a5f8446b08fbaacba0aa1a",
+    "6ca95867737b13fd5115e8f2680eb0a682e1fd4d"
+  ],
+  "runtime": "Linux x86_64 headless",
+  "passing_assertions": 1098,
+  "additional_passing_gate": "65-bone gait",
+  "source_sha256": {
+    "scripts/creative/lumo_world.gd": "24ca45ec226f8e74a72b81865d14b17bb8d29c549493a261b0e3a6b6dcaf5ecf",
+    "scripts/creative/lumo_world_art.gd": "63ebab19c97a238c91372165109eb9bbec6526b638f8238937a09cd983ccb147",
+    "scripts/creative/lumo_world_state.gd": "40c97b57611d8937c0fb80f256e88197f8a4c23bd4069da716fb41b3c625e3e8",
+    "scripts/creative/lumo_world_open_world.gd": "8ed146ba0e881912ff2faf52a532089f07b34b4632ad6828794ac52046e7f446",
+    "scripts/creative/lumo_world_quests.gd": "ba7bfa80eeeacd042decd670141f79b83a623aecaeb63e655acebb16898cb020",
+    "scripts/creative/lumo_world_dialog.gd": "a92e8b79abeacc3acc6721fa6639ada8586b8a49f0501b1ff0135d051f11917d",
+    "assets/creative/lumo_world/open_world_content.json": "3f52a61ebd25797ca418250a91cf5580b8508c11989a84bfc0b9c05542fd4ae2",
+    "scripts/creative/lumo_world_map.gd": "9943c643676295bbcb36103556069d44366a05e5acef69f7ac5cdf631d8207dc",
+    "scripts/characters/lumo/lumo_rigged_actor.gd": "94de760434315dfc0d71c228259f4afbc72ee2760dc33db9890669a382f97268",
+    "scripts/tests/lumo_scene_teardown.gd": "5d513ffe6c5f3f160b339e35470aff24c54ceea5b165e0db6f8dade525700c2c",
+    "scripts/tests/lumo_world_first_entry_regression.gd": "ef3586e849e72f7a28804a1e1be967fafd51c91bae8f20e6c93255e6811a4df7",
+    "scripts/tests/lumo_world_kart_ground_regression.gd": "45aa83d06d232ab35492b5b9b01e213eaad228ff620c63474088a08bfaade46d",
+    "scripts/tests/lumo_world_open_world_integration_regression.gd": "f474ae0ce95f7ace13d9370d597f2a2c83f2cf91366d43fd332cedee50aa03a8"
+  },
+  "limits": [
+    "No Android/APK proof in this native-source checkpoint",
+    "No Android or physical-device FPS claim",
+    "Mission encounters use fixed positions; actual joystick driving is checked in first-entry/ground tests",
+    "Some new halls and plazas retain authored prototype geometry"
+  ],
+  "import_errors": []
+}

@@ -69,8 +69,11 @@ def fixture_png(width=640, height=360, varied=False):
 class NextgenRunnerTests(unittest.TestCase):
     def test_all_previous_forty_eight_probe_marker_mode_contracts_remain_exact(self):
         cases = re.findall(r"^check_probe (\S+) '([^']+)' (\S+)", RUNNER.read_text(), re.M)
-        self.assertEqual(len(cases), 52)
-        previous = hashlib.sha256(json.dumps(cases[:48], separators=(',', ':')).encode()).hexdigest()
+        # 2751664c (21.11.) added the tutor probe as 53rd mode; the original 48 stay exact.
+        self.assertEqual(len(cases), 53)
+        self.assertIn(('learning_tutor_regression', '[Tutor] PASS', 'headless'), cases)
+        original = [case for case in cases if case[0] != 'learning_tutor_regression']
+        previous = hashlib.sha256(json.dumps(original[:48], separators=(',', ':')).encode()).hexdigest()
         self.assertEqual(previous, '64522b86f238780030cf35f36bfd20f18cf733e31ab8cacc817405de9f3889f3')
 
     def run_fixture(self, *, failing='', missing='', missing_raster='',
@@ -211,7 +214,7 @@ class NextgenRunnerTests(unittest.TestCase):
     def test_success_requires_every_logic_and_rendered_probe(self):
         result, rows, cases, budgets, images = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(cases), 52)
+        self.assertEqual(len(cases), 53)
         self.assertEqual(len(rows), len(cases))
         self.assertTrue(all(row.endswith('\tPASS') for row in rows))
         self.assertIn('[LumoNextgen] PASS', result.stdout)
@@ -278,7 +281,7 @@ class NextgenRunnerTests(unittest.TestCase):
             with self.subTest(name=name):
                 result, rows, cases, _, images = self.run_fixture(missing_raster=name)
                 self.assertEqual(result.returncode, 1)
-                self.assertEqual(len(cases), 52)
+                self.assertEqual(len(cases), 53)
                 self.assertTrue(all(row.endswith('\tPASS') for row in rows))
                 self.assertEqual(len(images), 24)
                 self.assertEqual(len(result.safe_area_images), 7)
