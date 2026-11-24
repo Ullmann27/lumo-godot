@@ -103,10 +103,9 @@ jobs:
                                 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
           by_path = {row['path']: row for row in proof}
           assert len(proof) == len(by_path) == 27
-          # The six authored originals have a separate checksum manifest.
-          # The additional three identities are still checked and hashed above.
-          assert {row['id'] for row in manifest['drivers']} == {
-              'lion', 'owl', 'rabbit', 'squirrel', 'turtle', 'frog'}
+          # Since 19113a97 the checksum manifest covers all nine delivered drivers
+          # (six authored originals plus otter, badger and cat); verify every one.
+          assert {row['id'] for row in manifest['drivers']} == expected
           for row in manifest['drivers']:
               assert len(row['lods']) == 3, row['id']
               assert {lod['file'] for lod in row['lods']} == {

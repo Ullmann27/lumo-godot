@@ -69,6 +69,12 @@ jobs:
           if [ -f "$baseline/$keep_csv" ]; then
             cp "$GITHUB_WORKSPACE/$keep_csv.import" "$baseline/$keep_csv.import"
           fi
+          # Its threaded editor import also crashes 4.6.3 (signal 11 in propagate_notification
+          # while reimporting Nunito fonts, run 45420039132). Use the serial import setting of the
+          # current tree (project.godot [editor] import/use_multiple_threads=false); scenes unchanged.
+          if ! grep -q '^import/use_multiple_threads=' "$baseline/project.godot"; then
+            printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> "$baseline/project.godot"
+          fi
           (cd "$baseline" && timeout 240s godot --headless --path . --editor --import --quit)
           mkdir -p "$original/exports/sonnenhafen-hoist/before"
           (cd "$baseline" && LUMO_POSES="$original/exports/sonnenhafen-hoist/after/poses.json" LUMO_CAPTURE_DIR="$original/exports/sonnenhafen-hoist/before" timeout 180s xvfb-run -a -s '-screen 0 1280x720x24' godot --path . --audio-driver Dummy --rendering-method gl_compatibility --script res://scripts/tests/kart_pose_capture.gd)

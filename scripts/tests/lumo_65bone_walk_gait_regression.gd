@@ -55,7 +55,10 @@ func _run() -> void:
 	actor.set_suspended(false)
 	actor.set_reduced_motion(true)
 	actor._process(1.0)
-	assert(is_equal_approx(actor.locomotion.phase, paused), "Calm mode freezes footsteps")
+	# Since 388e3ca1 (23.11.) reduced motion suppresses only decorative motion;
+	# a walking Lumo must keep articulating its gait (see lumo_rigged_actor._process).
+	assert(not is_equal_approx(actor.locomotion.phase, paused), "Calm mode keeps essential footsteps")
+	assert(actor.position.is_equal_approx(home), "Calm gait must not fake translation")
 	actor.set_reduced_motion(false)
 	actor.set_locomotion_speed(0.0)
 	assert(not actor.walking and actor.current_behavior == "idle")
