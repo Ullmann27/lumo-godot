@@ -1,0 +1,14 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 20.632575900999655,
+  "display": 186,
+  "project": "/workspace/scratch/4fa97167812c/agent-avatar",
+  "godot_arguments": [
+    "--script",
+    "scripts/tests/nextgen_learning_perf_capture.gd",
+    "--",
+    "--capture-dir=/workspace/scratch/4fa97167812c/avatar-qa/runtime-fixes-02/software-perf-3/screenshots"
+  ],
+  "timed_out": false,
+  "scope": "Local software renderer; not physical Android performance"
+}

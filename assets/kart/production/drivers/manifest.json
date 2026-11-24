@@ -1,0 +1,2381 @@
+{
+  "schema_version": 2,
+  "asset_set": "LUMO rival animals (kart, table)",
+  "units": "metres",
+  "runtime_axes": "X right, Y up, -Z forward",
+  "source_manifest": {
+    "file": "art/lumo_kart/meshy/20261123/drivers/source_manifest.json",
+    "sha256": "e669771499a46e6a9b41a92377aadf6b3042333c81131e12763ce71db3a784d3"
+  },
+  "source_generator": {
+    "file": "tools/lumo_kart_art/drivers/rig_meshy_drivers.py",
+    "sha256": "8eaade70ff3324a7f6eddb4dcd103e650b2582b770b1acb32b5b91ecca65e502",
+    "anatomy_file": "tools/lumo_kart_art/drivers/meshy_anatomy.json",
+    "anatomy_sha256": "55972ff1efb14d52e58351bba999573e37efe0a41c1fa778384916231de4af1c",
+    "base_generator_sha256": "7a8985f731c495fca98818b93e9d607a094375bbe28e08087eaa929723e20025",
+    "species_file_sha256": "46f5048080273d7cd6bc506d05f821ead21dde7fb8152d5a1c8ac7cb91f08c84",
+    "body_file_sha256": "7af32cb0c19a06b1ca09537976bceca03be0598f4fb847176874a62620bf3ac3"
+  },
+  "blender_sources": "Reproducible from the rig generator and retained Meshy GLBs; .blend files are not versioned.",
+  "mobile_asset_budget": {
+    "lod0_triangles": 30000,
+    "skin_joints": 26,
+    "embedded_images": 1,
+    "texture_max_edge": 1024,
+    "image_max_bytes": 1572864,
+    "structure_max_bytes": 2097152,
+    "rationale": "Textured Meshy figures retain one reduced albedo atlas. Its encoded bytes are bounded separately from geometry, skin and twelve animation clips; the former total-size limit described untextured procedural figures."
+  },
+  "android_performance": "No device FPS claim is made by this package.",
+  "drivers": [
+    {
+      "id": "lion",
+      "roster_name": "L\u00f6we",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-521a-74ee-b3c7-d141335b0d6a",
+        "file": "art/lumo_kart/meshy/20261123/drivers/lion.glb",
+        "sha256": "70dc43c4eea3550bb1d2e6a320c8bebfbf483f482e9c27882a5ede690f6eb529",
+        "bytes": 4646048,
+        "triangles": 23005,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/lion.webp",
+        "sha256": "b18344647a57390c1abea527b2cdf768088348d8cfde1aa4533db4d148994376",
+        "bytes": 28880,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.145712920219088e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 4.935412157082318e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/lion/driver.glb",
+          "bytes": 2740012,
+          "sha256": "b7340b55b26ec431863c31ef25aeb9480e9247e4f1a325d42719585d41629758",
+          "vertices": 17219,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 24073,
+            "primitives": 3,
+            "materials": [
+              "Meshy_lion_Original",
+              "Meshy_lion_Eyelid",
+              "Meshy_lion_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "lion_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1301511,
+            "structure_bytes": 1438501
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/lion/driver_lod1.glb",
+          "bytes": 2472576,
+          "sha256": "1f538660d3673cb91357785aec604c575ad44a7b62d20a20a75d76226e479c98",
+          "vertices": 12985,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 16367,
+            "primitives": 3,
+            "materials": [
+              "Meshy_lion_Original",
+              "Meshy_lion_Eyelid",
+              "Meshy_lion_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "lion_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1301511,
+            "structure_bytes": 1171065
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/lion/driver_lod2.glb",
+          "bytes": 2299904,
+          "sha256": "aa3a1a64ccca2c9de7187c649693b700ef093ac4dc906050bd719dcb74248df9",
+          "vertices": 10250,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 12515,
+            "primitives": 3,
+            "materials": [
+              "Meshy_lion_Original",
+              "Meshy_lion_Eyelid",
+              "Meshy_lion_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "lion_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1301511,
+            "structure_bytes": 998393
+          }
+        }
+      ]
+    },
+    {
+      "id": "owl",
+      "roster_name": "Eule",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-7093-7622-a4cd-0bc3f65a3835",
+        "file": "art/lumo_kart/meshy/20261123/drivers/owl.glb",
+        "sha256": "45843bab81456b9c35e318453d5a9fd1f0598e49ed26e9c3eee66332ab026bac",
+        "bytes": 5296036,
+        "triangles": 23100,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/owl.webp",
+        "sha256": "2593afece7a83fd16a67076313b73992e09b07258b544f4a56b4d207f13a7a33",
+        "bytes": 30670,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 3.7726726833498965e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 3.816559456248789e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 3.816559456248789e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 3.8426509375058493e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/owl/driver.glb",
+          "bytes": 3205288,
+          "sha256": "413b037709909387b224b46f3becebaf71c71b947e50523546ed7f30c23c445b",
+          "vertices": 21072,
+          "max_influences": 3,
+          "glb": {
+            "triangles": 24168,
+            "primitives": 3,
+            "materials": [
+              "Meshy_owl_Original",
+              "Meshy_owl_Eyelid",
+              "Meshy_owl_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "owl_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1565951,
+            "structure_bytes": 1639337
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/owl/driver_lod1.glb",
+          "bytes": 2837268,
+          "sha256": "7853f311502831c19ebf0390b76f94b42ba2082890aff4cfdce0c4f8c3287915",
+          "vertices": 15212,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 14700,
+            "primitives": 3,
+            "materials": [
+              "Meshy_owl_Original",
+              "Meshy_owl_Eyelid",
+              "Meshy_owl_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "owl_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1565951,
+            "structure_bytes": 1271317
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/owl/driver_lod2.glb",
+          "bytes": 2573612,
+          "sha256": "944b3d78b435cf085435f6fe091fb34b882070dd295c4deff0d770c7d8577a0e",
+          "vertices": 11187,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 9966,
+            "primitives": 3,
+            "materials": [
+              "Meshy_owl_Original",
+              "Meshy_owl_Eyelid",
+              "Meshy_owl_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "owl_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1565951,
+            "structure_bytes": 1007661
+          }
+        }
+      ]
+    },
+    {
+      "id": "rabbit",
+      "roster_name": "Nova",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f1-fadb-7712-9573-e442c381a995",
+        "file": "art/lumo_kart/meshy/20261123/drivers/rabbit.glb",
+        "sha256": "2556d81de7a7cd5d356eaf9864c9aa37d1f4ed4936a3cfcb008a6355f21bf878",
+        "bytes": 4296588,
+        "triangles": 22480,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/rabbit.webp",
+        "sha256": "e9bbcba27db5ecf613c507b094ec5223ac03bd0223b71b241fbfdb87b621ec3b",
+        "bytes": 18992,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.238943760233617e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/rabbit/driver.glb",
+          "bytes": 2678232,
+          "sha256": "ab5db6b0aba8be449beff8c836b01a0a564a49189b44acca8607de87cbffd64e",
+          "vertices": 17351,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 23548,
+            "primitives": 3,
+            "materials": [
+              "Meshy_rabbit_Original",
+              "Meshy_rabbit_Eyelid",
+              "Meshy_rabbit_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "rabbit_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1236261,
+            "structure_bytes": 1441971
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/rabbit/driver_lod1.glb",
+          "bytes": 2369524,
+          "sha256": "c619f0a58c435443c39c6085bbdac2a7d5793764293c90621d7b6cd071a6d072",
+          "vertices": 12462,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 14736,
+            "primitives": 3,
+            "materials": [
+              "Meshy_rabbit_Original",
+              "Meshy_rabbit_Eyelid",
+              "Meshy_rabbit_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "rabbit_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1236261,
+            "structure_bytes": 1133263
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/rabbit/driver_lod2.glb",
+          "bytes": 2158124,
+          "sha256": "0a5079beb665f1581c551d6da8431f7ed9ff9b5abbb93e6b9da80a3afe8b86f7",
+          "vertices": 9261,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 10331,
+            "primitives": 3,
+            "materials": [
+              "Meshy_rabbit_Original",
+              "Meshy_rabbit_Eyelid",
+              "Meshy_rabbit_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "rabbit_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1236261,
+            "structure_bytes": 921863
+          }
+        }
+      ]
+    },
+    {
+      "id": "squirrel",
+      "roster_name": "Eichh\u00f6rnchen",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-8987-7645-b995-cbfdbdf4da43",
+        "file": "art/lumo_kart/meshy/20261123/drivers/squirrel.glb",
+        "sha256": "203176c0111138a29105d239bba7ae37fd223582a93e4bf8a5d0d9e2b9a24586",
+        "bytes": 4654248,
+        "triangles": 23073,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/squirrel.webp",
+        "sha256": "9a422381494a8bed30b2d47805f95649d2e820da4aae016407c5421b867d454d",
+        "bytes": 25846,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.238943760233617e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 6.151130032703368e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/squirrel/driver.glb",
+          "bytes": 2684868,
+          "sha256": "f9cb213dd71ae893ea0624da54cd407a53940b7348509a131cd81437e3fb6566",
+          "vertices": 16858,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 24141,
+            "primitives": 3,
+            "materials": [
+              "Meshy_squirrel_Original",
+              "Meshy_squirrel_Eyelid",
+              "Meshy_squirrel_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "squirrel_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1264937,
+            "structure_bytes": 1419931
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/squirrel/driver_lod1.glb",
+          "bytes": 2389084,
+          "sha256": "72785800adbc08efdc1ab346bfcb1975167aba5d6be3d61079edae68098abd9b",
+          "vertices": 12181,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 15394,
+            "primitives": 3,
+            "materials": [
+              "Meshy_squirrel_Original",
+              "Meshy_squirrel_Eyelid",
+              "Meshy_squirrel_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "squirrel_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1264937,
+            "structure_bytes": 1124147
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/squirrel/driver_lod2.glb",
+          "bytes": 2209800,
+          "sha256": "44d418186759ba1bd0f6be2ecf5d4414fb224d862609e9e5d60c69ac1216c40a",
+          "vertices": 9266,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 11020,
+            "primitives": 3,
+            "materials": [
+              "Meshy_squirrel_Original",
+              "Meshy_squirrel_Eyelid",
+              "Meshy_squirrel_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "squirrel_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1264937,
+            "structure_bytes": 944863
+          }
+        }
+      ]
+    },
+    {
+      "id": "turtle",
+      "roster_name": "Schildkr\u00f6te",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-a0c6-7268-afe9-ccf417b38e39",
+        "file": "art/lumo_kart/meshy/20261123/drivers/turtle.glb",
+        "sha256": "1f0a751e1c7dd60a33ff32471ff7092aae03c7def85420433f532c5a32bad336",
+        "bytes": 4663392,
+        "triangles": 23197,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/turtle.webp",
+        "sha256": "a59f1aa3a0a35bd29faad04dc270ea9df5a5638cbca145236838ea9931a7ab66",
+        "bytes": 27506,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 4.935412157082318e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 4.770699320310986e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 4.770699320310986e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 3.796142102139293e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/turtle/driver.glb",
+          "bytes": 2678028,
+          "sha256": "dc9aafc571c7c489575ad7936028e66648b9e270f933abdb66a13fde152238ea",
+          "vertices": 15925,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 24265,
+            "primitives": 3,
+            "materials": [
+              "Meshy_turtle_Original",
+              "Meshy_turtle_Eyelid",
+              "Meshy_turtle_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "turtle_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1305921,
+            "structure_bytes": 1372107
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/turtle/driver_lod1.glb",
+          "bytes": 2359188,
+          "sha256": "f869e67b502848a77fba48bb44e1099012f73d1f45a50faa7aca7ee4702c914e",
+          "vertices": 10885,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 14804,
+            "primitives": 3,
+            "materials": [
+              "Meshy_turtle_Original",
+              "Meshy_turtle_Eyelid",
+              "Meshy_turtle_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "turtle_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1305921,
+            "structure_bytes": 1053267
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/turtle/driver_lod2.glb",
+          "bytes": 2173132,
+          "sha256": "39fcff56b97cae8742ff16d9f40fa69ef256929fb6582d3a071f8c799da8c311",
+          "vertices": 7870,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 10074,
+            "primitives": 3,
+            "materials": [
+              "Meshy_turtle_Original",
+              "Meshy_turtle_Eyelid",
+              "Meshy_turtle_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "turtle_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1305921,
+            "structure_bytes": 867211
+          }
+        }
+      ]
+    },
+    {
+      "id": "frog",
+      "roster_name": "Frosch",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f2-16ba-7472-93a3-d99c4062e1f2",
+        "file": "art/lumo_kart/meshy/20261123/drivers/frog.glb",
+        "sha256": "8a25b10d518963abd9bb0fdee87190296e5b912664202624e376671d6377149b",
+        "bytes": 4250088,
+        "triangles": 21013,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/frog.webp",
+        "sha256": "218d931dea9a6172826d43d5b02fd332f101a834bbebb38108869dc005256738",
+        "bytes": 28424,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 4.86061168619993e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 5.473008058132814e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 5.473008058132814e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 4.807789863616728e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/frog/driver.glb",
+          "bytes": 2446220,
+          "sha256": "3378bde1ec2016557c54f76e0211d71f35a2d060cd28c50a06824e8236da9ed2",
+          "vertices": 14511,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 22081,
+            "primitives": 3,
+            "materials": [
+              "Meshy_frog_Original",
+              "Meshy_frog_Eyelid",
+              "Meshy_frog_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "frog_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1160659,
+            "structure_bytes": 1285561
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
+          "bytes": 2142200,
+          "sha256": "746814038288b31c3e28aaffb5868a5028d84fb5d4a2a422cbe1d70b80adf8f1",
+          "vertices": 9719,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 12950,
+            "primitives": 3,
+            "materials": [
+              "Meshy_frog_Original",
+              "Meshy_frog_Eyelid",
+              "Meshy_frog_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "frog_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1160659,
+            "structure_bytes": 981541
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/frog/driver_lod2.glb",
+          "bytes": 1962604,
+          "sha256": "4df0aa2b788076e86327cbddb1f581ecf85c50f30717d7cf2aa2b4289a8db527",
+          "vertices": 6806,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 8385,
+            "primitives": 3,
+            "materials": [
+              "Meshy_frog_Original",
+              "Meshy_frog_Eyelid",
+              "Meshy_frog_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "frog_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1160659,
+            "structure_bytes": 801945
+          }
+        }
+      ]
+    },
+    {
+      "id": "otter",
+      "roster_name": "Milo",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-b791-7137-8267-65bec9ad74bf",
+        "file": "art/lumo_kart/meshy/20261123/drivers/otter.glb",
+        "sha256": "3243698db47a4e42354acbf7bf456e733817de9aa3e28861726cc08cc3eed27c",
+        "bytes": 4215216,
+        "triangles": 23098,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/otter.webp",
+        "sha256": "d7fa204ee61bd37ebfa7dd1ec0b702a2728247725b644c3aecd50df601a185f2",
+        "bytes": 22372,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.145712920219088e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 4.935412157082318e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/otter/driver.glb",
+          "bytes": 2500480,
+          "sha256": "7939814b0c973311209994212b8dd3ae51e30c093bd005ca171ce38b811cb155",
+          "vertices": 16015,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 24166,
+            "primitives": 3,
+            "materials": [
+              "Meshy_otter_Original",
+              "Meshy_otter_Eyelid",
+              "Meshy_otter_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "otter_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1124010,
+            "structure_bytes": 1376470
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/otter/driver_lod1.glb",
+          "bytes": 2208396,
+          "sha256": "e091b19d163cc51ed5a1c929cfe92a6cdd17675bb729d659d41d0190922eeb69",
+          "vertices": 11413,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 15368,
+            "primitives": 3,
+            "materials": [
+              "Meshy_otter_Original",
+              "Meshy_otter_Eyelid",
+              "Meshy_otter_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "otter_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1124010,
+            "structure_bytes": 1084386
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/otter/driver_lod2.glb",
+          "bytes": 2034372,
+          "sha256": "b357089becd75ff4222148f295f953ad1309e2d2467993a901ccc1490872a7e6",
+          "vertices": 8596,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 10970,
+            "primitives": 3,
+            "materials": [
+              "Meshy_otter_Original",
+              "Meshy_otter_Eyelid",
+              "Meshy_otter_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "otter_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1124010,
+            "structure_bytes": 910362
+          }
+        }
+      ]
+    },
+    {
+      "id": "badger",
+      "roster_name": "Dachs Bruno",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f4-cc5c-724e-af02-a3dead4905b2",
+        "file": "art/lumo_kart/meshy/20261123/drivers/badger.glb",
+        "sha256": "14ed9030b5328de7ebb2d5d44cddad33a890a092c201453b0bcb623272d68157",
+        "bytes": 4237060,
+        "triangles": 23106,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/badger.webp",
+        "sha256": "4d51a2bfe1d5b17b5df657ee7858681257926d849b7d20fb3bf766485469e6fc",
+        "bytes": 26662,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.145712920219088e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.809031759974875e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 4.935412157082318e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/badger/driver.glb",
+          "bytes": 2509920,
+          "sha256": "378bbc73c0893037105383726ea2f79316bf86769d4b1d7a3c1152227a1aea46",
+          "vertices": 15544,
+          "max_influences": 3,
+          "glb": {
+            "triangles": 24174,
+            "primitives": 3,
+            "materials": [
+              "Meshy_badger_Original",
+              "Meshy_badger_Eyelid",
+              "Meshy_badger_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "badger_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1157878,
+            "structure_bytes": 1352042
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/badger/driver_lod1.glb",
+          "bytes": 2193608,
+          "sha256": "cc1057f340ce5d76c3e555ff2d02e8f5e522a5429d7e45ea725c29119e610181",
+          "vertices": 10557,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 14675,
+            "primitives": 3,
+            "materials": [
+              "Meshy_badger_Original",
+              "Meshy_badger_Eyelid",
+              "Meshy_badger_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "badger_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1157878,
+            "structure_bytes": 1035730
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/badger/driver_lod2.glb",
+          "bytes": 2011924,
+          "sha256": "6ea576808b7ebbf3daa4a903ef17954432985ed3ac5f4ea69d774697fae28e93",
+          "vertices": 7629,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 9927,
+            "primitives": 3,
+            "materials": [
+              "Meshy_badger_Original",
+              "Meshy_badger_Eyelid",
+              "Meshy_badger_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "badger_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 1157878,
+            "structure_bytes": 854046
+          }
+        }
+      ]
+    },
+    {
+      "id": "cat",
+      "roster_name": "Mika",
+      "source": {
+        "provider": "Meshy",
+        "task_id": "01a208f5-e2ae-7524-9771-191ff2260646",
+        "file": "art/lumo_kart/meshy/20261123/drivers/cat.glb",
+        "sha256": "17db07199e33ca550fc26f2703fad627029b21124ca3816e87f370933aacefaa",
+        "bytes": 3463604,
+        "triangles": 23084,
+        "original_skins": 0,
+        "original_animations": 0
+      },
+      "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+      "bones": [
+        "Root",
+        "Pelvis",
+        "Spine",
+        "Chest",
+        "Neck",
+        "Head",
+        "Tail",
+        "UpperArm.L",
+        "Forearm.L",
+        "Hand.L",
+        "Thigh.L",
+        "Shin.L",
+        "Foot.L",
+        "Ear.L",
+        "UpperArm.R",
+        "Forearm.R",
+        "Hand.R",
+        "Thigh.R",
+        "Shin.R",
+        "Foot.R",
+        "Ear.R",
+        "Jaw",
+        "Eye.L",
+        "Eye.R",
+        "Lid.L",
+        "Lid.R"
+      ],
+      "textures": [
+        {
+          "name": "Image_0",
+          "source_size": [
+            2048,
+            2048
+          ],
+          "runtime_size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "portrait": {
+        "file": "assets/kart/menu/drivers/cat.webp",
+        "sha256": "5324c628e6ec7522c234655d09273c0010d3971848869c8ad3cf31c050476e05",
+        "bytes": 22956,
+        "source": "Rendered from this rigged Meshy mesh"
+      },
+      "animations": {
+        "idle": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_seated": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 6.056547591954939e-07
+        },
+        "kart_steer_left": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.043702301583661e-07
+        },
+        "kart_steer_right": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 6.043702301583661e-07
+        },
+        "kart_jump": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 6.043702301583661e-07
+        },
+        "celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_celebrate": {
+          "frames": 72,
+          "fps": 24,
+          "duration_s": 2.9583333333333335,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "kart_hit": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "greeting_wave": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "agree_nod": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "point_portal": {
+          "frames": 48,
+          "fps": 24,
+          "duration_s": 1.9583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        },
+        "card_play": {
+          "frames": 36,
+          "fps": 24,
+          "duration_s": 1.4583333333333333,
+          "sampled_max_hand_origin_error_m": 0.0
+        }
+      },
+      "lods": [
+        {
+          "level": "lod0",
+          "file": "assets/kart/production/drivers/cat/driver.glb",
+          "bytes": 2337360,
+          "sha256": "868f07cdf2ed558f0da1cfc7c4fdbdba297bd5ab4db8f49dc5bb06f3c8423c92",
+          "vertices": 15809,
+          "max_influences": 3,
+          "glb": {
+            "triangles": 24152,
+            "primitives": 3,
+            "materials": [
+              "Meshy_cat_Original",
+              "Meshy_cat_Eyelid",
+              "Meshy_cat_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "cat_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 971928,
+            "structure_bytes": 1365432
+          }
+        },
+        {
+          "level": "lod1",
+          "file": "assets/kart/production/drivers/cat/driver_lod1.glb",
+          "bytes": 2004904,
+          "sha256": "ccabbe67b1e19a09b73c150a1d4ad220627dac28241572ec0a4350c991d770b1",
+          "vertices": 10568,
+          "max_influences": 3,
+          "glb": {
+            "triangles": 14190,
+            "primitives": 3,
+            "materials": [
+              "Meshy_cat_Original",
+              "Meshy_cat_Eyelid",
+              "Meshy_cat_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "cat_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 971928,
+            "structure_bytes": 1032976
+          }
+        },
+        {
+          "level": "lod2",
+          "file": "assets/kart/production/drivers/cat/driver_lod2.glb",
+          "bytes": 1808144,
+          "sha256": "9260cb6efacc13d927bc545e828bc2c69091bab9c4a084cfedf8d95421a65c1e",
+          "vertices": 7382,
+          "max_influences": 4,
+          "glb": {
+            "triangles": 9209,
+            "primitives": 3,
+            "materials": [
+              "Meshy_cat_Original",
+              "Meshy_cat_Eyelid",
+              "Meshy_cat_LidCrease"
+            ],
+            "skin_joints": 26,
+            "clips": [
+              "agree_nod",
+              "card_play",
+              "celebrate",
+              "greeting_wave",
+              "idle",
+              "kart_celebrate",
+              "kart_hit",
+              "kart_jump",
+              "kart_seated",
+              "kart_steer_left",
+              "kart_steer_right",
+              "point_portal"
+            ],
+            "embedded_images": [
+              "cat_albedo"
+            ],
+            "image_dimensions": [
+              1024,
+              1024
+            ],
+            "image_bytes": 971928,
+            "structure_bytes": 836216
+          }
+        }
+      ]
+    }
+  ]
+}

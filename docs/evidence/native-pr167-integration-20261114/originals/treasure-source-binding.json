@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "scope": "read-only candidate preparation, no test and no working-tree application",
+  "base_commit": "27ae427029a5199699c95a79a84b0027d7571752",
+  "producer_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+  "before": {
+    "bytes": 24782,
+    "sha256": "c46d260fef1c4f6ee88db1b5e5704707b35771f2fc64522fc5927a25c3bd34cf",
+    "git_blob": "38da987abf4d152c1095a72ed1ac49ed30d9d381"
+  },
+  "after": [
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "bytes": 25074,
+      "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+      "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "bytes": 8982,
+      "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+      "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3"
+    },
+    {
+      "path": "scripts/tests/fixtures/treasure_title_86445.json",
+      "bytes": 317,
+      "sha256": "29bcc428329e2a6106f0608a3f0a53060d3073ca4c1fdffa5fd809848977ce73",
+      "git_blob": "78afb5e77187170a345940059da450eed02530cf"
+    }
+  ],
+  "only_product_change": "Exactly five published added lines; every existing byte retained",
+  "patch": {
+    "bytes": 693,
+    "sha256": "8c95c9baf146cf692c3622c90ed5252d5a93ec66a5ba0789a403f96146e0fa4c",
+    "git_blob": "3b1b628ae2f7e886ab249773488736492d34a8ed"
+  },
+  "counts_are_producer_claims_until_originals_bound": true
+}

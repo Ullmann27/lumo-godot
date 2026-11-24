@@ -1,0 +1,383 @@
+{
+  "schema": 1,
+  "status": "FROZEN_SOURCE_ONLY_NOT_TESTED",
+  "created_at": "2026-11-14T11:10:42.871Z",
+  "pack": "/tmp/native173-discovery-integration-bd071225-20261114",
+  "repository": "Ullmann27/lumo-godot",
+  "target_base": {
+    "sha": "bd0712259bb64908a5649ee1999638826c9eb597",
+    "tree": "2eb628d3e3a327ee8985385130c96168db7aa852"
+  },
+  "producer": {
+    "sha": "71a4c1e2304b52005950b12490d070c286c45438",
+    "tree": "8633c0ac611f2ba9f261cc247a60997634d43dd9",
+    "compare_base": "454e81229b0193cba75844e9985a53deb2ce5c91",
+    "compare": {
+      "bytes": 401190,
+      "sha256": "7132eb31857e62f4227ef9ed1d34768f9581b7075142f742153b3123c72d293e",
+      "git_blob": "2158e85f1f9c2e177c5368da6f9aa87c7e22755d"
+    },
+    "original_files": 19
+  },
+  "source_files": [
+    {
+      "path": "assets/shaders/learning_wonder_petals.gdshader",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 1313,
+        "sha256": "8af42f5dba2b4caa943da2903df00f1ed64062ea78ab0860ed90d12413ad5888",
+        "git_blob": "3476215f84242a665594e9aa01b4eb35ed151932",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 1313,
+        "sha256": "8af42f5dba2b4caa943da2903df00f1ed64062ea78ab0860ed90d12413ad5888",
+        "git_blob": "3476215f84242a665594e9aa01b4eb35ed151932"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scenes/learning/learning_world.tscn",
+      "mode": "100644",
+      "before": {
+        "path": "scenes/learning/learning_world.tscn",
+        "bytes": 191,
+        "sha256": "9f9d43a306a500da06ae3a4625695e3f6cf348b275d8d515a8bfcdc3097c846e",
+        "git_blob": "05f835f6c87c528b64b38054c2c41adc8cbef078",
+        "ref": "bd0712259bb64908a5649ee1999638826c9eb597"
+      },
+      "producer": {
+        "bytes": 198,
+        "sha256": "5de6bf0e793a14be23a698698016d613a2097943e26e21e0c71264fff6fc7016",
+        "git_blob": "34591fe19b6141c769a8d09a14dcd5b85ea05f2b",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 198,
+        "sha256": "5de6bf0e793a14be23a698698016d613a2097943e26e21e0c71264fff6fc7016",
+        "git_blob": "34591fe19b6141c769a8d09a14dcd5b85ea05f2b"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/app/app_boot.gd",
+      "mode": "100644",
+      "before": {
+        "path": "scripts/app/app_boot.gd",
+        "bytes": 18707,
+        "sha256": "4ed973120d62f1942842c43f3fe1f1b6b7390997d39e8cef7c1cefdd6ffebaf0",
+        "git_blob": "2fc3b5ea4fac7440733ae5a77a8289bcd57557f6",
+        "ref": "bd0712259bb64908a5649ee1999638826c9eb597"
+      },
+      "producer": {
+        "bytes": 18819,
+        "sha256": "e01899fb45fe4b0b8a7f0d54c9751d099bc1431b17668017233d5eeac96dab1f",
+        "git_blob": "125376b9018d03258a2be41da99efce175bbca6c",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 18819,
+        "sha256": "e01899fb45fe4b0b8a7f0d54c9751d099bc1431b17668017233d5eeac96dab1f",
+        "git_blob": "125376b9018d03258a2be41da99efce175bbca6c"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/creative/build_settlement_world.gd",
+      "mode": "100644",
+      "before": {
+        "path": "scripts/creative/build_settlement_world.gd",
+        "bytes": 45485,
+        "sha256": "50938300e4d40c7ded1be66af6384359fc4d9d83fefff52c25ca1670be3661ec",
+        "git_blob": "dd1e7b0662f2d4325a6fa562e3a111ecbb31fd50",
+        "ref": "bd0712259bb64908a5649ee1999638826c9eb597"
+      },
+      "producer": {
+        "bytes": 46954,
+        "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb",
+        "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 46954,
+        "sha256": "6bd9dd4380db95962f370aa2703e7f41b51eab2430f33ea4874c60de0b73bcfb",
+        "git_blob": "e6a2a84447757c04a7f07436b162ed698b827a33"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/games/game_hub.gd",
+      "mode": "100644",
+      "before": {
+        "path": "scripts/games/game_hub.gd",
+        "bytes": 8858,
+        "sha256": "7d1cffc8e282204ebbde63e822cfe6a693cfafd64ebf9b776a260b4a10df2492",
+        "git_blob": "1c725b65df517c9584193d8b1a84cf36f86f26a2",
+        "ref": "bd0712259bb64908a5649ee1999638826c9eb597"
+      },
+      "producer": {
+        "bytes": 13887,
+        "sha256": "12fb330dbfe2e7d868df1c702a718f0258c74d8224648a0b4fa523d83f1b050c",
+        "git_blob": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 13887,
+        "sha256": "12fb330dbfe2e7d868df1c702a718f0258c74d8224648a0b4fa523d83f1b050c",
+        "git_blob": "5a4fd789dcfb3dcd1bc1fcc2f7b0fd7f64ade1f6"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/games/game_hub_magic_stage.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 4521,
+        "sha256": "e15bb52280e6a24d2a654d19b471ef7ed3f8955d513576e88d0fa9aec3687fa1",
+        "git_blob": "0cfd41ddb991a286af66a132ef0ba0a3b5d3bd51",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 4521,
+        "sha256": "e15bb52280e6a24d2a654d19b471ef7ed3f8955d513576e88d0fa9aec3687fa1",
+        "git_blob": "0cfd41ddb991a286af66a132ef0ba0a3b5d3bd51"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/games/game_hub_routes.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 1773,
+        "sha256": "944dd73cdc17b718417c53f4c116e1aa7e02ea97140a607d682a2e001a851df2",
+        "git_blob": "c2df5d620a704f000d46e6c76e30f44fc0afe6a8",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 1773,
+        "sha256": "944dd73cdc17b718417c53f4c116e1aa7e02ea97140a607d682a2e001a851df2",
+        "git_blob": "c2df5d620a704f000d46e6c76e30f44fc0afe6a8"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/learning/learning_wonder_garden.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 8648,
+        "sha256": "771476e054391f30aa7f5fa4e4c3382f2bf733201c48b78818a3a2289306696d",
+        "git_blob": "52c22f7f9fd29a8ff7e1809de3e7cfb6bd843e34",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 8742,
+        "sha256": "13a3cc2e293fa4619cc0d8b00f13fe63358c182944df78d867c469fed6a47a53",
+        "git_blob": "616e9824e3c14f9ab4f5e29da0d926a577516b5e"
+      },
+      "kind": "minimal_owner_integration_correction"
+    },
+    {
+      "path": "scripts/learning/learning_wonder_world.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 1347,
+        "sha256": "3bc752a0085b181363b5dd50f807938d5b4f26e9e1dcb395ae8436c28bb059ba",
+        "git_blob": "933d42907bc5011cdb681907f3a5a022ef38fd7d",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 1347,
+        "sha256": "3bc752a0085b181363b5dd50f807938d5b4f26e9e1dcb395ae8436c28bb059ba",
+        "git_blob": "933d42907bc5011cdb681907f3a5a022ef38fd7d"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/systems/host_bridge.gd",
+      "mode": "100644",
+      "before": {
+        "path": "scripts/systems/host_bridge.gd",
+        "bytes": 5193,
+        "sha256": "56ecb470319ea047aa5d8c3aad92d55c99355ee07c533a6543fcf167f098abb7",
+        "git_blob": "dab96a1b918dc754568c0eda14cdda05175c89fb",
+        "ref": "bd0712259bb64908a5649ee1999638826c9eb597"
+      },
+      "producer": {
+        "bytes": 5604,
+        "sha256": "6b86fda5b38f2b966d0da4d26eb9cae24e2185ef9d067b0dfb99aa86bfe644b4",
+        "git_blob": "1845617ed2659dd377f433209799b12ddf310deb",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 5604,
+        "sha256": "6b86fda5b38f2b966d0da4d26eb9cae24e2185ef9d067b0dfb99aa86bfe644b4",
+        "git_blob": "1845617ed2659dd377f433209799b12ddf310deb"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/tests/game_hub_magic_capture.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 3637,
+        "sha256": "ee0320b36d1e2bd958c005188c873ee576821b353d2a43384c9eda5b46078933",
+        "git_blob": "4d2a6c61688054ce69b90afa07702f8f56a20cbf",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 3637,
+        "sha256": "ee0320b36d1e2bd958c005188c873ee576821b353d2a43384c9eda5b46078933",
+        "git_blob": "4d2a6c61688054ce69b90afa07702f8f56a20cbf"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/tests/game_hub_magic_regression.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 4865,
+        "sha256": "69285a9c6f672805f9b6e27468bc61d7bc04caa22f4cf8a5fdceb15a9110efd3",
+        "git_blob": "ff2a392c1317fddc21c3de49fa6d6453c09ca66d",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 4865,
+        "sha256": "69285a9c6f672805f9b6e27468bc61d7bc04caa22f4cf8a5fdceb15a9110efd3",
+        "git_blob": "ff2a392c1317fddc21c3de49fa6d6453c09ca66d"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/tests/helpers/game_hub_original_identity.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 3955,
+        "sha256": "fced1b32b27b7a99190f6374e573f2e5070b2ce058d5b935c97554db75630b63",
+        "git_blob": "b420ef154c12dda62ee02c28a20f23ad400abc8a",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 3955,
+        "sha256": "fced1b32b27b7a99190f6374e573f2e5070b2ce058d5b935c97554db75630b63",
+        "git_blob": "b420ef154c12dda62ee02c28a20f23ad400abc8a"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/tests/learning_wonder_details_capture.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 6377,
+        "sha256": "908fd4005258e8a6366c63830b926c9930528a272ca2d25c9bccd51154a1a844",
+        "git_blob": "badba5be3179bd09635ff15e4cfa6c1cb8386a08",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 6377,
+        "sha256": "908fd4005258e8a6366c63830b926c9930528a272ca2d25c9bccd51154a1a844",
+        "git_blob": "badba5be3179bd09635ff15e4cfa6c1cb8386a08"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "scripts/tests/learning_wonder_details_regression.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 8919,
+        "sha256": "c6a4f2d6f272b444828b29069165f898f465f5286794cfe5e2fc2b2ce2bb78a4",
+        "git_blob": "70ac9c519e8306cbf91a1c8f5deff1f13ac00376",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 9590,
+        "sha256": "d44f89c76759eb23529291264680ffd5619a6b1b3b9c96a2dfae86e4c3342858",
+        "git_blob": "4801759f704708bc53613d5aed8cacd595b01289"
+      },
+      "kind": "minimal_owner_integration_correction"
+    },
+    {
+      "path": "scripts/tests/village_host_launch_regression.gd",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 6598,
+        "sha256": "82626bead8f00e83270d298cbebc607d887c83f474dda11ef58fb84792411230",
+        "git_blob": "082cecfc4a6542c8372bc592b4729051b105a079",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 6598,
+        "sha256": "82626bead8f00e83270d298cbebc607d887c83f474dda11ef58fb84792411230",
+        "git_blob": "082cecfc4a6542c8372bc592b4729051b105a079"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "tools/tests/test_discovery_rasters.py",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 10956,
+        "sha256": "ed8a1811722e55407dafd74395414eebc3b7c36bd8238823685e458d563be1ba",
+        "git_blob": "d8af97bcd61c5ced583b0be133d504feb978e6a9",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 10956,
+        "sha256": "ed8a1811722e55407dafd74395414eebc3b7c36bd8238823685e458d563be1ba",
+        "git_blob": "d8af97bcd61c5ced583b0be133d504feb978e6a9"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "tools/validate_discovery_connections.sh",
+      "mode": "100755",
+      "before": null,
+      "producer": {
+        "bytes": 3315,
+        "sha256": "b508826d07120d5b85a65858971562a941901ee3750c951ab315ff9dbd7cc041",
+        "git_blob": "07975f12c1f9b07d586cbeb85270329955198f04",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 3315,
+        "sha256": "b508826d07120d5b85a65858971562a941901ee3750c951ab315ff9dbd7cc041",
+        "git_blob": "07975f12c1f9b07d586cbeb85270329955198f04"
+      },
+      "kind": "exact_published_producer_blob"
+    },
+    {
+      "path": "tools/verify_discovery_rasters.py",
+      "mode": "100644",
+      "before": null,
+      "producer": {
+        "bytes": 11528,
+        "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+        "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe",
+        "source": "71a4c1e2304b52005950b12490d070c286c45438"
+      },
+      "after": {
+        "bytes": 11528,
+        "sha256": "55591b4478d2074135ea4950fb00200d68a3f9bede286b39642d7fc17aa586da",
+        "git_blob": "219e691fc8aa119cc80221b3db6c77e63caf8bfe"
+      },
+      "kind": "exact_published_producer_blob"
+    }
+  ],
+  "original_source_files_retained": true,
+  "tests_executed": 0,
+  "engine_runs": 0,
+  "source_worktree_writes": false,
+  "git_mutations": false,
+  "scope": "Nineteen proposed source/gate files; two minimal integration corrections. Existing bd acceptance is not transferred."
+}

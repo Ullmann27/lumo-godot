@@ -5,13 +5,16 @@ extends Button
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
 const BARS = preload("res://scripts/games/kart_stat_bars.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
-const THUMBNAIL: String = "res://assets/kart/fleet/%s.png"
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const THUMBNAIL: String = "res://assets/kart/menu/fleet/%s.webp"
 var item: Dictionary = {}
 var locked: bool = false
 var missing_stars: int = 0
 var tuning_level: int = 0
 var stats: Dictionary = {}
 var bonus: Dictionary = {}
+## Mounted parts, upgrades and fine tuning: the same factors consumed by the race.
+var performance_factors: Dictionary = {}
 var thumb: TextureRect
 var title_label: Label
 var role_label: Label
@@ -61,17 +64,31 @@ func _ready() -> void:
 	column.add_child(title_label)
 	role_label = Label.new()
 	var tag_text: String = str(item.tag).to_lower()
-	role_label.text = "%s · %s" % [str(item.role).to_upper(), tag_text.substr(0, 1).to_upper() + tag_text.substr(1)]
+	role_label.text = tag_text.capitalize()
 	role_label.add_theme_color_override("font_color", Color("74e5f5"))
 	role_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	role_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	column.add_child(role_label)
 	bars = BARS.new()
-	bars.show_labels = false
+	bars.show_labels = true
+	bars.compact_labels = true
+	# Two immediate comparisons; the parts workshop shows all twelve physical readings.
+	bars.only_keys = ["speed", "handling"] as Array[String]
 	bars.show_numbers = false
 	bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(bars)
-	bars.set_values(stats, bonus, true)
+	if performance_factors.is_empty():
+		bars.set_values(stats, bonus, true)
+	else:
+		# Bars have no numbered stat points: half-length is the neutral Comet.
+		# Multiplying by six preserves that reference and reflects real proportional changes.
+		bars.set_values({
+			"speed": FLEET.NEUTRAL * float(performance_factors.get("speed", 1.0)),
+			"handling": FLEET.NEUTRAL * float(performance_factors.get("turn", 1.0)),
+		}, {}, true)
+		var top := POWERTRAIN.top_speed(performance_factors, POWERTRAIN.race_pace())
+		var steering := POWERTRAIN.turn_rate(performance_factors, top, false, false)
+		tooltip_text += "\nMontierter Aufbau: %.0f km/h · Lenken %.2f rad/s\nTeile, Ausbaustufen und Feineinstellung sind eingerechnet." % [top * 3.6, steering]
 	lock_label = Label.new()
 	lock_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lock_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -91,16 +108,33 @@ func _ready() -> void:
 	badge.offset_right = -12
 	add_child(badge)
 	if locked:
-		thumb.modulate = Color(0.34, 0.42, 0.55)
+		thumb.modulate = Color(0.74, 0.80, 0.86)
 		title_label.modulate = Color("96acc5")
 		bars.modulate = Color(1, 1, 1, 0.45)
 	apply_size(1.0, false)
 
 
+## The paint swatch stays readable even when the kart is locked.
+func _draw() -> void:
+	if not is_instance_valid(thumb):
+		return
+	var paint: Color = item.get("look", {}).get("paint", Color("537da8"))
+	var box := Rect2(thumb.global_position - global_position, thumb.size)
+	var band := minf(box.size.x * 0.19, size.y * 0.28)
+	var mid := box.get_center()
+	var h := minf(size.y * 0.35, box.size.y * 0.4)
+	for i in 2:
+		var at := mid + Vector2(-band * (1.4 - i * 1.2), 0)
+		draw_colored_polygon(PackedVector2Array([
+			at + Vector2(-band, h), at + Vector2(0, h),
+			at + Vector2(band, -h), at + Vector2(0, -h)
+		]), Color(paint.lightened(0.2), 0.13))
+
+
 func apply_size(scale_factor: float, compact: bool) -> void:
 	if not is_instance_valid(title_label):
 		return
-	var thumb_width: float = (86.0 if compact else 150.0) * scale_factor
+	var thumb_width: float = (105.0 if compact else 150.0) * scale_factor
 	thumb.custom_minimum_size = Vector2(thumb_width, 0)
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, roundi(10 * scale_factor))
@@ -110,6 +144,7 @@ func apply_size(scale_factor: float, compact: bool) -> void:
 	role_label.add_theme_font_size_override("font_size", roundi((10 if compact else 12) * scale_factor))
 	lock_label.add_theme_font_size_override("font_size", roundi((11 if compact else 13) * scale_factor))
 	badge.add_theme_font_size_override("font_size", roundi(11 * scale_factor))
-	bars.row_height = (7.0 if compact else 10.0) * scale_factor
+	bars.row_height = (15.0 if compact else 16.0) * scale_factor
 	bars.visible = not compact or not locked
-	role_label.visible = not compact
+	role_label.visible = true
+	queue_redraw()

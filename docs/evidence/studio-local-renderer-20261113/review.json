@@ -1,0 +1,28 @@
+{
+  "kind": "local_real_renderer_capability_smoke",
+  "status": "PASS",
+  "runner": "tools/run_local_renderer.py",
+  "runner_sha256": "d7169f0353071159e64a74d76e6e35718117402a597dfcc05c8f99ed7f275247",
+  "actual_command": "python3 tools/run_local_renderer.py --display 99 --output /tmp/lumo-local-renderer-root-20261113 --timeout 900 -- --script scripts/tests/learning_sharing_capture.gd -- --output=/tmp/lumo-local-renderer-root-20261113/captures",
+  "engine": "Godot4.6.3.stable.official.7d41c59c4",
+  "backend": "X11 / OpenGL Compatibility / Mesa25.0.7 llvmpipe LLVM19.1.7",
+  "exit_code": 0,
+  "captures_generated": 6,
+  "capture_failures": 0,
+  "actually_viewed_and_preserved": [
+    "sharing-start-1280x720.png",
+    "sharing-complete-412x915.png"
+  ],
+  "input": "The existing capture script executed 24 actual ScreenTouch distributions across landscape and portrait; original manifest records 0→1→4 per group.",
+  "native_revision_claim": null,
+  "source_scope": "Local working-tree capability smoke while follow-up edits are being prepared; not an exact-source release receipt.",
+  "authentication_file_removed_after_run": true,
+  "device_performance_claim": false,
+  "sha256": {
+    "run.json": "406fb82df9339e33210a4b56e55ff7525512a65f79670253fe0709287cc94bf1",
+    "godot.log": "6202969036b1ee6b81428ed7bec721c36bd72be0ff273333ae52c9d8f558bf6e",
+    "sharing-complete-412x915.png": "02f5f6cb203d87f15b8d5de46557d1e47b16b965072b9d6b1fc365731f6abe71",
+    "sharing-start-1280x720.png": "8153286850252d1bf7b365b079673b1da0ecb354ffb22fe8a0f9b4dbe768c605",
+    "capture-manifest.json": "05b76a8216362650075cd241071a42e98a509905b2dec5a24fd2bd09cf061bbf"
+  }
+}

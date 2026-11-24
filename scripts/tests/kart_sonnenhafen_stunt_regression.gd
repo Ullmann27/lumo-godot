@@ -1,0 +1,628 @@
+extends SceneTree
+## Sonnenhafen exterior loop, marked braking approach and precision jump:
+## layout on the real road, then real driving through _physics_process with
+## gas and steering only: boost pad, loop entry, full 360 degrees on the
+## rendered path, stars collected, safe exit and onward drive into the
+## tunnel. A too-slow kart never falls: it is set back onto the main lane.
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
+const ACTION = preload("res://scripts/games/kart_action_course.gd")
+const WORLD = preload("res://scripts/games/kart_world.gd")
+const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const TUNING = preload("res://scripts/games/kart_tuning.gd")
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const STEP: float = 1.0 / 60.0
+var game
+## A failed assert aborts its check; PASS needs every check to reach its end.
+var completed_checks: int = 0
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _settle() -> void:
+	await process_frame
+	await process_frame
+
+
+func _check_layout() -> void:
+	var world = WORLD.new()
+	root.add_child(world)
+	world.build(true, "sonnenhafen", true)
+	var layout: Dictionary = world.loop_layout
+	var tunnel: float = STUNT.tunnel_start(world)
+	assert(
+		not layout.is_empty() and bool(layout.get("stunt", false)), "Sonnenhafen has the stunt loop"
+	)
+	assert(
+		float(layout.start) + LOOP.advance_of(layout) + STUNT.LOOP_SETTLE_M <= float(STUNT.SPEED_ZONE.of(world).start) + 0.001, "Branch returns before the entire physical braking approach"
+	)
+	var structure_end: float = float(layout.start) + LOOP.advance_of(layout) + STUNT.LOOP_RADIUS + 2.0
+	assert(structure_end < tunnel - 80.0, "Loop ends well before the tunnel mouth")
+	assert(LOOP.radius_of(layout) > LOOP.RADIUS, "Stunt loop is larger than the side loops")
+	var pads: Array = world.action.pads.filter(func(pad): return bool(pad.get("stunt_pad", false)))
+	assert(pads.size() == 1, "Exactly one stunt boost pad")
+	var pad: Dictionary = pads[0]
+	assert(float(pad.end) < float(layout.start) - 10.0, "Pad ends before the loop entry")
+	assert(is_equal_approx(float(pad.lateral), float(layout.lane)), "Pad lies on the loop lane")
+	var kicker: Dictionary = world.action.kickers[0]
+	assert(float(pad.start) > float(kicker.take_off) + 40.0, "Panorama jump stays untouched")
+	# Riding line: continuous, closed circle, upside down at the top.
+	var top: Basis = LOOP.frame_at(world, layout, 0.5)
+	assert(top.y.dot(Vector3.UP) < -0.95, "Kart is upside down at the top of the loop")
+	var previous: Vector3 = LOOP.point(world, layout, 0.0)
+	var longest: float = 0.0
+	for i in range(1, 601):
+		var p: Vector3 = LOOP.point(world, layout, float(i) / 600.0)
+		longest = maxf(longest, p.distance_to(previous))
+		previous = p
+	assert(longest < 0.4, "Riding line has no gaps (%.2f m)" % longest)
+	var peak: float = LOOP.point(world, layout, 0.5).y - world.position_at(LOOP.road_distance_at(layout, 0.5), LOOP.lane_at(layout, 0.5)).y
+	assert(peak > 2.0 * STUNT.LOOP_RADIUS - 0.5, "Loop height %.1f m" % peak)
+	var star_count: int = STUNT.STAR_FRACTIONS.size() + 4 + STUNT.ARC_STARS.size()
+	assert(STUNT.star_positions(world).size() == star_count)
+	assert(world.get_node_or_null("StuntLoopDeck") is MeshInstance3D, "Deck mesh is built")
+	# Other tracks keep their loops and rules.
+	for track in ["zauberwald", "candy_cloud", "holo_city"]:
+		var other = WORLD.new()
+		root.add_child(other)
+		other.build(true, track, true)
+		if track == "candy_cloud":
+			assert(is_equal_approx(LOOP.radius_of(other.loop_layout), LOOP.RADIUS))
+			assert(not other.loop_layout.has("stunt"))
+		else:
+			assert(other.loop_layout.is_empty(), "%s has no loop" % track)
+		other.free()
+	world.free()
+	completed_checks += 1
+	print(
+		(
+			"[SonnenhafenStunt] layout: loop at %.1f m, tunnel at %.1f m, peak %.1f m"
+			% [float(layout.start), tunnel, peak]
+		)
+	)
+
+
+func _start(kart_id: String = "comet", track_id: String = "sonnenhafen") -> void:
+	game._start_selected_race(
+		{
+			"mode": "training",
+			"driver": "fox",
+			"kart": kart_id,
+			"track": track_id,
+			"difficulty": "flott"
+		}
+	)
+	game._end_preview()
+	await _settle()
+	game.countdown = 0
+	game.racing = true
+	game.auto_gas = true
+
+
+func _place(at: float, lateral: float, speed: float) -> void:
+	game.distance = at
+	game.previous_road_distance = at
+	game.player.transform = game.world.reset_transform(at, lateral)
+	game.player_heading = game._heading(at)
+	game.player.rotation = Vector3(0, game.player_heading, 0)
+	game.speed = speed
+	game.physical_velocity = (
+		Vector3(-sin(game.player_heading), 0, -cos(game.player_heading)) * speed
+	)
+	game.airborne = false
+	game.boost_time = 0.0
+	game.steering = 0.0
+
+
+func _steer_to(lateral: float) -> void:
+	var target: Vector3 = game.world.position_at(game.previous_road_distance + 8.0, lateral)
+	var direction: Vector3 = target - game.player.position
+	game.steering = clampf(
+		-angle_difference(game.player_heading, atan2(-direction.x, -direction.z)) * 2.3, -1, 1
+	)
+
+
+func _stunt_stars() -> int:
+	var count: int = 0
+	for key in game.collected.keys():
+		if int(key) >= 1000000:
+			count += 1
+	return count
+
+
+func _check_full_loop() -> void:
+	await _start()
+	var layout: Dictionary = game.world.loop_layout
+	var pad: Dictionary = game.world.action.pads[0]
+	_place(float(pad.start) - 14.0, float(layout.lane), 15.0)
+	var pads_before: int = game.action_pads_triggered
+	var loops_before: int = game.loop_count
+	var resets_before: int = game.reset_count
+	var entered: bool = false
+	var entry_speed: float = 0.0
+	var max_height: float = 0.0
+	var worst_alignment: float = 1.0
+	var last_progress: float = -1.0
+	var last_distance: float = game.distance
+	for frame in range(900):
+		if not game.loop_state.active:
+			_steer_to(float(layout.lane))
+		else:
+			game.steering = 0.0
+		game._physics_process(STEP)
+		assert(game.distance >= last_distance - 0.001, "Race distance never runs backwards")
+		last_distance = game.distance
+		if game.loop_state.active:
+			if not entered:
+				entry_speed = game.speed
+			entered = true
+			var p: Vector3 = game.player.position
+			assert(is_finite(p.x) and is_finite(p.y) and is_finite(p.z))
+			var expected: Basis = LOOP.frame_at(game.world, layout, game.loop_state.progress)
+			worst_alignment = minf(
+				worst_alignment, game.player.basis.y.normalized().dot(expected.y)
+			)
+			assert(game.loop_state.progress >= last_progress, "Loop progress is monotonic")
+			last_progress = game.loop_state.progress
+			max_height = maxf(max_height, p.y - game.world.position_at(float(layout.start)).y)
+		elif entered:
+			break
+	assert(game.action_pads_triggered == pads_before + 1, "Boost pad fired on the loop lane")
+	assert(entered, "Kart entered the loop")
+	assert(game.loop_count == loops_before + 1, "Loop completed")
+	assert(game.reset_count == resets_before, "No rescue reset")
+	assert(worst_alignment > 0.98, "Kart orientation follows the loop (%.3f)" % worst_alignment)
+	assert(max_height > 2.0 * STUNT.LOOP_RADIUS - 1.5, "Kart reached the top (%.1f m)" % max_height)
+	var stars: int = _stunt_stars()
+	assert(stars >= 5, "Stars on the riding line collected (%d)" % stars)
+	# Onward: back on the road, fast, and into the tunnel without a reset.
+	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
+	assert(
+		absf(float(road.lateral) - LOOP.exit_lane(layout)) < 0.6,
+		"Exit on the branch's continuous return lane"
+	)
+	assert(absf(game.player.position.y - float(road.height)) < 0.3, "Exit on the road surface")
+	assert(game.speed > 12.0, "Kart keeps speed after the loop (%.1f)" % game.speed)
+	var tunnel: float = STUNT.tunnel_start(game.world)
+	var frames: int = 0
+	while fposmod(game.previous_road_distance, game.track_length) < tunnel + 10.0 and frames < 900:
+		_steer_to(0.0)
+		game._physics_process(STEP)
+		frames += 1
+	assert(frames < 900, "Kart reaches the tunnel")
+	assert(game.reset_count == resets_before, "No reset on the way into the tunnel")
+	completed_checks += 1
+	print(
+		(
+			(
+				"[SonnenhafenStunt] loop: entry %.1f m/s, top %.1f m, alignment %.3f,"
+				+ " %d stars, exit %.1f m/s, tunnel after %d frames"
+			)
+			% [entry_speed, max_height, worst_alignment, stars, game.speed, frames]
+		)
+	)
+
+
+func _check_too_slow() -> void:
+	await _start()
+	var layout: Dictionary = game.world.loop_layout
+	# Barely fast enough to enter, then braking hard: the climb fails safely.
+	# Coasting now uses the faster drivetrain's deceleration. Start less than
+	# one physical step before the lip, with enough momentum for that step.
+	var minimum: float = float(layout.min_entry_speed)
+	var coast_loss: float = POWERTRAIN.acceleration(game.kart_factors, false) * STEP
+	_place(float(layout.start) - minimum * STEP * 0.5, float(layout.lane), minimum + coast_loss * 1.5)
+	game.auto_gas = false
+	game.gas_held = false
+	var loops_before: int = game.loop_count
+	var entered: bool = false
+	var fell_below: bool = false
+	var entry_speed: float = 0.0
+	for frame in range(600):
+		game.steering = 0.0
+		if game.loop_state.active:
+			if not entered:
+				entry_speed = game.speed
+			entered = true
+			game.control_brake = 1.0
+		game._physics_process(STEP)
+		if entered and not game.loop_state.active:
+			break
+	game.control_brake = 0.0
+	assert(entered, "Slow kart entered and failed inside the loop")
+	assert(entry_speed >= minimum and entry_speed < minimum + 2.0, "Failure fixture actually enters close to the minimum momentum")
+	assert(game.loop_count == loops_before, "Failed attempt is not counted")
+	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
+	assert(absf(float(road.lateral)) < 0.6, "Set back onto the main lane")
+	assert(absf(game.player.position.y - float(road.height)) < 0.3, "Back on the road surface")
+	assert("Schwung" in game.message.text)
+	# It must not re-enter or bounce: drive on along the main lane.
+	for frame in range(240):
+		_steer_to(0.0)
+		game._physics_process(STEP)
+		fell_below = fell_below or game.loop_state.active
+	assert(not fell_below, "No re-entry from the main lane")
+	completed_checks += 1
+	print("[SonnenhafenStunt] too slow: entry %.2f m/s, safe set-back to the main lane" % entry_speed)
+
+
+func _check_stunt_jump() -> void:
+	await _start()
+	var kickers: Array = game.world.action.kickers
+	var jump: Dictionary = {}
+	for kicker in kickers:
+		if bool(kicker.get("stunt", false)):
+			jump = kicker
+	assert(not jump.is_empty(), "Stunt jump exists")
+	var tunnel: float = STUNT.tunnel_start(game.world)
+	assert(is_equal_approx(float(jump.take_off), tunnel - STUNT.jump_lead_m(game.world)), "Jump at Position B")
+	assert(
+		float(jump.start) > float(game.world.loop_layout.start) + LOOP.advance_of(game.world.loop_layout),
+		"Ramp after the loop exit"
+	)
+	# Use the speed shown by the precision hint for this safe-landing run.
+	# The separate precision runs below measure an undershoot and an overshoot.
+	var landing_speed: float = PRECISION.speed_for_distance(
+		(float(jump.landing_min) + float(jump.landing_max)) * 0.5, jump
+	)
+	var rules: Dictionary = game.CATALOG.entry(game.CATALOG.DIFFICULTIES, game.difficulty)
+	var top_speed: float = POWERTRAIN.top_speed(game.kart_factors, float(rules.speed))
+	game.gas_held = true
+	game.brake = clampf((1.0 - landing_speed / top_speed) / 0.94, 0.0, 1.0)
+	_place(float(jump.start) - 14.0, 0.0, landing_speed)
+	var jumps_before: int = game.action_kicker_jumps
+	var landings_before: int = game.landing_count
+	var resets_before: int = game.reset_count
+	var stars_before: int = _stunt_stars()
+	var entered_air: bool = false
+	var max_height: float = 0.0
+	var air: float = 0.0
+	var flight_start: float = 0.0
+	var flight_end: float = 0.0
+	for frame in range(300):
+		_steer_to(0.0)
+		game._physics_process(STEP)
+		if game.airborne:
+			if not entered_air:
+				flight_start = game.distance
+			entered_air = true
+			air = maxf(air, game.air_time)
+			var road: Dictionary = game.world.sample_road(
+				game.player.position, game.previous_road_distance
+			)
+			max_height = maxf(max_height, game.player.position.y - float(road.height))
+		elif entered_air:
+			flight_end = game.distance
+			break
+	assert(
+		entered_air and game.action_kicker_jumps == jumps_before + 1,
+		"Kart launched from the stunt jump"
+	)
+	assert(game.landing_count == landings_before + 1 and not game.airborne, "Safe landing")
+	assert(game.reset_count == resets_before, "No rescue on the stunt jump")
+	assert(max_height > 3.0 and flight_end - flight_start > 15.0, "Real flight")
+	var road_after: Dictionary = game.world.sample_road(
+		game.player.position, game.previous_road_distance
+	)
+	assert(absf(float(road_after.lateral)) < 4.5, "Landed on the road")
+	var arc_stars: int = _stunt_stars() - stars_before
+	assert(fposmod(flight_end, game.track_length) < tunnel - 5.0, "Landing before the tunnel mouth")
+	assert(game.last_precision_landing == PRECISION.LANDING_ZONE, "Hint speed lands in the marked zone")
+	completed_checks += 1
+	print(
+		(
+			"[SonnenhafenStunt] jump: %.1f m flight, %.1f m high, %.2f s air, %d arc stars"
+			% [flight_end - flight_start, max_height, air, arc_stars]
+		)
+	)
+
+
+## Real driving at fixed lip speeds: too slow falls short into the open gap,
+## the reference speed lands in the zone, too fast overshoots. The measured
+## flight must match the model the speed hint uses; speed stays constant in
+## the air (no hidden correction) and steering still works in the air.
+func _precision_run(launch_speed: float, steer_in_air: float) -> Dictionary:
+	await _start()
+	var jump: Dictionary = {}
+	for kicker in game.world.action.kickers:
+		if bool(kicker.get("precision_jump", false)):
+			jump = kicker
+	game.auto_gas = false
+	game.gas_held = false
+	_place(float(jump.take_off) - 1.0, 0.0, launch_speed)
+	var falls_before: int = game.gap_falls
+	var landings_before: int = game.landing_count
+	var air_speeds: Array[float] = []
+	var lane_at_launch: float = 0.0
+	var launched: bool = false
+	var hint_at_lip: String = PRECISION.prediction(launch_speed, jump).status
+	var lifted_onto_road: bool = false
+	for frame in range(240):
+		game.steering = steer_in_air if game.airborne else 0.0
+		var falls: int = game.gap_falls
+		game._physics_process(STEP)
+		if game.airborne:
+			if not launched:
+				lane_at_launch = game.lane
+			launched = true
+			air_speeds.append(game.speed)
+		if launched and not game.airborne:
+			if game.gap_falls == falls and game.landing_count == landings_before:
+				lifted_onto_road = true
+			break
+	var spread: float = 0.0
+	if not air_speeds.is_empty():
+		spread = air_speeds.max() - air_speeds.min()
+	return {
+		"jump": jump,
+		"launched": launched,
+		"result": game.last_precision_landing,
+		"flown": game.last_precision_flown,
+		"model": PRECISION.landing_distance(air_speeds[0] if not air_speeds.is_empty() else 0.0, jump),
+		"air_speed": air_speeds[0] if not air_speeds.is_empty() else 0.0,
+		"spread": spread,
+		"fell": game.gap_falls - falls_before,
+		"landed": game.landing_count - landings_before,
+		"exit_speed": game.speed,
+		"lane_shift": game.lane - lane_at_launch,
+		"hint": hint_at_lip,
+		"lifted": lifted_onto_road,
+		"message": game.message.text,
+		"boost": game.boost_time,
+	}
+
+
+func _hint_at(at: float, speed: float) -> String:
+	_place(at, 0.0, speed)
+	game._update_hud()
+	return str(game.jump_hint.text) if game.jump_hint.visible else ""
+
+
+func _check_precision_speeds() -> void:
+	await _start()
+	var kicker: Dictionary = {}
+	for candidate in game.world.action.kickers:
+		if bool(candidate.get("precision_jump", false)):
+			kicker = candidate
+	var run_up: float = float(kicker.start) - 30.0
+	assert(_hint_at(float(kicker.start) - 200.0, 20.0) == "", "No hint far from the jump")
+	assert(_hint_at(run_up, 12.0) == "Gib Gas!", "Red hint when too slow")
+	assert(_hint_at(run_up, float(kicker.rival_speed)) == "Tempo passt!", "Green hint at good speed")
+	assert(_hint_at(run_up, 30.0) == "Etwas bremsen!", "Orange hint when too fast")
+	assert(_hint_at(float(kicker.take_off) + 40.0, 20.0) == "", "Hint gone after the jump")
+	var slow: Dictionary = await _precision_run(12.0, 0.0)
+	var jump: Dictionary = slow.jump
+	assert(slow.launched, "Slow kart still leaves the lip")
+	assert(slow.hint == PRECISION.STATUS_SLOW, "Hint said 'Gib Gas' for the slow kart")
+	assert(slow.result == PRECISION.LANDING_SHORT, "Slow kart falls short (%s)" % slow.result)
+	assert(slow.fell == 1 and slow.landed == 0, "Short jump ends in the gap, not on the road")
+	assert(not slow.lifted, "Short jump is never lifted onto the road")
+	assert("mehr Gas" in slow.message, "Child gets the 'mehr Gas' advice")
+	var good_speed: float = float(jump.rival_speed)
+	var good: Dictionary = await _precision_run(good_speed, 0.0)
+	assert(good.hint == PRECISION.STATUS_GOOD, "Hint said 'Tempo passt'")
+	assert(good.result == PRECISION.LANDING_ZONE, "Reference speed lands in the zone (%s)" % good.result)
+	assert(absf(float(good.flown) - float(good.model)) < 0.9,
+		"Flight matches model (%.2f vs %.2f m)" % [good.flown, good.model])
+	assert(float(good.spread) < 0.001, "Speed is not changed in the air (%.4f)" % good.spread)
+	assert(float(good.boost) > 0.0, "Zone landing gives a turbo")
+	var fast: Dictionary = await _precision_run(30.0, 0.0)
+	assert(fast.hint == PRECISION.STATUS_FAST, "Hint said 'Etwas bremsen'")
+	assert(fast.result == PRECISION.LANDING_LONG, "Fast kart overshoots (%s)" % fast.result)
+	assert(absf(float(fast.flown) - float(fast.model)) < 0.9,
+		"Fast flight matches model (%.2f vs %.2f m)" % [fast.flown, fast.model])
+	assert(float(fast.exit_speed) < float(fast.air_speed) * 0.65, "Overshoot costs speed")
+	var steered: Dictionary = await _precision_run(good_speed, 1.0)
+	assert(absf(float(steered.lane_shift)) > absf(float(good.lane_shift)) + 0.3,
+		"Kart can be steered in the air (%.2f vs %.2f m)" % [steered.lane_shift, good.lane_shift])
+	assert(absf(float(steered.lane_shift)) <= game.PRECISION_AIR_LATERAL_M + 0.5,
+		"Child-friendly air steering stays within 2 m (%.2f m)" % steered.lane_shift)
+	completed_checks += 1
+	print(
+		(
+			"[SonnenhafenStunt] precision: slow 12.0 m/s -> %s (fell %d); %.1f m/s -> %s %.2f m"
+			+ " (model %.2f); 30.0 m/s -> %s %.2f m (model %.2f), exit %.1f m/s; air steer %.2f m"
+		)
+		% [
+			slow.result, slow.fell, good.air_speed, good.result, good.flown, good.model,
+			fast.result, fast.flown, fast.model, fast.exit_speed, steered.lane_shift
+		]
+	)
+
+
+
+## Actual production road + _physics_process. The strongest joint boost setup,
+## its unupgraded brakes and the weakest stock braking kart traverse the marked
+## approach. A legal boost pulse is applied again just before the ramp so the
+## check also catches accidental boost acceleration during precision flight.
+
+## A normal60Hz step may cross both the lip and the gap beginning0.5m later.
+## Real input integration must launch in every phase, while a separate gap entry falls.
+func _check_takeoff_phases() -> void:
+	await _start("gecko_velo")
+	game.auto_gas = false
+	game.gas_held = false
+	game.brake = 0.0
+	game.control_brake = 0.0
+	var jump: Dictionary = {}
+	for candidate in game.world.action.kickers:
+		if bool(candidate.get("precision_jump", false)):
+			jump = candidate
+	assert(not jump.is_empty())
+	var simultaneous: int = 0
+	for offset in [0.05, 0.25, 0.49, 0.75, 0.99]:
+		_place(float(jump.take_off) - offset, 0.0, 61.78536)
+		game.precision_kicker = {}
+		game.vertical_speed = 0.0
+		var before: int = game.action_kicker_jumps
+		game._physics_process(STEP)
+		assert(game.airborne and not game.precision_kicker.is_empty(), "lip phase%.2f must launch before testing gap occupancy" % offset)
+		assert(game.action_kicker_jumps == before + 1, "one crossed lip creates exactly one launch")
+		assert(absf(game.vertical_speed - PRECISION.launch_vertical(game.speed, jump)) < 0.00001,
+			"the crossed lip keeps the normal ballistic launch momentum")
+		if game.previous_road_distance >= float(jump.gap_start):
+			simultaneous += 1
+	assert(simultaneous >= 2, "at least two cases cross lip and gap_start within one60Hz step")
+	for already_airborne in [false, true]:
+		_place(float(jump.gap_start) + 2.0, 0.0, 18.0)
+		game.precision_kicker = {}
+		game.airborne = already_airborne
+		game.vertical_speed = 0.0
+		game.current_jump_gravity = game.JUMP_GRAVITY
+		var before: int = game.action_kicker_jumps
+		game._physics_process(STEP)
+		assert(game.airborne and game.precision_kicker.is_empty(), "entering the gap without crossing a ramp remains a fall")
+		assert(game.action_kicker_jumps == before and game.vertical_speed < 0.0,
+			"a gap never invents an extra launch, including an already airborne kart")
+	completed_checks += 1
+	print("[SonnenhafenStunt] swept lip:5 phases, ", simultaneous, " simultaneous lip/gap crossings, both independent falls preserved")
+
+
+## Run the real production camera method through the entire aquarium section.
+## This distinguishes an elevated landscape shot looking at the roof from the
+## normal driving camera below it; no camera or water geometry is modified.
+func _check_aquarium_camera() -> void:
+	await _start("comet", "zauberwald")
+	var dives: Array = game.world.action.dives
+	assert(dives.size() == 1, "the real forest aquarium remains present")
+	var dive: Dictionary = dives[0]
+	var minimum_roof_clearance: float = INF
+	var maximum_lateral: float = 0.0
+	var samples: int = 0
+	for index in range(15):
+		var d: float = lerpf(float(dive.start) + 10.0, float(dive.end) - 10.0, float(index) / 14.0)
+		for lateral in [-3.0, 0.0, 3.0]:
+			_place(d, lateral, 50.0)
+			game.precision_kicker = {}
+			game.steering = 0.0
+			game._update_camera(STEP, true)
+			var road: Dictionary = game.world.sample_road(game.camera.position, d)
+			var up: Vector3 = (road.basis as Basis).y
+			var height: float = (game.camera.position - (road.position as Vector3)).dot(up)
+			minimum_roof_clearance = minf(minimum_roof_clearance, 4.2 - height)
+			maximum_lateral = maxf(maximum_lateral, absf(float(road.lateral)))
+			assert(height > 0.5 and height < 4.0, "the real chase camera stays above the road and below the aquarium roof")
+			assert(absf(float(road.lateral)) < 6.1, "the real chase camera stays inside the aquarium side walls")
+			samples += 1
+	completed_checks += 1
+	print("[SonnenhafenStunt] forest real camera: samples=", samples,
+		" roof_clearance=", snappedf(minimum_roof_clearance, 0.001), " lateral=", snappedf(maximum_lateral, 0.001))
+
+
+func _check_boosted_approach() -> void:
+	var original_workshop = game.workshop
+	var setups: Array[Dictionary] = [
+		{"kart": "stella", "upgrades": true, "brakes_level": TUNING.MAX_LEVEL, "name": "full_stella"},
+		{"kart": "stella", "upgrades": true, "brakes_level": 0, "name": "stella_light_brakes"},
+		{"kart": "gecko_velo", "upgrades": false, "brakes_level": 0, "name": "weakest_stock_brakes"},
+	]
+	for setup in setups:
+		var fixture = TUNING.new("__kart_precision_probe__", 100000)
+		fixture.save_enabled = false
+		fixture.levels = {}
+		fixture.looks = {}
+		fixture.tunes = {}
+		fixture.owned.clear()
+		var kart_id: String = str(setup.kart)
+		var mounted_parts: Dictionary = {"brakes": "leicht"}
+		if bool(setup.upgrades):
+			var levels: Dictionary = {}
+			for part in TUNING.PARTS:
+				levels[str(part.id)] = int(setup.brakes_level) if str(part.id) == "bremsen" else TUNING.MAX_LEVEL
+			fixture.levels[kart_id] = levels
+			mounted_parts = {"engine": "lader", "tires": "slick", "wing": "flach",
+				"booster": "kurz", "gearbox": "lang", "brakes": "leicht"}
+			fixture.set_tune(kart_id, {"pressure": 2, "wing_angle": -2, "gear": 2})
+		# The real workshop ignores paid parts that were never unlocked.
+		assert(fixture.unlock_parts(mounted_parts), "probe can buy the actual catalogue combination")
+		assert(fixture.mount_parts(kart_id, mounted_parts), "probe can mount its owned combination")
+		game.workshop = fixture
+		await _start(kart_id)
+		var zone: Dictionary = STUNT.SPEED_ZONE.of(game.world)
+		var factors: Dictionary = game.kart_factors
+		var boosted: float = POWERTRAIN.top_speed(factors, POWERTRAIN.race_pace()) * POWERTRAIN.boost_scale(factors)
+		_place(float(zone.start) - 1.0, 0.0, boosted)
+		game.boost_time = game._boost_for(3.2)
+		var extra_pulse: bool = false
+		var launched: bool = false
+		var landing: bool = false
+		var lip_speed: float = 0.0
+		var air_low: float = INF
+		var air_high: float = -INF
+		var resets: int = game.reset_count
+		var saw_braking: bool = false
+		var trace: Array = []
+		var frames_driven: int = 0
+		for frame in range(1800):
+			frames_driven = frame + 1
+			_steer_to(0.0)
+			if not extra_pulse and game.previous_road_distance >= float(zone.take_off) - STUNT.JUMP_RAMP_LENGTH - 42.0:
+				game.boost_time = game._boost_for(3.2)
+				extra_pulse = true
+			var previous_speed: float = game.speed
+			game._physics_process(STEP)
+			if frame % 60 == 0:
+				trace.append({"frame": frame, "road": game.previous_road_distance, "speed": game.speed,
+					"lane": game.lane, "air": game.airborne, "racing": game.racing,
+					"reset": game.reset_count, "gap_falls": game.gap_falls, "kicker": not game.precision_kicker.is_empty()})
+				if trace.size() > 8:
+					trace.pop_front()
+			if game.speed < previous_speed - 0.001 and not game.airborne:
+				saw_braking = true
+			if game.airborne and not game.precision_kicker.is_empty():
+				if not launched:
+					lip_speed = game.speed
+				launched = true
+				air_low = minf(air_low, game.speed)
+				air_high = maxf(air_high, game.speed)
+			elif launched and not game.airborne:
+				landing = true
+				break
+		print("[KartBoostApproach] ", JSON.stringify({"setup": setup.name, "parts": fixture.mounted(kart_id),
+			"factors": factors, "zone": zone, "entry": boosted, "frames": frames_driven,
+			"launched": launched, "landing": landing, "trace": trace}))
+		assert(saw_braking and extra_pulse, "%s exercises the real braking approach and active ramp boost" % setup.name)
+		assert(launched and landing, "%s completes the physical precision flight" % setup.name)
+		assert(lip_speed <= float(zone.limit) + 0.15, "%s obeys the visible approach before takeoff (%.3f)" % [setup.name, lip_speed])
+		assert(air_high - air_low < 0.001, "%s boost never changes the ballistic flight momentum" % setup.name)
+		assert(game.reset_count == resets, "%s lands without a rescue" % setup.name)
+		assert(game.previous_road_distance < float(zone.tunnel) - 5.0, "%s lands on open road before the tunnel" % setup.name)
+		print("[SonnenhafenStunt] boosted ", setup.name, " entry=", snappedf(boosted, 0.001),
+			" brake=", snappedf(POWERTRAIN.acceleration(factors, true), 0.001),
+			" lip=", snappedf(lip_speed, 0.001), " tunnel_clearance=", snappedf(float(zone.tunnel) - game.previous_road_distance, 0.01))
+	game.workshop = original_workshop
+	completed_checks += 1
+
+
+func _run() -> void:
+	assert(DisplayServer.get_name() != "headless")
+	await _check_layout()
+	game = load("res://scenes/games/kart_island.tscn").instantiate()
+	root.add_child(game)
+	game.set_physics_process(false)
+	game.lightweight = true
+	await _settle()
+	await _check_full_loop()
+	await _check_too_slow()
+	await _check_stunt_jump()
+	await _check_precision_speeds()
+	await _check_takeoff_phases()
+	await _check_boosted_approach()
+	await _check_aquarium_camera()
+	# Quitting with the race still mounted left "resources still in use at exit"
+	# on some runs, which the probe runner rightly rejects. Release it first.
+	game.abandoned = true
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[SonnenhafenStunt]")):
+		push_error("[SonnenhafenStunt] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
+	if completed_checks != 8:
+		print("[SonnenhafenStunt] FAIL: %d of 8 checks completed" % completed_checks)
+		quit(1)
+		return
+	print("[SonnenhafenStunt] PASS: real loop, boost pad, stars, safe exit and safe failure")
+	quit(0)

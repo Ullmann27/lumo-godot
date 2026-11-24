@@ -1,0 +1,102 @@
+name: LUMO 2013 integration repair verification
+
+on:
+  push:
+    branches:
+      - lumo-2013/integration-repair-20261110
+    paths:
+      - scripts/creative/build_world.gd
+      - scripts/creative/build_landmarks.gd
+      - .github/workflows/lumo-2013-integration-repair.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-2013-integration-repair
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Verify exact river-island repair contract
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+          world = Path("scripts/creative/build_world.gd").read_text(encoding="utf-8")
+          land = Path("scripts/creative/build_landmarks.gd").read_text(encoding="utf-8")
+          assert "for island_z in [-12.0, 20.0]:" in world
+          assert "for island_z in [-12.5, 19.5]:" not in world
+          assert "if (z >= -14.05 and z <= -9.95) or (z >= 17.95 and z <= 22.05):" in land
+          assert "var island_spans: Array[Vector2] = [Vector2(-14.05, -9.95), Vector2(17.95, 22.05)]" in land
+          print("PASS river-island collision, dry span and lawn cap share the logical cell range")
+          PY
+
+      - name: Import and static project validation
+        run: |
+          set -euo pipefail
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
+          python3 tools/validate_project.py
+
+      - name: Bauwelt 2013 identity regression
+        run: |
+          set -euo pipefail
+          timeout 180s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/bauwelt_identity_2013_regression.gd 2>&1 | tee "$RUNNER_TEMP/bauwelt.log"
+          grep -F '[BauweltIdentity2013] PASS' "$RUNNER_TEMP/bauwelt.log"
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/bauwelt.log"; then exit 1; fi
+
+      - name: Reproduce Kart pause-layout gate and record runtime
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          start="$(date +%s)"
+          set +e
+          timeout 300s xvfb-run -a -s '-screen 0 1920x2560x24' Godot_v4.6.3-stable_linux.x86_64 --verbose --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/kart_pause_layout_regression.gd 2>&1 | tee "$RUNNER_TEMP/pause-layout.log"
+          rc=${PIPESTATUS[0]}
+          set -e
+          elapsed="$(( $(date +%s) - start ))"
+          echo "KART_PAUSE_LAYOUT_SECONDS=$elapsed" | tee "$RUNNER_TEMP/pause-runtime.txt"
+          echo "KART_PAUSE_LAYOUT_EXIT=$rc" | tee -a "$RUNNER_TEMP/pause-runtime.txt"
+          test "$rc" -eq 0
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/pause-layout.log"
+          if grep -E 'SCRIPT ERROR|Assertion failed|Parse Error|ERROR:' "$RUNNER_TEMP/pause-layout.log" | grep -v 'resources still in use at exit' | grep -q .; then exit 1; fi
+
+      - name: Run complete validate_project.sh from repaired source
+        env:
+          GODOT_BIN: Godot_v4.6.3-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          timeout 1200s bash tools/validate_project.sh 2>&1 | tee "$RUNNER_TEMP/validate-project.log"
+          grep -F '[KartPauseLayoutTests] PASS' "$RUNNER_TEMP/validate-project.log"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-integration-repair-proof
+          path: |
+            ${{ runner.temp }}/pause-layout.log
+            ${{ runner.temp }}/pause-runtime.txt
+            ${{ runner.temp }}/validate-project.log
+            ${{ runner.temp }}/bauwelt.log
+            ${{ runner.temp }}/import.log
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "source": "Meshy image-to-3D batch 2026-11-23, visually reconciled against scripts/games/kart_fleet.gd colors, roles and body descriptions",
+  "vehicle_assignment": [
+    {
+      "incoming": "vehicle_01.glb",
+      "kart_id": "comet",
+      "evidence": "blue body, orange accents; Comet stock palette"
+    },
+    {
+      "incoming": "vehicle_02.glb",
+      "kart_id": "gecko_velo",
+      "evidence": "lime/white/orange; Gecko Velo palette and slim agile body"
+    },
+    {
+      "incoming": "vehicle_03.glb",
+      "kart_id": "boru_rally",
+      "evidence": "orange rally body with roll structure; Boru Rally description"
+    },
+    {
+      "incoming": "vehicle_04.glb",
+      "kart_id": "glider",
+      "evidence": "white/cyan lightweight aero body; Glider palette"
+    },
+    {
+      "incoming": "vehicle_05.glb",
+      "kart_id": "nala_comet",
+      "evidence": "coral/white sporty shell; Nala Comet palette"
+    },
+    {
+      "incoming": "vehicle_06.glb",
+      "kart_id": "noa_tide",
+      "evidence": "blue/cyan smooth wave styling; Noa Tide description"
+    },
+    {
+      "incoming": "vehicle_07.glb",
+      "kart_id": "iva_aurora",
+      "evidence": "lavender/silver aero fins; Iva Aurora palette and feather-fin description"
+    },
+    {
+      "incoming": "vehicle_08.glb",
+      "kart_id": "turbo",
+      "display_name": "Aurora GT",
+      "evidence": "dark-purple high-speed aero shell with warm accent; Aurora GT palette"
+    },
+    {
+      "incoming": "vehicle_09.glb",
+      "kart_id": "zuri_volt",
+      "evidence": "yellow/cyan electric styling; Zuri Volt palette"
+    },
+    {
+      "incoming": "vehicle_10.glb",
+      "kart_id": "blitz",
+      "evidence": "yellow/black/orange aggressive wing; Blitz palette and dragster role"
+    },
+    {
+      "incoming": "vehicle_11.glb",
+      "kart_id": "terra",
+      "evidence": "green/orange off-road roll structure; Terra palette and off-road role"
+    },
+    {
+      "incoming": "vehicle_12.glb",
+      "kart_id": "koloss",
+      "evidence": "dark-red heavy armored body; Koloss palette and heavyweight role"
+    },
+    {
+      "incoming": "vehicle_13.glb",
+      "kart_id": "phantom",
+      "evidence": "black/dark-purple shell with magenta neon styling; Phantom palette"
+    },
+    {
+      "incoming": "vehicle_14.glb",
+      "kart_id": "stella",
+      "evidence": "gold/blue star champion styling; Stella palette and champion role"
+    }
+  ],
+  "garage_world_classification": [
+    {
+      "incoming": "garage_01.glb",
+      "classification": "kart_garage",
+      "role": "tool_workbench",
+      "use": "HIGH/VERY HIGH garage visual"
+    },
+    {
+      "incoming": "garage_02.glb",
+      "classification": "kart_garage",
+      "role": "presentation_turntable",
+      "use": "HIGH/VERY HIGH garage visual"
+    },
+    {
+      "incoming": "garage_03.glb",
+      "classification": "open_world",
+      "role": "market_stall",
+      "use": "not forced into Kart garage"
+    },
+    {
+      "incoming": "garage_04.glb",
+      "classification": "open_world",
+      "role": "lumo_house",
+      "use": "not forced into Kart garage"
+    }
+  ],
+  "safety": "Only rendering shells/props are replaced. Existing mechanical chassis, wheel/driver anchors, collision, physics, tuning and save identifiers remain authoritative."
+}

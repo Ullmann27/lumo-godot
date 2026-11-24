@@ -1,0 +1,114 @@
+{
+  "status": "TOUCH_SENT",
+  "label": "Garage",
+  "timeout_seconds": 150,
+  "exact_caption_required": true,
+  "scope": "Observed touch prerequisites; post-action assertions still required",
+  "frames": [
+    {
+      "source": "open-real-garage-0.png",
+      "source_sha256": "3f3d848c4d0a4999379c917f84ec13cab9ff12203b7533b04eb56158faba1bef",
+      "source_bytes": 2030344,
+      "pixels": [
+        2400,
+        1080
+      ],
+      "sample_rows": [
+        130,
+        238,
+        346,
+        454,
+        562,
+        670,
+        778,
+        886
+      ],
+      "blank_edge_columns": {
+        "left": 0,
+        "right": 0
+      },
+      "blank_threshold_rgb_max": 8,
+      "blank_required_rows": 7,
+      "acceptable_for_target_sampling": true,
+      "reasons": [],
+      "scope": "Reject observed partial surface; no scene/gameplay PASS",
+      "captured_after_seconds": 4.677937,
+      "target": {
+        "surface_sha256": "3f3d848c4d0a4999379c917f84ec13cab9ff12203b7533b04eb56158faba1bef",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "bounds": [
+          501.0,
+          639.0,
+          643.0,
+          692.0
+        ],
+        "anchor": "",
+        "reasons": [
+          "waiting for second stable observed target bounds"
+        ],
+        "target_geometry_valid": true,
+        "stable_observed_target": false
+      }
+    },
+    {
+      "source": "open-real-garage-1.png",
+      "source_sha256": "3f3d848c4d0a4999379c917f84ec13cab9ff12203b7533b04eb56158faba1bef",
+      "source_bytes": 2030344,
+      "pixels": [
+        2400,
+        1080
+      ],
+      "sample_rows": [
+        130,
+        238,
+        346,
+        454,
+        562,
+        670,
+        778,
+        886
+      ],
+      "blank_edge_columns": {
+        "left": 0,
+        "right": 0
+      },
+      "blank_threshold_rgb_max": 8,
+      "blank_required_rows": 7,
+      "acceptable_for_target_sampling": true,
+      "reasons": [],
+      "scope": "Reject observed partial surface; no scene/gameplay PASS",
+      "captured_after_seconds": 12.841668,
+      "target": {
+        "surface_sha256": "3f3d848c4d0a4999379c917f84ec13cab9ff12203b7533b04eb56158faba1bef",
+        "pixels": [
+          2400,
+          1080
+        ],
+        "bounds": [
+          501.0,
+          639.0,
+          643.0,
+          692.0
+        ],
+        "anchor": "",
+        "reasons": [],
+        "target_geometry_valid": true,
+        "stable_observed_target": true
+      }
+    }
+  ],
+  "final_observed_bounds": [
+    501.0,
+    639.0,
+    643.0,
+    692.0
+  ],
+  "touch": [
+    572,
+    666
+  ],
+  "elapsed_seconds": 16.736503
+}

@@ -1,0 +1,40 @@
+{
+  "tested_at_utc": "2026-11-23T12:17:50.088853+00:00",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "scope": "Original optional post model plus original controller in a World-shaped fixture; not the complete Lumo World scene, Android, or visual rendering.",
+  "source_sha256": {
+    "scripts/creative/lumo_world_errands.gd": "8ba8e081e2a7ed41af9658267cf1aea5e8cad25e65a1f64235910b597a2b00f4",
+    "scripts/creative/lumo_world_errands_ui.gd": "0e44f9cf723c8a47652314e83908e7cf63cba784644ca6cd7ed830521bba8f11",
+    "scripts/tests/lumo_world_errands_regression.gd": "330b7732bb3519bd22409ac72d115e7f018be9eb6f110478b3b84d763c316204",
+    "scripts/tests/lumo_world_errands_controller_regression.gd": "aa6e2ca30ab7805279a0e7f8fcc5c5623dd1b695c485ab566eaf7979737be2f4"
+  },
+  "fixture_sources_match": true,
+  "runs": [
+    {
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/tmp/lumo-world-errands-check",
+        "--script",
+        "res://scripts/tests/lumo_world_errands_regression.gd"
+      ],
+      "exit_code": 0,
+      "log": "world-errands-model.log",
+      "log_sha256": "3462900cb8f9a45b5aaab97a1f23b99ef82e14a40551a1ce4d6d01decfce4adf"
+    },
+    {
+      "command": [
+        "/usr/local/bin/godot",
+        "--headless",
+        "--path",
+        "/tmp/lumo-world-errands-check",
+        "--script",
+        "res://scripts/tests/lumo_world_errands_controller_regression.gd"
+      ],
+      "exit_code": 0,
+      "log": "world-errands-controller.log",
+      "log_sha256": "57af7844587b7fea05c3e68049e1facd02d7d0f47869f625e23a83b5c56dc336"
+    }
+  ]
+}

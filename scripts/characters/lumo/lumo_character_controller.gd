@@ -15,6 +15,35 @@
 class_name LumoCharacterController
 extends Node3D
 
+## Seit November 2026 zeigt diese Szene den ECHTEN Lumo: das geriggte
+## 65-Knochen-Modell (lumo_rigged_actor.gd). Die Grundformen unter
+## VisualRoot bleiben nur als unsichtbare Logik-/Testträger (Augen, Mund,
+## Behaviors) und als Notfall-Ersatz, falls das Modell nicht ladbar ist.
+const ORIGINAL_LUMO = preload("res://scripts/characters/lumo/lumo_rigged_actor.gd")
+## Höhe der Grundformen-Figur (Fuß bis Ohr) und Fußtiefe unter dem Ursprung;
+## der echte Lumo wird auf genau diese Höhe und Fußebene gesetzt, damit
+## Kamera und Bodenkontakt aller bestehenden Szenen stimmen.
+const STAND_IN_HEIGHT: float = 2.19
+const FOOT_DEPTH: float = 0.305
+const MODEL_HEIGHT: float = 1.70
+## Behaviors der alten Figur -> vorhandene Clips des echten Lumo.
+const ORIGINAL_CLIP: Dictionary = {
+	"greet": "greeting_wave",
+	"greeting_wave": "greeting_wave",
+	"speak": "agree_nod",
+	"explain": "agree_nod",
+	"speak_explain": "agree_nod",
+	"listen": "agree_nod",
+	"encourage": "agree_nod",
+	"celebrate": "celebrate",
+	"reward": "celebrate",
+	"reward_star": "celebrate",
+	"jump": "celebrate",
+	"jump_hop": "celebrate",
+	"point": "point_portal",
+	"point_portal": "point_portal",
+}
+
 const AURA_BASE_ENERGY: float = 1.2
 const AURA_PULSE_AMP: float = 0.30
 const AURA_PULSE_SPEED: float = 1.4
@@ -25,6 +54,11 @@ const AURA_PULSE_SPEED: float = 1.4
 @export var aura_path: NodePath = NodePath("Aura")
 
 @export var auto_idle_on_ready: bool = true
+## false nur dort, wo der Besitzer den echten Lumo bereits selbst einbaut
+## (Jump/Lauf), damit das Modell nicht doppelt geladen wird.
+@export var use_original_model: bool = true
+
+var original_lumo: Node3D
 
 var _behavior: LumoBehaviorController
 var _eyes: LumoEyeSystem
@@ -39,6 +73,8 @@ func _ready() -> void:
 	_eyes = get_node_or_null(eye_system_path) as LumoEyeSystem
 	_mouth = get_node_or_null(mouth_system_path) as LumoMouthSystem
 	_aura = get_node_or_null(aura_path) as OmniLight3D
+	if use_original_model:
+		_attach_original_lumo()
 	# Aura im LOW-Profil aus
 	if _aura != null and Engine.has_singleton("PerformanceManager"):
 		var pm: Node = Engine.get_singleton("PerformanceManager")
@@ -74,8 +110,30 @@ func _on_behavior_started(behavior: String) -> void:
 			_aura_target = AURA_BASE_ENERGY
 
 
+func _attach_original_lumo() -> void:
+	var candidate: Node3D = ORIGINAL_LUMO.new()
+	candidate.name = "OriginalLumo"
+	add_child(candidate)
+	if not candidate.is_usable():
+		push_warning("[Lumo] Echter Lumo nicht ladbar; Grundformen-Ersatz bleibt sichtbar")
+		candidate.queue_free()
+		return
+	candidate.scale = Vector3.ONE * (STAND_IN_HEIGHT / MODEL_HEIGHT)
+	candidate.position.y = -FOOT_DEPTH
+	original_lumo = candidate
+	var visual_root := get_node_or_null("VisualRoot") as Node3D
+	if visual_root != null:
+		visual_root.visible = false
+
+
+func has_original_lumo() -> bool:
+	return is_instance_valid(original_lumo) and original_lumo.is_usable()
+
+
 ## High-Level API
 func play_behavior(name: String) -> void:
+	if has_original_lumo():
+		original_lumo.play_behavior(str(ORIGINAL_CLIP.get(name, "idle")))
 	if _behavior == null:
 		push_warning("[Lumo] kein BehaviorController angeschlossen")
 		return

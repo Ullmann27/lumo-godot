@@ -190,6 +190,12 @@ func _run() -> void:
 		"timeout_uses_test_clock_expiry": true, "physical_android_device": false,
 		"orphan_nodes_before": baseline, "orphan_nodes_after": after}
 	FileAccess.open(output.path_join("loading-report.json"), FileAccess.WRITE).store_string(JSON.stringify(report, "\t"))
+	# The music keeps playing in the menu; let the audio thread hand its playback
+	# back before the process ends (otherwise the stream is reported at exit).
+	var soundscape := root.get_node_or_null("GameSoundscape")
+	if soundscape != null and soundscape.has_method("release_audio"):
+		soundscape.call("release_audio")
+		await create_timer(0.4).timeout
 	if failures == 0:
 		print("[KartLoading] PASS:", checks, " real loading, rig, dp, timeout, Retry and existing Kart transition checks")
 	quit(0 if failures == 0 else 1)

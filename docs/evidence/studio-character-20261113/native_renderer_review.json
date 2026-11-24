@@ -1,0 +1,172 @@
+{
+  "review_date": "2026-11-13",
+  "reviewer": "character_animation agent; implementation author, not a separate independent reviewer",
+  "source_commit": "9eb25fcb158342639badb0e953a8fe7945fda6ce",
+  "baseline_revision": "ada5ed81ad62339f15289da62670c0a4f9f7f2b9",
+  "capture_kind": "native Godot pose studio, separate from gameplay capture",
+  "renderer": "Godot 4.6.3 / X11 / OpenGL Compatibility / Mesa llvmpipe",
+  "capture_receipt_sha256": "126a697b87ba699266a101c1fb33bf0bd2b0aee1d16d913643883700dce2f061",
+  "native_log_sha256": "b86485f1f5cee930cada12044d9f425daf403e73e51f2497c7593ee634270669",
+  "all_eight_images_viewed": true,
+  "all_image_hashes_match_downloaded_manifest": true,
+  "observed_blocking_visual_regression": false,
+  "decision": "Keep frozen native snapshot; no production modification required by these eight frames.",
+  "visual_conclusions_de": [
+    "Der wiedererkennbare Originalfuchs bleibt mit Gesicht, Brille, Anzug, Händen, Schwanz und Originalmaterialien erhalten.",
+    "Der klarste sichtbare Fortschritt liegt in angezogenen Sprungbeinen und konsistenteren Schuh-/Sohlenstellungen, besonders bei Aufstieg und Landung.",
+    "Kein fehlendes Mesh, keine doppelte Figur, keine auseinandergerissenen Gliedmaßen und keine neue grobe Hautverzerrung sichtbar.",
+    "Studio-Beleuchtung ist kontrastreich und erzeugt helle Reflexe; das betrifft Before und After gleichermaßen und ist kein neuer Materialfehler."
+  ],
+  "limits_de": [
+    "Es sind Einzelbilder eines Posenstudios. Animationsfluss, Eingabegefühl, physische Kollisionsreaktion und Geräteleistung werden dadurch allein nicht belegt.",
+    "Walk/Sprint verwenden nach gleicher verstrichener Simulationszeit unterschiedliche Schrittphasen, weil die Schrittlänge korrigiert wurde. Die Aufnahmen sind keine identische-Pose-A/B-Messung.",
+    "Bodenkontakt ist aus dieser Kameraperspektive und Schattenbeleuchtung nicht millimetergenau ablesbar; dafür existieren separate Endeffektor-/Gameplayprüfungen.",
+    "Keine Gesichtsanimation, Lippensynchronität oder physische Fold7-FPS aus den Bildern abgeleitet."
+  ],
+  "images": [
+    {
+      "filename": "before_walk.png",
+      "sha256": "e963e44f8bcb604c6476a47690ebf33b6f7d38a16a5f3554e5edbe48246af276",
+      "bytes": 234905,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Originalfigur vollständig; Knie-/Fußstellung relativ breit und Sohlen unterschiedlich geneigt. Keine fehlenden Materialien oder doppelte Figur.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "before_walk.png",
+        "sample": "walk",
+        "state": "walk_loop",
+        "stride_phase": 5.36369468307842,
+        "variant": "before"
+      }
+    },
+    {
+      "filename": "after_walk.png",
+      "sha256": "ee838afa26760e013fa9446b1b2732019b9c61b5227ae55b9c6c5ded4fec3b4d",
+      "bytes": 229788,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Originalfigur erhalten; sichtbare Kniebeugung, zusammenhängende Gliedmaßen und vollständig erkennbare, gleichmäßiger ausgerichtete Sohlen. Kein sichtbarer neuer Blocker.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "after_walk.png",
+        "sample": "walk",
+        "state": "walk_loop",
+        "stride_phase": 5.63875594887731,
+        "variant": "after"
+      }
+    },
+    {
+      "filename": "before_sprint.png",
+      "sha256": "a490cdfad662653025e849ae3f66f1ac1479b1054252da23a68841f69dd0ff2b",
+      "bytes": 236286,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Originalfigur vollständig; diese Stichprobe zeigt eine recht aufrechte Haltung mit relativ gestreckten Beinen.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "before_sprint.png",
+        "sample": "sprint",
+        "state": "run_loop",
+        "stride_phase": 4.18879020478639,
+        "variant": "before"
+      }
+    },
+    {
+      "filename": "after_sprint.png",
+      "sha256": "1a0c94b4a770315a9b071bdffa38cbad22df40fc21b9380443daeeb35e1e9999",
+      "bytes": 226051,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Tieferer Schwerpunkt, gebeugte Knie und erkennbare Körperneigung. Intakte Schuh-/Handgeometrie. Standbild liegt in einer anderen Schrittphase als Before und belegt allein keine Geschwindigkeit.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "after_sprint.png",
+        "sample": "sprint",
+        "state": "run_loop",
+        "stride_phase": 5.88495525249918,
+        "variant": "after"
+      }
+    },
+    {
+      "filename": "before_jump_rise.png",
+      "sha256": "dc2a537f56f807ecdc2d93c516aaf31508d8402db34961e18c9b08d13d950533",
+      "bytes": 233683,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Beine vergleichsweise wenig angezogen, Schuhspitzen kippen nach unten; Sprunghaltung aus dem Einzelbild schwach erkennbar.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "before_jump_rise.png",
+        "sample": "jump_rise",
+        "state": "jump_rise",
+        "stride_phase": 5.36369468307842,
+        "variant": "before"
+      }
+    },
+    {
+      "filename": "after_jump_rise.png",
+      "sha256": "80a2f272b3e0b4e7b33186263ccd3d935af219349eb4be5b81e5ef2cf141b8c6",
+      "bytes": 229670,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Deutlich angezogene Knie und sichtbarer Abstand beider Füße zur Bodenebene; Schuhe bleiben als vollständige Formen erkennbar. Arme und Schwanz zusammenhängend.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "after_jump_rise.png",
+        "sample": "jump_rise",
+        "state": "jump_rise",
+        "stride_phase": 5.63875594887731,
+        "variant": "after"
+      }
+    },
+    {
+      "filename": "before_land.png",
+      "sha256": "f4146c517e89bc057be2759415684533efe747267e84ee65b5d3b7810721909c",
+      "bytes": 226559,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Schuhspitzen kippen stark nach unten; die untere Schuhkontur wirkt an der Bodenebene angeschnitten.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "before_land.png",
+        "sample": "land",
+        "state": "land",
+        "stride_phase": 5.36369468307842,
+        "variant": "before"
+      }
+    },
+    {
+      "filename": "after_land.png",
+      "sha256": "d9442204e757b11d6a325f35df510cea0f02e3ba4cf0b68a0ca08103eabe4b51",
+      "bytes": 232932,
+      "width": 720,
+      "height": 840,
+      "viewed_with": "functions tools.view_image; all eight individually emitted and visually inspected",
+      "observation_de": "Beide Schuhe einschließlich Sohlen vollständig sichtbar, Knie zur Landung gebeugt und Standform besser nachvollziehbar. Kein sichtbares Strecken oder Abreißen eines Gliedmaßes.",
+      "capture_metadata": {
+        "display": "X11",
+        "draw_calls": 4,
+        "file": "after_land.png",
+        "sample": "land",
+        "state": "land",
+        "stride_phase": 5.63875594887731,
+        "variant": "after"
+      }
+    }
+  ]
+}

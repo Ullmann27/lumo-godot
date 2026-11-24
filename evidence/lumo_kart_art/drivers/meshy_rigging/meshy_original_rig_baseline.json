@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "method": "Independent GLB accessor decoding, glTF TRS sampling and linear blend skin evaluation",
+  "visual_review": false,
+  "physical_android_test": false,
+  "asset_count": 9,
+  "passed": false,
+  "assets": [
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/badger.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4237060,
+      "sha256": "14ed9030b5328de7ebb2d5d44cddad33a890a092c201453b0bcb623272d68157",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/cat.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 3463604,
+      "sha256": "17db07199e33ca550fc26f2703fad627029b21124ca3816e87f370933aacefaa",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/frog.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4250088,
+      "sha256": "8a25b10d518963abd9bb0fdee87190296e5b912664202624e376671d6377149b",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/lion.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4646048,
+      "sha256": "70dc43c4eea3550bb1d2e6a320c8bebfbf483f482e9c27882a5ede690f6eb529",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/otter.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4215216,
+      "sha256": "3243698db47a4e42354acbf7bf456e733817de9aa3e28861726cc08cc3eed27c",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/owl.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 5296036,
+      "sha256": "45843bab81456b9c35e318453d5a9fd1f0598e49ed26e9c3eee66332ab026bac",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/rabbit.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4296588,
+      "sha256": "2556d81de7a7cd5d356eaf9864c9aa37d1f4ed4936a3cfcb008a6355f21bf878",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/squirrel.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4654248,
+      "sha256": "203176c0111138a29105d239bba7ae37fd223582a93e4bf8a5d0d9e2b9a24586",
+      "skins": 0,
+      "animation_count": 0
+    },
+    {
+      "path": "art/lumo_kart/meshy/20261123/drivers/turtle.glb",
+      "passed": false,
+      "errors": [
+        "Expected exactly one exported skin"
+      ],
+      "bytes": 4663392,
+      "sha256": "1f0a751e1c7dd60a33ff32471ff7092aae03c7def85420433f532c5a32bad336",
+      "skins": 0,
+      "animation_count": 0
+    }
+  ]
+}

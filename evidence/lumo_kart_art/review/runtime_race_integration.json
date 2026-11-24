@@ -1,0 +1,149 @@
+{
+	"checks": [
+		{
+			"check": "Real player uses the production Comet",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Original animated LUMO remains the player",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds its tunnel and five rivals",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds production rival 0",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds production rival 1",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds production rival 2",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds production rival 3",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real race builds production rival 4",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Actual player controller traverses entry, tunnel and exit",
+			"detail": {
+				"frames": 81,
+				"largest_lateral_m": 0.937808036804199,
+				"reached": 293.10611707624,
+				"required_exit": 293.0,
+				"start": 245.0
+			},
+			"passed": true
+		},
+		{
+			"check": "Tunnel traversal has no position jump or rescue",
+			"detail": {
+				"largest_step_m": 0.686222493648529,
+				"rescues": 0
+			},
+			"passed": true
+		},
+		{
+			"check": "Race movement stays finite",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Actual horizontal integration cannot cross the tunnel wall",
+			"detail": 5.02433252334595,
+			"passed": true
+		},
+		{
+			"check": "Actual vertical integration stops at independently ray-measured roof",
+			"detail": {
+				"capsule_to_roof_m": -0.004730224609375,
+				"measured_roof_y": 13.7982521057129,
+				"rise_m": 5.38340139389038,
+				"vertical_speed": 0.0
+			},
+			"passed": true
+		},
+		{
+			"check": "Camera collision runs after chase interpolation",
+			"detail": 6.55630826950073,
+			"passed": true
+		},
+		{
+			"check": "Result camera remains inside the tunnel",
+			"detail": 6.55630826950073,
+			"passed": true
+		},
+		{
+			"check": "Island forwards actual rival flight and stun state",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Rival flight selects the imported jump clip",
+			"detail": "kart_jump",
+			"passed": true
+		},
+		{
+			"check": "Pause freezes imported rival animation",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Rival landing leaves the jump clip",
+			"detail": "",
+			"passed": true
+		},
+		{
+			"check": "Real finish selects rival celebration 0",
+			"detail": "celebrate",
+			"passed": true
+		},
+		{
+			"check": "Real finish selects rival celebration 1",
+			"detail": "celebrate",
+			"passed": true
+		},
+		{
+			"check": "Real finish selects rival celebration 2",
+			"detail": "celebrate",
+			"passed": true
+		},
+		{
+			"check": "Real finish selects rival celebration 3",
+			"detail": "celebrate",
+			"passed": true
+		},
+		{
+			"check": "Real finish selects rival celebration 4",
+			"detail": "celebrate",
+			"passed": true
+		},
+		{
+			"check": "Race and audio teardown complete",
+			"detail": "",
+			"passed": true
+		}
+	],
+	"display_server": "headless",
+	"engine": "4.6.3-stable (official)",
+	"failure_count": 0,
+	"physical_android_test": false,
+	"scope": "Production kart_island scene, manual player integration, rival state wiring and result flow",
+	"status": "PASS"
+}

@@ -118,7 +118,14 @@ capture_logcat() {
         rm -f "$pending"
         printf '[AndroidStartup] logcat attempt %s/3 failed (exit %s): %s\n' \
             "$attempt" "$result" "$(head -c 240 "$errors" | tr '\n' ' ')" >> "$lumo_log"
-        if (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
+        # Android emulator logcat can exit 255 with no stderr immediately
+        # after a landscape/deep-link restart (observed in CI 38884036326).
+        # Retry only this otherwise unclassifiable transport case, bounded
+        # exactly like timeout/offline. Any complete capture still undergoes
+        # the unchanged native/Java/Godot crash checks below.
+        if (( result == 255 )) && [[ ! -s "$errors" ]]; then
+            printf '[AndroidStartup] Empty-stderr adb 255 after route change; bounded retry\n' >> "$lumo_log"
+        elif (( result != 124 )) && ! grep -Eiq 'offline|transport|closed|broken pipe|device not found|timed out|timeout|read failed' "$errors"; then
             fail "Non-transient adb logcat failure (exit $result)"
         fi
         if (( attempt < 3 )); then sleep 2; fi
@@ -184,12 +191,18 @@ while (( SECONDS < lumo_deadline )); do
     adb_cmd shell pidof "$lumo_package" >> "$lumo_log" 2>&1 || fail "Kart exited after orientation change"
     adb_cmd exec-out screencap -p > "$lumo_root/exports/android/sonnenhafen-android-start.png" \
         || fail "Could not capture running Android race"
-    if python3 tools/check_android_frame.py "$lumo_root/exports/android/sonnenhafen-android-start.png" >> "$lumo_log" 2>&1; then
+    # A colourful garage is NOT proof that the race started. The native
+    # scene prints this marker only after the playable world has been built.
+    # Keep checking until both the engine-state marker and the actual Android
+    # framebuffer are present. Missing markers must fail rather than passing
+    # a visually nonblank selection screen.
+    if grep -Fq "[Kart] race_world_ready:" "$lumo_capture" \
+        && python3 tools/check_android_frame.py "$lumo_root/exports/android/sonnenhafen-android-start.png" "$lumo_root/exports/android/kart-garage-step-5.png" >> "$lumo_log" 2>&1; then
         lumo_frame_ready=1
         break
     fi
     sleep 2
 done
-(( lumo_frame_ready == 1 )) || fail "Android race remained black or clipped after actual five-step selection"
+(( lumo_frame_ready == 1 )) || fail "Android race frame never visibly replaced the garage after five selection steps"
 printf '[AndroidStartup] PASS: direct kart route, five actual selection steps and rendered race after orientation change\n' \
     | tee -a "$lumo_log"

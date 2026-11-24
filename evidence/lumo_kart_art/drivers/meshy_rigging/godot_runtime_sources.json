@@ -1,0 +1,658 @@
+{
+  "repository": "/workspace/scratch/83ad04e680ae/asset-audit/repo",
+  "base_commit": "5e23b4a7e18cefc03e6a38d78822ca73584aef60",
+  "drivers": [
+    "lion",
+    "owl",
+    "rabbit",
+    "squirrel",
+    "turtle",
+    "frog",
+    "otter",
+    "badger",
+    "cat"
+  ],
+  "production_snapshot_reused": false,
+  "normal_import_defaults_without_tracked_sidecar": [
+    "assets/kart/production/meshy/comet.glb.import"
+  ],
+  "method": "Exact working-tree bytes; absent sparse files read from the same git HEAD.",
+  "files": {
+    "assets/kart/production/drivers/cat/driver_lod2.glb.import": {
+      "bytes": 1075,
+      "sha256": "04fb1b3b0707f698a7b2c485e1cf082a730a5f770df17743b259d04fa16fa519"
+    },
+    "assets/kart/production/drivers/cat/driver_lod2.glb": {
+      "bytes": 1808144,
+      "sha256": "9260cb6efacc13d927bc545e828bc2c69091bab9c4a084cfedf8d95421a65c1e"
+    },
+    "assets/kart/production/drivers/cat/driver_lod1.glb.import": {
+      "bytes": 1075,
+      "sha256": "116620c1f077f6191f05b197a5924b9b4891de8a3185b38cdbf604feaad26a71"
+    },
+    "assets/kart/production/drivers/cat/driver_lod1.glb": {
+      "bytes": 2004904,
+      "sha256": "ccabbe67b1e19a09b73c150a1d4ad220627dac28241572ec0a4350c991d770b1"
+    },
+    "assets/kart/production/drivers/cat/driver.glb.import": {
+      "bytes": 1060,
+      "sha256": "2b7a059c909285d0e13e84fd34dfceb96cf7b87c3167d50dc11b4a51fa89d318"
+    },
+    "assets/kart/production/drivers/cat/driver.glb": {
+      "bytes": 2337360,
+      "sha256": "868f07cdf2ed558f0da1cfc7c4fdbdba297bd5ab4db8f49dc5bb06f3c8423c92"
+    },
+    "assets/kart/production/drivers/badger/driver_lod2.glb.import": {
+      "bytes": 1078,
+      "sha256": "e0436b74bdc366edfea969032912cb8b5834d3b8c661fae949f93420aa1d7744"
+    },
+    "assets/kart/production/drivers/badger/driver_lod2.glb": {
+      "bytes": 2011924,
+      "sha256": "6ea576808b7ebbf3daa4a903ef17954432985ed3ac5f4ea69d774697fae28e93"
+    },
+    "assets/kart/production/drivers/badger/driver_lod1.glb.import": {
+      "bytes": 1078,
+      "sha256": "c2fcd7538f0fa1cd28fb10c8007f778d0ca2b595d0514feaa4f34cf232413797"
+    },
+    "assets/kart/production/drivers/badger/driver_lod1.glb": {
+      "bytes": 2193608,
+      "sha256": "cc1057f340ce5d76c3e555ff2d02e8f5e522a5429d7e45ea725c29119e610181"
+    },
+    "assets/kart/production/drivers/badger/driver.glb.import": {
+      "bytes": 1063,
+      "sha256": "389d2468a16d2ead9894d799830759dbcd3a36ecd6080a6974ca27f64dc74285"
+    },
+    "assets/kart/production/drivers/badger/driver.glb": {
+      "bytes": 2509920,
+      "sha256": "378bbc73c0893037105383726ea2f79316bf86769d4b1d7a3c1152227a1aea46"
+    },
+    "assets/kart/production/drivers/otter/driver_lod2.glb.import": {
+      "bytes": 1077,
+      "sha256": "aeb02c6201d3836c8ec89a85d93bee906302420db6588e227fa01cf0396712ba"
+    },
+    "assets/kart/production/drivers/otter/driver_lod2.glb": {
+      "bytes": 2034372,
+      "sha256": "b357089becd75ff4222148f295f953ad1309e2d2467993a901ccc1490872a7e6"
+    },
+    "assets/kart/production/drivers/otter/driver_lod1.glb.import": {
+      "bytes": 1077,
+      "sha256": "8e82b55276dd92545c8afdba65634f57640f7b61da3a1c40e775d3fce1e2e4e4"
+    },
+    "assets/kart/production/drivers/otter/driver_lod1.glb": {
+      "bytes": 2208396,
+      "sha256": "e091b19d163cc51ed5a1c929cfe92a6cdd17675bb729d659d41d0190922eeb69"
+    },
+    "assets/kart/production/drivers/otter/driver.glb.import": {
+      "bytes": 1062,
+      "sha256": "4e1618ce8fa059ebc9930952f96a94c6271dfffbbc0aefc010b33b1073036a63"
+    },
+    "assets/kart/production/drivers/otter/driver.glb": {
+      "bytes": 2500480,
+      "sha256": "7939814b0c973311209994212b8dd3ae51e30c093bd005ca171ce38b811cb155"
+    },
+    "assets/kart/production/drivers/frog/driver_lod2.glb.import": {
+      "bytes": 1077,
+      "sha256": "9c2ed0fda33f84ed3532dccc19a3c150b56e4f9a725d8994f62143a819212416"
+    },
+    "assets/kart/production/drivers/frog/driver_lod2.glb": {
+      "bytes": 1962604,
+      "sha256": "4df0aa2b788076e86327cbddb1f581ecf85c50f30717d7cf2aa2b4289a8db527"
+    },
+    "assets/kart/production/drivers/frog/driver_lod1.glb.import": {
+      "bytes": 1076,
+      "sha256": "fca505489dd73238bd8a211b11403d95921dda2fae834d4ff6cbaf2b2efbf425"
+    },
+    "assets/kart/production/drivers/frog/driver_lod1.glb": {
+      "bytes": 2142200,
+      "sha256": "746814038288b31c3e28aaffb5868a5028d84fb5d4a2a422cbe1d70b80adf8f1"
+    },
+    "assets/kart/production/drivers/frog/driver.glb.import": {
+      "bytes": 1062,
+      "sha256": "6e5dc9d1c258ef8f07229dcddcdecd38901b32e7928328fbdc241f35a90ff234"
+    },
+    "assets/kart/production/drivers/frog/driver.glb": {
+      "bytes": 2446220,
+      "sha256": "3378bde1ec2016557c54f76e0211d71f35a2d060cd28c50a06824e8236da9ed2"
+    },
+    "assets/kart/production/drivers/turtle/driver_lod2.glb.import": {
+      "bytes": 1078,
+      "sha256": "8bd7755515c03c2549ba240a7b851639171727ba9986de6fc2474a01b8d016c2"
+    },
+    "assets/kart/production/drivers/turtle/driver_lod2.glb": {
+      "bytes": 2173132,
+      "sha256": "39fcff56b97cae8742ff16d9f40fa69ef256929fb6582d3a071f8c799da8c311"
+    },
+    "assets/kart/production/drivers/turtle/driver_lod1.glb.import": {
+      "bytes": 1079,
+      "sha256": "72d743d1fd6908f20333521c4574c686a0621b05d1ccba9e963ba6a776f0ab87"
+    },
+    "assets/kart/production/drivers/turtle/driver_lod1.glb": {
+      "bytes": 2359188,
+      "sha256": "f869e67b502848a77fba48bb44e1099012f73d1f45a50faa7aca7ee4702c914e"
+    },
+    "assets/kart/production/drivers/turtle/driver.glb.import": {
+      "bytes": 1064,
+      "sha256": "c220c2ea9af12f772d2e19cba871f237f06afd2f8ffd67cdddca0a452ea9a2eb"
+    },
+    "assets/kart/production/drivers/turtle/driver.glb": {
+      "bytes": 2678028,
+      "sha256": "dc9aafc571c7c489575ad7936028e66648b9e270f933abdb66a13fde152238ea"
+    },
+    "assets/kart/production/drivers/squirrel/driver_lod2.glb.import": {
+      "bytes": 1081,
+      "sha256": "31884187cfa9eeb2a480508ea699a614065bbab9b80cb966a0c68b4ce1534308"
+    },
+    "assets/kart/production/drivers/squirrel/driver_lod2.glb": {
+      "bytes": 2209800,
+      "sha256": "44d418186759ba1bd0f6be2ecf5d4414fb224d862609e9e5d60c69ac1216c40a"
+    },
+    "assets/kart/production/drivers/squirrel/driver_lod1.glb.import": {
+      "bytes": 1081,
+      "sha256": "4f676109e152e308298f1478708ea38c73a58e808dfea87a1834d6b2a1af4299"
+    },
+    "assets/kart/production/drivers/squirrel/driver_lod1.glb": {
+      "bytes": 2389084,
+      "sha256": "72785800adbc08efdc1ab346bfcb1975167aba5d6be3d61079edae68098abd9b"
+    },
+    "assets/kart/production/drivers/squirrel/driver.glb.import": {
+      "bytes": 1066,
+      "sha256": "665ea75ae4dea14e9177455e329f64e4da3fb2ba46b77ea482d2f5a0fd635dc9"
+    },
+    "assets/kart/production/drivers/squirrel/driver.glb": {
+      "bytes": 2684868,
+      "sha256": "f9cb213dd71ae893ea0624da54cd407a53940b7348509a131cd81437e3fb6566"
+    },
+    "assets/kart/production/drivers/rabbit/driver_lod2.glb.import": {
+      "bytes": 1079,
+      "sha256": "aff4d43d120d10b851bafa476c1f919addebae60b2c3899fc64e4d90ae5b28d4"
+    },
+    "assets/kart/production/drivers/rabbit/driver_lod2.glb": {
+      "bytes": 2158124,
+      "sha256": "0a5079beb665f1581c551d6da8431f7ed9ff9b5abbb93e6b9da80a3afe8b86f7"
+    },
+    "assets/kart/production/drivers/rabbit/driver_lod1.glb.import": {
+      "bytes": 1078,
+      "sha256": "05a55d356d40f92b7c7e36955b75894818e73750a91c56631dfb6bf9c8725bf2"
+    },
+    "assets/kart/production/drivers/rabbit/driver_lod1.glb": {
+      "bytes": 2369524,
+      "sha256": "c619f0a58c435443c39c6085bbdac2a7d5793764293c90621d7b6cd071a6d072"
+    },
+    "assets/kart/production/drivers/rabbit/driver.glb.import": {
+      "bytes": 1064,
+      "sha256": "d55b2a59573e700b0daec6551b1635a965f547fa74f27174249fc03fc4404da6"
+    },
+    "assets/kart/production/drivers/rabbit/driver.glb": {
+      "bytes": 2678232,
+      "sha256": "ab5db6b0aba8be449beff8c836b01a0a564a49189b44acca8607de87cbffd64e"
+    },
+    "assets/kart/production/drivers/owl/driver_lod2.glb.import": {
+      "bytes": 1075,
+      "sha256": "3ec35efa63acf8f6f26e90c19a3023fead0371e1247bec0df44b52f05c2cdabe"
+    },
+    "assets/kart/production/drivers/owl/driver_lod2.glb": {
+      "bytes": 2573612,
+      "sha256": "944b3d78b435cf085435f6fe091fb34b882070dd295c4deff0d770c7d8577a0e"
+    },
+    "assets/kart/production/drivers/owl/driver_lod1.glb.import": {
+      "bytes": 1076,
+      "sha256": "40ed689f48c5575f9aa182b9073b7a625b5d01643677b48ee44f56fc39513092"
+    },
+    "assets/kart/production/drivers/owl/driver_lod1.glb": {
+      "bytes": 2837268,
+      "sha256": "7853f311502831c19ebf0390b76f94b42ba2082890aff4cfdce0c4f8c3287915"
+    },
+    "assets/kart/production/drivers/owl/driver.glb.import": {
+      "bytes": 1060,
+      "sha256": "31f9c854058d023b0fd6ab1f3c9a5addb8be71cc3358ee43697b7428e2e9b514"
+    },
+    "assets/kart/production/drivers/owl/driver.glb": {
+      "bytes": 3205288,
+      "sha256": "413b037709909387b224b46f3becebaf71c71b947e50523546ed7f30c23c445b"
+    },
+    "assets/kart/production/drivers/lion/driver_lod2.glb.import": {
+      "bytes": 1077,
+      "sha256": "40c3615c88179fabeadf4d699de051a72677faeeccb862982c6fe98aee02037a"
+    },
+    "assets/kart/production/drivers/lion/driver_lod2.glb": {
+      "bytes": 2299904,
+      "sha256": "aa3a1a64ccca2c9de7187c649693b700ef093ac4dc906050bd719dcb74248df9"
+    },
+    "assets/kart/production/drivers/lion/driver_lod1.glb.import": {
+      "bytes": 1077,
+      "sha256": "22dd306ffb1492be7e4490d6c943b2caab10fd878a20f3a3e58c7010564dd0c1"
+    },
+    "assets/kart/production/drivers/lion/driver_lod1.glb": {
+      "bytes": 2472576,
+      "sha256": "1f538660d3673cb91357785aec604c575ad44a7b62d20a20a75d76226e479c98"
+    },
+    "assets/kart/production/drivers/lion/driver.glb.import": {
+      "bytes": 1062,
+      "sha256": "71b736c21ed2bfea971a3432a152f6420e7b25161e4b225097bfaedd2261d836"
+    },
+    "assets/kart/production/drivers/lion/driver.glb": {
+      "bytes": 2740012,
+      "sha256": "b7340b55b26ec431863c31ef25aeb9480e9247e4f1a325d42719585d41629758"
+    },
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import": {
+      "bytes": 1341,
+      "sha256": "ea8637187b5af2f1315958c27117d05d594873c61727f6bdf0e2d910581dfb5a"
+    },
+    "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb": {
+      "bytes": 8408740,
+      "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524"
+    },
+    "assets/kart/production/parts/kart_parts.glb.import": {
+      "bytes": 1065,
+      "sha256": "1e9407c8642216a217a732a4ebb7a9876bfea4c9a6f9ccf2b753983b5260fabd"
+    },
+    "assets/kart/production/parts/kart_parts.glb": {
+      "bytes": 569504,
+      "sha256": "bbeff2aecb10ccfb11c1d143e2f1a8b31bc7782ec8f2ce2c4401e5063c06de1d"
+    },
+    "assets/kart/production/meshy/comet.glb": {
+      "bytes": 4038768,
+      "sha256": "8feb17e921ee2c64a1cfafdb2fff305701d24256ffdc054726d7d743f0669381"
+    },
+    "assets/kart/production/fleet/comet.glb.import": {
+      "bytes": 1052,
+      "sha256": "0724bdcb256cf82ae7c888779ee3b7779cfe07ebba1064a660b19f92d61b4ec7"
+    },
+    "assets/kart/production/fleet/comet.glb": {
+      "bytes": 501876,
+      "sha256": "897d9642f05fc42f689ac334a6890d34c21fede82af02dc66b184443c9889517"
+    },
+    "assets/kart/production/karts/aurora_comet_lod2.glb.import": {
+      "bytes": 1087,
+      "sha256": "e01869352d33a536135e11376f2ac8b9a31b68fe5bffb39133905bb93b578716"
+    },
+    "assets/kart/production/karts/aurora_comet_lod2.glb": {
+      "bytes": 740716,
+      "sha256": "43f08e3c3330d5b92645d446aa959b36ee9b964eddcce5c3effe155671b8803a"
+    },
+    "assets/kart/production/karts/aurora_comet_lod1.glb.import": {
+      "bytes": 1087,
+      "sha256": "c784a57225e926348a6c95c3c30566dc57edcd03f3ccf6918676342af54329dc"
+    },
+    "assets/kart/production/karts/aurora_comet_lod1.glb": {
+      "bytes": 1016808,
+      "sha256": "01a8ef9dc0d12a257df2a18ce0d6933cf6b372139112dc0e56368b95995e095b"
+    },
+    "assets/kart/production/karts/aurora_comet.glb.import": {
+      "bytes": 1071,
+      "sha256": "8bd29f4ac3d8247f97dfea17bc5a58d90cc2dc6a2e37fb63ce4117e4697de5a3"
+    },
+    "assets/kart/production/karts/aurora_comet.glb": {
+      "bytes": 2072640,
+      "sha256": "cd938b0680b0532906e3b99517c29cc61a69ba919a4d061253ffa79ce3d4c213"
+    },
+    "assets/kart/production/details/kart_flake_normal.png": {
+      "bytes": 48249,
+      "sha256": "f14d9fe987a1c2ecacbc07705ef8d8170ecd9529a38ef8be1c3ccc2400d46a71"
+    },
+    "assets/kart/production/details/kart_sticker_atlas.png": {
+      "bytes": 87882,
+      "sha256": "1c260ca2c969da602b2cd43241f90b077e250f10d03803aa29656a3a2bea0ae0"
+    },
+    "scripts/tests/kart_driver_fit_capture.gd": {
+      "bytes": 4345,
+      "sha256": "1694a913cbbcae1305d221c0fcbc40073c76c3abb35af90364430abe796c30ac"
+    },
+    "scripts/games/kart_catalog.gd": {
+      "bytes": 5623,
+      "sha256": "6261c4a6f55282a66384886bca134a78d7a428119ce80dc1c3091c9adc9d692a"
+    },
+    "scripts/games/kart_fleet.gd": {
+      "bytes": 16092,
+      "sha256": "3b3ebb18813d4d3c99fd78721ec7434cf8d05b2655e378b5339968cae8339a42"
+    },
+    "scripts/games/kart_expansion_tracks.gd": {
+      "bytes": 6162,
+      "sha256": "fa5091461ba8c33603950898d0140d11e7cfedf0fd7044fb7bcf25785fd60514"
+    },
+    "scripts/games/kart_adventure_routes.gd": {
+      "bytes": 13453,
+      "sha256": "b42e4e1adb1b2382a21d20150fa7fc4cfe0a885ee6d96f1319e502244ebec171"
+    },
+    "scripts/games/kart_vehicle.gd": {
+      "bytes": 134500,
+      "sha256": "212cbf27f674b20b2f69e4e93cecb895d4dd4d74f56891475b26ea9806ea2d58"
+    },
+    "scripts/games/kart_production_lumo_seat.gd": {
+      "bytes": 18894,
+      "sha256": "a52e2aad5a0d6df17dfc3f1abe14115afcbd0571d17da1e0450ee6b84bf43eaa"
+    },
+    "scripts/games/kart_production_driver.gd": {
+      "bytes": 15260,
+      "sha256": "043a524b102d3e6c48987344e54d60ca723101bd643a5ffbde82d95762649401"
+    },
+    "scripts/games/lumo_opponent_roster.gd": {
+      "bytes": 3505,
+      "sha256": "0b4d5457304a83b8a245608cea45b33b4bb7dc7cca21ad7d456b8769c6fae999"
+    },
+    "scripts/games/kart_rival_model_contract.gd": {
+      "bytes": 6362,
+      "sha256": "9f649cc2575590f0b36fdb41e7267623b24cd1e3c5ba211d2ff2fb711282a3a2"
+    },
+    "scripts/games/kart_production_vehicle.gd": {
+      "bytes": 24581,
+      "sha256": "e9ace7b3e928997f88cf039b78eda9160de984e619261491f40fa682752ef5ef"
+    },
+    "scripts/games/kart_tuning.gd": {
+      "bytes": 23721,
+      "sha256": "533a093b8d2256b3fbe9e2d40b2c30d1f47474ffc4a94e07c58a2c03c0294296"
+    },
+    "scripts/games/kart_fine_tuning.gd": {
+      "bytes": 4388,
+      "sha256": "b061dc4f467b51a174fa121b5a8fd3080067538a43675755cf5b60725d9cc680"
+    },
+    "scripts/games/kart_part_catalog.gd": {
+      "bytes": 24032,
+      "sha256": "bc97a83f1b558aa5a811ed2f4cadf53a78bb44878ad69a5ebdb8787eb3dcf8c2"
+    },
+    "scripts/games/kart_powertrain.gd": {
+      "bytes": 4790,
+      "sha256": "6cfa8f404f46d36933761cc45da6ce4ae4968ccc57e90d9912a5a5d619bb8824"
+    },
+    "scripts/games/kart_evolution_geometry.gd": {
+      "bytes": 12482,
+      "sha256": "8bad0055d564686a15c709f7563a288496d6954e2f83525923ef5aa7902f6da5"
+    },
+    "scripts/games/kart_vehicle_finish.gd": {
+      "bytes": 8820,
+      "sha256": "55a4c0503a363929102e337b1cb173bd0b2142d9bd86739340d4c7a0a32593ac"
+    },
+    "assets/fonts/Nunito-Black.ttf": {
+      "bytes": 39260,
+      "sha256": "3a373c4d17cffecdc9f3c351e2ce9ec83edb0622925a59d802be24fd442346f8"
+    },
+    "scripts/games/visual/kart_cinema_materials.gd": {
+      "bytes": 2016,
+      "sha256": "69fc8def6197e5173104f015d82daf7a6b7c8574e0e6b158ae3e2a083ba0df15"
+    },
+    "assets/shaders/kart_lumo_cinema_mobile.gdshader": {
+      "bytes": 2254,
+      "sha256": "928e51083968d94e4361f6aa75f84c60a7c21141f3130a3901fc445c58582536"
+    },
+    "assets/shaders/kart_lumo_cinema_high.gdshader": {
+      "bytes": 3921,
+      "sha256": "85881b8a48a4b4f48e772d4518f846b4e3934eeaf418d52a9db33e37104c49f4"
+    },
+    "scripts/characters/lumo/lumo_kart_animation_adapter.gd": {
+      "bytes": 14684,
+      "sha256": "e7ee9141f00e7db3e90c2af79b8c3841ac63127e927046fdc4de00a21f9d0e1a"
+    },
+    "scripts/characters/lumo/lumo_rigged_actor.gd": {
+      "bytes": 13412,
+      "sha256": "94de760434315dfc0d71c228259f4afbc72ee2760dc33db9890669a382f97268"
+    },
+    "scripts/characters/lumo/lumo_facial_pose.gd": {
+      "bytes": 6120,
+      "sha256": "2d89319ccb622cad1b54c36113bda8594706c024d77f2a0605ec057d51a0f6ef"
+    },
+    "scripts/characters/lumo/lumo_teacher_pose.gd": {
+      "bytes": 5611,
+      "sha256": "202750b1b59c1c07f94024f100549b2cc3968eabba8a1cc8ba04ceaa4719a340"
+    },
+    "scripts/characters/lumo/lumo_platform_pose.gd": {
+      "bytes": 6362,
+      "sha256": "6cffe97d947067806e8d25589e159870f6b83da4e155f0ffa4030e31a76bae69"
+    },
+    "scripts/characters/lumo/lumo_body_space_pose.gd": {
+      "bytes": 2902,
+      "sha256": "043d9eb3cbd1d56f2be4ad62aff71b99753540b524f3d4b69c030fc9217dcd9e"
+    },
+    "assets/characters/lumo_animated/lumo_studio_clips.gd": {
+      "bytes": 196296,
+      "sha256": "c0b4be7f094b4f69942d92ad25d54c8c45f01b6cb8471c00e7d5a0513ee8df18"
+    },
+    "scripts/characters/lumo/lumo_walk_locomotion.gd": {
+      "bytes": 2736,
+      "sha256": "95366a2716a557b27383757771923ec73971a385651749c78da8f2cc14a24ec2"
+    },
+    "scripts/games/kart_modular_aero_kit.gd": {
+      "bytes": 4296,
+      "sha256": "de42e297af639a9a4a39e6be0d80dbdbcef4459c5307608f05e6a3fcdbac6529"
+    },
+    "scripts/games/kart_coachwork_finish.gd": {
+      "bytes": 5518,
+      "sha256": "80d0e9fe300c43743d528098a7548a1ff7abb011db456d282439ed13efbeee09"
+    },
+    "scripts/games/kart_rival_visual_adapter.gd": {
+      "bytes": 3779,
+      "sha256": "8e6425e7f450acd5602a8c9837e8f33acda2cf143238654658b2a91cf0a0f1be"
+    },
+    "scripts/games/kart_rival_character_finish.gd": {
+      "bytes": 8627,
+      "sha256": "00acdcd5787af3054786a3d669083a8884ebf3888abb8fd275affdc53b95616d"
+    },
+    "scripts/games/kart_character_finish.gd": {
+      "bytes": 9469,
+      "sha256": "42182df326361dcce398f1a8e3210bce53c760db467cb4b64ed59df4b5da16ef"
+    },
+    "scripts/games/kart_fur_geometry.gd": {
+      "bytes": 3477,
+      "sha256": "eaee8cabfe93e5c7f39d16a371f87d2c20fa3bc78bc5b99c955e9e0e20491eba"
+    },
+    "assets/cards_table/ui/emote_ask.webp": {
+      "bytes": 4400,
+      "sha256": "60963e0e934a35ec44545ebddfac46464b72c92b5205fbe23ffa812563895052"
+    },
+    "assets/cards_table/ui/emote_idea.webp": {
+      "bytes": 4654,
+      "sha256": "3d75f290192de5b33f160f1c2884c5d9aa0699537be3c78bc4fd716b7b5be182"
+    },
+    "assets/cards_table/ui/emote_grumpy.webp": {
+      "bytes": 4252,
+      "sha256": "ac6d6bb0637efcaa64d0d993bcae0df3fe17353ffe270bd2f14a8eedea09fc45"
+    },
+    "assets/cards_table/ui/emote_happy.webp": {
+      "bytes": 5204,
+      "sha256": "c23cc5d884b39d4a3ea0803a75ced262172b9abdcb08906a32f9726d6595e1b3"
+    },
+    "assets/cards_table/ui/emote_think.webp": {
+      "bytes": 4046,
+      "sha256": "b2f6615ade58d5511af70579044a43b02e51c1475cf2b478a14adf97f43331fc"
+    },
+    "assets/kart/menu/drivers/cat.webp": {
+      "bytes": 22956,
+      "sha256": "5324c628e6ec7522c234655d09273c0010d3971848869c8ad3cf31c050476e05"
+    },
+    "assets/kart/menu/drivers/badger.webp": {
+      "bytes": 26662,
+      "sha256": "4d51a2bfe1d5b17b5df657ee7858681257926d849b7d20fb3bf766485469e6fc"
+    },
+    "assets/kart/menu/drivers/otter.webp": {
+      "bytes": 22372,
+      "sha256": "d7fa204ee61bd37ebfa7dd1ec0b702a2728247725b644c3aecd50df601a185f2"
+    },
+    "assets/kart/menu/drivers/frog.webp": {
+      "bytes": 28424,
+      "sha256": "218d931dea9a6172826d43d5b02fd332f101a834bbebb38108869dc005256738"
+    },
+    "assets/kart/menu/drivers/turtle.webp": {
+      "bytes": 27506,
+      "sha256": "a59f1aa3a0a35bd29faad04dc270ea9df5a5638cbca145236838ea9931a7ab66"
+    },
+    "assets/kart/menu/drivers/squirrel.webp": {
+      "bytes": 25846,
+      "sha256": "9a422381494a8bed30b2d47805f95649d2e820da4aae016407c5421b867d454d"
+    },
+    "assets/kart/menu/drivers/rabbit.webp": {
+      "bytes": 18992,
+      "sha256": "e9bbcba27db5ecf613c507b094ec5223ac03bd0223b71b241fbfdb87b621ec3b"
+    },
+    "assets/kart/menu/drivers/owl.webp": {
+      "bytes": 30670,
+      "sha256": "2593afece7a83fd16a67076313b73992e09b07258b544f4a56b4d207f13a7a33"
+    },
+    "assets/kart/menu/drivers/lion.webp": {
+      "bytes": 28880,
+      "sha256": "b18344647a57390c1abea527b2cdf768088348d8cfde1aa4533db4d148994376"
+    },
+    "assets/cards_table/portraits/turtle.webp": {
+      "bytes": 11192,
+      "sha256": "463846c72861a2d0214ddeed4c86fa6b663e1e1fc67bcc3e739cca57b6fff038"
+    },
+    "assets/cards_table/portraits/squirrel.webp": {
+      "bytes": 11452,
+      "sha256": "0adcd022bc82874c0201f0729ce4b4f57897b2bd7292d2511e86820b2186eae8"
+    },
+    "assets/cards_table/portraits/rabbit.webp": {
+      "bytes": 9344,
+      "sha256": "ee749fa5344b48e79710e124ee1dfef9227fe13e11653598536ed89b16aa8361"
+    },
+    "assets/cards_table/portraits/owl.webp": {
+      "bytes": 10274,
+      "sha256": "e0507a209b4d213e43702c9e798eee90a2a0ad1e80494b7919daeb22dd24f559"
+    },
+    "assets/cards_table/portraits/lion.webp": {
+      "bytes": 11282,
+      "sha256": "18848181e13d731ba2442924df8a14afe34a27d02ddd0705f1bc59904e0f1a99"
+    },
+    "assets/kart/production/drivers/manifest.json": {
+      "bytes": 68436,
+      "sha256": "7bed0f0ab2a29301c8671cae84e006458e0d1650d9ded2fcc9d915779d7b8276"
+    },
+    "assets/characters/rivals/roster.json": {
+      "bytes": 5737,
+      "sha256": "abc87c7a18891b439e3adecb13739e86d737513a94f6d076c1fbd4d47ce2dc76"
+    },
+    "scripts/systems/progress_store.gd": {
+      "bytes": 5664,
+      "sha256": "9e61f231e9a207be2d49f6917fbec66a5236c4f5f9f05d726a25939d961c5811"
+    },
+    "scripts/systems/audio_manager.gd": {
+      "bytes": 11689,
+      "sha256": "de959531ca7872d4f6860019f91fdeb1609936315828a9dbd721d0dfca1ae861"
+    },
+    "scripts/app/scene_router.gd": {
+      "bytes": 5275,
+      "sha256": "eb597e095a07d4c0a1ffb642293716df4986165dbfe4576c6b84a47b1b3df9b1"
+    },
+    "scripts/systems/host_bridge.gd": {
+      "bytes": 7176,
+      "sha256": "3aecaa6dd0e2b13b622dd1f87225ac3fef5d3ca0db0e36e593039c31d103c715"
+    },
+    "scripts/app/mobile_runtime.gd": {
+      "bytes": 7146,
+      "sha256": "eec90f6187525eda2c330718e93c592cabc523ee93406b4c02e739286a8fd517"
+    },
+    "scripts/app/android_safe_area.gd": {
+      "bytes": 5708,
+      "sha256": "28077c1eca89e7e915fc346973c6397d2c1b545fca9592f16394b2d9d2b04564"
+    },
+    "scripts/systems/performance_manager.gd": {
+      "bytes": 6842,
+      "sha256": "f01de7a67550e40e7cced3660e693560d00136d390acd33aef0daa8102d6b583"
+    },
+    "scripts/systems/settings_store.gd": {
+      "bytes": 1673,
+      "sha256": "dc0ac7f96f8e47d7c9735b6593ec3da69cff4d5aad9505590cd201ab426b2b82"
+    },
+    "scripts/systems/event_bus.gd": {
+      "bytes": 2299,
+      "sha256": "b809f381eb919f7b9c6cba5c13be737612c853f5fdfb688b8c20c5983ec9f340"
+    },
+    "scripts/tests/cards_character_roster_regression.gd": {
+      "bytes": 3354,
+      "sha256": "024af3d61c22f42ae84e0c36d9673b1b73296de0db09fd1d7d1392464d0183f8"
+    },
+    "scripts/games/cards/cards_hud.gd": {
+      "bytes": 46185,
+      "sha256": "11985b4c24c14aff5b7422496f09fc03267d1ae414fd10dd6a17f25d2b29bc52"
+    },
+    "scripts/games/cards/cards_deck_art.gd": {
+      "bytes": 6250,
+      "sha256": "6b390eea3d66bdaf7afe230d1ed15e6c00906c212409bbe924b68f87a4abcec6"
+    },
+    "scripts/games/cards/cards_ui_kit.gd": {
+      "bytes": 7463,
+      "sha256": "def26e065a0d74f9eca5b1765c6d4aa6bb1cbd7f9dc916f4ec7468229f03e420"
+    },
+    "scripts/games/kart_ui_theme.gd": {
+      "bytes": 3014,
+      "sha256": "376cdd77582eece65625787d1b76ab554b64d7759f6829fad1dfc8dc4ce4f21f"
+    },
+    "assets/fonts/Nunito-Bold.ttf": {
+      "bytes": 39284,
+      "sha256": "5d6ac65faf73856810797d4e6843a57c7444ee6089b764399c3ebfa85d61e448"
+    },
+    "scripts/games/cards/cards_table.gd": {
+      "bytes": 62118,
+      "sha256": "94fef9d0fcdd51f925642981e2f8d2425e9f6872d6207cce64c58ed9b1302d14"
+    },
+    "scripts/games/table_room/table_room_kit.gd": {
+      "bytes": 9105,
+      "sha256": "48297ae0f0f5490beb8d3173e8996c591713ab196af76614509c0e8d04ea3e71"
+    },
+    "assets/cards_table/table/table_glow.webp": {
+      "bytes": 25800,
+      "sha256": "b9f359651f596d7a7669ad671acfcb3eb7de224d688a84f3e19280572232839f"
+    },
+    "scripts/games/cards/rules/star_deck.gd": {
+      "bytes": 3054,
+      "sha256": "29d599deadbc862d31970d007c9c408f1fac177cbdffbef6dcb3b3e97690c225"
+    },
+    "scripts/games/cards/cards_intro.gd": {
+      "bytes": 5018,
+      "sha256": "ad668a023a5cc9d03680e4aecb61441a838326d60a989f792f4142e3546c2b4a"
+    },
+    "scripts/games/cards/cards_session.gd": {
+      "bytes": 6897,
+      "sha256": "4232cd211e5e8c06d5aee7558e166baa5d6a5a9d86e70e657c68ab5a53cd16e3"
+    },
+    "scripts/games/cards/rules/quartett_rules.gd": {
+      "bytes": 8318,
+      "sha256": "d66f673aea837b3f0448bdf45eeb8c7a9d58cc7e997aa54af22e8e2d9685185f"
+    },
+    "scripts/games/cards/rules/cards_rules.gd": {
+      "bytes": 6665,
+      "sha256": "7651314a595c69aacb8a966d7d38dd4bfcb1564191e1c847d58c9dbfad9171b0"
+    },
+    "scripts/games/cards/rules/sternenleiter_rules.gd": {
+      "bytes": 6023,
+      "sha256": "c254317eeaa430f5455bb83c9c4e5d91d43ce1874bbf27e057a986828cc68798"
+    },
+    "scripts/games/cards/rules/punktlandung_rules.gd": {
+      "bytes": 1440,
+      "sha256": "a1fb5e19158ad805e07a917e14c2053a0f3293c72732bfc3b5d7dbd9a5a49d0d"
+    },
+    "scripts/games/cards/rules/sternenstich_rules.gd": {
+      "bytes": 7352,
+      "sha256": "4504d6c48b71b4be4d7093ffc7a5be9e9f3811ab55991e8f9419f39d01b4bbd0"
+    },
+    "scripts/games/cards/rules/cards_ai.gd": {
+      "bytes": 13554,
+      "sha256": "d2c0cd7b2f201d9f8de532617598cdcde555b6505c031eb0eb57d079e7770d8f"
+    },
+    "scripts/games/cards/cards_card.gd": {
+      "bytes": 4910,
+      "sha256": "3e2457fe9c96e397e31c45df17f5ac5e83c8b22a2366382786251f0fdb54d1a7"
+    },
+    "scripts/games/cards/cards_seat.gd": {
+      "bytes": 15877,
+      "sha256": "03e8b6d459dbe5d785f5f396f7dad8d6ffe68cc93120d78009ee85bc5d0f4ad1"
+    },
+    "scripts/games/cards/cards_room.gd": {
+      "bytes": 30635,
+      "sha256": "02ddeb76ad203cc0645f3b53af5cf9812307103f628aedd02540e751c2741324"
+    },
+    "scripts/games/cards/cards_opening.gd": {
+      "bytes": 6735,
+      "sha256": "ea58372cd9b147752fec8f288320bbece93b3e68126ee7b322f4025aadb88d5e"
+    },
+    "assets/cards_table/audio/table_opening.ogg": {
+      "bytes": 38647,
+      "sha256": "3d239416935c0ec806daf272d63a748397585e5c9c1d2bd463f9aa11f308f64b"
+    },
+    "scripts/tests/lumo_kart_production_driver_regression.gd": {
+      "bytes": 11455,
+      "sha256": "4ea94c5d9110c4036e16c21ff9cb6ea3f2536d98614080e2fda75645ee4f751a"
+    },
+    "scripts/tests/lumo_rival_rig_contract_regression.gd": {
+      "bytes": 8836,
+      "sha256": "b7ce599d2be42ddc3a4adbe1d872b86e5d9b9ca6cedf295147141885ec91c074"
+    }
+  }
+}

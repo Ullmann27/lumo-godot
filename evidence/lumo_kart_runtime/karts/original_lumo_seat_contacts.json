@@ -1,0 +1,497 @@
+{
+	"checks": 225,
+	"engine": "4.6.3-stable (official)",
+	"failures": [],
+	"model_sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+	"original_model_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+	"samples": [
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_002.json",
+			"hand_error_m": 0.000374352384824306,
+			"phase": "driving",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_007.json",
+			"hand_error_m": 0.000921524304430932,
+			"phase": "driving",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_driving_015.json",
+			"hand_error_m": 0.00087414839072153,
+			"phase": "driving",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000199794769287047,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_002.json",
+			"hand_error_m": 0.000873438431881368,
+			"phase": "left",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_007.json",
+			"hand_error_m": 0.000631777453236282,
+			"phase": "left",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_left_015.json",
+			"hand_error_m": 0.000629231799393892,
+			"phase": "left",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000199794769287047,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_002.json",
+			"hand_error_m": 0.00101514544803649,
+			"phase": "right",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_007.json",
+			"hand_error_m": 0.000546072260476649,
+			"phase": "right",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_right_015.json",
+			"hand_error_m": 0.00033373330370523,
+			"phase": "right",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000199794769287047,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_002.json",
+			"hand_error_m": 0.000660797755699605,
+			"phase": "jump",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_007.json",
+			"hand_error_m": 0.00109573162626475,
+			"phase": "jump",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_jump_015.json",
+			"hand_error_m": 0.000170255734701641,
+			"phase": "jump",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000199794769287047,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_002.json",
+			"hand_error_m": 0.000392379763070494,
+			"phase": "landing",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_007.json",
+			"hand_error_m": 0.000704767473507673,
+			"phase": "landing",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_landing_015.json",
+			"hand_error_m": 0.000673233123961836,
+			"phase": "landing",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000199794769287047,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000337174782316652,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_002.json",
+			"hand_error_m": 0.000221473019337282,
+			"phase": "finish",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.00000413370132446283,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_007.json",
+			"hand_error_m": 0.000108379535959102,
+			"phase": "finish",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.00000109386444091791,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/comet_finish_015.json",
+			"hand_error_m": 0.00033611649996601,
+			"phase": "finish",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.00000329923629760736,
+			"variant": "comet"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_002.json",
+			"hand_error_m": 0.000374352384824306,
+			"phase": "driving",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_007.json",
+			"hand_error_m": 0.000921524304430932,
+			"phase": "driving",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_driving_015.json",
+			"hand_error_m": 0.00087414839072153,
+			"phase": "driving",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_002.json",
+			"hand_error_m": 0.000873438431881368,
+			"phase": "left",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_007.json",
+			"hand_error_m": 0.000631777453236282,
+			"phase": "left",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_left_015.json",
+			"hand_error_m": 0.000629231799393892,
+			"phase": "left",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_002.json",
+			"hand_error_m": 0.00101514544803649,
+			"phase": "right",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_007.json",
+			"hand_error_m": 0.000546072260476649,
+			"phase": "right",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_right_015.json",
+			"hand_error_m": 0.00033373330370523,
+			"phase": "right",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_002.json",
+			"hand_error_m": 0.000660797755699605,
+			"phase": "jump",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_007.json",
+			"hand_error_m": 0.00109573162626475,
+			"phase": "jump",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_jump_015.json",
+			"hand_error_m": 0.000170255734701641,
+			"phase": "jump",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_002.json",
+			"hand_error_m": 0.000392379763070494,
+			"phase": "landing",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_007.json",
+			"hand_error_m": 0.000704767473507673,
+			"phase": "landing",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000476837158203125,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_landing_015.json",
+			"hand_error_m": 0.000673233123961836,
+			"phase": "landing",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000533120157797384,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_002.json",
+			"hand_error_m": 0.000221473019337282,
+			"phase": "finish",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.00000437211990356439,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000533120157797384,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_007.json",
+			"hand_error_m": 0.000108379535959102,
+			"phase": "finish",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.00000127267837524408,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000491512480493839,
+			"geometry": "/tmp/lumo-original-seat-validation/glider_finish_015.json",
+			"hand_error_m": 0.00033611649996601,
+			"phase": "finish",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.00000353765487670892,
+			"variant": "glider"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_002.json",
+			"hand_error_m": 0.000374352384824306,
+			"phase": "driving",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_007.json",
+			"hand_error_m": 0.000921524304430932,
+			"phase": "driving",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_driving_015.json",
+			"hand_error_m": 0.00087414839072153,
+			"phase": "driving",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_002.json",
+			"hand_error_m": 0.000873438431881368,
+			"phase": "left",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_007.json",
+			"hand_error_m": 0.000631777453236282,
+			"phase": "left",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_left_015.json",
+			"hand_error_m": 0.000629231799393892,
+			"phase": "left",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_002.json",
+			"hand_error_m": 0.00101514544803649,
+			"phase": "right",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000217437744140687,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_007.json",
+			"hand_error_m": 0.000546072260476649,
+			"phase": "right",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_right_015.json",
+			"hand_error_m": 0.00033373330370523,
+			"phase": "right",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.0000000982284545899062,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_002.json",
+			"hand_error_m": 0.000660797755699605,
+			"phase": "jump",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_007.json",
+			"hand_error_m": 0.00109573162626475,
+			"phase": "jump",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000217437744140687,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_jump_015.json",
+			"hand_error_m": 0.000170255734701641,
+			"phase": "jump",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000217437744140687,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_002.json",
+			"hand_error_m": 0.000392379763070494,
+			"phase": "landing",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_007.json",
+			"hand_error_m": 0.000704767473507673,
+			"phase": "landing",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000238418579101562,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_landing_015.json",
+			"hand_error_m": 0.000673233123961836,
+			"phase": "landing",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.000000140190124511656,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_002.json",
+			"hand_error_m": 0.000221473019337282,
+			"phase": "finish",
+			"seconds": 0.2,
+			"sole_support_error_m": 0.00000383567810058588,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_007.json",
+			"hand_error_m": 0.000108379535959102,
+			"phase": "finish",
+			"seconds": 0.7,
+			"sole_support_error_m": 0.0000011534690856933,
+			"variant": "turbo"
+		},
+		{
+			"foot_error_m": 0.000000266560078898692,
+			"geometry": "/tmp/lumo-original-seat-validation/turbo_finish_015.json",
+			"hand_error_m": 0.00033611649996601,
+			"phase": "finish",
+			"seconds": 1.5,
+			"sole_support_error_m": 0.00000312042236328119,
+			"variant": "turbo"
+		}
+	],
+	"scope": "Original character, actual skin vertices and wheel contact. Surface clearance needs the separate Blender BVH gate.",
+	"status": "PASS"
+}

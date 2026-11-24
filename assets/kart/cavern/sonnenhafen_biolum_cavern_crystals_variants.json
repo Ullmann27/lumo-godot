@@ -1,0 +1,71 @@
+{
+  "asset_id": "sonnenhafen_biolum_cavern_crystals",
+  "physical_device_fps_verified": false,
+  "provenance": "Lumo deterministic procedural crystal_cluster; no neural model or external assets",
+  "schema_version": 1,
+  "source_spec": {
+    "asset_id": "sonnenhafen_biolum_cavern_crystals",
+    "count": 9,
+    "height_m": 4.2,
+    "max_triangles": 520,
+    "radius_m": 0.72,
+    "recipe": "crystal_cluster",
+    "seed": 1975
+  },
+  "variants": {
+    "high": {
+      "ai_provided_spec": false,
+      "asset_id": "sonnenhafen_biolum_cavern_crystals",
+      "bbox_max_m": [
+        1.692534327507019,
+        4.199999809265137,
+        1.7017651796340942
+      ],
+      "bbox_min_m": [
+        -1.4718103408813477,
+        0.0,
+        -1.2734975814819336
+      ],
+      "bytes": 35328,
+      "file_name": "sonnenhafen_biolum_cavern_crystals_high.glb",
+      "ground_pivot_m": 0.0,
+      "materials": 2,
+      "mesh_primitives": 2,
+      "physical_device_fps_verified": false,
+      "profile": "high",
+      "recipe": "crystal_cluster",
+      "seed": 1975,
+      "sha256": "b2ca1afb33585486649f4432977c44a49f1c4413976281e9e3b9a2c3d5f35bcb",
+      "spec_sha256": "57a0bf6d7e2cb565d3fedf5f8ca8400d2c3b064a453bb2f423a9d6e92675ce89",
+      "triangles": 324,
+      "vertices": 972
+    },
+    "mobile": {
+      "ai_provided_spec": false,
+      "asset_id": "sonnenhafen_biolum_cavern_crystals",
+      "bbox_max_m": [
+        1.692534327507019,
+        4.199999809265137,
+        1.6248621940612793
+      ],
+      "bbox_min_m": [
+        -1.4718103408813477,
+        0.0,
+        -1.232807993888855
+      ],
+      "bytes": 16964,
+      "file_name": "sonnenhafen_biolum_cavern_crystals_mobile.glb",
+      "ground_pivot_m": 0.0,
+      "materials": 2,
+      "mesh_primitives": 2,
+      "physical_device_fps_verified": false,
+      "profile": "mobile",
+      "recipe": "crystal_cluster",
+      "seed": 1975,
+      "sha256": "c0ce813c259dca10d30f42e6b60d39150f9c4927c0cb11ab7c9e849aeef8aa48",
+      "spec_sha256": "57a0bf6d7e2cb565d3fedf5f8ca8400d2c3b064a453bb2f423a9d6e92675ce89",
+      "triangles": 144,
+      "vertices": 432
+    }
+  }
+}

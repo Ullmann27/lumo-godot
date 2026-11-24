@@ -1,0 +1,81 @@
+{
+  "head_sha": "74c246d0b0af01c5d2d5438400ddd9ff3a3b0fef",
+  "source_tree": "05f547fd58ccdc1002d98ff1031d4208b992b0ee",
+  "run_id": 43458897683,
+  "recorder_input_set_complete": true,
+  "proofs_directory": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/proofs",
+  "archives": [
+    {
+      "area": "home",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/home-14056672152.zip",
+      "archive_sha256": "f699c6cf5a0d61c398afded89ce67ce8eb871f002db5bc48db63c625b7facf4c",
+      "artifact_id": 14056672152,
+      "proof_metadata_sha256": "b4a7821e9fa929705a6b5cef528d90286734cba4267114ed000e4d53817afe36",
+      "original_required_files": [
+        "artifact.json",
+        "cards-header.log",
+        "engine.txt",
+        "home-promenade.log",
+        "image-manifest.json",
+        "preserved-garage.log",
+        "preserved-spatial-menu.log",
+        "preview-resolution.log",
+        "regression.log",
+        "render.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt"
+      ],
+      "images": 44
+    },
+    {
+      "area": "worlds",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/worlds-14055182823.zip",
+      "archive_sha256": "55b6cad5e63684d483b1704563015350b47c05c780d1199a5cff21f5b322e196",
+      "artifact_id": 14055182823,
+      "proof_metadata_sha256": "9e656c22c1a9c4b62d50dea454a8b9de0049f630571aa91cb528f636c1e1331a",
+      "original_required_files": [
+        "artifact.json",
+        "engine.txt",
+        "image-manifest.json",
+        "regression.log",
+        "render-crystal_canyon.log",
+        "render-winter_sprint.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt",
+        "winter-visibility.log"
+      ],
+      "images": 12
+    },
+    {
+      "area": "feedback",
+      "archive": "/workspace/scratch/b3485b7bb989/pipeline-evidence/pr160-74c246d-graphics/feedback-14054878169.zip",
+      "archive_sha256": "c099f7f20aec7f94b7c862082bb53cda1d11b4862d8987eefff86d5f12ccebd6",
+      "artifact_id": 14054878169,
+      "proof_metadata_sha256": "ebc4c61c2879bf5c7ac77a265b8348dd93c412d82e9a94a80ba4f228f4a21651",
+      "original_required_files": [
+        "artifact.json",
+        "engine.txt",
+        "image-manifest.json",
+        "regression.log",
+        "render.log",
+        "source-dirty.txt",
+        "source-sha.txt",
+        "source-tree.txt"
+      ],
+      "images": 6
+    }
+  ],
+  "workflow_proofs": {
+    "run.json": "dbc758c5bb448c1b0c88e85a0f3c1ebbbb3f52674fd27415f751f781e42ea4ac",
+    "jobs.json": "da85a9bd9e38ca311313cd61c874195e6ad52444a7367bcdb6d9828fa33aef1c"
+  },
+  "existing_recorder_readers": {
+    "record_kart_graphics_review.py": "f579ad149e56a896d9e45e56d6e8674b01aa41d00b155b47f483d6ea6539ff85",
+    "verify_kart_graphics_review.py": "592d131f06d2a43987289d8f4f15acb75c65375b4b0a09953cf53958819afc63"
+  },
+  "receipt_created": false,
+  "visual_review_performed_by_this_script": false,
+  "scope": "Only archive, raw proof, source and existing recorder input checks. Root must inspect the current original images and supply actual findings before invoking the recorder."
+}

@@ -1,0 +1,9 @@
+{
+  "scope": "Read-only patch applicability; no source/index/ref mutation",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "patch_bytes": 71794,
+  "patch_sha256": "46bf49be692728177741608ec66c792104a67df98bdedc51d44511c84e4297bc",
+  "source_freeze_v2_sha256": "fb8d09a4474b6d130214d98ec5dd38640f763f9bfbcf4df2f7386e594f8bd546"
+}

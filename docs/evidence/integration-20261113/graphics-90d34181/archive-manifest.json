@@ -1,0 +1,695 @@
+{
+  "schema": 1,
+  "source": "90d34181409c15d1b1ad3a6a9643539453155c1d",
+  "tree": "9b407d61633a6421dc47b6858e6a6fb3fa60bea5",
+  "scope": "Original Graphics checkpoint only; separate geometry acceptance blocked",
+  "original_manifest_sha256": "4f98e39c2c2be69b631f522ca96f780a9e517c13c03ee771c471e825569ee5b1",
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 632267,
+    "sha256": "7bebf69e5d9ad0dd21c92efdf45fcd1556ff8077b7c0268b0e60f156360893e4"
+  },
+  "all_members_round_trip_byte_compared": true,
+  "members": [
+    {
+      "path": "README.md",
+      "bytes": 4828,
+      "sha256": "8dd587913bffb2e72844c38e21f8bf967bb1ca3fa585f3469813b364883ae109"
+    },
+    {
+      "path": "SHA256SUMS",
+      "bytes": 14988,
+      "sha256": "03916244296dcc3d84ae49a05f2b67dc1fa18d8d3f1183dc2a35c40024f3c003"
+    },
+    {
+      "path": "archive-index.json",
+      "bytes": 3506,
+      "sha256": "df25ea69d373b079175387eae369f0559ecdab552787b728a534af4f6537020d"
+    },
+    {
+      "path": "artifact-logs/feedback/capture-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 1009,
+      "sha256": "4586ea5eb2aa9ac170541a09a41123c36a97fcc6cb2194ae7ac91577ba2bfa72"
+    },
+    {
+      "path": "artifact-logs/feedback/import.log.gz",
+      "bytes": 10121,
+      "sha256": "b074559d32ab7edc111a26b620c69fc3ef4bfb93f5e068188f419c4f47121985"
+    },
+    {
+      "path": "artifact-logs/feedback/project-validation.log.gz",
+      "bytes": 1423,
+      "sha256": "9e4ec2d76a0c7b80dda93c99d76059efbf569542f1866793fe768b1846e7ab42"
+    },
+    {
+      "path": "artifact-logs/feedback/regression-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 840,
+      "sha256": "43f12e429a8f2bd9373af09f4f9adacd698b26ed5008a33fe49b532fec21224b"
+    },
+    {
+      "path": "artifact-logs/feedback/regression.log.gz",
+      "bytes": 841,
+      "sha256": "511f5803d54fee73c6d3b82e98093d3f9f4ad960095f6a9145f9fae9b09eac7b"
+    },
+    {
+      "path": "artifact-logs/feedback/render.log.gz",
+      "bytes": 1010,
+      "sha256": "4a55fef09764b0423c1859141ee826918b8d26a4010c236853075447bd90a77d"
+    },
+    {
+      "path": "artifact-logs/home/baseline__import.log.gz",
+      "bytes": 9993,
+      "sha256": "ac262226077f192b6927ded10fa9db6bfbae133dc1c36c69fd082a6632ec2628"
+    },
+    {
+      "path": "artifact-logs/home/baseline__render.log.gz",
+      "bytes": 1026,
+      "sha256": "335e3b76ca156dd3f1fa260466ed9f52d437060a3a401b123aee8ca6214422da"
+    },
+    {
+      "path": "artifact-logs/home/baseline__user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 1026,
+      "sha256": "02e6a7d832f5118842bfb143d0dd6654c1cdbe946f8ed196799380b6f9d5419f"
+    },
+    {
+      "path": "artifact-logs/home/capture-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 1051,
+      "sha256": "fdfa76be5cd06ef0fa5a6cc5d5e743d6fafe8871eb04f32313152bcbbd9b37e5"
+    },
+    {
+      "path": "artifact-logs/home/cards-header.log.gz",
+      "bytes": 428,
+      "sha256": "8485bed9acea3b3c5378dfd933b6c96995d69d2b7852abdb293905b1ccfb28d8"
+    },
+    {
+      "path": "artifact-logs/home/home-promenade.log.gz",
+      "bytes": 365,
+      "sha256": "c7e9646553f70d174c41f88238128dd385065d9f3363a010ddfd9484c01dc0bb"
+    },
+    {
+      "path": "artifact-logs/home/import.log.gz",
+      "bytes": 10121,
+      "sha256": "b074559d32ab7edc111a26b620c69fc3ef4bfb93f5e068188f419c4f47121985"
+    },
+    {
+      "path": "artifact-logs/home/preserved-garage.log.gz",
+      "bytes": 421,
+      "sha256": "728be77fc856b77e6c8c8cbe645a7f1a1332907a072fb3a161ad6f9f59aa3279"
+    },
+    {
+      "path": "artifact-logs/home/preserved-spatial-menu.log.gz",
+      "bytes": 1169,
+      "sha256": "2fc65c511899d005fa646efa6cf8d3da1a7380c1e2d3ce61d5b3df28b5269317"
+    },
+    {
+      "path": "artifact-logs/home/preserved-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 421,
+      "sha256": "728be77fc856b77e6c8c8cbe645a7f1a1332907a072fb3a161ad6f9f59aa3279"
+    },
+    {
+      "path": "artifact-logs/home/preserved-user-data__godot__app_userdata__Lumo_3D__logs__godot2026-11-13T18.42.55.log.gz",
+      "bytes": 365,
+      "sha256": "c7e9646553f70d174c41f88238128dd385065d9f3363a010ddfd9484c01dc0bb"
+    },
+    {
+      "path": "artifact-logs/home/preserved-user-data__godot__app_userdata__Lumo_3D__logs__godot2026-11-13T18.43.26.log.gz",
+      "bytes": 1169,
+      "sha256": "2fc65c511899d005fa646efa6cf8d3da1a7380c1e2d3ce61d5b3df28b5269317"
+    },
+    {
+      "path": "artifact-logs/home/preview-resolution.log.gz",
+      "bytes": 696,
+      "sha256": "e6e000668949e01c3b2e971832db2eb8cf039d3fbdf4d9c0058e279d08eb9a6e"
+    },
+    {
+      "path": "artifact-logs/home/project-validation.log.gz",
+      "bytes": 1423,
+      "sha256": "9e4ec2d76a0c7b80dda93c99d76059efbf569542f1866793fe768b1846e7ab42"
+    },
+    {
+      "path": "artifact-logs/home/regression-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 428,
+      "sha256": "8485bed9acea3b3c5378dfd933b6c96995d69d2b7852abdb293905b1ccfb28d8"
+    },
+    {
+      "path": "artifact-logs/home/regression-user-data__godot__app_userdata__Lumo_3D__logs__godot2026-11-13T18.36.11.log.gz",
+      "bytes": 511,
+      "sha256": "d9d9d62b60394ae77d2b607337c0f4a0b47eabe0fddec1fff09c61eeef62f77a"
+    },
+    {
+      "path": "artifact-logs/home/regression-user-data__godot__app_userdata__Lumo_3D__logs__godot2026-11-13T18.36.19.log.gz",
+      "bytes": 696,
+      "sha256": "e6e000668949e01c3b2e971832db2eb8cf039d3fbdf4d9c0058e279d08eb9a6e"
+    },
+    {
+      "path": "artifact-logs/home/regression.log.gz",
+      "bytes": 511,
+      "sha256": "d9d9d62b60394ae77d2b607337c0f4a0b47eabe0fddec1fff09c61eeef62f77a"
+    },
+    {
+      "path": "artifact-logs/home/render.log.gz",
+      "bytes": 1051,
+      "sha256": "81891c67e3cf0a5bf262075e814f0e236a841a6d74638117a675784abb8a01af"
+    },
+    {
+      "path": "artifact-logs/worlds/baseline__import.log.gz",
+      "bytes": 9987,
+      "sha256": "87693e04ededf91091bfad9c172b9c717e5daeeb9fba3c0a7a5963ee7b6ded41"
+    },
+    {
+      "path": "artifact-logs/worlds/baseline__render-crystal_canyon.log.gz",
+      "bytes": 4719,
+      "sha256": "18691563361ce0f273c1457b8d2bb07ae2104eb9514133c9beee2c526cd9d2f2"
+    },
+    {
+      "path": "artifact-logs/worlds/baseline__render-winter_sprint.log.gz",
+      "bytes": 4719,
+      "sha256": "73219abd44a036f1f7c501babe92d4832836c5add0911109216ec101b74e3495"
+    },
+    {
+      "path": "artifact-logs/worlds/baseline__user-data-crystal_canyon__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 4626,
+      "sha256": "3544eb13a4ed9288cade3914f440bb02e230932ea998d966a0b4e00b40e7bdd6"
+    },
+    {
+      "path": "artifact-logs/worlds/baseline__user-data-winter_sprint__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 4627,
+      "sha256": "a184255236b373dd24f5e6158fd5f93a2cc455b3566df6f3992823890d546db8"
+    },
+    {
+      "path": "artifact-logs/worlds/import.log.gz",
+      "bytes": 10121,
+      "sha256": "b074559d32ab7edc111a26b620c69fc3ef4bfb93f5e068188f419c4f47121985"
+    },
+    {
+      "path": "artifact-logs/worlds/project-validation.log.gz",
+      "bytes": 1423,
+      "sha256": "9e4ec2d76a0c7b80dda93c99d76059efbf569542f1866793fe768b1846e7ab42"
+    },
+    {
+      "path": "artifact-logs/worlds/regression-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 792,
+      "sha256": "81ec24332f78281163839ae855e5575ac50592dfab1b86b83334266d2e9bca77"
+    },
+    {
+      "path": "artifact-logs/worlds/regression.log.gz",
+      "bytes": 794,
+      "sha256": "96ac7a28445658f341a4c795de8bb4a31e53d748bb7a861e6c80937558eb01f5"
+    },
+    {
+      "path": "artifact-logs/worlds/render-crystal_canyon.log.gz",
+      "bytes": 4719,
+      "sha256": "519565965db86e1cf48ae162ff9051d5289d1cba70fbba89a22b66174e7d601f"
+    },
+    {
+      "path": "artifact-logs/worlds/render-winter_sprint.log.gz",
+      "bytes": 4719,
+      "sha256": "73219abd44a036f1f7c501babe92d4832836c5add0911109216ec101b74e3495"
+    },
+    {
+      "path": "artifact-logs/worlds/user-data-crystal_canyon__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 4626,
+      "sha256": "b64fc432e8445a1c17b0c58ca36eb1ccdd3779d5934fea127e3ff3283b8e864a"
+    },
+    {
+      "path": "artifact-logs/worlds/user-data-winter_sprint__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 4627,
+      "sha256": "a184255236b373dd24f5e6158fd5f93a2cc455b3566df6f3992823890d546db8"
+    },
+    {
+      "path": "artifact-logs/worlds/visibility-user-data__godot__app_userdata__Lumo_3D__logs__godot.log.gz",
+      "bytes": 3721,
+      "sha256": "b2098405b300abe20993c46ba442e73c8fbcfc500aba3f49e9a063604bcbaec0"
+    },
+    {
+      "path": "artifact-logs/worlds/winter-visibility.log.gz",
+      "bytes": 3801,
+      "sha256": "3431cb2c4c23300a3fc4f48f5161ccebc5241825bd568a54046f7689e97a91ce"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 83246,
+      "sha256": "4f98e39c2c2be69b631f522ca96f780a9e517c13c03ee771c471e825569ee5b1"
+    },
+    {
+      "path": "original/README.md",
+      "bytes": 3636,
+      "sha256": "80812c1dc315032eb9526dd9d7d735be0756fb9af2192b33efb60bd155d23991"
+    },
+    {
+      "path": "original/SHA256SUMS.gz",
+      "bytes": 7709,
+      "sha256": "712f72bd69a225bd24501b268b049f26b439a39f2b9a4ca6d76f6bf946d73e64"
+    },
+    {
+      "path": "original/analysis-helper-provenance.json",
+      "bytes": 1173,
+      "sha256": "80857d7006191ca3b0b48983314975f7bff0b90fb05744e94240d2a175062dbe"
+    },
+    {
+      "path": "original/archive-indexes/feedback-members.json.gz",
+      "bytes": 61837,
+      "sha256": "beb3e232e9beef2e9be4e7bced23789906db77da765c9f399502fcbd343a3bcf"
+    },
+    {
+      "path": "original/archive-indexes/home-members.json.gz",
+      "bytes": 80873,
+      "sha256": "99403a44d69e5317cddd5595af976ad0e7620b5cd1a90c2feeb61a0007c7b210"
+    },
+    {
+      "path": "original/archive-indexes/worlds-members.json.gz",
+      "bytes": 47676,
+      "sha256": "95b4041ec836be17cf72700cc313f5f7026c4eb78500b8a39afdd3ae587a3eae"
+    },
+    {
+      "path": "original/artifact-metadata-provenance.json",
+      "bytes": 1368,
+      "sha256": "6c3a8f48ae10772c5247c4efad5b18143e19a4d0b50ee2aa38c1ea847dec31a9"
+    },
+    {
+      "path": "original/download-provenance-first.json",
+      "bytes": 883,
+      "sha256": "d86458edc11fd73f60bbd058ca525b7ab9ba9928c2f0d794b57e3ddf5bfe07f9"
+    },
+    {
+      "path": "original/download-provenance-home.json",
+      "bytes": 441,
+      "sha256": "1b5a8893ef04a941b5750e87c4d53179e4a3ca7c651164b2e20924d499415076"
+    },
+    {
+      "path": "original/feedback-job.log.gz",
+      "bytes": 34803,
+      "sha256": "403b5b7c2d1d85a8933982e10d79eee36b7546726fffe02828bbbf0d557bffb7"
+    },
+    {
+      "path": "original/feedback-verified.json",
+      "bytes": 10782,
+      "sha256": "8d7ce31b56f17428d49484e7edc0c836cb84d15fefe25074809ac02e1a27e142"
+    },
+    {
+      "path": "original/finalize_handoff.py",
+      "bytes": 14518,
+      "sha256": "f2c434864d87505cc86132f8f1ab1152b8f169ba0653998f24b50350a4b3ba95"
+    },
+    {
+      "path": "original/first-current-image-paths.json",
+      "bytes": 2175,
+      "sha256": "51e420ac13244c6f69513879975711c2b960ee1a978ab57ae084c5423e414af1"
+    },
+    {
+      "path": "original/handoff.json",
+      "bytes": 11793,
+      "sha256": "a6ebfe66d448a8b18648193b2d56477df511a0fd45d629309a2073a642d0e545"
+    },
+    {
+      "path": "original/home-job.log.gz",
+      "bytes": 63125,
+      "sha256": "d7cad309adf2bb8d356e0cb0d876c87923acf405b6d40ea3ea039607f48bf4c1"
+    },
+    {
+      "path": "original/home-verified.json.gz",
+      "bytes": 6326,
+      "sha256": "fbe8c1a0b1f0c92fdaff3925700ac7819c1bab34935e2c28a0d43a83a55aaa3d"
+    },
+    {
+      "path": "original/immutable-source/feedback-capture.gd",
+      "bytes": 4033,
+      "sha256": "e00a26d5566354ea22a86750013cd673285f9918d6bfe1a08668e22822dada01"
+    },
+    {
+      "path": "original/immutable-source/feedback-regression.gd.gz",
+      "bytes": 6450,
+      "sha256": "1cebe8cc956647f756c8c0ce1e1932e0bb1b523cbd9a336d821efba7e2453e6a"
+    },
+    {
+      "path": "original/immutable-source/home-capture.gd",
+      "bytes": 327,
+      "sha256": "99fb94c992750d543ed0b61e9f4ba48c571b2c8143f16eb2707fd8da1dd7e641"
+    },
+    {
+      "path": "original/immutable-source/home-regression.gd",
+      "bytes": 11717,
+      "sha256": "98a262b3570e7664d586fd675f00dcc044f1896f6b8a2f84ca29c2ea0338c777"
+    },
+    {
+      "path": "original/immutable-source/kart-island.gd.gz",
+      "bytes": 47919,
+      "sha256": "f330e7b95c7cf79653fe0b4300c76075cb5c4f5edc45f366c68b565e4e44fe19"
+    },
+    {
+      "path": "original/immutable-source/manifest.json",
+      "bytes": 2767,
+      "sha256": "bc6245b426590c16949ca1dccb9f038d249b0328b28ff6c95071f4245f04f5ae"
+    },
+    {
+      "path": "original/immutable-source/worlds-capture.gd",
+      "bytes": 7678,
+      "sha256": "5f8722732147f3ea7ea9ba8cb5b2355098f0c51585e04156405ac9ccb206857e"
+    },
+    {
+      "path": "original/initial/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/initial/baseline-commit.json",
+      "bytes": 1198,
+      "sha256": "0e9f4792ae6b2c891fc4301fba47dbf5e2721db1ddc12716b363f510a33debbf"
+    },
+    {
+      "path": "original/initial/commit.json",
+      "bytes": 1872,
+      "sha256": "eaa0896e0e7215baacea01a9c868e108b6f6b19c45c8a65b406eaa5ff1b46fda"
+    },
+    {
+      "path": "original/initial/jobs.json",
+      "bytes": 8954,
+      "sha256": "f1a8afea75ae2fc659fa155ee5ec49dbeed18fa40f15b029d3aeeedcf6f4afd6"
+    },
+    {
+      "path": "original/initial/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/loop-integration-current-run.json",
+      "bytes": 2445,
+      "sha256": "161e2910f5ad8d28af3760317bcd940f04c3d3713f41b2decf378695daad3e60"
+    },
+    {
+      "path": "original/partial-handoff.json",
+      "bytes": 2026,
+      "sha256": "a882b5e10cc4d542d0243c789f66024825a119095135552bf63807196f90423b"
+    },
+    {
+      "path": "original/prepare_inputs.py",
+      "bytes": 3263,
+      "sha256": "a905f471fe6ff1d2928a61094a6745cb89cc7840cc0afe8581dd4ce2b36e6a75"
+    },
+    {
+      "path": "original/proofs/artifacts.json",
+      "bytes": 2224,
+      "sha256": "a8cfc68c6a51422830954d390d669886b5c7750cdde0188e598f8cc82eb96118"
+    },
+    {
+      "path": "original/proofs/feedback-artifact.json",
+      "bytes": 732,
+      "sha256": "2e571a66a8b20518de4399188828eab61b189ea84c741daadafe596cdd1d4431"
+    },
+    {
+      "path": "original/proofs/home-artifact.json",
+      "bytes": 728,
+      "sha256": "36828c73d50577bde2d73fd9e164e2e9bcf68e61107f530b7a36130aa074dc5c"
+    },
+    {
+      "path": "original/proofs/jobs.json",
+      "bytes": 9365,
+      "sha256": "0e3f2710dbeb8d1ec297d116a876fff64eb208d6b448a18319558fe64641ffa4"
+    },
+    {
+      "path": "original/proofs/run.json",
+      "bytes": 13309,
+      "sha256": "7b3e80c50083b28f7edb78077f9f8ae1abe0d47134ce6b83f15ed4f91dcdb1ce"
+    },
+    {
+      "path": "original/proofs/worlds-artifact.json",
+      "bytes": 730,
+      "sha256": "4213e97fade58b43b84c33194cf6ae2f3bf2ce0558b728a96377aa9cd86856b0"
+    },
+    {
+      "path": "original/recorder-inputs-ready.json",
+      "bytes": 3210,
+      "sha256": "a15cfc0264b42b3d732d27dbc241e8719d348267830a4835ab298a80dff7cac0"
+    },
+    {
+      "path": "original/required-current-image-paths.json",
+      "bytes": 3464,
+      "sha256": "6b737e4fa79a71399eb59c2feb2eeb7b8551b3e3e6808536bec17b469d848c30"
+    },
+    {
+      "path": "original/root-current-five-viewed.json",
+      "bytes": 5796,
+      "sha256": "1783699114d664a7ed1851688c7eec0e6ea30546ddedee3422972f1633d2c520"
+    },
+    {
+      "path": "original/root-current-three-viewed.json",
+      "bytes": 3522,
+      "sha256": "c9bf18566f391616082193c0daedcc029b4462abd46d52ea24a1a54a6ba95b3e"
+    },
+    {
+      "path": "original/source-identity.json",
+      "bytes": 999,
+      "sha256": "17e73f6e48176d6393bf6954fc985339420c91a911aa09369719c8981089f423"
+    },
+    {
+      "path": "original/verify_archive.py",
+      "bytes": 9071,
+      "sha256": "908e2db62f1ffe6c01b239e4770bd9ea7acdf3ab652156a1d804e59036055c9a"
+    },
+    {
+      "path": "original/watch1/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/watch1/jobs.json",
+      "bytes": 8954,
+      "sha256": "f1a8afea75ae2fc659fa155ee5ec49dbeed18fa40f15b029d3aeeedcf6f4afd6"
+    },
+    {
+      "path": "original/watch1/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/watch2/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/watch2/jobs.json",
+      "bytes": 9040,
+      "sha256": "4705c0accf3f1c29620ff10f5b5335f4e3c92e87f5d1e2254c9e117592a8cc27"
+    },
+    {
+      "path": "original/watch2/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/watch3/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/watch3/jobs.json",
+      "bytes": 9040,
+      "sha256": "4705c0accf3f1c29620ff10f5b5335f4e3c92e87f5d1e2254c9e117592a8cc27"
+    },
+    {
+      "path": "original/watch3/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/watch4/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/watch4/jobs.json",
+      "bytes": 9040,
+      "sha256": "4705c0accf3f1c29620ff10f5b5335f4e3c92e87f5d1e2254c9e117592a8cc27"
+    },
+    {
+      "path": "original/watch4/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/watch5/artifacts.json",
+      "bytes": 1495,
+      "sha256": "9f908962c19ab7cc219fac6df621a6c1d0d91cc754947f4c4211420bc3cdfe38"
+    },
+    {
+      "path": "original/watch5/jobs.json",
+      "bytes": 9040,
+      "sha256": "4705c0accf3f1c29620ff10f5b5335f4e3c92e87f5d1e2254c9e117592a8cc27"
+    },
+    {
+      "path": "original/watch5/run.json",
+      "bytes": 13306,
+      "sha256": "4f8e863ba6b497aedc3e8c8b9e9ae200ec5e5fba9260d1936fe39eefe3b4c66e"
+    },
+    {
+      "path": "original/watch6/artifacts.json",
+      "bytes": 2224,
+      "sha256": "a8cfc68c6a51422830954d390d669886b5c7750cdde0188e598f8cc82eb96118"
+    },
+    {
+      "path": "original/watch6/jobs.json",
+      "bytes": 9365,
+      "sha256": "0e3f2710dbeb8d1ec297d116a876fff64eb208d6b448a18319558fe64641ffa4"
+    },
+    {
+      "path": "original/watch6/run.json",
+      "bytes": 13309,
+      "sha256": "7b3e80c50083b28f7edb78077f9f8ae1abe0d47134ce6b83f15ed4f91dcdb1ce"
+    },
+    {
+      "path": "original/workflow-90d34181.yml",
+      "bytes": 13801,
+      "sha256": "fbc70c9353a65804f42b3083414e7aff753eb9c48f8e167c121b1bac762b515d"
+    },
+    {
+      "path": "original/worlds-job.log.gz",
+      "bytes": 75865,
+      "sha256": "d689fb5aed0ceb2a380d30492d983abaec3dd1232ab9a0e8b7d3ee0ce7101ed5"
+    },
+    {
+      "path": "original/worlds-verified.json.gz",
+      "bytes": 5343,
+      "sha256": "6565c99c57e4f199364baace3033e9c292eef08d6d69f6bb5ce9f8003a6536a4"
+    },
+    {
+      "path": "original-artifacts/feedback/engine.txt",
+      "bytes": 32,
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f"
+    },
+    {
+      "path": "original-artifacts/feedback/image-manifest.json",
+      "bytes": 911,
+      "sha256": "f570c52c8417a7b87f75522724d9b9d5d8961bbb91c8dcbcc4fef76df63bb3b1"
+    },
+    {
+      "path": "original-artifacts/feedback/source-dirty.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-artifacts/feedback/source-sha.txt",
+      "bytes": 41,
+      "sha256": "2affaad81f248500ebb2e2dbf6159972d90dc498d3ccdd58d4e9b4c7e4e11b18"
+    },
+    {
+      "path": "original-artifacts/feedback/source-tree.txt",
+      "bytes": 41,
+      "sha256": "aee88c85c0474071fee4f65d4574639c15bbe45b7067e09152016ed72ad45abb"
+    },
+    {
+      "path": "original-artifacts/home/baseline/harness-sha256.txt",
+      "bytes": 112,
+      "sha256": "0395b9ce48fa664174ba17944c9c65fbd34876a225d814264d1d0b0cca8e662d"
+    },
+    {
+      "path": "original-artifacts/home/baseline/images/home-render.json",
+      "bytes": 5018,
+      "sha256": "ee5869c14f750ffb086f79d20c37a74aabc769df9aaf1a8dddd825a6243a00f5"
+    },
+    {
+      "path": "original-artifacts/home/baseline/source-sha.txt",
+      "bytes": 41,
+      "sha256": "632ae1eec796b812c73a4898cff60634e73ef2693b559f274680c55611550137"
+    },
+    {
+      "path": "original-artifacts/home/baseline/source-tree.txt",
+      "bytes": 41,
+      "sha256": "1269bb5b93f75b87b43114f8b7cd4304a62af5c4f0957696b17e73cada163332"
+    },
+    {
+      "path": "original-artifacts/home/engine.txt",
+      "bytes": 32,
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f"
+    },
+    {
+      "path": "original-artifacts/home/image-manifest.json",
+      "bytes": 7150,
+      "sha256": "8336587e8a3cf66bb9f8fab42143c4a7c70119f80444ceff4e133e2c20ff08e4"
+    },
+    {
+      "path": "original-artifacts/home/images/home-render.json",
+      "bytes": 6037,
+      "sha256": "a7135cc484a3f93d6abf0e3c74fecacd8b6156fdbfe9765384cc9b7f3b860ae1"
+    },
+    {
+      "path": "original-artifacts/home/source-dirty.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-artifacts/home/source-sha.txt",
+      "bytes": 41,
+      "sha256": "2affaad81f248500ebb2e2dbf6159972d90dc498d3ccdd58d4e9b4c7e4e11b18"
+    },
+    {
+      "path": "original-artifacts/home/source-tree.txt",
+      "bytes": 41,
+      "sha256": "aee88c85c0474071fee4f65d4574639c15bbe45b7067e09152016ed72ad45abb"
+    },
+    {
+      "path": "original-artifacts/worlds/baseline/harness-sha256.txt",
+      "bytes": 112,
+      "sha256": "693b635c4a6319a9962b36e06cf25d0ee235212aaaf0a2b0d16ff06cf67983af"
+    },
+    {
+      "path": "original-artifacts/worlds/baseline/images/crystal_canyon/capture.json",
+      "bytes": 2880,
+      "sha256": "3d42d5fa3e4afc7c5dd1d0465c491dcfb5e2d275e30e40186555f7bdb891d29e"
+    },
+    {
+      "path": "original-artifacts/worlds/baseline/images/winter_sprint/capture.json",
+      "bytes": 2856,
+      "sha256": "71c80a020f7c2342b330b95e976254eeefa9969776314f6b7284e8251df336a0"
+    },
+    {
+      "path": "original-artifacts/worlds/baseline/source-sha.txt",
+      "bytes": 41,
+      "sha256": "632ae1eec796b812c73a4898cff60634e73ef2693b559f274680c55611550137"
+    },
+    {
+      "path": "original-artifacts/worlds/baseline/source-tree.txt",
+      "bytes": 41,
+      "sha256": "1269bb5b93f75b87b43114f8b7cd4304a62af5c4f0957696b17e73cada163332"
+    },
+    {
+      "path": "original-artifacts/worlds/engine.txt",
+      "bytes": 32,
+      "sha256": "1e07780c365549219ffd8e6bd120a818c80424e8295d4ee7451c10d0ed0fa84f"
+    },
+    {
+      "path": "original-artifacts/worlds/image-manifest.json",
+      "bytes": 2079,
+      "sha256": "3bd07229111f5c41f503d2c781d0f3adfdf68ab6782435a1b106aced17ac40fc"
+    },
+    {
+      "path": "original-artifacts/worlds/images/crystal_canyon/capture.json",
+      "bytes": 2844,
+      "sha256": "2049e1c7786cde59eb640ad27c3f7658f43733130a628f00a5e2a8fe27d97438"
+    },
+    {
+      "path": "original-artifacts/worlds/images/winter_sprint/capture.json",
+      "bytes": 2820,
+      "sha256": "141b968c211ac879731332749bdaeec4de6d59e29e73549686ac80ef8824fe4a"
+    },
+    {
+      "path": "original-artifacts/worlds/source-dirty.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "original-artifacts/worlds/source-sha.txt",
+      "bytes": 41,
+      "sha256": "2affaad81f248500ebb2e2dbf6159972d90dc498d3ccdd58d4e9b4c7e4e11b18"
+    },
+    {
+      "path": "original-artifacts/worlds/source-tree.txt",
+      "bytes": 41,
+      "sha256": "aee88c85c0474071fee4f65d4574639c15bbe45b7067e09152016ed72ad45abb"
+    },
+    {
+      "path": "raster-index.json.gz",
+      "bytes": 4295,
+      "sha256": "dc9bda428794806608ca3fbf34a3664dc16fb39a15c9283fb6a84063d2eb2fca"
+    }
+  ]
+}

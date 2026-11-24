@@ -1,0 +1,849 @@
+{
+  "schema": 1,
+  "theme": "zauberwald",
+  "label": "Wurzelgewölbe",
+  "source_blend": "art/lumo_kart/blender/tracks/zauberwald_tunnel_workshop.blend",
+  "blender": "4.3.2",
+  "units": "meters",
+  "axes": {
+    "blender_forward": "+Y",
+    "blender_up": "+Z",
+    "godot_forward": "-Z",
+    "godot_up": "+Y"
+  },
+  "existing_road_width_m": 10.8,
+  "reserved_clear_width_m": 11.8,
+  "reserved_clear_height_m": 4.5,
+  "inner_wall_half_width_m": 6.8,
+  "central_ceiling_height_m": 7.5,
+  "texture_size_px": [
+    1024,
+    1024
+  ],
+  "texture_density_texels_per_meter": 512,
+  "material_policy": "seven theme materials; original texture maps stored once per course under textures/ and referenced by every module (tools/lumo_kart_art/tracks/externalize_textures.py)",
+  "modules": {
+    "portal_entry": {
+      "file": "portal_entry.glb",
+      "length_m": 4.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        4.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 8534,
+            "vertices": 4507,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 8534,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -10.176814079284668,
+            -0.5049707889556885,
+            -1.1699998378753662
+          ],
+          "max": [
+            10.176813125610352,
+            5.026711940765381,
+            8.703051567077637
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6570,
+            "vertices": 3525,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6570,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -10.176326751708984,
+            -0.5077996253967285,
+            -1.1699998378753662
+          ],
+          "max": [
+            10.176326751708984,
+            5.023133277893066,
+            8.699999809265137
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision",
+            "triangles": 228,
+            "vertices": 114,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 228,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "portal_exit": {
+      "file": "portal_exit.glb",
+      "length_m": 4.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        4.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 8534,
+            "vertices": 4507,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 8534,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -10.176814079284668,
+            0.0,
+            -1.1699998378753662
+          ],
+          "max": [
+            10.176813125610352,
+            5.051522254943848,
+            8.703051567077637
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6570,
+            "vertices": 3525,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6570,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -10.176326751708984,
+            0.0,
+            -1.1699998378753662
+          ],
+          "max": [
+            10.176326751708984,
+            5.051522254943848,
+            8.699999809265137
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.001",
+            "triangles": 228,
+            "vertices": 114,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 228,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            4.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "straight_12m": {
+      "file": "straight_12m.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 9084,
+            "vertices": 4770,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 9084,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699998378753662
+          ],
+          "max": [
+            7.649999618530273,
+            12.100000381469727,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6796,
+            "vertices": 3626,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6796,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699998378753662
+          ],
+          "max": [
+            7.649999618530273,
+            12.100000381469727,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.002",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_left_30": {
+      "file": "curve_left_30.glb",
+      "length_m": 18.84955592153876,
+      "centerline_radius_m": 36,
+      "turn_degrees": -30,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        -4.823085308074951,
+        18.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 13348,
+            "vertices": 7010,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 13348,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            -0.000981748104095459,
+            -1.1699998378753662
+          ],
+          "max": [
+            7.65000057220459,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 9916,
+            "vertices": 5294,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 9916,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            -0.000981748104095459,
+            -1.1699998378753662
+          ],
+          "max": [
+            7.65000057220459,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.003",
+            "triangles": 456,
+            "vertices": 228,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 456,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -11.448179244995117,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_right_30": {
+      "file": "curve_right_30.glb",
+      "length_m": 18.84955592153876,
+      "centerline_radius_m": 36,
+      "turn_degrees": 30,
+      "elevation_change_m": 0.0,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        4.823085308074951,
+        18.0,
+        0.0
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 13348,
+            "vertices": 7010,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 13348,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0009816884994506836,
+            -1.1699998378753662
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 9916,
+            "vertices": 5294,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 9916,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0009816884994506836,
+            -1.1699998378753662
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.004",
+            "triangles": 456,
+            "vertices": 228,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 456,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            11.448179244995117,
+            21.825000762939453,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_down": {
+      "file": "grade_down.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": -1.5,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        -1.5
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 9084,
+            "vertices": 4770,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 9084,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011837482452392578,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.649999618530273,
+            12.102993965148926,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6796,
+            "vertices": 3626,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6796,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.0011837482452392578,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.649999618530273,
+            12.102993965148926,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.005",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -2.6700000762939453
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            8.350000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_up": {
+      "file": "grade_up.glb",
+      "length_m": 12.0,
+      "centerline_radius_m": null,
+      "turn_degrees": 0,
+      "elevation_change_m": 1.5,
+      "socket_in_blender": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "socket_out_blender": [
+        0.0,
+        12.0,
+        1.5
+      ],
+      "lod0": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry",
+            "triangles": 9084,
+            "vertices": 4770,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 9084,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.019773125648498535,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.649999618530273,
+            12.097006797790527,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "meshes": [
+          {
+            "name": "TunnelGeometry.001",
+            "triangles": 6796,
+            "vertices": 3626,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 6796,
+        "materials": [
+          "zauberwald_accent",
+          "zauberwald_inner",
+          "zauberwald_light",
+          "zauberwald_outer",
+          "zauberwald_roof",
+          "zauberwald_secondary",
+          "zauberwald_trim"
+        ],
+        "material_count": 7,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            -0.03103017807006836,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.649999618530273,
+            12.097006797790527,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "collision": {
+        "meshes": [
+          {
+            "name": "TunnelShellCollision.006",
+            "triangles": 304,
+            "vertices": 152,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 304,
+        "materials": [],
+        "material_count": 0,
+        "bounds_blender_m": {
+          "min": [
+            -7.650000095367432,
+            0.0,
+            -1.1699999570846558
+          ],
+          "max": [
+            7.650000095367432,
+            12.0,
+            9.850000381469727
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    }
+  },
+  "source_provenance": "Original procedural geometry and original baked images, authored for LUMO; no external assets or Nintendo content",
+  "runtime_integration": false,
+  "physical_device_fps_verified": false
+}

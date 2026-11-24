@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+assets/kart/production/drivers/rabbit/driver.glb: seated hand is outside the wheel grip envelope: Hand.L (-0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver.glb: seated hand is outside the wheel grip envelope: Hand.R (0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver.glb: seated head height is outside the kart envelope
+assets/kart/production/drivers/rabbit/driver_lod1.glb: seated hand is outside the wheel grip envelope: Hand.L (-0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver_lod1.glb: seated hand is outside the wheel grip envelope: Hand.R (0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver_lod1.glb: seated head height is outside the kart envelope
+assets/kart/production/drivers/rabbit/driver_lod2.glb: seated hand is outside the wheel grip envelope: Hand.L (-0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver_lod2.glb: seated hand is outside the wheel grip envelope: Hand.R (0.16, 0.625, -0.34)
+assets/kart/production/drivers/rabbit/driver_lod2.glb: seated head height is outside the kart envelope
+[LumoKartArtImport] FAIL assets=33

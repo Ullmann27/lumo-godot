@@ -1,0 +1,19 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[RoadsideActionFlight] ramp=407.4 pace=20.5 peak=1.93 landings=1 resets=0
+[RoadsideActionFlight] ramp=407.4 pace=48.0 peak=2.07 landings=1 resets=0
+[RoadsideActionFlight] ramp=407.4 pace=70.0 peak=2.02 landings=1 resets=0
+[RoadsideActionFlight] ramp=1544.4 pace=20.5 peak=2.06 landings=1 resets=0
+[RoadsideActionFlight] ramp=1544.4 pace=48.0 peak=2.48 landings=1 resets=0
+[RoadsideActionFlight] ramp=1544.4 pace=70.0 peak=2.63 landings=1 resets=0
+[RoadsideAction] PASS: 176 assertions; two new drivable ramps at 20.5/48/70 m/s, visible fair encounter plans

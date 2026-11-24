@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "head": "afc0df9a2b1794f39051add9dfce0cf947bb177b",
+  "tree": "3e621dc8230e155e1089deb1a40c22f177e546b3",
+  "status": "TARGETED_HEADLESS_PASS_RENDERED_ACCEPTANCE_NOT_RUN",
+  "python_cases": 11,
+  "python_skipped": 0,
+  "real_import": true,
+  "real_headless_probes": [
+    "game_hub_magic_regression",
+    "village_host_launch_regression",
+    "learning_wonder_details_regression",
+    "lumo_dream_ambience_regression",
+    "dream_garden_props_regression"
+  ],
+  "all_expected_markers_unique": true,
+  "all_expected_engine_banners_unique": true,
+  "all_tracked_entries": 3641,
+  "materialized_tracked_entries": 1467,
+  "explicit_sparse_entries": 2174,
+  "head_tree_index_and_tracked_bytes_unchanged": true,
+  "generated_inventory_after": {
+    "generated_import_metadata": 463,
+    "generated_uid": 348
+  },
+  "rendered_discovery_10_probes_38_pngs": "NOT_RUN",
+  "apk_and_device_acceptance": "NOT_RUN",
+  "scope": "Only the recorded exact afc0df9 checkpoint and seven invocations. No previous-run result transfer."
+}

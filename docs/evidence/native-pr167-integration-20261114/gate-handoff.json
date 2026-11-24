@@ -1,0 +1,238 @@
+{
+  "schema": 1,
+  "producer": {
+    "commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+    "tree": "9edd7afed143c83fec5d2dc89949ca9325e042ce",
+    "parent": "803e7a626ea6ef0aeeda9c37010e844033d3a8e3",
+    "pr": 167
+  },
+  "integration_base": "27ae427029a5199699c95a79a84b0027d7571752",
+  "new_required_probes": [
+    {
+      "probe": "lumo_facial_regression",
+      "path": "scripts/tests/lumo_facial_regression.gd",
+      "mode": "headless",
+      "producer_timeout_seconds": 180,
+      "required_marker": "LUMO_FACIAL_PASS checks=102 actual_meshes=true original_bones=65 original_clips=9 phoneme_lipsync=false",
+      "source": {
+        "bytes": 7102,
+        "sha256": "dc98c2521543d5b28238f37ed064b0ccd105378d124e44bbefd668c1b16cc03e",
+        "git_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624"
+      },
+      "extra_engine_arguments": [],
+      "environment": {},
+      "pngs": [],
+      "report": null,
+      "scope": "Actual imported meshes and productive lesson at a mocked Host speech seam; not Android playback"
+    },
+    {
+      "probe": "lumo_facial_capture",
+      "path": "scripts/tests/lumo_facial_capture.gd",
+      "mode": "rendered",
+      "producer_timeout_seconds": 420,
+      "required_marker": "LUMO_FACIAL_CAPTURE_PASS frames=144 original_word=true recording_fps=24 not_device_fps=true",
+      "source": {
+        "bytes": 8675,
+        "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38",
+        "git_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9"
+      },
+      "extra_engine_arguments": [
+        "--resolution",
+        "640x640",
+        "--fixed-fps",
+        "24",
+        "--write-movie",
+        "<capture-dir>/facial-runtime.avi"
+      ],
+      "environment": {
+        "LUMO_FACE_CAPTURE_DIR": "<capture-dir>"
+      },
+      "pngs": [
+        {
+          "path": "teacher_scene.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "neutral.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "audio_jaw.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "blink.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "blink_intermediate.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "muted.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "gaze_left.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        },
+        {
+          "path": "stopped.png",
+          "dimensions": [
+            640,
+            640
+          ]
+        }
+      ],
+      "report": "runtime-frames.json",
+      "scope": "Actual production teacher, original local Apfel WAV and runtime mesh/Playback sequence; desktop renderer only,24fps recording cadence is not device FPS"
+    },
+    {
+      "probe": "connect_four_visual_capture",
+      "path": "scripts/tests/connect_four_visual_capture.gd",
+      "mode": "rendered",
+      "producer_timeout_seconds": 600,
+      "required_marker": "CONNECT_FOUR_VISUAL_PASS",
+      "source": {
+        "bytes": 19435,
+        "sha256": "178bc5b179e0402f1e4cc9901b21f2592745eae20b164706ec621506350f9324",
+        "git_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29"
+      },
+      "extra_engine_arguments": [
+        "--",
+        "--capture"
+      ],
+      "environment": {
+        "LUMO_CAPTURE_DIR": "<capture-dir>"
+      },
+      "pngs": [
+        {
+          "path": "c4-empty-landscape.png",
+          "dimensions": [
+            960,
+            540
+          ]
+        },
+        {
+          "path": "c4-playing-phone.png",
+          "dimensions": [
+            412,
+            915
+          ]
+        },
+        {
+          "path": "c4-win-landscape.png",
+          "dimensions": [
+            960,
+            540
+          ]
+        },
+        {
+          "path": "c4-paused-small.png",
+          "dimensions": [
+            640,
+            360
+          ]
+        }
+      ],
+      "report": "visual-state.json",
+      "scope": "Read-only recorded legal-state renderer fixture; it rejects every Host action and does not prove Dart rules, bot, persistence, rewards or Android"
+    },
+    {
+      "probe": "treasure_title_contrast_regression",
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "mode": "rendered",
+      "producer_timeout_seconds": 600,
+      "required_marker": "[TreasureTitleContrast] PASS",
+      "source": {
+        "bytes": 8982,
+        "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+        "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3"
+      },
+      "extra_engine_arguments": [
+        "--",
+        "--capture"
+      ],
+      "environment": {
+        "LUMO_CAPTURE_DIR": "<capture-dir>"
+      },
+      "pngs": [
+        {
+          "path": "treasure-title-landscape.png",
+          "dimensions": [
+            1920,
+            1080
+          ]
+        },
+        {
+          "path": "treasure-title-compact.png",
+          "dimensions": [
+            640,
+            320
+          ]
+        },
+        {
+          "path": "treasure-title-portrait.png",
+          "dimensions": [
+            1080,
+            2400
+          ]
+        },
+        {
+          "path": "treasure-title-fold.png",
+          "dimensions": [
+            2176,
+            1812
+          ]
+        }
+      ],
+      "report": "treasure-title-report.json",
+      "scope": "Actual renderer and synthetic safe-area profiles with original frame/quest fixture, bounded real input events; no physical-device safe-area/performance claim"
+    }
+  ],
+  "existing_modified_probes_to_retain": [
+    "learning_world_regression",
+    "lumo_rigged_animation_capture",
+    "lumo_studio_motion_regression",
+    "lumo_teacher_pose_regression"
+  ],
+  "unchanged_runtime_gate": "Real existing Dart/Godot two-process Connect Four runtime gate remains independent and required",
+  "current_nextgen_core_pairs": 48,
+  "current_core_not_modified": true,
+  "existing_constraints": "All current48 Core gates, existing source/tree/strict error and teardown policies,24Studio+4Village+6Puzzle+7SafeArea and6Touch/32 PNG remain; new16 PNG and movie/sidecars are additive, not replacements.",
+  "wiring_status": "NOT YET WIRED: no current runner/workflow edited by this pack. Root/Pipeline must connect these four modes and complete measured raster/movie verification on the new combined Native source.",
+  "conditional_count_if_appended_to_nextgen": 52,
+  "producer_harness_reference": "originals/producer-harness/tools/validate_studio.sh",
+  "face_capture_contract": "originals/face-ci-contract.json",
+  "required_gate_rules": [
+    "Fresh imported GLB with body LOD retained and lid LOD disabled; lumo_facial_regression requires imported_packed_scene, so raw-source fallback cannot supply this proof.",
+    "Use existing strict run_godot_probe.py; actual exit0 plus marker, reject ERROR/SCRIPT ERROR/Parse Error/leaks; do not allow a PASS line to override errors.",
+    "Bind final Native HEAD and tree and clean source stamps before/after. C4 visual report lists a selected source subset; require full source tree and new face asset/pose hashes too.",
+    "Facial MovieMaker AVI must really exist; original AVI hash, actual encoded MP4, full decode, ffprobe and byte hashes required.24fps is recording cadence only.",
+    "Verify all8 facial PNG plus144 sequential actual mesh/Playback rows including mute/stopped intervals and8 bounded lid weights, not just file count.",
+    "Verify all4 C4 PNG+visual-state geometry/targets, read_only_fixture_host and no accepted/simulated actions. Do not replace the separate real Dart/Godot gate with visual fixture.",
+    "Verify all4 Treasure PNG+report sizes/profile/density/insets, full title backdrop/contrast/targets and preserved quest state.",
+    "No old Producer results or PNGs satisfy fresh combined-source acceptance."
+  ]
+}

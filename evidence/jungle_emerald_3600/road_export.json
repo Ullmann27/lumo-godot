@@ -1,0 +1,11 @@
+{
+	"blender_material_authority": "Blender master scene provided by the environment production",
+	"collision_bodies_after_scene_reload": 12,
+	"collision_shapes_after_scene_reload": 36,
+	"godot_scene": "res://art/jungle_emerald_3600/geometry/dschungelherz_road_with_collision.tscn",
+	"road_glb": "res://art/jungle_emerald_3600/geometry/dschungelherz_road.glb",
+	"road_meshes_after_glb_reimport": 12,
+	"shader_preservation": "PackedScene retains the runtime ShaderMaterial; GLB has PBR colour/roughness approximation",
+	"source": "LumoRaceWorld.build(true, jungle_emerald_3600, true)",
+	"status": "passed"
+}

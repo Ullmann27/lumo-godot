@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "state": "FROZEN",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 5986,
+      "sha256": "75bc29055aedf0d5e77f4ded9d0d7027e5f7a0d4df2a315bcabfae4595f45b9c"
+    },
+    {
+      "path": "base-after.json",
+      "bytes": 315,
+      "sha256": "8fc3834fd45c7412f8d3af73715f1054c0bb61017f1f5f21c1cab56f022ab5ca"
+    },
+    {
+      "path": "base-before.json",
+      "bytes": 315,
+      "sha256": "8fc3834fd45c7412f8d3af73715f1054c0bb61017f1f5f21c1cab56f022ab5ca"
+    },
+    {
+      "path": "before/scripts/learning/learning_atelier.gd",
+      "bytes": 6954,
+      "sha256": "6696a9f5604bf71efa5eb6d64fe5b6ff4ca85f76cee8553586dec8743ad7022b"
+    },
+    {
+      "path": "before/scripts/systems/render/lumo_environment.gd",
+      "bytes": 5917,
+      "sha256": "791be11bf5de041b9746557c395f33a0b0bef5db4c1d0af822b21ee4fd8065be"
+    },
+    {
+      "path": "before/scripts/systems/render/lumo_environment_creative_presets.gd",
+      "bytes": 12479,
+      "sha256": "5217ebfbc63ed08ad94d9906c058f407d21515428fc3c4f898fbc5214fcdbe9b"
+    },
+    {
+      "path": "final-source/assets/dream_garden/dream_blossom.glb",
+      "bytes": 115408,
+      "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4"
+    },
+    {
+      "path": "final-source/assets/dream_garden/dream_storybook.glb",
+      "bytes": 115136,
+      "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102"
+    },
+    {
+      "path": "final-source/assets/dream_garden/provenance.json",
+      "bytes": 1587,
+      "sha256": "926703b434afb2fb90650c6207863e17e0de12803858c8fa0aff55ad9e561d1f"
+    },
+    {
+      "path": "final-source/assets/shaders/lumo_dream_ambience.gdshader",
+      "bytes": 1545,
+      "sha256": "c73c05003f3051a142ac6a7b87d483e06d1bdf7a3c3e6b60439a3571dc74d7f0"
+    },
+    {
+      "path": "final-source/scripts/learning/learning_atelier.gd",
+      "bytes": 7471,
+      "sha256": "50d01bd437e84333bde534502c4d0bd137c653e819e1c8fb3b5b631447eb4d2b"
+    },
+    {
+      "path": "final-source/scripts/learning/lumo_dream_props.gd",
+      "bytes": 2903,
+      "sha256": "74bf0cce4848e9ed86a0d0ef5b53bd15042467b9a4aa9113b436a36d667d849a"
+    },
+    {
+      "path": "final-source/scripts/systems/render/lumo_dream_ambience.gd",
+      "bytes": 8956,
+      "sha256": "3ac034e242ce52f89b4295c7b08f45cbef323151a62a7c90229f2eb8c18c2999"
+    },
+    {
+      "path": "final-source/scripts/systems/render/lumo_environment.gd",
+      "bytes": 6119,
+      "sha256": "bde7fc355ca75817934c95d4b551783a3074b001aca3ec71c2d85843c80e2bef"
+    },
+    {
+      "path": "final-source/scripts/systems/render/lumo_environment_creative_presets.gd",
+      "bytes": 12609,
+      "sha256": "5e3036477f83d54b6b74e32161e4d566975df0918fd366b57a9e4e3fb7c4da88"
+    },
+    {
+      "path": "final-source/scripts/tests/dream_garden_capture.gd",
+      "bytes": 2051,
+      "sha256": "7c9178c8cd9284b2669293c79e44e642e54a3d9b203e7071403c3d9d33cca746"
+    },
+    {
+      "path": "final-source/scripts/tests/dream_garden_props_regression.gd",
+      "bytes": 6389,
+      "sha256": "527b63e2889567e88b8310873801bf87d7bec4b64a661c15be225cba309ae118"
+    },
+    {
+      "path": "final-source/scripts/tests/lumo_dream_ambience_capture.gd",
+      "bytes": 3545,
+      "sha256": "080e4289c12e637562dbae804d2fd8c803357e24933c07a953ad798364c123b9"
+    },
+    {
+      "path": "final-source/scripts/tests/lumo_dream_ambience_regression.gd",
+      "bytes": 5523,
+      "sha256": "c3291510e53fa322b16fb50d444f502143e20b39e969f9cb5bce2e6eec169212"
+    },
+    {
+      "path": "final-source/tools/tests/test_dream_rasters.py",
+      "bytes": 10291,
+      "sha256": "d974aeba9a89b5ac0374033d5b70dad085819191ea8fb67704e0d28a2db20085"
+    },
+    {
+      "path": "final-source/tools/validate_dream_connections.sh",
+      "bytes": 4660,
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc"
+    },
+    {
+      "path": "final-source/tools/verify_dream_rasters.py",
+      "bytes": 20254,
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d"
+    },
+    {
+      "path": "gate-contract.json",
+      "bytes": 4698,
+      "sha256": "bc58617ee657ff4f56e06765fffa6ce48f1b5d05910b78d55998cb618dd19663"
+    },
+    {
+      "path": "glb-validation.json",
+      "bytes": 1993,
+      "sha256": "c7fd355b41ebcc56f5415a9423eb40b8ebba4cfd78d4594c39324a13ce97534e"
+    },
+    {
+      "path": "handoff.json",
+      "bytes": 2696,
+      "sha256": "a29ec0046197ec03485de5e0e097ac2fe6a4a87848f500e659430d1227cf0488"
+    },
+    {
+      "path": "inspect_glb_originals.py",
+      "bytes": 8583,
+      "sha256": "3b3dac618b1faac934646287bdf756313b10d32e0f0274f3a7daa2a1b3e2adfc"
+    },
+    {
+      "path": "integration.patch",
+      "bytes": 240818,
+      "sha256": "6964f5ffccf964330553a3ac41fecf85f78ce08200d249cf0dc9d018f70bae74"
+    },
+    {
+      "path": "original-source-bindings.json",
+      "bytes": 4748,
+      "sha256": "06990b1d98c1464fb9dfbe23b4037995f7060f8bf495a71ad1104bbca07f78f4"
+    },
+    {
+      "path": "originals/github-dream_blossom.glb.json",
+      "bytes": 159438,
+      "sha256": "8f3d1fe9a2c1218d9b922095ae3f2ff903fbdeca3a5b06d9aec6de67dd6cf893"
+    },
+    {
+      "path": "originals/github-dream_storybook.glb.json",
+      "bytes": 159066,
+      "sha256": "87dd22cb923a750ef89ee5e62210255f1786174fc8ba3790ecee4350c0ff2eeb"
+    },
+    {
+      "path": "originals/native173-compare.json",
+      "bytes": 262960,
+      "sha256": "3731abed66c064ece081be260438927ee67cc208b6ae2059f0d7253a52fc437c"
+    },
+    {
+      "path": "originals/native173-pr.json",
+      "bytes": 17633,
+      "sha256": "a1e3830028b6fd8c04cddd533e66ad4b750626b72b430c98599e0a444d71c2c5"
+    },
+    {
+      "path": "originals/native173-runs.json",
+      "bytes": 36,
+      "sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "producer-reference/tools/art/build_dream_garden.py",
+      "bytes": 18339,
+      "sha256": "45b0b6bf33fd1b42abad06226efb2ba707a47de5373ac82749becfbf081f67ab"
+    },
+    {
+      "path": "producer-reference/tools/validate_live_connections.sh",
+      "bytes": 5085,
+      "sha256": "12fdf2e50f90ec452d66048324edaf5fbd1f9f658128422d9ec55af7e67ba4dd"
+    },
+    {
+      "path": "protected-source-bindings.json",
+      "bytes": 3720,
+      "sha256": "9257bd408c5e18ace38ac1a92fbae37040f7aaaabf78352a60709a650ad6b3b6"
+    },
+    {
+      "path": "provenance/prior-compare-path-classification.json",
+      "bytes": 15002,
+      "sha256": "0a56e53ff965b20f971d643fdef3d558175c29d6bdc68bd3de463e2f733c9456"
+    },
+    {
+      "path": "provenance/prior-dependency-bindings.json",
+      "bytes": 9328,
+      "sha256": "80704a6835a616cd1fb4ea4652ca92f6b5c6e31540f4a70fe67c7c908514fd16"
+    },
+    {
+      "path": "provenance/prior-review.json",
+      "bytes": 17765,
+      "sha256": "8bdec7283eeabd9bd76fca84dc3974fe1046d81eb8797d9a9dfc6f0d626a83d6"
+    },
+    {
+      "path": "provenance/prior-source-bindings.json",
+      "bytes": 6221,
+      "sha256": "a6d3a7aabd6db84c37eedc4b32d2498d114b76b6e9603c41e2ce30b30abba594"
+    },
+    {
+      "path": "source-freeze.json",
+      "bytes": 6122,
+      "sha256": "c7d8ad62fc9f8325dd79ffc101bcaf1d00753b5ef2b05b820150e1d6e74e487f"
+    }
+  ]
+}

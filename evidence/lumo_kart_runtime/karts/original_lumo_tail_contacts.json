@@ -1,0 +1,735 @@
+{
+	"checks": 148,
+	"engine": "4.6.3-stable (official)",
+	"failures": [],
+	"geometry_format": "little endian uint32 row count, per-row uint32 vertex count, xyz float32; first corrected then same-pose original tail",
+	"model_sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+	"original_model_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+	"samples": [
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "8b8fb65150ee83bb99142e5e3ba847863491485f8a71f1ea11d00b3e32f8c22b",
+			"frame": 12,
+			"geometry": "comet_driving_012.bin",
+			"phase": "driving",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "0cfbda6a6c6e8f62ce0e9382f99c171dcaf75f0d24f11958d1e7244fdf3c7fbc",
+			"frame": 13,
+			"geometry": "comet_driving_013.bin",
+			"phase": "driving",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 1.0,
+			"file_sha256": "20df88e777339f6af2891b3f0a1b162b25f438f43d3d6c6a966f25a893ba516e",
+			"frame": 42,
+			"geometry": "comet_driving_042.bin",
+			"phase": "driving",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.76666669845581,
+			"file_sha256": "e6bd9691ea8d0d4d8431c1b78a0b4d70ff809217694d11253378cf9ce9f17451",
+			"frame": 90,
+			"geometry": "comet_driving_090.bin",
+			"phase": "driving",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "cedc4b9e700234b59cf61a85147140d220a0802b71c06885deb68a0689745820",
+			"frame": 12,
+			"geometry": "comet_left_012.bin",
+			"phase": "left",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "7ac8e2096e7822dfa25d52bd5606be1ecf2f81b5496052c3688dd939209f6a3d",
+			"frame": 13,
+			"geometry": "comet_left_013.bin",
+			"phase": "left",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.433333396911621,
+			"file_sha256": "1604bd5ba2524b12519188a998efa64c3be1b8904e24c7051dbab18414746b89",
+			"frame": 42,
+			"geometry": "comet_left_042.bin",
+			"phase": "left",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.200000095367432,
+			"file_sha256": "02df451df06e6ca665ec1a1433b802ba1ac6c937332c0e923310dca2aacb7546",
+			"frame": 90,
+			"geometry": "comet_left_090.bin",
+			"phase": "left",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "1525cf57dcdc3ff5eaa01266e33a43f5b3efbc96123e01bdc5522453e557c894",
+			"frame": 12,
+			"geometry": "comet_right_012.bin",
+			"phase": "right",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "fba7793253402a1f3693f7ea5af2a572ad8aba1feb8e01628b8b8548fdc91762",
+			"frame": 13,
+			"geometry": "comet_right_013.bin",
+			"phase": "right",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.900000095367432,
+			"file_sha256": "bd13c755193e2abfb3210d0c97b9d329846072e0ad71b75a0e3a63a79224acb4",
+			"frame": 42,
+			"geometry": "comet_right_042.bin",
+			"phase": "right",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.666666793823242,
+			"file_sha256": "8cb2365f591d770b5443ea3fd5514e389c8ca2280c951feaac9b24f5c25594a4",
+			"frame": 90,
+			"geometry": "comet_right_090.bin",
+			"phase": "right",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "3a4ef3534d35aef2f898d723bbb09f76eca4ab29c707d214addf2d5550aceb11",
+			"frame": 12,
+			"geometry": "comet_jump_012.bin",
+			"phase": "jump",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "c8b96f7760d98c77c06a3e9633df20fb8984f9ca097d2b7d7438693457767ed4",
+			"frame": 13,
+			"geometry": "comet_jump_013.bin",
+			"phase": "jump",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.7,
+			"file_sha256": "d5620656c9afc48a68cfd39f2ab93e4a94c981ba57be688af15b7d84b461b3ea",
+			"frame": 42,
+			"geometry": "comet_jump_042.bin",
+			"phase": "jump",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.466666666666667,
+			"file_sha256": "590da206a102d75050d7f0d864e5cbe345f89a6b75425c6acba143940c4b0aed",
+			"frame": 90,
+			"geometry": "comet_jump_090.bin",
+			"phase": "jump",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "e3d27d63e2f39a451be9dc84b082c28af00eecf06dcb9a096b817f08374be6d0",
+			"frame": 12,
+			"geometry": "comet_landing_012.bin",
+			"phase": "landing",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "54a923f083638c3c41a3d8370df2594bf4cc2e00e162c832437d2da148a9a94b",
+			"frame": 13,
+			"geometry": "comet_landing_013.bin",
+			"phase": "landing",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.7,
+			"file_sha256": "b53ec14743961663c05a4564d09ae57427cb0ea3abbf8720372aacb41676b09d",
+			"frame": 42,
+			"geometry": "comet_landing_042.bin",
+			"phase": "landing",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.46666669845581,
+			"file_sha256": "b669ee932066c7c912891a1a51ebfc626b9ed69d6b8cb88934c5cce674e86e29",
+			"frame": 90,
+			"geometry": "comet_landing_090.bin",
+			"phase": "landing",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "22459b4cd27689a056aa99ce87f34ae0bf5880f98b0c6770267688e80f3b487e",
+			"frame": 12,
+			"geometry": "comet_finish_012.bin",
+			"phase": "finish",
+			"seconds": 0.2,
+			"variant": "comet"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "9568a7d8de9ef23f9e17a3ba3b5c75b69e6543e1afd90a7060c3805ef8ded881",
+			"frame": 13,
+			"geometry": "comet_finish_013.bin",
+			"phase": "finish",
+			"seconds": 0.216666666666667,
+			"variant": "comet"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.7,
+			"file_sha256": "1e567a710cb4c3235355f2f2e0f4dfd73b6abc194f568aacc275da0f217c6be5",
+			"frame": 42,
+			"geometry": "comet_finish_042.bin",
+			"phase": "finish",
+			"seconds": 0.7,
+			"variant": "comet"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 1.5,
+			"file_sha256": "1289bcdddb56bb149a826cfe6434d61de715f0474d044c4f0e5e04181e2e6988",
+			"frame": 90,
+			"geometry": "comet_finish_090.bin",
+			"phase": "finish",
+			"seconds": 1.5,
+			"variant": "comet"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "464de5d7913a13061f9c6542edde0e1e31b85a25d49602efc13e915e9a41d693",
+			"frame": 12,
+			"geometry": "glider_driving_012.bin",
+			"phase": "driving",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "b5455ac4d23b8633ce0ef84c5ffa7dc0be98ef40a30ad60a31533a23e92b2dea",
+			"frame": 13,
+			"geometry": "glider_driving_013.bin",
+			"phase": "driving",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 1.0,
+			"file_sha256": "3e795bbdf9bdacbe593a23bd1bdd264bb921175e1ad2a877c4fe867c9d496511",
+			"frame": 42,
+			"geometry": "glider_driving_042.bin",
+			"phase": "driving",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.76666669845581,
+			"file_sha256": "f18984e8acc00cf15a72b92d64394c498e4faa21f450da9b2079a9f866506a82",
+			"frame": 90,
+			"geometry": "glider_driving_090.bin",
+			"phase": "driving",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "aa688570fa7964a08213cd33623a21e99ae73066806822e7c1f9e5a0aeed14ec",
+			"frame": 12,
+			"geometry": "glider_left_012.bin",
+			"phase": "left",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "52a12eec57869eb3a17bdfd73be12411d3570c6483988a52993b1e73e0d00544",
+			"frame": 13,
+			"geometry": "glider_left_013.bin",
+			"phase": "left",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.433333396911621,
+			"file_sha256": "6a7c66e1c68b967f6567e66af00664205af7144ace9b9dc45be86bfa390b7533",
+			"frame": 42,
+			"geometry": "glider_left_042.bin",
+			"phase": "left",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.200000095367432,
+			"file_sha256": "b50d5fb7e2acda9daffa9888df1563c6f86550e076fb9ee69da0203dcac89b86",
+			"frame": 90,
+			"geometry": "glider_left_090.bin",
+			"phase": "left",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "9667e8aa738bd63d14c0716d9262a42f65e3df632a2427b46f8c4a3ab6801dd4",
+			"frame": 12,
+			"geometry": "glider_right_012.bin",
+			"phase": "right",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "d85bfe53db0a72ac44a68876a46b111f29ebb66a2cf57540ae6e350d0a4004f0",
+			"frame": 13,
+			"geometry": "glider_right_013.bin",
+			"phase": "right",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.900000095367432,
+			"file_sha256": "cdea52184f2c0c41718cb3212ab84df2af159ecd79d4782ed3dab217f67bd8e0",
+			"frame": 42,
+			"geometry": "glider_right_042.bin",
+			"phase": "right",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.666666793823242,
+			"file_sha256": "0deb32466db4967785eb98850df1fe9c79e4c91225874532d6c179a6aded42d1",
+			"frame": 90,
+			"geometry": "glider_right_090.bin",
+			"phase": "right",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "7eb994a525f36d0578d6ca456c54529da632adf4899e8e89e214dc903fbaf712",
+			"frame": 12,
+			"geometry": "glider_jump_012.bin",
+			"phase": "jump",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "1b6cba27c6d873c0f726f30edbc60ff3447ee19df13b53d5f59597cec9181737",
+			"frame": 13,
+			"geometry": "glider_jump_013.bin",
+			"phase": "jump",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.7,
+			"file_sha256": "0d9ce9ec4159b2bc7203036028ff13e01f581f5bb78a800bbb17b4c6cf050110",
+			"frame": 42,
+			"geometry": "glider_jump_042.bin",
+			"phase": "jump",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.466666666666667,
+			"file_sha256": "58420d60a0fd79e83a808788f7a7812bd915d83196c1dbf36e3387f2dbb089e2",
+			"frame": 90,
+			"geometry": "glider_jump_090.bin",
+			"phase": "jump",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "f115c70d385950e5ea18de05eb6e4adbcdd453b65b14734317ab3d1627c80616",
+			"frame": 12,
+			"geometry": "glider_landing_012.bin",
+			"phase": "landing",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "a223cf2b43df98d4aa13b365d61ec8fc7bab4cfeeff43c51cf3a8886f2adfb52",
+			"frame": 13,
+			"geometry": "glider_landing_013.bin",
+			"phase": "landing",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.7,
+			"file_sha256": "f0736c75ef63587819c8a1003b527dd0acb68fcb0ce7863875cda2b1ba4a89c9",
+			"frame": 42,
+			"geometry": "glider_landing_042.bin",
+			"phase": "landing",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.46666669845581,
+			"file_sha256": "5f9a212dedb7f4a4c8d108d41b1745ce6aba20efe09131f8ce9b912c092488c8",
+			"frame": 90,
+			"geometry": "glider_landing_090.bin",
+			"phase": "landing",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "5e164613437e49d7120bb261a9a27d0244f53e68c87d4706a865ecf00cdba1be",
+			"frame": 12,
+			"geometry": "glider_finish_012.bin",
+			"phase": "finish",
+			"seconds": 0.2,
+			"variant": "glider"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "5e8c70394d1a1f26299b335c1413889c3cd95a6269910511076c1f94e77f3dfa",
+			"frame": 13,
+			"geometry": "glider_finish_013.bin",
+			"phase": "finish",
+			"seconds": 0.216666666666667,
+			"variant": "glider"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.7,
+			"file_sha256": "ecac0891ce1a900885f77af2c251d6e42458b4153f233295d222d60873e24dc4",
+			"frame": 42,
+			"geometry": "glider_finish_042.bin",
+			"phase": "finish",
+			"seconds": 0.7,
+			"variant": "glider"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 1.5,
+			"file_sha256": "66ca7fecf3e7c73a3990c149ce6aa9aac9afc47e813902370b420e916256d5ca",
+			"frame": 90,
+			"geometry": "glider_finish_090.bin",
+			"phase": "finish",
+			"seconds": 1.5,
+			"variant": "glider"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "4c745d3ad68f0efd859c805be5758bfb0c83ab1fc7b367788c68756ca0865d71",
+			"frame": 12,
+			"geometry": "turbo_driving_012.bin",
+			"phase": "driving",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.5,
+			"file_sha256": "9134ed54c120647006917133470d7c201d5804d42721e94b40333b85fdaf8e45",
+			"frame": 13,
+			"geometry": "turbo_driving_013.bin",
+			"phase": "driving",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 1.0,
+			"file_sha256": "b3d1744d6aef29afd11cfebd304d944d231ffe1252a06b2c2b7f111fd89dc8be",
+			"frame": 42,
+			"geometry": "turbo_driving_042.bin",
+			"phase": "driving",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.76666669845581,
+			"file_sha256": "2458682873d7778e30ddb9ea8e1bdeab8187882ad83a831ba95bb17288fbda9f",
+			"frame": 90,
+			"geometry": "turbo_driving_090.bin",
+			"phase": "driving",
+			"seconds": 1.5,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "21c9c02bbf08fe22f0aea8253968a1c59669d771346f6812296f14fb9900f56d",
+			"frame": 12,
+			"geometry": "turbo_left_012.bin",
+			"phase": "left",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.96666669845581,
+			"file_sha256": "71f68b158f1b104e4260aefabe1414f538cd9f31ada7069d7119ae46ffb7cfe7",
+			"frame": 13,
+			"geometry": "turbo_left_013.bin",
+			"phase": "left",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.433333396911621,
+			"file_sha256": "0a1cc20d1c8e7381d038bada80e004d08984f40af47f292f05fec72fab7668e6",
+			"frame": 42,
+			"geometry": "turbo_left_042.bin",
+			"phase": "left",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.200000095367432,
+			"file_sha256": "04ecf290b8be7689b55d250ca1d43abd1bede6a26b1e918dab6515fcada6f45f",
+			"frame": 90,
+			"geometry": "turbo_left_090.bin",
+			"phase": "left",
+			"seconds": 1.5,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "d91fc40107769e2ca308cc3ac4ecd5da9857c9d6a42cb1d5cb2b500fe31c8940",
+			"frame": 12,
+			"geometry": "turbo_right_012.bin",
+			"phase": "right",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.400000095367432,
+			"file_sha256": "58e9769af780d9f434ae767f1eeb19b0787df3c216cae2182e58c2375ef6ddc6",
+			"frame": 13,
+			"geometry": "turbo_right_013.bin",
+			"phase": "right",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.900000095367432,
+			"file_sha256": "abfcdd6c12919c8c0567b85492cd5869cc0650c0b30aa9da6886d68aa05b9440",
+			"frame": 42,
+			"geometry": "turbo_right_042.bin",
+			"phase": "right",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.666666793823242,
+			"file_sha256": "45f5bffb6686c0686f246a610f60b3ce1b61cc0ea4699d9789d515ce0c5ae99c",
+			"frame": 90,
+			"geometry": "turbo_right_090.bin",
+			"phase": "right",
+			"seconds": 1.5,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "7ec9577383c43ba257392b19c0c85aafd4de95b8d512808e6e9959e151e42ed7",
+			"frame": 12,
+			"geometry": "turbo_jump_012.bin",
+			"phase": "jump",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.2,
+			"file_sha256": "2eb8613f8e58bf604bfcfecdb01b970bc234a4fe170bdc779cf57c2032975971",
+			"frame": 13,
+			"geometry": "turbo_jump_013.bin",
+			"phase": "jump",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.7,
+			"file_sha256": "d6a6f8187d93df58df4979a2eb64716e820f5d5dd1f36a53bea69e6b84a9612d",
+			"frame": 42,
+			"geometry": "turbo_jump_042.bin",
+			"phase": "jump",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_jump",
+			"clip_seconds": 0.466666666666667,
+			"file_sha256": "a864901f9e7202901d243ada32343b8e3607727c172cdc12914d7fbfe5717af8",
+			"frame": 90,
+			"geometry": "turbo_jump_090.bin",
+			"phase": "jump",
+			"seconds": 1.5,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "ff67c859cf1f0b1d88cef11fe5913b027a0fe2a4e5f5e0cb18f9e863a02e354f",
+			"frame": 12,
+			"geometry": "turbo_landing_012.bin",
+			"phase": "landing",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.2,
+			"file_sha256": "01dd849eabd79c21850da5f7fa2c2ab8c26e97a0abbf803f94ef1ff93ac6cb6f",
+			"frame": 13,
+			"geometry": "turbo_landing_013.bin",
+			"phase": "landing",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.7,
+			"file_sha256": "61032848c4080c0d5ac7dabec77e5cfdcbf88ddd13ae0464ea939035bea672b8",
+			"frame": 42,
+			"geometry": "turbo_landing_042.bin",
+			"phase": "landing",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "kart_seated",
+			"clip_seconds": 0.46666669845581,
+			"file_sha256": "4d5a89c8883983b3b9b7212f2fcdf77871befc57e19598f9c978e9cd12e5e297",
+			"frame": 90,
+			"geometry": "turbo_landing_090.bin",
+			"phase": "landing",
+			"seconds": 1.5,
+			"variant": "turbo"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "04f86d6cc6c39bcd4c0d19de9f50de2aa78c9dba01135799d1ee90a09a7532b9",
+			"frame": 12,
+			"geometry": "turbo_finish_012.bin",
+			"phase": "finish",
+			"seconds": 0.2,
+			"variant": "turbo"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.2,
+			"file_sha256": "bca35c57ca391a3861a95716c77d4a6cb0a7ae75afc19e5917a2dbc23f0b8652",
+			"frame": 13,
+			"geometry": "turbo_finish_013.bin",
+			"phase": "finish",
+			"seconds": 0.216666666666667,
+			"variant": "turbo"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 0.7,
+			"file_sha256": "8f3472e4bb996d3327587c330ebdc46aae8869d4169ff6ec1db8ee202b984be5",
+			"frame": 42,
+			"geometry": "turbo_finish_042.bin",
+			"phase": "finish",
+			"seconds": 0.7,
+			"variant": "turbo"
+		},
+		{
+			"clip": "celebrate",
+			"clip_seconds": 1.5,
+			"file_sha256": "1a9e0da58ccfa40a241f9835f3d5e34a4c3cea07b29ccc1d03595d06b163783e",
+			"frame": 90,
+			"geometry": "turbo_finish_090.bin",
+			"phase": "finish",
+			"seconds": 1.5,
+			"variant": "turbo"
+		}
+	],
+	"scope": "Actual runtime skin with final adapter, paired with exact same body/animation pose after removing only adapter tail deltas. BVH evaluated separately.",
+	"seat_adapter_sha256": "a52e2aad5a0d6df17dfc3f1abe14115afcbd0571d17da1e0450ee6b84bf43eaa",
+	"status": "PASS",
+	"topology_sha256": "4a266e5d5d47627a4c634a4629fa2109cb1777361e5de2686f8afee48f7efbbe",
+	"vehicle_script_sha256": "404ef0b24d6a4bf2b71ddfe9efe9daf98a90c6c9d8e630c9795e8269d0bf5c6b"
+}

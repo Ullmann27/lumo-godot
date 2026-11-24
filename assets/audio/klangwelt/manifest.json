@@ -1,0 +1,1820 @@
+{
+ "music": {
+  "lumo_theme": {
+   "key": "F-Dur",
+   "mood": "Lumo-Thema: Erkennungsmelodie, warm und neugierig",
+   "bpm": 96,
+   "meter": "4/4",
+   "bars": 16,
+   "samples": 1280000,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/lumo_theme.ogg",
+    "seconds": 40.0,
+    "bytes": 457098,
+    "kbps": 91.4,
+    "channels": 2,
+    "lufs": -16.3,
+    "true_peak_dbfs": -5.0,
+    "max_volume_db": -5.1,
+    "dc": 1.4925039710750099e-06,
+    "energy_above_15k": 2.1602390946467712e-08,
+    "seam_jump": 0.006515473127365112,
+    "diff_p99": 0.040408925227820865,
+    "seam_ratio": 0.16123846626631091,
+    "seam_rms_ratio": 0.820183577076335
+   }
+  },
+  "hub": {
+   "key": "C-Dur",
+   "mood": "Spielewelt: einladend, verspielt, federnder Pop",
+   "bpm": 112,
+   "meter": "4/4",
+   "bars": 32,
+   "samples": 2194286,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/hub.ogg",
+    "seconds": 68.571,
+    "bytes": 842276,
+    "kbps": 98.3,
+    "channels": 2,
+    "lufs": -16.5,
+    "true_peak_dbfs": -2.3,
+    "max_volume_db": -2.3,
+    "dc": 1.418559199362263e-05,
+    "energy_above_15k": 1.491507514471714e-07,
+    "seam_jump": 0.01136934757232666,
+    "diff_p99": 0.05669536978006359,
+    "seam_ratio": 0.20053396981501043,
+    "seam_rms_ratio": 1.2186032311804063
+   }
+  },
+  "cards": {
+   "key": "B-Dur",
+   "mood": "Kartentisch: gemütlicher Swing mit Vibrafon und Klarinette",
+   "bpm": 100,
+   "meter": "4/4",
+   "bars": 24,
+   "samples": 1843200,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/cards.ogg",
+    "seconds": 57.6,
+    "bytes": 651153,
+    "kbps": 90.4,
+    "channels": 2,
+    "lufs": -16.5,
+    "true_peak_dbfs": -2.3,
+    "max_volume_db": -2.3,
+    "dc": 1.0770707132985261e-05,
+    "energy_above_15k": 1.2994112274332428e-07,
+    "seam_jump": 0.006937697529792786,
+    "diff_p99": 0.04533335357904415,
+    "seam_ratio": 0.15303737716079263,
+    "seam_rms_ratio": 1.2395049153598547
+   }
+  },
+  "memory": {
+   "key": "G-Dur",
+   "mood": "Memory: ruhig und konzentriert, Spieluhr und Celesta",
+   "bpm": 76,
+   "meter": "4/4",
+   "bars": 16,
+   "samples": 1616842,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/memory.ogg",
+    "seconds": 50.526,
+    "bytes": 417694,
+    "kbps": 66.1,
+    "channels": 2,
+    "lufs": -16.7,
+    "true_peak_dbfs": -4.4,
+    "max_volume_db": -4.4,
+    "dc": 8.206623464356448e-06,
+    "energy_above_15k": 2.3043063431176776e-11,
+    "seam_jump": 0.010709777474403381,
+    "diff_p99": 0.023966546505689613,
+    "seam_ratio": 0.4468636092986546,
+    "seam_rms_ratio": 0.9512673946191172
+   }
+  },
+  "connect_four": {
+   "key": "D-Dur",
+   "mood": "Vier gewinnt: verschmitzt, Marimba und Pizzicato, Tick-Tack",
+   "bpm": 116,
+   "meter": "4/4",
+   "bars": 28,
+   "samples": 1853793,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/connect_four.ogg",
+    "seconds": 57.931,
+    "bytes": 687750,
+    "kbps": 95.0,
+    "channels": 2,
+    "lufs": -16.5,
+    "true_peak_dbfs": -3.8,
+    "max_volume_db": -3.9,
+    "dc": 7.72330848677027e-06,
+    "energy_above_15k": 2.3330720663117807e-08,
+    "seam_jump": 0.0028039077296853065,
+    "diff_p99": 0.04028432400897143,
+    "seam_ratio": 0.06960294850650257,
+    "seam_rms_ratio": 0.8657708997650471
+   }
+  },
+  "quiz": {
+   "key": "Es-Dur",
+   "mood": "Quiz-Studio: Show-Thema mit Bläsern, Four-on-the-floor",
+   "bpm": 120,
+   "meter": "4/4",
+   "bars": 32,
+   "samples": 2048000,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/quiz.ogg",
+    "seconds": 64.0,
+    "bytes": 763418,
+    "kbps": 95.4,
+    "channels": 2,
+    "lufs": -16.8,
+    "true_peak_dbfs": -3.3,
+    "max_volume_db": -3.4,
+    "dc": 5.389288972276529e-06,
+    "energy_above_15k": 2.0839741418636035e-07,
+    "seam_jump": 0.01057401206344366,
+    "diff_p99": 0.043816201649606173,
+    "seam_ratio": 0.2413265336818025,
+    "seam_rms_ratio": 1.0085150265977112
+   }
+  },
+  "treasure": {
+   "key": "D-Dorisch",
+   "mood": "Schatzsuche: Erkundung, Kalimba, Flöte, Handtrommeln",
+   "bpm": 96,
+   "meter": "4/4",
+   "bars": 32,
+   "samples": 2560000,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/treasure.ogg",
+    "seconds": 80.0,
+    "bytes": 881316,
+    "kbps": 88.1,
+    "channels": 2,
+    "lufs": -16.3,
+    "true_peak_dbfs": -1.7,
+    "max_volume_db": -1.7,
+    "dc": 1.9817512266619848e-06,
+    "energy_above_15k": 7.497779720153097e-09,
+    "seam_jump": 0.024444177746772766,
+    "diff_p99": 0.05154338242486133,
+    "seam_ratio": 0.4742447351400083,
+    "seam_rms_ratio": 0.8493261334890196
+   }
+  },
+  "puzzle": {
+   "key": "E-Dur",
+   "mood": "Puzzle: verträumter Walzer mit Celesta und Harfe (3/4)",
+   "bpm": 84,
+   "meter": "3/4",
+   "bars": 24,
+   "samples": 1645714,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/puzzle.ogg",
+    "seconds": 51.429,
+    "bytes": 552980,
+    "kbps": 86.0,
+    "channels": 2,
+    "lufs": -16.3,
+    "true_peak_dbfs": -5.0,
+    "max_volume_db": -5.0,
+    "dc": 2.6780535737609188e-06,
+    "energy_above_15k": 2.2279776041809619e-10,
+    "seam_jump": 0.012928202748298645,
+    "diff_p99": 0.03799337521195412,
+    "seam_ratio": 0.34027518418239083,
+    "seam_rms_ratio": 0.9839153952820423
+   }
+  },
+  "build": {
+   "key": "G-Dur",
+   "mood": "Bauwelt: hell und kreativ, Glockenspiel, Gitarren-Arpeggio",
+   "bpm": 108,
+   "meter": "4/4",
+   "bars": 28,
+   "samples": 1991111,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/build.ogg",
+    "seconds": 62.222,
+    "bytes": 742228,
+    "kbps": 95.4,
+    "channels": 2,
+    "lufs": -16.9,
+    "true_peak_dbfs": -2.0,
+    "max_volume_db": -2.0,
+    "dc": 4.44072284009957e-05,
+    "energy_above_15k": 1.1038377549147306e-07,
+    "seam_jump": 0.007907301187515259,
+    "diff_p99": 0.042771601201966415,
+    "seam_ratio": 0.18487269508551504,
+    "seam_rms_ratio": 1.134004058701411
+   }
+  },
+  "settlement_day": {
+   "key": "D-Dur",
+   "mood": "Dorf am Tag: pastoral-heroisch, Horn und Streicher (6/8)",
+   "bpm": 180,
+   "meter": "6/8",
+   "bars": 32,
+   "samples": 2048000,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/settlement_day.ogg",
+    "seconds": 64.0,
+    "bytes": 753619,
+    "kbps": 94.2,
+    "channels": 2,
+    "lufs": -16.6,
+    "true_peak_dbfs": -1.5,
+    "max_volume_db": -1.6,
+    "dc": 2.5944411800679745e-05,
+    "energy_above_15k": 1.1788377741636847e-07,
+    "seam_jump": 0.01983647048473358,
+    "diff_p99": 0.05203943490982052,
+    "seam_ratio": 0.38118151203461664,
+    "seam_rms_ratio": 1.2168971078211868
+   }
+  },
+  "settlement_evening": {
+   "key": "D-Dur",
+   "mood": "Dorf am Abend: ruhige Harfe, Flöte, warme Hörner",
+   "bpm": 72,
+   "meter": "4/4",
+   "bars": 16,
+   "samples": 1706667,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/settlement_evening.ogg",
+    "seconds": 53.333,
+    "bytes": 540452,
+    "kbps": 81.1,
+    "channels": 2,
+    "lufs": -16.6,
+    "true_peak_dbfs": -5.8,
+    "max_volume_db": -5.8,
+    "dc": 2.1486369913346772e-06,
+    "energy_above_15k": 1.0582717981557298e-11,
+    "seam_jump": 0.004054639488458633,
+    "diff_p99": 0.027543803751468657,
+    "seam_ratio": 0.1472069553245793,
+    "seam_rms_ratio": 0.7312468354144063
+   }
+  },
+  "learning": {
+   "key": "F-Dur",
+   "mood": "Lernwerkstatt: freundlich und zurückhaltend, viel Platz für Sprache",
+   "bpm": 88,
+   "meter": "4/4",
+   "bars": 24,
+   "samples": 2094545,
+   "layer_of": null,
+   "motif": true,
+   "measure": {
+    "file": "music/learning.ogg",
+    "seconds": 65.455,
+    "bytes": 647532,
+    "kbps": 79.1,
+    "channels": 2,
+    "lufs": -16.7,
+    "true_peak_dbfs": -1.4,
+    "max_volume_db": -1.4,
+    "dc": 4.2242852492961456e-05,
+    "energy_above_15k": 1.3725354552976277e-10,
+    "seam_jump": 0.0056822821497917175,
+    "diff_p99": 0.025179041326045953,
+    "seam_ratio": 0.22567507936404713,
+    "seam_rms_ratio": 1.2827886913842574
+   }
+  },
+  "quiz_tension": {
+   "key": "Es-Dur",
+   "mood": "Quiz-Spannungsschicht: Uhr-Ticken, Tremolo, Pauken (synchron)",
+   "bpm": 120,
+   "meter": "4/4",
+   "bars": 32,
+   "samples": 2048000,
+   "layer_of": "quiz",
+   "motif": true,
+   "measure": {
+    "file": "music/quiz_tension.ogg",
+    "seconds": 64.0,
+    "bytes": 629724,
+    "kbps": 78.7,
+    "channels": 2,
+    "lufs": -20.0,
+    "true_peak_dbfs": -7.0,
+    "max_volume_db": -7.1,
+    "dc": 6.7622843060147766e-06,
+    "energy_above_15k": 4.867672041962916e-07,
+    "seam_jump": 0.028336893767118454,
+    "diff_p99": 0.046869557054014764,
+    "seam_ratio": 0.6045906031042079,
+    "seam_rms_ratio": 1.4817439350918977
+   }
+  },
+  "treasure_discovery": {
+   "key": "D-Dorisch",
+   "mood": "Schatzsuche-Entdeckung: Hörner, Pauken, Harfenläufe (synchron)",
+   "bpm": 96,
+   "meter": "4/4",
+   "bars": 32,
+   "samples": 2560000,
+   "layer_of": "treasure",
+   "motif": true,
+   "measure": {
+    "file": "music/treasure_discovery.ogg",
+    "seconds": 80.0,
+    "bytes": 952304,
+    "kbps": 95.2,
+    "channels": 2,
+    "lufs": -17.6,
+    "true_peak_dbfs": -6.2,
+    "max_volume_db": -6.2,
+    "dc": 7.393779697777675e-06,
+    "energy_above_15k": 1.7555374217939118e-07,
+    "seam_jump": 0.004326775670051575,
+    "diff_p99": 0.04537010576575995,
+    "seam_ratio": 0.09536622401311555,
+    "seam_rms_ratio": 1.05929964814901
+   }
+  }
+ },
+ "ambience": {
+  "playroom": {
+   "mood": "Spielzimmer: Uhr tickt, Holz knarzt leise, Wind am Fenster",
+   "samples": 1536000,
+   "measure": {
+    "file": "ambience/playroom.ogg",
+    "seconds": 48.0,
+    "bytes": 315645,
+    "kbps": 52.6,
+    "channels": 1,
+    "lufs": -27.3,
+    "true_peak_dbfs": -6.4,
+    "max_volume_db": -6.4,
+    "dc": 1.2154280643479342e-06,
+    "energy_above_15k": 2.403488491821229e-10,
+    "seam_jump": 0.0017387047410011292,
+    "diff_p99": 0.027873427867889412,
+    "seam_ratio": 0.06237857608255508,
+    "seam_rms_ratio": 1.565682209302546
+   }
+  },
+  "island": {
+   "mood": "Insel: Brandung, Möwen, Blätterrauschen",
+   "samples": 1536000,
+   "measure": {
+    "file": "ambience/island.ogg",
+    "seconds": 48.0,
+    "bytes": 314980,
+    "kbps": 52.5,
+    "channels": 1,
+    "lufs": -27.8,
+    "true_peak_dbfs": -8.1,
+    "max_volume_db": -8.1,
+    "dc": 3.0404201094034188e-05,
+    "energy_above_15k": 8.021873639452208e-10,
+    "seam_jump": 0.01966293901205063,
+    "diff_p99": 0.03380923628807068,
+    "seam_ratio": 0.5815848321426579,
+    "seam_rms_ratio": 1.2209484410701232
+   }
+  },
+  "island_waterfall": {
+   "mood": "Wasserfall in der Nähe (Schicht, lauter beim Näherkommen)",
+   "samples": 960000,
+   "measure": {
+    "file": "ambience/island_waterfall.ogg",
+    "seconds": 30.0,
+    "bytes": 205506,
+    "kbps": 54.8,
+    "channels": 1,
+    "lufs": -23.9,
+    "true_peak_dbfs": -10.3,
+    "max_volume_db": -10.4,
+    "dc": 3.541880708147242e-05,
+    "energy_above_15k": 2.0535739112097473e-09,
+    "seam_jump": 0.018410511314868927,
+    "diff_p99": 0.0677907794713974,
+    "seam_ratio": 0.27157839839214704,
+    "seam_rms_ratio": 1.030395328094262
+   }
+  },
+  "village_day": {
+   "mood": "Dorf am Tag: Vögel, Bach, Hämmern und Sägen, wortloses Gemurmel",
+   "samples": 1920000,
+   "measure": {
+    "file": "ambience/village_day.ogg",
+    "seconds": 60.0,
+    "bytes": 390377,
+    "kbps": 52.1,
+    "channels": 1,
+    "lufs": -27.0,
+    "true_peak_dbfs": -9.3,
+    "max_volume_db": -9.3,
+    "dc": 2.4029846781845166e-06,
+    "energy_above_15k": 6.111405383566516e-10,
+    "seam_jump": 0.02410024870187044,
+    "diff_p99": 0.04179824847728018,
+    "seam_ratio": 0.576585134049188,
+    "seam_rms_ratio": 1.4051591806468313
+   }
+  },
+  "village_evening": {
+   "mood": "Dorf am Abend: Grillen, leiser Bach, Abendwind",
+   "samples": 1536000,
+   "measure": {
+    "file": "ambience/village_evening.ogg",
+    "seconds": 48.0,
+    "bytes": 317439,
+    "kbps": 52.9,
+    "channels": 1,
+    "lufs": -27.0,
+    "true_peak_dbfs": -11.4,
+    "max_volume_db": -11.5,
+    "dc": 3.3387152610586667e-08,
+    "energy_above_15k": 3.612193955799218e-10,
+    "seam_jump": 0.0058453193050809205,
+    "diff_p99": 0.04170466697774827,
+    "seam_ratio": 0.14015983650126157,
+    "seam_rms_ratio": 0.8175651787077208
+   }
+  },
+  "stage": {
+   "mood": "Bühne: erwartungsvolles Publikumsraunen",
+   "samples": 1280000,
+   "measure": {
+    "file": "ambience/stage.ogg",
+    "seconds": 40.0,
+    "bytes": 255352,
+    "kbps": 51.1,
+    "channels": 1,
+    "lufs": -27.3,
+    "true_peak_dbfs": -11.4,
+    "max_volume_db": -11.4,
+    "dc": 2.8725156077484825e-07,
+    "energy_above_15k": 1.5235999425377202e-10,
+    "seam_jump": 0.008564017713069916,
+    "diff_p99": 0.018058799766004087,
+    "seam_ratio": 0.47422961789063944,
+    "seam_rms_ratio": 0.8527985002166504
+   }
+  },
+  "studio": {
+   "mood": "Quiz-Studio: Studiopublikum, leises Raunen",
+   "samples": 1280000,
+   "measure": {
+    "file": "ambience/studio.ogg",
+    "seconds": 40.0,
+    "bytes": 256621,
+    "kbps": 51.3,
+    "channels": 1,
+    "lufs": -27.4,
+    "true_peak_dbfs": -11.0,
+    "max_volume_db": -11.1,
+    "dc": 1.0958170272333945e-05,
+    "energy_above_15k": 8.472308739585412e-12,
+    "seam_jump": 0.001531016081571579,
+    "diff_p99": 0.019249619096517564,
+    "seam_ratio": 0.07953487670667828,
+    "seam_rms_ratio": 1.1060624644206838
+   }
+  }
+ },
+ "sfx": {
+  "ui_click": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/ui_click_0.ogg",
+     "seconds": 0.056,
+     "bytes": 4238,
+     "kbps": 605.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.0,
+     "max_volume_db": -9.0,
+     "dc": 0.0006118602887129779,
+     "energy_above_15k": 9.490056993460811e-05
+    },
+    {
+     "file": "sfx/ui_click_1.ogg",
+     "seconds": 0.056,
+     "bytes": 4245,
+     "kbps": 606.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.6,
+     "max_volume_db": -9.6,
+     "dc": 0.0004962274590971649,
+     "energy_above_15k": 8.30499500055428e-05
+    },
+    {
+     "file": "sfx/ui_click_2.ogg",
+     "seconds": 0.056,
+     "bytes": 4241,
+     "kbps": 605.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.4,
+     "max_volume_db": -9.5,
+     "dc": 0.000508687709239984,
+     "energy_above_15k": 0.00015601277239279135
+    },
+    {
+     "file": "sfx/ui_click_3.ogg",
+     "seconds": 0.056,
+     "bytes": 4251,
+     "kbps": 607.3,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.1,
+     "max_volume_db": -9.2,
+     "dc": 0.0005105494031067335,
+     "energy_above_15k": 0.00016284390685298387
+    }
+   ]
+  },
+  "ui_confirm": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/ui_confirm_0.ogg",
+     "seconds": 0.596,
+     "bytes": 5997,
+     "kbps": 80.5,
+     "channels": 1,
+     "lufs": -15.8,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -2.9,
+     "dc": 5.968411668185117e-06,
+     "energy_above_15k": 1.4986415577562908e-09
+    },
+    {
+     "file": "sfx/ui_confirm_1.ogg",
+     "seconds": 0.596,
+     "bytes": 6029,
+     "kbps": 80.9,
+     "channels": 1,
+     "lufs": -14.8,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.1,
+     "dc": 1.5532668373449854e-05,
+     "energy_above_15k": 4.4190505307104e-10
+    },
+    {
+     "file": "sfx/ui_confirm_2.ogg",
+     "seconds": 0.596,
+     "bytes": 6194,
+     "kbps": 83.1,
+     "channels": 1,
+     "lufs": -15.3,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.1,
+     "dc": 1.3199265006141097e-06,
+     "energy_above_15k": 1.531002413225003e-09
+    }
+   ]
+  },
+  "ui_cancel": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/ui_cancel_0.ogg",
+     "seconds": 0.446,
+     "bytes": 4781,
+     "kbps": 85.8,
+     "channels": 1,
+     "lufs": -14.7,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.2,
+     "dc": 2.2493124137502333e-05,
+     "energy_above_15k": 9.164176110090864e-10
+    },
+    {
+     "file": "sfx/ui_cancel_1.ogg",
+     "seconds": 0.446,
+     "bytes": 4828,
+     "kbps": 86.6,
+     "channels": 1,
+     "lufs": -15.0,
+     "true_peak_dbfs": -3.2,
+     "max_volume_db": -3.2,
+     "dc": 1.3302674383156232e-05,
+     "energy_above_15k": 2.056227190107011e-09
+    }
+   ]
+  },
+  "ui_back": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/ui_back_0.ogg",
+     "seconds": 0.156,
+     "bytes": 4334,
+     "kbps": 222.3,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 2.777420057607462e-05,
+     "energy_above_15k": 2.609991396621798e-06
+    },
+    {
+     "file": "sfx/ui_back_1.ogg",
+     "seconds": 0.156,
+     "bytes": 4327,
+     "kbps": 221.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 3.0021321326245972e-05,
+     "energy_above_15k": 1.5976549003751804e-06
+    }
+   ]
+  },
+  "portal_tap": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/portal_tap_0.ogg",
+     "seconds": 1.1,
+     "bytes": 12060,
+     "kbps": 87.7,
+     "channels": 1,
+     "lufs": -15.8,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -2.9,
+     "dc": 1.7830687801184585e-05,
+     "energy_above_15k": 7.702769059800144e-06
+    },
+    {
+     "file": "sfx/portal_tap_1.ogg",
+     "seconds": 1.1,
+     "bytes": 12228,
+     "kbps": 88.9,
+     "channels": 1,
+     "lufs": -16.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 7.5446740494168225e-06,
+     "energy_above_15k": 1.0759752786122593e-05
+    }
+   ]
+  },
+  "card_next": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/card_next_0.ogg",
+     "seconds": 0.296,
+     "bytes": 5336,
+     "kbps": 144.2,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.4,
+     "max_volume_db": -2.9,
+     "dc": 4.93455725491768e-06,
+     "energy_above_15k": 0.0001536553296619509
+    },
+    {
+     "file": "sfx/card_next_1.ogg",
+     "seconds": 0.296,
+     "bytes": 5584,
+     "kbps": 150.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.4,
+     "max_volume_db": -2.7,
+     "dc": 5.728761911618942e-07,
+     "energy_above_15k": 0.00014887933074096357
+    },
+    {
+     "file": "sfx/card_next_2.ogg",
+     "seconds": 0.296,
+     "bytes": 5866,
+     "kbps": 158.5,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.5,
+     "max_volume_db": -2.8,
+     "dc": 2.6888077847500653e-06,
+     "energy_above_15k": 0.00011460966995081101
+    }
+   ]
+  },
+  "star_collected": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/star_collected_0.ogg",
+     "seconds": 0.896,
+     "bytes": 9327,
+     "kbps": 83.3,
+     "channels": 1,
+     "lufs": -13.3,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.7,
+     "dc": 1.358995357327229e-06,
+     "energy_above_15k": 4.376711742853082e-09
+    },
+    {
+     "file": "sfx/star_collected_1.ogg",
+     "seconds": 0.896,
+     "bytes": 9463,
+     "kbps": 84.5,
+     "channels": 1,
+     "lufs": -13.1,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.9,
+     "dc": 5.608109080488889e-06,
+     "energy_above_15k": 3.542769738023061e-09
+    },
+    {
+     "file": "sfx/star_collected_2.ogg",
+     "seconds": 0.896,
+     "bytes": 9512,
+     "kbps": 84.9,
+     "channels": 1,
+     "lufs": -13.0,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.1,
+     "dc": 2.728752495327415e-06,
+     "energy_above_15k": 3.0872602391431023e-09
+    },
+    {
+     "file": "sfx/star_collected_3.ogg",
+     "seconds": 0.896,
+     "bytes": 9805,
+     "kbps": 87.5,
+     "channels": 1,
+     "lufs": -14.8,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.0,
+     "dc": 3.7876695363005453e-06,
+     "energy_above_15k": 2.1346245710375944e-09
+    }
+   ]
+  },
+  "celebrate": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/celebrate_0.ogg",
+     "seconds": 1.8,
+     "bytes": 15096,
+     "kbps": 67.1,
+     "channels": 1,
+     "lufs": -16.0,
+     "true_peak_dbfs": -2.6,
+     "max_volume_db": -2.8,
+     "dc": 9.225681130414405e-06,
+     "energy_above_15k": 2.29814256861306e-05
+    },
+    {
+     "file": "sfx/celebrate_1.ogg",
+     "seconds": 1.8,
+     "bytes": 15156,
+     "kbps": 67.4,
+     "channels": 1,
+     "lufs": -16.1,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.1,
+     "dc": 2.294521989163319e-05,
+     "energy_above_15k": 2.0756663947062683e-05
+    }
+   ]
+  },
+  "card_deal": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/card_deal_0.ogg",
+     "seconds": 0.076,
+     "bytes": 4252,
+     "kbps": 447.6,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.9,
+     "max_volume_db": -8.9,
+     "dc": 2.139425279204959e-05,
+     "energy_above_15k": 0.00236837419217482
+    },
+    {
+     "file": "sfx/card_deal_1.ogg",
+     "seconds": 0.11,
+     "bytes": 4497,
+     "kbps": 327.1,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -7.1,
+     "max_volume_db": -8.4,
+     "dc": 8.091394732298152e-06,
+     "energy_above_15k": 0.003105812853928355
+    },
+    {
+     "file": "sfx/card_deal_2.ogg",
+     "seconds": 0.076,
+     "bytes": 4385,
+     "kbps": 461.6,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -7.9,
+     "max_volume_db": -8.1,
+     "dc": 5.990854190356767e-05,
+     "energy_above_15k": 0.002016569370214498
+    },
+    {
+     "file": "sfx/card_deal_3.ogg",
+     "seconds": 0.076,
+     "bytes": 4370,
+     "kbps": 460.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.1,
+     "max_volume_db": -9.1,
+     "dc": 3.059553651082867e-05,
+     "energy_above_15k": 0.005752272648573616
+    }
+   ]
+  },
+  "card_play": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/card_play_0.ogg",
+     "seconds": 0.17,
+     "bytes": 4772,
+     "kbps": 224.6,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.3,
+     "max_volume_db": -3.0,
+     "dc": 1.5265230598926758e-05,
+     "energy_above_15k": 0.0010035987343126607
+    },
+    {
+     "file": "sfx/card_play_1.ogg",
+     "seconds": 0.136,
+     "bytes": 4665,
+     "kbps": 274.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.2,
+     "max_volume_db": -3.2,
+     "dc": 2.5088875157791323e-05,
+     "energy_above_15k": 0.0002170892381600186
+    },
+    {
+     "file": "sfx/card_play_2.ogg",
+     "seconds": 0.136,
+     "bytes": 4705,
+     "kbps": 276.8,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.8,
+     "max_volume_db": -3.8,
+     "dc": 0.00017172916860406777,
+     "energy_above_15k": 0.00023563740545194865
+    },
+    {
+     "file": "sfx/card_play_3.ogg",
+     "seconds": 0.136,
+     "bytes": 4750,
+     "kbps": 279.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.7,
+     "dc": 2.2225139655043963e-06,
+     "energy_above_15k": 0.00024714005010406534
+    }
+   ]
+  },
+  "card_draw": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/card_draw_0.ogg",
+     "seconds": 0.176,
+     "bytes": 5105,
+     "kbps": 232.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 5.58125163878427e-07,
+     "energy_above_15k": 0.001106522438029327
+    },
+    {
+     "file": "sfx/card_draw_1.ogg",
+     "seconds": 0.176,
+     "bytes": 5010,
+     "kbps": 227.7,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.7,
+     "dc": 4.796756290799019e-06,
+     "energy_above_15k": 0.0012247761645472906
+    },
+    {
+     "file": "sfx/card_draw_2.ogg",
+     "seconds": 0.176,
+     "bytes": 5060,
+     "kbps": 230.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -4.2,
+     "max_volume_db": -4.9,
+     "dc": 4.0151133514632065e-06,
+     "energy_above_15k": 0.0008857915304292645
+    }
+   ]
+  },
+  "card_select": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/card_select_0.ogg",
+     "seconds": 0.33,
+     "bytes": 4504,
+     "kbps": 109.2,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.4,
+     "max_volume_db": -8.7,
+     "dc": 3.288800609103741e-06,
+     "energy_above_15k": 5.8260775293782395e-05
+    },
+    {
+     "file": "sfx/card_select_1.ogg",
+     "seconds": 0.33,
+     "bytes": 4494,
+     "kbps": 108.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.6,
+     "max_volume_db": -9.0,
+     "dc": 1.3333333535544785e-05,
+     "energy_above_15k": 7.02612122825999e-05
+    },
+    {
+     "file": "sfx/card_select_2.ogg",
+     "seconds": 0.33,
+     "bytes": 4546,
+     "kbps": 110.2,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -7.7,
+     "max_volume_db": -8.5,
+     "dc": 7.636191075012237e-07,
+     "energy_above_15k": 5.870636098988967e-05
+    }
+   ]
+  },
+  "card_refuse": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/card_refuse_0.ogg",
+     "seconds": 0.496,
+     "bytes": 4715,
+     "kbps": 76.0,
+     "channels": 1,
+     "lufs": -15.4,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 0.00019622505028436417,
+     "energy_above_15k": 4.225256223827312e-10
+    },
+    {
+     "file": "sfx/card_refuse_1.ogg",
+     "seconds": 0.496,
+     "bytes": 4812,
+     "kbps": 77.6,
+     "channels": 1,
+     "lufs": -13.2,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.1,
+     "dc": 0.00017411070601905835,
+     "energy_above_15k": 2.720410853188847e-10
+    }
+   ]
+  },
+  "card_pass": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/card_pass_0.ogg",
+     "seconds": 0.246,
+     "bytes": 5553,
+     "kbps": 180.6,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.4,
+     "max_volume_db": -3.5,
+     "dc": 2.3324891350127442e-06,
+     "energy_above_15k": 4.536569267647464e-05
+    },
+    {
+     "file": "sfx/card_pass_1.ogg",
+     "seconds": 0.246,
+     "bytes": 5578,
+     "kbps": 181.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -4.4,
+     "max_volume_db": -4.7,
+     "dc": 6.128000645856905e-06,
+     "energy_above_15k": 3.670890153922572e-05
+    }
+   ]
+  },
+  "card_shuffle": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/card_shuffle_0.ogg",
+     "seconds": 0.946,
+     "bytes": 11725,
+     "kbps": 99.2,
+     "channels": 1,
+     "lufs": -16.5,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -3.7,
+     "dc": 5.616312334183797e-07,
+     "energy_above_15k": 0.0026698352013759096
+    },
+    {
+     "file": "sfx/card_shuffle_1.ogg",
+     "seconds": 0.946,
+     "bytes": 11606,
+     "kbps": 98.1,
+     "channels": 1,
+     "lufs": -15.7,
+     "true_peak_dbfs": -2.6,
+     "max_volume_db": -3.4,
+     "dc": 6.0111443541774175e-06,
+     "energy_above_15k": 0.0026806743239967557
+    }
+   ]
+  },
+  "card_flip": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/card_flip_0.ogg",
+     "seconds": 0.146,
+     "bytes": 4803,
+     "kbps": 263.2,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -3.4,
+     "dc": 5.815241500605881e-05,
+     "energy_above_15k": 0.00046677673775797436
+    },
+    {
+     "file": "sfx/card_flip_1.ogg",
+     "seconds": 0.146,
+     "bytes": 4791,
+     "kbps": 262.5,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.2,
+     "max_volume_db": -2.7,
+     "dc": 1.2334122677136784e-05,
+     "energy_above_15k": 0.0005376188228368567
+    },
+    {
+     "file": "sfx/card_flip_2.ogg",
+     "seconds": 0.146,
+     "bytes": 4764,
+     "kbps": 261.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.8,
+     "dc": 1.6650724625506905e-05,
+     "energy_above_15k": 0.000587027541885866
+    }
+   ]
+  },
+  "trick_win": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/trick_win_0.ogg",
+     "seconds": 0.746,
+     "bytes": 6883,
+     "kbps": 73.8,
+     "channels": 1,
+     "lufs": -15.4,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.8,
+     "dc": 1.3929174887047305e-06,
+     "energy_above_15k": 6.132878177717389e-07
+    },
+    {
+     "file": "sfx/trick_win_1.ogg",
+     "seconds": 0.746,
+     "bytes": 6717,
+     "kbps": 72.0,
+     "channels": 1,
+     "lufs": -16.2,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 2.8441035307495675e-07,
+     "energy_above_15k": 7.226050152670375e-07
+    }
+   ]
+  },
+  "quartet": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/quartet_0.ogg",
+     "seconds": 1.5,
+     "bytes": 13625,
+     "kbps": 72.7,
+     "channels": 1,
+     "lufs": -15.5,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -2.8,
+     "dc": 7.906999762781197e-07,
+     "energy_above_15k": 1.631469142852124e-09
+    }
+   ]
+  },
+  "round_win": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/round_win_0.ogg",
+     "seconds": 1.6,
+     "bytes": 12775,
+     "kbps": 63.9,
+     "channels": 1,
+     "lufs": -17.1,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.1,
+     "dc": 2.270675062036748e-05,
+     "energy_above_15k": 8.315713406859887e-10
+    }
+   ]
+  },
+  "turn_ping": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/turn_ping_0.ogg",
+     "seconds": 0.896,
+     "bytes": 6234,
+     "kbps": 55.7,
+     "channels": 1,
+     "lufs": -15.8,
+     "true_peak_dbfs": -7.0,
+     "max_volume_db": -7.0,
+     "dc": 1.8617271731389908e-06,
+     "energy_above_15k": 1.3791095423078676e-09
+    },
+    {
+     "file": "sfx/turn_ping_1.ogg",
+     "seconds": 0.896,
+     "bytes": 6118,
+     "kbps": 54.6,
+     "channels": 1,
+     "lufs": -16.0,
+     "true_peak_dbfs": -6.5,
+     "max_volume_db": -6.7,
+     "dc": 2.495068890384644e-06,
+     "energy_above_15k": 1.2638509174243634e-09
+    }
+   ]
+  },
+  "piece_drop": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/piece_drop_0.ogg",
+     "seconds": 0.446,
+     "bytes": 6606,
+     "kbps": 118.5,
+     "channels": 1,
+     "lufs": -22.9,
+     "true_peak_dbfs": -3.4,
+     "max_volume_db": -3.4,
+     "dc": 3.824668209605874e-05,
+     "energy_above_15k": 0.0005419746226377892
+    },
+    {
+     "file": "sfx/piece_drop_1.ogg",
+     "seconds": 0.446,
+     "bytes": 6636,
+     "kbps": 119.0,
+     "channels": 1,
+     "lufs": -23.2,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -3.0,
+     "dc": 3.565104202731825e-05,
+     "energy_above_15k": 0.0004835651170986359
+    },
+    {
+     "file": "sfx/piece_drop_2.ogg",
+     "seconds": 0.446,
+     "bytes": 6653,
+     "kbps": 119.3,
+     "channels": 1,
+     "lufs": -23.0,
+     "true_peak_dbfs": -3.9,
+     "max_volume_db": -3.9,
+     "dc": 3.130014026829828e-05,
+     "energy_above_15k": 0.0005096891504496943
+    },
+    {
+     "file": "sfx/piece_drop_3.ogg",
+     "seconds": 0.446,
+     "bytes": 6701,
+     "kbps": 120.2,
+     "channels": 1,
+     "lufs": -24.3,
+     "true_peak_dbfs": -3.2,
+     "max_volume_db": -3.3,
+     "dc": 2.248483527762787e-05,
+     "energy_above_15k": 0.0006081458062306209
+    }
+   ]
+  },
+  "pair_found": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/pair_found_0.ogg",
+     "seconds": 0.896,
+     "bytes": 9415,
+     "kbps": 84.1,
+     "channels": 1,
+     "lufs": -13.9,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.7,
+     "dc": 4.033705752843579e-06,
+     "energy_above_15k": 3.154885636526161e-09
+    },
+    {
+     "file": "sfx/pair_found_1.ogg",
+     "seconds": 0.896,
+     "bytes": 9298,
+     "kbps": 83.0,
+     "channels": 1,
+     "lufs": -13.4,
+     "true_peak_dbfs": -2.6,
+     "max_volume_db": -2.7,
+     "dc": 6.7671580024075695e-06,
+     "energy_above_15k": 6.586170130155851e-10
+    }
+   ]
+  },
+  "pair_miss": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/pair_miss_0.ogg",
+     "seconds": 0.696,
+     "bytes": 5328,
+     "kbps": 61.2,
+     "channels": 1,
+     "lufs": -13.6,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.1,
+     "dc": 2.5292459928594448e-05,
+     "energy_above_15k": 4.055466315677229e-10
+    },
+    {
+     "file": "sfx/pair_miss_1.ogg",
+     "seconds": 0.73,
+     "bytes": 5387,
+     "kbps": 59.0,
+     "channels": 1,
+     "lufs": -14.0,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 7.951162660699823e-05,
+     "energy_above_15k": 1.4075533718562246e-10
+    }
+   ]
+  },
+  "answer_correct": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/answer_correct_0.ogg",
+     "seconds": 1.2,
+     "bytes": 10939,
+     "kbps": 72.9,
+     "channels": 1,
+     "lufs": -15.6,
+     "true_peak_dbfs": -3.1,
+     "max_volume_db": -3.3,
+     "dc": 4.009250826015887e-06,
+     "energy_above_15k": 6.429600319603959e-10
+    },
+    {
+     "file": "sfx/answer_correct_1.ogg",
+     "seconds": 1.2,
+     "bytes": 10679,
+     "kbps": 71.2,
+     "channels": 1,
+     "lufs": -13.6,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 4.022949498505568e-06,
+     "energy_above_15k": 1.1997106829578097e-10
+    },
+    {
+     "file": "sfx/answer_correct_2.ogg",
+     "seconds": 1.2,
+     "bytes": 10533,
+     "kbps": 70.2,
+     "channels": 1,
+     "lufs": -15.3,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 2.145389429794401e-06,
+     "energy_above_15k": 5.13882492182194e-10
+    }
+   ]
+  },
+  "answer_wrong": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/answer_wrong_0.ogg",
+     "seconds": 0.896,
+     "bytes": 5980,
+     "kbps": 53.4,
+     "channels": 1,
+     "lufs": -14.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 4.414667494145874e-05,
+     "energy_above_15k": 4.272029048673606e-10
+    },
+    {
+     "file": "sfx/answer_wrong_1.ogg",
+     "seconds": 0.896,
+     "bytes": 5898,
+     "kbps": 52.7,
+     "channels": 1,
+     "lufs": -14.0,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 4.192399163015027e-05,
+     "energy_above_15k": 1.7591587068573312e-10
+    }
+   ]
+  },
+  "coin": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/coin_0.ogg",
+     "seconds": 0.696,
+     "bytes": 7032,
+     "kbps": 80.8,
+     "channels": 1,
+     "lufs": -12.1,
+     "true_peak_dbfs": -2.7,
+     "max_volume_db": -2.8,
+     "dc": 9.200637732065508e-06,
+     "energy_above_15k": 5.197284918491665e-05
+    },
+    {
+     "file": "sfx/coin_1.ogg",
+     "seconds": 0.696,
+     "bytes": 6862,
+     "kbps": 78.9,
+     "channels": 1,
+     "lufs": -11.2,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -2.8,
+     "dc": 1.3889900185796281e-05,
+     "energy_above_15k": 1.4978283372061918e-05
+    },
+    {
+     "file": "sfx/coin_2.ogg",
+     "seconds": 0.696,
+     "bytes": 6971,
+     "kbps": 80.1,
+     "channels": 1,
+     "lufs": -11.4,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -3.0,
+     "dc": 4.204814544060543e-06,
+     "energy_above_15k": 2.4590082253364645e-05
+    },
+    {
+     "file": "sfx/coin_3.ogg",
+     "seconds": 0.696,
+     "bytes": 6825,
+     "kbps": 78.4,
+     "channels": 1,
+     "lufs": -10.4,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.1,
+     "dc": 1.9598186539476055e-06,
+     "energy_above_15k": 2.766689335637055e-05
+    }
+   ]
+  },
+  "count_tick": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/count_tick_0.ogg",
+     "seconds": 0.246,
+     "bytes": 4534,
+     "kbps": 147.4,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.9,
+     "max_volume_db": -9.5,
+     "dc": 5.52826593302302e-06,
+     "energy_above_15k": 5.344867889099118e-05
+    },
+    {
+     "file": "sfx/count_tick_1.ogg",
+     "seconds": 0.246,
+     "bytes": 4491,
+     "kbps": 146.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.8,
+     "max_volume_db": -8.8,
+     "dc": 1.6870395339959408e-05,
+     "energy_above_15k": 0.00013165898712339243
+    },
+    {
+     "file": "sfx/count_tick_2.ogg",
+     "seconds": 0.246,
+     "bytes": 4478,
+     "kbps": 145.6,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.0,
+     "max_volume_db": -9.1,
+     "dc": 1.766716601599082e-05,
+     "energy_above_15k": 8.503946232664982e-05
+    },
+    {
+     "file": "sfx/count_tick_3.ogg",
+     "seconds": 0.246,
+     "bytes": 4505,
+     "kbps": 146.5,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -9.2,
+     "max_volume_db": -9.3,
+     "dc": 2.0858128815840853e-05,
+     "energy_above_15k": 0.0001927977518997523
+    }
+   ]
+  },
+  "build_place": {
+   "variants": 4,
+   "measure": [
+    {
+     "file": "sfx/build_place_0.ogg",
+     "seconds": 0.446,
+     "bytes": 4848,
+     "kbps": 87.0,
+     "channels": 1,
+     "lufs": -18.4,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.1,
+     "dc": 0.00024434797362374766,
+     "energy_above_15k": 4.673081230504139e-06
+    },
+    {
+     "file": "sfx/build_place_1.ogg",
+     "seconds": 0.446,
+     "bytes": 4879,
+     "kbps": 87.5,
+     "channels": 1,
+     "lufs": -20.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 9.409172410522564e-05,
+     "energy_above_15k": 5.639576474894116e-06
+    },
+    {
+     "file": "sfx/build_place_2.ogg",
+     "seconds": 0.446,
+     "bytes": 4882,
+     "kbps": 87.6,
+     "channels": 1,
+     "lufs": -18.2,
+     "true_peak_dbfs": -2.6,
+     "max_volume_db": -3.0,
+     "dc": 0.00023419340097690028,
+     "energy_above_15k": 4.415468525506182e-06
+    },
+    {
+     "file": "sfx/build_place_3.ogg",
+     "seconds": 0.446,
+     "bytes": 4842,
+     "kbps": 86.9,
+     "channels": 1,
+     "lufs": -17.6,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.0,
+     "dc": 4.939829557611859e-05,
+     "energy_above_15k": 2.6197040707684307e-06
+    }
+   ]
+  },
+  "build_remove": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/build_remove_0.ogg",
+     "seconds": 0.396,
+     "bytes": 6140,
+     "kbps": 124.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.3,
+     "max_volume_db": -3.5,
+     "dc": 0.00023232674622862253,
+     "energy_above_15k": 1.3130217126780468e-05
+    },
+    {
+     "file": "sfx/build_remove_1.ogg",
+     "seconds": 0.396,
+     "bytes": 6286,
+     "kbps": 127.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.0,
+     "dc": 0.00018152992357280053,
+     "energy_above_15k": 1.3918509608507043e-05
+    },
+    {
+     "file": "sfx/build_remove_2.ogg",
+     "seconds": 0.396,
+     "bytes": 6418,
+     "kbps": 129.7,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.4,
+     "max_volume_db": -2.5,
+     "dc": 0.00022623365624370166,
+     "energy_above_15k": 1.3325923890895224e-05
+    }
+   ]
+  },
+  "level_up": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/level_up_0.ogg",
+     "seconds": 2.2,
+     "bytes": 18043,
+     "kbps": 65.6,
+     "channels": 1,
+     "lufs": -17.1,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -2.9,
+     "dc": 4.127367950388089e-05,
+     "energy_above_15k": 1.2089273132864034e-09
+    }
+   ]
+  },
+  "treasure_found": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/treasure_found_0.ogg",
+     "seconds": 2.6,
+     "bytes": 22685,
+     "kbps": 69.8,
+     "channels": 1,
+     "lufs": -16.3,
+     "true_peak_dbfs": -2.8,
+     "max_volume_db": -2.8,
+     "dc": 9.791384950962565e-06,
+     "energy_above_15k": 1.1928319758595014e-05
+    }
+   ]
+  },
+  "puzzle_snap": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/puzzle_snap_0.ogg",
+     "seconds": 0.446,
+     "bytes": 5535,
+     "kbps": 99.3,
+     "channels": 1,
+     "lufs": -18.6,
+     "true_peak_dbfs": -3.0,
+     "max_volume_db": -3.1,
+     "dc": 7.499999254572609e-05,
+     "energy_above_15k": 6.700157777426484e-05
+    },
+    {
+     "file": "sfx/puzzle_snap_1.ogg",
+     "seconds": 0.446,
+     "bytes": 5592,
+     "kbps": 100.3,
+     "channels": 1,
+     "lufs": -19.5,
+     "true_peak_dbfs": -3.3,
+     "max_volume_db": -3.7,
+     "dc": 5.09695230009344e-05,
+     "energy_above_15k": 4.6433490614530516e-05
+    },
+    {
+     "file": "sfx/puzzle_snap_2.ogg",
+     "seconds": 0.446,
+     "bytes": 5615,
+     "kbps": 100.7,
+     "channels": 1,
+     "lufs": -19.1,
+     "true_peak_dbfs": -3.5,
+     "max_volume_db": -3.5,
+     "dc": 3.514113350515896e-05,
+     "energy_above_15k": 5.22862017248807e-05
+    }
+   ]
+  },
+  "dig": {
+   "variants": 3,
+   "measure": [
+    {
+     "file": "sfx/dig_0.ogg",
+     "seconds": 0.316,
+     "bytes": 7462,
+     "kbps": 188.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.3,
+     "max_volume_db": -3.4,
+     "dc": 0.00032467931490040954,
+     "energy_above_15k": 0.00024532400363806803
+    },
+    {
+     "file": "sfx/dig_1.ogg",
+     "seconds": 0.316,
+     "bytes": 6783,
+     "kbps": 171.7,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -3.5,
+     "max_volume_db": -4.1,
+     "dc": 0.00015068679363098908,
+     "energy_above_15k": 0.00030371149198986505
+    },
+    {
+     "file": "sfx/dig_2.ogg",
+     "seconds": 0.316,
+     "bytes": 7467,
+     "kbps": 189.0,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.1,
+     "dc": 8.10242472789644e-05,
+     "energy_above_15k": 0.00020045120119446688
+    }
+   ]
+  },
+  "applause": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/applause_0.ogg",
+     "seconds": 3.2,
+     "bytes": 25696,
+     "kbps": 64.2,
+     "channels": 1,
+     "lufs": -19.7,
+     "true_peak_dbfs": -6.3,
+     "max_volume_db": -6.5,
+     "dc": 1.3233064791544304e-06,
+     "energy_above_15k": 5.437282787171142e-05
+    },
+    {
+     "file": "sfx/applause_1.ogg",
+     "seconds": 3.2,
+     "bytes": 24660,
+     "kbps": 61.6,
+     "channels": 1,
+     "lufs": -19.7,
+     "true_peak_dbfs": -6.5,
+     "max_volume_db": -7.0,
+     "dc": 1.9039954691085726e-06,
+     "energy_above_15k": 5.167894104447809e-05
+    }
+   ]
+  },
+  "crowd_ooh": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/crowd_ooh_0.ogg",
+     "seconds": 1.4,
+     "bytes": 7884,
+     "kbps": 45.1,
+     "channels": 1,
+     "lufs": -21.4,
+     "true_peak_dbfs": -8.1,
+     "max_volume_db": -8.1,
+     "dc": 7.527132585739688e-07,
+     "energy_above_15k": 1.0045211463412773e-15
+    }
+   ]
+  },
+  "lumo_jingle": {
+   "variants": 1,
+   "measure": [
+    {
+     "file": "sfx/lumo_jingle_0.ogg",
+     "seconds": 6.0,
+     "bytes": 41629,
+     "kbps": 55.5,
+     "channels": 1,
+     "lufs": -16.0,
+     "true_peak_dbfs": -2.9,
+     "max_volume_db": -3.0,
+     "dc": 4.750785945427128e-06,
+     "energy_above_15k": 6.435263319950365e-09
+    }
+   ]
+  },
+  "whoosh": {
+   "variants": 2,
+   "measure": [
+    {
+     "file": "sfx/whoosh_0.ogg",
+     "seconds": 0.346,
+     "bytes": 6569,
+     "kbps": 151.9,
+     "channels": 1,
+     "lufs": -70.0,
+     "true_peak_dbfs": -8.4,
+     "max_volume_db": -8.4,
+     "dc": 2.3564331475182563e-06,
+     "energy_above_15k": 8.936977265069244e-05
+    },
+    {
+     "file": "sfx/whoosh_1.ogg",
+     "seconds": 0.446,
+     "bytes": 7281,
+     "kbps": 130.6,
+     "channels": 1,
+     "lufs": -20.8,
+     "true_peak_dbfs": -7.7,
+     "max_volume_db": -7.8,
+     "dc": 2.0813582887644426e-06,
+     "energy_above_15k": 0.00011210072149815511
+    }
+   ]
+  }
+ },
+ "generator": "tools/art/generate_klangwelt_audio.py",
+ "sample_rate": 32000,
+ "seed": 20261118,
+ "license": "Eigenbau für Lumo: selbst komponiert und synthetisiert, keine fremden Samples oder Melodien",
+ "total_bytes": 12291123,
+ "largest_bytes": 952304,
+ "file_count": 114
+}

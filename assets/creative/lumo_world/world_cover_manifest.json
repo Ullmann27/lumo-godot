@@ -1,0 +1,129 @@
+{
+  "kind": "Blender preview artwork, not a gameplay screenshot",
+  "blender": "4.3.2",
+  "generator": "tools/lumo_world_art/render_world_cover.py",
+  "sources": [
+    {
+      "path": "assets/creative/village3d/models/bridge.glb",
+      "sha256": "11c93dbac47e64d5ce5a289fcd4320f8910d897b0e8ca470c523b11cf864e09d"
+    },
+    {
+      "path": "assets/creative/village3d/models/house_a.glb",
+      "sha256": "bf09821f13ff80bde6e2c619c03c8d65f3dd8d1499f93c8635e2df02da69cc72"
+    },
+    {
+      "path": "assets/creative/village3d/models/house_b.glb",
+      "sha256": "56a1de5669243b5278b10b1c2f8d6dd46486aedd17d023f8268a67f9d729171b"
+    },
+    {
+      "path": "assets/creative/village3d/models/school.glb",
+      "sha256": "83a43943858de5f0bc66eedf687966bee56fcde3cda7abb1dee0b2dabded2c77"
+    },
+    {
+      "path": "assets/creative/village3d/models/house_c.glb",
+      "sha256": "c83ef5122e98973f886cdf5aa5bc0b82d8aeecde03e2aae97f4d6ac2b210d265"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/tree_oak.glb",
+      "sha256": "46b3ebea0553d88893ffd2adcc86ae107e8da3a35c7580aca009363447cbff48"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/creative/village3d/models/flowers.glb",
+      "sha256": "5fea03746f68b43f3521d3d61e27c6fddcdea5cf707b3aed26e257355f3864e2"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524"
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_comet.glb",
+      "sha256": "cd938b0680b0532906e3b99517c29cc61a69ba919a4d061253ffa79ce3d4c213"
+    },
+    {
+      "path": "assets/creative/lumo_world/vehicles/school_bus.glb",
+      "sha256": "49655d109e1188149c9d7017a4022dcd0a39bd0f78fee391ed7220756e4ee2ee"
+    },
+    {
+      "path": "assets/creative/models/lumo_treasure_chest.glb",
+      "sha256": "606bf5f7b1c25849fc12bd857957d632fe63dab8b4849e128c7554cf07845096"
+    },
+    {
+      "path": "assets/creative/models/lumo_lantern.glb",
+      "sha256": "88628b79065a08963e27bc7c12da68a38782c4fe9dfe34eeaffc903675c45ea3"
+    },
+    {
+      "path": "assets/creative/models/lumo_lantern.glb",
+      "sha256": "88628b79065a08963e27bc7c12da68a38782c4fe9dfe34eeaffc903675c45ea3"
+    },
+    {
+      "path": "assets/creative/models/lumo_lantern.glb",
+      "sha256": "88628b79065a08963e27bc7c12da68a38782c4fe9dfe34eeaffc903675c45ea3"
+    }
+  ],
+  "render": {
+    "engine": "Cycles CPU",
+    "samples": 144,
+    "width": 1600,
+    "height": 1000
+  },
+  "delivery": {
+    "path": "assets/games/hub/world.webp",
+    "bytes": 216938,
+    "sha256": "9beb2b4476cc0c916e2338c69900cd77acc28934615c95ce0bebdea4c784f8e2",
+    "width": 1600,
+    "height": 1000
+  },
+  "attribution": "Original Lumo model: Meshy, CC BY 4.0; original reference authorized by project owner. Existing model notices remain at assets/characters/lumo_animated/ATTRIBUTION.md and assets/characters/lumo_facial/ATTRIBUTION.md."
+}

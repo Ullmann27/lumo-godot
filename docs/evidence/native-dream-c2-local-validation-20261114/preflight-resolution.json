@@ -1,0 +1,29 @@
+{
+  "original_preflight": "/tmp/lumo-root-recovery-0900/native-dream-validation-c2e025f",
+  "original_stages": [],
+  "cause": "Collector incorrectly assumed every missing skip-worktree path was under docs/. No test or engine ran in that preflight.",
+  "missing_count": 2139,
+  "missing_top_levels": {
+    "docs": 2083,
+    "evidence": 8,
+    "tools": 48
+  },
+  "missing_tools_groups": {
+    "tools/ai3d": 2,
+    "tools/android_patches": 20,
+    "tools/argon_review": 1,
+    "tools/art": 16,
+    "tools/harbor": 1,
+    "tools/lumo_animation": 6,
+    "tools/qa": 2
+  },
+  "original_preflight_sha256": {
+    "run-state.json": "e35bb13ac647640e0d80f8ef7a901e50a06f3ce954f488095b9d00e9a8c79789",
+    "generated-import-originals.tar.gz": "272adeccafe73e7009d51f2ec2be9871db5e0eb14239f483ea429be26c3c6402",
+    "tracked-status-after.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source-inventory-after.json": "ed6d9ff5345ca50115d7f2e9b069fc46d521471517552a81dba6731bad052a55",
+    "original-orchestration-error.txt": "81aef2c3b8309cc2eb7130775930967e432e5dcd58565f4fba249ad33bcb9ac2",
+    "source-inventory-before.json": "ed6d9ff5345ca50115d7f2e9b069fc46d521471517552a81dba6731bad052a55"
+  },
+  "current_required_source_gate": "All materialized tracked bytes, modes, HEAD, tree and index match exactly; the complete explicit missing path list remains required."
+}

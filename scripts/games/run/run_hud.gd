@@ -1,0 +1,529 @@
+extends Control
+## What the child sees while running: pause, star count, progress along the
+## course with its checkpoints, a short message line, and the touch controls –
+## steering stick on the left, DASH and a big JUMP on the right.
+
+signal pause_pressed
+signal jump_changed(held: bool)
+signal dash_pressed
+signal steer_changed(axis: Vector2)
+signal skip_pressed
+
+const STICK = preload("res://scripts/games/kart_joystick.gd")
+const ACTION = preload("res://scripts/games/run/run_touch_button.gd")
+const UI = preload("res://scripts/games/run/run_ui.gd")
+const GHOST = preload("res://scripts/games/run/run_ghost.gd")
+const THEME = preload("res://scripts/games/kart_ui_theme.gd")
+
+var stick
+var jump_button
+var dash_button
+var pause_button: Button
+var top: Control
+var toast: Label
+var countdown: Label
+var stars: int = 0
+var star_total: int = 0
+var solved: int = 0
+var question_total: int = 3
+var progress: float = 0.0
+var ghost_progress: float = -1.0
+var marks := PackedFloat32Array()
+var mark_is_question := PackedByteArray()
+var reached: int = -1
+var _toast_left: float = 0.0
+## The text of the hint bubble as given (the bubble shows it broken into lines).
+var _toast_text: String = ""
+var _unit: float = 1.0
+var _bar := Rect2()
+var _two_rows: bool = false
+## Adventure path: the four crystal letters, the wordless coach and the skip button.
+var letter_chars: Array = []
+var letter_mask: int = 0
+var coach_icon: String = ""
+var skip_visible: bool = false
+var skip_button: Button
+var coach: Control
+var banner_label: Label
+var _banner_left: float = 0.0
+var _pulse: float = 0.0
+
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top = Control.new()
+	top.name = "TopBar"
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.draw.connect(_draw_top)
+	add_child(top)
+	pause_button = Button.new()
+	pause_button.name = "Pause"
+	pause_button.tooltip_text = "Pause"
+	pause_button.focus_mode = Control.FOCUS_NONE
+	pause_button.pressed.connect(func() -> void: pause_pressed.emit())
+	pause_button.draw.connect(_draw_pause)
+	add_child(pause_button)
+	toast = UI.label("", 18.0, 1.0, UI.WHITE, true)
+	toast.name = "Toast"
+	toast.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	toast.clip_text = false
+	# Lines are broken in _place_toast: a wrapping label measured its height at
+	# its old width, and a long hint after a short one became a tall dark board
+	# over Lumo.
+	toast.autowrap_mode = TextServer.AUTOWRAP_OFF
+	toast.hide()
+	add_child(toast)
+	countdown = UI.label("", 96.0, 1.0, UI.GOLD, true)
+	countdown.name = "Countdown"
+	countdown.add_theme_color_override("font_outline_color", UI.INK)
+	countdown.hide()
+	add_child(countdown)
+	stick = STICK.new()
+	stick.name = "SteerStick"
+	stick.tooltip_text = "Lenken: Stick nach links oder rechts ziehen."
+	stick.axis_changed.connect(func(axis: Vector2) -> void: steer_changed.emit(axis))
+	add_child(stick)
+	dash_button = ACTION.new()
+	dash_button.name = "DashButton"
+	dash_button.configure("dash", "FLITZEN", "Flitzen: kurzer Sprint, zerbricht Kisten.")
+	dash_button.hold_changed.connect(_on_dash)
+	add_child(dash_button)
+	jump_button = ACTION.new()
+	jump_button.name = "JumpButton"
+	jump_button.configure("jump", "SPRINGEN", "Tippen: kleiner Sprung. Halten: hoher, weiter Sprung.")
+	jump_button.hold_changed.connect(func(value: bool) -> void: jump_changed.emit(value))
+	add_child(jump_button)
+	coach = Control.new()
+	coach.name = "Coach"
+	coach.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	coach.draw.connect(_draw_coach)
+	add_child(coach)
+	move_child(coach, 0)
+	skip_button = Button.new()
+	skip_button.name = "SkipIntro"
+	skip_button.text = "▶▶"
+	skip_button.tooltip_text = "Einführung überspringen"
+	skip_button.focus_mode = Control.FOCUS_NONE
+	skip_button.pressed.connect(func() -> void: skip_pressed.emit())
+	skip_button.hide()
+	add_child(skip_button)
+	banner_label = UI.label("", 34.0, 1.0, UI.GOLD, true)
+	banner_label.name = "SectionBanner"
+	banner_label.add_theme_color_override("font_outline_color", UI.INK)
+	banner_label.hide()
+	add_child(banner_label)
+	get_viewport().size_changed.connect(layout)
+	MobileRuntime.safe_area_changed.connect(layout)
+	layout()
+
+
+func _exit_tree() -> void:
+	if get_viewport().size_changed.is_connected(layout):
+		get_viewport().size_changed.disconnect(layout)
+	if MobileRuntime.safe_area_changed.is_connected(layout):
+		MobileRuntime.safe_area_changed.disconnect(layout)
+
+
+func _on_dash(value: bool) -> void:
+	if value:
+		dash_pressed.emit()
+
+
+func set_course(shares: PackedFloat32Array, questions: PackedByteArray, total: int) -> void:
+	marks = shares
+	mark_is_question = questions
+	star_total = total
+	question_total = 0
+	ghost_progress = -1.0
+	for flag in questions:
+		question_total += int(flag)
+	top.queue_redraw()
+
+
+func set_state(star_count: int, share: float, solved_count: int, checkpoint: int) -> void:
+	if star_count == stars and solved_count == solved and checkpoint == reached and absf(share - progress) < 0.002:
+		return
+	stars = star_count
+	progress = clampf(share, 0.0, 1.0)
+	solved = solved_count
+	reached = checkpoint
+	top.queue_redraw()
+
+
+func set_letters(chars: Array, mask: int) -> void:
+	letter_chars = chars
+	letter_mask = mask
+	top.queue_redraw()
+
+
+func set_ghost_progress(value: float) -> void:
+	if absf(value - ghost_progress) < 0.002:
+		return
+	ghost_progress = value
+	top.queue_redraw()
+
+
+func set_skip_visible(value: bool) -> void:
+	skip_visible = value
+	skip_button.visible = value and top.visible
+
+
+func set_coach(icon: String) -> void:
+	if icon != coach_icon:
+		coach_icon = icon
+		coach.queue_redraw()
+
+
+## Big title of a new section, shown for a moment.
+func banner(text: String, _index: int) -> void:
+	banner_label.text = text
+	banner_label.visible = not text.is_empty()
+	banner_label.modulate.a = 1.0
+	_banner_left = 2.4
+
+
+func set_dash_cooldown(value: float) -> void:
+	dash_button.set_cooldown(value)
+
+
+func say(text: String, seconds: float = 2.4) -> void:
+	_toast_text = text
+	toast.text = text
+	toast.visible = not text.is_empty()
+	_toast_left = seconds
+	_place_toast()
+
+
+func show_countdown(text: String) -> void:
+	countdown.text = text
+	countdown.visible = not text.is_empty()
+
+
+## Shows or hides the running controls; menus take over while they are hidden.
+func set_playing(value: bool) -> void:
+	for control in [stick, jump_button, dash_button]:
+		control.visible = value
+		control.set_enabled(value)
+	pause_button.visible = value
+	pause_button.disabled = not value
+	top.visible = value
+	coach.visible = value
+	skip_button.visible = value and skip_visible
+	if not value:
+		toast.hide()
+		banner_label.hide()
+
+
+func release_controls() -> void:
+	stick._reset()
+	jump_button.reset()
+	dash_button.reset()
+
+
+func _process(delta: float) -> void:
+	if not coach_icon.is_empty():
+		_pulse += delta
+		coach.queue_redraw()
+	if _banner_left > 0.0:
+		_banner_left -= delta
+		banner_label.modulate.a = clampf(_banner_left / 0.5, 0.0, 1.0)
+		if _banner_left <= 0.0:
+			banner_label.hide()
+	if _toast_left > 0.0:
+		_toast_left -= delta
+		if _toast_left <= 0.0:
+			toast.hide()
+
+
+func layout() -> void:
+	if not is_inside_tree():
+		return
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	_unit = UI.unit(self)
+	var u: float = _unit
+	var m: Vector4 = UI.margins(self)
+	visible = MobileRuntime.safe_area_is_ready()
+	var inner_width: float = view.x - m.x - m.z
+	_two_rows = inner_width / u < 560.0
+	var row: float = 52.0 * u
+	pause_button.position = Vector2(m.x, m.y)
+	pause_button.size = Vector2(row, row)
+	var plain := StyleBoxEmpty.new()
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		pause_button.add_theme_stylebox_override(state, plain)
+	top.position = Vector2(m.x, m.y)
+	top.size = Vector2(inner_width, row * (2.0 if _two_rows else 1.0) + (8.0 * u if _two_rows else 0.0))
+	top.queue_redraw()
+	pause_button.queue_redraw()
+	var controls: float = minf(view.x, view.y) / u
+	var stick_side: float = clampf(controls * 0.34, 124.0, 168.0) * u
+	var jump_side: float = clampf(controls * 0.30, 112.0, 140.0) * u
+	var dash_side: float = clampf(controls * 0.22, 84.0, 104.0) * u
+	var bottom: float = view.y - m.w - 6.0 * u
+	stick.custom_minimum_size = Vector2.ONE * stick_side
+	stick.size = Vector2.ONE * stick_side
+	stick.position = Vector2(m.x + 4.0 * u, bottom - stick_side)
+	jump_button.size = Vector2.ONE * jump_side
+	jump_button.position = Vector2(view.x - m.z - 4.0 * u - jump_side, bottom - jump_side)
+	dash_button.size = Vector2.ONE * dash_side
+	if view.x / u < 520.0:
+		# Narrow phones: DASH sits above JUMP, the middle of the road stays free.
+		dash_button.position = Vector2(
+			view.x - m.z - 4.0 * u - dash_side, jump_button.position.y - dash_side - 10.0 * u
+		)
+	else:
+		dash_button.position = Vector2(
+			jump_button.position.x - dash_side - 10.0 * u, bottom - dash_side - 26.0 * u
+		)
+	toast.add_theme_font_size_override("font_size", roundi(16.0 * u))
+	var pill := StyleBoxFlat.new()
+	pill.bg_color = Color(0.02, 0.09, 0.22, 0.82)
+	pill.set_corner_radius_all(roundi(18.0 * u))
+	pill.set_content_margin_all(6.0 * u)
+	pill.content_margin_left = 14.0 * u
+	pill.content_margin_right = 14.0 * u
+	toast.add_theme_stylebox_override("normal", pill)
+	_place_toast()
+	countdown.add_theme_font_size_override("font_size", roundi(110.0 * u))
+	countdown.add_theme_constant_override("outline_size", roundi(16.0 * u))
+	countdown.position = Vector2(0, view.y * 0.24)
+	countdown.size = Vector2(view.x, 150.0 * u)
+	coach.position = Vector2.ZERO
+	coach.size = view
+	skip_button.position = Vector2(view.x - m.z - 64.0 * u, top.position.y + top.size.y + 10.0 * u)
+	skip_button.size = Vector2(56.0, 48.0) * u
+	skip_button.add_theme_font_size_override("font_size", roundi(20.0 * u))
+	var skip_style := StyleBoxFlat.new()
+	skip_style.bg_color = Color(0.02, 0.09, 0.22, 0.82)
+	skip_style.border_color = UI.GOLD
+	skip_style.set_border_width_all(maxi(1, roundi(2.0 * u)))
+	skip_style.set_corner_radius_all(roundi(14.0 * u))
+	for state in ["normal", "hover", "pressed", "focus"]:
+		skip_button.add_theme_stylebox_override(state, skip_style)
+	banner_label.add_theme_font_size_override("font_size", roundi(34.0 * u))
+	banner_label.add_theme_constant_override("outline_size", roundi(10.0 * u))
+	banner_label.position = Vector2(0, view.y * 0.36)
+	banner_label.size = Vector2(view.x, 60.0 * u)
+
+
+func _place_toast() -> void:
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	var u: float = _unit
+	var font: Font = toast.get_theme_font("font")
+	var font_size: int = roundi(16.0 * u)
+	var limit: float = minf(view.x - 28.0 * u, 460.0 * u)
+	var inner: float = limit - 28.0 * u
+	var text_width: float = font.get_string_size(_toast_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	var lines: int = clampi(ceili(text_width / maxf(1.0, inner)), 1, 3)
+	# Balanced lines: about the same length each, never wider than the limit.
+	var target: float = minf(text_width / float(lines) + 16.0 * u, inner)
+	var rows: Array[String] = []
+	var row: String = ""
+	for word in _toast_text.split(" ", false):
+		var trial: String = word if row.is_empty() else row + " " + word
+		if not row.is_empty() and font.get_string_size(trial, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > target:
+			rows.append(row)
+			row = word
+		else:
+			row = trial
+	if not row.is_empty():
+		rows.append(row)
+	toast.text = "\n".join(rows)
+	toast.custom_minimum_size = Vector2.ZERO
+	toast.size = Vector2.ZERO
+	toast.reset_size()
+	toast.position = Vector2((view.x - toast.size.x) * 0.5, top.position.y + top.size.y + 8.0 * u)
+
+
+func _draw_pause() -> void:
+	var u: float = _unit
+	var side: float = pause_button.size.x
+	var centre := Vector2(side, side) * 0.5
+	pause_button.draw_circle(centre, side * 0.48, Color(0.02, 0.09, 0.22, 0.86))
+	pause_button.draw_arc(centre, side * 0.46, 0.0, TAU, 40, UI.CYAN, 2.0 * u, true)
+	for shift in [-1.0, 1.0]:
+		pause_button.draw_rect(
+			Rect2(centre + Vector2(shift * side * 0.13 - side * 0.055, -side * 0.17), Vector2(side * 0.11, side * 0.34)),
+			UI.WHITE
+		)
+
+
+func _draw_top() -> void:
+	if top.size.x <= 0.0 or top.size.y <= 0.0:
+		return
+	var u: float = _unit
+	var row: float = 52.0 * u
+	var font: Font = THEME.HEADING
+	var font_size: int = roundi(21.0 * u)
+	var left: float = row + 8.0 * u
+	# Stars collected.
+	var count: String = str(stars)
+	var count_width: float = font.get_string_size(count, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	var star_pill := Rect2(left, 6.0 * u, 54.0 * u + count_width, row - 12.0 * u)
+	_pill(star_pill, UI.GOLD)
+	top.draw_colored_polygon(
+		UI.star_points(star_pill.position + Vector2(22.0 * u, star_pill.size.y * 0.5), 13.0 * u), UI.GOLD
+	)
+	top.draw_string(
+		font, star_pill.position + Vector2(42.0 * u, star_pill.size.y * 0.5 + font_size * 0.36), count,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, UI.WHITE
+	)
+	# Crystal letters of the adventure path, under the star count.
+	if not letter_chars.is_empty():
+		var x: float = star_pill.position.x + 4.0 * u
+		var y: float = star_pill.end.y + 4.0 * u
+		var step: float = 30.0 * u
+		if _two_rows:
+			x = star_pill.end.x + 8.0 * u
+			# Narrow phones: the letters share the first row with the task
+			# counter and shrink until all of them fit between both pills.
+			var counter: String = "%d/%d" % [solved, question_total]
+			var counter_left: float = (
+				top.size.x - 50.0 * u
+				- font.get_string_size(counter, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+			)
+			step = minf(step, (counter_left - 6.0 * u - x) / maxf(1.0, float(letter_chars.size())))
+			y = star_pill.position.y + (star_pill.size.y - step * 0.87) * 0.5
+		var side: float = step * 0.87
+		var letter_font_size: int = roundi(side * 0.65)
+		# A pending resize can leave no glyph space between the two counters.
+		if letter_font_size > 0:
+			for index in range(letter_chars.size()):
+				var found: bool = (letter_mask & (1 << index)) != 0
+				var cell := Rect2(x + float(index) * step, y, side, side)
+				var style := StyleBoxFlat.new()
+				style.bg_color = Color(0.25, 0.75, 0.95, 0.9) if found else Color(0.02, 0.09, 0.22, 0.7)
+				style.border_color = Color(0.6, 0.95, 1.0, 0.9)
+				style.set_border_width_all(maxi(1, roundi(1.5 * u)))
+				style.set_corner_radius_all(roundi(6.0 * u))
+				top.draw_style_box(style, cell)
+				top.draw_string(
+					font, cell.position + Vector2(0, side * 0.73), str(letter_chars[index]), HORIZONTAL_ALIGNMENT_CENTER,
+					cell.size.x, letter_font_size, UI.WHITE if found else Color(1, 1, 1, 0.35)
+				)
+	# Learning stops solved.
+	var tasks: String = "%d/%d" % [solved, question_total]
+	var tasks_width: float = font.get_string_size(tasks, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	var task_pill := Rect2(top.size.x - 50.0 * u - tasks_width, 6.0 * u, 50.0 * u + tasks_width, row - 12.0 * u)
+	_pill(task_pill, UI.CYAN)
+	top.draw_circle(task_pill.position + Vector2(20.0 * u, task_pill.size.y * 0.5), 12.0 * u, UI.CYAN)
+	top.draw_string(
+		font, task_pill.position + Vector2(14.5 * u, task_pill.size.y * 0.5 + 7.0 * u), "?",
+		HORIZONTAL_ALIGNMENT_LEFT, -1, roundi(19.0 * u), UI.INK
+	)
+	top.draw_string(
+		font, task_pill.position + Vector2(38.0 * u, task_pill.size.y * 0.5 + font_size * 0.36), tasks,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, UI.WHITE
+	)
+	# Progress along the course.
+	if _two_rows:
+		_bar = Rect2(10.0 * u, row + 22.0 * u, top.size.x - 20.0 * u, 14.0 * u)
+	else:
+		var from: float = star_pill.end.x + 22.0 * u
+		_bar = Rect2(from, row * 0.5 - 7.0 * u, task_pill.position.x - 22.0 * u - from, 14.0 * u)
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color(0.02, 0.09, 0.22, 0.86)
+	track.border_color = Color(1, 1, 1, 0.55)
+	track.set_border_width_all(maxi(1, roundi(1.5 * u)))
+	track.set_corner_radius_all(roundi(7.0 * u))
+	top.draw_style_box(track, _bar)
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = UI.GOLD
+	fill.set_corner_radius_all(roundi(5.0 * u))
+	var filled: float = maxf(0.0, (_bar.size.x - 4.0 * u) * progress)
+	if filled > 2.0:
+		top.draw_style_box(fill, Rect2(_bar.position + Vector2(2.0 * u, 2.0 * u), Vector2(filled, _bar.size.y - 4.0 * u)))
+	for index in range(marks.size()):
+		var at := Vector2(_bar.position.x + _bar.size.x * marks[index], _bar.position.y + _bar.size.y * 0.5)
+		var done: bool = index <= reached
+		if mark_is_question[index] != 0:
+			top.draw_circle(at, 9.0 * u, UI.INK)
+			top.draw_circle(at, 7.5 * u, UI.CYAN if not done else UI.GOLD)
+			top.draw_string(font, at + Vector2(-3.6 * u, 4.6 * u), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, roundi(12.0 * u), UI.INK)
+		else:
+			top.draw_circle(at, 6.0 * u, UI.INK)
+			top.draw_circle(at, 4.5 * u, UI.WHITE if not done else UI.GOLD)
+	# Finish flag and Lumo's marker.
+	var goal := Vector2(_bar.end.x, _bar.position.y + _bar.size.y * 0.5)
+	top.draw_rect(Rect2(goal + Vector2(-2.0 * u, -15.0 * u), Vector2(3.0 * u, 24.0 * u)), UI.WHITE)
+	top.draw_rect(Rect2(goal + Vector2(1.0 * u, -15.0 * u), Vector2(13.0 * u, 10.0 * u)), UI.GOLD)
+	var marker := Vector2(_bar.position.x + _bar.size.x * progress, _bar.position.y + _bar.size.y * 0.5)
+	top.draw_circle(marker, 11.0 * u, UI.WHITE)
+	top.draw_circle(marker, 8.5 * u, Color("ff8a2a"))
+	for side in [-1.0, 1.0]:
+		top.draw_colored_polygon(
+			PackedVector2Array(
+				[
+					marker + Vector2(side * 2.5 * u, -7.0 * u),
+					marker + Vector2(side * 9.0 * u, -15.0 * u),
+					marker + Vector2(side * 9.5 * u, -4.0 * u),
+				]
+			),
+			Color("ff8a2a")
+		)
+	if ghost_progress >= 0.0:
+		var ghost_at := Vector2(_bar.position.x + _bar.size.x * ghost_progress, _bar.end.y + 4.0 * u)
+		var diamond := PackedVector2Array([Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT])
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 8.0 * u, 0.0, ghost_at) * diamond, UI.INK)
+		top.draw_colored_polygon(Transform2D(0.0, Vector2.ONE * 5.5 * u, 0.0, ghost_at) * diamond, GHOST.COLOUR)
+
+
+func _pill(rect: Rect2, accent: Color) -> void:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.02, 0.09, 0.22, 0.86)
+	style.border_color = Color(accent.r, accent.g, accent.b, 0.85)
+	style.set_border_width_all(maxi(1, roundi(1.5 * _unit)))
+	style.set_corner_radius_all(roundi(rect.size.y * 0.5))
+	top.draw_style_box(style, rect)
+
+
+## Wordless coach of the introduction: a pulsing ring on the button to press
+## and a small picture of what happens next.
+func _draw_coach() -> void:
+	if coach_icon.is_empty():
+		return
+	var u: float = _unit
+	var wave: float = 0.5 + 0.5 * sin(_pulse * 6.0)
+	if coach_icon != "bounce":
+		var rect: Rect2 = jump_button.get_global_rect()
+		var centre: Vector2 = rect.get_center() - coach.global_position
+		var radius: float = rect.size.x * (0.56 + 0.1 * wave)
+		coach.draw_arc(centre, radius, 0.0, TAU, 48, Color(1.0, 0.86, 0.3, 0.9 - 0.5 * wave), 6.0 * u, true)
+		# A tapping finger above the button.
+		var finger: Vector2 = centre + Vector2(-rect.size.x * 0.1, -rect.size.y * (0.75 + 0.12 * wave))
+		coach.draw_circle(finger, 13.0 * u, UI.WHITE)
+		coach.draw_rect(Rect2(finger + Vector2(-8.0 * u, -34.0 * u), Vector2(16.0 * u, 34.0 * u)), UI.WHITE)
+	# The demonstration belongs above the steering thumb. The centre stays
+	# clear so the child can see the obstacle the diagram describes.
+	u *= .72
+	var box := Rect2(stick.position.x, maxf(top.position.y + top.size.y, stick.position.y - 102.0 * u),
+		140.0 * u, 92.0 * u)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.02, 0.09, 0.22, 0.75)
+	style.border_color = UI.GOLD
+	style.set_border_width_all(maxi(1, roundi(2.0 * u)))
+	style.set_corner_radius_all(roundi(18.0 * u))
+	coach.draw_style_box(style, box)
+	var c: Vector2 = box.get_center()
+	var fox := Color("ff8a2a")
+	var hop: float = sin(_pulse * 4.0) * 0.5 + 0.5
+	match coach_icon:
+		"jump":
+			coach.draw_rect(Rect2(box.position + Vector2(10, 62) * u, Vector2(40, 10) * u), Color("7a5a3c"))
+			coach.draw_rect(Rect2(box.position + Vector2(90, 62) * u, Vector2(40, 10) * u), Color("7a5a3c"))
+			coach.draw_rect(Rect2(box.position + Vector2(50, 66) * u, Vector2(40, 18) * u), Color("2fd0c8"))
+			coach.draw_circle(c + Vector2(lerpf(-40.0, 40.0, hop), -10.0 - 26.0 * sin(hop * PI)) * u, 10.0 * u, fox)
+		"bounce":
+			coach.draw_circle(c + Vector2(0, 26) * u, 20.0 * u, Color("ff5a4e"))
+			coach.draw_rect(Rect2(c + Vector2(-6, 26) * u, Vector2(12, 16) * u), Color("f3ead2"))
+			coach.draw_circle(c + Vector2(0, -8.0 - 22.0 * hop) * u, 10.0 * u, fox)
+		"stomp":
+			coach.draw_circle(c + Vector2(0, 28) * u, 16.0 * u, Color("ff6f3c"))
+			coach.draw_circle(c + Vector2(0, -26.0 + 30.0 * hop) * u, 10.0 * u, fox)
+			coach.draw_line(c + Vector2(26, -20) * u, c + Vector2(26, 10) * u, UI.GOLD, 4.0 * u)
+			coach.draw_colored_polygon(PackedVector2Array([c + Vector2(18, 8) * u, c + Vector2(34, 8) * u, c + Vector2(26, 20) * u]), UI.GOLD)
+		"barrel":
+			coach.draw_rect(Rect2(c + Vector2(-50, 4) * u, Vector2(32, 26) * u), Color("a8683a"))
+			coach.draw_arc(c + Vector2(0, 30) * u, 44.0 * u, PI * 1.15, PI * 1.85, 16, UI.GOLD, 3.0 * u)
+			coach.draw_circle(c + Vector2(-34.0 + 76.0 * hop, 18.0 - 40.0 * sin(hop * PI)) * u, 9.0 * u, fox)

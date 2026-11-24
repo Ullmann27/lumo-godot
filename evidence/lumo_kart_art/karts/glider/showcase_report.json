@@ -1,0 +1,13 @@
+{
+  "variant": "glider",
+  "path": "assets/kart/production/karts/aurora_glider_showcase.glb",
+  "faces": 2512,
+  "use": "Nur Garage, Werkstatt und Siegerpodest (set_preview_detail); nie im Rennen.",
+  "materials": [
+    "LampGlass",
+    "HeatTintStraw",
+    "HeatTintViolet",
+    "HeatTintBlue",
+    "RoadDustFilm"
+  ]
+}

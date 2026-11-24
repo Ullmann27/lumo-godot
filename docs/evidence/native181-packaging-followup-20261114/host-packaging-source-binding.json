@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "head": "0b7bacadd3cdc45d22a8e038c5df50ba8b739d62",
+  "tree": "f3a7df4c3112ac63577db00a9637facfea5c0175",
+  "source_index": {
+    "path": "/workspace/scratch/b3485b7bb989/producer-pr503-pr182-selective-review-20261114/originals/host-target-tree.json",
+    "bytes": 1402391,
+    "sha256": "5c9a07b1812750593b93ccab5a9a3d5403af9e6c09a91572198ea1049f0e1c3c",
+    "git_blob": "982e7d65cc2df06a9a6f2c46050a4c80196459f0"
+  },
+  "notice_name_matches_in_all_tracked_paths": [],
+  "bound_sources": [
+    {
+      "path": "pubspec.yaml",
+      "mode": "100644",
+      "bytes": 2718,
+      "sha256": "c81dc1a0e41cce6888fbcd031249d01da6e71e44dcc3be8d43312641efca26a1",
+      "git_blob": "f3b1792a73098c5c8c4f426ee041e1f05eeb2426"
+    },
+    {
+      "path": "scripts/prepare_android.py",
+      "mode": "100644",
+      "bytes": 8826,
+      "sha256": "e80c31269ba8d15fc5db171dd46e1c45cb418f1ff799b03292e89e45b7e4dc6f",
+      "git_blob": "83d6421d0fe26848962c8a2433b0b78182596261"
+    },
+    {
+      "path": "scripts/prepare_embedded_games.py",
+      "mode": "100644",
+      "bytes": 10377,
+      "sha256": "694c115184bd6464ff8e7a3e0bd078e58f5f37d47739ac1d7675827c2f21e129",
+      "git_blob": "a1615455b5ea6251926d5037900e025d46971c18"
+    },
+    {
+      "path": "scripts/export_embedded_game.py",
+      "mode": "100644",
+      "bytes": 8567,
+      "sha256": "fcef35e68e8487fa16357161adec6550b9c3c8c0c7bb8f84574ef7963f8a3fcc",
+      "git_blob": "00915781968bb61f5d1ce1923529fb14a35cce19"
+    }
+  ],
+  "method": "Existing exact Git blobs read without lazy fetch; no importer/test/export execution."
+}

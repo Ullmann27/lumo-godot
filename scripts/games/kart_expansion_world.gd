@@ -3,11 +3,24 @@ extends RefCounted
 const TRACKS = preload("res://scripts/games/kart_expansion_tracks.gd")
 const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const SKY = preload("res://scripts/games/kart_sky_islands.gd")
+const GROUND_PROFILE = preload("res://scripts/games/track_themes/track_ground_profile.gd")
+const WINTER_ALPINE = preload("res://scripts/games/kart_winter_alpine_world.gd")
+const CRYSTAL_RESONANCE = preload("res://scripts/games/kart_crystal_resonance_world.gd")
 
 
 static func prepare(world) -> void:
 	if world.track_id in ["candy_cloud", "volcano_night", "galaxy_ringway"]:
-		world.loop_layout = {"start": world.length * 0.72, "lane": 2.9}
+		# Entry on the outer right lane, exit on the inner right lane: the two
+		# tracks of the ring sit side by side and never cross each other.
+		world.loop_layout = {
+			"start": world.length * 0.72,
+			"lane": 4.0,
+			"exit_shift": -2.75,
+			"deck_half_width": 1.2,
+			"lateral_limit": 0.3,
+			"lane_tolerance": 1.3,
+		}
+		world.loop_layout = LOOP.configure_branch(world, world.loop_layout)
 	if (
 		world.track_id
 		in ["crystal_canyon", "candy_cloud", "volcano_night", "winter_sprint", "galaxy_ringway"]
@@ -23,12 +36,11 @@ static func prepare(world) -> void:
 
 
 static func environment(world) -> void:
-	var floating: bool = world.track_id in ["candy_cloud", "galaxy_ringway"]
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(900, 900)
 	var ground := MeshInstance3D.new()
 	ground.mesh = plane
-	ground.position.y = -12 if floating else -2
+	ground.position.y = GROUND_PROFILE.surface_height(world.track_id)
 	if world.track_id == "volcano_night":
 		var lava := ShaderMaterial.new()
 		lava.shader = preload("res://assets/shaders/kart_lava.gdshader")
@@ -82,8 +94,12 @@ static func build(world) -> void:
 	rng.seed = world.definition.seed
 	# The landmarks repeat around the whole course, with a clear navigable roadway.
 	var count: int = 32 if world.low_detail else 56
+	if not world.adventure_tunnel.is_empty():
+		count = clampi(ceili(world.length / (30.0 if world.low_detail else 17.0)), count, 76 if world.low_detail else 128)
 	for i in range(count):
 		var d: float = (float(i) + 0.25) * world.length / count
+		if world.ADVENTURE_TUNNELS.contains(world, d, 25.0):
+			continue
 		var basis: Basis = world.frame(d)
 		var side: float = -1 if i % 2 == 0 else 1
 		var at: Vector3 = world.position_at(d, side * rng.randf_range(15, 29))
@@ -104,7 +120,11 @@ static func build(world) -> void:
 				_palm(world, at, 6 + i % 4, basis)
 				if i % 5 == 0:
 					_temple(world, at + basis.x * side * 5, basis, Color("adb49b"))
-				world._prop("crown", at + Vector3(4, 0, 2), Vector3(5, 1.7, 4), Color("3d8262"))
+				# Strukturierter Dschungelbaum statt flacher Kronen-Scheibe.
+				world.plant_scenery(
+					"dschungelbaum", at + Vector3(4, -0.2, 2), 0.72, float(i) * 1.7,
+					Color(0.48, 0.52, 0.47), fposmod(float(i) * 0.37, 1.0)
+				)
 			"candy_cloud":
 				# The architectural kit supplies palaces, iced donuts and cloud islands.
 				if i % 5 == 0:
@@ -132,8 +152,15 @@ static func build(world) -> void:
 				world._prop(
 					"mountain", at - Vector3.UP * 7, Vector3(10, 15, 12), Color("d7eaf3"), angle
 				)
-				world._prop("fir", at + Vector3.UP * 2.5, Vector3(4, 8, 4), Color("8cadc4"))
-				world._prop("fir", at + Vector3.UP * 3.5, Vector3(3.2, 6.5, 3.2), Color("eef5ff"))
+				# Verschneite Nadelbaeume (Blender-Modell) statt Kegel.
+				world.plant_scenery(
+					"winterbaum", at - Vector3.UP * 0.5, 1.05, float(i) * 2.3,
+					Color(0.5, 0.5, 0.52), fposmod(float(i) * 0.41, 1.0)
+				)
+				world.plant_scenery(
+					"winterbaum", at + Vector3(3.5, -0.5, -2.0), 0.8, float(i) * 1.1,
+					Color(0.47, 0.5, 0.53), fposmod(float(i) * 0.73, 1.0)
+				)
 				if i % 3 == 0:
 					world._prop(
 						"crystal",
@@ -153,7 +180,7 @@ static func build(world) -> void:
 					true
 				)
 				if i % 5 == 0:
-					var planet: Vector3 = at + Vector3.UP * 16
+					var planet: Vector3 = _planet_at(world, d, at, side)
 					world._prop(
 						"ball",
 						planet,
@@ -231,26 +258,17 @@ static func build(world) -> void:
 		)
 	if world.track_id in ["jungle_temple", "desert_drift"]:
 		world._suspension_bridge(world.length * 0.30, 45)
+	WINTER_ALPINE.build(world)
+	CRYSTAL_RESONANCE.build(world)
 
 
 static func _palm(world, at: Vector3, height: float, basis: Basis) -> void:
-	world._prop(
-		"cylinder",
-		at + Vector3.UP * height * 0.4,
-		Vector3(0.33, height, 0.33),
-		Color("98755b"),
-		basis
+	# Palme aus Blender (Ringrinde, gefiederte Wedel) statt Zylinder und Kronen-Bloecken.
+	var yaw: float = atan2(basis.z.x, basis.z.z) + height * 0.9
+	world.plant_scenery(
+		"palme", at - Vector3.UP * 0.2, height / 8.9 * 1.1, yaw, Color(0.5, 0.52, 0.48),
+		fposmod(height * 0.31 + at.x * 0.01, 1.0)
 	)
-	for j in range(6):
-		var angle: float = j * TAU / 6
-		var leaf_basis := Basis(Vector3.UP, angle).rotated(Vector3.FORWARD, 0.3)
-		world._prop(
-			"crown",
-			at + Vector3(sin(angle) * 2, height * 0.94, cos(angle) * 2),
-			Vector3(1.3, 0.55, 4.5),
-			Color("57a776"),
-			leaf_basis
-		)
 
 
 static func _temple(world, at: Vector3, basis: Basis, color: Color) -> void:
@@ -370,3 +388,31 @@ static func _volcano(world) -> void:
 		for j in range(5):
 			var spray: Vector3 = previous + basis.x * (j - 2) * 0.8 + Vector3.UP * (1 + j % 3)
 			world._prop("ball", spray, Vector3.ONE * 0.22, Color("ffb955"), Basis.IDENTITY, true)
+
+
+## Include the full supplied planet/ring radius, the whole circuit and the exterior loop.
+## Nearby planets must frame the road without engulfing a crest or its camera.
+static func _planet_clear(world, at: Vector3, radius: float = 12.0) -> bool:
+	if world._near_road(at, radius + float(world.WIDTH) * 0.5 + 4.0):
+		return false
+	if not world.loop_layout.is_empty():
+		for i in range(49):
+			var p: Vector3 = LOOP.point(world, world.loop_layout, float(i) / 48.0)
+			if Vector2(p.x - at.x, p.z - at.z).length() < radius + 4.0:
+				return false
+	return true
+
+
+static func _planet_at(world, distance: float, original: Vector3, side: float, radius: float = 12.0, height: float = 16.0) -> Vector3:
+	var lateral: Vector3 = world.frame(distance).x
+	lateral.y = 0.0
+	lateral = lateral.normalized()
+	for attempt in range(20):
+		var candidate: Vector3 = original + lateral * side * float(attempt) * 12.0 + Vector3.UP * height
+		if _planet_clear(world, candidate, radius):
+			return candidate
+	# A very tight future layout still retains its planet outside all route bounds.
+	var outside_x: float = 0.0
+	for sample in world._road_samples:
+		outside_x = maxf(outside_x, absf(sample.x))
+	return Vector3(outside_x + radius + 128.0, original.y + height, original.z)

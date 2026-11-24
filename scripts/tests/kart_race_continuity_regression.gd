@@ -78,7 +78,19 @@ func _collect_first_box() -> void:
 	game.previous_road_distance = game.distance
 	game.checkpoint_index = int(game.distance / (game.track_length / 8.0))
 	game.player.position = game.item_boxes[0].position
+	# Resonance rings require a moving, grounded kart. A stationary fixture
+	# cannot collect one; keep the production minimum-speed rule unchanged.
+	game.speed = game.RESONANCE.MIN_PICKUP_SPEED + 1.0
+	game.lane = game.item_box_laterals[0]
+	# Diagnose the genuine resonance trigger before rebuilding or altering its
+	# production rules. A teleport fixture must still satisfy every gate.
+	print("[KartContinuityDiag] before: ringCount=%d item=%s airborne=%s speed=%.2f lap=%d distance=%.4f" % [
+		game.item_boxes.size(), game.item, str(game.airborne), game.speed,
+		int(game.distance / game.track_length),
+		game.player.position.distance_to(game.item_boxes[0].position)
+	])
 	game._track_events()
+	print("[KartContinuityDiag] after events: keys=%s item=%s" % [str(game.item_box_collected), game.item])
 	game._physics_process(0.0)
 	assert(game.item_box_collected.has(0), "The actual pickup is consumed in lap one")
 	assert(not game.item_boxes[0].visible, "Consumed pickup is hidden by the race runtime")
@@ -519,7 +531,9 @@ func _test_lap_driven_reopen() -> void:
 	var gates: Array[Dictionary] = []
 	var last_gate := 0
 	var frames := 0
-	while game.checkpoint_index < 10 and not game.finished and frames < 6000:
+	# The 1.85 km circuit plus both ramps needs more than 100 simulated
+	# seconds to reach gate ten. Keep the actual driven-gate assertions.
+	while game.checkpoint_index < 10 and not game.finished and frames < 9000:
 		_lap_drive_step()
 		frames += 1
 		if game.checkpoint_index != last_gate:
@@ -737,7 +751,7 @@ func _test_lap_driven_reopen() -> void:
 		finished_payload,
 		reopened_payload
 	)
-	var stats: Label = game.modal_column.get_node("ResultStats")
+	var stats: Control = game.modal_column.get_node("ResultStats")
 	var stats_text: String = stats.text
 	var stats_visible: bool = stats.is_visible_in_tree()
 	_lap_check(

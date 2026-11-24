@@ -99,18 +99,13 @@ func _run() -> void:
 		_check(not menu.preview_caption_panel.visible
 			or _dp(menu.preview_caption_panel, density).y < 48.0,
 			"Hero hint is a bounded single-line pill, never a column of letters")
-		var world_rect: Rect2 = menu.world_backdrop.get_global_rect()
-		_check(world_rect.position.distance_to(root.get_visible_rect().position) < 0.5
-			and world_rect.size.distance_to(root.get_visible_rect().size) < 0.5,
-			"Original world fills the viewport, not only SafeUI: " + str(pixels))
-		_check(menu.world_veil.get_global_rect().is_equal_approx(world_rect),
-			"Readability gradient covers exactly the same full-bleed area")
-		var art: AtlasTexture = menu.world_backdrop.texture as AtlasTexture
-		_check(art != null and art.filter_clip and art.region == Rect2(0, 0, 1066, 1904)
-			and art.atlas.resource_path == "res://assets/kart/menu/lumo-world.webp",
-			"Baked white edges excluded by sampling, original asset retained")
-		_check(menu.world_backdrop.mouse_filter == Control.MOUSE_FILTER_IGNORE,
-			"Full-bleed artwork never intercepts safe-area buttons")
+		_check(menu.preview_container.is_visible_in_tree()
+			and menu.preview_container.get_global_rect().size.x >= viewport.size.x * 0.98
+			and menu.preview_container.get_global_rect().size.y >= viewport.size.y * 0.98,
+			"One live 3D stage fills the production menu: " + str(pixels))
+		_check(not menu.world_backdrop.is_visible_in_tree(), "Actual 3D scene owns the background")
+		_check(menu._selection_surface.mouse_filter == Control.MOUSE_FILTER_IGNORE,
+			"Readability surface never intercepts safe-area buttons")
 		_check(menu.stage_rings.size() == 3, "Three actual lightweight 3D light rings")
 		for ring in menu.stage_rings:
 			_check(ring.mesh.ring_segments == 6 and ring.mesh.outer_radius < 1.72,
@@ -141,11 +136,14 @@ func _run() -> void:
 		_check(not menu.quick_start_button.visible, "Exactly one main gold action")
 		_check(menu.progress_icon.visible == menu.progress_label.visible,
 			"Reward icon never appears as a clipped unlabelled star")
-		_check(viewport.encloses(menu.brand_wordmark.get_global_rect()), "Whole two-line wordmark stays inside")
+		_check(not menu.brand_wordmark.is_visible_in_tree()
+			or viewport.encloses(menu.brand_wordmark.get_global_rect()), "Visible wordmark stays inside")
 		_check(menu.brand_wordmark.get_script().resource_path == "res://scripts/games/kart_wordmark.gd",
 			"Reference wordmark uses native sharp lettering and flags, not emoji text")
 		var cards: GridContainer = menu.choices.get_child(0)
-		_check(cards.get_child_count() == 5, "Five real modes")
+		# Rennarten aus dem Katalog (seit dem Abenteuer-Parcours sechs).
+		var mode_count: int = load("res://scripts/games/kart_catalog.gd").MODES.size()
+		_check(cards.get_child_count() == mode_count, "Every real mode has a card (%d)" % mode_count)
 		var scroll: ScrollContainer = menu.choices.get_parent()
 		scroll.scroll_vertical = 0
 		await _settle()
@@ -154,18 +152,25 @@ func _run() -> void:
 		var ui_scale: float = root.get_visible_rect().size.x / (float(pixels.x) / density)
 		var selected_count := 0
 		for card in cards.get_children():
-			if card.selection_mark.visible:
+			# Mode cards are drawn showcase cards (kart_showcase_card.gd, since 18.11.2026):
+			# the selection is a thick accent frame plus check badge, the name is drawn
+			# at the size _fit() chooses for the card's text width.
+			if card.selected:
 				selected_count += 1
 			_check(_dp(card, density).y >= 47.8, "Selectable mode is never a 28px substitute")
-			_check(float(card.title_label.get_theme_font_size("font_size")) / ui_scale >= 15.5,
-				"Readable mode type at actual density")
-			var title_size: int = card.title_label.get_theme_font_size("font_size")
-			var title_font: Font = card.title_label.get_theme_font("font")
+			var k: float = maxf(card.ui_scale, 0.25)
+			var text_width: float = card.size.x - 20.0 * k
+			if card.art_share <= 0.0 and (card.selected or card.disabled):
+				text_width -= 76.0 * k
+			var title_font: Font = card.UI.HEADING
+			var title_size: int = card._fit(title_font, card.title, text_width, 24.0 * k, 13.0 * k)
+			_check(float(title_size) / ui_scale >= 15.5,
+				"Readable mode type at actual density (%.1f dp)" % (float(title_size) / ui_scale))
 			var full_width: float = title_font.get_string_size(
-				card.title_label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
-			_check(card.title_label.size.x + 0.75 >= full_width,
+				card.title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size).x
+			_check(text_width + 0.75 >= full_width,
 				"Complete mode name, not an ellipsis: " + card.title + " " + str(pixels)
-				+ " density=" + str(density) + " available=" + str(card.title_label.size.x)
+				+ " density=" + str(density) + " available=" + str(text_width)
 				+ " required=" + str(full_width))
 			scroll.ensure_control_visible(card)
 			await _settle(2)
@@ -182,7 +187,7 @@ func _run() -> void:
 					" page=", scroll.get_v_scroll_bar().page)
 			_check(reachable,
 				"Every mode is reachable without clipping: " + card.title + " " + str(pixels))
-		_check(selected_count == 1 and cards.get_child(0).selection_mark.visible,
+		_check(selected_count == 1 and cards.get_child(0).selected,
 			"Exactly the real selected mode has a check mark")
 		if float(pixels.x) / density >= 760 and float(pixels.y) / density >= 600:
 			_check(scroll.get_global_rect().grow(1).encloses(cards.get_global_rect()),
@@ -253,7 +258,9 @@ func _run() -> void:
 	await _settle()
 	_check(menu.setup.mode == "time_trial", "Actual mode selection survives the visual change")
 	menu._next()
-	_check(menu.step == 1, "Actual Weiter enters the existing setup, no competing menu")
+	await _settle()
+	_check(not game.menu_active and game.mode == "time_trial"
+		and is_instance_valid(game.player), "Primary action starts the selected real race directly")
 	game.abandoned = true
 	game.queue_free()
 	await _settle()

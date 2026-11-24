@@ -1,0 +1,54 @@
+name: LUMO Cards character propagation QA
+
+on:
+  pull_request:
+    paths:
+      - 'assets/characters/rivals/roster.json'
+      - 'assets/kart/production/drivers/**'
+      - 'scripts/games/lumo_opponent_roster.gd'
+      - 'scripts/games/cards/**'
+      - 'scripts/tests/lumo_opponent_roster_regression.gd'
+      - 'scripts/tests/cards_character_roster_regression.gd'
+      - '.github/workflows/lumo-cards-character-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cards-characters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import exact source
+        run: |
+          set -euo pipefail
+          godot --headless --editor --import --quit 2>&1 | tee cards-character-import.log
+          if grep -qE 'SCRIPT ERROR|Parse Error|ERROR:' cards-character-import.log; then exit 1; fi
+      - name: Shared opponent roster
+        run: |
+          godot --headless --audio-driver Dummy --path . --script scripts/tests/lumo_opponent_roster_regression.gd 2>&1 | tee cards-roster.log
+      - name: Cards production characters and humanized reactions
+        run: |
+          godot --headless --audio-driver Dummy --path . --script scripts/tests/cards_character_roster_regression.gd 2>&1 | tee cards-characters.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-cards-character-qa
+          path: |
+            cards-character-import.log
+            cards-roster.log
+            cards-characters.log
+          if-no-files-found: warn
+          retention-days: 30

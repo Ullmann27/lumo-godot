@@ -1,0 +1,81 @@
+name: "LUMO Bauwelt – guided village and real 3D rendering QA"
+
+on:
+  push:
+    branches: [feature/lumo-child-guided-bauwelt-20261116]
+    paths:
+      - scripts/creative/build_settlement_world.gd
+      - scripts/tests/build_village_scene_regression.gd
+      - .github/workflows/lumo-bauwelt-child-guidance-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-bauwelt-child-guidance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-village:
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref == 'refs/heads/feature/lumo-child-guided-bauwelt-20261116'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Official pinned Godot 4.6.3 and software renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          echo "d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3  $RUNNER_TEMP/godot.zip" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/godot-bin"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Fresh import and actual scene script parse
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p village-proof
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD > village-proof/source-sha.txt
+          export XDG_DATA_HOME="$RUNNER_TEMP/lumo-village-data"
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/lumo-village-config"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/lumo-village-cache"
+          mkdir -p "$XDG_DATA_HOME" "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+          godot --headless --editor --import --quit 2>&1 | tee village-proof/import.log
+          if grep -qE 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' village-proof/import.log; then
+            echo "Native import did not pass" >&2
+            exit 1
+          fi
+          python3 tools/validate_project.py 2>&1 | tee village-proof/validate.log
+      - name: Run real village chapters, touch and plot guidance in software renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p village-proof/screenshots village-proof/interaction
+          export LUMO_CAPTURE_DIR="$GITHUB_WORKSPACE/village-proof/screenshots"
+          export LUMO_EVIDENCE_DIR="$GITHUB_WORKSPACE/village-proof/interaction"
+          python3 tools/run_godot_probe.py \
+            --timeout 480 --log village-proof/scene.log \
+            --required '[VillageScene] PASS' -- \
+            xvfb-run -a -s '-screen 0 2560x1440x24' \
+            godot --path . --rendering-method gl_compatibility --audio-driver Dummy \
+            --script res://scripts/tests/build_village_scene_regression.gd -- --capture
+      - name: Preserve actual native test and render evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: LUMO-Bauwelt-Child-Guidance-3D
+          path: village-proof/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,6 +1,7 @@
 extends SceneTree
 ## Exercise Godot's actual GUI dispatch, in addition to unit-level input checks.
 
+const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 var game
 
 
@@ -127,13 +128,14 @@ func _run() -> void:
 	assert(game.paused and game.steering == 0)
 	DirAccess.remove_absolute(game.SESSION)
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not (await SCENE_TEARDOWN.release_scene(self, game, "[KartTouchTests]")):
+		push_error("[KartTouchTests] FAIL: scene/audio teardown incomplete")
+		quit(1)
+		return
 	print(
 		(
 			"[KartTouchTests] PASS: real two-finger GUI, window Back countdown/race pause, "
 			+ "touch resume, simultaneous steering+BREMSE, release outside, no learning panel, scaled safe areas"
 		)
 	)
-	await create_timer(0.12).timeout
 	quit(0)

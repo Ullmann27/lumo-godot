@@ -14,27 +14,95 @@ static var TRACKS: Array[Dictionary] = _all_tracks()
 static func _all_tracks() -> Array[Dictionary]:
 	var result: Array[Dictionary] = BASE_TRACKS.duplicate(true)
 	result.append_array(EXPANSION.CATALOG)
+	result.append({
+		"id": "jungle_emerald_3600", "name": "Dschungelherz",
+		"tag": "EXPEDITION SMARAGD · 3,6 KM", "color": Color("9dcb6b"),
+		"description": "Zwölf Dschungelwelten: Flusshafen, Wasserfall, Wurzelgrotte und Kronenbrücke."
+	})
+	result.append({
+		"id": "riesengarten_2400", "name": "Riesengarten",
+		"tag": "LUMOS SOMMERGARTEN · 2,4 KM", "color": Color("ffcf3a"),
+		"description": "Winzig im Riesengarten: Gießkannen-Schanze, Gartenschlauch und Gewächshaus."
+	})
+	result.append({
+		"id": "windwerk_3000", "name": "Lumos Windwerk",
+		"tag": "WINDWERK · 3,0 KM", "color": Color("45d3bd"),
+		"description": "Rase ins Turbinental, über die Weichen und durch die Signaltore der Windbahn."
+	})
 	result.make_read_only()
 	return result
 
 const MODES: Array[Dictionary] = [
 	{"id": "race", "name": "Einzelrennen", "tag": "DEIN SCHNELLER START", "description": "Zwei Runden, fünf Rivalen und deine Lieblingsstrecke."},
-	{"id": "cup", "name": "Sternen-Cup", "tag": "ZWÖLF WELTEN · EIN POKAL", "description": "Fahre alle zwölf Strecken. Jeder Platz zählt für die Gesamtwertung."},
+	{"id": "cup", "name": "Sternen-Cup", "tag": "ALLE WELTEN · EIN POKAL", "description": "Fahre durch alle Rennwelten. Jeder Platz zählt für die Gesamtwertung."},
 	{"id": "time_trial", "name": "Zeitfahren", "tag": "DU GEGEN DEINEN GEIST", "description": "Verbessere deine Bestzeit. Deine beste Fahrt fährt als Geist mit."},
 	{"id": "training", "name": "Freies Training", "tag": "ENTDECKEN OHNE DRUCK", "description": "Lerne lenken, bremsen und driften. Du bestimmst, wann du fertig bist."},
-	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."}
+	{"id": "arena", "name": "Kristall-Arena", "tag": "90 SEKUNDEN ABENTEUER", "description": "Sammle mehr Kristalle als deine Rivalen. Schild und Impuls helfen dir."},
+	# Eigene Szene mit demselben Kart: scripts/games/parcours/ (Weltwahl dort).
+	{"id": "parcours", "name": "Abenteuer-Parcours", "tag": "RENNEN · GEHEIMWEGE · ZU FUSS", "description": "Fahr mit Nova und Milo um die Wette. Wähle deinen Weg und öffne die Brücke zu Fuß."}
 ]
 const DRIVERS: Array[Dictionary] = [
 	{"id": "fox", "name": "Lumo", "tag": "DEIN MUTIGER FUCHS", "color": Color("76d9ff"), "unlock": 0},
 	{"id": "rabbit", "name": "Nova", "tag": "NEUGIERIG UND FLINK", "color": Color("c0abff"), "unlock": 6},
-	{"id": "otter", "name": "Milo", "tag": "ENTSPANNT INS ABENTEUER", "color": Color("75e6ce"), "unlock": 12}
+	{"id": "otter", "name": "Milo", "tag": "ENTSPANNT INS ABENTEUER", "color": Color("75e6ce"), "unlock": 12},
+	{
+		"id": "frog",
+		"name": "Frosch",
+		"tag": "AUS DEM DSCHUNGEL",
+		"color": Color("64c987"),
+		"unlock": 0
+	},
+	{
+		"id": "badger",
+		"name": "Borin",
+		"tag": "DEIN STARKER DACHS",
+		"color": Color("83dab9"),
+		"unlock": 0
+	},
+	{
+		"id": "cat",
+		"name": "Yuki",
+		"tag": "DEINE FLINKE KATZE",
+		"color": Color("c8d8ef"),
+		"unlock": 0
+	},
+	{
+		"id": "lion",
+		"name": "Löwe",
+		"tag": "STARK UND MUTIG",
+		"color": Color("f4ae52"),
+		"unlock": 0
+	},
+	{
+		"id": "owl",
+		"name": "Eule",
+		"tag": "KLUG UND RUHIG",
+		"color": Color("c7a585"),
+		"unlock": 0
+	},
+	{
+		"id": "squirrel",
+		"name": "Eichhörnchen",
+		"tag": "SCHNELL UND WENDIG",
+		"color": Color("f39154"),
+		"unlock": 0
+	},
+	{
+		"id": "turtle",
+		"name": "Schildkröte",
+		"tag": "RUHIG UND AUSDAUERND",
+		"color": Color("95c661"),
+		"unlock": 0
+	}
 ]
 ## Die Flotte mit Werten, Preisen und Aussehen steht in kart_fleet.gd.
 static var KARTS: Array[Dictionary] = FLEET.KARTS
 const DIFFICULTIES: Array[Dictionary] = [
-	{"id": "gemuetlich", "name": "Entdecken", "tag": "MIT LENKHILFE", "description": "Gemütliches Tempo. Lumo hilft sanft am Fahrbahnrand.", "speed": 0.83, "rival": 0.71},
-	{"id": "flott", "name": "Abenteuer", "tag": "DEIN EIGENES TEMPO", "description": "Mehr Tempo, freie Lenkung und ausgeglichene Rivalen.", "speed": 1.0, "rival": 0.87},
-	{"id": "pro", "name": "Sternen-Profi", "tag": "DRIFT MACHT DEN UNTERSCHIED", "description": "Volles Tempo. Gewinne mit sauberen Kurven und cleverem Boost.", "speed": 1.17, "rival": 0.99}
+	# Eigentempo ist auf allen Stufen gleich (volles Tempo, wie bisher auf "Extrem");
+	# die Stufen unterscheiden sich über die Rivalen und die Lenkhilfe.
+	{"id": "gemuetlich", "name": "Entdecken", "tag": "VOLLES TEMPO · LENKHILFE", "description": "Volles Tempo mit sanfter Lenkhilfe am Fahrbahnrand. Die Rivalen lassen dir Platz.", "speed": 1.17, "rival": 0.86},
+	{"id": "flott", "name": "Abenteuer", "tag": "FREIE LENKUNG", "description": "Volles Tempo, freie Lenkung und starke Rivalen.", "speed": 1.17, "rival": 0.96},
+	{"id": "pro", "name": "Extrem", "tag": "MAXIMALE HERAUSFORDERUNG", "description": "Rivalen nutzen volle Kartleistung, schnelle Kurven, Überholmanöver und verdiente Turbos.", "speed": 1.17, "rival": 1.0}
 ]
 const CUP_POINTS: Array[int] = [12, 9, 7, 5, 3, 1]
 

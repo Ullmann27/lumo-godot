@@ -1,0 +1,84 @@
+{
+  "assertion_count": 495,
+  "checks": [
+    {
+      "lod_paths": [
+        "res://assets/kart/production/karts/aurora_comet.glb",
+        "res://assets/kart/production/karts/aurora_comet_lod1.glb",
+        "res://assets/kart/production/karts/aurora_comet_lod2.glb"
+      ],
+      "mechanics_pause_lod_passed": true,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
+      "variant": "comet",
+      "visible_surfaces": 39
+    },
+    {
+      "lod_paths": [
+        "res://assets/kart/production/karts/aurora_glider.glb",
+        "res://assets/kart/production/karts/aurora_glider_lod1.glb",
+        "res://assets/kart/production/karts/aurora_glider_lod2.glb"
+      ],
+      "mechanics_pause_lod_passed": true,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
+      "variant": "glider",
+      "visible_surfaces": 39
+    },
+    {
+      "lod_paths": [
+        "res://assets/kart/production/karts/aurora_turbo.glb",
+        "res://assets/kart/production/karts/aurora_turbo_lod1.glb",
+        "res://assets/kart/production/karts/aurora_turbo_lod2.glb"
+      ],
+      "mechanics_pause_lod_passed": true,
+      "original_lumo_steering_sample_hand_error_m": 0.000711778877303004,
+      "variant": "turbo",
+      "visible_surfaces": 39
+    },
+    {
+      "tuning_and_shared_material_isolation": true
+    },
+    {
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
+      "shared_vehicle_driver_hook": true,
+      "species": "rabbit"
+    },
+    {
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
+      "shared_vehicle_driver_hook": true,
+      "species": "lion"
+    },
+    {
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
+      "shared_vehicle_driver_hook": true,
+      "species": "squirrel"
+    },
+    {
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
+      "shared_vehicle_driver_hook": true,
+      "species": "owl"
+    },
+    {
+      "maximum_sampled_grip_error_m": 0.000000163669184871651,
+      "shared_vehicle_driver_hook": true,
+      "species": "turtle"
+    },
+    {
+      "garage_selection_and_workshop_buttons": true,
+      "paint_preview_without_purchase": true
+    }
+  ],
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "failures": [],
+  "passed": true,
+  "scope": "Actual LumoRaceKart, garage and workshop, imported PackedScenes; no APK or physical-device FPS claim"
+}

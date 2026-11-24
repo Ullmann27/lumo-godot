@@ -1,0 +1,25 @@
+{
+  "source": "art/lumo_kart/blender/karts/aurora_comet.blend",
+  "source_sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+  "image_sha256": "e138fa116a3d1141b8c2964c970be6a1168237fadbd65d4c874c3a12ca602535",
+  "engine": "Blender Cycles CPU",
+  "samples": 32,
+  "resolution": [
+    1440,
+    1080
+  ],
+  "camera_godot_m": [
+    -3.2,
+    2.0,
+    3.9
+  ],
+  "target_godot_m": [
+    0,
+    0.54,
+    0
+  ],
+  "lens_mm": 48,
+  "frame": 1,
+  "production_race_camera": false,
+  "postprocess": "Blender AgX only; no AI image generation"
+}

@@ -1,0 +1,1 @@
+3bb833935d47fca64efeceb753a48f663d48d3d43b3f02f3e9c798ba9538a4cb  dist/Lumo-Lernen-Neu.apk

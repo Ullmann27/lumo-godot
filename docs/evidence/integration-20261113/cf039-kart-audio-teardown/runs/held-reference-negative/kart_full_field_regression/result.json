@@ -1,0 +1,49 @@
+{
+  "phase": "held-reference-negative",
+  "test": "kart_full_field_regression",
+  "started_utc": "2026-11-13T15:12:33.112848+00:00",
+  "finished_utc": "2026-11-13T15:12:44.913035+00:00",
+  "elapsed_seconds": 11.8,
+  "command": [
+    "python3",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups/tools/run_godot_probe.py",
+    "--log",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/engine.log",
+    "--timeout",
+    "240",
+    "--required",
+    "[KartFullField] PASS",
+    "--",
+    "/usr/local/bin/godot",
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--verbose",
+    "--path",
+    "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+    "--script",
+    "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/negative-fixtures/kart_full_field_regression.gd",
+    "--fixed-fps",
+    "60"
+  ],
+  "cwd": "/workspace/scratch/b3485b7bb989/lumo-native-followups",
+  "xdg": {
+    "XDG_DATA_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-data",
+    "XDG_CONFIG_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-config",
+    "XDG_CACHE_HOME": "/workspace/scratch/b3485b7bb989/pipeline-evidence/cf039-extra-audio-teardowns/held-reference-negative/kart_full_field_regression/xdg-cache",
+    "XDG_STATE_HOME": "/home/agent/.local/state",
+    "XDG_RUNTIME_DIR": "/home/agent/.local/run"
+  },
+  "script_sha256": "2d139cb90a9d7fe37b1ee43697f014a462a8dfa6353594b83f0dd5428b003551",
+  "strict_runner_exit": 1,
+  "required_marker": "[KartFullField] PASS",
+  "marker_present": false,
+  "errors": [
+    "ERROR: [KartFullField] Scene or audio playback retained after teardown"
+  ],
+  "cleanup_lines": [
+    "[KartFullField] retained_scene=false retained_audio_playbacks=1 elapsed_ms=2002"
+  ],
+  "engine_log_sha256": "ca3beb1ad5378f1fb425e8f200bcfa32726b9c7a8b69660f25c95673cf09d7bc",
+  "runner_log_sha256": "106f4b4f78d80c7473e3e979b0183208a5783f0267cd0b31370a547285873792"
+}

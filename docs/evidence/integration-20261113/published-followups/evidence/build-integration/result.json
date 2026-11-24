@@ -1,0 +1,102 @@
+{
+  "merge_head": "c88b100f2cf031f504f2a1a4e3f0b90a3d71d523",
+  "staged_tree_before": "8f3df38250b9e06e078abac09b235ee013e20667",
+  "staged_tree_after": "8f3df38250b9e06e078abac09b235ee013e20667",
+  "village_parent": "027c2535d2d69fc56fc19d8d96490f7de5be9c37",
+  "source_files": 1224,
+  "changed_during_run": [],
+  "original_fixture_source": "edb39e17719df7e05cda6d9cd1bc810a78a038d8:scripts/tests/build_nextgen_play_regression.gd",
+  "original_fixture_sha256": "dab756a7e255029eec566dd26b16fdd4e3ba624188cd790b5434ea3883fa2dff",
+  "results": [
+    {
+      "case": "published-build-play",
+      "command": [
+        "python",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/published-build-play/engine.log",
+        "--timeout",
+        "210",
+        "--required",
+        "[BuildNextgen] PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+        "--script",
+        "res://scripts/tests/build_nextgen_play_regression.gd"
+      ],
+      "started_at": "2026-11-13T17:00:58.247713+00:00",
+      "finished_at": "2026-11-13T17:01:04.761813+00:00",
+      "seconds": 6.514,
+      "exit_code": 0,
+      "engine_log_sha256": "6002e63e5c39a4a7b638ca52081be4843141dcb7f25adce45d5360ff5e30d2bd",
+      "significant_lines": [
+        "[BuildNextgen] PASS checks=71: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+      ]
+    },
+    {
+      "case": "original-4f-build-play",
+      "command": [
+        "python",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/original-4f-build-play/engine.log",
+        "--timeout",
+        "210",
+        "--required",
+        "[BuildNextgen] PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+        "--script",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/original-4f-build-nextgen.gd"
+      ],
+      "started_at": "2026-11-13T17:00:58.243599+00:00",
+      "finished_at": "2026-11-13T17:01:04.812806+00:00",
+      "seconds": 6.569,
+      "exit_code": 0,
+      "engine_log_sha256": "4f02d44a99debb7a5b7a8580c5c7ef215201906963f133e6d10c79d65d27c01c",
+      "significant_lines": [
+        "[BuildNextgen] PASS checks=62: real touch, move/rotate/history/save, original Lumo walk/jump/collision/pause/layout"
+      ]
+    },
+    {
+      "case": "build-dialog-density",
+      "command": [
+        "python",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/build-integration/build-dialog-density/engine.log",
+        "--timeout",
+        "600",
+        "--required",
+        "[BuildDialogDensity] PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+        "--script",
+        "res://scripts/tests/build_dialog_density_regression.gd"
+      ],
+      "started_at": "2026-11-13T17:01:04.769087+00:00",
+      "finished_at": "2026-11-13T17:01:45.889059+00:00",
+      "seconds": 41.12,
+      "exit_code": 0,
+      "engine_log_sha256": "84cdd18620c18e038faeaabe82aed73b1d916827baee5bf774e4aa606fc1a086",
+      "significant_lines": [
+        "[BuildDialogDensity] PASS 2016 checks: bounded dialogs, preserved choices, actual scroll/select/cancel, >=48dp and restore"
+      ]
+    }
+  ]
+}

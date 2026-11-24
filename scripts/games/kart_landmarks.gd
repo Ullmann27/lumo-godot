@@ -460,7 +460,8 @@ static func _harbour_fronts(world) -> void:
 			i % 4
 		]
 		_piece(world, "box", at, Vector3(0, 4.5, 0), Vector3(7, 9, 5), tint, b)
-		_piece(world, "roof", at, Vector3(0, 10, 0), Vector3(7.8, 2.2, 5.8), Color("52647c"), b)
+		var roof: Color = [Color("c14b32"), Color("b33b28"), Color("d4723c"), Color("a34a38")][i % 4]
+		_piece(world, "roof", at, Vector3(0, 10, 0), Vector3(7.8, 2.2, 5.8), roof, b)
 		for y in [0.4, 3.3, 6.3, 9.0]:
 			_piece(world, "box", at, Vector3(0, y, 0), Vector3(7.4, 0.22, 5.4), CREAM, b)
 		for row in range(3):

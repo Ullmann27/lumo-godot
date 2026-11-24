@@ -1,0 +1,52 @@
+name: Lumo Kart Godot quality preferences real regression
+on:
+  pull_request:
+    paths:
+      - 'scripts/systems/performance_manager.gd'
+      - 'scripts/tests/kart_quality_persistence_regression.gd'
+      - '.github/workflows/lumo-kart-quality-profile-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-godot-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install exact Godot 4.6.3 Linux binary
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          chmod +x "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import and parse actual Godot project
+        run: |
+          set -euo pipefail
+          mkdir -p exports/quality-qa
+          timeout -k 5s 240s Godot_v4.6.3-stable_linux.x86_64 \
+            --headless --path . --editor --import --quit \
+            > exports/quality-qa/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|Failed to load script' exports/quality-qa/import.log; then
+            cat exports/quality-qa/import.log
+            exit 1
+          fi
+      - name: Verify saved quality controls and scene hook in real Godot
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py \
+            --log exports/quality-qa/quality.log --timeout 130 \
+            --required '[KartQualityPersist] PASS:' -- \
+            Godot_v4.6.3-stable_linux.x86_64 --headless --path . \
+            --script res://scripts/tests/kart_quality_persistence_regression.gd
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-kart-quality-settings-${{ github.run_id }}
+          path: exports/quality-qa/
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,76 @@
+{
+  "source_head": "176184c9ccef361266d888dbb023ffdad792f345",
+  "files": 1224,
+  "source_changes": [],
+  "results": [
+    {
+      "case": "scene-headless",
+      "command": [
+        "python",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-v1/scene-headless/engine.log",
+        "--timeout",
+        "210",
+        "--required",
+        "[VillageScene] PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+        "--script",
+        "res://scripts/tests/build_village_scene_regression.gd"
+      ],
+      "started_at": "2026-11-13T17:08:42.925157+00:00",
+      "seconds": 15.724,
+      "exit_code": 1,
+      "engine_sha256": "0f78f426bfc0c719d47d0888e453d281ab927ede7e4bd8697d32ff4de2e53c50",
+      "significant_lines": [
+        "WARNING: [VillageScene] Real horizontal drags expose Kapitel",
+        "WARNING: [VillageScene] toolbar Kapitel fits the display",
+        "WARNING: [VillageScene] toolbar Kapitel fits its own viewport",
+        "WARNING: [VillageScene] toolbar Kapitel is fully exposed inside its scroll viewport",
+        "WARNING: [VillageScene] Actual toolbar touch opens Kapitel",
+        "WARNING: [VillageScene] Real horizontal drags expose Stadtkasse",
+        "WARNING: [VillageScene] toolbar Stadtkasse fits the display",
+        "WARNING: [VillageScene] toolbar Stadtkasse fits its own viewport",
+        "WARNING: [VillageScene] toolbar Stadtkasse is fully exposed inside its scroll viewport",
+        "SCRIPT ERROR: Trying to assign invalid previously freed instance."
+      ]
+    },
+    {
+      "case": "capture-headless-rejected",
+      "command": [
+        "python",
+        "tools/run_godot_probe.py",
+        "--log",
+        "/workspace/scratch/b3485b7bb989/published-native-followup-evidence/village-surface-v1/capture-headless-rejected/engine.log",
+        "--timeout",
+        "210",
+        "--required",
+        "[VillageScene] PASS",
+        "--",
+        "godot",
+        "--headless",
+        "--audio-driver",
+        "Dummy",
+        "--path",
+        "/workspace/scratch/b3485b7bb989/lumo-native-published-followups",
+        "--script",
+        "res://scripts/tests/build_village_scene_regression.gd",
+        "--",
+        "--capture"
+      ],
+      "started_at": "2026-11-13T17:08:42.926112+00:00",
+      "seconds": 0.195,
+      "exit_code": 1,
+      "engine_sha256": "a2fe3f49d296d94e4c8d91755e81b30e9534cf87d512216ed8f87a50159937b0",
+      "significant_lines": [
+        "ERROR: [VillageScene] Capture requires a real renderer and LUMO_CAPTURE_DIR"
+      ]
+    }
+  ]
+}

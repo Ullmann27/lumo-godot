@@ -1,0 +1,491 @@
+{
+  "schema": 1,
+  "theme": "volcano_night",
+  "source_blend": "art/lumo_kart/blender/tracks/volcano_night_tunnel_workshop.blend",
+  "description": "Separate closed terrain or architectural cover shell around the existing tunnel",
+  "additional_glbs": 14,
+  "modules": {
+    "portal_entry": {
+      "lod0": {
+        "file": "portal_entry_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            4.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "portal_entry_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.001",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            4.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "portal_exit": {
+      "lod0": {
+        "file": "portal_exit_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.002",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            4.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "portal_exit_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.003",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            4.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "straight_12m": {
+      "lod0": {
+        "file": "straight_12m_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.004",
+            "triangles": 2132,
+            "vertices": 1066,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 2132,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "straight_12m_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.005",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_left_30": {
+      "lod0": {
+        "file": "curve_left_30_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.006",
+            "triangles": 3280,
+            "vertices": 1640,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 3280,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -17.12064552307129,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            25.100000381469727,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "curve_left_30_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.007",
+            "triangles": 1312,
+            "vertices": 656,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 1312,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -17.12064552307129,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            25.100000381469727,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "curve_right_30": {
+      "lod0": {
+        "file": "curve_right_30_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.008",
+            "triangles": 3280,
+            "vertices": 1640,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 3280,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            17.12064552307129,
+            25.100000381469727,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "curve_right_30_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.009",
+            "triangles": 1312,
+            "vertices": 656,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 1312,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            17.12064552307129,
+            25.100000381469727,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_down": {
+      "lod0": {
+        "file": "grade_down_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.010",
+            "triangles": 2132,
+            "vertices": 1066,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 2132,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -3.3499999046325684
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "grade_down_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.011",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -3.3499999046325684
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            11.800000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    },
+    "grade_up": {
+      "lod0": {
+        "file": "grade_up_terrain.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.012",
+            "triangles": 2132,
+            "vertices": 1066,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 2132,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            13.300000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      },
+      "lod1": {
+        "file": "grade_up_terrain_lod1.glb",
+        "meshes": [
+          {
+            "name": "TerrainRoof.013",
+            "triangles": 820,
+            "vertices": 410,
+            "nonmanifold_edges": 0,
+            "degenerate_triangles": 0
+          }
+        ],
+        "triangles": 820,
+        "materials": [
+          "volcano_night_TerrainVertexPBR"
+        ],
+        "material_count": 1,
+        "bounds_blender_m": {
+          "min": [
+            -14.199999809265137,
+            0.0,
+            -1.850000023841858
+          ],
+          "max": [
+            14.199999809265137,
+            12.0,
+            13.300000190734863
+          ]
+        },
+        "nonmanifold_edges": 0,
+        "degenerate_triangles": 0
+      }
+    }
+  },
+  "textures": "No image textures; original per-vertex terrain colors",
+  "material_count": 1,
+  "ordinary_outer_width_m": 28.4,
+  "ordinary_crown_height_m": 11.8,
+  "portal_outer_width_m": 19.4,
+  "portal_crown_height_m": 10.2,
+  "core_overlap_m": 0.03,
+  "collision_policy": "Visual landscape cover; use the existing tunnel collision and the main team's terrain collider",
+  "lod_policy": "Identical socket/end profiles; longitudinal tessellation reduced in LOD1",
+  "preserved_core_glb_sha256": {
+    "grade_down_collision.glb": "a802a354dcabc9403443e19d5c6e5c1c9518e3d1157eb18da3441cea83af33b6",
+    "straight_12m_collision.glb": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+    "straight_12m.glb": "8e89e6c38bb6534eac2828685a73779d9473329a9bc5650b87f7e84f3803972d",
+    "grade_down.glb": "e91181e48cce3e42c85e8a520aaf0fa2f5320aea32fcde9dd80c229018ea1ef5",
+    "portal_entry.glb": "af9e14838e94e685f7aaed1c603e93d57a655b5af0eadf32139038d250c15ec5",
+    "portal_entry_lod1.glb": "2ebfbe10b531409ef08c9bd7016bc01b545533f7db752380879363251f6173df",
+    "straight_12m_lod1.glb": "9673246bb1c3dcfe234b5fd8f76abcbef6de5992e4fe6569662f86e287005666",
+    "portal_exit.glb": "0513d72b92499df7897e2e17005e6dac9c236fc4b2cad05d69fc2aecb7c1b03f",
+    "portal_exit_collision.glb": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+    "curve_left_30_collision.glb": "21570deb1b050cc999102e176f0d1af2ec3e71165626ec10a0c099745f3dad7a",
+    "curve_right_30.glb": "228cbc1254f5001c3c3fa4bbe63c055ab1bd586d465ac290452b4b7808e6c50c",
+    "curve_right_30_lod1.glb": "dff3ecf784deafff0df65fae6037366587067ee3e5f26619d23b310bec6c5f26",
+    "grade_up.glb": "22fe30da2c97ad5bee230cf58990ea5af94e937e2268c815629db995b16c0fe5",
+    "grade_up_collision.glb": "d051e511dfc22e2caf2163c00eddd537372d34a61ff2e9437852e7f9499138f6",
+    "curve_left_30.glb": "8bbe9649e1a75e243a5e6fd24ca5bbec32d2b15238945c4e9b84778b2f55cfb9",
+    "grade_down_lod1.glb": "ef028a2835b2e8736438c2ded336f50bcf3012a052e8d45c0920af01b0c4bae1",
+    "curve_left_30_lod1.glb": "d0e531ba009ddc3c9ede4b80e42955d07598d6575af18bbc302d896ecc80ae41",
+    "grade_up_lod1.glb": "17e171fd5419ab718f926bb0180ba094742141d953212c44aaabc5e042dcd0ca",
+    "curve_right_30_collision.glb": "b9737ea61fb95dec0ccf8f81e35c68ed1050adaa122fd190b5196183aead0257",
+    "portal_exit_lod1.glb": "1760f9da5b53ae31f4b7cf1e0af253583d2e37803e67157cfed631876cb0fdb6",
+    "portal_entry_collision.glb": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f"
+  },
+  "runtime_integration": false,
+  "normal_policy": "Flat closed end caps are separated from longitudinal smooth surface normals; geometry and sockets unchanged"
+}

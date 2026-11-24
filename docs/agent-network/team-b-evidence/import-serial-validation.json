@@ -1,0 +1,340 @@
+{
+  "kind": "Godot 4.6.3 serial resource import mitigation validation",
+  "nativeBase": "93557b3ca206916a39fdeaa6ae6ce05442b08846",
+  "hostValidationBase": "404d6bcaaff0ac47bf1326551381110126daf9e4",
+  "failure": {
+    "run": 45181487984,
+    "job": 137716310183,
+    "phase": "Second cold editor import in build/godot-source after successful QA and all five World captures",
+    "assetAtLastImportMarker": "Nunito-Variable.ttf",
+    "exitSignal": "SIGABRT (6)",
+    "messages": [
+      "double free or corruption (out)",
+      "Index type_b = 3154252208 is out of bounds (Variant::VARIANT_MAX = 39)"
+    ]
+  },
+  "change": {
+    "path": "project.godot",
+    "oldBlob": "1651f1de3ee0471a44ffd41f6d4f609b6fc5f796",
+    "newBlob": "af44a1d48b5167b9743b70db943f1e5c42c98a19",
+    "setting": "editor/import/use_multiple_threads",
+    "value": false,
+    "scope": "Tracked editor resource-import configuration; no gameplay settings, retries or error gates changed"
+  },
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "sourceEvidence": [
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/editor/file_system/editor_file_system.cpp",
+      "finding": "Resource import reads editor/import/use_multiple_threads independently of scene-tree threading."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/editor/import/resource_importer_dynamic_font.h",
+      "finding": "Dynamic font importer declares can_import_threaded=true."
+    },
+    {
+      "url": "https://github.com/godotengine/godot/blob/4.6.3-stable/main/main.cpp",
+      "finding": "--single-threaded-scene sets the scene-tree control only; editor mode passes ignore_override=true to ProjectSettings setup."
+    }
+  ],
+  "threadObservation": {
+    "commandFlags": [
+      "--headless",
+      "--single-threaded-scene",
+      "--editor",
+      "--import",
+      "--quit",
+      "--verbose"
+    ],
+    "probe": "Four real EditorImportPlugin import callbacks in each isolated project, can_import_threaded=true; recorded actual OS main/caller thread IDs",
+    "results": {
+      "thread-observer-on": [
+        {
+          "file": "res://sample2.threadprobe",
+          "mainThread": false,
+          "threadedSetting": true
+        },
+        {
+          "file": "res://sample0.threadprobe",
+          "mainThread": false,
+          "threadedSetting": true
+        },
+        {
+          "file": "res://sample3.threadprobe",
+          "mainThread": false,
+          "threadedSetting": true
+        },
+        {
+          "file": "res://sample1.threadprobe",
+          "mainThread": false,
+          "threadedSetting": true
+        }
+      ],
+      "thread-observer-off": [
+        {
+          "file": "res://sample0.threadprobe",
+          "mainThread": true,
+          "threadedSetting": false
+        },
+        {
+          "file": "res://sample1.threadprobe",
+          "mainThread": true,
+          "threadedSetting": false
+        },
+        {
+          "file": "res://sample2.threadprobe",
+          "mainThread": true,
+          "threadedSetting": false
+        },
+        {
+          "file": "res://sample3.threadprobe",
+          "mainThread": true,
+          "threadedSetting": false
+        }
+      ]
+    }
+  },
+  "coldFontImports": {
+    "fonts": {
+      "Nunito-Black.ttf": "9e7743ebb7efc2bda51e99eda079cb9b2061f566",
+      "Nunito-Bold.ttf": "e289ba049b167e4fd0e5ba5f537fa3f4b94a92fb",
+      "Nunito-Variable.ttf": "2ec1f4b0676c83ef33049db87b311171699e9192"
+    },
+    "sourceBytesVerified": "Each local font blob SHA equals the file in nativeBase",
+    "freshDirectories": 12,
+    "serialPasses": 6,
+    "threadedControlPasses": 6,
+    "fontsPerRun": 3,
+    "cachedInputUsed": false,
+    "results": [
+      {
+        "threaded": true,
+        "iteration": 1,
+        "exit": 0,
+        "seconds": 3.927,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": true,
+        "iteration": 2,
+        "exit": 0,
+        "seconds": 2.976,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": true,
+        "iteration": 3,
+        "exit": 0,
+        "seconds": 3.277,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": true,
+        "iteration": 4,
+        "exit": 0,
+        "seconds": 2.975,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": true,
+        "iteration": 5,
+        "exit": 0,
+        "seconds": 2.972,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": true,
+        "iteration": 6,
+        "exit": 0,
+        "seconds": 2.975,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 1,
+        "exit": 0,
+        "seconds": 3.528,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 2,
+        "exit": 0,
+        "seconds": 3.174,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 3,
+        "exit": 0,
+        "seconds": 2.775,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 4,
+        "exit": 0,
+        "seconds": 3.133,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 5,
+        "exit": 0,
+        "seconds": 2.973,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      },
+      {
+        "threaded": false,
+        "iteration": 6,
+        "exit": 0,
+        "seconds": 3.179,
+        "fontImports": [
+          "Nunito-Black.ttf.import",
+          "Nunito-Bold.ttf.import",
+          "Nunito-Variable.ttf.import"
+        ],
+        "fontResources": [
+          "Nunito-Black.ttf-7b2426a1f0c820b56f0a7d499d447bbe.fontdata",
+          "Nunito-Bold.ttf-a833930dd2b599bbdd282e8165b38cb1.fontdata",
+          "Nunito-Variable.ttf-719b8c4235bd7aa9a465d237c75441c4.fontdata"
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "fontResourceLoad": {
+    "passedChecks": 9,
+    "coverage": "Each serially imported resource loads as FontFile, has Nunito family and nonzero metrics for Lumo ÄÖÜ 123"
+  },
+  "unchangedExporter": {
+    "path": "scripts/export_embedded_game.py",
+    "blob": "bcaf82511457f2c90fb54ab41a187f15ffb7f176",
+    "testsBlob": "028d78ef40a687a3d8f68b8816acbc4bde20d594",
+    "testsPassed": 36,
+    "realSigabrtGuard": "PASS: one native SIGABRT child invocation raises CalledProcessError(-6), keeps its full log and is not retried"
+  },
+  "limits": [
+    "CI heap corruption was not reproduced in the reduced three-font control fixture; this is an evidence-based concurrency mitigation, not proof of a specific C++ race or a guarantee against all crashes.",
+    "No full cold import or APK export of the final merged source was performed locally. The strict complete build still needs to pass.",
+    "The upstream visual release hold remains separate and is not resolved by this build-setting change."
+  ],
+  "localEvidenceDirectory": "/dev/shm/lumo-import-serial-463",
+  "logSHA256": {
+    "font-import-results.json": "04dbbcfbc6a79a0cf6ca1f609d7e8b23cd0613121ae51b6560120ace9ae286e2",
+    "font-load.log": "9a830b40a693503a12557907ff054e4792f018dc0ad3d65cac183e34745ce7f3",
+    "exporter-regression.log": "e92e84646f36de271ce32343602f8783adc9fdc5a5d559eb7cf223cfaf4241ab",
+    "sigabrt-guard.log": "ae9858728778db6430dd178a9faa11a115fc8853e0d41f536ca7b313fb87adca",
+    "thread-observer-on/import.log": "de15822e10d8e5dd48d34e5c3732212b3756dc7c815917ec99c66fff12f4ea04",
+    "thread-observer-off/import.log": "4f443d22a82ae0a8414f878ced6a9c57f743b26f50ec0fb467c57329bb62742f"
+  }
+}

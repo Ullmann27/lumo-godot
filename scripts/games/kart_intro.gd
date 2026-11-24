@@ -6,6 +6,8 @@ extends Control
 
 signal finished
 
+const OPENING_PATH := "res://assets/kart/track_stage/clips/windwerk_auftakt.ogv"
+const WORDMARK = preload("res://scripts/games/kart_wordmark.gd")
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const UI = preload("res://scripts/games/kart_ui_theme.gd")
@@ -34,12 +36,19 @@ var hint: Label
 var leaving: bool = false
 var fade_left: float = 0.0
 var _cues: Dictionary = {}
+var film: VideoStreamPlayer
+var film_title: Control
 
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = MOUSE_FILTER_STOP
 	theme = UI.create()
+	if ResourceLoader.exists(OPENING_PATH):
+		var source := load(OPENING_PATH) as VideoStream
+		if source != null:
+			_show_film(source)
+			return
 	var background := TextureRect.new()
 	background.texture = preload("res://assets/kart/menu/lumo-world.webp")
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -68,6 +77,52 @@ func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 	_update(0.0)
+
+
+func _show_film(source: VideoStream) -> void:
+	var matte := ColorRect.new()
+	matte.color = Color("111d2b")
+	matte.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	matte.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(matte)
+	var frame := AspectRatioContainer.new()
+	frame.ratio = 16.0 / 9.0
+	frame.stretch_mode = AspectRatioContainer.STRETCH_FIT
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(frame)
+	film = VideoStreamPlayer.new()
+	film.expand = true
+	film.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	film.stream = source
+	film.finished.connect(leave)
+	frame.add_child(film)
+	film_title = WORDMARK.new()
+	film_title.modulate.a = 0.0
+	film.add_child(film_title)
+	film.resized.connect(_film_layout)
+	hint = Label.new()
+	hint.text = "Überspringen"
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hint.add_theme_font_override("font", UI.BODY)
+	hint.add_theme_font_size_override("font_size", 24)
+	hint.add_theme_color_override("font_color", Color("fff4db"))
+	var plate := StyleBoxFlat.new()
+	plate.bg_color = Color(.04,.09,.14,.85)
+	plate.set_corner_radius_all(18)
+	plate.set_content_margin_all(10)
+	hint.add_theme_stylebox_override("normal", plate)
+	add_child(hint)
+	hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT,Control.PRESET_MODE_MINSIZE, 20)
+	hint.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	film.play()
+
+
+func _film_layout() -> void:
+	var width := minf(film.size.x * .48, 505.0)
+	film_title.size = Vector2(width, width * .245)
+	film_title.position = Vector2(film.size.x * .045, film.size.y * .08)
 
 
 func _build_stage(viewport: SubViewport) -> void:
@@ -147,6 +202,8 @@ func _build_stage(viewport: SubViewport) -> void:
 		star.material_override = _glow(Color("ffd36b") if index % 4 == 0 else Color("a8deee"))
 		stage.add_child(star)
 	kart = VEHICLE.new()
+	# The intro shows the real rigged Lumo, never the sculpted stand-in fox.
+	kart.set_animated_lumo_enabled(true)
 	kart.configure("fox", Color("357cba"), "comet")
 	kart.reduced_motion = reduced_motion
 	stage.add_child(kart)
@@ -266,6 +323,16 @@ func _process(delta: float) -> void:
 			queue_free()
 		return
 	time += delta
+	if is_instance_valid(film):
+		var playhead := film.stream_position
+		film_title.modulate.a = smoothstep(4.55, 5.1, playhead)
+		_cue("start", .12, playhead)
+		_cue("whoosh", 1.25, playhead)
+		_cue("boost", 3.05, playhead)
+		# An unavailable decoder must never strand a child before the menu.
+		if time > 9.0 and playhead < .1:
+			leave()
+		return
 	_update(time)
 	if time >= DURATION:
 		leave()

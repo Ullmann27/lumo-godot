@@ -1,7 +1,11 @@
 class_name LumoKartRivalItemFx
 extends Node3D
-## Lightweight world-space feedback for the existing Lumo rival items.
-## Five rivals share primitive meshes only; no external asset or gameplay rule lives here.
+## World-space feedback for the existing Lumo rival items. The held ability
+## uses the same solid emblem as its skill-gate outcome. Racing owns the clock.
+
+const SYMBOLS = preload("res://scripts/games/kart_item_symbols.gd")
+const ITEM_CATALOG = preload("res://scripts/games/kart_items/kart_item_catalog.gd")
+const SHIELD_SHADER = preload("res://assets/shaders/kart_shield_dome.gdshader")
 
 const ITEM_COLORS := {
 	"boost": Color("ffd166"),
@@ -14,18 +18,26 @@ var reduced_motion: bool = false
 var pulse_age: float = 1.0
 var elapsed: float = 0.0
 
-var item_orb: MeshInstance3D
+## Historical public name retained for capture/inspection compatibility.
+var item_orb: Node3D
 var item_ring: MeshInstance3D
 var shield_bubble: MeshInstance3D
 var shield_ring: MeshInstance3D
 var warning_ring: MeshInstance3D
 var pulse_ring: MeshInstance3D
 var stun_ring: MeshInstance3D
+var _held_symbols: Dictionary = {}
+var _held_ring_materials: Dictionary = {}
+var _rendered_item: String = "__unbuilt__"
+var _pulse_material: StandardMaterial3D
+var _shield_material: ShaderMaterial
+var _shield_hit_age: float = 9.0
 
 
 func _ready() -> void:
 	_build()
-	set_process(true)
+	set_process(false)
+	set_item(held_item)
 
 
 func _material(color: Color, alpha: float = 1.0, glow: float = 1.0) -> StandardMaterial3D:
@@ -54,21 +66,24 @@ func _ring(radius: float, thickness: float, color: Color, alpha: float) -> MeshI
 
 
 func _build() -> void:
-	item_orb = MeshInstance3D.new()
-	var orb_mesh := SphereMesh.new()
-	orb_mesh.radius = 0.28
-	orb_mesh.height = 0.56
-	orb_mesh.radial_segments = 12
-	orb_mesh.rings = 6
-	item_orb.mesh = orb_mesh
-	item_orb.position = Vector3(0.0, 2.28, 0.0)
+	item_orb = Node3D.new()
+	item_orb.name = "HeldItemSymbol"
+	# The tallest current driver (rabbit) reaches 2.492 m; the lowest shield
+	# tip and hover rail retain clearance even at the bottom of the small bob.
+	item_orb.position = Vector3(0.0, 3.20, 0.0)
+	item_orb.scale = Vector3.ONE * 0.70
 	item_orb.visible = false
-	item_orb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(item_orb)
+	for kind in SYMBOLS.KINDS:
+		var symbol: Node3D = SYMBOLS.build(kind)
+		symbol.visible = false
+		item_orb.add_child(symbol)
+		_held_symbols[kind] = symbol
+		_held_ring_materials[kind] = _material(ITEM_COLORS[kind], 0.85, 1.1)
 
-	item_ring = _ring(0.42, 0.08, Color("ffffff"), 0.92)
-	item_ring.position = Vector3(0.0, 2.28, 0.0)
-	item_ring.rotation.x = PI * 0.5
+	item_ring = _ring(0.34, 0.06, Color("ffffff"), 0.85)
+	item_ring.name = "HeldItemHoverRail"
+	item_ring.position = Vector3(0.0, 2.68, 0.0)
 	item_ring.visible = false
 	add_child(item_ring)
 
@@ -80,7 +95,11 @@ func _build() -> void:
 	shield_mesh.rings = 9
 	shield_bubble.mesh = shield_mesh
 	shield_bubble.position.y = 0.95
-	shield_bubble.material_override = _material(Color("66e8ff"), 0.20, 0.95)
+	# Same honeycomb energy dome as the player's Sternenschild (one shader draw call).
+	_shield_material = ShaderMaterial.new()
+	_shield_material.shader = SHIELD_SHADER
+	_shield_material.set_shader_parameter("time_offset", randf() * 10.0)
+	shield_bubble.material_override = _shield_material
 	shield_bubble.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	shield_bubble.visible = false
 	add_child(shield_bubble)
@@ -90,13 +109,15 @@ func _build() -> void:
 	shield_ring.visible = false
 	add_child(shield_ring)
 
-	warning_ring = _ring(1.55, 0.18, Color("e5a0ff"), 0.90)
+	warning_ring = _ring(1.55, 0.26, Color("f0b8ff"), 0.95)
 	warning_ring.position.y = 0.10
 	warning_ring.visible = false
 	add_child(warning_ring)
 
 	pulse_ring = _ring(1.38, 0.20, Color("b5efff"), 0.88)
 	pulse_ring.position.y = 0.12
+	_pulse_material = _material(Color("c58cff"), 0.88, 1.8)
+	pulse_ring.material_override = _pulse_material
 	pulse_ring.visible = false
 	add_child(pulse_ring)
 
@@ -109,21 +130,28 @@ func _build() -> void:
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
+	_apply_motion()
 
 
 func set_item(value: String) -> void:
-	if value == held_item and is_instance_valid(item_orb):
-		return
 	held_item = value
 	if not is_instance_valid(item_orb):
 		return
-	var visible_item: bool = ITEM_COLORS.has(value)
+	if value == _rendered_item:
+		return
+	_rendered_item = value
+	var visible_item: bool = ITEM_COLORS.has(value) or ITEM_CATALOG.has(value)
 	item_orb.visible = visible_item
 	item_ring.visible = visible_item
+	for kind in _held_symbols:
+		(_held_symbols[kind] as Node3D).visible = kind == value
 	if visible_item:
-		var color: Color = ITEM_COLORS[value]
-		item_orb.material_override = _material(color, 0.95, 1.7)
-		item_ring.material_override = _material(color.lightened(0.16), 0.82, 1.4)
+		if _held_ring_materials.has(value) and _held_symbols.has(value):
+			item_ring.material_override = _held_ring_materials[value]
+			SYMBOLS.advance(_held_symbols[value], elapsed, reduced_motion)
+		else:
+			# Catalogue items without an own emblem show their colour on the hover rail.
+			item_ring.material_override = _material(ITEM_CATALOG.color(value).lightened(0.16), 0.82, 1.4)
 
 
 func set_shield(seconds: float) -> void:
@@ -138,6 +166,15 @@ func set_shield(seconds: float) -> void:
 		shield_ring.scale = Vector3.ONE * scale_value
 
 
+## A rocket bounced off this rival's dome: ripple from the contact point.
+func shield_impact(world_point: Vector3) -> void:
+	if not is_instance_valid(shield_bubble) or not shield_bubble.is_inside_tree():
+		return
+	var local: Vector3 = shield_bubble.to_local(world_point)
+	_shield_hit_age = 0.0
+	_shield_material.set_shader_parameter("hit_direction", local.normalized() if local.length_squared() > 0.0001 else Vector3.FORWARD)
+
+
 func set_pulse_warning(remaining: float, duration: float) -> void:
 	if not is_instance_valid(warning_ring):
 		return
@@ -145,16 +182,16 @@ func set_pulse_warning(remaining: float, duration: float) -> void:
 	if not warning_ring.visible:
 		return
 	var progress: float = 1.0 - clampf(remaining / maxf(duration, 0.001), 0.0, 1.0)
-	var beat: float = 0.0 if reduced_motion else sin(progress * TAU * 3.0) * 0.08
-	warning_ring.scale = Vector3.ONE * (0.88 + progress * 0.28 + beat)
+	var beat: float = sin(progress * TAU * 3.0) * 0.08
+	warning_ring.scale = Vector3.ONE if reduced_motion else Vector3.ONE * (0.88 + progress * 0.28 + beat)
 
 
 func fire_pulse() -> void:
 	pulse_age = 0.0
 	if is_instance_valid(pulse_ring):
 		pulse_ring.visible = true
-		pulse_ring.scale = Vector3.ONE
-		pulse_ring.material_override = _material(Color("b5efff"), 0.75, 1.8)
+		pulse_ring.scale = Vector3.ONE * (2.4 if reduced_motion else 1.0)
+		_pulse_material.albedo_color.a = 0.88
 
 
 func set_stunned(seconds: float) -> void:
@@ -162,25 +199,48 @@ func set_stunned(seconds: float) -> void:
 		stun_ring.visible = seconds > 0.0
 
 
-func _process(delta: float) -> void:
+func advance(delta: float, paused: bool = false, reduce_motion: bool = false) -> void:
+	# No autonomous process callback: preview, finish and menus cannot keep a
+	# separate effects clock running after the actual race has stopped.
+	if paused or not is_finite(delta) or delta < 0.0:
+		return
+	reduced_motion = reduce_motion
 	elapsed += delta
-	if is_instance_valid(item_ring) and item_ring.visible and not reduced_motion:
-		item_ring.rotation.y += delta * 2.4
-	if is_instance_valid(stun_ring) and stun_ring.visible and not reduced_motion:
-		stun_ring.rotation.y += delta * 3.0
+	_shield_hit_age = minf(9.0, _shield_hit_age + delta)
+	if _shield_material != null:
+		_shield_material.set_shader_parameter("hit_age", _shield_hit_age)
+		_shield_material.set_shader_parameter("pulse_amount", 0.0 if reduced_motion else 0.22)
+	_apply_motion()
 	if pulse_age < 0.72 and is_instance_valid(pulse_ring):
-		pulse_age += delta
+		pulse_age = minf(0.72, pulse_age + delta)
 		var progress: float = clampf(pulse_age / 0.72, 0.0, 1.0)
 		pulse_ring.visible = progress < 1.0
-		pulse_ring.scale = Vector3.ONE * (1.0 + progress * 6.0)
-		var material := pulse_ring.material_override as StandardMaterial3D
-		if material:
-			material.albedo_color.a = 0.75 * (1.0 - progress)
+		pulse_ring.scale = Vector3.ONE * (2.4 if reduced_motion else 1.0 + progress * 8.5)
+		_pulse_material.albedo_color.a = 0.75 * (1.0 - progress)
+
+
+func _apply_motion() -> void:
+	if _held_symbols.has(held_item):
+		SYMBOLS.advance(_held_symbols[held_item], elapsed, reduced_motion)
+	if is_instance_valid(stun_ring):
+		stun_ring.rotation.y = 0.0 if reduced_motion else elapsed * 3.0
+	if is_instance_valid(shield_bubble):
+		var scale_value: float = 1.0 if reduced_motion else 1.0 + sin(elapsed * 4.0) * 0.035
+		shield_bubble.scale = Vector3.ONE * scale_value
+		shield_ring.scale = Vector3.ONE * scale_value
+	if reduced_motion:
+		if is_instance_valid(warning_ring):
+			warning_ring.scale = Vector3.ONE
+		if is_instance_valid(pulse_ring):
+			pulse_ring.scale = Vector3.ONE * 2.4
 
 
 func visual_state() -> Dictionary:
 	return {
 		"held_item": held_item,
+		"symbol_kind": held_item if _held_symbols.has(held_item) else "",
+		"clock": elapsed,
+		"pulse_age": pulse_age,
 		"item_visible": is_instance_valid(item_orb) and item_orb.visible,
 		"shield_visible": is_instance_valid(shield_bubble) and shield_bubble.visible,
 		"shield_ring_visible": is_instance_valid(shield_ring) and shield_ring.visible,

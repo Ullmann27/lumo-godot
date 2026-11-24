@@ -2,9 +2,13 @@ extends RefCounted
 ## Action-Parcours je Runde: Turbo-Felder, Slalom-Tore, Sprungschanze, Unterwasser-Tunnel und
 ## offene Kanten, von denen man fallen kann (die Lumo-Wolke setzt das Kart fair zurück).
 ## Alle Elemente liegen in lokaler Rundendistanz (0 … Länge) und meiden Start/Ziel, Sprunglücke
-## und Looping. Sonnenhafen bleibt vorerst unverändert: Er ist Referenz- und Prüfstrecke des
-## vollständigen Android-Rennablaufs.
+## und Looping. Sonnenhafen erhält eine eigene Panorama-Schanze mit längerer,
+## fahrphysikalisch berechneter Flugphase; die übrigen Strecken bleiben unverändert.
 
+const STUNT = preload("res://scripts/games/kart_sonnenhafen_stunt_sequence.gd")
+const RAMP = preload("res://scripts/games/track_pieces/kart_ramp_piece.gd")
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 const PAD_LENGTH: float = 6.0
 const PAD_HALF_WIDTH: float = 1.4
 const PAD_BOOST_SECONDS: float = 1.0
@@ -20,9 +24,13 @@ const DIVE_SPEED: float = 0.9
 const EDGE_LENGTH: float = 30.0
 ## Abstand zu Start/Ziel, Sprung und Looping, damit sich Elemente nie überlagern.
 const CLEARANCE: float = 14.0
+## A swept 100 ms step at a boosted 70 m/s must not miss a lip or gate.
+## Longer discontinuities are rescue/load jumps, not physical crossings.
+const MAX_CROSSING_STEP: float = 14.0
 
 ## Lage der Elemente als Anteil der Runde. Die Fahrt prüft jede Lage noch gegen Sprung und Looping.
 const COURSES: Dictionary = {
+	"sonnenhafen": {"kicker": 0.55, "hero_flight": true, "stunt": true, "extra_kickers": [0.22, 0.86]},
 	"zauberwald": {"pads": [0.16, 0.66], "slalom": 0.28, "kicker": 0.84, "dive": [0.38, 0.46]},
 	"bergwelt": {"pads": [0.21, 0.93], "slalom": 0.45},
 	"holo_city": {"pads": [0.12, 0.57], "slalom": 0.31, "kicker": 0.80},
@@ -52,6 +60,15 @@ static func plan(world) -> Dictionary:
 		return result
 	var blocked: Array = _blocked_ranges(world, length)
 	var taken: Array = []
+	# Der lange Unterwassertunnel braucht einen durchgehenden Korridor.
+	if course.has("dive"):
+		var range_fractions: Array = course.dive
+		var dive_start: float = float(range_fractions[0]) * length
+		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
+		var start := _free_start(dive_start, dive_length, length, blocked, taken)
+		if start >= 0.0:
+			result.dives.append({"start": start, "end": start + dive_length})
+			taken.append(Vector2(start, start + dive_length))
 	var pad_lane: float = -2.2
 	for fraction in course.get("pads", []):
 		var start: float = _free_start(float(fraction) * length, PAD_LENGTH, length, blocked, taken)
@@ -59,6 +76,11 @@ static func plan(world) -> Dictionary:
 			result.pads.append({"start": start, "end": start + PAD_LENGTH, "lateral": pad_lane})
 			taken.append(Vector2(start, start + PAD_LENGTH))
 			pad_lane = -pad_lane
+	# Stunt pads feed the loop lane; they sit just outside the loop's own zone.
+	if bool(course.get("stunt", false)):
+		for pad in STUNT.pads(world):
+			result.pads.append(pad)
+			taken.append(Vector2(float(pad.start), float(pad.end)))
 	if course.has("slalom"):
 		var span: float = GATE_SPACING * float(GATE_COUNT)
 		var start: float = _free_start(float(course.slalom) * length, span, length, blocked, taken)
@@ -70,21 +92,55 @@ static func plan(world) -> Dictionary:
 				})
 			taken.append(Vector2(start, start + span))
 	if course.has("kicker"):
-		var start: float = _free_start(float(course.kicker) * length, KICKER_LENGTH + 10.0, length, blocked, taken)
+		var panorama: bool = bool(course.get("hero_flight", false))
+		var ramp_length: float = 12.0 if panorama else KICKER_LENGTH
+		var ramp_height: float = 2.2 if panorama else KICKER_HEIGHT
+		var reserved_span: float = ramp_length + (34.0 if panorama else 10.0)
+		if panorama and STUNT.applies(world):
+			var maximum: float = float(STUNT.SPEED_ZONE.hardware_limits().cruise)
+			var flight: Dictionary = {"height": ramp_height, "angle": atan2(ramp_height, ramp_length),
+				"flight_gravity": 14.0, "lift_bonus": 5.0, "max_lift": 11.0}
+			reserved_span = ramp_length + ceilf(STUNT.PRECISION.landing_distance(maximum, flight)) + 16.0
+		var wish: float = float(course.kicker) * length
+		var ramp_blocked: Array = blocked
+		if panorama and not world.loop_layout.is_empty():
+			# Keep the full physical panorama landing before the branch's boost
+			# pad. Moving the precision approach must not move this jump into it.
+			var before_loop: float = float(world.loop_layout.start) - STUNT.PAD_GAP_M - STUNT.PAD_LENGTH - CLEARANCE
+			ramp_blocked = blocked.duplicate()
+			ramp_blocked.append(Vector2(before_loop, length))
+			wish = minf(wish, before_loop - reserved_span - CLEARANCE)
+		var start: float = _free_start(wish, reserved_span, length, ramp_blocked, taken)
 		if start >= 0.0:
 			result.kickers.append({
-				"start": start, "take_off": start + KICKER_LENGTH, "height": KICKER_HEIGHT,
-				"angle": atan2(KICKER_HEIGHT, KICKER_LENGTH)
+				"start": start, "take_off": start + ramp_length,
+				"length": ramp_length, "height": ramp_height,
+				"angle": atan2(ramp_height, ramp_length),
+				"flight_gravity": 14.0 if panorama else 30.0,
+				"lift_bonus": 5.0 if panorama else 1.6,
+				"max_lift": 11.0 if panorama else 4.0,
+				"hero_flight": panorama, "landing_road_end": start + reserved_span
 			})
-			taken.append(Vector2(start, start + KICKER_LENGTH + 10.0))
-	if course.has("dive"):
-		var range_fractions: Array = course.dive
-		var dive_start: float = float(range_fractions[0]) * length
-		var dive_length: float = (float(range_fractions[1]) - float(range_fractions[0])) * length
-		var start: float = _free_start(dive_start, dive_length, length, blocked, taken)
-		if start >= 0.0:
-			result.dives.append({"start": start, "end": start + dive_length})
-			taken.append(Vector2(start, start + dive_length))
+			taken.append(Vector2(start, start + reserved_span))
+	# The stunt sequence adds its own panorama kicker after the loop exit.
+	if bool(course.get("stunt", false)):
+		for kicker in STUNT.kickers(world):
+			result.kickers.append(kicker)
+			taken.append(Vector2(float(kicker.start), float(kicker.take_off) + 34.0))
+	# Two additional low, full-width harbour kickers have a continuous road
+	# beneath the entire landing. Their capped lift remains controllable at
+	# doubled cruise/boost speeds; no new mandatory gap or teleported flight.
+	for fraction in course.get("extra_kickers", []):
+		var start: float = _extra_kicker_start(world, float(fraction) * length, blocked, taken)
+		if start < 0.0:
+			continue
+		result.kickers.append({
+			"start": start, "take_off": start + 12.0, "length": 12.0, "height": 1.6,
+			"angle": atan2(1.6, 12.0), "flight_gravity": 30.0,
+			"lift_bonus": 2.0, "max_lift": 6.0, "action_expansion": true,
+			"landing_road_end": start + 76.0,
+		})
+		taken.append(Vector2(start, start + 76.0))
 	for fraction in course.get("edges", []):
 		var start: float = _free_start(float(fraction) * length, EDGE_LENGTH, length, blocked, taken)
 		if start >= 0.0:
@@ -99,20 +155,50 @@ static func plan(world) -> Dictionary:
 	return result
 
 
+static func _extra_kicker_start(world, wish: float, blocked: Array, taken: Array) -> float:
+	for step in range(61):
+		var offset: float = floorf(float(step + 1) / 2.0) * 4.0 * (1.0 if step % 2 == 0 else -1.0)
+		var start: float = wish + offset
+		if start < 45.0 or start + 76.0 > float(world.length) - 45.0:
+			continue
+		var free: bool = true
+		for zone in blocked + taken:
+			var area: Vector2 = zone
+			if start < area.y + CLEARANCE and start + 76.0 > area.x - CLEARANCE:
+				free = false
+				break
+		# Prefer a broad road arc: the landing is actually driven, not snapped
+		# back to the centre line. All three samples must agree on the corridor.
+		var launch: Vector3 = world.forward(start + 12.0)
+		if free and launch.dot(world.forward(start + 42.0)) > 0.94 and launch.dot(world.forward(start + 65.0)) > 0.90:
+			return start
+	return -1.0
+
+
 static func _blocked_ranges(world, length: float) -> Array:
 	var blocked: Array = [Vector2(length - 30.0, length), Vector2(0.0, 35.0)]
+	var precision_zone: Dictionary = STUNT.SPEED_ZONE.of(world)
+	if not precision_zone.is_empty():
+		blocked.append(Vector2(float(precision_zone.start) - CLEARANCE, float(precision_zone.tunnel) + CLEARANCE))
+	var tunnel: Dictionary = world.get_meta("adventure_tunnel_plan", {})
+	if not tunnel.is_empty():
+		blocked.append(Vector2(float(tunnel.start) - CLEARANCE, float(tunnel.end) + CLEARANCE))
 	var jump: Dictionary = world.jump
 	if not jump.is_empty():
 		blocked.append(Vector2(float(jump.ramp_start) - CLEARANCE, float(jump.gap_end) + CLEARANCE))
 	var loop: Dictionary = world.loop_layout
 	if not loop.is_empty():
 		blocked.append(Vector2(float(loop.start) - CLEARANCE, float(loop.start) + 70.0))
+	blocked.append_array(PASSAGES.blocked_ranges(world))
+	blocked.append_array(THRILLS.blocked_ranges(world))
 	return blocked
 
 
-## Erste freie Lage ab der Wunschdistanz (in 4-m-Schritten, höchstens ±120 m); -1 ohne Platz.
+## Erste freie Lage ab der Wunschdistanz in 4-m-Schritten; -1 ohne freien Abschnitt.
 static func _free_start(wish: float, span: float, length: float, blocked: Array, taken: Array) -> float:
-	for step in range(61):
+	# Longer authored routes need a wider deterministic search, retaining the same
+	# first-fit order and every original separation/start/jump/loop constraint.
+	for step in range(maxi(61, ceili(length / 4.0))):
 		var offset: float = floorf(float(step + 1) / 2.0) * 4.0 * (1.0 if step % 2 == 0 else -1.0)
 		var start: float = wish + offset
 		if start < 0.0 or start + span > length:
@@ -133,22 +219,42 @@ static func _free_start(wish: float, span: float, length: float, blocked: Array,
 static func kicker_height(course: Dictionary, distance: float) -> float:
 	for kicker in course.get("kickers", []):
 		if distance >= float(kicker.start) and distance < float(kicker.take_off):
-			return (distance - float(kicker.start)) / KICKER_LENGTH * float(kicker.height)
+			var t: float = (distance - float(kicker.start)) / float(kicker.length)
+			if str(kicker.get("profile", "")) == "ease_in":
+				return t * t * float(kicker.height)
+			return t * float(kicker.height)
 	return 0.0
 
 
 static func kicker_pitch(course: Dictionary, distance: float) -> float:
 	for kicker in course.get("kickers", []):
 		if distance >= float(kicker.start) and distance < float(kicker.take_off):
+			if str(kicker.get("profile", "")) == "ease_in":
+				var t: float = (distance - float(kicker.start)) / float(kicker.length)
+				return atan(2.0 * float(kicker.height) * t / float(kicker.length))
 			return float(kicker.angle)
 	return 0.0
 
 
 ## Die Schanze, deren Absprungkante zwischen zwei Fahrschritten überquert wurde.
 static func kicker_crossed(course: Dictionary, previous: float, current: float) -> Dictionary:
+	if current <= previous or current - previous > MAX_CROSSING_STEP:
+		return {}
 	for kicker in course.get("kickers", []):
 		var edge: float = float(kicker.take_off)
-		if previous >= float(kicker.start) and previous < edge and current >= edge and current < edge + 6.0:
+		if previous >= float(kicker.start) and previous < edge and current >= edge:
+			return kicker
+	return {}
+
+
+## A physical opening in the road after the Sonnenhafen stunt ramp.
+## It is not a visual illusion: world._ribbon skips it and the race physics
+## tests in_gap before allowing landing. Other courses remain unchanged.
+static func precision_gap_at(course: Dictionary, distance: float) -> Dictionary:
+	for kicker in course.get("kickers", []):
+		if not bool(kicker.get("precision_jump", false)):
+			continue
+		if distance >= float(kicker.gap_start) and distance < float(kicker.gap_end):
 			return kicker
 	return {}
 
@@ -165,7 +271,7 @@ static func pad_at(course: Dictionary, distance: float, lateral: float) -> int:
 ## Tore, deren Linie zwischen zwei Fahrschritten vorwärts überquert wurde.
 static func gates_crossed(course: Dictionary, previous: float, current: float) -> Array:
 	var crossed: Array = []
-	if current <= previous or current - previous > 6.0:
+	if current <= previous or current - previous > MAX_CROSSING_STEP:
 		return crossed
 	for gate in course.get("gates", []):
 		var line: float = float(gate.distance)
@@ -250,18 +356,43 @@ static func _build_gate(world, gate: Dictionary, accent: Color) -> void:
 
 
 static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
-	var steps: int = 7
-	for step in range(steps):
-		var along: float = float(kicker.start) + (float(step) + 0.5) * KICKER_LENGTH / float(steps)
-		var basis: Basis = world.frame(along)
-		var rise: float = (float(step) + 0.5) / float(steps) * float(kicker.height)
-		var slab: Basis = basis.rotated(basis.x, float(kicker.angle))
-		var at: Vector3 = world.position_at(along) + basis.y * (rise * 0.5)
-		var color: Color = Color("f7c84a") if step % 2 == 0 else Color("23324a")
-		world._prop("box", at, Vector3(9.2, maxf(0.08, rise), KICKER_LENGTH / float(steps) + 0.05), color, slab)
+	if bool(kicker.get("precision_jump", false)):
+		STUNT.build_precision_ramp(world, kicker)
+		return
+	if kicker.has("thrill"):
+		return  # Kuppensprung: kart_track_thrill_art.gd zeichnet den Hügel.
+	# One smooth swept wedge (was a stack of 1 m boxes with visible steps).
+	# Breitere Fahrbahn (Dschungelherz) bekommt eine ebenso breite Rampe.
+	var half: float = maxf(4.6, float(world.road_width_at(float(kicker.start))) * 0.5 - 0.8)
+	if bool(kicker.get("spectacle", false)):
+		half = float(world.road_width_at(float(kicker.start))) * 0.5
+	RAMP.build(
+		world, float(kicker.start), float(kicker.length), float(kicker.height), half,
+		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a"), "profile": str(kicker.get("profile", "linear"))}
+	)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
-	world._prop("box", world.position_at(lip) + lip_basis.y * float(kicker.height), Vector3(9.4, 0.08, 0.3), accent, lip_basis, true)
+	world._prop("box", world.position_at(lip) + lip_basis.y * kicker_height(world.action, lip), Vector3(half * 2.0 + 0.2, 0.08, 0.3), accent, lip_basis, true)
+	if bool(kicker.get("hero_flight", false)):
+		# Cyan landing markers sit outside the driving corridor.
+		for marker in range(3):
+			var d: float = float(kicker.take_off) + 5.0 + float(marker) * 8.0
+			var frame: Basis = world.frame(d)
+			for side in [-1.0, 1.0]:
+				var p: Vector3 = world.position_at(d, side * 6.4)
+				world._prop("box", p + frame.y * (1.2 + marker * 0.25),
+					Vector3(0.24, 2.4 + marker * 0.5, 0.28), Color("43e4ff"), frame, true)
+			var arch: Vector3 = world.position_at(d) + frame.y * (2.5 + marker * 0.5)
+			world._prop("box", arch, Vector3(12.8, 0.24, 0.28),
+				Color("a6f6ff"), frame, true)
+	if bool(kicker.get("action_expansion", false)):
+		for marker in range(5):
+			var d: float = float(kicker.take_off) + 6.0 + float(marker) * 10.0
+			var frame: Basis = world.frame(d)
+			for side in [-1.0, 1.0]:
+				var foot: Vector3 = world.position_at(d, side * (half + 1.8))
+				world._prop("box", foot + frame.y * 1.8, Vector3(0.18, 3.6, 0.18), Color("15375a"), frame)
+				world._prop("box", foot + frame.y * 3.3, Vector3(0.75, 0.5, 0.1), accent, frame, true)
 
 
 static func _build_dive(world, dive: Dictionary) -> void:
@@ -279,7 +410,7 @@ static func _build_dive(world, dive: Dictionary) -> void:
 			var wall: Vector3 = world.position_at(along, side * 6.4) + basis.y * 2.1
 			world._prop("box", wall, Vector3(0.18, 4.2, 4.05), water.darkened(0.25 if ring % 2 == 0 else 0.15), basis, true)
 			world._prop("box", world.position_at(along, side * 6.25) + basis.y * 2.1, Vector3(0.12, 4.3, 0.18), Color("dff8ff"), basis, true)
-		world._prop("box", centre + basis.y * 4.3, Vector3(13.0, 0.2, 4.05), water.darkened(0.35), basis, true)
+		world._prop("dive_water", centre + basis.y * 4.3, Vector3(13.0, 0.2, 4.05), water, basis, true)
 		world._prop("box", centre + basis.y * 4.18, Vector3(12.8, 0.06, 0.2), Color("dff8ff"), basis, true)
 		if ring % 2 == 0:
 			# Fische und Luftblasen an den Wänden, nie in der Fahrspur.

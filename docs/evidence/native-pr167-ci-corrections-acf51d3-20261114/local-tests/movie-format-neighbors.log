@@ -1,0 +1,8 @@
+test_portrait_movie_dimensions_cannot_pass_square_face_capture (test_studio_2020_rasters.Studio2020RasterTests.test_portrait_movie_dimensions_cannot_pass_square_face_capture) ... ok
+test_original_sidecar_structures_bind_all_sixteen_decoded_synthetic_images (test_studio_2020_rasters.Studio2020RasterTests.test_original_sidecar_structures_bind_all_sixteen_decoded_synthetic_images) ... ok
+test_read_only_replay_preserves_all_original_files_and_manifests (test_studio_2020_rasters.Studio2020RasterTests.test_read_only_replay_preserves_all_original_files_and_manifests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.182s
+
+OK

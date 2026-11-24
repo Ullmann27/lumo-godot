@@ -1,0 +1,178 @@
+{
+  "species": "frog",
+  "source_file": "art/lumo_kart/meshy/20261123/drivers/frog.glb",
+  "source_sha256": "8a25b10d518963abd9bb0fdee87190296e5b912664202624e376671d6377149b",
+  "task_id": "01a208f2-16ba-7472-93a3-d99c4062e1f2",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R"
+  ],
+  "animations": {
+    "idle": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_seated": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 4.86061168619993e-07
+    },
+    "kart_steer_left": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.473008058132814e-07
+    },
+    "kart_steer_right": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 5.473008058132814e-07
+    },
+    "kart_jump": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 4.807789863616728e-07
+    },
+    "celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_celebrate": {
+      "frames": 72,
+      "fps": 24,
+      "duration_s": 2.9583333333333335,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "kart_hit": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "greeting_wave": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "agree_nod": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "point_portal": {
+      "frames": 48,
+      "fps": 24,
+      "duration_s": 1.9583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    },
+    "card_play": {
+      "frames": 36,
+      "fps": 24,
+      "duration_s": 1.4583333333333333,
+      "sampled_max_hand_origin_error_m": 0.0
+    }
+  },
+  "lods": {
+    "lod0": {
+      "vertices": 14511,
+      "triangles": 22081,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.737,
+        0.8682,
+        1.0968
+      ],
+      "file": "assets/kart/production/drivers/frog/driver.glb",
+      "bytes": 2446220,
+      "sha256": "3378bde1ec2016557c54f76e0211d71f35a2d060cd28c50a06824e8236da9ed2"
+    },
+    "lod1": {
+      "vertices": 9719,
+      "triangles": 12950,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.7371,
+        0.8685,
+        1.097
+      ],
+      "file": "assets/kart/production/drivers/frog/driver_lod1.glb",
+      "bytes": 2142200,
+      "sha256": "746814038288b31c3e28aaffb5868a5028d84fb5d4a2a422cbe1d70b80adf8f1"
+    },
+    "lod2": {
+      "vertices": 6806,
+      "triangles": 8385,
+      "materials": 3,
+      "max_weight_sum_error": 4.470348358154297e-08,
+      "max_influences": 4,
+      "dimensions_blender_m": [
+        0.7375,
+        0.8682,
+        1.0988
+      ],
+      "file": "assets/kart/production/drivers/frog/driver_lod2.glb",
+      "bytes": 1962604,
+      "sha256": "4df0aa2b788076e86327cbddb1f581ecf85c50f30717d7cf2aa2b4289a8db527"
+    }
+  },
+  "textures": [
+    {
+      "name": "Image_0",
+      "source_size": [
+        2048,
+        2048
+      ],
+      "runtime_size": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "anatomy_file": "tools/lumo_kart_art/drivers/meshy_anatomy.json",
+  "anatomy_sha256": "55972ff1efb14d52e58351bba999573e37efe0a41c1fa778384916231de4af1c",
+  "blender_version": "4.3.2",
+  "authoring": "Retained textured Meshy source, anatomy-guided four-influence skinning, seated rest-space fitting, actual eye components and eyelid skins, 26 bones and 12 authored clips; three explicit LODs.",
+  "portrait": {
+    "file": "assets/kart/menu/drivers/frog.webp",
+    "sha256": "218d931dea9a6172826d43d5b02fd332f101a834bbebb38108869dc005256738",
+    "bytes": 28424,
+    "source": "Rendered from this rigged Meshy mesh"
+  }
+}

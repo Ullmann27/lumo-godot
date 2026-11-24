@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "base_native": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "base_tree": "35492eec16cac6774bc546b6e57628900bef61cb",
+  "producer": "454e81229b0193cba75844e9985a53deb2ce5c91",
+  "source_scope": "13 exact published Producer files including two actually verified GLBs and three exact hook updates, plus three new isolated gates and one new branch-scoped workflow.",
+  "source_paths": [
+    {
+      "path": "assets/dream_garden/dream_blossom.glb",
+      "git_blob": "30bcaa17a7a7d86bc2124823cbd30428aedb0760",
+      "sha256": "7390bce21e80f9404b009d7a21859b6c1adbb6d9c9f945c79469dc7bd6859ec4",
+      "mode": "100644"
+    },
+    {
+      "path": "assets/dream_garden/dream_storybook.glb",
+      "git_blob": "d11aac2c5e33d58563ae6707ace16c9c67b59291",
+      "sha256": "f64698452dc41c10f9659e1641c9386775af891577207ac04a0e5ee82106f102",
+      "mode": "100644"
+    },
+    {
+      "path": "assets/dream_garden/provenance.json",
+      "git_blob": "3f8030d6a113752e771ca2c110478f26efe98d52",
+      "sha256": "926703b434afb2fb90650c6207863e17e0de12803858c8fa0aff55ad9e561d1f",
+      "mode": "100644"
+    },
+    {
+      "path": "assets/shaders/lumo_dream_ambience.gdshader",
+      "git_blob": "14ff7da92f330f97a82d2579c009db8c981c2cb8",
+      "sha256": "c73c05003f3051a142ac6a7b87d483e06d1bdf7a3c3e6b60439a3571dc74d7f0",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/learning/learning_atelier.gd",
+      "git_blob": "6bca8ad6d91e9e4378104a9afef4dc8b9ebf54a9",
+      "sha256": "50d01bd437e84333bde534502c4d0bd137c653e819e1c8fb3b5b631447eb4d2b",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/learning/lumo_dream_props.gd",
+      "git_blob": "e042f4295acfb2e6fa7d95a4789ff149383d77af",
+      "sha256": "74bf0cce4848e9ed86a0d0ef5b53bd15042467b9a4aa9113b436a36d667d849a",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/systems/render/lumo_dream_ambience.gd",
+      "git_blob": "faabc7aeee73c18cf5fa8783dfc77c4e67a2bc33",
+      "sha256": "3ac034e242ce52f89b4295c7b08f45cbef323151a62a7c90229f2eb8c18c2999",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment.gd",
+      "git_blob": "a3444f97fe9c6bfa6a509dca64a669fadde55a90",
+      "sha256": "bde7fc355ca75817934c95d4b551783a3074b001aca3ec71c2d85843c80e2bef",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/systems/render/lumo_environment_creative_presets.gd",
+      "git_blob": "263d05faedf43adb32b46555811294cba65b8d20",
+      "sha256": "5e3036477f83d54b6b74e32161e4d566975df0918fd366b57a9e4e3fb7c4da88",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/dream_garden_capture.gd",
+      "git_blob": "8b514d3f6bf9095e6908765cd3d59bc5ebdb67a4",
+      "sha256": "7c9178c8cd9284b2669293c79e44e642e54a3d9b203e7071403c3d9d33cca746",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/dream_garden_props_regression.gd",
+      "git_blob": "361eed7ed25b46bff8173087eb7df1eaaac96b56",
+      "sha256": "527b63e2889567e88b8310873801bf87d7bec4b64a661c15be225cba309ae118",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_capture.gd",
+      "git_blob": "75085479ed587335533651adece30b579b8fe11f",
+      "sha256": "080e4289c12e637562dbae804d2fd8c803357e24933c07a953ad798364c123b9",
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/tests/lumo_dream_ambience_regression.gd",
+      "git_blob": "d96ad6f332b93e3e28d563d72b3c10d208c7be13",
+      "sha256": "c3291510e53fa322b16fb50d444f502143e20b39e969f9cb5bce2e6eec169212",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/tests/test_dream_rasters.py",
+      "git_blob": "0af63932d9f71fd3f1c1657f6aaaba46a019a2c0",
+      "sha256": "d974aeba9a89b5ac0374033d5b70dad085819191ea8fb67704e0d28a2db20085",
+      "mode": "100644"
+    },
+    {
+      "path": "tools/validate_dream_connections.sh",
+      "git_blob": "834ea912003f5e27a271139646a857601baea905",
+      "sha256": "19366398784db00c335800bc26ab3e171e062eb2149316021039bc027706dadc",
+      "mode": "100755"
+    },
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "mode": "100755"
+    },
+    {
+      "path": ".github/workflows/lumo-dream-connections.yml",
+      "git_blob": "321aeff8018435789cc57df3af3e3b5fecc4c910",
+      "sha256": "7320bc547bbf110ca1374d651fd3867f603e2ae996bd37848939574a67e29217",
+      "mode": "100644"
+    }
+  ],
+  "current_host_unchanged": "32e7efbff427fef64e90b3a1fcecd3b52f00af42",
+  "current_host_native_pin_unchanged": "f052c2795b765265dbb6f5c27b9e92b557d39a39",
+  "current_host_run_untouched": 43583493817,
+  "protected_existing_contracts": "Current Return21, Wisp14, Treasure92, Learning5347 and52-mode/17-image acceptance sources remain unchanged.",
+  "binary_scope": "Both original GLB byte lengths, Git/SHA256 identities, chunks,43 Accessors and all internal references checked; this is not a renderer acceptance.",
+  "workflow_scope": "New Dream push branch only, contents:read, exact event SHA,45-minute budget, verified Godot4.6.3 and Pillow12.3.0, four existing headless gates plus five new Dream gates and seven PNGs.",
+  "actual_validation_before_checkpoint": "WorkflowV1 original Actionlint FAIL preserved; V2 targeted recheck PASS. No Dream Python/engine/render/device tests have run before this source checkpoint.",
+  "remaining": "After this source checkpoint:12 Python raster contract cases, one exact import and two Dream headless probes locally; no local renderer repeat. Then a separate evidence activation can run the real renderer CI.",
+  "acceptance": "No APK,Android,FPS,renderer or release approval inferred; active Host remains pinned to f052."
+}

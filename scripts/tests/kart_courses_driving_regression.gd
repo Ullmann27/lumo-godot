@@ -4,12 +4,25 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
+	# Fester Seed: Platz, Zeit und Rücksetzer dürfen nicht vom Zufall der Item-Ziehung abhängen.
+	var race_seed: int = 20261118
+	var selected: Array[String] = preload("res://scripts/games/kart_tracks.gd").IDS.duplicate()
+	for argument in OS.get_cmdline_user_args():
+		if str(argument).begins_with("--tracks="):
+			selected.clear()
+			for track_id in str(argument).trim_prefix("--tracks=").split(","):
+				assert(track_id in preload("res://scripts/games/kart_tracks.gd").IDS)
+				selected.append(track_id)
+		elif str(argument).begins_with("--seed="):
+			race_seed = int(str(argument).trim_prefix("--seed="))
+	assert(not selected.is_empty())
 	var game = load("res://scenes/games/kart_island.tscn").instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
 	await process_frame
-	for track in ["sonnenhafen", "zauberwald", "bergwelt", "holo_city"]:
+	for track in selected:
+		game.race_seed = race_seed
 		game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet", "track": track, "difficulty": "flott"})
 		await process_frame
 		game.countdown = 0
@@ -24,15 +37,15 @@ func _run() -> void:
 			frames += 1
 			if frames % 60 == 0:
 				await process_frame
-		assert(game.finished, "All four tracks must be finishable with physical steering")
+		assert(game.finished, "All twelve tracks must be finishable with physical steering")
 		assert(game.checkpoint_index == 16, "Two laps cross all sixteen ordered gates")
 		assert(game.reset_count == 0, "A smooth centre-line drive must not fall off the course")
-		print("[KartCourseDriving] %s: two laps, %.2fs, no resets, place%d" % [track, game.elapsed, int(game.result_payload.place)])
+		print("[KartCourseDriving] %s: two laps, %.2fs, no resets, place%d, seed %d" % [track, game.elapsed, int(game.result_payload.place), race_seed])
 	await process_frame
 	game.abandoned = true
 	game.queue_free()
 	await process_frame
-	print("[KartCourseDriving] PASS: four distinct courses completed through physical steering")
+	print("[KartCourseDriving] PASS: %d selected courses completed through physical steering" % selected.size())
 	# AudioServer releases stopped stream playbacks on its asynchronous mix thread.
 	await create_timer(0.12).timeout
 	quit(0)

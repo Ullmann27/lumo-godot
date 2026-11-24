@@ -1,0 +1,31 @@
+{
+  "checked_at_utc": "2026-11-24T08:04:31.207264+00:00",
+  "engine": "4.6.3",
+  "status": "PASS",
+  "checks": 27,
+  "scope": "Focused World camera regression; five integrated files byte-identical to executed project. Full combined source and Android verification are delivery-workflow requirements.",
+  "rig_source_parent": "574a10e8fb7b06fc8f9af3ff89ef28c6bd4f76d7",
+  "files": [
+    {
+      "path": "export_presets.cfg",
+      "sha256": "0c2f8aba49a2ea9fbdad49ca8f6279c50ac2edcaeef3dd90b2969cf08dc7e842"
+    },
+    {
+      "path": "scripts/creative/lumo_world.gd",
+      "sha256": "b52c4fcf83b58866c18575618c5459fb7b5c5ffe2cf24a329d3155ca0e4a87f6"
+    },
+    {
+      "path": "scripts/creative/lumo_world_art.gd",
+      "sha256": "e3257d53005364ea2073536ab9f9d13fdc81c7f0506db4a5bacfe4d26ea4ae47"
+    },
+    {
+      "path": "scripts/tests/lumo_world_capture.gd",
+      "sha256": "c7b0f8068c4bb61ea32be10e419179001b73f3043b7d26ca3285922d35c6fa18"
+    },
+    {
+      "path": "scripts/tests/lumo_world_camera_regression.gd",
+      "sha256": "1104e658fc1003c060d2741f83f2309732c5a4978fa77656d88737436528087a"
+    }
+  ],
+  "log_sha256": "3e835b4c8ba41efd42840084029bddf5b33267a380e8bdf75a5a86feae30630e"
+}

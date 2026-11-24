@@ -1,0 +1,21 @@
+config_version=5
+
+[application]
+config/name="LUMO Meshy runtime verification"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+
+[autoload]
+EventBus="*res://scripts/systems/event_bus.gd"
+SettingsStore="*res://scripts/systems/settings_store.gd"
+PerformanceManager="*res://scripts/systems/performance_manager.gd"
+MobileRuntime="*res://scripts/app/mobile_runtime.gd"
+HostBridge="*res://scripts/systems/host_bridge.gd"
+SceneRouter="*res://scripts/app/scene_router.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
+ProgressStore="*res://scripts/systems/progress_store.gd"
+
+[editor]
+import/use_multiple_threads=false
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

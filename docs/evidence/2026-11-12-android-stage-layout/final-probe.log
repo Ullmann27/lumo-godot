@@ -1,0 +1,30 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+ROOT physical=(2400, 1080) logical=[P: (0.0, 0.0), S: (1600.0, 720.0)] density=2.625 content_scale=(1280, 720)
+safe size=(1600.0, 614.6667) min=(0.0, 0.0) px=[P: (0.0, 32.0), S: (2400.0, 922.0)] font=22 cached_min=(0.0, 0.0)
+landing size=(1600.0, 614.6667) min=(0.0, 0.0) px=[P: (0.0, 32.0), S: (2400.0, 922.0)] font=22 cached_min=(0.0, 0.0)
+landing header size=(1558.0, 84.0) min=(539.0, 84.0) px=[P: (31.5, 63.5), S: (2337.0, 126.0)] font=22 cached_min=(0.0, 0.0)
+landing modes size=(464.0, 271.6667) min=(84.0, 269.0) px=[P: (31.5, 210.5), S: (696.0, 407.5)] font=22 cached_min=(0.0, 0.0)
+landing navigation size=(1558.0, 84.0) min=(704.0, 84.0) px=[P: (31.5, 639.0001), S: (2337.0, 126.0)] font=22 cached_min=(0.0, 0.0)
+landing footer size=(1558.0, 91.0) min=(457.0, 91.0) px=[P: (31.5, 786.0), S: (2337.0, 136.5)] font=22 cached_min=(0.0, 0.0)
+PHYSICAL_RAYS landing=true origin=(5.804257, 2.58835, -8.831055) points=100 hits=[]
+header size=(1558.0, 88.0) min=(555.0, 88.0) px=[P: (31.5, 63.5), S: (2337.0, 132.0)] font=22 cached_min=(0.0, 0.0)
+header row size=(1554.0, 84.0) min=(551.0, 84.0) px=[P: (34.5, 66.5), S: (2331.0, 126.0)] font=22 cached_min=(0.0, 0.0)
+logo size=(196.0, 84.0) min=(196.0, 77.0) px=[P: (34.5, 66.5), S: (294.0, 126.0)] font=22 cached_min=(112.0, 44.0)
+reward size=(347.0, 84.0) min=(347.0, 84.0) px=[P: (1845.0, 66.5), S: (520.5, 126.0)] font=22 cached_min=(0.0, 0.0)
+star size=(35.0, 54.0) min=(35.0, 54.0) px=[P: (1845.0, 89.0), S: (52.5, 81.0)] font=39 cached_min=(0.0, 0.0)
+stars size=(110.0, 39.0) min=(110.0, 39.0) px=[P: (1912.5, 99.5), S: (165.0, 58.5)] font=28 cached_min=(0.0, 0.0)
+games size=(182.0, 84.0) min=(182.0, 84.0) px=[P: (2092.5, 66.5), S: (273.0, 126.0)] font=25 cached_min=(104.0, 48.0)
+tabs size=(1558.0, 84.0) min=(537.0, 84.0) px=[P: (31.5, 216.5), S: (2337.0, 126.0)] font=22 cached_min=(0.0, 0.0)
+selection size=(482.0, 239.6667) min=(287.0, 95.0) px=[P: (42.0, 384.5), S: (722.9999, 359.5001)] font=22 cached_min=(0.0, 0.0)
+footer size=(1558.0, 91.0) min=(498.0, 91.0) px=[P: (31.5, 786.0), S: (2337.0, 136.5)] font=22 cached_min=(0.0, 0.0)
+PHYSICAL_RAYS landing=false origin=(4.519927, 3.841823, -9.889572) points=100 hits=[]

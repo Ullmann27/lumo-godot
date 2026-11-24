@@ -1,3 +1,4 @@
+## 2013 game-identity covers are generated from real scene captures; never reuse puzzle motifs.
 ## The existing Godot boot route with a themed real-image game entry.
 ## No invented percent, account registration or additional gameplay state.
 extends Node
@@ -9,19 +10,35 @@ const LUMO_MODEL := "res://assets/characters/lumo_animated/Lumo-Animated-Mobile.
 const LOAD_TIMEOUT_SECONDS := 30.0
 const COVER_BY_SCENE: Dictionary = {
 	"kart": "res://assets/kart/menu/lumo-world.webp",
-	"build": "res://assets/creative/sandstone.webp",
-	"puzzle": "res://assets/creative/puzzle/candy.webp",
-	"rhythm": "res://assets/creative/puzzle/volcano.webp",
-	"treasure": "res://assets/creative/puzzle/moonlight.webp",
+	"build": "res://assets/creative/covers/build.png",
+	"settlement": "res://assets/creative/covers/build.png",
+	"puzzle": "res://assets/creative/covers/puzzle.png",
+	"rhythm": "res://assets/creative/covers/rhythm.png",
+	"treasure": "res://assets/creative/covers/treasure.png",
+	"world": "res://assets/games/hub/world.webp",
 	"jump": "res://assets/kart/menu/lumo-world.webp",
+	"run": "res://assets/kart/menu/lumo-world.webp",
+	"skypost": "res://assets/skypost/cover.webp",
 }
 const TITLE_BY_SCENE: Dictionary = {
 	"kart": "LUMO KART",
 	"build": "LUMO BAUWELT",
+	"settlement": "LUMO DORF & WIRTSCHAFT",
 	"puzzle": "LUMO PUZZLE-ATELIER",
 	"rhythm": "LUMO RHYTHM PARTY",
 	"treasure": "LUMO SCHATZSUCHE",
+	"world": "LUMO WORLD",
 	"jump": "LUMO ABENTEUER",
+	"run": "LUMO LAUF",
+	"skypost": "LUMOS STERNENPOST",
+	"learning": "LUMO LERNWERKSTATT",
+	"tutor": "NACHHILFE MIT LUMO",
+	"holo": "LUMOS HOLO-LERNRAUM",
+	"cards": "LUMO CARDS",
+	"connect_four": "VIER GEWINNT",
+	"memory": "LUMO MEMORY",
+	"chess": "LUMO SCHACH",
+	"quiz": "LUMO QUIZSHOW",
 }
 signal load_state_changed(state: String)
 ## Test harnesses may attach the actual boot scene without starting navigation.
@@ -71,11 +88,25 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "puzzle", "build", "rhythm", "treasure", "home", "games"
+		"kart", "jump", "run", "skypost", "puzzle", "build", "settlement", "rhythm", "treasure", "world", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
 	] else "games"
+	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
+	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.
+	var learning_payload: Variant = options.get("learning", {})
+	if target == "learning" and learning_payload is Dictionary and learning_payload.get("kind") == "tutor":
+		target = "tutor"
+	# Aufgabenbezogene Holo-Räume (Textaufgabe, Tunwort, Satzbau) teilen
+	# Rückkehr, Stimme und Abdeckung mit der Lern-Route.
+	elif (
+		target == "learning"
+		and learning_payload is Dictionary
+		and str(learning_payload.get("kind", "")) in ["holo_word_problem", "holo_sentence"]
+	):
+		target = "holo"
 	_show_cover(target)
 	_build_actions()
 	get_viewport().size_changed.connect(_layout)
+	MobileRuntime.safe_area_changed.connect(_layout)
 	_layout()
 	SceneRouter.loaded_navigation_failed.connect(_navigation_failed)
 	# Let the real cover render before requesting the scene and native model.
@@ -254,7 +285,9 @@ func _finish_loading() -> void:
 	_set_phase("transitioning")
 	SceneRouter.launch_options["reduceAnimations"] = _reduced_motion
 	if target_scene == "kart":
-		# One entry, not a boot greeting followed by another forced 4.4s intro.
+		# The optional film belongs to this fresh launch. Returning from a race or
+		# the Parcours reuses the prepared menu without requesting a second film.
+		SceneRouter.launch_options["kartOpeningFilm"] = not _reduced_motion
 		SceneRouter.launch_options["kartEntryPrepared"] = true
 	# Present the actually ready scene once; do not fade a not-yet-drawn hero.
 	if DisplayServer.get_name() != "headless":
@@ -298,7 +331,7 @@ func _back_to_games() -> void:
 	if load_phase == "transitioning":
 		return
 	if HostBridge.is_embedded():
-		if not HostBridge.return_to_app("games"):
+		if not HostBridge.return_to_app("learn" if target_scene in ["learning", "tutor", "holo"] else "games"):
 			_show_failure(HostBridge.SAVE_FAILURE)
 	else:
 		_set_phase("idle")
@@ -312,6 +345,9 @@ func _notification(what: int) -> void:
 
 func _show_cover(scene_id: String) -> void:
 	var cover: TextureRect = $Layer/Background
+	# Until a renderer capture of this lesson is shipped, use the neutral
+	# loading surface instead of falsely presenting the Kart world as learning.
+	cover.visible = scene_id not in ["learning", "tutor", "holo", "memory", "quiz"]
 	var path: String = str(COVER_BY_SCENE.get(scene_id, "res://assets/kart/menu/lumo-world.webp"))
 	cover.texture = MENU_ART.world_texture() if path == MENU_ART.WORLD.resource_path else load(path) as Texture2D
 	var title: Label = $Layer/Title
@@ -319,11 +355,13 @@ func _show_cover(scene_id: String) -> void:
 	title.add_theme_font_override("font", UI.HEADING)
 	title.add_theme_color_override("font_color", Color("f7fbff"))
 	var subtitle: Label = $Layer/Subtitle
-	subtitle.text = "DEIN NÄCHSTES ABENTEUER"
+	subtitle.text = "MIT LUMO BEGREIFEN UND AUSPROBIEREN" if scene_id in ["learning", "tutor", "holo"] else "DEIN NÄCHSTES ABENTEUER"
 	subtitle.add_theme_font_override("font", UI.BODY)
 	subtitle.add_theme_color_override("font_color", Color("53ddfd"))
 	var status: Label = $Layer/LoadingLabel
-	status.text = "Spielwelt wird vorbereitet …"
+	status.text = "Deine Lernansicht wird vorbereitet …" if scene_id in ["learning", "tutor", "holo"] else "Spielwelt wird vorbereitet …"
+	if is_instance_valid(_back_button):
+		_back_button.text = "Zur Aufgabe" if scene_id in ["learning", "tutor", "holo"] else "Zur Spielewelt"
 	status.add_theme_font_override("font", UI.BODY)
 	status.add_theme_color_override("font_color", Color("f7fbff"))
 	var bar: ProgressBar = $Layer/LoadBar
@@ -354,13 +392,16 @@ func _show_cover(scene_id: String) -> void:
 
 
 func _layout() -> void:
+	if not is_inside_tree():
+		return
+	$Layer.visible = MobileRuntime.safe_area_is_ready()
 	var size: Vector2 = get_viewport().get_visible_rect().size
 	if size.x < 1 or size.y < 1:
 		return
 	var physical := Vector2(get_window().size)
 	var dp := physical / MobileRuntime.get_ui_density()
 	var scale_factor := maxf(size.x / dp.x, size.y / dp.y)
-	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") else Rect2()
+	var insets := MobileRuntime.get_safe_area_insets() if OS.has_feature("android") or MobileRuntime.requires_safe_area_observation() else Rect2()
 	var safe_origin := insets.position * size / physical
 	var safe_size := size - (insets.position + insets.size) * size / physical
 	var compact: bool = dp.y < 410
@@ -415,3 +456,10 @@ func _layout() -> void:
 			var portrait_stage: bool = _hero_box.size.x < _hero_box.size.y
 			_hero_camera.keep_aspect = Camera3D.KEEP_WIDTH if portrait_stage else Camera3D.KEEP_HEIGHT
 			_hero_camera.fov = 46.0 if portrait_stage else 37.0
+
+
+func _exit_tree() -> void:
+	if MobileRuntime.safe_area_changed.is_connected(_layout):
+		MobileRuntime.safe_area_changed.disconnect(_layout)
+	if get_viewport().size_changed.is_connected(_layout):
+		get_viewport().size_changed.disconnect(_layout)

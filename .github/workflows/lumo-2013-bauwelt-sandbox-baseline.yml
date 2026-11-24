@@ -1,0 +1,67 @@
+name: LUMO 2013 Bauwelt sandbox baseline
+
+on:
+  push:
+    branches:
+      - lumo-2013/bauwelt-sandbox-20261110
+    paths:
+      - .github/workflows/lumo-2013-bauwelt-sandbox-baseline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-2013-bauwelt-sandbox-baseline
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.6.3 and software renderer
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri libglx-mesa0
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Import the untouched sandbox start source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee "$RUNNER_TEMP/source-sha.txt"
+          timeout 300s Godot_v4.6.3-stable_linux.x86_64 --headless --path . --editor --import --quit 2>&1 | tee "$RUNNER_TEMP/import.log"
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' "$RUNNER_TEMP/import.log"; then exit 1; fi
+
+      - name: Render genuine Bauwelt before state and exercise real sandbox basics
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          rm -rf exports/creative-build
+          mkdir -p exports/creative-build
+          timeout 300s xvfb-run -a -s '-screen 0 1600x900x24' Godot_v4.6.3-stable_linux.x86_64 --path . --audio-driver Dummy --rendering-method gl_compatibility --script scripts/tests/creative_build_capture.gd 2>&1 | tee "$RUNNER_TEMP/bauwelt-before.log"
+          grep -F '[CreativeBuild] PASS: actual world' "$RUNNER_TEMP/bauwelt-before.log"
+          test -s exports/creative-build/01_bauwelt_house.png
+          test -s exports/creative-build/02_bauwelt_bridge_test.png
+          test -s exports/creative-build/03_bauwelt_tower.png
+          test -s exports/creative-build/04_bauwelt_pause.png
+          sha256sum exports/creative-build/*.png | tee "$RUNNER_TEMP/capture-sha256.txt"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-2013-bauwelt-sandbox-before-${{ github.run_id }}
+          path: |
+            exports/creative-build/*.png
+            ${{ runner.temp }}/source-sha.txt
+            ${{ runner.temp }}/import.log
+            ${{ runner.temp }}/bauwelt-before.log
+            ${{ runner.temp }}/capture-sha256.txt
+          if-no-files-found: warn
+          retention-days: 30

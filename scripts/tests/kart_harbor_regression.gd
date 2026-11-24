@@ -28,9 +28,23 @@ func _settle() -> void:
 
 func _terrain_height(world, p: Vector3, vertices: PackedVector3Array) -> float:
 	# Query the triangles uploaded to SculptedIslandTerrain, including coastal interpolation.
-	var count: int = 48 if world.low_detail else 72
-	var x: float = (p.x + 114.0) * float(count) / 228.0
-	var z: float = (p.z + 104.0) * float(count) / 208.0
+	# world._terrain() emits an unindexed count x count quad mesh spanning
+	# ±(world_extent + 13), and count itself scales with the authored course.
+	assert(vertices.size() % 6 == 0, "SculptedIslandTerrain must stay an unindexed quad mesh")
+	var count: int = int(round(sqrt(float(vertices.size() / 6))))
+	assert(count * count * 6 == vertices.size(), "Terrain must stay a square height grid")
+	var baseline: int = 48 if world.low_detail else 72
+	var span_ratio: float = maxf(world.world_extent.x / 101.0, world.world_extent.y / 91.0)
+	var expected: int = clampi(
+		ceili(float(baseline) * span_ratio),
+		baseline,
+		224 if not world.low_detail else 144
+	)
+	assert(count == expected, "Terrain grid must match world._terrain sizing for this course")
+	var half_x: float = world.world_extent.x + 13.0
+	var half_z: float = world.world_extent.y + 13.0
+	var x: float = (p.x + half_x) * float(count) / (2.0 * half_x)
+	var z: float = (p.z + half_z) * float(count) / (2.0 * half_z)
 	if x < 0.0 or z < 0.0 or x >= count or z >= count:
 		return -INF
 	var cell: int = (floori(z) * count + floori(x)) * 6

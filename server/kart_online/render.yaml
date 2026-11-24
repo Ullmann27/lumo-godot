@@ -1,0 +1,25 @@
+# Requires an explicitly approved persistent web-service plan and disk.
+# Do not deploy this blueprint until the workspace and costs are approved.
+services:
+  - type: web
+    name: lumo-kart-online
+    runtime: python
+    plan: 0.5c-512mb
+    region: frankfurt
+    numInstances: 1
+    rootDir: server/kart_online
+    buildCommand: pip install -r requirements.txt
+    startCommand: python relay.py
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    disk:
+      name: lumo-kart-accounts
+      mountPath: /var/data/lumo
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: '3.12.16'
+      - key: HOST
+        value: 0.0.0.0
+      - key: LUMO_DATABASE_PATH
+        value: /var/data/lumo/lumo-kart.sqlite3

@@ -70,7 +70,7 @@ func _run() -> void:
 	await _settle()
 	for step in range(5):
 		assert(game.garage.step == step)
-		await _tap(game.garage.next_button)
+		await _tap(game.garage.step_buttons[step + 1] if step < 4 else game.garage.next_button)
 	assert(not game.menu_active and game.is_physics_processing())
 	await _tap(game.top_pause_button)
 	assert(game.paused)

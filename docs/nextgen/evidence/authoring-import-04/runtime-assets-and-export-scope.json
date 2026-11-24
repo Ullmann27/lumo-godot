@@ -1,0 +1,120 @@
+{
+  "learning_asset_count": 15,
+  "runtime_assets": [
+    {
+      "path": "res://assets/lumo_next/learning/count_token_teal.glb",
+      "expected_sha256": "5049cd76f4feb2ca4ea0c8516c629524dcc19a03b9dac55d2edbd76456f00dac",
+      "actual_sha256": "5049cd76f4feb2ca4ea0c8516c629524dcc19a03b9dac55d2edbd76456f00dac",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/count_token_gold.glb",
+      "expected_sha256": "a3a895d5d4fbbf20b328299d1edfba58c8053223cff6556726566cf33bd56ec9",
+      "actual_sha256": "a3a895d5d4fbbf20b328299d1edfba58c8053223cff6556726566cf33bd56ec9",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/ten_frame.glb",
+      "expected_sha256": "d2efd217fb911d4cb9d15dd86d257a54b3b3bcd7d0f67a9d879bb80921694a52",
+      "actual_sha256": "d2efd217fb911d4cb9d15dd86d257a54b3b3bcd7d0f67a9d879bb80921694a52",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/ten_bundle.glb",
+      "expected_sha256": "7e017975349f1604b8db8a48264064cc467724f35b71197e9d97fb47c09c67d1",
+      "actual_sha256": "7e017975349f1604b8db8a48264064cc467724f35b71197e9d97fb47c09c67d1",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/syllable_tile.glb",
+      "expected_sha256": "1bb3106769c4606070b79263b8e0109988f0ba54b84a8e980f562d70d753c7ee",
+      "actual_sha256": "1bb3106769c4606070b79263b8e0109988f0ba54b84a8e980f562d70d753c7ee",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/letter_tile.glb",
+      "expected_sha256": "360360ce66410e52e794fb8c608a7b6a02ddd99558c064a1579c115f0a1dbc53",
+      "actual_sha256": "360360ce66410e52e794fb8c608a7b6a02ddd99558c064a1579c115f0a1dbc53",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/shape_circle.glb",
+      "expected_sha256": "919422efa64d11d2177f2f17de51f0d1259f2a81585f9da4aa32e10120edd539",
+      "actual_sha256": "919422efa64d11d2177f2f17de51f0d1259f2a81585f9da4aa32e10120edd539",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/shape_triangle.glb",
+      "expected_sha256": "62d83f5a6e47aae0d0d67326fd8ffee7b7c9ff70b471b7ff10e0f044f0234982",
+      "actual_sha256": "62d83f5a6e47aae0d0d67326fd8ffee7b7c9ff70b471b7ff10e0f044f0234982",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/shape_square.glb",
+      "expected_sha256": "549d7b298540acae6a70bc442b47df26f21088cfdf8c2ad8fc9e3730e0201aa6",
+      "actual_sha256": "549d7b298540acae6a70bc442b47df26f21088cfdf8c2ad8fc9e3730e0201aa6",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/shape_hexagon.glb",
+      "expected_sha256": "d7317d1ea6118c69499adef40bf37110d7278b9a5ec10339f8d969e6c4f38f38",
+      "actual_sha256": "d7317d1ea6118c69499adef40bf37110d7278b9a5ec10339f8d969e6c4f38f38",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/banana.glb",
+      "expected_sha256": "eb3fb9f86c9e501e6516574a4da597bddf5f5792abaf346e573d4efebf352acb",
+      "actual_sha256": "eb3fb9f86c9e501e6516574a4da597bddf5f5792abaf346e573d4efebf352acb",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/plant_study.glb",
+      "expected_sha256": "73782e6c3e9bf1472416f68d6f7d10b817fe18768e01e51b3c8a849560b2227a",
+      "actual_sha256": "73782e6c3e9bf1472416f68d6f7d10b817fe18768e01e51b3c8a849560b2227a",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/pedestal.glb",
+      "expected_sha256": "78a1fc33fc921f1d5544667149936bca7ec656951959942a987e35487c85c173",
+      "actual_sha256": "78a1fc33fc921f1d5544667149936bca7ec656951959942a987e35487c85c173",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/floor_module.glb",
+      "expected_sha256": "d8c3e45c43d94bf00a9d17bdc1c4f7ad39fcc61d280aed3af6a04887d549f6f3",
+      "actual_sha256": "d8c3e45c43d94bf00a9d17bdc1c4f7ad39fcc61d280aed3af6a04887d549f6f3",
+      "match": true
+    },
+    {
+      "path": "res://assets/lumo_next/learning/backdrop_module.glb",
+      "expected_sha256": "2a0e230baa3d42606559fb48e0aa138b2dd769087ecc687998e41bdae8f8eb1f",
+      "actual_sha256": "2a0e230baa3d42606559fb48e0aa138b2dd769087ecc687998e41bdae8f8eb1f",
+      "match": true
+    },
+    {
+      "path": "assets/lumo_next/character/Lumo-Learning.glb",
+      "expected_sha256": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163",
+      "actual_sha256": "cc210fb03bd831f21f0ba99aa12c7b7ef60f2fb5a38e0ca30a8b059d51f08163",
+      "match": true
+    }
+  ],
+  "all_hashes_match": true,
+  "art_gdignore_present": true,
+  "authoring_import_sidecars_found": [],
+  "export_preset_exclusions": {
+    "preset.0": {
+      "name": "\"Web\"",
+      "authoring_excluded": true
+    },
+    "preset.1": {
+      "name": "\"Android\"",
+      "authoring_excluded": true
+    },
+    "preset.2": {
+      "name": "\"Linux\"",
+      "authoring_excluded": true
+    }
+  },
+  "full_pack_export_executed": false,
+  "full_pack_export_limit": "Low free disk; full resource pack could exceed remaining budget. This check covers actual editor import, parser, routed native scene and scope, not a new APK/PCK."
+}

@@ -3,6 +3,8 @@ extends SceneTree
 # Native method name intentionally matches the Android plugin contract.
 # gdlint: disable=function-name
 
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+
 
 class Host:
 	extends Node
@@ -170,6 +172,11 @@ func _run() -> void:
 			== OK
 		)
 	)
+	# Die Pausenliste ist seit den größeren Menüknöpfen länger als das kleine Querformat:
+	# nach dem Blättern zu „Grafik“ steht „Weiterfahren“ oberhalb des Ausschnitts. Ein Kind
+	# blättert zurück – der Tipp selbst bleibt ein echter Tipp in Bildschirm-Pixeln.
+	await _scroll_into_view(_button("Weiterfahren"), game.modal_scroll)
+	_inside(_button("Weiterfahren"), game.modal_scroll.get_global_rect())
 	await _tap(_button("Weiterfahren"))
 	assert(not game.paused, "Actual physical-pixel screen touch must resume the compact pause")
 	root.propagate_notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
@@ -216,10 +223,17 @@ func _run() -> void:
 		_inside(game.modal_column.get_child(0), game.modal_scroll.get_global_rect())
 		game.modal_scroll.scroll_vertical = game.modal_scroll.get_v_scroll_bar().max_value
 		await _settle()
-		_inside(
-			game.modal_column.get_child(game.modal_column.get_child_count() - 1),
-			game.modal_scroll.get_global_rect()
-		)
+		# The closing line is optional and hidden where the height is short;
+		# both action rows must always be there and end inside the panel.
+		var last_visible: Control = null
+		for entry in game.modal_column.get_children():
+			if entry is Control and entry.visible:
+				last_visible = entry
+		assert(last_visible != null, "Result panel shows no content")
+		for row_name in ["ResultMainActions", "ResultMoreActions"]:
+			var row: Control = game.modal_column.get_node_or_null(row_name)
+			assert(row != null and row.visible, row_name + " must stay visible at %s" % pixels)
+		_inside(last_visible, game.modal_scroll.get_global_rect())
 	var garage = load("res://scripts/games/kart_garage_menu.gd").new()
 	root.add_child(garage)
 	for pixels in [Vector2i(320, 720), Vector2i(600, 960), Vector2i(840, 720), Vector2i(1280, 800)]:
@@ -231,19 +245,27 @@ func _run() -> void:
 		_inside(garage.setup_row, garage.page_margin.get_global_rect())
 		_inside(garage.back_button, garage.page_margin.get_global_rect())
 		_inside(garage.next_button, garage.page_margin.get_global_rect())
-	garage.queue_free()
+	if not await TEARDOWN.release_scene(self, garage, "[KartPauseLayoutTests] garage"):
+		push_error("[KartPauseLayoutTests] FAIL: garage teardown did not complete")
+		quit.call_deferred(1)
+		return
 	DirAccess.remove_absolute(game.SESSION)
 	game.abandoned = true
-	game.queue_free()
-	await process_frame
+	if not await TEARDOWN.release_scene(self, game, "[KartPauseLayoutTests] race"):
+		push_error("[KartPauseLayoutTests] FAIL: race teardown did not complete")
+		quit.call_deferred(1)
+		return
+	game = null
 	bridge._host = null
-	host.queue_free()
+	if not await TEARDOWN.release_scene(self, host, "[KartPauseLayoutTests] host"):
+		push_error("[KartPauseLayoutTests] FAIL: host teardown did not complete")
+		quit.call_deferred(1)
+		return
 	print(
 		(
 			"[KartPauseLayoutTests] PASS: actual compact/Fold matrix, "
 			+ "safe-area controls, pause/results layout and touch navigation"
 		)
 	)
-	await create_timer(0.25).timeout
 	# Let the asynchronous runner release its locals before SceneTree teardown.
 	quit.call_deferred(0)

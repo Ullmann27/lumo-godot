@@ -20,6 +20,8 @@ func _settle() -> void:
 
 func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 	for child in node.get_children():
+		if child is Node3D and not child.is_visible_in_tree():
+			continue
 		if child is MeshInstance3D:
 			if child == kart.far_mesh or kart.flames.has(child) or kart.sparks.has(child):
 				continue
@@ -35,29 +37,58 @@ func _run() -> void:
 	assert(CATALOG.KARTS.size() == 14)
 	var seen: Dictionary = {}
 	var signatures: Dictionary = {}
+	var shell_geometry: Dictionary = {}
 	for entry in CATALOG.KARTS:
 		assert(not seen.has(entry.id), "Garage IDs must be unique")
 		seen[entry.id] = true
 		var kart = VEHICLE.new()
 		kart.configure("fox", Color("76d9ff"), str(entry.id))
+		kart.set_animated_lumo_enabled(true)
 		root.add_child(kart)
 		kart.set_process(false)
 		assert(kart.kart_style == entry.id, "Selectable design must not fall back to Comet")
 		assert(kart.wheel_pivots.size() == 4 and kart.wheel_rotors.size() == 4)
-		assert(kart.head != null and kart.arm_right != null)
+		assert(is_instance_valid(kart.lumo_animation) and not kart.driver.visible)
 		var shape := {"surfaces": 0, "vertices": 0}
 		_geometry(kart, kart, shape)
 		assert(shape.vertices > 1000)
 		assert(shape.surfaces <= 64, "Fleet must retain the mobile draw-surface budget")
-		assert(kart.far_mesh.mesh.get_surface_count() == 1)
+		if is_instance_valid(kart.production_vehicle):
+			assert(kart.production_vehicle.source_paths.size() == 3)
+			assert(kart.production_vehicle.visible_surface_count() <= 39)
+			assert(kart.far_mesh.mesh == null, "The animated imported chassis needs no rigid proxy")
+		else:
+			assert(kart.far_mesh.mesh.get_surface_count() == 1)
 		assert(float(entry.speed) >= 0.9 and float(entry.speed) <= 1.11)
 		assert(float(entry.turn) >= 0.9 and float(entry.turn) <= 1.14)
 		kart.set_motion(12.0, 0.7, true, true)
 		kart._process(0.016)
 		assert(kart.flames[0].visible and kart.sparks[0].visible)
+		assert(is_instance_valid(kart.production_vehicle), "Every kart uses an authored exterior")
+		var production = kart.production_vehicle
+		assert(production.get_meta("fleet_design") == entry.id)
+		assert(production.shell_path.ends_with("/%s.glb" % entry.id))
+		var shell_vertices := 0
+		for level in range(3):
+			production.set_lod(level)
+			var shell := production.asset_root.find_child("LOD%d" % level, true, false) as MeshInstance3D
+			assert(shell != null and shell.is_visible_in_tree())
+			var vertices := 0
+			var outlines: Array[int] = []
+			for surface in range(shell.mesh.get_surface_count()):
+				vertices += shell.mesh.surface_get_array_len(surface)
+				if level == 0:
+					outlines.append(hash(shell.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]))
+			if level == 0:
+				var signature := hash(outlines)
+				assert(not shell_geometry.has(signature), "Selectable shells must have distinct geometry")
+				shell_geometry[signature] = entry.id
+			else:
+				assert(vertices < shell_vertices, "Each shell LOD must reduce geometry")
+			shell_vertices = vertices
+		assert(production.dressing_nodes().size() == 7)
+		assert(is_instance_valid(kart.production_lumo_seat), "Original Lumo retains the pedal and seat fit")
 		if FLEET.IDS.has(str(entry.id)):
-			var body: Node3D = kart.get_node("AuroraCoachwork")
-			assert(body.get_meta("fleet_design") == entry.id)
 			var info: Dictionary = FLEET.profile(str(entry.id))
 			var signature: String = str(info)
 			assert(not signatures.has(signature), "New designs need distinct physical profiles")

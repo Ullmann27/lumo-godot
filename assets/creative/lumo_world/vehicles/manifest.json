@@ -1,0 +1,23 @@
+{
+  "generator": "tools/lumo_world_art/build_world_vehicles.py",
+  "source": "Original procedural Blender geometry, created for LUMO",
+  "blender": "4.3.2",
+  "models": {
+    "city_car": {
+      "bytes": 231688,
+      "sha256": "188c31ada9a6b49987187ee6748f908ed47a2a3d6c81120b39b4daa657b5ea87"
+    },
+    "school_bus": {
+      "bytes": 265308,
+      "sha256": "49655d109e1188149c9d7017a4022dcd0a39bd0f78fee391ed7220756e4ee2ee"
+    },
+    "city_bicycle": {
+      "bytes": 104700,
+      "sha256": "21ecbf470a03917dbc015a48105014993db089c8b416e62a69f916c1359e7a9b"
+    },
+    "kick_scooter": {
+      "bytes": 83928,
+      "sha256": "e903bac8e87038be7f518eab70055622dd004511c6b89b9d5849cf4b498ddbc0"
+    }
+  }
+}

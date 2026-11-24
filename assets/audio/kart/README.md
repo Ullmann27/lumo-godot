@@ -1,5 +1,11 @@
 # Original Lumo Kart music and effects
 
+## Rennmusik ab Teststand 2065
+
+Die Bandarrangements entstehen mit `python tools/art/compose_track_scores.py`.
+`garage.ogg` spielt „Späte Runde“ mit tiefem E-Piano, Bass und versetzter Bassdrum.
+Vierzehn Rundstrecken und die drei Abenteuerwelten haben eigene Tonfolgen, Tempi und Rhythmen. Dschungelherz verwendet weiterhin seine aufeinander abgestimmten Musikspuren für Start, Wald, Regen, Wasser und Finale. Die Rennmusik stammt vollständig aus der lokalen Synthese. Das Manifest enthält für jede neue Aufnahme Dauer, Lautheit, Spitzenpegel und Unterschied der Amplituden am Schleifenübergang.
+
 ## Version 2 (8. Oktober 2026): zeitgemäße Rennmusik
 
 Die fünf Musikstücke wurden mit `tools/art/generate_kart_music.py` (Seed 20261008) neu
@@ -57,3 +63,4 @@ user who selected mute. The existing race preference remains the source of truth
 `manifest.json` records duration, sample rate, peak, loop boundary difference,
 size and SHA-256 for each generated source file. These measurements are file
 checks; actual device loudness and focus behavior still require Android QA.
+

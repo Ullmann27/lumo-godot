@@ -24,48 +24,96 @@ class Host:
 
 const OUTPUT := "res://exports/complete-flow"
 const STEP := 1.0 / 60.0
+const CHOICE = preload("res://scripts/games/kart_menu_choice.gd")
+const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
+const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 var game
 var host: Host
 var trace: Array[Dictionary] = []
 var expected_id := ""
 var flow_checks: Array[Dictionary] = []
+var menu_touch_actions: Array[String] = []
+var capture := false
+var braking := false
 
 
 func _initialize() -> void:
+	capture = DisplayServer.get_name() != "headless"
+	if "--capture" in OS.get_cmdline_user_args() and not capture:
+		push_error("[KartCompleteFlow] Captures require an actual renderer")
+		quit(1)
+		return
 	call_deferred("_run")
 
 
 func _settle() -> void:
 	await process_frame
 	await process_frame
-	await RenderingServer.frame_post_draw
+	if capture:
+		await RenderingServer.frame_post_draw
 
 
 func _capture(name: String) -> void:
 	await _settle()
-	assert(root.get_texture().get_image().save_png(OUTPUT.path_join(name + ".png")) == OK)
+	if capture:
+		assert(root.get_texture().get_image().save_png(OUTPUT.path_join(name + ".png")) == OK)
 
 
 func _touch(index: int, at: Vector2, pressed: bool) -> void:
+	_input_touch(index, at, pressed)
+	await process_frame
+
+
+func _input_touch(index: int, at: Vector2, pressed: bool) -> void:
 	var input := InputEventScreenTouch.new()
 	input.index = index
 	input.position = at * Vector2(root.size) / root.get_visible_rect().size
 	input.pressed = pressed
 	Input.parse_input_event(input)
-	await process_frame
+	Input.flush_buffered_events()
 
 
 func _tap(control: Control) -> void:
+	assert(is_instance_valid(control), "Expected a live native touch control")
 	assert(control.is_visible_in_tree())
 	assert(root.get_visible_rect().encloses(control.get_global_rect()))
-	await _touch(4, control.get_global_rect().get_center(), true)
-	await _touch(4, control.get_global_rect().get_center(), false)
+	var point: Vector2 = control.get_global_rect().get_center()
+	await _touch(4, point, true)
+	await _touch(4, point, false)
 	await _settle()
 
 
+func _choice(title: String) -> Control:
+	for child in game.garage.choices.find_children("*", "Button", true, false):
+		# Auswahlkarten (Zeilen, Strecken-, Rennarten-, Fahrer- und Stufenkarten) tragen ihren Titel.
+		if (child is CHOICE or child.get("title") != null) and str(child.get("title")) == title:
+			return child
+	assert(false, "Expected visible native selection: " + title)
+	return null
+
+
+func _start_from_native_tabs() -> void:
+	# Direct, nonsequential tabs replace the removed five-step NEXT wizard.
+	# Only the final START action is allowed to consume and free the menu.
+	for selection in [[3, "Sonnenhafen"], [4, "Abenteuer"], [0, "Einzelrennen"]]:
+		var index: int = int(selection[0])
+		var title: String = str(selection[1])
+		menu_touch_actions.append("tab:" + str(index))
+		await _tap(game.garage.step_buttons[index])
+		assert(game.menu_active and game.garage.step == index, "Native tab switches without starting")
+		menu_touch_actions.append("choice:" + title)
+		await _tap(_choice(title))
+	assert(game.garage.setup.mode == "race" and game.garage.setup.track == "sonnenhafen")
+	assert(game.garage.setup.difficulty == "flott", "Actual tempo card selects doubled race pace")
+	menu_touch_actions.append("START")
+	await _tap(game.garage.next_button)
+
+
 func _button(text: String) -> Button:
-	for child in game.modal_column.get_children():
-		if child is Button and child.text == text:
+	# Pause actions are direct children of the column; the finished-race panel
+	# keeps its actions in rows below the scroll area. Only a visible one counts.
+	for child in game.modal.find_children("*", "Button", true, false):
+		if child.text == text and child.is_visible_in_tree():
 			return child
 	assert(false, "Expected actual modal action: " + text)
 	return null
@@ -78,6 +126,41 @@ func _steer(value: float) -> void:
 	point.x += game.joystick.size.x * 0.31 * value
 	event.position = point * Vector2(root.size) / root.get_visible_rect().size
 	Input.parse_input_event(event)
+	Input.flush_buffered_events()
+
+
+func _drive_controls() -> void:
+	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
+	var at: float = float(road.distance)
+	var layout: Dictionary = game.world.loop_layout
+	var loop_lead: float = float(layout.start) - at
+	var target_lane: float = float(layout.lane) if loop_lead >= -36.0 and loop_lead <= 130.0 else 0.0
+	var target: Vector3 = game.world.position_at(at + 9.0, target_lane)
+	var direction: Vector3 = target - game.player.position
+	var heading: float = atan2(-direction.x, -direction.z)
+	var turn: float = clampf(-angle_difference(game.player_heading, heading) * 2.2, -1.0, 1.0)
+	_steer(0.0 if game.loop_state.active else turn)
+	# Same published ramp approach as the full-route probe, using only the
+	# actual brake pedal. No velocity, pose or progress is assigned in the race.
+	var target_speed: float = POWERTRAIN.top_speed(game.kart_factors)
+	for kicker in game.world.action.get("kickers", []):
+		var lead: float = float(kicker.take_off) - at
+		var launch_speed: float = RAMP_PLAN.launch_speed(game.world, kicker)
+		if launch_speed > 0.0 and lead > 0.0 and lead < 55.0:
+			target_speed = launch_speed
+	var should_brake: bool = (
+		not game.airborne and not game.loop_state.active
+		and game.speed > target_speed + (0.1 if braking else 0.45)
+	)
+	if braking != should_brake:
+		braking = should_brake
+		_input_touch(3, game.brake_button.get_global_rect().get_center(), braking)
+
+
+func _release_controls() -> void:
+	for index in [3, 2, 1]:
+		await _touch(index, Vector2(420, 250), false)
+	braking = false
 
 
 func _hold_controls() -> void:
@@ -85,6 +168,7 @@ func _hold_controls() -> void:
 	# resumed action availability before issuing fresh touches.
 	game._physics_process(STEP)
 	await _settle()
+	braking = false
 	await _touch(1, game.joystick.get_global_rect().get_center(), true)
 	await _touch(2, game.gas_button.get_global_rect().get_center(), true)
 	assert(
@@ -107,7 +191,6 @@ func _drop() -> void:
 
 
 func _run() -> void:
-	assert(DisplayServer.get_name() != "headless")
 	root.size = Vector2i(1280, 720)
 	DirAccess.make_dir_recursive_absolute(OUTPUT)
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
@@ -119,10 +202,9 @@ func _run() -> void:
 	bridge._options = {"sessionId": "complete-touch-race", "soundEnabled": false}
 	game = await _fresh()
 	assert(game.menu_active)
-	for step in range(5):
-		assert(game.garage.step == step)
-		await _tap(game.garage.next_button)
+	await _start_from_native_tabs()
 	assert(not game.menu_active and game.mode == "race" and game.track_id == "sonnenhafen")
+	assert(game.difficulty == "flott")
 	expected_id = game.result_id
 	game.auto_gas = false
 	game._update_hud()
@@ -140,26 +222,18 @@ func _run() -> void:
 	var lap2_restored: Dictionary = {}
 	var frames := 0
 	var last_gate := 0
-	while not game.finished and frames < 12000:
-		var road: Dictionary = game.world.sample_road(
-			game.player.position, game.previous_road_distance
-		)
-		var heading: float = game._heading(float(road.distance) + 7.0)
-		var turn := clampf(
-			-angle_difference(game.player_heading, heading) * 1.8 - float(road.lateral) * 0.12,
-			-1.0,
-			1.0
-		)
-		_steer(turn)
+	# Preserve a bounded complete two-lap run, including both saved reopens.
+	while not game.finished and frames < 30000:
+		_drive_controls()
 		game._physics_process(STEP)
 		frames += 1
 		if game.checkpoint_index != last_gate:
 			assert(game.checkpoint_index == last_gate + 1, "Ordered gates cannot be skipped")
 			last_gate = game.checkpoint_index
 			trace.append({"gate": last_gate, "seconds": game.elapsed, "distance": game.distance})
+			print("[KartCompleteFlowGate] ", JSON.stringify(trace[-1]))
 		if last_gate >= 4 and not resumed:
-			await _touch(2, Vector2(420, 250), false)
-			await _touch(1, Vector2(420, 250), false)
+			await _release_controls()
 			await _tap(game.top_pause_button)
 			assert(game.paused and not game.gas_held and game.steering == 0.0)
 			await _capture("02-paused-mid-race")
@@ -171,7 +245,18 @@ func _run() -> void:
 			game = await _fresh()
 			assert(game.saved_session_available)
 			await _tap(game.garage.find_child("ResumeRace", true, false))
-			assert(game.paused and game.result_id == expected_id and game.distance == progress)
+			# ConfigFile serializes float values as text. On reload the last bit of
+			# the numeric distance may differ (~1.1e-13 m measured), without any
+			# actual loss of checkpoint, identity, paused state or position.
+			# Use the same strict 1e-9 m ABSOLUTE tolerance as the separately
+			# passing kart_race_continuity_regression.gd. Never alter game physics.
+			assert(
+				game.paused
+				and game.result_id == expected_id
+				and is_finite(game.distance)
+				and absf(game.distance - progress) <= 0.000000001,
+				"Paused resume must preserve distance within a nanometer, result ID and pause"
+			)
 			game.auto_gas = false
 			game._update_hud()
 			await _tap(_button("Weiterfahren"))
@@ -179,8 +264,7 @@ func _run() -> void:
 			resumed = true
 			await _capture("03-restored-race")
 		if last_gate >= 12 and not lap2_resumed:
-			await _touch(2, Vector2(420, 250), false)
-			await _touch(1, Vector2(420, 250), false)
+			await _release_controls()
 			await _tap(game.top_pause_button)
 			lap2_before = _flow_lap_state().duplicate(true)
 			game._return_to_app("games")
@@ -220,9 +304,31 @@ func _run() -> void:
 			lap2_resumed = true
 		if frames % 120 == 0:
 			await process_frame
+	if not game.finished:
+		# Diagnostic evidence only; never inject distance, checkpoints or results.
+		var position_on_road: Dictionary = game.world.sample_road(
+			game.player.position, game.previous_road_distance
+		)
+		print("[KartCompleteFlowDiagnostic] ", JSON.stringify({
+			"frames": frames,
+			"checkpoint_index": game.checkpoint_index,
+			"last_gate": last_gate,
+			"resumed": resumed,
+			"lap2_resumed": lap2_resumed,
+			"race_distance": game.distance,
+			"track_length": game.track_length,
+			"speed": game.speed,
+			"gas_held": game.gas_held,
+			"auto_gas": game.auto_gas,
+			"steering": game.steering,
+			"paused": game.paused,
+			"racing": game.racing,
+			"road_distance": position_on_road.get("distance", -1),
+			"lateral": position_on_road.get("lateral", -1),
+			"reset_count": game.reset_count
+		}))
 	assert(game.finished and resumed, "Real driving must finish after a saved continuation")
-	await _touch(2, Vector2(420, 250), false)
-	await _touch(1, Vector2(420, 250), false)
+	await _release_controls()
 	assert(game.checkpoint_index == 16 and game.reset_count == 0)
 	assert(game.result_payload.resultId == expected_id and game.result_payload.stars == 3)
 	assert(game.result_payload.solved is int and game.result_payload.solved == 0)
@@ -232,7 +338,7 @@ func _run() -> void:
 		if game.finish_cine_left <= 0:
 			break
 	assert(game.modal.visible)
-	var actual_stats_label: Label = game.modal_column.get_node("ResultStats")
+	var actual_stats_label: Control = game.modal_column.get_node("ResultStats")
 	assert(actual_stats_label.is_visible_in_tree())
 	var actual_stats: String = actual_stats_label.text
 	assert(
@@ -248,7 +354,8 @@ func _run() -> void:
 		"result_stats_visible": actual_stats_label.is_visible_in_tree(),
 		"best_lap_seconds_unrounded": game._best_lap(),
 		"ordered_gates": trace,
-		"actual_menu_touch_steps": 5,
+		"actual_menu_touch_steps": menu_touch_actions.size(),
+		"actual_menu_touch_actions": menu_touch_actions.duplicate(),
 		"save_reopen_resume": resumed,
 		"input": "screen touch/drag; physics stepped at 1/60; no teleport or forced finish",
 		"physical_device_performance": "NOT EXECUTED"
@@ -287,7 +394,7 @@ func _run() -> void:
 	game = await _fresh()
 	await _tap(game.garage.find_child("ResumeRace", true, false))
 	var reopened_payload: Dictionary = game.result_payload.duplicate(true)
-	var reopened_stats_label: Label = game.modal_column.get_node("ResultStats")
+	var reopened_stats_label: Control = game.modal_column.get_node("ResultStats")
 	var reopened_stats: String = reopened_stats_label.text
 	var reopened_ui: Dictionary = _flow_result_ui()
 	game._physics_process(STEP)
@@ -343,7 +450,8 @@ func _run() -> void:
 	)
 	host.return_ack = 1
 	await _tap(_button("Zur Spieleauswahl"))
-	assert(host.returns[-1].status == "completed" and host.returns[-1].resultId == expected_id)
+	assert(host.returns[-1].status == "completed" and host.returns[-1].resultId == expected_id,
+		"Completed return %s, expected %s" % [JSON.stringify(host.returns[-1]), expected_id])
 	assert(not FileAccess.file_exists(game.SESSION), "Durable ACK removes completed save")
 	bridge._return_pending = false
 	await _drop()
@@ -351,15 +459,17 @@ func _run() -> void:
 	assert(not game.saved_session_available and host.reward_calls == 1 and host.rewards.size() == 1)
 	await _capture("05-reopened-garage")
 	var screenshot_sha256: Dictionary = {}
-	for name in [
+	var screenshot_names: Array[String] = [
 		"01-start-grid.png",
 		"02-paused-mid-race.png",
 		"03-restored-race.png",
 		"04-result.png",
 		"05-reopened-garage.png",
 		"06-reopened-result.png"
-	]:
-		screenshot_sha256[name] = FileAccess.get_sha256(OUTPUT.path_join(name))
+	]
+	if capture:
+		for name in screenshot_names:
+			screenshot_sha256[name] = FileAccess.get_sha256(OUTPUT.path_join(name))
 	var failures := 0
 	for check in flow_checks:
 		if not check.passed:
@@ -372,7 +482,7 @@ func _run() -> void:
 				"check_count": flow_checks.size(),
 				"failed_checks": failures,
 				"checks": flow_checks.duplicate(true),
-				"provenance": "NEW_TEST_IMPLEMENTATION_AFTER_WORKSPACE_LOSS",
+				"provenance": "NATIVE_TABS_DIRECT_START_PHYSICAL_RACE",
 				"historical_unrecovered_probe_sha256":
 				"a260568656f2c4b5d6501b71e511cdfde3fb2d03e1f9f14c6dabc1e5dbbfd917",
 				"engine": Engine.get_version_info().string,
@@ -384,8 +494,9 @@ func _run() -> void:
 				"probe_sha256":
 				FileAccess.get_sha256("res://scripts/tests/kart_complete_flow_regression.gd"),
 				"screenshot_sha256": screenshot_sha256,
-				"reopened_result_screenshot": "06-reopened-result.png",
-				"reopened_result_screenshot_sha256": screenshot_sha256["06-reopened-result.png"],
+				"visual_capture_status": "RENDERED" if capture else "NOT_EXECUTED_HEADLESS",
+				"reopened_result_screenshot": "06-reopened-result.png" if capture else "",
+				"reopened_result_screenshot_sha256": screenshot_sha256.get("06-reopened-result.png", ""),
 			},
 			true
 		)

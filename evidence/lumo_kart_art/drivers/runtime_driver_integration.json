@@ -1,0 +1,221 @@
+{
+  "checks": 4016,
+  "errors": [],
+  "godot": "4.6.3-stable (official)",
+  "imported_scenes": [
+    {
+      "import_sha256": "71b736c21ed2bfea971a3432a152f6420e7b25161e4b225097bfaedd2261d836",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/lion/driver.glb",
+      "source_sha256": "b3925896a2addd6de0f1710410953a77efbe1e72e35f5d74b6339414f3510833",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "22dd306ffb1492be7e4490d6c943b2caab10fd878a20f3a3e58c7010564dd0c1",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/lion/driver_lod1.glb",
+      "source_sha256": "14df7f9d3dbcc19759779e589c0a83305960d9495f587394809c07bb5935305e",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "40c3615c88179fabeadf4d699de051a72677faeeccb862982c6fe98aee02037a",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/lion/driver_lod2.glb",
+      "source_sha256": "e3d091927fe6db0975711cd3a73ea7c1f636792987a8efa31666e506f005c05a",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "31f9c854058d023b0fd6ab1f3c9a5addb8be71cc3358ee43697b7428e2e9b514",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/owl/driver.glb",
+      "source_sha256": "f07f9c26140790af36961fe780fe0ba77d0d1df8de2117fa5c10a064f89094c3",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "40ed689f48c5575f9aa182b9073b7a625b5d01643677b48ee44f56fc39513092",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/owl/driver_lod1.glb",
+      "source_sha256": "f423385a7386e651b5f784729fb5427177d8bde5927975a8f542e60daf87fa69",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "3ec35efa63acf8f6f26e90c19a3023fead0371e1247bec0df44b52f05c2cdabe",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/owl/driver_lod2.glb",
+      "source_sha256": "9847a75504fe05c6f5a24831453f6c7349fcd4af5826e8194a999294919444f5",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "d55b2a59573e700b0daec6551b1635a965f547fa74f27174249fc03fc4404da6",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/rabbit/driver.glb",
+      "source_sha256": "3f21d290e77fee2e7d0ac66f1f8af0195759628895a2a3d391a1db2b419a13e3",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "05a55d356d40f92b7c7e36955b75894818e73750a91c56631dfb6bf9c8725bf2",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/rabbit/driver_lod1.glb",
+      "source_sha256": "b7b7aa1f8253b86b95ea8c65759f5bbe2497da600cb1cfa09289e1df1cec365c",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "aff4d43d120d10b851bafa476c1f919addebae60b2c3899fc64e4d90ae5b28d4",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/rabbit/driver_lod2.glb",
+      "source_sha256": "7b892848f6b4c9a49d2859f018be9b6461ce4c70fc82d8d5fe632df81e64a7f3",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "665ea75ae4dea14e9177455e329f64e4da3fb2ba46b77ea482d2f5a0fd635dc9",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/squirrel/driver.glb",
+      "source_sha256": "61b1bf1c4d8f7c407001ef23334d402e81417435b841ed87095c5eea3c2a0db0",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "4f676109e152e308298f1478708ea38c73a58e808dfea87a1834d6b2a1af4299",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/squirrel/driver_lod1.glb",
+      "source_sha256": "440cf534739d799671ba076723c98dae5e6f82db60a24edc492a5d5769bc0f23",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "31884187cfa9eeb2a480508ea699a614065bbab9b80cb966a0c68b4ce1534308",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/squirrel/driver_lod2.glb",
+      "source_sha256": "25ab22d03a3d04f67029b9e29daf9bdf7b47dbff8e7a5cbb5e5e276ccf733534",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "c220c2ea9af12f772d2e19cba871f237f06afd2f8ffd67cdddca0a452ea9a2eb",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/turtle/driver.glb",
+      "source_sha256": "282febd626d383eaf666ace1d845e728e1d5526d6894bdb8209b92ecb3bec77f",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "72d743d1fd6908f20333521c4574c686a0621b05d1ccba9e963ba6a776f0ab87",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/turtle/driver_lod1.glb",
+      "source_sha256": "6d39bfac47632e53566c606848590216cad8573e9923af4f7fe610326cff032f",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    },
+    {
+      "import_sha256": "8bd7755515c03c2549ba240a7b851639171727ba9986de6fc2474a01b8d016c2",
+      "load_kind": "ResourceLoader PackedScene.instantiate",
+      "path": "res://assets/kart/production/drivers/turtle/driver_lod2.glb",
+      "source_sha256": "8df4e047eb0f0af515a6bd3763a1bd5b44afd4fe74bf66ae55f648e910f0d0c9",
+      "tracks": {
+        "celebrate": 63,
+        "idle": 63,
+        "kart_jump": 63,
+        "kart_seated": 63,
+        "kart_steer_left": 63,
+        "kart_steer_right": 63
+      }
+    }
+  ],
+  "maximum_hand_error_m": 0.00019731669453904,
+  "method": "Regular Godot editor imports loaded as PackedScenes; full clip transitions, driven steering/flight/finish, manual clock, pause, reduced motion and LOD pose retention",
+  "passed": true,
+  "physical_android": false
+}

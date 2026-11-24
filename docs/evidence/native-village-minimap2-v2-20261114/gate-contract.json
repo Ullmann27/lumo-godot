@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "workflow": ".github/workflows/lumo-discovery-connections.yml",
+  "branch": "integration/lumo-discovery-bd-20261114",
+  "job": "discovery-native-acceptance",
+  "job_timeout_minutes": 130,
+  "scope": "Additional Village and actual MobileSafeArea/minimap renderer acceptance; preserve existing47Python,4headless,Dream5/7/2,Discovery10/38/2 and all52/17 contracts. No Android/device/FPS acceptance.",
+  "output": "village-scaling/",
+  "manifest": "village-scaling/village-scaling-acceptance.json",
+  "new_modes": [
+    {
+      "name": "01-economy-headless",
+      "script": "scripts/tests/build_village_economy_regression.gd",
+      "mode": "headless",
+      "seconds": 420,
+      "marker": "[VillageEconomy] PASS 339 checks",
+      "budget_origin": "Existing combined Native52 economy limit retained"
+    },
+    {
+      "name": "02-scaling-headless",
+      "script": "scripts/tests/build_village_scaling_regression.gd",
+      "mode": "headless",
+      "seconds": 180,
+      "marker": "[VillageScaling] PASS 42 checks: full 2178-house model, camera and explorer",
+      "budget_origin": "New bound:2178 saved houses and five focus states; not claimed as original Producer deadline"
+    },
+    {
+      "name": "03-scaling-rendered",
+      "script": "scripts/tests/build_village_scaling_regression.gd",
+      "mode": "rendered",
+      "seconds": 300,
+      "marker": "[VillageScaling] PASS 46 checks: full 2178-house model, camera and explorer",
+      "budget_origin": "New bound for same workload plus two renderer readbacks; not claimed as original Producer deadline"
+    }
+  ],
+  "pngs": [
+    "captures/01-home-region.png",
+    "captures/02-river-boundary.png"
+  ],
+  "png_dimensions": [
+    1280,
+    720
+  ],
+  "exact_final_marker": "[VillageScalingOriginals] PASS 3 exact probes and 2 decoded 1280x720 PNGs",
+  "helper_bindings": [
+    {
+      "path": "tools/verify_dream_rasters.py",
+      "sha256": "f7296a802d15c382dbcc77640373a0f53e30306fcaab3de869549ff1656de89d",
+      "git_blob": "da8eed7d6383fcbc82a03596518a5fcc3b9a00c5",
+      "purpose": "Unchanged source snapshots, original-byte records, full PNG decode and nonblank checks"
+    },
+    {
+      "path": "tools/run_godot_probe.py",
+      "sha256": "e1836029a196e4dcd4a4f47fd8c2010c5b460ec5bf4c0578e90e75d3a5d2ea13",
+      "git_blob": "c23859ece2d62101d000d7a89556fda5d3fe4105",
+      "purpose": "Unchanged bounded Engine process and strict original-log collection"
+    }
+  ],
+  "proof_guards": [
+    "Output and capture directory fresh",
+    "Current expected HEAD/tree before engine calls",
+    "Probe/helpers bound to exact Git blobs; helpers also SHA256 before import",
+    "Three exact original/runner log byte pairs",
+    "One Engine banner and complete marker each",
+    "Original error/timeout/leak rejection",
+    "Two exact filenames and full1280x720 PNG decoding with original/pixel hashes",
+    "Before/after HEAD/tree/full index/all tracked bytes and modes identical"
+  ],
+  "total_explicit_budget_seconds": 7230,
+  "remaining_job_budget_seconds": 570,
+  "minimap_followup": {
+    "required_original_probe": "scripts/tests/mobile_safe_area_regression.gd",
+    "producer_declared_headless_checks": 380,
+    "required_marker_prefix": "MOBILE_SAFE_AREA_PASS",
+    "current_combined_runtime_status": "not yet run; requires Root's next published source",
+    "existing_mandatory_png_count": 4
+  },
+  "no_new_tests_or_engine_runs_for_gate_source": true,
+  "version": 2,
+  "mobile_minimap": {
+    "output": "mobile-minimap/",
+    "manifest": "mobile-minimap/mobile-minimap-acceptance.json",
+    "probe": "scripts/tests/mobile_safe_area_regression.gd",
+    "mode": "rendered",
+    "seconds": 420,
+    "budget_origin": "Existing Native52 MobileSafeArea mode budget preserved",
+    "argv_tail": [
+      "--audio-driver",
+      "Dummy",
+      "--path",
+      "$GITHUB_WORKSPACE",
+      "--rendering-method",
+      "gl_compatibility",
+      "--resolution",
+      "2400x1080",
+      "--script",
+      "res://scripts/tests/mobile_safe_area_regression.gd",
+      "--",
+      "--capture"
+    ],
+    "environment": {
+      "LUMO_CAPTURE_DIR": "$LUMO_MINIMAP_OUTPUT/captures/mobile",
+      "LUMO_KART_MINIMAP_CAPTURE_DIR": "$LUMO_MINIMAP_OUTPUT/captures/minimap"
+    },
+    "original_report": "captures/mobile/mobile-safe-area.json",
+    "required_marker_regex": "^MOBILE_SAFE_AREA_PASS checks=(\\d+) failures=0 controls=15 images=4 scope=platform_boundary_fixture$",
+    "required_report": {
+      "failures": [],
+      "layouts": 7,
+      "hint_transitions": 2,
+      "original_images": 4,
+      "minimap_images": 9,
+      "check_count_must_equal_original_marker": true
+    },
+    "preserved_images": [
+      {
+        "path": "captures/mobile/jump-landscape-cutout.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "path": "captures/mobile/build-landscape-cutout.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "path": "captures/mobile/puzzle-landscape-cutout.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "path": "captures/mobile/treasure-landscape-cutout.png",
+        "width": 2400,
+        "height": 1080
+      }
+    ],
+    "minimap_images": [
+      {
+        "label": "dense-left-cutout",
+        "path": "captures/minimap/dense-left-cutout.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "label": "dense-right-cutout",
+        "path": "captures/minimap/dense-right-cutout.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "label": "same-pixels-density-one",
+        "path": "captures/minimap/same-pixels-density-one.png",
+        "width": 2400,
+        "height": 1080
+      },
+      {
+        "label": "expanded-inner-display",
+        "path": "captures/minimap/expanded-inner-display.png",
+        "width": 2176,
+        "height": 1812
+      },
+      {
+        "label": "expanded-hint-visible",
+        "path": "captures/minimap/expanded-hint-visible.png",
+        "width": 2176,
+        "height": 1812
+      },
+      {
+        "label": "expanded-hint-hidden",
+        "path": "captures/minimap/expanded-hint-hidden.png",
+        "width": 2176,
+        "height": 1812
+      },
+      {
+        "label": "compact-portrait",
+        "path": "captures/minimap/compact-portrait.png",
+        "width": 360,
+        "height": 800
+      },
+      {
+        "label": "short-landscape",
+        "path": "captures/minimap/short-landscape.png",
+        "width": 1280,
+        "height": 640
+      },
+      {
+        "label": "dense-restored",
+        "path": "captures/minimap/dense-restored.png",
+        "width": 2400,
+        "height": 1080
+      }
+    ],
+    "original_absolute_paths_bound_to_explicit_capture_root": true,
+    "all_png_original_hashes_bound_to_actual_report": true,
+    "all_png_decoders": "Unchanged SHA-/blob-bound verify_dream_rasters.png",
+    "exact_final_marker": "[MobileMinimapOriginals] PASS 1 exact rendered probe, 4 preserved SafeArea PNGs and 9 minimap PNGs",
+    "source_index_guards": "Own before/after full tracked byte/index inventories plus unchanged final workflow-wide guard",
+    "scope": "Desktop renderer with the actual asynchronous Android boundary fixture; not Android-device execution"
+  }
+}

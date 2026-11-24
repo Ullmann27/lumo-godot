@@ -1,0 +1,201 @@
+{
+  "reviewer": "/root/lumo_animation",
+  "scope": "Independent visual inspection of 7 baseline/final image pairs; final correctly attributed race rerun opened again. No renderer job or product-source edit by reviewer.",
+  "capture_product_commit": "b357b2f8decb4b11b0cc45e9fde2b8df5ec9cbe1",
+  "race_baseline_commit": "207bfbc5377c0f3e8be800854c83ddf2110ac3f6",
+  "garage_baseline_commit": "c9b77eeab3750508268cbff45cde2d0a5ea4ef37",
+  "current_head_at_review": "8bd40b4b7f77d3c259c8beecc768c13de46d1979",
+  "post_capture_head_changes_only_docs_and_capture_helpers": true,
+  "current_tracked_diff_clean": true,
+  "capture_source_clean_before_and_after_recorded": true,
+  "final_race_png_hashes_verified": 4,
+  "race_fixture_and_product_script_hashes_match_commit": true,
+  "original_empty_source_sha_resolved_by_rerun": true,
+  "race_exact_matching_metadata_fields": [
+    "engine",
+    "renderer",
+    "adapter",
+    "display",
+    "quality",
+    "resolution",
+    "seed",
+    "reduced_motion",
+    "capture_script_sha256"
+  ],
+  "garage_exact_matching_metadata_fields": [
+    "image",
+    "engine",
+    "renderer",
+    "adapter",
+    "animation",
+    "animation_position",
+    "fov",
+    "resolution",
+    "preview_resolution",
+    "quality",
+    "seed",
+    "yaw"
+  ],
+  "garage_baseline_protected_sources_equal_to_2014": [
+    "scripts/games/kart_garage_menu.gd",
+    "scripts/games/visual/kart_garage_interior.gd",
+    "scripts/characters/lumo/lumo_kart_animation_adapter.gd",
+    "assets/characters/lumo_animated/Lumo-Animated-Mobile.glb"
+  ],
+  "model_sha256": "3559f700784bc1006905ee3aae01e8bcfbffb95b4f621f7430ce771ba0e3efd5",
+  "environment": "Godot 4.6.3-stable, GL Compatibility, Mesa llvmpipe (LLVM 19.1.7, 256 bits), High",
+  "race": [
+    {
+      "file": "race-018m.png",
+      "distance_m": 18.0,
+      "fov": 55.0,
+      "camera_max_component_delta": "0.000000",
+      "player_max_component_delta": "0.000000",
+      "draw_calls_before": 350,
+      "draw_calls_after": 391,
+      "draw_call_delta": 41,
+      "draw_counter": "RenderingServer total frame",
+      "primitives_before": 1411713,
+      "primitives_after": 1535963,
+      "render_objects_before": 436,
+      "render_objects_after": 477,
+      "resolution": [
+        1280,
+        720
+      ],
+      "before_sha256": "17da66e37dc5a7ba6e4f57719438433327ee0df6ca31c6f4a3d9e17096643563",
+      "after_sha256": "58a99f2831d342c026d447fdeef688b3383bc1562a2fd9827a9810fa68fdbe84"
+    },
+    {
+      "file": "race-060m.png",
+      "distance_m": 60.0,
+      "fov": 55.0,
+      "camera_max_component_delta": "0.000000",
+      "player_max_component_delta": "0.000000",
+      "draw_calls_before": 278,
+      "draw_calls_after": 313,
+      "draw_call_delta": 35,
+      "draw_counter": "RenderingServer total frame",
+      "primitives_before": 914960,
+      "primitives_after": 1038810,
+      "render_objects_before": 364,
+      "render_objects_after": 399,
+      "resolution": [
+        1280,
+        720
+      ],
+      "before_sha256": "71862ae27077afb80f3c6615c6de42b25675caecbcc95f4bea73eb4caf1e8c3d",
+      "after_sha256": "3f0ef5506e0373d6df45e3270f1ab1c0a556076a3c3a7a7409a9142c11bc5150"
+    },
+    {
+      "file": "race-110m.png",
+      "distance_m": 110.0,
+      "fov": 55.0,
+      "camera_max_component_delta": "0.000000",
+      "player_max_component_delta": "0.000000",
+      "draw_calls_before": 269,
+      "draw_calls_after": 287,
+      "draw_call_delta": 18,
+      "draw_counter": "RenderingServer total frame",
+      "primitives_before": 821804,
+      "primitives_after": 900586,
+      "render_objects_before": 355,
+      "render_objects_after": 373,
+      "resolution": [
+        1280,
+        720
+      ],
+      "before_sha256": "b881b9cb4bb9e743056782e7e39fd4285f007d2e1bf020f918b13fca6b5ee181",
+      "after_sha256": "6ff168a5e19d6a857b4d167321089aa418179cdec9f6a40941c2f55d06d3c17c"
+    },
+    {
+      "file": "race-160m.png",
+      "distance_m": 160.0,
+      "fov": 55.0,
+      "camera_max_component_delta": "0.000000",
+      "player_max_component_delta": "0.00000",
+      "draw_calls_before": 250,
+      "draw_calls_after": 250,
+      "draw_call_delta": 0,
+      "draw_counter": "RenderingServer total frame",
+      "primitives_before": 791680,
+      "primitives_after": 790576,
+      "render_objects_before": 336,
+      "render_objects_after": 336,
+      "resolution": [
+        1280,
+        720
+      ],
+      "before_sha256": "60f8a50fd4bf36573da21dadee2367c004cb26ea96e93efd286e99eda8099cc8",
+      "after_sha256": "60f8a50fd4bf36573da21dadee2367c004cb26ea96e93efd286e99eda8099cc8"
+    }
+  ],
+  "garage": [
+    {
+      "file": "garage-1280x720.png",
+      "fov": 37.0,
+      "camera_max_component_delta": "0.000001",
+      "camera_difference": "one Y-basis component: 0.977191 -> 0.977190",
+      "draw_calls_before": 213,
+      "draw_calls_after": 147,
+      "draw_call_delta": -66,
+      "draw_counter": "Preview SubViewport visible only",
+      "resolution": [
+        1280,
+        720
+      ],
+      "preview_resolution": "(1417, 553)",
+      "before_sha256": "29a345695da650b24026735671cd773d0b5905558106de00857a8d011690627e",
+      "after_sha256": "d7bfe7676e93e267d81b80c8f02195a3af490405d8f26af0710854c8d238e65b"
+    },
+    {
+      "file": "garage-412x915.png",
+      "fov": 37.0,
+      "camera_max_component_delta": "0.000001",
+      "camera_difference": "one Y-basis component: 0.977191 -> 0.977190",
+      "draw_calls_before": 207,
+      "draw_calls_after": 138,
+      "draw_call_delta": -69,
+      "draw_counter": "Preview SubViewport visible only",
+      "resolution": [
+        412,
+        915
+      ],
+      "preview_resolution": "(686, 375)",
+      "before_sha256": "73e29f411879f0c7f21b2e84a8398ca4fb745dc98edd225e8e13c01c9ca5cf46",
+      "after_sha256": "a4b6f9b6cd5123788674ae31b318e77aa5d667e4792581ec07ae28de6d0a07c7"
+    },
+    {
+      "file": "garage-690x829.png",
+      "fov": 37.0,
+      "camera_max_component_delta": "0.000001",
+      "camera_difference": "one Y-basis component: 0.977191 -> 0.977190",
+      "draw_calls_before": 220,
+      "draw_calls_after": 150,
+      "draw_call_delta": -70,
+      "draw_counter": "Preview SubViewport visible only",
+      "resolution": [
+        690,
+        829
+      ],
+      "preview_resolution": "(1013, 300)",
+      "before_sha256": "df31af7af2ee9843ea95ff6d3865414f3a69f0f239d9fb0ed8a1e4ff19b7bebd",
+      "after_sha256": "d1a70aa42aad9eab68da6c2307e4377554af98523235253dcbd263479e85db3c"
+    }
+  ],
+  "visual_findings": [
+    "18/60/110 m: cream window arches, shutters, cornices and layered balconies/awnings are visible from the same chase camera and form a consistent facade design.",
+    "160 m: appearance remains essentially unchanged. These four frames do not demonstrate a whole-track redesign.",
+    "No new obvious mesh clipping, road/curve-marker/player/HUD obstruction or text clipping was observed in the reviewed race views.",
+    "Garage wall ribs, floor panels, podium markings and tool drawers give the same original Comet/Lumo clearer spatial context. Face, goggles, proportions and suit appear preserved; model hash is unchanged.",
+    "All three layouts retain visible selection, Back and Next. Phone view selector fits as Rundum, where the baseline label was cut.",
+    "Fold retains a scroll-constrained list showing only its first kart card in this frame. Existing statistics remain very small. The new decorative wall slogan is also small at phone/fold size; original colorful background remains busy."
+  ],
+  "limits": [
+    "Stills cannot prove absence of temporal z-fighting, clipping through all camera transitions or valid touch hit areas.",
+    "Race fixture is staged at zero speed with reduced motion. It does not prove a complete race, looping/ramp traversal, animation timing or input behavior.",
+    "Known preexisting Gecko boot/body clipping remains open in the separately documented side-view diagnosis; final Comet/front stills do not retest it.",
+    "Race and garage counters have different scopes. These desktop snapshots are not FPS or Android temperature/RAM benchmarks. No physical Android/Fold verification by this review."
+  ],
+  "new_blocking_visual_findings_in_reviewed_stills": []
+}

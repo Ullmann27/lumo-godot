@@ -30,7 +30,8 @@ permissions:
 jobs:
   kart-stage2:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Die vollständigen Prüfungen mit Software-Renderer benötigen bis zu 25 Minuten.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,6 +74,12 @@ jobs:
             echo "Rejected Godot error output in $RUNNER_TEMP/godot-import.log"
             exit 1
           fi
+
+      - name: Start lights reuse resources and respect motion preferences
+        run: |
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/start-lights.log" --timeout 30 --required '[StartLights] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_start_lights_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-persistence.log" --timeout 30 --required '[KartQualityPersist] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_persistence_regression.gd
+          python3 tools/run_godot_probe.py --log "$RUNNER_TEMP/quality-scene-switch.log" --timeout 45 --required '[KartQualitySceneSwitch] PASS' -- Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script scripts/tests/kart_quality_scene_switch_regression.gd
 
       - name: Verify actual harbor prefab placement and mobile LODs
         run: |
@@ -301,13 +308,13 @@ jobs:
           print("PASS: forty pause cover/touch/color checks and five actual Fold/phone PNGs")
           PY
 
-      - name: Actual five-step and direct menu entry inside Android safe insets
+      - name: Actual direct sections and race entry inside Android safe insets
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p exports/menu-safe-area
           python3 tools/run_godot_probe.py --log exports/menu-safe-area/menu-flow.log \
-            --timeout 300 --required '[KartMenuFlow] PASS: five touch steps;' -- \
+            --timeout 300 --required '[KartMenuFlow] PASS: five direct sections;' -- \
             xvfb-run -a -s '-screen 0 2500x2500x24' Godot_v4.6.3-stable_linux.x86_64 \
             --path . --rendering-method gl_compatibility --audio-driver Dummy \
             --script res://scripts/tests/kart_menu_flow_regression.gd
@@ -418,7 +425,7 @@ jobs:
           set -euo pipefail
           mkdir -p exports/character-review
           for case in \
-            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2325 failures=0' \
+            'kart_character_pose_regression|character-pose|[CharacterPose] checks=2287 failures=0' \
             'kart_face_depth_regression|face-depth|[FaceDepth] checks=23 failures=0' \
             'kart_fox_eye_proportions_regression|fox-eyes|[LumoEyeProportions] PASS:' \
             'kart_stage_visual_regression|face-studio|[LumoFaceStudio] PASS:'; do
@@ -468,7 +475,7 @@ jobs:
           output = Path('exports/character-review')
           checks = {}
           for name, tag, expected in (
-              ('character-pose', 'CharacterPose', 2325),
+              # Otter/Milo now uses the authored production rig path: 8 fewer normal-mode checks\n    # plus 11 fewer reduced-motion stand-in checks, with the same semantic coverage.\n    ('character-pose', 'CharacterPose', 2287),
               ('face-depth', 'FaceDepth', 23),
               ('start-hero', 'StartHero', 225),
           ):

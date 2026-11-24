@@ -1,0 +1,64 @@
+name: Lumo B5 dynamic real coastline shader QA
+on:
+  push:
+    branches:
+      - chatgpt/lumo-b5-true-coastal-foam-2026-10-17
+  pull_request:
+    paths:
+      - assets/shaders/kart_water.gdshader
+      - scripts/games/kart_world.gd
+      - scripts/tests/kart_dynamic_coastal_foam_regression.gd
+      - .github/workflows/lumo-dynamic-coastal-foam.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  coastline-shader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install real Godot 4.6.3
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Import and validate actual Godot shader and source
+        run: |
+          set -euo pipefail
+          timeout 220s godot --headless --path . --editor --import --quit \
+            2>&1 | tee "$RUNNER_TEMP/import.log"
+          ! grep -E 'SCRIPT ERROR:|Parse Error:|Shader compilation failed|ERROR: Failed to load' "$RUNNER_TEMP/import.log"
+      - name: Validate dynamic water shoreline bounds for high and low LOD
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 240 \
+            --log "$RUNNER_TEMP/dynamic-foam.log" \
+            --required '[DynamicCoastalFoam] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_dynamic_coastal_foam_regression.gd
+      - name: Existing original foam and harbor features remain correct
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 220 \
+            --log "$RUNNER_TEMP/water-regression.log" \
+            --required '[SonnenhafenWater] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_sonnenhafen_water_regression.gd
+          python3 tools/run_godot_probe.py --timeout 220 \
+            --log "$RUNNER_TEMP/coast-terrain.log" \
+            --required '[KartTerrainExtent] PASS:' -- \
+            godot --headless --audio-driver Dummy --path . \
+            --script res://scripts/tests/kart_coastal_terrain_extent_regression.gd
+      - name: Archive Godot test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumo-b5-coastal-foam-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/*.log
+          if-no-files-found: warn

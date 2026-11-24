@@ -1,0 +1,100 @@
+{
+  "production": "LUMO Kart Aurora Blender assets",
+  "date": "2026-11-14",
+  "tool": "Blender 4.3.2",
+  "source_commit": "9f8341494ea316c9e36ed6722915ab34b22e67bd",
+  "authorship": "Original project-specific geometry, materials and keyframes created for LUMO. Existing LUMO mechanical dimensions and fleet colours were retained.",
+  "third_party_geometry": [],
+  "third_party_images": [],
+  "paid_generation": false,
+  "licence_statement": "No new external asset licence or open-source licence is declared by this package. No standalone LICENSE file was present in the inspected source checkout.",
+  "files": [
+    {
+      "path": "assets/kart/production/karts/aurora_comet.glb",
+      "sha256": "d2b80327d4c35f8f5cd43929966c0c887ae2aa01ceaaba9b35b87ffd46a37f2f",
+      "bytes": 1614724,
+      "triangles": 47996,
+      "materials": 8,
+      "surfaces": 38
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
+      "sha256": "25e89ab45e62ad8f62235db3e3e81632f85a348c0c19d6f11094bb95baac449e",
+      "bytes": 889416,
+      "triangles": 23030,
+      "materials": 8,
+      "surfaces": 38
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
+      "sha256": "76820a7193022768702f25b0b621c54e23f8241dd27d8f4d2a62a6b930a63b3c",
+      "bytes": 653756,
+      "triangles": 15352,
+      "materials": 8,
+      "surfaces": 38
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider.glb",
+      "sha256": "2993929ce54e5b30cb9e921985f9e8cb979141908c60b8ae5d8c476c07527b0e",
+      "bytes": 1652492,
+      "triangles": 49064,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
+      "sha256": "0257090e8c8f7316a10734b9ef3b72e2aeea9057f955d61aed138b3ea31b9dee",
+      "bytes": 919260,
+      "triangles": 23542,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
+      "sha256": "e91a9d83379e776396a346277820dc7334da208dd383680de35f376e34f42421",
+      "bytes": 678472,
+      "triangles": 15694,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo.glb",
+      "sha256": "d0840f0918a3bdf0f5fdcee5193b713b95b54f53f465118f75c5840e41212639",
+      "bytes": 1649432,
+      "triangles": 49064,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
+      "sha256": "d4e8545fd4555fa02e32741be604848c6fe9083681cea4731a74ab4bd70ecf99",
+      "bytes": 915688,
+      "triangles": 23542,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
+      "sha256": "db58cd4ee6c5a74689618acd748da41aa0a69f68b7069a7eddb0684954685a2b",
+      "bytes": 672436,
+      "triangles": 15694,
+      "materials": 9,
+      "surfaces": 39
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_comet.blend",
+      "sha256": "4a959df68d03f2858775e602fa0df8663150328858a099fb3c8b90b860f534e1",
+      "bytes": 651844
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_glider.blend",
+      "sha256": "aa9936550710406df40e7a8657a28ca0a5e3d5e2715b2f966ca2abf2cdcaf6c1",
+      "bytes": 668001
+    },
+    {
+      "path": "art/lumo_kart/blender/karts/aurora_turbo.blend",
+      "sha256": "334b537426d1961a301f49468b07552b8992df6f15600f89e35c124b85118fd2",
+      "bytes": 669226
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(64, 64) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 0 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[KartFleet] comet: 39 surfaces, 61886 vertices
+[Perf] quality_profile:medium
+[KartFleet] gecko_velo: 34 surfaces, 54850 vertices
+[KartFleet] boru_rally: 34 surfaces, 55958 vertices
+[KartFleet] glider: 40 surfaces, 62899 vertices
+[KartFleet] nala_comet: 34 surfaces, 54086 vertices
+[KartFleet] noa_tide: 34 surfaces, 55302 vertices
+[KartFleet] iva_aurora: 34 surfaces, 55422 vertices
+[KartFleet] turbo: 40 surfaces, 62732 vertices
+[KartFleet] zuri_volt: 34 surfaces, 62886 vertices
+[KartFleet] blitz: 29 surfaces, 41207 vertices
+[KartFleet] terra: 29 surfaces, 44411 vertices
+[KartFleet] koloss: 30 surfaces, 41401 vertices
+[KartFleet] phantom: 30 surfaces, 40729 vertices
+[KartFleet] stella: 29 surfaces, 41287 vertices
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartFleet] PASS: 14 designs, animated chassis, LOD, budgets, garage views, scenery

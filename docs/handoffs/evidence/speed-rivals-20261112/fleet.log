@@ -1,0 +1,31 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+[EventBus] online - signals registered
+[Settings] no settings.cfg yet, defaults used
+[Perf] platform_detected:Linux
+[Mobile] runtime ready screen:(0, 0) safe-area:[P: (16.0, 32.0), S: (16.0, 48.0)]
+[AssetLoader] manifest loaded: 6 models, 13 materials, 175 textures, 0 audio
+[Audio] manager ready (muted:false)
+[Progress] no save file (first run) - starting fresh
+[Kart] Holographic garage ready: five modes, twelve worlds, free steering
+[Perf] quality_profile:medium
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartFleetStats] gemessen: Endtempo { "comet": 41.0, "glider": 39.77, "turbo": 44.69, "blitz": 41.0, "koloss": 42.23 } · Zeit bis 15 m/s { "comet": 0.37, "glider": 0.35, "turbo": 0.38, "blitz": 0.32, "koloss": 0.42 } · Bremsweg { "comet": 2.99091566354036, "turbo": 3.20646579191089, "koloss": 2.44904826581478 } · Lenken { "comet": 0.02353582152424, "glider": 0.03063508625593, "turbo": 0.02293309653729 }
+[KartFleetStats] Prüfstand comet: 147.6 km/h · 0–54 in 0.38 s · Bremsweg 3.0 m
+[KartFleetStats] Prüfstand blitz: 147.6 km/h · 0–54 in 0.32 s · Bremsweg 3.2 m
+[KartFleetStats] Prüfstand koloss: 152.0 km/h · 0–54 in 0.43 s · Bremsweg 2.4 m
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[Kart] race_world_ready: sonnenhafen mode=training
+[KartFleetStats] PASS: vierzehn Karts mit unterscheidbaren Werten, Comet neutral, Werkstatt (Kauf, Rückgabe, Speichern, Schutz vor kaputten Dateien) und Wirkung bei Tempo, Beschleunigung, Bremsen, Lenken und Turbo

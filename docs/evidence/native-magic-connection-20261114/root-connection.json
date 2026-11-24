@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "status": "SOURCE_CHECKPOINT_NOT_NEW_RUNTIME_ACCEPTANCE",
+  "created_utc": "2026-11-14T09:11:43.142509+00:00",
+  "parent": "f0c19f9eb69ea330ac5d2b8f9948cb029ca218aa",
+  "base_tree": "40e7a8d073de320865613152f8a027abbe025d51",
+  "source_files": 7,
+  "source_freezes": [
+    {
+      "label": "magic",
+      "sha256": "3fe8fdc5d85bfa0dd6419792688b72ed3840c3122e2267f695e800e6f986b1e2"
+    }
+  ],
+  "archives": [
+    {
+      "source_pack": "native-pr172-174-magic-integration-f0c19-20261114",
+      "members": 62,
+      "bytes": 705098,
+      "sha256": "33d3e64a66a85a7e2638841eebfc0aa3e57130b4ab13051358062aa6326a4c90",
+      "complete_original_roundtrip": true
+    }
+  ],
+  "working_sources_not_modified_by_preparation": true,
+  "actual_tests_on_combination": 0,
+  "no_device_or_release_claim": true,
+  "producer_blobs": "All7 final blobs are exact published PR174 blobs.",
+  "existing_runner_preserved": {
+    "modes": 52,
+    "studio_images": 17
+  },
+  "required_new_extra_gate": "treasure_wisp_regression.gd; remaining changed learning/treasure modes already required by unchanged52 runner.",
+  "c4_return_preserved": "f0c19 acknowledged-exit retry and21-check fixture-bound regression remain unchanged."
+}

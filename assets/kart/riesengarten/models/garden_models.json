@@ -1,0 +1,210 @@
+{
+ "biene": {
+  "triangles": [
+   424,
+   190,
+   66
+  ],
+  "bytes": 22732
+ },
+ "blumenbusch": {
+  "triangles": [
+   1614,
+   726,
+   244
+  ],
+  "bytes": 80736
+ },
+ "blumentopf": {
+  "triangles": [
+   1152,
+   518,
+   294
+  ],
+  "bytes": 48504
+ },
+ "gartenbahn_bahnhof": {
+  "triangles": [
+   648,
+   290,
+   102
+  ],
+  "bytes": 71816
+ },
+ "gartenbahn_lok": {
+  "triangles": [
+   5948,
+   2676,
+   950
+  ],
+  "bytes": 370224
+ },
+ "gartenbahn_wagen": {
+  "triangles": [
+   2036,
+   916,
+   315
+  ],
+  "bytes": 110504
+ },
+ "gartenblatt": {
+  "triangles": [
+   192,
+   86,
+   28
+  ],
+  "bytes": 9584
+ },
+ "gewaechshaus_bogen": {
+  "triangles": [
+   3980,
+   1790,
+   636
+  ],
+  "bytes": 308600
+ },
+ "gewaechshaus_giebel": {
+  "triangles": [
+   1081,
+   485,
+   171
+  ],
+  "bytes": 115712
+ },
+ "giesskanne": {
+  "triangles": [
+   6185,
+   2782,
+   941
+  ],
+  "bytes": 244676
+ },
+ "grashalme": {
+  "triangles": [
+   140,
+   62,
+   22
+  ],
+  "bytes": 10700
+ },
+ "kuerbis": {
+  "triangles": [
+   2628,
+   1181,
+   418
+  ],
+  "bytes": 89492
+ },
+ "kuerbis_tunnel": {
+  "triangles": [
+   4792,
+   2156,
+   765
+  ],
+  "bytes": 180780
+ },
+ "libelle": {
+  "triangles": [
+   192,
+   86,
+   30
+  ],
+  "bytes": 12736
+ },
+ "marienkaefer": {
+  "triangles": [
+   768,
+   344,
+   122
+  ],
+  "bytes": 27644
+ },
+ "pflanztisch": {
+  "triangles": [
+   2484,
+   1117,
+   507
+  ],
+  "bytes": 171560
+ },
+ "pusteblume": {
+  "triangles": [
+   464,
+   206,
+   72
+  ],
+  "bytes": 53288
+ },
+ "rasensprenger": {
+  "triangles": [
+   1620,
+   728,
+   349
+  ],
+  "bytes": 84556
+ },
+ "rosenbogen": {
+  "triangles": [
+   3836,
+   1726,
+   604
+  ],
+  "bytes": 150728
+ },
+ "schirmchen": {
+  "triangles": [
+   32,
+   13,
+   4
+  ],
+  "bytes": 7404
+ },
+ "schlauchkupplung": {
+  "triangles": [
+   960,
+   432,
+   153
+  ],
+  "bytes": 34436
+ },
+ "schmetterling": {
+  "triangles": [
+   92,
+   40,
+   13
+  ],
+  "bytes": 9032
+ },
+ "seerose_blatt": {
+  "triangles": [
+   1400,
+   630,
+   224
+  ],
+  "bytes": 52544
+ },
+ "seerose_bluete": {
+  "triangles": [
+   1344,
+   604,
+   215
+  ],
+  "bytes": 60740
+ },
+ "sonnenblume": {
+  "triangles": [
+   19464,
+   8758,
+   3062
+  ],
+  "bytes": 702992
+ },
+ "tomatenbogen": {
+  "triangles": [
+   3552,
+   1598,
+   567
+  ],
+  "bytes": 129432
+ }
+}

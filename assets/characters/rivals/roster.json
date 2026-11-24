@@ -1,67 +1,176 @@
 {
   "schemaVersion": 1,
   "referenceBatch": "0a69ed73c9f546eb87ec8cd947be5f07",
-  "status": "reference_prepared_models_pending",
+  "status": "blender_models_runtime_integrated",
   "opponents": [
     {
       "id": "lion",
       "name": "Löwe",
       "color": "#F4AE52",
-      "games": ["kart", "lumo_cards", "connect_four"],
+      "games": [
+        "kart",
+        "lumo_cards",
+        "connect_four"
+      ],
       "reference": "50835.jpeg",
       "geometryInput": "reference/inputs/lion-front.jpg",
       "materialInput": "reference/inputs/lion-material.jpg",
-      "godotModel": "res://assets/characters/rivals/lion/driver.glb",
+      "godotModel": "res://assets/kart/production/drivers/lion/driver.glb",
       "flutterPortrait": "assets/rivals/portraits/lion.png",
-      "runtimeReady": false
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/lion/driver.glb",
+        "res://assets/kart/production/drivers/lion/driver_lod1.glb",
+        "res://assets/kart/production/drivers/lion/driver_lod2.glb"
+      ]
     },
     {
       "id": "owl",
       "name": "Eule",
       "color": "#C7A585",
-      "games": ["kart", "lumo_cards", "connect_four"],
+      "games": [
+        "kart",
+        "lumo_cards",
+        "connect_four"
+      ],
       "reference": "50839.jpeg",
       "geometryInput": "reference/inputs/owl-front.jpg",
       "materialInput": "reference/inputs/owl-material.jpg",
-      "godotModel": "res://assets/characters/rivals/owl/driver.glb",
+      "godotModel": "res://assets/kart/production/drivers/owl/driver.glb",
       "flutterPortrait": "assets/rivals/portraits/owl.png",
-      "runtimeReady": false
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/owl/driver.glb",
+        "res://assets/kart/production/drivers/owl/driver_lod1.glb",
+        "res://assets/kart/production/drivers/owl/driver_lod2.glb"
+      ]
     },
     {
       "id": "rabbit",
       "name": "Nova",
       "color": "#C0ABFF",
-      "games": ["kart", "lumo_cards", "connect_four"],
+      "games": [
+        "kart",
+        "lumo_cards",
+        "connect_four"
+      ],
       "reference": "50838.jpeg",
       "geometryInput": "reference/inputs/rabbit-front.jpg",
       "materialInput": "reference/inputs/rabbit-material.jpg",
-      "godotModel": "res://assets/characters/rivals/rabbit/driver.glb",
+      "godotModel": "res://assets/kart/production/drivers/rabbit/driver.glb",
       "flutterPortrait": "assets/rivals/portraits/rabbit.png",
-      "runtimeReady": false
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/rabbit/driver.glb",
+        "res://assets/kart/production/drivers/rabbit/driver_lod1.glb",
+        "res://assets/kart/production/drivers/rabbit/driver_lod2.glb"
+      ]
     },
     {
       "id": "squirrel",
       "name": "Eichhörnchen",
       "color": "#F39154",
-      "games": ["kart", "lumo_cards", "connect_four"],
+      "games": [
+        "kart",
+        "lumo_cards",
+        "connect_four"
+      ],
       "reference": "50837.jpeg",
       "geometryInput": "reference/inputs/squirrel-material.jpg",
       "materialInput": "reference/inputs/squirrel-material.jpg",
-      "godotModel": "res://assets/characters/rivals/squirrel/driver.glb",
+      "godotModel": "res://assets/kart/production/drivers/squirrel/driver.glb",
       "flutterPortrait": "assets/rivals/portraits/squirrel.png",
-      "runtimeReady": false
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/squirrel/driver.glb",
+        "res://assets/kart/production/drivers/squirrel/driver_lod1.glb",
+        "res://assets/kart/production/drivers/squirrel/driver_lod2.glb"
+      ]
     },
     {
       "id": "turtle",
       "name": "Schildkröte",
       "color": "#95C661",
-      "games": ["kart", "lumo_cards", "connect_four"],
+      "games": [
+        "kart",
+        "lumo_cards",
+        "connect_four"
+      ],
       "reference": "50836.jpeg",
       "geometryInput": "reference/inputs/turtle-material.jpg",
       "materialInput": "reference/inputs/turtle-material.jpg",
-      "godotModel": "res://assets/characters/rivals/turtle/driver.glb",
+      "godotModel": "res://assets/kart/production/drivers/turtle/driver.glb",
       "flutterPortrait": "assets/rivals/portraits/turtle.png",
-      "runtimeReady": false
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/turtle/driver.glb",
+        "res://assets/kart/production/drivers/turtle/driver_lod1.glb",
+        "res://assets/kart/production/drivers/turtle/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "frog",
+      "name": "Frosch",
+      "color": "#64C987",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/frog/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/frog/driver.glb",
+        "res://assets/kart/production/drivers/frog/driver_lod1.glb",
+        "res://assets/kart/production/drivers/frog/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "otter",
+      "name": "Milo",
+      "color": "#75E6CE",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/otter/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/otter/driver.glb",
+        "res://assets/kart/production/drivers/otter/driver_lod1.glb",
+        "res://assets/kart/production/drivers/otter/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "badger",
+      "name": "Dachs Bruno",
+      "color": "#8397B0",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/badger/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/badger/driver.glb",
+        "res://assets/kart/production/drivers/badger/driver_lod1.glb",
+        "res://assets/kart/production/drivers/badger/driver_lod2.glb"
+      ]
+    },
+    {
+      "id": "cat",
+      "name": "Mika",
+      "color": "#D4B396",
+      "games": [
+        "kart",
+        "lumo_cards"
+      ],
+      "godotModel": "res://assets/kart/production/drivers/cat/driver.glb",
+      "runtimeReady": true,
+      "godotLods": [
+        "res://assets/kart/production/drivers/cat/driver.glb",
+        "res://assets/kart/production/drivers/cat/driver_lod1.glb",
+        "res://assets/kart/production/drivers/cat/driver_lod2.glb"
+      ]
     }
   ]
 }

@@ -1,0 +1,263 @@
+name: Lumo Kart action and live network verification
+on:
+  push:
+    branches: [integration/kart-action-20261123]
+    paths:
+      - config/kart-action-qa.json
+      - .github/workflows/kart-action-20261123.yml
+permissions:
+  contents: read
+concurrency:
+  group: kart-action-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  relay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact relay dependency
+        run: python -m pip install -r server/kart_online/requirements.txt
+      - name: Validate proposed persistent server configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p kart-proof
+          python -m pip install PyYAML jsonschema
+          python -m pip freeze > kart-proof/qa-python-packages.txt
+          curl --fail --location --retry 2 https://render.com/schema/render.yaml.json \
+            --output kart-proof/render-schema.json
+          python - <<'PY'
+          import json, pathlib, yaml, jsonschema
+          schema = json.loads(pathlib.Path('kart-proof/render-schema.json').read_text())
+          definition = yaml.safe_load(pathlib.Path('server/kart_online/render.yaml').read_text())
+          jsonschema.validate(definition, schema)
+          pathlib.Path('kart-proof/blueprint-validation.json').write_text(json.dumps({
+              'status':'PASS','source':'server/kart_online/render.yaml',
+              'schema':'https://render.com/schema/render.yaml.json',
+              'scope':'schema validation only; no service or paid resource created'},indent=2))
+          print('Render Blueprint schema: PASS (no deployment)')
+          PY
+      - name: Exercise actual WebSocket clients and server boundaries
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p kart-proof
+          git rev-parse HEAD > kart-proof/SOURCE-COMMIT.txt
+          python -m unittest discover -s server/kart_online -p test_relay.py -v 2>&1 | tee kart-proof/relay.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-relay-proof-${{ github.run_id }}
+          path: kart-proof/
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GODOT_SILENCE_ROOT_WARNING: '1'
+      LIBGL_ALWAYS_SOFTWARE: 'true'
+      GALLIUM_DRIVER: llvmpipe
+      LP_NUM_THREADS: '2'
+      LUMO_PRODUCT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/lumo-kart-godot" kart-proof
+          curl --fail --location --retry 3 --max-time 180 \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            --output "$RUNNER_TEMP/lumo-kart-godot/engine.zip"
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/lumo-kart-godot/engine.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/lumo-kart-godot/engine.zip" -d "$RUNNER_TEMP/lumo-kart-godot"
+          mv "$RUNNER_TEMP/lumo-kart-godot/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/lumo-kart-godot/godot"
+          echo "$RUNNER_TEMP/lumo-kart-godot" >> "$GITHUB_PATH"
+          git rev-parse HEAD > kart-proof/SOURCE-COMMIT.txt
+      - name: Import actual complete project
+        id: project_import
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-first.log 2>&1 \
+            || godot --headless --single-threaded-scene --path . --editor --import --quit > kart-proof/import-retry.log 2>&1
+      - name: Prepare genuine offscreen renderer
+        id: renderer_setup
+        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb xauth libgl1-mesa-dri
+          python3 -m pip install Pillow==12.3.0
+      - name: Verify two actual Godot clients across relay restart
+        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -r server/kart_online/requirements.txt
+          python3 scripts/tests/kart_online_two_process.py --godot "$(command -v godot)" \
+            --output "$PWD/kart-proof/online-two-process" 2>&1 | tee kart-proof/online-two-process.log
+      - name: Verify actual friend menu and visible remote kart in race scene
+        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/tests/kart_online_scene_probe.py --godot "$(command -v godot)" \
+            --output "$PWD/kart-proof/online-scene" 2>&1 | tee kart-proof/online-scene.log
+      - name: Run selected physics and vehicle checks
+        if: ${{ !cancelled() && steps.project_import.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, re, signal, subprocess, time
+          config = json.loads(pathlib.Path('config/kart-action-qa.json').read_text())
+          markers = ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', 'ERROR: Condition "p_size <= 0"')
+          results = []
+          proof_environment = dict(os.environ, LUMO_KART_ACTION_PROOF_DIR=str(pathlib.Path('kart-proof/vehicles').resolve()))
+          def checked(command, log, seconds):
+              error = None
+              with log.open('a') as stream:
+                  process = subprocess.Popen(command,env=proof_environment,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
+                  deadline = time.monotonic() + seconds
+                  while process.poll() is None:
+                      output = log.read_text(errors='replace')
+                      if any(marker in output for marker in markers):
+                          error = 'Godot reported a script error'
+                      elif time.monotonic() >= deadline:
+                          error = 'timeout'
+                      if error:
+                          os.killpg(process.pid,signal.SIGTERM)
+                          try:
+                              process.wait(timeout=5)
+                          except subprocess.TimeoutExpired:
+                              os.killpg(process.pid,signal.SIGKILL)
+                              process.wait()
+                          break
+                      time.sleep(0.25)
+                  code = process.wait()
+              return code, error
+          for name in config['probes']:
+              assert re.fullmatch(r'[a-z0-9_]+', name), name
+              # Run the exact loop route in source QA; keep the full
+              # multi-course endurance suite for the signed Android gate.
+              proof_environment.pop('LUMO_RUN_FOCUS', None)
+              if name == 'lumo_run_regression':
+                  proof_environment['LUMO_RUN_FOCUS'] = 'loop'
+              target = pathlib.Path('scripts/tests') / (name + '.gd')
+              assert target.is_file(), target
+              log = pathlib.Path('kart-proof') / (name + '.log')
+              log.write_text('')
+              command = ['godot','--headless','--path','.','--script','res://' + str(target)]
+              code, error = checked(command + ['--check-only'], log, 60)
+              if code == 0 and not error and not any(marker in log.read_text(errors='replace') for marker in markers):
+                  if name in config.get('renderer_probes', []):
+                      command = ['xvfb-run','-a','godot','--path','.',
+                          '--rendering-method','gl_compatibility','--audio-driver','Dummy',
+                          '--resolution','1280x720','--script','res://' + str(target)]
+                  extra_args = config.get('probe_arguments', {}).get(name, [])
+                  if extra_args: command += ['--'] + extra_args
+                  code, error = checked(command, log, 360)
+              output = log.read_text(errors='replace')
+              failed = code != 0 or error is not None or any(marker in output for marker in markers + ('] FAIL',))
+              result = {'probe':name,'exit':code,'passed':not failed}
+              if error: result['error'] = error
+              results.append(result)
+              print(json.dumps(result),flush=True)
+              print(output[-16000:],flush=True)
+          pathlib.Path('kart-proof/native-results.json').write_text(json.dumps(results,indent=2))
+          if not results or not all(row['passed'] for row in results):
+              raise SystemExit(1)
+          PY
+      - name: Render actual vehicles, workshop and all fifteen courses
+        if: ${{ !cancelled() && steps.renderer_setup.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, io, json, os, pathlib, subprocess
+          from PIL import Image
+          root = pathlib.Path('kart-proof').resolve()
+          tracks = ['sonnenhafen','zauberwald','bergwelt','holo_city',
+              'crystal_canyon','jungle_temple','candy_cloud','volcano_night',
+              'winter_sprint','galaxy_ringway','desert_drift','learning_lab',
+              'jungle_emerald_3600','riesengarten_2400','windwerk_3000']
+          jobs = [('vehicles','kart_evolution_capture',[]),
+                  ('run-loop','lumo_run_loop_regression',[])]
+          for track in tracks:
+              views = 'course,landscape'
+              if track == 'sonnenhafen':
+                  views += ',loop_approach,loop_side,loop_exit,precision_braking'
+              jobs.append((track,'kart_action_spectacle_capture',[
+                  '--track='+track, '--out='+str(root/track), '--views='+views]))
+          results = []
+          scene_output = root/'online-scene-render'
+          scene_log = root/'online-scene-render.log'
+          with scene_log.open('w') as stream:
+              try:
+                  scene = subprocess.run(['xvfb-run','-a','python3',
+                      'scripts/tests/kart_online_scene_probe.py','--godot','godot',
+                      '--output',str(scene_output),'--shots'],stdout=stream,
+                      stderr=subprocess.STDOUT,timeout=240)
+                  scene_text = scene_log.read_text(errors='replace')
+                  results.append({'case':'online-scene-render','exit':scene.returncode,
+                      'passed':scene.returncode == 0 and bool(list(scene_output.rglob('*.png')))})
+                  print(scene_text[-16000:],flush=True)
+              except subprocess.TimeoutExpired:
+                  results.append({'case':'online-scene-render','passed':False,'error':'timeout'})
+          for label,script,args in jobs:
+              output = root/label
+              output.mkdir(parents=True,exist_ok=True)
+              environment = dict(os.environ)
+              environment['LUMO_KART_ACTION_PROOF_DIR'] = str(output)
+              if label == 'run-loop':
+                  environment['LUMO_RUN_LOOP_PROOF_DIR'] = str(output)
+              command = ['xvfb-run','-a','godot','--path','.',
+                  '--rendering-method','gl_compatibility','--audio-driver','Dummy',
+                  '--resolution','1280x720','--script','res://scripts/tests/'+script+'.gd']
+              if args: command += ['--'] + args
+              log = root/(label+'-render.log')
+              try:
+                  with log.open('w') as stream:
+                      run = subprocess.run(command,env=environment,stdout=stream,
+                          stderr=subprocess.STDOUT,timeout=240)
+                  text = log.read_text(errors='replace')
+                  pngs = list(output.rglob('*.png'))
+                  passed = run.returncode == 0 and bool(pngs) and not any(marker in text
+                      for marker in ('SCRIPT ERROR:', 'Parse Error:', 'Compile Error:', 'SHADER ERROR:'))
+                  results.append({'case':label,'passed':passed,'exit':run.returncode,'pngs':len(pngs)})
+                  print(label, json.dumps(results[-1]), flush=True)
+                  if not passed: print(text[-20000:],flush=True)
+              except subprocess.TimeoutExpired:
+                  results.append({'case':label,'passed':False,'error':'timeout'})
+          manifest = []
+          for path in sorted(root.rglob('*.png')):
+              data = path.read_bytes()
+              manifest.append({'path':str(path.relative_to(root)),'bytes':len(data),
+                  'sha256':hashlib.sha256(data).hexdigest()})
+              with Image.open(path) as picture:
+                  picture = picture.convert('RGB')
+                  picture.thumbnail((800,450))
+                  buffer = io.BytesIO()
+                  picture.save(buffer,format='JPEG',quality=78)
+              print('KART_RENDER_PREVIEW '+json.dumps({'path':str(path.relative_to(root)),
+                  'source_sha256':hashlib.sha256(data).hexdigest(),
+                  'jpeg_base64':base64.b64encode(buffer.getvalue()).decode()}),flush=True)
+          (root/'render-results.json').write_text(json.dumps(results,indent=2))
+          (root/'render-manifest.json').write_text(json.dumps(manifest,indent=2))
+          if not all(row['passed'] for row in results): raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kart-native-proof-${{ github.run_id }}
+          path: kart-proof/

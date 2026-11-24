@@ -24,10 +24,23 @@ const SCENES: Dictionary = {
 	"games": "res://scenes/games/game_hub.tscn",
 	"puzzle": "res://scenes/creative/puzzle_world.tscn",
 	"build": "res://scenes/creative/build_world.tscn",
+	"settlement": "res://scenes/creative/build_settlement_world.tscn",
 	"rhythm": "res://scenes/creative/rhythm_world.tscn",
 	"treasure": "res://scenes/creative/treasure_world.tscn",
+	"world": "res://scenes/creative/lumo_world.tscn",
 	"kart": "res://scenes/games/kart_island.tscn",
+	"kart_parcours": "res://scenes/games/kart_parcours.tscn",
 	"jump": "res://scenes/games/jump_islands.tscn",
+	"run": "res://scenes/games/lumo_run.tscn",
+	"skypost": "res://scenes/games/sky_post.tscn",
+	"learning": "res://scenes/learning/learning_world.tscn",
+	"tutor": "res://scenes/learning/tutor_world.tscn",
+	"holo": "res://scenes/learning/holo_lesson.tscn",
+	"cards": "res://scenes/games/cards_table.tscn",
+	"connect_four": "res://scenes/games/connect_four_table.tscn",
+	"memory": "res://scenes/games/memory_table.tscn",
+	"chess": "res://scenes/games/chess_table.tscn",
+	"quiz": "res://scenes/games/quiz_studio.tscn",
 	"stars": "res://scenes/games/star_collect.tscn",
 	"parent": "res://scenes/games/parent_settings.tscn",
 }
@@ -89,6 +102,10 @@ func _commit_loaded_scene(scene_id: String, scene: PackedScene) -> void:
 
 
 func goto(scene_id: String) -> void:
+	if should_return_to_world(scene_id):
+		launch_options.erase("worldPortalOrigin")
+		goto("world")
+		return
 	if current_scene_id != "boot" and scene_id in ["home", "games", "learn"]:
 		if HostBridge.is_embedded():
 			HostBridge.return_to_app("learn" if scene_id == "learn" else "games")
@@ -103,3 +120,11 @@ func goto(scene_id: String) -> void:
 	# call_deferred damit der Wechsel sicher zwischen Frames passiert
 	get_tree().call_deferred("change_scene_to_file", path)
 	EventBus.scene_changed.emit(from, scene_id)
+
+
+func should_return_to_world(destination: String) -> bool:
+	return (
+		str(launch_options.get("worldPortalOrigin", "")) == "world"
+		and current_scene_id in ["kart", "kart_parcours", "cards", "settlement"]
+		and destination in ["games", "home", "build"]
+	)

@@ -5,6 +5,23 @@
 
 # Imported resources (Godot regeneriert beim Editor-Start)
 *.import
+# Explicit production LODs and embedded textures are part of the runtime contract.
+!assets/kart/production/**/*.glb.import
+# Dorfwelt: Mipmaps für Gelände-/Atlas-Texturen und Mesh-LODs der Modelle sind Teil des Laufzeitvertrags.
+!assets/creative/village3d/**/*.import
+!assets/creative/bauwelt_voxel/*.import
+# Jungle models of Lumo Lauf: no automatic LODs (explicit _lod models), mipmapped textures.
+!assets/games/run/jungle/models/*.glb.import
+!assets/games/run/jungle/models/textures/*.import
+# Lumos Riesengarten: explizite LOD-Stufen (_lod0/_lod1/_lod2) statt automatischer LODs.
+!assets/kart/riesengarten/models/*.glb.import
+# Lumos Sternenpost: explicit _lod models, no automatic LODs.
+!assets/skypost/models/*.glb.import
+# Die Bildliste ist keine Übersetzung. Als CSV-Übersetzung importiert löst sie
+# im Importer TRANSLATION_CHANGED aus einem Arbeits-Thread aus (Absturz im CI).
+!assets/characters/lumo/reference/lumo_reference_manifest.csv.import
+# Lumo Schach: Holz-, Brett- und Symboltexturen mit Mipmaps (scharf unter flachem Blickwinkel).
+!assets/chess/**/*.import
 
 # Export-Output (lokale Builds nicht ins Repo)
 exports/
@@ -35,3 +52,7 @@ __pycache__/
 
 # Generated developer-pack build output (GitHub Actions artifacts only)
 dist/
+
+# Mitspieler-Tiere: .blend wird von tools/lumo_kart_art/drivers/build_animal_drivers.py
+# reproduzierbar erzeugt (je ~1,6 MB) und nicht versioniert.
+art/lumo_kart/blender/drivers/*.blend

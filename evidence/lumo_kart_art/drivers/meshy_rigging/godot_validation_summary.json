@@ -1,0 +1,53 @@
+{
+  "validated_at_utc": "2026-11-24T07:40:18.880681+00:00",
+  "engine": "4.6.3.stable.official.7d41c59c4",
+  "source_inventory_sha256": "50172996574167f9da4393cca7cd959ae0e4cbdcd9b00c8b5c0b603dc82fb5cf",
+  "source_verification": {
+    "current_git_head": "5e23b4a7e18cefc03e6a38d78822ca73584aef60",
+    "checked_files": 159,
+    "current_worktree_and_staged_hashes_match": true,
+    "missing_sparse_files_checked_against_head": true
+  },
+  "headless": {
+    "rig_contract_checks": 1558,
+    "production_driver_checks": 8245,
+    "cards_roster_checks": 119,
+    "failures": 0,
+    "imported_production_scenes": 27,
+    "maximum_moving_hand_error_m": 0.000208172597922385,
+    "summary_lines": {
+      "lumo_rival_rig_contract_regression": [
+        "[RivalRig] checks=1558 failures=0"
+      ],
+      "lumo_kart_production_driver_regression": [
+        "[ProductionDriver] checks=8245 failures=0 imported=27 maximum_hand_error_m=0.00020817259792"
+      ],
+      "cards_character_roster_regression": [
+        "[CardsCharacters] checks=119 failures=0"
+      ]
+    }
+  },
+  "rendered_captures": {
+    "neutral": {
+      "png": "kart_fit_neutral.png",
+      "report": "kart_fit_neutral.json",
+      "maximum_hand_error_m": 1.06676083078128e-07,
+      "clip": "kart_seated",
+      "sample_time_seconds": 0.241666666666667,
+      "steer": 0.0,
+      "passed": true
+    },
+    "left": {
+      "png": "kart_fit_left.png",
+      "report": "kart_fit_left.json",
+      "maximum_hand_error_m": 1.1864040772025e-07,
+      "clip": "kart_steer_left",
+      "sample_time_seconds": 0.53125,
+      "steer": 1.0,
+      "passed": true
+    }
+  },
+  "actual_runtime_sources_modified_for_capture": false,
+  "physical_android": false,
+  "scope": "Real Godot 4.6.3 imports and actual production runtime in isolated project; desktop Compatibility llvmpipe render. No APK, physical device, or 60 FPS claim."
+}

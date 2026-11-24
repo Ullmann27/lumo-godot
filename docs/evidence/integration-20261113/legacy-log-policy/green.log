@@ -1,0 +1,9 @@
+test_clean_pass_is_accepted (__main__.LegacyLogPolicyTests.test_clean_pass_is_accepted) ... ok
+test_exit_zero_with_post_pass_resource_error_is_rejected (__main__.LegacyLogPolicyTests.test_exit_zero_with_post_pass_resource_error_is_rejected) ... ok
+test_missing_pass_is_rejected (__main__.LegacyLogPolicyTests.test_missing_pass_is_rejected) ... ok
+test_post_pass_script_error_is_rejected (__main__.LegacyLogPolicyTests.test_post_pass_script_error_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.307s
+
+OK

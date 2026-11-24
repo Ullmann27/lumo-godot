@@ -1,0 +1,156 @@
+{
+  "generator": "tools/art/generate_kart_fx_audio.py",
+  "seed": 20261118,
+  "sample_rate": 32000,
+  "channels": 1,
+  "original_samples_only": true,
+  "assets": [
+    {
+      "file": "engine_low.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 15530,
+      "sha256": "bd03c48c02bcf5731186b2795cb3215151685c9d54d2c4228e5654ea309b45e0",
+      "description": "Original synthesized engine_low",
+      "seam_delta": 0.07424
+    },
+    {
+      "file": "engine_mid.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11996,
+      "sha256": "c2d5c2122dd3229d1462da7759e7decbd512cd0090975ff4bfde1876c8fdf75e",
+      "description": "Original synthesized engine_mid",
+      "seam_delta": 0.04687
+    },
+    {
+      "file": "engine_high.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 10949,
+      "sha256": "05a75d5bcc799ef013dc1be38d67e4f8b650ea05f145ddf8c0f6b291421f0cfe",
+      "description": "Original synthesized engine_high",
+      "seam_delta": 0.2814
+    },
+    {
+      "file": "engine_off.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 8438,
+      "sha256": "3faf271b451a66cee47cdef8c6b9cc468bfbcabb512a1658a50bccf7d1a8e250",
+      "description": "Original synthesized engine_off",
+      "seam_delta": 0.03583
+    },
+    {
+      "file": "scrape.ogg",
+      "seconds": 1.2,
+      "loop": true,
+      "bytes": 12687,
+      "sha256": "db6233d6f3899fe4e0d1eebcc2ff29980359e98b48901e6dd4eedee5aeb91449",
+      "description": "Original synthesized scrape",
+      "seam_delta": 0.04323
+    },
+    {
+      "file": "squeal.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11214,
+      "sha256": "792533c061f4e4be1eebb116f09c6ecd172b10b835b2ff2b27543fb782495184",
+      "description": "Original synthesized squeal",
+      "seam_delta": 0.08802
+    },
+    {
+      "file": "gravel.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11971,
+      "sha256": "ebe5c845fec760e21936957a5c7ff82bbaf5d7410bae7bbfc2e22c873191caa5",
+      "description": "Original synthesized gravel",
+      "seam_delta": 0.00137
+    },
+    {
+      "file": "snow.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11441,
+      "sha256": "a0a45b6515fdb53b52fbca9688593203eb8a7a966f674a93f5d075901715d513",
+      "description": "Original synthesized snow",
+      "seam_delta": 0.07698
+    },
+    {
+      "file": "turbo.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 10936,
+      "sha256": "43d491aae4fadbfd4716356635594a3d8dbdff319c324cbc5183aba0f14c6ec5",
+      "description": "Original synthesized turbo",
+      "seam_delta": 0.00371
+    },
+    {
+      "file": "wind.ogg",
+      "seconds": 2.0,
+      "loop": true,
+      "bytes": 18001,
+      "sha256": "0b7c6c49c4081f9943406318a4bd92b6d6c1cdc9f99f6119e5fa47723bbd3249",
+      "description": "Original synthesized wind",
+      "seam_delta": 0.06235
+    },
+    {
+      "file": "rail_hit.ogg",
+      "seconds": 0.75,
+      "loop": false,
+      "bytes": 9026,
+      "sha256": "f067fe570cd6aa4be4558eb59ee35fd00aea3b50d3037597e630ca042d5d292c",
+      "description": "Original synthesized rail_hit"
+    },
+    {
+      "file": "rail_hit_soft.ogg",
+      "seconds": 0.38,
+      "loop": false,
+      "bytes": 6380,
+      "sha256": "ce837ade3057570ea62efd84c88ac359ef6dffc0f9abca4347d59452902e7294",
+      "description": "Original synthesized rail_hit_soft"
+    },
+    {
+      "file": "backfire.ogg",
+      "seconds": 0.26,
+      "loop": false,
+      "bytes": 5384,
+      "sha256": "6be697a1d6ddfad636e3f249e6209146fdbb7d1dbeaf5dd811fa069eff574fb2",
+      "description": "Original synthesized backfire"
+    },
+    {
+      "file": "land_thump.ogg",
+      "seconds": 0.45,
+      "loop": false,
+      "bytes": 6918,
+      "sha256": "568bdc4ce94e804a137e1c292eedde5a6118734034b3475664dd6b73a800721b",
+      "description": "Original synthesized land_thump"
+    },
+    {
+      "file": "confetti.ogg",
+      "seconds": 1.0,
+      "loop": false,
+      "bytes": 9883,
+      "sha256": "590865787d1743bc05d5bcc367dd214e12b00a05c95f98e8336a671ff53de06c",
+      "description": "Original synthesized confetti"
+    },
+    {
+      "file": "whoosh.ogg",
+      "seconds": 0.65,
+      "loop": false,
+      "bytes": 8530,
+      "sha256": "3f900b514b00568744789f52e8ad42a3574f8835b0df0f8eeece51b2378ea014",
+      "description": "Original synthesized whoosh"
+    },
+    {
+      "file": "rocket_fly.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 11365,
+      "sha256": "325a614f0698d6737c28fe3ad3ef694e4902c89b3e6371c78e2a8cfaea6a8f1a",
+      "description": "Original synthesized rocket_fly",
+      "seam_delta": 0.06338
+    }
+  ]
+}

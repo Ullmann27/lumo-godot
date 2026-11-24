@@ -1,0 +1,13 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "synthetic_orchestration_tests": true,
+  "log_original_sha256": "030a665e7422a07bdf4600524362d4723a8e3c34a063de2d5218f8faf8c02c9d",
+  "archive_sha256": "eb3120cbbc454e9843f5e1eac9bb14bf482f9af544cfc32bae6a9e7fbb1040a0",
+  "source_sha256": {
+    "tools/validate_nextgen.sh": "6c509c4ec559abcf9cb11bbd68142a306cabafa08012bdb75f14fea4c767ba23",
+    "tools/validate_studio.sh": "70b2fc4a4835bd1af0169e6f5115387437b13feb4d0efc2928e0778798455bd7",
+    "tools/verify_studio_rasters.py": "eefad8134f66404aa4bd3fedee279661e3f243a1a9aa3042c69e3d181fda62dd",
+    "tools/tests/test_nextgen_runner.py": "1a24017d78de2804bb13313f230e5c41da05f614a2e861ca2fc392e708378355"
+  }
+}

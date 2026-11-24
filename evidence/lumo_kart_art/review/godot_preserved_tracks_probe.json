@@ -1,0 +1,1150 @@
+{
+  "assets": [
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 3.0,
+          "name": "celebrate",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Hand.R": [
+              0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Head": [
+              0.0,
+              1.41636562347412,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 18,
+          "length_seconds": 3.0,
+          "name": "idle",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Foot.R": [
+              0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Hand.L": [
+              -0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Hand.R": [
+              0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Head": [
+              0.0,
+              0.986337721347809,
+              0.0150001030415297
+            ],
+            "Pelvis": [
+              0.0,
+              0.38633805513382,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 1.5,
+          "name": "kart_jump",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Hand.R": [
+              0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Head": [
+              0.0,
+              1.45921397209167,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 11,
+          "length_seconds": 3.0,
+          "name": "kart_seated",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Hand.R": [
+              0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Head": [
+              0.0,
+              1.41633772850037,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_left",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Hand.R": [
+              0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Head": [
+              -0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_right",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Hand.R": [
+              0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Head": [
+              0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        }
+      ],
+      "material_surfaces": 6,
+      "meshes": 1,
+      "path": "assets/kart/production/drivers/rabbit/driver.glb",
+      "sha256": "869bd782ca7f3f5ab616ac3a3c1852432ad60783844e3564542f9f56f17d8c9a",
+      "skeletons": 1,
+      "skin_instances": 1,
+      "surfaces": 6,
+      "triangles": 39364
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 3.0,
+          "name": "celebrate",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Hand.R": [
+              0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Head": [
+              0.0,
+              1.41636562347412,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 18,
+          "length_seconds": 3.0,
+          "name": "idle",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Foot.R": [
+              0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Hand.L": [
+              -0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Hand.R": [
+              0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Head": [
+              0.0,
+              0.986337721347809,
+              0.0150001030415297
+            ],
+            "Pelvis": [
+              0.0,
+              0.38633805513382,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 1.5,
+          "name": "kart_jump",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Hand.R": [
+              0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Head": [
+              0.0,
+              1.45921397209167,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 11,
+          "length_seconds": 3.0,
+          "name": "kart_seated",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Hand.R": [
+              0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Head": [
+              0.0,
+              1.41633772850037,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_left",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Hand.R": [
+              0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Head": [
+              -0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_right",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Hand.R": [
+              0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Head": [
+              0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        }
+      ],
+      "material_surfaces": 6,
+      "meshes": 1,
+      "path": "assets/kart/production/drivers/rabbit/driver_lod1.glb",
+      "sha256": "5645a2c88b676176dc37108d0436184386fd1b0dc27d08e6ed017877d945eb9b",
+      "skeletons": 1,
+      "skin_instances": 1,
+      "surfaces": 6,
+      "triangles": 22436
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 3.0,
+          "name": "celebrate",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Hand.R": [
+              0.222803264856339,
+              1.51071214675903,
+              -0.162130326032639
+            ],
+            "Head": [
+              0.0,
+              1.41636562347412,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 18,
+          "length_seconds": 3.0,
+          "name": "idle",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Foot.R": [
+              0.170000091195107,
+              0.0799997225403786,
+              -0.00500001758337021
+            ],
+            "Hand.L": [
+              -0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Hand.R": [
+              0.326338052749634,
+              0.36000007390976,
+              -0.0179999321699142
+            ],
+            "Head": [
+              0.0,
+              0.986337721347809,
+              0.0150001030415297
+            ],
+            "Pelvis": [
+              0.0,
+              0.38633805513382,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 1.5,
+          "name": "kart_jump",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Hand.R": [
+              0.159992635250092,
+              1.05499827861786,
+              -0.340007722377777
+            ],
+            "Head": [
+              0.0,
+              1.45921397209167,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 11,
+          "length_seconds": 3.0,
+          "name": "kart_seated",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Hand.R": [
+              0.159999802708626,
+              1.05499947071075,
+              -0.339999616146088
+            ],
+            "Head": [
+              0.0,
+              1.41633772850037,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_left",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Hand.R": [
+              0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Head": [
+              -0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        },
+        {
+          "bones_changed_between_samples": 13,
+          "length_seconds": 2.0,
+          "name": "kart_steer_right",
+          "sampled_bone_positions_m": {
+            "Foot.L": [
+              -0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Foot.R": [
+              0.180000022053719,
+              0.800000011920929,
+              -0.24000009894371
+            ],
+            "Hand.L": [
+              -0.156074851751328,
+              0.997305810451508,
+              -0.312131971120834
+            ],
+            "Hand.R": [
+              0.13866201043129,
+              1.10951471328735,
+              -0.366334319114685
+            ],
+            "Head": [
+              0.0219999998807907,
+              1.41649317741394,
+              0.0150000229477882
+            ],
+            "Pelvis": [
+              0.0,
+              0.819999933242798,
+              0.0700000002980232
+            ]
+          },
+          "tracks": 63
+        }
+      ],
+      "material_surfaces": 6,
+      "meshes": 1,
+      "path": "assets/kart/production/drivers/rabbit/driver_lod2.glb",
+      "sha256": "48e9466cf0aa643a339380b62a88d3774e2c7b7a30a31d8e83ebaff53634bbf0",
+      "skeletons": 1,
+      "skin_instances": 1,
+      "surfaces": 6,
+      "triangles": 11414
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 38,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_comet.glb",
+      "sha256": "65ff70a45dc6b83360b285fd355a8e9f3a980a43be38e80d8ab40cde38e0f70f",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 38,
+      "triangles": 47996
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 38,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_comet_lod1.glb",
+      "sha256": "255a3aa4161ef9c35573e9cc4bda6a20c3b83514cd297e797e4da7a39805abcb",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 38,
+      "triangles": 23030
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 38,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_comet_lod2.glb",
+      "sha256": "fca7d0c5703dab88368bd071a436fc1dab13eca1ca0f8d97e845cdfce2d6c696",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 38,
+      "triangles": 15352
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_glider.glb",
+      "sha256": "9ff0257abb7a545d42ccc8c1ff29a77ce3191161380f8ad57930dc56186e0364",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 49064
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_glider_lod1.glb",
+      "sha256": "8e8e539512a8a4d6523cac8c2806c1eb43fc21e7e54de3c3adff32c142ddf4e9",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 23542
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_glider_lod2.glb",
+      "sha256": "3e5d582fcabc56b25f926662bf6c48071cf1eabd3cac0777aba19316219d6ac4",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 15694
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_turbo.glb",
+      "sha256": "b391d8c667734dc781e1a9f4a43b4f100bbfbe14ade53ab6064023ad8f9c519b",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 49064
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_turbo_lod1.glb",
+      "sha256": "9503a26179e383403219fc0dfac42a9111ec0ca2079572ca3c2cc0f503732e43",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 23542
+    },
+    {
+      "clips": [
+        {
+          "bones_changed_between_samples": 0,
+          "length_seconds": 2.0,
+          "name": "mechanical_demo",
+          "sampled_bone_positions_m": {
+
+          },
+          "tracks": 7
+        }
+      ],
+      "material_surfaces": 39,
+      "meshes": 12,
+      "path": "assets/kart/production/karts/aurora_turbo_lod2.glb",
+      "sha256": "3585f8d0333498b4dee2621587d936bf0ca92f802ec0e87c4b577c6fc3bae038",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 39,
+      "triangles": 15694
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_left_30.glb",
+      "sha256": "869dcf275390e1541f597b8469a8d40de5df8c184f4e7156ad38c00a0defe37f",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 13348
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_left_30_collision.glb",
+      "sha256": "21570deb1b050cc999102e176f0d1af2ec3e71165626ec10a0c099745f3dad7a",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 456
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_left_30_lod1.glb",
+      "sha256": "d9068e9c992751000cb1879ddaa8871208bd5e38a622be2e71330e12700167e5",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 9916
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_right_30.glb",
+      "sha256": "74f10e9c7fb7d4d3b2a7b50057d2eb9d6f9b44c88d3fe984e5a6d87934f17355",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 12484
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_right_30_collision.glb",
+      "sha256": "e3b5dfd8afc8a891800da853823e711d67e5a6245e14cbcc170a5899c34377bb",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 312
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/curve_right_30_lod1.glb",
+      "sha256": "f212defbcc474df7cf0c23fffea31976f68812146bd966d4fd52490b89cdfc51",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 6584
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_down.glb",
+      "sha256": "4b7bbbdaf5a2ee64bd1bf4d0e1783bf92b15cc10aa9cf09ffa05420da06bb58f",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 8516
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_down_collision.glb",
+      "sha256": "badf31c5ecfc4d6e338fd1b3f0f8ef5daa51e83fe735fdcc75ddef450f2b9068",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 208
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_down_lod1.glb",
+      "sha256": "7b1c49690ac514e251de760d058a89fced10a4f0f3675abeb3c43829c216c607",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 4444
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_up.glb",
+      "sha256": "dbc6e58f577f89a63541780ce2c8761368147b0ddda0524215b4a22443ee6285",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 8516
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_up_collision.glb",
+      "sha256": "f638111e9dd91a3a4e23c6f3512efe85cc8baea450510c9c40ca7da8569cbdd3",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 208
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/grade_up_lod1.glb",
+      "sha256": "c7eab42b498c41e6dd65dbc35fa0b04af219963efd203781c4c6ed1aa4e42340",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 4440
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry.glb",
+      "sha256": "98a9dfb833876bfc7f28840a0a093e37105f519205fdcc77a66ffe6f52f63e87",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 8534
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_collision.glb",
+      "sha256": "5cdba24f997737b4d9123326eff49d52fdad7778979cc31204b90c33d86cc64f",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 228
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_entry_lod1.glb",
+      "sha256": "483dcf95fd1d9b39dd2676e15fe15267945d54f92a7f773198b9018e8b9efd8d",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 6570
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit.glb",
+      "sha256": "94d522d1318bab743f8a5193fe7acc3cf3af751f34c677b9ab71fc2f5317d93d",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 8534
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_collision.glb",
+      "sha256": "1d7ebc06c1469368b79fd67f65e1add5d11b24fdfafd71ea2d2906350018e446",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 228
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/portal_exit_lod1.glb",
+      "sha256": "e00f84ef8ebe976c892a1cc57d1b8b6b66309faeb3b70245be70d8d335a58e2f",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 6570
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m.glb",
+      "sha256": "bee6ba6bf59e9076f8145ce52294eb1476c7deae152767d2862c142ea9296b92",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 9084
+    },
+    {
+      "clips": [],
+      "material_surfaces": 1,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_collision.glb",
+      "sha256": "25659578c5cb8ab949dfc7939927f0fdc16a96ac6e23d018d6691394c3087f0c",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 1,
+      "triangles": 304
+    },
+    {
+      "clips": [],
+      "material_surfaces": 7,
+      "meshes": 1,
+      "path": "assets/kart/production/tracks/zauberwald/straight_12m_lod1.glb",
+      "sha256": "b884ef1d7f8c75b6f7ccbabed16e56a24f61c132b1c45467049fb17a4313e1c1",
+      "skeletons": 0,
+      "skin_instances": 0,
+      "surfaces": 7,
+      "triangles": 6796
+    }
+  ],
+  "errors": [],
+  "godot": "4.6.3-stable (official)",
+  "method": "GLTFDocument import, scene instantiation, material inventory, manual AnimationPlayer sampling",
+  "passed": true,
+  "physical_android": false,
+  "rendered": false
+}

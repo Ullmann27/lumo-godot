@@ -1,0 +1,624 @@
+{
+  "schema": 1,
+  "created_at": "2026-11-14T06:10:25.999706+00:00",
+  "status": "SOURCE_BOUND_ONLY_NO_NEW_ENGINE_RUN",
+  "base": {
+    "commit": "27ae427029a5199699c95a79a84b0027d7571752",
+    "tree": "c389c0de01d9a6ca9fd6e9332fafdf2dedbc8153",
+    "repository": "Ullmann27/lumo-godot",
+    "worktree": "/workspace/scratch/b3485b7bb989/lumo-native-connect-four-integration",
+    "tracked_status_before": "",
+    "tracked_status_after": ""
+  },
+  "producer": {
+    "commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+    "tree": "9edd7afed143c83fec5d2dc89949ca9325e042ce",
+    "parent": "803e7a626ea6ef0aeeda9c37010e844033d3a8e3",
+    "pr": 167
+  },
+  "files": [
+    {
+      "path": "assets/characters/lumo_facial/ATTRIBUTION.md",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/assets/characters/lumo_facial/ATTRIBUTION.md",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216",
+      "final": {
+        "bytes": 2626,
+        "sha256": "4bf37300273f8edc20b1557f7284da30d235ed1dc4f1999af4947bbb0056aa85",
+        "git_blob": "50f43591977dc46683fe8c547bbba2fa6e73f216"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad",
+      "final": {
+        "bytes": 8408740,
+        "sha256": "e14aea79eb9918f5184c8ded64e8c1343bf71f553772a4f59298ada6862d9524",
+        "git_blob": "4d18f240a34a5aa6320ecd61c0ab0fa719c0b0ad"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/assets/characters/lumo_facial/Lumo-Facial-Mobile.glb.import",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0",
+      "final": {
+        "bytes": 1162,
+        "sha256": "fb3244345f930d628253b8f687646566273c8adb77aa276b46815e5861304b15",
+        "git_blob": "3b65ce3c2d8e63efe4c2251261b047be37e383a0"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_facial_pose.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/characters/lumo/lumo_facial_pose.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9",
+      "final": {
+        "bytes": 6120,
+        "sha256": "2d89319ccb622cad1b54c36113bda8594706c024d77f2a0605ec057d51a0f6ef",
+        "git_blob": "91b8a8cd25f21dab84b77f178aa82d06673b54f9"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/characters/lumo/lumo_rigged_actor.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/characters/lumo/lumo_rigged_actor.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "e4b6a6081a922a137f68491de66f51e096528510",
+      "final": {
+        "bytes": 11313,
+        "sha256": "caad03c39ac9098443cda2db937e2a412cecc4365cde238b465bc98e13a6b610",
+        "git_blob": "e4b6a6081a922a137f68491de66f51e096528510"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 3,
+          "old_count": 10,
+          "new_start": 3,
+          "new_count": 12,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 21,
+          "old_count": 6,
+          "new_start": 23,
+          "new_count": 8,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 36,
+          "old_count": 17,
+          "new_start": 40,
+          "new_count": 20,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 84,
+          "old_count": 6,
+          "new_start": 91,
+          "new_count": 10,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 99,
+          "old_count": 9,
+          "new_start": 110,
+          "new_count": 16,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 205,
+          "old_count": 12,
+          "new_start": 223,
+          "new_count": 16,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 276,
+          "old_count": 6,
+          "new_start": 298,
+          "new_count": 9,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 291,
+          "old_count": 6,
+          "new_start": 316,
+          "new_count": 9,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 300,
+          "old_count": 11,
+          "new_start": 328,
+          "new_count": 14,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 10090,
+        "sha256": "f262df70dd22937058b698e570eafabc8e05bba539036f89eda059166b68f3d0",
+        "git_blob": "dea775d2f26877c858bb79079a01b3b464e4d88f"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/creative/treasure_world.gd",
+      "group": "treasure",
+      "source_file": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/treasure-title-candidate/after/scripts/creative/treasure_world.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8",
+      "final": {
+        "bytes": 25074,
+        "sha256": "ce7c7df90f85604f912ff1afc46077935053e883359db47c3f9e9d7dcc4fe65d",
+        "git_blob": "fdddd40fdf9958b7bc0bff50b75ccd4e8a2458b8"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 252,
+          "old_count": 6,
+          "new_start": 252,
+          "new_count": 11,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 24782,
+        "sha256": "c46d260fef1c4f6ee88db1b5e5704707b35771f2fc64522fc5927a25c3bd34cf",
+        "git_blob": "38da987abf4d152c1095a72ed1ac49ed30d9d381"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/learning/learning_world.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/learning/learning_world.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890",
+      "final": {
+        "bytes": 45446,
+        "sha256": "1ec88577645b89d11d13191a0dcc987af9beb6b3d2b2e7f0379525470711921a",
+        "git_blob": "25e41d3d81e091e7e357400ff8ba76a18d6d2890"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 1295,
+          "old_count": 6,
+          "new_start": 1295,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 1309,
+          "old_count": 7,
+          "new_start": 1310,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 1321,
+          "old_count": 10,
+          "new_start": 1322,
+          "new_count": 16,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 45147,
+        "sha256": "715e0940904ea0e4fda789a7738b89896a9c86a6cecca015834e4abc30716d95",
+        "git_blob": "5ab38de47eaf8aa960423faae4fb11430f4136f4"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/tests/connect_four_visual_capture.gd",
+      "group": "c4_visual_probe_only",
+      "source_file": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/published-text/scripts/tests/connect_four_visual_capture.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29",
+      "final": {
+        "bytes": 19435,
+        "sha256": "178bc5b179e0402f1e4cc9901b21f2592745eae20b164706ec621506350f9324",
+        "git_blob": "6e3d98071bf3f0f16f4a20a6599d4950521c8a29"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/tests/fixtures/treasure_title_86445.json",
+      "group": "treasure",
+      "source_file": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/treasure-title-candidate/after/scripts/tests/fixtures/treasure_title_86445.json",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "78afb5e77187170a345940059da450eed02530cf",
+      "final": {
+        "bytes": 317,
+        "sha256": "29bcc428329e2a6106f0608a3f0a53060d3073ca4c1fdffa5fd809848977ce73",
+        "git_blob": "78afb5e77187170a345940059da450eed02530cf"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/tests/learning_world_regression.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/learning_world_regression.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac",
+      "final": {
+        "bytes": 22332,
+        "sha256": "4873ac19bfadf84f318973d02950e11ffafd57024898148790e3d66d221f715d",
+        "git_blob": "93a903efb43a2bdef97121434fc7e89e60cab6ac"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 19,
+          "old_count": 7,
+          "new_start": 19,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 22256,
+        "sha256": "c7b2a45da230b0dc736a03fe59cb13ce66a5f8fc791b1d6115935923b15c374c",
+        "git_blob": "e4526f35b78188022fd5bcad94e943fc7b7a5b00"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_capture.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/lumo_facial_capture.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9",
+      "final": {
+        "bytes": 8675,
+        "sha256": "cd223ad265b46626a09350583466d3cbcb70c1d7061170c753f58d24269aba38",
+        "git_blob": "e272be6f0aed98fdc5b5a1bfca58bb7f0d0edba9"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/tests/lumo_facial_regression.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/lumo_facial_regression.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624",
+      "final": {
+        "bytes": 7102,
+        "sha256": "dc98c2521543d5b28238f37ed064b0ccd105378d124e44bbefd668c1b16cc03e",
+        "git_blob": "9834e1c8cbef59f86f8ec1840895357cb429b624"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    },
+    {
+      "path": "scripts/tests/lumo_rigged_animation_capture.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/lumo_rigged_animation_capture.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926",
+      "final": {
+        "bytes": 5631,
+        "sha256": "03ce996e765947e20c32cea4b683e70b25ec07e20f8d8c844a0cb0af038df151",
+        "git_blob": "f821f2b7bfa5d15c9dc1a23b0f171caf31264926"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 111,
+          "old_count": 7,
+          "new_start": 111,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 5595,
+        "sha256": "f334680df85ead91d2bb98b4a4d4e3a75a2db2b45efc13dfdbd6500fbffbcd64",
+        "git_blob": "6ac65a9f97718230932fdd3de375f21c4ef752ca"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/tests/lumo_studio_motion_regression.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/lumo_studio_motion_regression.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7",
+      "final": {
+        "bytes": 8857,
+        "sha256": "f6451145eec7729f35b3aab70d9fe69ad970e171288c156de3e484213984253e",
+        "git_blob": "2a3e40da3a48e68d587f635658f9db645e70e4e7"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 47,
+          "old_count": 7,
+          "new_start": 47,
+          "new_count": 8,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        },
+        {
+          "old_start": 131,
+          "old_count": 7,
+          "new_start": 132,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 8637,
+        "sha256": "eee791939d9664c8473d623d182d69180847af11e4a8ad05b98063d001bc7453",
+        "git_blob": "b3f1fa0c3bf6c7d47cac6665039ccb7fc891a146"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/tests/lumo_teacher_pose_regression.gd",
+      "group": "face",
+      "source_file": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/native/scripts/tests/lumo_teacher_pose_regression.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268",
+      "final": {
+        "bytes": 7298,
+        "sha256": "51b32d1cb3d3684334bb5445626cacc5b20d87471f9e0f8325f07514f23f1a26",
+        "git_blob": "bc534776d2f9295369e5e2de90abb8a2f3a46268"
+      },
+      "status": "modified",
+      "hunks": [
+        {
+          "old_start": 160,
+          "old_count": 7,
+          "new_start": 160,
+          "new_count": 7,
+          "exact_context": true,
+          "fuzz": 0,
+          "offset": 0
+        }
+      ],
+      "base": {
+        "bytes": 7262,
+        "sha256": "70258ad79e59dd1c7b34323bef0bc602541ab27db6202555dd80bfc5d42584b8",
+        "git_blob": "e04b3bd36cdaaa34ce07dd599e86bb24c5908575"
+      },
+      "construction": "Exact published hunks applied to 27ae, no fuzz or offset"
+    },
+    {
+      "path": "scripts/tests/treasure_title_contrast_regression.gd",
+      "group": "treasure",
+      "source_file": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/treasure-title-candidate/after/scripts/tests/treasure_title_contrast_regression.gd",
+      "published_commit": "8be3a95d5d948d457c4c39bc6694138d60b70027",
+      "published_blob": "6e50ace998d896fd88f0006112152e490e7c64e3",
+      "final": {
+        "bytes": 8982,
+        "sha256": "1f0d170fbe05c89a36501463ec9307d3f830e10a4cb63a02f663f98a5e7b600d",
+        "git_blob": "6e50ace998d896fd88f0006112152e490e7c64e3"
+      },
+      "status": "added",
+      "hunks": [],
+      "construction": "New file; exact published blob independently verified"
+    }
+  ],
+  "identical_c4_not_copied": [
+    {
+      "path": "scenes/games/connect_four_table.tscn",
+      "bytes": 204,
+      "sha256": "49d116bd0436200d01b1e03eac3601854b33bf75142969b69d2c588418dd3af2",
+      "git_blob": "e1c14734e2bde85fd9852db3d8ef20f4cd0ca24d",
+      "copied": false,
+      "changed": false
+    },
+    {
+      "path": "scripts/app/app_boot.gd",
+      "bytes": 18707,
+      "sha256": "4ed973120d62f1942842c43f3fe1f1b6b7390997d39e8cef7c1cefdd6ffebaf0",
+      "git_blob": "2fc3b5ea4fac7440733ae5a77a8289bcd57557f6",
+      "copied": false,
+      "changed": false
+    },
+    {
+      "path": "scripts/app/scene_router.gd",
+      "bytes": 4457,
+      "sha256": "b7b7b5d1c882b10b8e07141b32b0369941bea98b2d8665e7d20d6cb958188e06",
+      "git_blob": "0e28e5c797af076d2a2410143e42605982e8d1d5",
+      "copied": false,
+      "changed": false
+    },
+    {
+      "path": "scripts/games/connect_four/connect_four_table.gd",
+      "bytes": 30031,
+      "sha256": "76ab128b835bffd41b87274566408b8baab4073fe6733b2f5e3e990e0e027a72",
+      "git_blob": "cdeb31fc6cfe30c18fc6c96afb2b1d749532c37f",
+      "copied": false,
+      "changed": false
+    },
+    {
+      "path": "scripts/systems/host_bridge.gd",
+      "bytes": 5193,
+      "sha256": "56ecb470319ea047aa5d8c3aad92d55c99355ee07c533a6543fcf167f098abb7",
+      "git_blob": "dab96a1b918dc754568c0eda14cdda05175c89fb",
+      "copied": false,
+      "changed": false
+    },
+    {
+      "path": "scripts/tests/connect_four_runtime_regression.gd",
+      "bytes": 14782,
+      "sha256": "83852fdd2e19cd32b20ec6de62179ee3f9e7712e574f723773bcc40cc35dd0a7",
+      "git_blob": "94c32597c0170c5c3199e39ca6fbfcc1caf25f99",
+      "copied": false,
+      "changed": false
+    }
+  ],
+  "not_adopted": [
+    {
+      "path": ".github/workflows/lumo-studio-2020.yml",
+      "published_blob": "fcf5fec5a43eda65b7d2c077af281fa5497635ae",
+      "reason": "Producer infrastructure or implementation overview; not copied over current integrated harness"
+    },
+    {
+      "path": "docs/studio-2020-implementation.md",
+      "published_blob": "638d086741f5ce6962410e3097bac9b254f97f6f",
+      "reason": "Producer infrastructure or implementation overview; not copied over current integrated harness"
+    },
+    {
+      "path": "tools/tests/test_nextgen_runner.py",
+      "published_blob": "7b7b9049889848354abc64d0e4028bcb943c2811",
+      "reason": "Producer infrastructure or implementation overview; not copied over current integrated harness"
+    },
+    {
+      "path": "tools/validate_studio.sh",
+      "published_blob": "3b41626b54845e70e3ac9046e5120f7aa0eb7907",
+      "reason": "Producer infrastructure or implementation overview; not copied over current integrated harness"
+    }
+  ],
+  "original_metadata": [
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/originals/native-pr167-head-commit.json",
+      "copy": "originals/pr167-head-commit.json",
+      "bytes": 1473,
+      "sha256": "0f01a8250cdca80f673ce61e085a8bc8bc8f985c965d55c297e44e2a5fb2097d",
+      "git_blob": "2b025b060b896ec4dcbc8a7aa6800d8a956f554c"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/originals/native-pr167-delta.json",
+      "copy": "originals/pr167-delta.json",
+      "bytes": 222207,
+      "sha256": "278e757f620e56c75189e0f3b88a95b2c8acf2aba4ff7539f357b400c5066524",
+      "git_blob": "4333417744e055e9742561faba8809a86e98d243"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/originals/native-pr167-root-tree.json",
+      "copy": "originals/pr167-root-tree.json",
+      "bytes": 4102,
+      "sha256": "b32811ed5042b313907b8c40225460e32007e9966ebbccde31a8181b3a9efef9",
+      "git_blob": "1b7ba36da4e0d87e7fc3355800371cf16b507ef2"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/originals/native-pr167-assets-tree.json",
+      "copy": "originals/pr167-assets-tree.json",
+      "bytes": 2885,
+      "sha256": "8e9bb0fd1be04a3b3bd003f194cecfd65f5708a8c57a8f4256c7098a9a5f79ab",
+      "git_blob": "0eeb55f56e731fb35fb1891e3c8d34a1f1632f5b"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/originals/native-pr167-characters-tree.json",
+      "copy": "originals/pr167-characters-tree.json",
+      "bytes": 11781,
+      "sha256": "6efd380895f5fa01aa4b9ff45ad77d4819bdef2cb28523456e299566334030ae",
+      "git_blob": "1f34b0d57bdcb24463ac79fd56415cefd22ad42c"
+    },
+    {
+      "source": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/source-freeze.json",
+      "copy": "originals/face-source-freeze.json",
+      "bytes": 6334,
+      "sha256": "ee7abfc2eee1d932e50042432be720ea8c4c25311752dafdce35f3f4e563acfe",
+      "git_blob": "d79f3bd878d865473408ca09c99083e6bfd09e45"
+    },
+    {
+      "source": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/ci-contract.json",
+      "copy": "originals/face-ci-contract.json",
+      "bytes": 3211,
+      "sha256": "59502714ae68edf73939295ebbd1bda096dfa6d4cc440d171c04520f155d61b4",
+      "git_blob": "393d3aa4fd6b4ef7b20faa59f43451ffab17d807"
+    },
+    {
+      "source": "/workspace/scratch/5987865ae883/qa/original-lumo-facial-studio-803e/README.md",
+      "copy": "originals/face-producer-readme.md",
+      "bytes": 10347,
+      "sha256": "52849d4c95a79bfa179c7c6f4484e2c6ec45ae8cbf5983149ea590985cf74e30",
+      "git_blob": "7d75278ab50ecf099f35c08b06a4c9cb9e693cee"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/native27ae-to-pr167-source-binding.json",
+      "copy": "originals/peer-source-binding.json",
+      "bytes": 26333,
+      "sha256": "9be75c70b1c1f6dd53a18c89b7e8059d5bf070fec8e80da2b9d6f60f748ad694",
+      "git_blob": "6de8d7b3615bf10cde3e4d21fab352e3d4ea1e75"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/native2020-harness-scope.json",
+      "copy": "originals/producer-harness-scope.json",
+      "bytes": 2865,
+      "sha256": "661c7393374b0eeb7bc3385d73647df2a18a9fe99265899de139af98d99d65ee",
+      "git_blob": "0af2d4cf3b6cc9b15af442f2d4f63e2b20bd6388"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/treasure-title-candidate/source-binding.json",
+      "copy": "originals/treasure-source-binding.json",
+      "bytes": 1482,
+      "sha256": "5ced4629c0e2b0e4c3c614995d636152be2c7dd5bb32eaf38d15bb3bc2e3c883",
+      "git_blob": "999832614db731123b2c66fbe3950e7abe161a0d"
+    },
+    {
+      "source": "/workspace/scratch/b3485b7bb989/producer-incremental-20261114-055131/treasure-title-candidate/producer-evidence-binding.json",
+      "copy": "originals/treasure-producer-evidence-binding.json",
+      "bytes": 5843,
+      "sha256": "240fa623dffeede9e9e7765f965f053a92c01d5e7141f4ea0915285f6a4706bf",
+      "git_blob": "a5a81d5debbaeac734a5ac23776178768800fb96"
+    }
+  ],
+  "scope": "Sixteen exact published files: twelve facial, three Treasure, one new C4 visual-only probe. Seven modified files reconstructed from exact 27ae hunks. No repository/Git mutation."
+}

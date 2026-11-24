@@ -1,0 +1,602 @@
+{
+  "schema": 1,
+  "reviewed_at_utc": "2026-11-13T18:03:05.501948+00:00",
+  "reviewer": "/root/pipeline_repair",
+  "scope": "Independent source review only; no reviewer-executed regression, renderer, Android, receipt or publishing action.",
+  "conclusion": "No concrete integration regression found in the reviewed source. Current combined-source rendered Puzzle acceptance remains required.",
+  "blocking_findings": [],
+  "reviewer_ran_tests": false,
+  "reviewer_changed_product_or_probe": false,
+  "source_binding": {
+    "native_review_base": "a4de0e68a76ab37109cef5fd1bf499ff94464d10",
+    "native_review_base_tree": "9cfe439e2607e3644aa7705e739fcac41e865885",
+    "published_product_source": "ab9237025e5e5a30a168c4d1fbbd0a24a82690b6",
+    "native_local_head_at_completion": "108dc8969cdd6e0f69a307f755bb2512cb2c6722",
+    "native_local_tree_at_completion": "07591ef728f12a665ab226a74778535f05583d1d",
+    "host_local_base": "fd0d777e6a8bdb489d58efd93d42d08cee0f65f2",
+    "host_local_head_at_completion": "fd0d777e6a8bdb489d58efd93d42d08cee0f65f2",
+    "host_local_tree_at_completion": "86e6ed0f439b9ec8fda6d83d6f1e7d0c5e24b3b1",
+    "native_head_changed_during_review": "Root committed the same reviewed bytes as 108dc8969cdd6e0f69a307f755bb2512cb2c6722; per-file before/after hashes remain authoritative.",
+    "host_scope": "The reviewed Host files are a working-tree delta on the stated base; no unstaged source is claimed to belong to that committed tree.",
+    "files": [
+      {
+        "repository": "native",
+        "path": "tools/validate_nextgen.sh",
+        "bytes": 7285,
+        "sha256_before": "8b1844825b3c6ea6ecd4a186ca7d28b94ed4fd5a218f4e34a102cd739981c4b6",
+        "sha256_after": "8b1844825b3c6ea6ecd4a186ca7d28b94ed4fd5a218f4e34a102cd739981c4b6",
+        "git_blob_sha1": "d93968abd5c9718c05f24496a5ab835cba0d6d41"
+      },
+      {
+        "repository": "native",
+        "path": "tools/verify_village_rasters.py",
+        "bytes": 3859,
+        "sha256_before": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5",
+        "sha256_after": "0605a556d45ba9a7d6db6f85bdab21f0bc338a9c5fb5b8efb0ff40d04fa472e5",
+        "git_blob_sha1": "8dc6a7b1df79d74925d5b53758bbe3d553bdcea9"
+      },
+      {
+        "repository": "native",
+        "path": "tools/verify_puzzle_menu_rasters.py",
+        "bytes": 1191,
+        "sha256_before": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994",
+        "sha256_after": "3afe208e8572b683d12a338d73cf261416958ec2306ae87007f9c2c6b35e4994",
+        "git_blob_sha1": "391630e0bcd394dd0e274725cf15a7474eb41e77"
+      },
+      {
+        "repository": "native",
+        "path": "tools/tests/test_nextgen_runner.py",
+        "bytes": 24565,
+        "sha256_before": "08a157a743e4a3d37285c4850bc57712cd3d81acead7143577f8ab06211cac21",
+        "sha256_after": "08a157a743e4a3d37285c4850bc57712cd3d81acead7143577f8ab06211cac21",
+        "git_blob_sha1": "8bdb672d3edf16c79c2a3629d30a130e2aac5280"
+      },
+      {
+        "repository": "native",
+        "path": "scripts/creative/puzzle_world.gd",
+        "bytes": 30912,
+        "sha256_before": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+        "sha256_after": "1726e625cf0135e133fcdb3e0abb2202fd648c16ee72af19f9bfdb2d0c2ee10a",
+        "git_blob_sha1": "035c18b9cb3e05b30e135012995d8a1dddc13a8e"
+      },
+      {
+        "repository": "native",
+        "path": "scripts/tests/puzzle_menu_lifecycle_regression.gd",
+        "bytes": 10390,
+        "sha256_before": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+        "sha256_after": "0890454d8134b54b3e59dd75c3481b76ce18568b3e7f7e93a4eafb71f83bcf9c",
+        "git_blob_sha1": "9b5c24e4e35b45c09c79b170d4a47e85e521a789"
+      },
+      {
+        "repository": "host",
+        "path": "scripts/verify_studio_delivery.py",
+        "bytes": 47035,
+        "sha256_before": "f5bfd40078087ec59442be19a400210ba18e4fd713b6f00bfe0853bf2de61ae4",
+        "sha256_after": "f5bfd40078087ec59442be19a400210ba18e4fd713b6f00bfe0853bf2de61ae4",
+        "git_blob_sha1": "37993d6bbf0bf017f615ab0a9100cda51c18da7c"
+      },
+      {
+        "repository": "host",
+        "path": "scripts/record_studio_visual_review.py",
+        "bytes": 6960,
+        "sha256_before": "dd8d73d72838186a51d494acb4d1b796bd12beebdd923e7bb48369f606bed64d",
+        "sha256_after": "dd8d73d72838186a51d494acb4d1b796bd12beebdd923e7bb48369f606bed64d",
+        "git_blob_sha1": "47bb0840bf14b93537693c8cffc0a22526643960"
+      },
+      {
+        "repository": "host",
+        "path": "scripts/tests/test_nextgen_2019_review.py",
+        "bytes": 38537,
+        "sha256_before": "ce037aff18a5c9a1552bc5a1ff2caf5a8389f94cc01ec640ddd425a80ebb8165",
+        "sha256_after": "ce037aff18a5c9a1552bc5a1ff2caf5a8389f94cc01ec640ddd425a80ebb8165",
+        "git_blob_sha1": "e18a8589cfa8157205790856ae9111124a9dd4aa"
+      },
+      {
+        "repository": "host",
+        "path": "scripts/tests/test_kart_graphics_delivery.py",
+        "bytes": 24123,
+        "sha256_before": "74822d7b25059f22943db202ad2907048044a685db81442e45f557b8019ab1b7",
+        "sha256_after": "74822d7b25059f22943db202ad2907048044a685db81442e45f557b8019ab1b7",
+        "git_blob_sha1": "ff9642156410f0ee262518cba6f3432c55485374"
+      }
+    ],
+    "all_reviewed_file_hashes_unchanged": true
+  },
+  "findings": [
+    {
+      "area": "Published product scope",
+      "paths": [
+        "scripts/creative/puzzle_world.gd",
+        "scripts/tests/puzzle_menu_lifecycle_regression.gd"
+      ],
+      "finding": "Both files match published ab92370 byte for byte. The sole runtime delta replaces remove_child with hide for obsolete Control children, retains queue_free and all other puzzle state/gesture/menu behavior.",
+      "runtime_diff_sha256": "d94bba2aaff1a9936ff73f3c065c194fe7e590ed9ac6ac9d9353e07827779999"
+    },
+    {
+      "area": "Runner preservation",
+      "path": "tools/validate_nextgen.sh",
+      "finding": "All original 41 check_probe calls retain their order, marker and arguments. Exactly the headless and rendered Puzzle lifecycle calls are added; the rendered call passes -- --capture and both modes receive LUMO_PUZZLE_MENU_EVIDENCE_DIR.",
+      "unchanged_original_calls": [
+        [
+          "check_probe",
+          "learning_world_regression",
+          "[LearningWorld] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "learning_sharing_regression",
+          "[LearningSharing] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "learning_studio_regression",
+          "[LearningStudio] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "learning_host_payload_regression",
+          "[LearningHostPayload] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "puzzle_rotation_regression",
+          "[PuzzleRotation] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "treasure_exploration_regression",
+          "[TreasureExploration] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "jump_nextgen_regression",
+          "[JumpNextgen] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "jump_expeditions_regression",
+          "[JumpExpeditions] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "lumo_teacher_pose_regression",
+          "[LumoTeacherPose] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "lumo_studio_motion_regression",
+          "[LumoStudioMotion] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "lumo_65bone_walk_gait_regression",
+          "[LumoGait] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "lumo_original_jump_visual_regression",
+          "[JumpOriginalLumo] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "bauwelt_identity_2013_regression",
+          "[BauweltIdentity2013] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_frontier_regression",
+          "[BuildFrontier] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_transform_regression",
+          "[BuildTransform] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_nextgen_play_regression",
+          "[BuildNextgen] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_settlement_regression",
+          "[Settlement] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_settlement_play_regression",
+          "[SettlementPlay] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_village_economy_regression",
+          "[VillageEconomy] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_village_art_regression",
+          " checks / 0 failures",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "build_village_scene_regression",
+          "[VillageScene] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "creative_nextgen_environment_regression",
+          "[CreativeNextgenEnvironment] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "kart_nextgen_garage_regression",
+          "[NextGenGarage] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "kart_track_pass_regression",
+          "[KartTrackPass] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "cards_table_regression",
+          "CARDS_TABLE_RUNTIME_PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "rhythm_tour_regression",
+          "[RhythmTour] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "rhythm_tour_play_regression",
+          "[RhythmTourPlay] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "learning_world_capture",
+          "[LearningCapture] PASS",
+          "rendered",
+          "--",
+          "--output=$LOG_DIR/captures/learning_world_capture"
+        ],
+        [
+          "check_probe",
+          "learning_sharing_capture",
+          "[LearningSharingCapture] PASS",
+          "rendered",
+          "--",
+          "--output=$LOG_DIR/captures/learning_sharing_capture"
+        ],
+        [
+          "check_probe",
+          "lumo_studio_motion_capture",
+          "[LumoStudioCapture] PASS",
+          "rendered"
+        ],
+        [
+          "check_probe",
+          "puzzle_rotation_regression",
+          "[PuzzleRotation] PASS",
+          "rendered"
+        ],
+        [
+          "check_probe",
+          "treasure_exploration_regression",
+          "[TreasureExploration] PASS",
+          "rendered"
+        ],
+        [
+          "check_probe",
+          "jump_nextgen_capture",
+          "[JumpNextgenCapture] PASS",
+          "rendered"
+        ],
+        [
+          "check_probe",
+          "build_nextgen_play_regression",
+          "[BuildNextgen] PASS",
+          "rendered",
+          "--",
+          "--capture"
+        ],
+        [
+          "check_probe",
+          "build_settlement_play_regression",
+          "[SettlementPlay] PASS",
+          "rendered",
+          "--",
+          "--capture"
+        ],
+        [
+          "check_probe",
+          "build_village_scene_regression",
+          "[VillageScene] PASS",
+          "rendered",
+          "--",
+          "--capture"
+        ],
+        [
+          "check_probe",
+          "creative_nextgen_environment_regression",
+          "[CreativeNextgenEnvironment] PASS",
+          "rendered"
+        ],
+        [
+          "check_probe",
+          "kart_nextgen_garage_regression",
+          "[NextGenGarage] PASS",
+          "rendered",
+          "--fixed-fps",
+          "60",
+          "--",
+          "--capture"
+        ],
+        [
+          "check_probe",
+          "cards_table_capture",
+          "CARDS_TABLE_RENDER_PASS",
+          "rendered",
+          "--",
+          "--output=$LOG_DIR/captures/cards_table_capture"
+        ],
+        [
+          "check_probe",
+          "rhythm_tour_play_regression",
+          "[RhythmTourPlay] PASS",
+          "rendered",
+          "--",
+          "--capture"
+        ],
+        [
+          "check_probe",
+          "kart_player_full_route_regression",
+          "[PlayerFullRoute] PASS",
+          "rendered",
+          "--",
+          "--out=$LOG_DIR/captures/kart_player_full_route_regression"
+        ]
+      ],
+      "added_calls": [
+        [
+          "check_probe",
+          "puzzle_menu_lifecycle_regression",
+          "[PuzzleMenuLifecycle] PASS",
+          "headless"
+        ],
+        [
+          "check_probe",
+          "puzzle_menu_lifecycle_regression",
+          "[PuzzleMenuLifecycle] PASS",
+          "rendered",
+          "--",
+          "--capture"
+        ]
+      ],
+      "fixed_core_pairs": 43,
+      "host_native_pairs_exactly_equal": true
+    },
+    {
+      "area": "Capture authenticity",
+      "path": "scripts/tests/puzzle_menu_lifecycle_regression.gd",
+      "finding": "Production scene and actual root-viewport ScreenTouch/ScreenDrag dispatch remain. Evidence directory is mandatory. --capture on headless fails before capture. Only real viewport texture output after frame_post_draw is saved at 960x540 and 640x360 for rotation-menu, rotation-play and classic-play. The strict existing runner remains required; the probe explicitly labels no device-FPS proof."
+    },
+    {
+      "area": "Fixed additional raster roster",
+      "paths": [
+        "tools/verify_puzzle_menu_rasters.py",
+        "tools/verify_village_rasters.py",
+        "scripts/verify_studio_delivery.py"
+      ],
+      "finding": "Six exact Puzzle files and fixed dimensions are additional requirements. The shared Native Village/Puzzle helper and Host fixed-scene verifier retain exact roster/directory membership, unique original regular files, hashes/byte counts, complete PNG verify+decode and rejection of invisible/uniform pixels. The Native Village wrapper keeps its unchanged four paths and dimensions; its manifest is published only after whole-roster success. This full-decode statement concerns the additional Village/Puzzle helpers, not tools/verify_studio_rasters.py: that existing Native 24-image helper checks counts, signature, IHDR minimum size and hashes, while complete decoding of all 24 Studio PNGs is enforced by the Host verifier."
+    },
+    {
+      "area": "Existing acceptance retained",
+      "path": "scripts/verify_studio_delivery.py",
+      "core_probe_pairs": 43,
+      "studio_pngs": 24,
+      "village_pngs": 4,
+      "puzzle_menu_pngs": 6,
+      "touch_probe_pairs": 6,
+      "touch_pngs": 32,
+      "finding": "Original nine production modules, portrait+landscape, all three independently reviewed touch surfaces, explicit Village review and source/archive/workflow/job checks remain. Puzzle menu capture must also be explicitly reviewed; older puzzle imagery cannot substitute. studio-2019 remains the default fixed profile with the same artifact, eight jobs, five source sets, capture map and publication checks.",
+      "unchanged_ast_functions": [
+        "_NativeReviewProfile",
+        "archive_member",
+        "capture_module",
+        "main",
+        "native_review_profile",
+        "png_dimensions",
+        "reviewed_file",
+        "reviewed_relative_path",
+        "verify_android_platforms",
+        "verify_android_runtime",
+        "verify_archive_sources",
+        "verify_native_acceptance",
+        "verify_nextgen_touch_archive",
+        "verify_proofs",
+        "verify_tour_android_runtime"
+      ],
+      "unchanged_ast_constants": [
+        "CAPTURE_MODULES",
+        "CAPTURE_SOURCES",
+        "NATIVE_ARTIFACT",
+        "NATIVE_JOBS",
+        "NATIVE_PROFILES",
+        "NATIVE_WORKFLOW",
+        "NEXTGEN_PREFIX",
+        "NEXTGEN_STUDIO_PNGS",
+        "NEXTGEN_TOUCH_PNGS",
+        "NEXTGEN_TOUCH_PROBES",
+        "NEXTGEN_VILLAGE_CAPTURE",
+        "NEXTGEN_VILLAGE_PNGS",
+        "REVIEW_DIRECTORY",
+        "REVIEW_MODULES",
+        "REVIEW_RECEIPT",
+        "TOUCH_CAPTURE_PROBES",
+        "VERSION_CODE",
+        "VERSION_NAME"
+      ]
+    },
+    {
+      "area": "Recorder and regression coverage",
+      "paths": [
+        "scripts/record_studio_visual_review.py",
+        "scripts/tests/test_nextgen_2019_review.py",
+        "scripts/tests/test_kart_graphics_delivery.py",
+        "tools/tests/test_nextgen_runner.py"
+      ],
+      "finding": "Recorder executable code is unchanged; only its contract docstring is updated. Existing test cases are retained or renamed from 41 to 43. Added negative fixtures cover missing/failed lifecycle modes, missing current review, each original raster, malformed/digest/size/transparent/uniform/extra rasters, and default-profile/module misuse. Synthetic PNG fixtures are explicitly identified as parser input, not production evidence."
+    }
+  ],
+  "root_executed_results_read_only": {
+    "inputs": [
+      {
+        "path": "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/local-results.json",
+        "bytes": 4745,
+        "sha256": "17ff0d2e877edd83c1108bf023beea03ae292b9907a807442b37dd6203607d2b",
+        "executed_by": "root",
+        "reviewer_reexecuted": false
+      },
+      {
+        "path": "/workspace/scratch/b3485b7bb989/lumo-native-puzzle-followups/docs/evidence/integration-20261113/puzzle-menu-contract/contract-check.json",
+        "bytes": 983,
+        "sha256": "f54718cfd22a94ee83febe26333c29f25981ff541b91dadd0834f45110c8ef52",
+        "executed_by": "root",
+        "reviewer_reexecuted": false
+      }
+    ],
+    "local_engine_cases": [
+      {
+        "name": "puzzle_menu_lifecycle_regression",
+        "capture_requested": false,
+        "exit_code": 0,
+        "pass_lines": [
+          "[PuzzleMenuLifecycle] PASS 720 behavioral checks; strict native log gate still required"
+        ],
+        "error_lines": [],
+        "pngs": [],
+        "original_log_path": "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_menu_lifecycle_regression-headless/godot.log",
+        "original_log_sha256": "e4abf43a73ce8a31a60e23f78730c873cd8b4a8a98c799f25d136594100d7363",
+        "executed_by": "root"
+      },
+      {
+        "name": "puzzle_expansion_regression",
+        "capture_requested": false,
+        "exit_code": 0,
+        "pass_lines": [
+          "[PuzzleExpansion] PASS 1103 checks: all motifs/counts, saves and two played rounds"
+        ],
+        "error_lines": [],
+        "pngs": [],
+        "original_log_path": "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_expansion_regression-headless/godot.log",
+        "original_log_sha256": "924ad72d475a497fe8f5fc88e849b02c8450ef3cde3ece16d6e949c17cef1d6f",
+        "executed_by": "root"
+      },
+      {
+        "name": "puzzle_rotation_regression",
+        "capture_requested": false,
+        "exit_code": 0,
+        "pass_lines": [
+          "[PuzzleRotation] PASS 4558 checks: orientation, legacy saves, real picking, touch rotation and resume"
+        ],
+        "error_lines": [],
+        "pngs": [],
+        "original_log_path": "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_rotation_regression-headless/godot.log",
+        "original_log_sha256": "eb86541e102b1706bd36e900c63d46fd5db5fd8989021c9ebd8782435164252b",
+        "executed_by": "root"
+      },
+      {
+        "name": "puzzle_menu_lifecycle_regression",
+        "capture_requested": true,
+        "exit_code": 1,
+        "pass_lines": [],
+        "error_lines": [
+          "ERROR: [PuzzleMenuLifecycle] real renderer required for capture"
+        ],
+        "pngs": [],
+        "original_log_path": "/workspace/scratch/b3485b7bb989/puzzle-menu-integration-evidence/puzzle_menu_lifecycle_regression-capture-negative/godot.log",
+        "original_log_sha256": "b494e61359c7dc7b5464266bf7d7d516314243faed929017c4ddcbe8b23472e2",
+        "executed_by": "root"
+      }
+    ],
+    "contract_result": {
+      "checked_at_utc": "2026-11-13T17:56:53.526378+00:00",
+      "native_local_head": "a4de0e68a76ab37109cef5fd1bf499ff94464d10",
+      "host_local_base": "fd0d777e6a8bdb489d58efd93d42d08cee0f65f2",
+      "native_host_probe_pairs_equal": true,
+      "core_probe_pairs": 43,
+      "studio_pngs": 24,
+      "village_pngs": 4,
+      "puzzle_menu_pngs": 6,
+      "touch_probe_pairs": 6,
+      "touch_pngs": 32,
+      "native_tests": {
+        "tests": 15,
+        "result": "PASS",
+        "seconds": 43.453
+      },
+      "host_affected_tests": {
+        "tests": 76,
+        "result": "PASS",
+        "seconds": 64.257
+      },
+      "preimplementation_negative_tests": {
+        "native": {
+          "tests": 2,
+          "failures": 2,
+          "seconds": 8.352
+        },
+        "host": {
+          "tests": 2,
+          "failures": 2,
+          "seconds": 1.698
+        }
+      },
+      "scope": "Synthetic contract tests and exact source-binding equality only. Current-source rendered Puzzle acceptance remains pending. Published producer renderer evidence and local engine tests are stored separately."
+    },
+    "attribution": "Results were executed by Root and only read/hash-checked by this reviewer. No new tests were run."
+  },
+  "limits": [
+    "No fresh combined-source renderer or Android run was executed by this reviewer.",
+    "No visual approval is inferred from synthetic fixtures, producer historical images or headless checks.",
+    "No receipt, pin, publication, source/index mutation, additional scheduler or rerun was made.",
+    "The separate cce Graphics checkpoint belongs exclusively to ccebbe24 and cannot approve the new Puzzle source.",
+    "Native Studio 24-image validation is currently a count/header/hash check. Full Studio image decoding is Host-side; Native Village and Puzzle fixed rosters already decode fully."
+  ],
+  "clarification": {
+    "at_utc": "2026-11-13T18:18:11.118438+00:00",
+    "supersedes_review_sha256": "1d199088e17157bf63483b841ab362a962a4affd23794395b87b8c2eca0ac9f7",
+    "reason": "Clarify where complete Studio PNG decoding occurs; no original evidence or source bytes changed.",
+    "native_studio_24": "tools/verify_studio_rasters.py currently verifies per-probe counts, PNG signature, IHDR minimum dimensions and byte hashes; it does not perform complete Pillow decoding.",
+    "host_studio_24": "scripts/verify_studio_delivery.py verifies complete original Studio PNG decoding with Pillow Image.verify and Image.load.",
+    "native_puzzle_6": "tools/verify_puzzle_menu_rasters.py uses verify_fixed_rasters for exact names/dimensions, complete Pillow verification/decoding and nonuniform visible pixels."
+  }
+}

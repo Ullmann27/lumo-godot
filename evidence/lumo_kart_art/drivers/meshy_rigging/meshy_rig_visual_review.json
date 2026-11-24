@@ -1,0 +1,545 @@
+{
+  "reviewed_utc": "2026-11-24T07:31:24+00:00",
+  "review_method": "Assistant image inspection of actual Blender Cycles renders; the contact sheet displays the unchanged rendered images as a diagnostic figure.",
+  "physical_android_test": false,
+  "runtime_import_tests": "Recorded separately by the Godot runtime validation task.",
+  "numeric_report": "meshy_rig_validation.json",
+  "contact_sheet": {
+    "file": "meshy_rig_visual_review.webp",
+    "sha256": "6cb690ada14fd1e127aa9c4e2a2f6eed55f0f7f4c2ec1c7f9ba32d8ef515988c"
+  },
+  "drivers": [
+    {
+      "driver": "rabbit",
+      "lod0_sha256": "ab5db6b0aba8be449beff8c836b01a0a564a49189b44acca8607de87cbffd64e",
+      "views": [
+        {
+          "render_name": "rabbit_idle_front.png",
+          "sha256": "164ad6ae43dc7a3a7ab699120104797a4eaf90c4aa1a9ed8b06e9f7d4b7646c8",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_idle_front.png"
+        },
+        {
+          "render_name": "rabbit_kart_seated_front.png",
+          "sha256": "7ef90fbe2d2fe1198495130861b2633c740da4e53f153473a67746eb4ffefe33",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_kart_seated_front.png"
+        },
+        {
+          "render_name": "rabbit_kart_seated_side.png",
+          "sha256": "2d52e6d58372702831fd37f92a0400c12014ef2238ec0d3a235aff1e8ba68758",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_kart_seated_side.png"
+        },
+        {
+          "render_name": "rabbit_kart_steer_left_quarter.png",
+          "sha256": "268a706a6398bd1819cc8c3c04fc1ae6db5b18a17ca81d84c595a77cbf191a48",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "rabbit_greeting_wave_quarter.png",
+          "sha256": "7029e447dad33e1f5b4ba4800e9fb16af6f4b10c0f0aa4dc561c2a91ac761079",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "rabbit_celebrate_quarter.png",
+          "sha256": "c0de7b73d091c4b76fb99728eb8b0412539798ddd3b55ff64eb3276f00c782a8",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_celebrate_quarter.png"
+        },
+        {
+          "render_name": "rabbit_kart_seated_blink.png",
+          "sha256": "10c3a34b98b656f6dc955f1486620ded9a67838b2a1f3fb0197ffee178498697",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/rabbit_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "frog",
+      "lod0_sha256": "3378bde1ec2016557c54f76e0211d71f35a2d060cd28c50a06824e8236da9ed2",
+      "views": [
+        {
+          "render_name": "frog_idle_front.png",
+          "sha256": "77a4ef8fa53b1e37b6135fa4a12dfcdbffad6edbbe9f59eb7f860fa304738c56",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_idle_front.png"
+        },
+        {
+          "render_name": "frog_kart_seated_front.png",
+          "sha256": "72316ef35bd09114b1b1e59d541fcaad9f3b480827f10425c741c9a7b4110c0c",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_kart_seated_front.png"
+        },
+        {
+          "render_name": "frog_kart_seated_side.png",
+          "sha256": "de6243dae7dfda442425ad5cdbd23d732f973d0b8c3487d63d02111c53ef5978",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_kart_seated_side.png"
+        },
+        {
+          "render_name": "frog_kart_steer_left_quarter.png",
+          "sha256": "692fb845592ebdac9715df3bb6631b575da8632ee486cf698bfb419e166e2e56",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "frog_greeting_wave_quarter.png",
+          "sha256": "bc8024ce8fd863267f9df70bed57b26c68c22c4fb26f7636565ece279838947e",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "frog_celebrate_quarter.png",
+          "sha256": "c3570bce551771ae3387bbc866350a1be3caf2ad43991c4174469c6019700b69",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_celebrate_quarter.png"
+        },
+        {
+          "render_name": "frog_kart_seated_blink.png",
+          "sha256": "c5a6f3ca1875d2cb39a3ccbd70152063eb7ad180718015f38d4485ab562d955c",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/frog_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "lion",
+      "lod0_sha256": "b7340b55b26ec431863c31ef25aeb9480e9247e4f1a325d42719585d41629758",
+      "views": [
+        {
+          "render_name": "lion_idle_front.png",
+          "sha256": "38812f24f8f95c27fdf93f14ea007f8465d4fd53aba78cd3251e78e7a8fe8b20",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_idle_front.png"
+        },
+        {
+          "render_name": "lion_kart_seated_front.png",
+          "sha256": "b95570d2e0700969fdcfe0c3be111e9b0b055b0e77bdc609a523b27514b392a0",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_kart_seated_front.png"
+        },
+        {
+          "render_name": "lion_kart_seated_side.png",
+          "sha256": "4d39cc846e41203938c419430ae81ce57687a1dd6ea9a65a10a95b81077ad929",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_kart_seated_side.png"
+        },
+        {
+          "render_name": "lion_kart_steer_left_quarter.png",
+          "sha256": "e367d1c49f051350ef717d9bfac512993de190f158439dbff2547b11501b06df",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "lion_greeting_wave_quarter.png",
+          "sha256": "831a5058154ea04a1ffa306be90247dfdf0e9eb6d59406a3b15d8e9bb92d407d",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "lion_celebrate_quarter.png",
+          "sha256": "c743d3849dd46e7530417f398f397d299445e8744b7b8d393beeac3c6514fb9d",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_celebrate_quarter.png"
+        },
+        {
+          "render_name": "lion_kart_seated_blink.png",
+          "sha256": "7b9e6c7524c4ac60ba9b36d24d65923c0e0446bbcf1af8154e44afcb3e3d047e",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/lion_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "owl",
+      "lod0_sha256": "413b037709909387b224b46f3becebaf71c71b947e50523546ed7f30c23c445b",
+      "views": [
+        {
+          "render_name": "owl_idle_front.png",
+          "sha256": "3aee3bfc84f5e405f91e2ed6e60a5f215b8211e2002e3e190d4befb4826c767a",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_idle_front.png"
+        },
+        {
+          "render_name": "owl_kart_seated_front.png",
+          "sha256": "da2b887b374766e7d1618554e4410a565b0c7a489a751ef9dc3405e49af44787",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_kart_seated_front.png"
+        },
+        {
+          "render_name": "owl_kart_seated_side.png",
+          "sha256": "81c91a8f6117527c0370fa1ff46b6685e2c8cc520831b8db9f560fbbd1aeaf64",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_kart_seated_side.png"
+        },
+        {
+          "render_name": "owl_kart_steer_left_quarter.png",
+          "sha256": "0983bef9bc1f7102dd6f43862d48c43d2800fa9be5cdefae9e81b4cc18b43d40",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "owl_greeting_wave_quarter.png",
+          "sha256": "1337625628d083a237ab85aeed6d8642cd1d12eb57bbbbaee41fd40656442a32",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "owl_celebrate_quarter.png",
+          "sha256": "6acd1c7beb22b37c223849cd3b6f1ecb1d93905b8743b875dab2d4538905778a",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_celebrate_quarter.png"
+        },
+        {
+          "render_name": "owl_kart_seated_blink.png",
+          "sha256": "983161d7574973a1cf92890ca770e4245df1db5502f5cc264245b31abaa93091",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/owl_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "squirrel",
+      "lod0_sha256": "f9cb213dd71ae893ea0624da54cd407a53940b7348509a131cd81437e3fb6566",
+      "views": [
+        {
+          "render_name": "squirrel_idle_front.png",
+          "sha256": "f45459f4db630d355cc08fc79fcf1ed44c09bf39c5d923b21b50c5d7ef8af570",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_idle_front.png"
+        },
+        {
+          "render_name": "squirrel_kart_seated_front.png",
+          "sha256": "5fcebf2fbf9024ba138a004c37f04257b0d979144236a389d44626ff237e542a",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_kart_seated_front.png"
+        },
+        {
+          "render_name": "squirrel_kart_seated_side.png",
+          "sha256": "53d8bb72603561d74c7dfbb2c76eb9cafb40e63683cba19542ee5bcd1be76bf3",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_kart_seated_side.png"
+        },
+        {
+          "render_name": "squirrel_kart_steer_left_quarter.png",
+          "sha256": "9f393a8f056c2e73d9ccd4be3cc738910bd3c8214feb6f52c7249f1b561fece8",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "squirrel_greeting_wave_quarter.png",
+          "sha256": "eacab64f8f60588c2b78257550a604416a82f3ccb0d5aceaeab75006f8a9ff7f",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "squirrel_celebrate_quarter.png",
+          "sha256": "b18a0d0606e821153677f6c8648aab1e6236856af9485d0daaac993f94763da2",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_celebrate_quarter.png"
+        },
+        {
+          "render_name": "squirrel_kart_seated_blink.png",
+          "sha256": "f963b5fd8b2e2b139407dc52f47eda84c1430633812f09121417987ca27c53fe",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/squirrel_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "turtle",
+      "lod0_sha256": "dc9aafc571c7c489575ad7936028e66648b9e270f933abdb66a13fde152238ea",
+      "views": [
+        {
+          "render_name": "turtle_idle_front.png",
+          "sha256": "dedc8b73dd0fd2d64e8a08b8d67444f28e2f9e361bb63bae3a2b5ee705f16977",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_idle_front.png"
+        },
+        {
+          "render_name": "turtle_kart_seated_front.png",
+          "sha256": "f5c43c09730c5f89ff10ab8e9372e185ceec8451674bbfa879410dbf71727d5e",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_kart_seated_front.png"
+        },
+        {
+          "render_name": "turtle_kart_seated_side.png",
+          "sha256": "95c522a9fbcde73406a4996bcd89cce1cf07b1f0ac16e5e5d56fe02a50ff50ed",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_kart_seated_side.png"
+        },
+        {
+          "render_name": "turtle_kart_steer_left_quarter.png",
+          "sha256": "a1bbb0ad9527663b11ff725737c89edf01c0b60ed5c3a691dc70810d4fd7276a",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "turtle_greeting_wave_quarter.png",
+          "sha256": "e463621c8db451637ebc1bbb2f9e3e7317bc098d98d3e00d366ee36eb1b43680",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "turtle_celebrate_quarter.png",
+          "sha256": "7cf3e6bb9adf38a7c1b2135e6226b5a58dccb26d8163d0d407a9c2c9d1a250d1",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_celebrate_quarter.png"
+        },
+        {
+          "render_name": "turtle_kart_seated_blink.png",
+          "sha256": "50ce65d8110ac749129a1514d2113705c41072f28f2995384553768ea08f39e3",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/turtle_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "otter",
+      "lod0_sha256": "7939814b0c973311209994212b8dd3ae51e30c093bd005ca171ce38b811cb155",
+      "views": [
+        {
+          "render_name": "otter_idle_front.png",
+          "sha256": "64c49f1aa47e5511c81c6a0996e1e8ad86ae030b60920164fb59682c71b751d9",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_idle_front.png"
+        },
+        {
+          "render_name": "otter_kart_seated_front.png",
+          "sha256": "3b7d12f018dbb55f2656593203ee145bf3822bc63e709d5ccff285c3a6203225",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_kart_seated_front.png"
+        },
+        {
+          "render_name": "otter_kart_seated_side.png",
+          "sha256": "4ee189fc691321188c3c964f10db5918d297c3d411199860813552578739ca2d",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_kart_seated_side.png"
+        },
+        {
+          "render_name": "otter_kart_steer_left_quarter.png",
+          "sha256": "e185af9b8716c531cfc99d19a93305839833f5c3ded4b88ea7ba8da9e527d496",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "otter_greeting_wave_quarter.png",
+          "sha256": "8c57bb49741a794d1291f0d7d176e676c59c55cdc57ff6261ba56fa9adfb1065",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "otter_celebrate_quarter.png",
+          "sha256": "d5f56d2375d3ce965948b4bb13314ce01b1c8171533e7eab9e2ff680f6a0e68d",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_celebrate_quarter.png"
+        },
+        {
+          "render_name": "otter_kart_seated_blink.png",
+          "sha256": "d2ba21dade508b07904fa9607d076cc414783511a8c433d229bbdac71da3414d",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/otter_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "badger",
+      "lod0_sha256": "378bbc73c0893037105383726ea2f79316bf86769d4b1d7a3c1152227a1aea46",
+      "views": [
+        {
+          "render_name": "badger_idle_front.png",
+          "sha256": "80b07bd6cb8ce64414980b1e72f64834f6352c1e50ac7556ca42141e1607cd9b",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_idle_front.png"
+        },
+        {
+          "render_name": "badger_kart_seated_front.png",
+          "sha256": "1e9cd8fc8cace9ca9d6c63cb153f2fd310a1fd5195ab4701ce4123f5dbe0e907",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_kart_seated_front.png"
+        },
+        {
+          "render_name": "badger_kart_seated_side.png",
+          "sha256": "7bdb9dfefb3efc08bfc1894f93446a0a8b2a949f0bf0b37d3c5fde5e691035d7",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_kart_seated_side.png"
+        },
+        {
+          "render_name": "badger_kart_steer_left_quarter.png",
+          "sha256": "722695df800f3fbe472df3ab0f41c1faae1390bc40ea4a07ac91b0006362bf50",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "badger_greeting_wave_quarter.png",
+          "sha256": "7dc1c996b3330e98383228be6dde1702115567798b4ca355899df94e5cda0bec",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "badger_celebrate_quarter.png",
+          "sha256": "b5b0e6f39d6d17c3e470af3b398a7fbf5ebc454750c1752b8445563427dcb7ff",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_celebrate_quarter.png"
+        },
+        {
+          "render_name": "badger_kart_seated_blink.png",
+          "sha256": "b2ac4bc32f911393d8c4b467a6c483fe476c289c44e138733b0c73dde8484c75",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/badger_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    },
+    {
+      "driver": "cat",
+      "lod0_sha256": "868f07cdf2ed558f0da1cfc7c4fdbdba297bd5ab4db8f49dc5bb06f3c8423c92",
+      "views": [
+        {
+          "render_name": "cat_idle_front.png",
+          "sha256": "e46b3403dba43f6603d772010204be5d39473bcc039447518e3023e56c947392",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_idle_front.png"
+        },
+        {
+          "render_name": "cat_kart_seated_front.png",
+          "sha256": "3e312348a7ed522b61efc02c5752447eff38e13a232ecc0c6b7af3b373728be5",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_kart_seated_front.png"
+        },
+        {
+          "render_name": "cat_kart_seated_side.png",
+          "sha256": "31feb90387655abc6bf30fa7a7da62b63fef32ad0de7a4c80213d637e0f16c03",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_kart_seated_side.png"
+        },
+        {
+          "render_name": "cat_kart_steer_left_quarter.png",
+          "sha256": "d321224f6e36a34bd9fc36ab95ac1329998a248eadd0559ff983266a3b41b10c",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_kart_steer_left_quarter.png"
+        },
+        {
+          "render_name": "cat_greeting_wave_quarter.png",
+          "sha256": "88f1cdb85ff4dcf6697cb7180309b66148f58e327cd2a795b61955abaa0cd905",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_greeting_wave_quarter.png"
+        },
+        {
+          "render_name": "cat_celebrate_quarter.png",
+          "sha256": "93379997abea50d09661ccf319fbdd09b4404708270ca8471068cb33be6151e9",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_celebrate_quarter.png"
+        },
+        {
+          "render_name": "cat_kart_seated_blink.png",
+          "sha256": "4866cee6513cc338de3aaa89c992087af7664de0843d1ef59778e8a167efddb0",
+          "width": 512,
+          "height": 512,
+          "file": "blender_views/cat_kart_seated_blink.png"
+        }
+      ],
+      "visible_body_and_gesture_deformation_reviewed": true,
+      "full_blink_reviewed": true,
+      "standing_and_steering_reviewed": true
+    }
+  ],
+  "retained_source_details": [
+    "Rabbit rear waist has a dense irregular source patch. Source-to-fit inspection showed only Spine/Pelvis weights, with the original geometry retained.",
+    "Rabbit and squirrel tails are detached source mesh components. After anatomical attachment fitting, closest tail/body vertex gaps measured 2.6 mm and 7.9 mm, compared with 2.8 mm and 4.9 mm in the original source at its smaller authoring scale."
+  ],
+  "seated_overview": {
+    "file": "meshy_drivers_seated_overview.webp",
+    "sha256": "4ffc984704beaec8a17335a7c07047cf684a2aad3d5a6abae819e6cff76b3d7c",
+    "labels": "German species names",
+    "source_view": "kart_seated_front"
+  }
+}

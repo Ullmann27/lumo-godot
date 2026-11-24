@@ -1,0 +1,35 @@
+[
+  {
+    "file": "proofs/worlds-artifact.json",
+    "sha256": "2e50916d4e0dfab29e1e87228d0eda0d1023c9e7050c03154a41cb23b47b953f",
+    "source": "watch1/artifacts.json",
+    "source_sha256": "1517703e8dd1232a45fe9491607348690b6d786ad513f04f76030ceb9ef645f9",
+    "artifact_id": 14059251203,
+    "artifact_name": "lumo-kart-experience-worlds",
+    "object_byte_start": 30,
+    "object_byte_end_exclusive": 760,
+    "extraction": "Exact unchanged complete JSON object byte slice from the original GitHub REST artifact collection; every original field retained."
+  },
+  {
+    "file": "proofs/feedback-artifact.json",
+    "sha256": "3b784fcdf20494dbdb54b0460b4e1c4ec0de61a3d1fd76633bf63b8385ebe4d1",
+    "source": "watch1/artifacts.json",
+    "source_sha256": "1517703e8dd1232a45fe9491607348690b6d786ad513f04f76030ceb9ef645f9",
+    "artifact_id": 14058227051,
+    "artifact_name": "lumo-kart-experience-feedback",
+    "object_byte_start": 761,
+    "object_byte_end_exclusive": 1493,
+    "extraction": "Exact unchanged complete JSON object byte slice from the original GitHub REST artifact collection; every original field retained."
+  },
+  {
+    "file": "proofs/home-artifact.json",
+    "sha256": "6c8805d10487b529b4f2c61be0f023224ed6f9184b8bd27055e09ca606f9225b",
+    "source": "watch6/artifacts.json",
+    "source_sha256": "2f30f626a574d5b25aeee6507478c2b47585a149383664c3566487007cc1a975",
+    "artifact_id": 14059154186,
+    "artifact_name": "lumo-kart-experience-home",
+    "object_byte_start": 761,
+    "object_byte_end_exclusive": 1489,
+    "extraction": "Exact unchanged complete JSON object byte slice from the original GitHub REST artifact collection; every original field retained."
+  }
+]

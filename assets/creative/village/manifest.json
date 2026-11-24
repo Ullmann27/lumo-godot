@@ -1,0 +1,48 @@
+{
+  "authoring": "Original village models built in Blender with tools/art/build_village_friends.py and tools/lumo_village_art/build_village_founders.py",
+  "characters": [
+    {
+      "id": "nelli_rabbit",
+      "species": "rabbit",
+      "vertices": 2064,
+      "triangles": 4032,
+      "bones": 7,
+      "materials": 1,
+      "bytes": 211272
+    },
+    {
+      "id": "bruno_beaver",
+      "species": "beaver",
+      "vertices": 1924,
+      "triangles": 3744,
+      "bones": 7,
+      "materials": 1,
+      "bytes": 205240
+    },
+    {
+      "id": "tilda_duck",
+      "species": "duck",
+      "vertices": 1720,
+      "triangles": 3360,
+      "bones": 7,
+      "materials": 1,
+      "bytes": 191444
+    },
+    {
+      "id": "lion_village",
+      "species": "lion",
+      "triangles": 6600,
+      "materials": 1,
+      "rigid_parts": 6,
+      "bytes": 247140
+    },
+    {
+      "id": "carpenter_village",
+      "species": "human",
+      "triangles": 2728,
+      "materials": 1,
+      "rigid_parts": 5,
+      "bytes": 106432
+    }
+  ]
+}

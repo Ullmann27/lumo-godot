@@ -1,0 +1,25 @@
+{
+  "command": [
+    "godot",
+    "--headless",
+    "--path",
+    "/home/agent/lumo-treasure-2708/source",
+    "--audio-driver",
+    "Dummy",
+    "--rendering-method",
+    "gl_compatibility",
+    "--script",
+    "res://scripts/tests/treasure_title_contrast_regression.gd"
+  ],
+  "exit_code": 0,
+  "source_before": {
+    "scripts/creative/treasure_world.gd": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "source_after": {
+    "scripts/creative/treasure_world.gd": "e68fc85498b76fb7b482417a1bf6b64410a53d2f018fec7771e263ea60fa5447",
+    "scripts/tests/treasure_title_contrast_regression.gd": "ea6087ef56a96d585382f4228661d753121152aa249c4a5afdc99d2e946941ea"
+  },
+  "elapsed_seconds": 19.47455925300892,
+  "scope": "Actual Godot integration504c plus narrow Treasure port; headless, no raster or Android claim"
+}

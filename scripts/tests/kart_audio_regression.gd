@@ -22,6 +22,30 @@ func _run() -> void:
 	assert(audio.effect_db() == audio.QUIET_DB, "Effekte auf 0 sind stumm")
 	audio.set_volumes(2.0, -1.0)
 	assert(audio.music_volume == 1.0 and audio.effects_volume == 0.0, "Werte werden begrenzt")
+	audio.play_menu()
+	await process_frame
+	var catalog = load("res://scripts/games/kart_catalog.gd")
+	var sources: Dictionary = {}
+	for entry in catalog.TRACKS:
+		audio.play_track(entry.id)
+		var playing: AudioStreamOggVorbis = audio._music[audio._active].stream
+		assert(playing != null and playing.loop and playing.get_length() > 10.0, str(entry.id))
+		assert(not sources.has(playing.resource_path), "%s needs its own score" % entry.id)
+		sources[playing.resource_path] = true
+	for world in audio.PARCOURS_MUSIC:
+		audio.play_track(world)
+		assert(audio._current == world and audio._music[audio._active].stream.get_length() > 55.0, world)
+	audio.play_track("sonnenhafen")
+	audio.effect("collision")
+	await process_frame
+	assert(audio._music[audio._active].playing, "Echter Track läuft vor dem Szenenwechsel")
+	root.remove_child(audio)
+	assert(audio._fade == null and audio._streams.is_empty(), "Szenenaustritt gibt Crossfade und Streamcache frei")
+	for player in audio._music + audio._effects:
+		assert(player.stream == null and not player.playing, "Szenenaustritt löst jeden Musik-/Effektstream")
+	root.add_child(audio)
+	audio.play_track("sonnenhafen")
+	assert(audio._music[audio._active].playing, "Derselbe Track startet nach Wiedereintritt erneut")
 	audio.queue_free()
 
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
@@ -58,6 +82,6 @@ func _run() -> void:
 	reopened.queue_free()
 	await process_frame
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
-	print("[KartAudio] PASS: fünf neue Schleifen > 55 s, Musik/Effekte getrennt regelbar, sofort wirksam, gespeichert")
+	print("[KartAudio] PASS: fünf Schleifen > 55 s, Musik/Effekte getrennt regelbar, gespeichert; aktive Crossfade-/Effektressourcen beim Austritt gelöst und gleicher Track nach Wiedereintritt spielbar")
 	await create_timer(0.2).timeout
 	quit(0)

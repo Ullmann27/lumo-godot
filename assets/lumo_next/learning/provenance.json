@@ -1,0 +1,17 @@
+{
+  "asset_family": "LUMO next-generation learning manipulatives",
+  "authoring": "Original geometry, UV layouts, deterministic texture atlas and Blender scene authored for Heinz Ullmann's LUMO project through a scripted Blender production workflow.",
+  "third_party_geometry": [],
+  "third_party_textures": [],
+  "paid_provider_calls": [],
+  "reference_sources": [
+    "Existing lumo-godot scripts/learning/learning_world.gd for dimensions, lesson semantics and palette",
+    "Existing lumo-godot scripts/learning/learning_atelier.gd for compatible restrained colours",
+    "Existing lumo-lernen lib/features/learning/lab/learning_lab_catalog.dart for Banane / Ba-na-ne"
+  ],
+  "rights": "New project-authored assets; no third-party model, texture, motion or stock asset licenses are required. No ownership or license statement is made for pre-existing project files.",
+  "source_script": "tools/lumo_next/build_learning_assets.py",
+  "blender_version": "4.3.2",
+  "render_evidence": "learning_assets_blender_overview.png is a direct Cycles render of the editable scene. It does not represent Godot or an Android capture.",
+  "runtime_status": "GLB export completed; engine import, app interaction and device profiling are separate checks owned by integration."
+}

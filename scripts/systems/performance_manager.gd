@@ -21,6 +21,29 @@ const _PROFILE_NAMES: Dictionary = {
 
 var current_profile: Profile = Profile.MEDIUM
 var platform: String = ""
+## ULTRA: zusaetzliche Stufe ueber HIGH fuer sehr starke Geraete, nur manuell
+## waehlbar (set_ultra). Das Profil-Enum bleibt HIGH, damit alle anderen Welten
+## und LumoQuality unveraendert bleiben; nur Kart-Kulisse liest is_ultra().
+var ultra_enabled: bool = false
+
+
+## Names of graphics adapters that compute the picture on the processor.
+const SOFTWARE_ADAPTER_WORDS: Array[String] = ["swiftshader", "llvmpipe", "softpipe", "software rasterizer", "android emulator"]
+
+
+static func is_software_adapter(adapter_name: String) -> bool:
+	var lower := adapter_name.to_lower()
+	for word in SOFTWARE_ADAPTER_WORDS:
+		if lower.contains(word):
+			return true
+	return false
+
+
+## True on a phone or tablet without hardware graphics (see is_software_adapter).
+static func software_rendered_mobile() -> bool:
+	if not (OS.has_feature("android") or OS.has_feature("ios")):
+		return false
+	return is_software_adapter(RenderingServer.get_video_adapter_name())
 
 
 func _ready() -> void:
@@ -36,16 +59,22 @@ func _ready() -> void:
 			auto_profile = Profile.MEDIUM
 		_:
 			auto_profile = Profile.MEDIUM
-	if Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("get_profile"):
-			match store.call("get_profile"):
-				"low":
-					auto_profile = Profile.LOW
-				"medium":
-					auto_profile = Profile.MEDIUM
-				"high":
-					auto_profile = Profile.HIGH
+	var store: Node = get_node_or_null("/root/SettingsStore")
+	if store != null and store.has_method("get_profile"):
+		match store.call("get_profile"):
+			"low":
+				auto_profile = Profile.LOW
+			"medium":
+				auto_profile = Profile.MEDIUM
+			"high":
+				auto_profile = Profile.HIGH
+	# A phone whose pictures are computed by the processor (an emulator, or a
+	# device without a usable graphics chip) starts with the light profile.
+	if software_rendered_mobile():
+		auto_profile = Profile.LOW
+		print("[Perf] software_renderer_on_mobile: light profile")
+	# Apply the quality settings again when a different race/learning scene loads.
+	get_tree().scene_changed.connect(_on_scene_changed)
 	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
 	await get_tree().process_frame
 	set_profile(auto_profile, false)
@@ -60,14 +89,32 @@ func set_profile(profile: Profile, persist: bool = true) -> void:
 	_apply_environment(profile)
 	_apply_viewport(profile)
 	EventBus.quality_profile_changed.emit(name)
-	if persist and Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("set_profile"):
+	if persist:
+		var store: Node = get_node_or_null("/root/SettingsStore")
+		if store != null and store.has_method("set_profile"):
 			store.call("set_profile", name)
+
+
+## Schaltet die ULTRA-Kulisse (volle Dichte, 8 Lichter, weite Sicht) an/aus.
+## Wirkt nur zusammen mit HIGH; set_ultra(true) hebt das Profil daher auf HIGH.
+func set_ultra(enabled: bool) -> void:
+	ultra_enabled = enabled
+	if enabled and current_profile != Profile.HIGH:
+		set_profile(Profile.HIGH, false)
+	print("[Perf] ultra_scenery:%s" % ("on" if is_ultra() else "off"))
+
+
+func is_ultra() -> bool:
+	return ultra_enabled and current_profile == Profile.HIGH
 
 
 func get_profile_name() -> String:
 	return _PROFILE_NAMES.get(current_profile, "medium")
+
+
+func _on_scene_changed() -> void:
+	# The previous WorldEnvironment was freed with the old scene.
+	_apply_environment(current_profile)
 
 
 ## Sucht das erste WorldEnvironment im aktuellen Tree und mutiert dessen
@@ -98,8 +145,13 @@ func _apply_environment(profile: Profile) -> void:
 		Profile.HIGH:
 			env.glow_enabled = true
 			env.fog_enabled = true
-			env.volumetric_fog_enabled = true
-			env.ssao_enabled = true
+			# Match the renderer/platform gate used by KartEnvironmentPolish.
+			var supports_advanced_effects := (
+				RenderingServer.get_current_rendering_method() == "forward_plus"
+				and not OS.has_feature("mobile")
+			)
+			env.volumetric_fog_enabled = supports_advanced_effects
+			env.ssao_enabled = supports_advanced_effects
 
 
 func _apply_viewport(profile: Profile) -> void:

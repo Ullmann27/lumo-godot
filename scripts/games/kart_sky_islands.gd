@@ -32,6 +32,8 @@ const SPLIT_LEFT_LANE: float = -2.8
 const RAMP_LENGTH: float = 7.0
 const GAP_LENGTH: float = 8.0
 const RAMP_HEIGHT: float = 1.8
+const LEVEL_CREST_LIFT_SCALE: float = 2.0
+const LEVEL_CREST_MAX_LIFT: float = 9.0
 ## Islands extend this far beyond their span (see _road_island).
 const ISLAND_PADDING: float = 10.0
 const CLOUD_LEVEL: float = -38.0
@@ -81,7 +83,12 @@ static func jump_layout(length: float) -> Dictionary:
 		"take_off": take_off,
 		"gap_end": gap_end,
 		"height": RAMP_HEIGHT,
-		"angle": atan2(RAMP_HEIGHT, RAMP_LENGTH)
+		"angle": atan2(RAMP_HEIGHT, RAMP_LENGTH),
+		# The extended route crosses the gap on a level crest instead of the old
+		# downhill, so the ramp itself supplies the flight. Lift still scales
+		# with speed: a crawl keeps falling into the clouds.
+		"lift_scale": LEVEL_CREST_LIFT_SCALE,
+		"max_lift": LEVEL_CREST_MAX_LIFT
 	}
 
 
@@ -434,11 +441,10 @@ static func _island_dressing(
 			if roll < 0.32 and not world.low_detail:
 				world._tree(at, rng.randf_range(0.7, 1.15), rng)
 			elif roll < 0.62:
-				world._prop(
-					"crown",
-					at + Vector3.UP * 0.4,
-					Vector3(1.4, 0.9, 1.2) * rng.randf_range(0.8, 1.4),
-					MOSS.lightened(0.15)
+				# Kulissen-Paket: strukturierter Busch statt Kronen-Klumpen (gleicher Zufallszug).
+				world.plant_scenery(
+					"busch_bluehend" if roll < 0.45 else "busch", at - Vector3.UP * 0.1,
+					rng.randf_range(0.8, 1.4) * 0.85, roll * 40.0, Color(0.5, 0.53, 0.47), roll
 				)
 				for flower in range(3):
 					var bloom: Vector3 = (
