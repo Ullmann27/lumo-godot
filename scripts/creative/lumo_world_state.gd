@@ -4,6 +4,7 @@ extends RefCounted
 
 const VERSION := 1
 const SPAWN := Vector3(0.0, 0.1, 6.0)
+const KART_SPAWN := Vector3(77.0, 0.2, 18.0)
 const BOUNDS := Rect2(-36.0, -238.0, 992.0, 476.0)
 const MISSIONS: Array[Dictionary] = [
 	{"id": "meet_nelli", "title": "Ein neues Zuhause", "lead": "Über die Brücke zum Sonnendorf: Nelli wartet vor ihrem Haus.", "at": Vector3(90, 0, 20), "kind": "talk"},
@@ -16,6 +17,8 @@ const MISSIONS: Array[Dictionary] = [
 
 var completed: Array[String] = []
 var position: Vector3 = SPAWN
+var kart_position: Vector3 = KART_SPAWN
+var kart_yaw := 0.0
 var pending_lesson: Dictionary = {}
 var result_id := ""
 var crossing_started := false
@@ -126,8 +129,18 @@ func _finish(id: String) -> bool:
 	return true
 
 
+func remember_kart(at: Vector3, yaw: float, on_floor: bool) -> bool:
+	# The caller supplies actual post-move_and_slide contact, not a height guess.
+	if not on_floor or not at.is_finite() or not is_finite(yaw) or not BOUNDS.has_point(Vector2(at.x, at.z)) or at.y < -0.5 or at.y > 180.0:
+		return false
+	kart_position = at
+	kart_yaw = wrapf(yaw, -PI, PI)
+	return true
+
+
 func to_data() -> Dictionary:
-	return {"version": VERSION, "completed": completed.duplicate(), "position": [position.x, position.y, position.z], "pendingLesson": pending_lesson.duplicate(true), "resultId": result_id}
+	return {"version": VERSION, "completed": completed.duplicate(), "position": [position.x, position.y, position.z], "pendingLesson": pending_lesson.duplicate(true), "resultId": result_id,
+		"kart": {"position": [kart_position.x, kart_position.y, kart_position.z], "yaw": kart_yaw}}
 
 
 func restore(data: Dictionary) -> bool:
@@ -150,6 +163,26 @@ func restore(data: Dictionary) -> bool:
 	var at := Vector3(float(xyz[0]), float(xyz[1]), float(xyz[2]))
 	if not BOUNDS.has_point(Vector2(at.x, at.z)) or at.y < -1.0 or at.y > 180.0:
 		return false
+	# Version-one saves written before kart persistence remain readable.
+	var saved_kart_position := KART_SPAWN
+	var saved_kart_yaw := 0.0
+	if data.has("kart"):
+		var kart = data.kart
+		if not kart is Dictionary:
+			return false
+		var kart_xyz = kart.get("position")
+		if not kart_xyz is Array or kart_xyz.size() != 3:
+			return false
+		for value in kart_xyz:
+			if (not value is float and not value is int) or not is_finite(float(value)):
+				return false
+		saved_kart_position = Vector3(float(kart_xyz[0]), float(kart_xyz[1]), float(kart_xyz[2]))
+		var yaw = kart.get("yaw")
+		if (not yaw is float and not yaw is int) or not is_finite(float(yaw)):
+			return false
+		if not BOUNDS.has_point(Vector2(saved_kart_position.x, saved_kart_position.z)) or saved_kart_position.y < -0.5 or saved_kart_position.y > 180.0:
+			return false
+		saved_kart_yaw = wrapf(float(yaw), -PI, PI)
 	var pending = data.get("pendingLesson", {})
 	if not pending is Dictionary:
 		return false
@@ -170,6 +203,8 @@ func restore(data: Dictionary) -> bool:
 		return false
 	completed = checked
 	position = at
+	kart_position = saved_kart_position
+	kart_yaw = saved_kart_yaw
 	pending_lesson = pending.duplicate(true)
 	result_id = str(data.get("resultId", "")).substr(0, 160)
 	crossing_started = false

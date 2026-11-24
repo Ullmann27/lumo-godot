@@ -9,6 +9,7 @@ const LAND := Color("62845d")
 const PLAYER_COLOR := Color("ffb76b")
 const TARGET_COLOR := Color("c4ff98")
 const PORTAL_COLOR := Color("8ceaf1")
+const KART_COLOR := Color("ffe48a")
 const MIN_TOUCH := 48.0
 
 class AtlasCanvas extends Control:
@@ -26,6 +27,8 @@ var view_bounds := Rect2(-36, -102, 316, 186)
 var focus_id := "player"
 var player_at := Vector3.ZERO
 var player_heading := 0.0
+var kart_at := Vector3.ZERO
+var kart_available := false
 var active_mission: Dictionary = {}
 var completed: Array = []
 var missions: Array = []
@@ -47,6 +50,7 @@ func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dict
 		world_bounds = bounds
 	player_at = at
 	player_heading = heading
+	kart_available = false
 	active_mission = current_mission.duplicate(true)
 	completed = completed_missions.duplicate(true)
 	missions = all_missions.duplicate(true)
@@ -66,6 +70,7 @@ func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dict
 	location_label.text = "Du bist hier: " + location_name(player_at)
 	objective_label.text = "Dein nächstes Ziel: " + str(active_mission.get("title", "")) if not active_mission.is_empty() else "Alle Aufträge geschafft. Entdecke deine Lieblingsorte!"
 	(focus_buttons["objective"] as Button).disabled = active_mission.is_empty()
+	(focus_buttons["kart"] as Button).disabled = true
 	focus_player()
 
 
@@ -98,6 +103,13 @@ func _build_ui() -> void:
 		button.toggle_mode = true
 		focus_buttons[spec[0]] = button
 		focus_row.add_child(button)
+	var kart_button := _button("Mein Kart zeigen", focus_kart)
+	kart_button.name = "WorldMapFocus_kart"
+	kart_button.tooltip_text = "Den aktuellen Parkplatz deines Karts auf der Karte zeigen"
+	kart_button.toggle_mode = true
+	kart_button.disabled = not kart_available
+	focus_buttons["kart"] = kart_button
+	add_child(kart_button)
 	focus_label = _label("In deiner Nähe", 15, MUTED)
 	focus_label.name = "WorldMapViewLabel"
 	add_child(focus_label)
@@ -115,7 +127,7 @@ func _build_ui() -> void:
 	legend.add_theme_constant_override("h_separation", 16)
 	legend.add_theme_constant_override("v_separation", 5)
 	add_child(legend)
-	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR]]:
+	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR], ["Dein Kart", KART_COLOR]]:
 		var line := HBoxContainer.new()
 		line.add_theme_constant_override("separation", 6)
 		var swatch := ColorRect.new()
@@ -218,6 +230,22 @@ func focus_world() -> void:
 	_set_view(world_bounds, "world", "Die ganze Lumo World")
 
 
+func set_kart_position(at: Vector3) -> void:
+	kart_available = at.is_finite() and world_bounds.has_point(Vector2(at.x, at.z))
+	if kart_available:
+		kart_at = at
+	_build_ui()
+	(focus_buttons["kart"] as Button).disabled = not kart_available
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+func focus_kart() -> void:
+	if kart_available:
+		var extent := Rect2(Vector2(kart_at.x, kart_at.z) - Vector2(80, 60), Vector2(160, 120))
+		_set_view(extent, "kart", "Dein Kart: " + location_name(kart_at))
+
+
 func focus_place(id: String) -> void:
 	for place in _places:
 		if str(place.id) == id:
@@ -306,6 +334,8 @@ func draw_atlas(surface: Control) -> void:
 	if not active_mission.is_empty():
 		var at: Vector3 = active_mission.get("at", player_at)
 		_draw_marker(surface, at, TARGET_COLOR, true)
+	if kart_available and _inside(kart_at):
+		_draw_kart_marker(surface)
 	_draw_marker(surface, player_at, PLAYER_COLOR, false)
 	_draw_north(surface, rect)
 	_draw_scale(surface, rect)
@@ -405,6 +435,16 @@ func _draw_marker(surface: Control, at: Vector3, color: Color, target: bool) -> 
 		var side := Vector2(-direction.y, direction.x)
 		var tip := point + direction * 17
 		surface.draw_polyline(PackedVector2Array([tip - direction * 5 + side * 4, tip, tip - direction * 5 - side * 4]), color, 2, true)
+
+
+func _draw_kart_marker(surface: Control) -> void:
+	var point := project_position(kart_at, surface.size)
+	surface.draw_circle(point, 10, Color("092a36"))
+	surface.draw_arc(point, 10, 0, TAU, 24, KART_COLOR, 2, true)
+	surface.draw_rect(Rect2(point - Vector2(4, 7), Vector2(8, 14)), KART_COLOR)
+	for side in [-1.0, 1.0]:
+		for axle in [-4.0, 4.0]:
+			surface.draw_rect(Rect2(point + Vector2(side * 6 - 1.5, axle - 2), Vector2(3, 4)), KART_COLOR)
 
 
 func _draw_north(surface: Control, rect: Rect2) -> void:
