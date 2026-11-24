@@ -77,10 +77,44 @@ func _room_obstructions(menu) -> Dictionary:
 	return result
 
 
+func _touch_targets() -> Dictionary:
+	var pixels_per_canvas := Vector2(root.size) / root.get_visible_rect().size
+	var ui_density: float = root.get_node("MobileRuntime").get_ui_density()
+	var minimum := Vector2(INF, INF)
+	var count := 0
+	var undersized: Array[String] = []
+	var outside_viewport: Array[String] = []
+	var viewport_bounds := root.get_visible_rect().grow(0.01)
+	for node in game.safe_ui.find_children("*", "BaseButton", true, false):
+		var button := node as BaseButton
+		if not button.is_visible_in_tree() or button.mouse_filter == Control.MOUSE_FILTER_IGNORE:
+			continue
+		var dp := button.get_global_rect().size * pixels_per_canvas / ui_density
+		minimum.x = minf(minimum.x, dp.x)
+		minimum.y = minf(minimum.y, dp.y)
+		count += 1
+		if dp.x < 47.99 or dp.y < 47.99:
+			undersized.append("%s: %.2fx%.2f dp" % [game.safe_ui.get_path_to(button), dp.x, dp.y])
+		var ancestor: Node = button.get_parent()
+		var scrolls := false
+		while ancestor != null and ancestor != game.safe_ui:
+			if ancestor is ScrollContainer:
+				scrolls = true
+				break
+			ancestor = ancestor.get_parent()
+		if not scrolls and not viewport_bounds.encloses(button.get_global_rect()):
+			outside_viewport.append(str(game.safe_ui.get_path_to(button)))
+	return {"count": count, "density": ui_density, "minimum_dp": [minimum.x, minimum.y], "undersized": undersized, "outside_viewport": outside_viewport}
+
+
 func _record(label: String, menu) -> void:
 	await _settle(2)
+	_check(root.size == FOLD, label + " actual Fold window dimensions")
 	var blocked := _room_obstructions(menu)
 	_check(blocked.is_empty(), label + " room does not occlude kart or host: " + str(blocked))
+	var touch_targets := _touch_targets()
+	_check(touch_targets.undersized.is_empty(), label + " visible controls >=48x48 dp: " + str(touch_targets.undersized))
+	_check(touch_targets.outside_viewport.is_empty(), label + " fixed controls inside viewport: " + str(touch_targets.outside_viewport))
 	var camera: Camera3D = menu.preview_camera
 	var record := {
 		"name": label, "viewport": [root.size.x, root.size.y], "display_density": density,
@@ -89,11 +123,11 @@ func _record(label: String, menu) -> void:
 		"fov": camera.fov, "offset": [camera.h_offset, camera.v_offset],
 		"stage_region": str(menu._visible_stage_region()), "room_obstructions": blocked,
 		"renderer": RenderingServer.get_current_rendering_method(),
-		"physical_android_device": false
+		"physical_android_device": false, "touch_targets": touch_targets
 	}
 	if capture:
 		var image := root.get_texture().get_image()
-		_check(image != null and image.get_size() == root.size, label + " actual viewport pixels")
+		_check(image != null and image.get_size() == FOLD, label + " actual 1384x1400 viewport pixels")
 		if image != null:
 			_check(image.save_png(output.path_join(label + ".png")) == OK, label + " image saved")
 			var preview: Image = menu.preview_viewport.get_texture().get_image()
@@ -116,6 +150,11 @@ func _run() -> void:
 	game = scene.instantiate()
 	root.add_child(game)
 	game.set_physics_process(false)
+	await _settle()
+	# Desktop Kart initialization opens its 1280x720 development window.
+	# Apply the intended Fold dimensions after that initialization has settled,
+	# so landscape pixels cannot be mislabeled as a successful Fold capture.
+	root.size = FOLD
 	await _settle()
 	game._apply_safe_area(Rect2(0, 0, 0, 0), Vector2(FOLD))
 	var menu = game.garage

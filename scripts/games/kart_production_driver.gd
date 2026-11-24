@@ -380,12 +380,19 @@ func _follow_wheel() -> void:
 	maximum_contact_error = 0.0
 	if not is_instance_valid(kart) or not is_instance_valid(kart.get("steering_wheel")):
 		return
-	# A stopped kart may celebrate with both hands. During finish coasting
-	# the left hand retains contact; every other driving pose uses both.
-	if victory and speed <= 0.5:
+	# Parked menu gestures belong to the authored clip. Applying driving IK
+	# here would cancel the visible wave again on every animation/subframe.
+	# Keep the supporting hand on the wheel and restore both contacts as soon
+	# as the vehicle moves or the optional menu gesture ends.
+	var parked := speed <= 0.5
+	if parked and (victory or _menu_behavior == &"celebrate"):
 		return
 	_solve_arm(0)
-	if not victory:
+	var right_hand_gesture := parked and (
+		_menu_behavior == &"greeting_wave" or _menu_behavior == &"point_portal"
+	)
+	# A finish celebration may keep one hand raised while coasting.
+	if not victory and not right_hand_gesture:
 		_solve_arm(1)
 
 

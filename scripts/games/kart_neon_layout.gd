@@ -7,7 +7,12 @@ const MIN_TOUCH := 48.0
 
 static func _place(control: Control, rect: Rect2, k: float) -> void:
 	control.position = (rect.position * k).round()
-	control.size = (rect.size * k).round()
+	var pixels := (rect.size * k).round()
+	if control is BaseButton:
+		# A 48dp button can round down below its touch contract at fractional
+		# viewport scales. Reserve the next whole canvas pixel for hit targets.
+		pixels = pixels.max(Vector2.ONE * ceilf(MIN_TOUCH * k))
+	control.size = pixels
 	if "ui_scale" in control:
 		control.ui_scale = k
 	control.queue_redraw()
