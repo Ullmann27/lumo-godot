@@ -34,6 +34,15 @@ const RESIDENT_ROLE := "Computerfigur"
 ## On re-entry the follow camera turns by this angle away from the parked
 ## kart, so the kart appears beside Lumo instead of behind the camera.
 const RESUME_VIEW_OFFSET := 0.5
+# The kart collision box starts exactly at the wheel contact plane (local y 0),
+# so a body resting on the floor shows its tyres on the ground, not inside it.
+const KART_BOX_SIZE := Vector3(1.5, 1.2, 2.7)
+const KART_PROBE_UP := 1.0
+const KART_PROBE_DOWN := 1.4
+const KART_GROUND_TOLERANCE := 0.02
+const KART_MAX_TILT := 0.35
+const KART_FIT_SINK := 0.6
+const KART_FALLBACK_CONTACTS: Array[Vector3] = [Vector3(-0.72, 0, -0.9), Vector3(0.72, 0, -0.9), Vector3(-0.72, 0, 0.9), Vector3(0.72, 0, 0.9)]
 
 var model = STATE.new()
 var art = ART.new()
@@ -45,6 +54,8 @@ var kart_body: CharacterBody3D
 var kart_visual: Node3D
 var kart_beacon: Label3D
 var kart_guidance := false
+var kart_contacts: Array[Vector3] = []
+var kart_ground_pending := true
 var player_shape: CollisionShape3D
 var joystick: Control
 var safe_ui: Control
@@ -225,9 +236,9 @@ func _create_kart() -> void:
 	add_child(kart_body)
 	var shape_node := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(1.5, 1.2, 2.7)
+	shape.size = KART_BOX_SIZE
 	shape_node.shape = shape
-	shape_node.position.y = 0.72
+	shape_node.position.y = KART_BOX_SIZE.y * 0.5
 	kart_body.add_child(shape_node)
 	kart_visual = KART.new()
 	kart_visual.name = "OriginalLumoKart"
@@ -240,6 +251,86 @@ func _create_kart() -> void:
 	kart_beacon.name = "WorldKartBeacon"
 	_set_kart_driver(false)
 	art._sign(self, "Lumo Kart · Parkplatz", Vector3(77, 3.2, 18), Color("9aefff"))
+	_settle_kart.call_deferred()
+
+
+func _kart_wheel_contacts() -> Array[Vector3]:
+	if not kart_contacts.is_empty():
+		return kart_contacts
+	var contacts: Array[Vector3] = []
+	for pivot in kart_visual.wheel_pivots:
+		if is_instance_valid(pivot):
+			var local: Vector3 = kart_visual.to_local(pivot.global_position)
+			contacts.append(Vector3(local.x, 0.0, local.z))
+	if contacts.size() < 3:
+		return KART_FALLBACK_CONTACTS
+	kart_contacts = contacts
+	return kart_contacts
+
+
+func _kart_ground_at(local_point: Vector3) -> Variant:
+	if not kart_body.is_inside_tree():
+		return null
+	var level := Transform3D(Basis(Vector3.UP, kart_body.rotation.y), kart_body.global_position)
+	var from: Vector3 = level * (local_point + Vector3.UP * KART_PROBE_UP)
+	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * (KART_PROBE_UP + KART_PROBE_DOWN), kart_body.collision_mask, [kart_body.get_rid(), player.get_rid()])
+	var hit := kart_body.get_world_3d().direct_space_state.intersect_ray(query)
+	return null if hit.is_empty() else float(hit.position.y)
+
+
+## Places the kart body on the highest floor point under its footprint. Poses
+## already resting on the floor stay untouched within the tolerance, so saved
+## grounded parking places are restored bit-identical.
+func _ground_kart() -> bool:
+	var highest := -INF
+	var points: Array[Vector3] = [Vector3.ZERO]
+	points.append_array(_kart_wheel_contacts())
+	for point in points:
+		var ground: Variant = _kart_ground_at(point)
+		if ground != null:
+			highest = maxf(highest, float(ground))
+	if highest == -INF:
+		return false
+	var lift := highest - kart_body.global_position.y
+	if absf(lift) > KART_GROUND_TOLERANCE:
+		kart_body.global_position.y = highest
+		kart_body.velocity.y = 0.0
+	return true
+
+
+## Tilts and lowers only the visual kart so all four tyres follow the ground
+## plane (hills, ramps, bridge joints) while the physics box stays level.
+func _fit_kart_visual(delta: float, instant: bool) -> void:
+	var contacts := _kart_wheel_contacts()
+	var sum_x := 0.0
+	var sum_z := 0.0
+	var mean := 0.0
+	var slope_x := 0.0
+	var slope_z := 0.0
+	for point in contacts:
+		var ground: Variant = _kart_ground_at(point)
+		var relative := 0.0 if ground == null else clampf(float(ground) - kart_body.global_position.y, -KART_FIT_SINK, KART_PROBE_UP)
+		mean += relative
+		slope_x += relative * point.x
+		slope_z += relative * point.z
+		sum_x += point.x * point.x
+		sum_z += point.z * point.z
+	mean /= float(contacts.size())
+	var roll := clampf(atan(slope_x / maxf(sum_x, 0.001)), -KART_MAX_TILT, KART_MAX_TILT)
+	var pitch := clampf(-atan(slope_z / maxf(sum_z, 0.001)), -KART_MAX_TILT, KART_MAX_TILT)
+	var weight := 1.0 if instant else 1.0 - exp(-14.0 * delta)
+	kart_visual.position.y = lerpf(kart_visual.position.y, clampf(mean, -KART_FIT_SINK, 0.0), weight)
+	kart_visual.rotation.x = lerp_angle(kart_visual.rotation.x, pitch, weight)
+	kart_visual.rotation.z = lerp_angle(kart_visual.rotation.z, roll, weight)
+
+
+func _settle_kart() -> void:
+	if not is_instance_valid(kart_body) or not kart_body.is_inside_tree():
+		return
+	if _ground_kart():
+		kart_ground_pending = false
+		model.remember_kart(kart_body.position, kart_body.rotation.y, true)
+	_fit_kart_visual(0.0, true)
 
 
 func _set_kart_driver(visible_driver: bool) -> void:
@@ -646,6 +737,9 @@ func _physics_process(delta: float) -> void:
 	if paused:
 		return
 	time += delta
+	if kart_ground_pending:
+		kart_ground_pending = false
+		_settle_kart()
 	var axis: Vector2 = joystick.axis + Vector2(
 		float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),
 		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
@@ -770,9 +864,12 @@ func _drive_tick(axis: Vector2, delta: float) -> void:
 				drive_speed *= 0.2
 	if kart_body.position.y < -6.0:
 		kart_body.position = STATE.KART_SPAWN
+		kart_body.velocity = Vector3.ZERO
 		drive_speed = 0.0
+		_settle_kart()
 		status_label.text = "Zurück am sicheren Parkplatz. Bleib mit dem Kart auf den Wegen."
 	_clamp_body(kart_body)
+	_fit_kart_visual(delta, false)
 	kart_visual.set_motion(drive_speed, axis.x, false, false)
 
 

@@ -62,17 +62,18 @@ func _enter_world() -> Node:
 
 func _first_entry(scene: Node) -> void:
 	_check(scene.player.position.distance_to(STATE.SPAWN) < 0.3, "the child starts at the original island spawn")
-	_check(scene.kart_body.position.is_equal_approx(STATE.KART_START), "a fresh World places the kart at its first-entry start")
+	var start_xz := Vector2(scene.kart_body.position.x - STATE.KART_START.x, scene.kart_body.position.z - STATE.KART_START.z)
+	_check(start_xz.length() < 0.001 and is_equal_approx(scene.kart_body.rotation.y, STATE.KART_START_YAW), "a fresh World places the kart at its first-entry start")
 	_check(scene.kart_in_reach(), "the first-entry kart is within normal entry reach")
 	_check(not scene.vehicle_button.disabled and scene.vehicle_button.text == "Ins Kart", "the entry control is active at first entry")
 	var space: PhysicsDirectSpaceState3D = scene.get_world_3d().direct_space_state
 	var down := PhysicsRayQueryParameters3D.create(scene.kart_body.global_position + Vector3.UP, scene.kart_body.global_position + Vector3.DOWN * 2.0, 0xFFFFFFFF, [scene.kart_body.get_rid()])
 	var ground: Dictionary = space.intersect_ray(down)
-	_check(not ground.is_empty() and absf(scene.kart_body.global_position.y - float(ground.position.y)) < 0.35, "the start stands on real island floor collision")
+	_check(not ground.is_empty() and absf(scene.kart_body.global_position.y - float(ground.position.y)) < 0.03, "the start stands on real island floor collision")
 	var shape_node: CollisionShape3D = scene.kart_body.get_child(0)
 	var overlap := PhysicsShapeQueryParameters3D.new()
 	overlap.shape = shape_node.shape
-	overlap.transform = shape_node.global_transform
+	overlap.transform = shape_node.global_transform.translated(Vector3.UP * 0.05)
 	overlap.exclude = [scene.kart_body.get_rid(), scene.player.get_rid()]
 	_check(space.intersect_shape(overlap, 1).is_empty(), "the start does not intersect island scenery")
 	for dimensions in VIEWS:
@@ -105,17 +106,28 @@ func _drive_park_and_reopen(scene: Node) -> void:
 	scene.vehicle_button.pressed.emit()
 	await _frames(4)
 	_check(scene.driving and not scene.kart_beacon.visible and scene.vehicle_button.text == "Aussteigen", "the real entry control seats Lumo in the kart")
-	scene.joystick.target = Vector2(0, -1)
+	# Steer like a child would: out of the start bay between the arch pillar and
+	# the compass pedestal, then east towards the island bridge.
+	var waypoints: Array[Vector2] = [Vector2(1.0, 2.85), Vector2(6.0, 2.85), Vector2(45.0, 6.0)]
 	var reached := false
-	for index in range(600):
-		await physics_frame
+	var max_sink := 0.0
+	for index in range(900):
 		var at: Vector3 = scene.kart_body.position
+		if waypoints.size() > 1 and Vector2(at.x, at.z).distance_to(waypoints[0]) < 1.2:
+			waypoints.remove_at(0)
+		var desired := atan2(-(waypoints[0].x - at.x), -(waypoints[0].y - at.z))
+		var steer := clampf(wrapf(scene.kart_body.rotation.y - desired, -PI, PI) * 2.5, -1.0, 1.0)
+		scene.joystick.target = Vector2(steer, -1.0)
+		await physics_frame
+		if scene.kart_body.is_on_floor():
+			max_sink = maxf(max_sink, _wheel_sink(scene))
 		if at.x > 40.0 and absf(at.z - 6.0) < 2.6:
 			reached = true
 			break
 	scene.joystick.target = Vector2.ZERO
 	scene.joystick.axis = Vector2.ZERO
-	_check(reached, "driving straight from the start reaches the island bridge")
+	_check(reached, "driving from the start reaches the island bridge")
+	_check(max_sink < 0.03, "no tyre sinks into the floor while driving to the bridge (deepest %.3f m)" % max_sink)
 	scene.run_button.pressed.emit()
 	for index in range(30):
 		await physics_frame
@@ -223,8 +235,22 @@ func _legacy_save() -> void:
 	_check(scene != null and not scene.save_blocked, "a version-one save without kart data still opens")
 	if scene == null:
 		return
-	_check(scene.kart_body.position.is_equal_approx(STATE.KART_SPAWN), "legacy saves keep the original Sonnendorf parking place")
+	var legacy_xz := Vector2(scene.kart_body.position.x - STATE.KART_SPAWN.x, scene.kart_body.position.z - STATE.KART_SPAWN.z)
+	_check(legacy_xz.length() < 0.001 and is_zero_approx(scene.kart_body.rotation.y), "legacy saves keep the original Sonnendorf parking place")
 	_check(scene.vehicle_button.text == "Kart suchen" and not scene.vehicle_button.disabled, "legacy saves offer kart guidance")
+
+
+## Deepest tyre penetration: visual wheel bottom below the floor under it.
+func _wheel_sink(scene: Node) -> float:
+	var space: PhysicsDirectSpaceState3D = scene.get_world_3d().direct_space_state
+	var deepest := 0.0
+	for pivot in scene.kart_visual.wheel_pivots:
+		var bottom: Vector3 = pivot.global_position - scene.kart_visual.global_basis.y.normalized() * 0.35
+		var ray := PhysicsRayQueryParameters3D.create(bottom + Vector3.UP, bottom + Vector3.DOWN * 1.0, 0xFFFFFFFF, [scene.kart_body.get_rid(), scene.player.get_rid()])
+		var hit: Dictionary = space.intersect_ray(ray)
+		if not hit.is_empty():
+			deepest = maxf(deepest, float(hit.position.y) - bottom.y)
+	return deepest
 
 
 func _capture(name: String) -> void:
