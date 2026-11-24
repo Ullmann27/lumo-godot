@@ -67,6 +67,12 @@ func _run() -> void:
 
 
 func _atlas(model) -> void:
+	# The width checks below measure UI units against window pixels. In the full
+	# project the 720x1280 canvas_items stretch would make those units differ;
+	# disable it here so both match, as in the minimal project this test was
+	# written for. Real-density 48dp checks live in lumo_world_map_regression.gd.
+	var previous_scale_mode := root.content_scale_mode
+	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -106,6 +112,7 @@ func _atlas(model) -> void:
 	atlas.focus_kart()
 	_check(atlas.view_bounds == retained, "invalid kart focus cannot move the map")
 	scroll.queue_free()
+	root.content_scale_mode = previous_scale_mode
 	await _frames(3)
 
 

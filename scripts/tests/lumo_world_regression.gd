@@ -240,6 +240,9 @@ func _visibility_and_school(scene: Node3D) -> void:
 		scene.driving = view.drive
 		if view.drive:
 			scene.kart_body.position = view.at
+			# The pose was recorded with the kart's original north heading;
+			# a fresh World now starts the kart facing the island bridge.
+			scene.kart_body.rotation.y = 0.0
 		else:
 			scene.player.position = view.at
 		scene.own_village.update_focus(view.at, 0.0)

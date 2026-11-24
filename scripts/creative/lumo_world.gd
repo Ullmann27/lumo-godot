@@ -22,6 +22,15 @@ const BUILD_ZOOM_MIN := 28.0
 const BUILD_ZOOM_MAX := 155.0
 const PERSON_PITCH_MIN := 0.16
 const PERSON_PITCH_MAX := 1.02
+## Entry reach for the parked kart; the guide and the action button share it.
+const KART_REACH := 5.0
+## Local story residents. They are computer-controlled figures, not players.
+const RESIDENT_SPECS := [
+	["nelli_rabbit", Vector3(90, 0, 20), "Nelli"],
+	["bruno_beaver", Vector3(135, 0, -58), "Bruno"],
+	["tilda_duck", Vector3(218, 0, -34), "Tilda"]
+]
+const RESIDENT_ROLE := "Computerfigur"
 
 var model = STATE.new()
 var art = ART.new()
@@ -31,6 +40,8 @@ var fox: Node3D
 var camera: Camera3D
 var kart_body: CharacterBody3D
 var kart_visual: Node3D
+var kart_beacon: Label3D
+var kart_guidance := false
 var player_shape: CollisionShape3D
 var joystick: Control
 var safe_ui: Control
@@ -220,11 +231,15 @@ func _create_kart() -> void:
 	kart_visual.set_animated_lumo_enabled(true)
 	kart_visual.set_preview_detail(true)
 	kart_visual.reduced_motion = reduced_motion
+	kart_beacon = art._sign(kart_body, "Dein Kart", Vector3(0, 2.6, 0), Color("ffe48a"))
+	kart_beacon.name = "WorldKartBeacon"
 	_set_kart_driver(false)
 	art._sign(self, "Lumo Kart · Parkplatz", Vector3(77, 3.2, 18), Color("9aefff"))
 
 
 func _set_kart_driver(visible_driver: bool) -> void:
+	if is_instance_valid(kart_beacon):
+		kart_beacon.visible = not visible_driver
 	if is_instance_valid(kart_visual.lumo_animation):
 		kart_visual.lumo_animation.visible = visible_driver
 		kart_visual.lumo_animation.set_suspended(not visible_driver)
@@ -233,12 +248,7 @@ func _set_kart_driver(visible_driver: bool) -> void:
 
 
 func _create_residents() -> void:
-	var specs := [
-		["nelli_rabbit", Vector3(90, 0, 20), "Nelli"],
-		["bruno_beaver", Vector3(135, 0, -58), "Bruno"],
-		["tilda_duck", Vector3(218, 0, -34), "Tilda"]
-	]
-	for spec in specs:
+	for spec in RESIDENT_SPECS:
 		var scene := load("res://assets/creative/village/" + str(spec[0]) + ".glb") as PackedScene
 		if scene == null:
 			continue
@@ -256,6 +266,9 @@ func _create_residents() -> void:
 			friend.position.y -= bounds.position.y * friend.scale.y
 		residents.append(friend)
 		art._sign(self, str(spec[2]), spec[1] + Vector3.UP * 3.2, Color("fff1c8"))
+		var role := art._sign(self, RESIDENT_ROLE, spec[1] + Vector3.UP * 2.75, Color("d8ecef"))
+		role.name = "ResidentRole_" + str(spec[2])
+		role.font_size = 26
 
 
 func _create_traffic() -> void:
@@ -650,6 +663,11 @@ func _physics_process(delta: float) -> void:
 	if not mission.is_empty():
 		marker.position = mission.at + Vector3.UP * (3.5 + (0.0 if reduced_motion else sin(time * 2.0) * 0.18))
 		marker.rotate_y(0.0 if reduced_motion else delta)
+	if kart_guidance and not driving and kart_in_reach():
+		_end_kart_guidance("Dein Kart ist da. Tippe auf Ins Kart zum Einsteigen.")
+	if kart_guidance:
+		wonder.set_routes(at, [{"at": kart_body.position}])
+	elif not mission.is_empty():
 		wonder.set_routes(at, [mission])
 	_update_camera(delta)
 	var portal := _near_portal()
@@ -667,7 +685,7 @@ func _physics_process(delta: float) -> void:
 			action_button.text = "Freundepost"
 		elif not portal.is_empty():
 			action_button.text = "Ort öffnen"
-	vehicle_button.disabled = not driving and player.position.distance_to(kart_body.position) > 5.0
+	_refresh_vehicle_button()
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
 	for friend in residents:
@@ -751,6 +769,42 @@ func _drive_tick(axis: Vector2, delta: float) -> void:
 		status_label.text = "Zurück am sicheren Parkplatz. Bleib mit dem Kart auf den Wegen."
 	_clamp_body(kart_body)
 	kart_visual.set_motion(drive_speed, axis.x, false, false)
+
+
+func kart_in_reach() -> bool:
+	return player.position.distance_to(kart_body.position) <= KART_REACH
+
+
+func _refresh_vehicle_button() -> void:
+	# Far from the kart the same control becomes a guide instead of a dead
+	# button, so a child always has a reachable way to find the vehicle.
+	vehicle_button.disabled = false
+	if driving:
+		vehicle_button.text = "Aussteigen"
+	elif kart_in_reach():
+		vehicle_button.text = "Ins Kart"
+	elif kart_guidance:
+		vehicle_button.text = "Führung aus"
+	else:
+		vehicle_button.text = "Kart suchen"
+
+
+func _toggle_kart_guidance() -> void:
+	if kart_guidance:
+		_end_kart_guidance("Kart-Führung beendet. Auf der Weltkarte findest du dein Kart jederzeit.")
+		return
+	kart_guidance = true
+	wonder.set_routes(player.position, [{"at": kart_body.position}])
+	status_label.text = "Folge den Lichtern zu deinem Kart: %d m entfernt, Ort: %s." % [roundi(player.position.distance_to(kart_body.position)), WORLD_MAP.location_name(kart_body.position)]
+	_refresh_vehicle_button()
+
+
+func _end_kart_guidance(message: String) -> void:
+	kart_guidance = false
+	var mission: Dictionary = model.current()
+	wonder.set_routes(_active_position(), [] if mission.is_empty() else [mission])
+	status_label.text = message
+	_refresh_vehicle_button()
 
 
 func _clamp_body(body: CharacterBody3D) -> void:
@@ -888,8 +942,10 @@ func _toggle_vehicle() -> void:
 		run_button.text = "Rennen" if walking_fast else "Gehen"
 		status_label.text = "Wieder zu Fuß. Mit Ansprechen redest du mit deinen Freunden."
 	else:
-		if player.position.distance_to(kart_body.position) > 5.0:
+		if not kart_in_reach():
+			_toggle_kart_guidance()
 			return
+		kart_guidance = false
 		driving = true
 		player.velocity = Vector3.ZERO
 		airborne_time = 0.0
@@ -1124,6 +1180,10 @@ func _map_dialog() -> void:
 		map_mission = friend_post.guidance()
 	overview.configure(STATE.BOUNDS, _active_position(), kart_body.rotation.y if driving else fox.rotation.y, map_mission, model.completed, STATE.MISSIONS, portals, reduced_motion)
 	overview.set_kart_position(kart_body.position)
+	var friends: Array[Dictionary] = []
+	for friend in residents:
+		friends.append({"name": str(friend.name), "at": friend.position})
+	overview.set_friends(friends)
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
@@ -1133,7 +1193,7 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden und in der Nähe einsteigen", 16))
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden, mit Kart suchen hinführen lassen und in der Nähe einsteigen\nNelli, Bruno und Tilda sind Computerfiguren dieser Welt, keine Online-Mitspieler", 16))
 	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

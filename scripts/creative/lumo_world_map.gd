@@ -10,6 +10,7 @@ const PLAYER_COLOR := Color("ffb76b")
 const TARGET_COLOR := Color("c4ff98")
 const PORTAL_COLOR := Color("8ceaf1")
 const KART_COLOR := Color("ffe48a")
+const FRIEND_COLOR := Color("f6a8d8")
 const MIN_TOUCH := 48.0
 
 class AtlasCanvas extends Control:
@@ -29,6 +30,7 @@ var player_at := Vector3.ZERO
 var player_heading := 0.0
 var kart_at := Vector3.ZERO
 var kart_available := false
+var friends: Array[Dictionary] = []
 var active_mission: Dictionary = {}
 var completed: Array = []
 var missions: Array = []
@@ -51,6 +53,7 @@ func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dict
 	player_at = at
 	player_heading = heading
 	kart_available = false
+	friends.clear()
 	active_mission = current_mission.duplicate(true)
 	completed = completed_missions.duplicate(true)
 	missions = all_missions.duplicate(true)
@@ -127,7 +130,7 @@ func _build_ui() -> void:
 	legend.add_theme_constant_override("h_separation", 16)
 	legend.add_theme_constant_override("v_separation", 5)
 	add_child(legend)
-	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR], ["Dein Kart", KART_COLOR]]:
+	for item in [["Du", PLAYER_COLOR], ["Dein Ziel", TARGET_COLOR], ["Spielort", PORTAL_COLOR], ["Dein Kart", KART_COLOR], ["Computerfigur", FRIEND_COLOR]]:
 		var line := HBoxContainer.new()
 		line.add_theme_constant_override("separation", 6)
 		var swatch := ColorRect.new()
@@ -240,6 +243,20 @@ func set_kart_position(at: Vector3) -> void:
 		canvas.queue_redraw()
 
 
+## Local computer-controlled residents. Only named, finite in-world entries are kept.
+func set_friends(entries: Array) -> void:
+	friends.clear()
+	for entry in entries:
+		if not entry is Dictionary or not entry.get("at") is Vector3 or not entry.get("name") is String:
+			continue
+		var at: Vector3 = entry.at
+		if str(entry.name).is_empty() or not at.is_finite() or not world_bounds.has_point(Vector2(at.x, at.z)):
+			continue
+		friends.append({"name": str(entry.name), "at": at})
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
 func focus_kart() -> void:
 	if kart_available:
 		var extent := Rect2(Vector2(kart_at.x, kart_at.z) - Vector2(80, 60), Vector2(160, 120))
@@ -270,7 +287,7 @@ func _set_view(requested: Rect2, id: String, title: String) -> void:
 		canvas.queue_redraw()
 
 
-func location_name(at: Vector3) -> String:
+static func location_name(at: Vector3) -> String:
 	if at.x >= 280:
 		return "Dein Dorf"
 	if at.x >= 173:
@@ -334,7 +351,10 @@ func draw_atlas(surface: Control) -> void:
 	if not active_mission.is_empty():
 		var at: Vector3 = active_mission.get("at", player_at)
 		_draw_marker(surface, at, TARGET_COLOR, true)
-	if kart_available and _inside(kart_at):
+	for friend in friends:
+		if _inside(friend.at):
+			_draw_friend_marker(surface, friend)
+	if kart_available:
 		_draw_kart_marker(surface)
 	_draw_marker(surface, player_at, PLAYER_COLOR, false)
 	_draw_north(surface, rect)
@@ -437,8 +457,39 @@ func _draw_marker(surface: Control, at: Vector3, color: Color, target: bool) -> 
 		surface.draw_polyline(PackedVector2Array([tip - direction * 5 + side * 4, tip, tip - direction * 5 - side * 4]), color, 2, true)
 
 
+func _draw_friend_marker(surface: Control, friend: Dictionary) -> void:
+	var point := project_position(friend.at, surface.size)
+	surface.draw_circle(point, 7, Color("092a36"))
+	surface.draw_arc(point, 7, 0, TAU, 20, FRIEND_COLOR, 2, true)
+	var font := surface.get_theme_default_font()
+	var initial := str(friend.name).substr(0, 1)
+	var glyph := font.get_string_size(initial, HORIZONTAL_ALIGNMENT_LEFT, -1, 11)
+	surface.draw_string(font, point + Vector2(-glyph.x * 0.5, font.get_ascent(11) * 0.5 - 1), initial, HORIZONTAL_ALIGNMENT_LEFT, -1, 11, FRIEND_COLOR)
+
+
+## The drawn kart position: exact inside the focused view, otherwise clipped
+## to the map edge so the kart stays discoverable. Null without a kart.
+func kart_marker_point(viewport_size: Vector2) -> Variant:
+	if not kart_available:
+		return null
+	var projected := project_position(kart_at, viewport_size)
+	if _inside(kart_at):
+		return projected
+	var rect := atlas_rect(viewport_size).grow(-10)
+	var clipped := _clip_segment(rect.get_center(), projected, rect)
+	return clipped[1] if clipped.size() == 2 else null
+
+
 func _draw_kart_marker(surface: Control) -> void:
-	var point := project_position(kart_at, surface.size)
+	var marker_point: Variant = kart_marker_point(surface.size)
+	if marker_point == null:
+		return
+	var point: Vector2 = marker_point
+	if not _inside(kart_at):
+		var direction := (project_position(kart_at, surface.size) - point).normalized()
+		var side := Vector2(-direction.y, direction.x)
+		var tip := point + direction * 17
+		surface.draw_polyline(PackedVector2Array([tip - direction * 5 + side * 4, tip, tip - direction * 5 - side * 4]), KART_COLOR, 2, true)
 	surface.draw_circle(point, 10, Color("092a36"))
 	surface.draw_arc(point, 10, 0, TAU, 24, KART_COLOR, 2, true)
 	surface.draw_rect(Rect2(point - Vector2(4, 7), Vector2(8, 14)), KART_COLOR)

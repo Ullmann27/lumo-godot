@@ -4,7 +4,13 @@ extends RefCounted
 
 const VERSION := 1
 const SPAWN := Vector3(0.0, 0.1, 6.0)
+## Original Sonnendorf parking place. Version-one saves written before kart
+## persistence keep resolving their kart here.
 const KART_SPAWN := Vector3(77.0, 0.2, 18.0)
+## First entry: the kart waits on the island path a few steps ahead of SPAWN,
+## inside the default follow-camera view, and points towards the bridge.
+const KART_START := Vector3(1.8, 0.2, 2.2)
+const KART_START_YAW := -1.692
 const BOUNDS := Rect2(-36.0, -238.0, 992.0, 476.0)
 const MISSIONS: Array[Dictionary] = [
 	{"id": "meet_nelli", "title": "Ein neues Zuhause", "lead": "Über die Brücke zum Sonnendorf: Nelli wartet vor ihrem Haus.", "at": Vector3(90, 0, 20), "kind": "talk"},
@@ -17,8 +23,8 @@ const MISSIONS: Array[Dictionary] = [
 
 var completed: Array[String] = []
 var position: Vector3 = SPAWN
-var kart_position: Vector3 = KART_SPAWN
-var kart_yaw := 0.0
+var kart_position: Vector3 = KART_START
+var kart_yaw := KART_START_YAW
 var pending_lesson: Dictionary = {}
 var result_id := ""
 var crossing_started := false
