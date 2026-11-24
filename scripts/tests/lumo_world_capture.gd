@@ -59,7 +59,10 @@ func _run() -> void:
 		{"name": "village_walking", "size": Vector2i(1280, 720), "at": Vector3(91, 0.2, 20), "drive": false},
 		{"name": "school_portrait", "size": Vector2i(720, 1280), "at": Vector3(110, 0.2, -20), "drive": false},
 		{"name": "kart_driving", "size": Vector2i(1280, 720), "at": Vector3(77, 0.2, 18), "drive": true},
-		{"name": "saved_village", "size": Vector2i(1280, 720), "at": scene.own_village.doorway(), "drive": false}
+		{"name": "saved_village", "size": Vector2i(1280, 720), "at": scene.own_village.doorway(), "drive": false},
+		{"name": "fold_town_road", "size": Vector2i(1384, 1400), "at": Vector3(170, 0.2, 8), "drive": false, "yaw": -PI * 0.5},
+		{"name": "fold_city_road", "size": Vector2i(1384, 1400), "at": Vector3(218, 0.2, 8), "drive": false, "yaw": -PI * 0.5},
+		{"name": "fold_village_entry", "size": Vector2i(1384, 1400), "at": Vector3(286.6, scene.own_village.surface_height(286.6, 6.0) + 0.2, 6), "drive": false, "yaw": -PI * 0.5}
 	]
 	for view in views:
 		if not await _capture(view):
@@ -93,6 +96,7 @@ func _capture(view: Dictionary) -> bool:
 	scene.player.position = view.at
 	scene.player.velocity = Vector3.ZERO
 	scene.last_safe = view.at
+	scene.camera_yaw = float(view.get("yaw", 0.0))
 	scene.camera.position = view.at + Vector3(4.6, 5, 10)
 	scene.own_village.update_focus(view.at, 0.0)
 	scene._layout()
@@ -137,6 +141,8 @@ func _capture(view: Dictionary) -> bool:
 		return false
 	captures.append({"file": filename, "view": view.name, "width": view.size.x, "height": view.size.y,
 		"position": [at.x, at.y, at.z], "driving": scene.driving, "camera": "normal gameplay follow camera",
+		"missionRect": [scene.mission_panel.position.x, scene.mission_panel.position.y, scene.mission_panel.size.x, scene.mission_panel.size.y],
+		"logicalSafeArea": [scene.safe_ui.size.x, scene.safe_ui.size.y],
 		"vegetationClearance": clearance,
 		"frames": durations.size(), "frameMsMedian": durations[30], "frameMsP95": durations[56], "frameMsMax": durations[59],
 		"drawCalls": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),

@@ -641,7 +641,10 @@ func _fit_welcome_camera() -> void:
 	var garage_stage: bool = step == 2 and garage_interior.root.visible
 	if garage_stage:
 		focus = Vector3(0, 0.62, 0.15)
-		direction = Vector3(-2.35, 0.82, -3.6).normalized()
+		# The landscape drawer offsets the optical origin to the left. A
+		# shallow view from the right keeps that origin inside the service bay
+		# instead of backing through the left wall while framing the whole kart.
+		direction = Vector3(1.6, 0.82, -4.6).normalized()
 	# Fahrer: nah an Figur und Cockpit, leicht von vorn – Gesicht und Silhouette groß.
 	var driver_stage: bool = step == 1 and inspection_view == 0
 	# Hauptmenü (offenes Fold): Kart und Lumo füllen die linke Bühne; der Lichtring darf
@@ -674,13 +677,14 @@ func _fit_welcome_camera() -> void:
 	else:
 		points = _stage_subject_points(garage_stage or driver_stage or landing_stage)
 		if driver_stage and is_instance_valid(preview_kart):
-			# Nur Figur und Cockpit füllen das Bild (nicht die ganze Kartbreite): Kopf, Ohren
-			# und Oberkörper der (teils geskinnten) Figuren groß, Räder dürfen angeschnitten sein.
-			points.clear()
-			for x in [-0.5, 0.5]:
-				for y in [0.95, 2.02]:
-					for z in [-0.55, 0.4]:
-						points.append(preview_kart.to_global(Vector3(x, y, z)))
+			points = _driver_subject_points()
+			if points.is_empty():
+				# The original Lumo has its established animated head/cockpit fit.
+				# Production rivals use their actual selected mesh silhouette.
+				for x in [-0.5, 0.5]:
+					for y in [0.95, 2.02]:
+						for z in [-0.55, 0.4]:
+							points.append(preview_kart.to_global(Vector3(x, y, z)))
 		if garage_stage and aspect >= 1.0:
 			var plinth: MeshInstance3D = garage_interior.turntable.get_parent().get_node("GarageTurntablePlinth")
 			var base := plinth.mesh as CylinderMesh
@@ -773,10 +777,26 @@ func _visible_stage_region() -> Rect2:
 	return Rect2((clear.position - stage.position) / stage.size, clear.size / stage.size)
 
 
+## The production animals are authored seated. Their real mesh bounds include
+## different ears, tails and shells; the original Lumo keeps his measured head fit.
+func _driver_subject_points() -> Array[Vector3]:
+	var points: Array[Vector3] = []
+	if not is_instance_valid(preview_kart) or not is_instance_valid(preview_kart.production_driver):
+		return points
+	for mesh in preview_kart.production_driver.find_children("*", "MeshInstance3D", true, false):
+		if not mesh.is_visible_in_tree():
+			continue
+		var bounds: AABB = mesh.get_aabb()
+		for corner in range(8):
+			points.append(mesh.to_global(bounds.get_endpoint(corner)))
+	return points
+
+
 func _stage_subject_points(close_up: bool = false) -> Array[Vector3]:
 	var points: Array[Vector3] = []
 	for mesh in preview_kart.find_children("*", "MeshInstance3D", true, false):
-		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == preview_kart.far_mesh:
+		var seated_rival: bool = is_instance_valid(preview_kart.production_driver) and preview_kart.production_driver.is_ancestor_of(mesh)
+		if not mesh.is_visible_in_tree() or (mesh.skin != null and not seated_rival) or mesh == preview_kart.far_mesh:
 			continue
 		var bounds: AABB = mesh.get_aabb()
 		for corner in range(8):

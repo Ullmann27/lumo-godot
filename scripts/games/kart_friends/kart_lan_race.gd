@@ -26,6 +26,7 @@ var typed: String = ""
 var start_button: Button
 var result_row: Control
 var _start_pending: bool = false
+var _entry_skin_scale := -1.0
 
 
 func setup(owner_island: Node, name: String) -> void:
@@ -41,14 +42,8 @@ func setup(owner_island: Node, name: String) -> void:
 	entry = Button.new()
 	entry.name = "KartLanEntry"
 	entry.text = "Zusammen fahren"
-	entry.add_theme_font_size_override("font_size", 24)
-	MODAL_STYLE.dress_button(entry, 1.0)
-	# Oben in der freien Leiste zwischen Profil und Sternen, nicht über Lumo.
-	entry.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	entry.offset_left = -500.0
-	entry.offset_right = -200.0
-	entry.offset_top = 18.0
-	entry.offset_bottom = 82.0
+	entry.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	entry.hide()
 	entry.pressed.connect(open_lobby)
 	island.safe_ui.add_child(entry)
 
@@ -56,12 +51,27 @@ func setup(owner_island: Node, name: String) -> void:
 func _process(_delta: float) -> void:
 	if is_instance_valid(entry):
 		var landing: Variant = island.get("reference_landing")
+		var entry_rect := Rect2()
+		if is_instance_valid(landing) and landing.has_method("set_friends_available"):
+			landing.set_friends_available(true)
+			entry_rect = landing.friends_entry_rect()
 		entry.visible = (
 			bool(island.menu_active)
 			and not is_instance_valid(panel)
 			and is_instance_valid(landing)
 			and (landing as Control).visible
+			and entry_rect.has_area()
 		)
+		if entry.visible:
+			var parent_canvas := entry.get_parent() as CanvasItem
+			var local_rect: Rect2 = parent_canvas.get_global_transform().affine_inverse() * entry_rect
+			var scale := maxf(float(landing._layout_scale), 0.25)
+			if not is_equal_approx(scale, _entry_skin_scale):
+				MODAL_STYLE.dress_button(entry, scale)
+				entry.add_theme_font_size_override("font_size", roundi(17.0 * scale))
+				_entry_skin_scale = scale
+			entry.position = local_rect.position
+			entry.size = local_rect.size
 
 
 func _info() -> Dictionary:

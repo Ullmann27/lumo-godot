@@ -43,6 +43,9 @@ var tier := "medium"
 var budget: Dictionary = BUDGETS.medium
 var animated: Array[Node3D] = []
 var bridge_decks: Array[Vector3] = []
+## Disabled in the original village. World opts into a seam beyond its town.
+var terrain_west_entry_x := -INF
+var terrain_west_entry_blend_width := 20.0
 
 
 static func plot_coordinate(index: int) -> Vector2i:
@@ -114,6 +117,8 @@ func build_landscape(mode := "settlement") -> void:
 	tier = LumoQuality.tier()
 	budget = BUDGETS.get(tier, BUDGETS.medium)
 	landscape = LANDSCAPE.new()
+	landscape.west_entry_x = terrain_west_entry_x
+	landscape.west_entry_blend_width = terrain_west_entry_blend_width
 	add_child(landscape)
 	landscape.build(tier)
 	for side in [false, true]:
@@ -253,7 +258,7 @@ func _paint(opponent: bool) -> void:
 
 func _place(x: float, z: float, scale: float, yaw: float, sink := 0.05) -> Transform3D:
 	var basis := Basis(Vector3.UP, yaw).scaled(Vector3.ONE * scale)
-	return Transform3D(basis, Vector3(x, TERRAIN.height(x, z) - sink, z))
+	return Transform3D(basis, Vector3(x, landscape.surface_height(x, z) - sink, z))
 
 
 ## Batched scenery around the unlocked town. Trees and wildflowers move to
@@ -338,6 +343,13 @@ func _build_wilderness() -> void:
 			var px := x + rng.randf_range(-0.45, 0.45) * spacing
 			var pz := z + rng.randf_range(-0.45, 0.45) * spacing
 			x += spacing
+			# The World seam replaces the western mountain overlap, including
+			# its trees and rocks. Keep the joining walking/driving lane clear.
+			if is_finite(terrain_west_entry_x):
+				if px < terrain_west_entry_x + 4.0:
+					continue
+				if px < terrain_west_entry_x + terrain_west_entry_blend_width and absf(pz - 6.0) < 5.0:
+					continue
 			# Kein Wald auf Bauland: weder in der Stadt des Kindes (bis Ring 32)
 			# noch im alten Ostufer-Ortsteil noch in den Nachbarstädten.
 			if absf(px + TOWN_CENTER) < PLAYER_HALF_EXTENT and absf(pz) < PLAYER_HALF_EXTENT:
@@ -346,7 +358,7 @@ func _build_wilderness() -> void:
 				continue
 			if not TERRAIN.territory_at(px, pz).is_empty():
 				continue
-			var h := TERRAIN.height(px, pz)
+			var h: float = landscape.surface_height(px, pz)
 			if h < TERRAIN.WATER_LEVEL + 0.7 or absf(px - TERRAIN.river_center(pz)) < 12.0:
 				continue
 			var steep := TERRAIN.steepness(px, pz)

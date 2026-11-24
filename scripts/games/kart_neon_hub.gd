@@ -92,6 +92,8 @@ var _live_start: Button
 var _weekly_track := ""
 var _stage_bounds := Rect2()
 var _hub_ready := false
+var _friends_available := false
+var _friends_entry_bounds := Rect2()
 
 
 func _ready() -> void:
@@ -802,6 +804,20 @@ func _layout() -> void:
 		return
 	ADAPTIVE_LAYOUT.arrange(self)
 	_publish_stage_region()
+
+
+func set_friends_available(available: bool) -> void:
+	if _friends_available == available:
+		return
+	_friends_available = available
+	_layout()
+
+
+## The LAN controller owns the button; this menu owns its reserved layout space.
+func friends_entry_rect() -> Rect2:
+	if not _friends_available or not visible or (_overlay != null and _overlay.visible):
+		return Rect2()
+	return get_global_transform() * _friends_entry_bounds
 
 
 func _publish_stage_region() -> void:

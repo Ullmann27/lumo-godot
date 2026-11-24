@@ -58,13 +58,25 @@ func _vehicle(id: String) -> void:
 			is_finite(fit_scale.x) and is_finite(fit_scale.y) and is_finite(fit_scale.z),
 			id + " finite fit"
 		)
-		var fitted := Vector3(
-			source_size.z * fit_scale.z,
-			source_size.y * fit_scale.y,
-			source_size.x * fit_scale.x
-		)
-		_check(_close_vec(fitted, target_size * PRODUCTION.MESHY_CLOSE_MARGIN, 0.003),
-			id + " fits proven body envelope")
+		# Measure the actual rendered transform, independently of fit metadata.
+		# Metadata-only multiplication missed both the parent-axis scale bug and
+		# the discarded authored LOD0 pivot in the delivered Android build.
+		var stock_mesh: MeshInstance3D = kart.stock_close_mesh
+		var close_mesh: MeshInstance3D = kart.meshy_close_mesh
+		var stock_box := stock_mesh.get_aabb()
+		var source_box := close_mesh.get_aabb()
+		var into_stock := stock_mesh.global_transform.affine_inverse() * close_mesh.global_transform
+		var fitted := AABB(into_stock * source_box.get_endpoint(0), Vector3.ZERO)
+		for corner in range(1, 8):
+			fitted = fitted.expand(into_stock * source_box.get_endpoint(corner))
+		_check(_close_vec(fitted.size, stock_box.size * PRODUCTION.MESHY_CLOSE_MARGIN, 0.003),
+			id + " actual transformed shell fits proven body envelope")
+		_check(_close_vec(fitted.get_center(), stock_box.get_center(), 0.003),
+			id + " actual transformed shell retains authored chassis pivot")
+		var nose := (close_mesh.global_basis * Vector3.LEFT).normalized()
+		var chassis_forward := (stock_mesh.global_basis * Vector3.FORWARD).normalized()
+		_check(nose.dot(chassis_forward) > 0.999,
+			id + " shell nose follows chassis forward axis")
 		_check(bool(kart.meshy_close_mesh.get_meta("mechanics_preserved", false)),
 			id + " visual-only mechanics marker")
 	kart.set_lod(0)

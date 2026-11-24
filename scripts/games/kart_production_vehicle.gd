@@ -277,6 +277,7 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 	var visual := MeshInstance3D.new()
 	visual.name = "MeshyLOD0_" + design
 	visual.mesh = source_mesh.mesh
+	var source_transform := _relative_transform(source_mesh, null)
 	visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	var fallback_finish := StandardMaterial3D.new()
 	fallback_finish.albedo_color = Color("9aa8b8")
@@ -289,7 +290,7 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 	source_root.free()
 
 	var target_box := target_mesh.get_aabb()
-	var source_box := visual.get_aabb()
+	var source_box := source_transform * visual.get_aabb()
 	if (
 		target_box.size.x <= 0.001 or target_box.size.y <= 0.001 or target_box.size.z <= 0.001
 		or source_box.size.x <= 0.001 or source_box.size.y <= 0.001 or source_box.size.z <= 0.001
@@ -306,8 +307,17 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 		target_box.size.y / source_box.size.y,
 		target_box.size.x / source_box.size.z
 	) * MESHY_CLOSE_MARGIN
-	visual.basis = Basis(Vector3.UP, -PI / 2.0).scaled(local_scale)
-	visual.position = target_box.get_center() - visual.basis * source_box.get_center()
+	# Scale in the imported mesh's axes before yawing into the chassis axes.
+	# Basis.scaled() instead scales in parent axes and stretches the length a
+	# second time (Glider became 4.8 m long instead of its 2.44 m envelope).
+	var fit_basis := Basis(Vector3.UP, -PI / 2.0).scaled_local(local_scale)
+	var fitted := Transform3D(
+		fit_basis, target_box.get_center() - fit_basis * source_box.get_center()
+	)
+	# Fleet LOD0 meshes have authored object pivots. Their AABB is mesh-local,
+	# while this visual is a sibling: preserve the complete target transform,
+	# including the 0.467 m / 1.122 m offsets on the Comet-based shells.
+	visual.transform = _relative_transform(target_mesh, shell) * fitted * source_transform
 	visual.set_meta("meshy_visual_only", true)
 	visual.set_meta("mechanics_preserved", true)
 	visual.set_meta("fit_target_size", target_box.size)
@@ -319,6 +329,15 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 	_lod_meshes[0].append(visual)
 	source_paths.append(meshy_shell_path)
 	return true
+
+
+static func _relative_transform(node: Node3D, parent: Node3D) -> Transform3D:
+	var result := Transform3D.IDENTITY
+	var current := node
+	while current != null and current != parent:
+		result = current.transform * result
+		current = current.get_parent_node_3d()
+	return result
 
 
 func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary) -> void:

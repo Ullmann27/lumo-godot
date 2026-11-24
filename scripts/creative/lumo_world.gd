@@ -280,11 +280,11 @@ func _create_owned_village(profile: String) -> void:
 	add_child(own_village)
 	own_village.setup(profile, clampi(int(SceneRouter.launch_options.get("buildSlot", 1)), 1, 6))
 	# This short road joins the mainland to the actual heightmapped village.
-	# From x=280 onward it follows the same original height samples.
+	# It follows the same World-only seam as the rendered terrain and collider.
 	var previous_point := Vector3(271, 0.04, 6)
 	for index in range(1, 30):
 		var x: float = 271.0 + float(index) * 7.8
-		var height: float = OWN_VILLAGE.TERRAIN.height(x - OWN_VILLAGE.ORIGIN.x, 6.0) if x >= 280 else 0.0
+		var height: float = own_village.surface_height(x, 6.0)
 		var next := Vector3(x, maxf(0.04, height + 0.07), 6.0)
 		var center := (previous_point + next) * 0.5
 		var direction := next - previous_point
@@ -341,12 +341,15 @@ func _build_ui() -> void:
 	layer.add_child(safe_ui)
 	mission_panel = PanelContainer.new()
 	mission_panel.add_theme_stylebox_override("panel", KIT.tinted_panel(Color("102c42"), Color("7bdfa7"), 18))
+	mission_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	safe_ui.add_child(mission_panel)
-	mission_label = KIT.label("", 18)
+	mission_label = KIT.label("", 16)
 	mission_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	mission_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mission_panel.add_child(mission_label)
 	status_label = KIT.label("Folge dem Stern zu Nelli. Du kannst die ganze Welt in Ruhe erkunden.", 16)
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	status_label.add_theme_color_override("font_shadow_color", Color("102438"))
 	status_label.add_theme_constant_override("shadow_offset_x", 2)
 	status_label.add_theme_constant_override("shadow_offset_y", 2)
@@ -387,6 +390,8 @@ func _build_ui() -> void:
 	for button in [action_button, vehicle_button, run_button, map_button, build_button, exit_button]:
 		button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 		button.minimum_size_changed.connect(func(): _layout.call_deferred())
+	for button in [map_button, build_button, exit_button]:
+		button.add_theme_font_size_override("font_size", 16)
 	mission_panel.minimum_size_changed.connect(func(): _layout.call_deferred())
 
 
@@ -553,18 +558,22 @@ func _layout() -> void:
 	var size: Vector2 = safe_ui.size
 	var portrait := size.y > size.x
 	var margin := 12.0
-	exit_button.size = Vector2(maxf(80, exit_button.get_combined_minimum_size().x), maxf(50, exit_button.get_combined_minimum_size().y))
-	map_button.size = Vector2(maxf(104, map_button.get_combined_minimum_size().x), maxf(50, map_button.get_combined_minimum_size().y))
-	build_button.size = Vector2(maxf(104, build_button.get_combined_minimum_size().x), maxf(50, build_button.get_combined_minimum_size().y))
+	var top_gap := 8.0
+	exit_button.size = Vector2(maxf(80, exit_button.get_combined_minimum_size().x), maxf(48, exit_button.get_combined_minimum_size().y))
+	map_button.size = Vector2(maxf(104, map_button.get_combined_minimum_size().x), maxf(48, map_button.get_combined_minimum_size().y))
+	build_button.size = Vector2(maxf(104, build_button.get_combined_minimum_size().x), maxf(48, build_button.get_combined_minimum_size().y))
 	exit_button.position = Vector2(size.x - exit_button.size.x - margin, margin)
-	map_button.position = Vector2(exit_button.position.x - map_button.size.x - margin, margin)
-	build_button.position = Vector2(map_button.position.x - build_button.size.x - margin, margin)
+	map_button.position = Vector2(exit_button.position.x - map_button.size.x - top_gap, margin)
+	build_button.position = Vector2(map_button.position.x - build_button.size.x - top_gap, margin)
+	# Unfolded portrait has enough width for a compact mission and controls
+	# on one row. Narrow phones keep the separate, fully readable action row.
+	var beside_mission := not portrait or build_button.position.x - margin * 2 >= 330.0
 	var mission_width := maxf(48, size.x - margin * 2)
-	if not portrait:
+	if beside_mission:
 		mission_width = minf(610, maxf(48, build_button.position.x - margin * 2))
 	mission_panel.position = Vector2(margin, margin)
-	mission_panel.size = Vector2(mission_width, maxf(138 if portrait else 110, mission_panel.get_combined_minimum_size().y))
-	if portrait:
+	mission_panel.size = Vector2(mission_width, maxf(64, mission_panel.get_combined_minimum_size().y))
+	if not beside_mission:
 		var top_actions_y := mission_panel.position.y + mission_panel.size.y + 6
 		exit_button.position.y = top_actions_y
 		map_button.position.y = top_actions_y
@@ -575,7 +584,7 @@ func _layout() -> void:
 	for button in buttons:
 		button_width = maxf(button_width, ceilf(button.get_combined_minimum_size().x))
 	var stick_space := maxf(48, size.x - button_width - margin * 3)
-	var stick_size := minf(clampf(minf(size.x * 0.39, size.y * 0.44), 120, 180), stick_space)
+	var stick_size := minf(clampf(minf(size.x * 0.39, size.y * 0.44), 120, 164), stick_space)
 	# This shared Kart control starts with a 188px minimum. Adapt only this
 	# World instance so its real touch rectangle fits beside the action column.
 	joystick.custom_minimum_size = Vector2.ONE * 48
@@ -587,9 +596,10 @@ func _layout() -> void:
 		button.size = Vector2(button_width, maxf(heights[index], button.get_combined_minimum_size().y))
 		button.position = Vector2(size.x - button.size.x - margin, button_bottom - button.size.y)
 		button_bottom = button.position.y - 6
-	var status_y := map_button.position.y + maxf(map_button.size.y, exit_button.size.y) + 12 if portrait else mission_panel.position.y + mission_panel.size.y + 8
+	var top_bottom := maxf(mission_panel.get_rect().end.y, maxf(map_button.get_rect().end.y, build_button.get_rect().end.y))
+	var status_y := top_bottom + 8
 	status_label.position = Vector2(margin, status_y)
-	status_label.size = Vector2(size.x - 24, 70)
+	status_label.size = Vector2(size.x - 24, 48)
 	if size.y < 420:
 		status_label.position = Vector2(stick_size + 24, size.y - 82)
 		status_label.size = Vector2(maxf(120, size.x - stick_size - button_width - 60), 70)
@@ -842,16 +852,23 @@ func _toggle_run() -> void:
 
 
 func _toggle_vehicle() -> void:
-	if paused:
+	if paused or build_mode:
 		return
 	if driving:
 		if absf(drive_speed) > 0.75:
 			status_label.text = "Halte zuerst an. Mit der Bremse kommst du ruhig zum Stehen."
 			return
-		var exit_at := kart_body.position + kart_body.global_basis.x * 2.2
-		if absf(exit_at.z) < 7.0 and exit_at.x > 65.0:
-			exit_at.z = 7.5 if exit_at.z >= 0 else -7.5
-		player.position = exit_at + Vector3.UP * 0.2
+		var exit_at: Variant = _safe_vehicle_exit()
+		if exit_at == null:
+			status_label.text = "Hier ist es zu eng zum Aussteigen. Fahre ein Stück auf einen freien Weg."
+			return
+		player.global_position = exit_at
+		player.velocity = Vector3.ZERO
+		kart_body.velocity = Vector3.ZERO
+		airborne_time = 0.0
+		last_safe = player.position
+		camera_yaw = kart_body.rotation.y
+		fox.rotation.y = kart_body.rotation.y
 		player_shape.set_deferred("disabled", false)
 		fox.show()
 		fox.set_suspended(false)
@@ -866,6 +883,7 @@ func _toggle_vehicle() -> void:
 			return
 		driving = true
 		player.velocity = Vector3.ZERO
+		airborne_time = 0.0
 		player_shape.set_deferred("disabled", true)
 		fox.hide()
 		fox.set_suspended(true)
@@ -873,7 +891,45 @@ func _toggle_vehicle() -> void:
 		vehicle_button.text = "Aussteigen"
 		run_button.text = "Bremse"
 		status_label.text = "Dein Kart: Stick vor zum Fahren, seitlich zum Lenken. Langsam und rücksichtsvoll."
+	camera_contacts.clear()
+	gesture_index = -1
+	gesture_moved = false
 	_save()
+
+
+func _safe_vehicle_exit() -> Variant:
+	var space := get_world_3d().direct_space_state
+	var excluded: Array[RID] = [player.get_rid(), kart_body.get_rid()]
+	var right := kart_body.global_basis.x.normalized()
+	var forward := -kart_body.global_basis.z.normalized()
+	for offset in [right * 2.2, -right * 2.2, -forward * 3.2, forward * 3.2]:
+		var candidate: Vector3 = kart_body.global_position + offset
+		var local := to_local(candidate)
+		# Only the real Sonnendorf/Sternenstadt road has these sidewalks.
+		if local.x >= 67.0 and local.x <= 271.0 and absf(local.z) < 7.0:
+			local.z = 7.5 if local.z >= 0.0 else -7.5
+			candidate = to_global(local)
+		var ground_query := PhysicsRayQueryParameters3D.create(
+			candidate + Vector3.UP * 2.0,
+			candidate + Vector3.DOWN * 3.0,
+			player.collision_mask,
+			excluded
+		)
+		var ground := space.intersect_ray(ground_query)
+		if ground.is_empty() or ground.normal.y < cos(player.floor_max_angle):
+			continue
+		if absf(float(ground.position.y) - kart_body.global_position.y) > 1.5:
+			continue
+		var feet: Vector3 = ground.position + Vector3.UP * 0.10
+		var body_query := PhysicsShapeQueryParameters3D.new()
+		body_query.shape = player_shape.shape
+		body_query.transform = Transform3D(player.global_basis, feet + player.global_basis * player_shape.position)
+		body_query.margin = 0.025
+		body_query.collision_mask = player.collision_mask
+		body_query.exclude = excluded
+		if space.intersect_shape(body_query, 1).is_empty():
+			return feet
+	return null
 
 
 func _open_dialog(title: String, body: String) -> void:
@@ -1037,7 +1093,7 @@ func _report_completed_reward() -> bool:
 func _update_mission() -> void:
 	var mission: Dictionary = model.current()
 	marker.visible = not mission.is_empty()
-	mission_label.text = "LUMO WORLD · %d / %d Aufträge\n%s\n%s" % [model.completed.size(), STATE.MISSIONS.size(), str(mission.get("title", "Deine Welt voller Freunde")), str(mission.get("lead", "Schatzinsel, Sonnendorf und Sternenstadt stehen dir offen."))]
+	mission_label.text = "%s · %d / %d Aufträge\n%s" % [str(mission.get("title", "Deine Welt voller Freunde")), model.completed.size(), STATE.MISSIONS.size(), str(mission.get("lead", "Schatzinsel, Sonnendorf und Sternenstadt stehen dir offen."))]
 	if mission.is_empty():
 		wonder.set_routes(_active_position(), [])
 		var post_briefing: String = friend_post.briefing()

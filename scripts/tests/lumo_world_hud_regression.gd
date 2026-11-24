@@ -38,7 +38,7 @@ func _run() -> void:
 		DirAccess.remove_absolute(world_path)
 		_finish()
 		return
-	for dimensions in [Vector2i(344, 882), Vector2i(640, 360), Vector2i(720, 1280), Vector2i(1280, 720)]:
+	for dimensions in [Vector2i(344, 882), Vector2i(640, 360), Vector2i(720, 1280), Vector2i(884, 920), Vector2i(1384, 1400), Vector2i(1280, 720)]:
 		root.size = dimensions
 		# Real mission proximity updates the production label during physics.
 		scene.player.position = scene.model.current().at + Vector3(2, 0.2, 0)
@@ -69,7 +69,7 @@ func _assert_hud(scene, expected_text: String, context: String, expected_enabled
 	_check(scene.action_button.text == expected_text, context + ": real interaction text is complete")
 	_check(scene.action_button.disabled != expected_enabled, context + ": interaction availability matches real proximity")
 	var area := Rect2(Vector2.ZERO, scene.safe_ui.size)
-	var buttons: Array[Button] = [scene.action_button, scene.vehicle_button, scene.run_button, scene.map_button, scene.exit_button]
+	var buttons: Array[Button] = [scene.action_button, scene.vehicle_button, scene.run_button, scene.build_button, scene.map_button, scene.exit_button]
 	for button in buttons:
 		var label := context + ": " + button.text
 		_check(button.size.x >= 48 and button.size.y >= 48, label + " retains a 48px touch target")
@@ -81,6 +81,11 @@ func _assert_hud(scene, expected_text: String, context: String, expected_enabled
 	_check(not scene.vehicle_button.get_rect().intersects(scene.run_button.get_rect()), context + ": vehicle and movement controls do not overlap")
 	_check(not scene.map_button.get_rect().intersects(scene.exit_button.get_rect()), context + ": map and pause controls do not overlap")
 	_check(not scene.mission_panel.get_rect().intersects(scene.map_button.get_rect()), context + ": mission text does not cover the map control")
+	_check(not scene.mission_panel.get_rect().intersects(scene.build_button.get_rect()), context + ": mission text does not cover the build control")
+	_check(not scene.build_button.get_rect().intersects(scene.map_button.get_rect()), context + ": build and map controls do not overlap")
+	if area.size.x >= 720.0 and area.size.y > area.size.x:
+		_check(is_equal_approx(scene.build_button.position.y, scene.mission_panel.position.y), context + ": wide Fold portrait uses a single top row")
+		_check(scene.mission_panel.size.y <= 112.0, context + ": compact mission preserves the visible world")
 
 
 func _settle() -> void:

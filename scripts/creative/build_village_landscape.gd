@@ -20,6 +20,10 @@ var paint_texture: ImageTexture
 var chunks: Array[MeshInstance3D] = []
 var water: MeshInstance3D
 var triangles := 0
+## Optional presentation seam used only when this village joins Lumo World.
+## The original heightmap, plot coordinates and standalone village stay intact.
+var west_entry_x := -INF
+var west_entry_blend_width := 20.0
 
 
 func build(quality: String) -> void:
@@ -83,13 +87,34 @@ func _indices(start: int, finish: int, stride: int) -> PackedInt32Array:
 	return result
 
 
+func first_grid_column() -> int:
+	if not is_finite(west_entry_x):
+		return 0
+	return clampi(ceili((west_entry_x - TERRAIN.origin().x) / TERRAIN.step()), 0, TERRAIN.grid_size().x - 2)
+
+
+func surface_height(x: float, z: float) -> float:
+	var height := TERRAIN.height(x, z)
+	if not is_finite(west_entry_x):
+		return height
+	return height * smoothstep(west_entry_x, west_entry_x + maxf(west_entry_blend_width, TERRAIN.step()), x)
+
+
+func _grid_height(ix: int, iz: int) -> float:
+	var height := TERRAIN.grid_height(ix, iz)
+	if not is_finite(west_entry_x):
+		return height
+	var x := TERRAIN.origin().x + float(ix) * TERRAIN.step()
+	return height * smoothstep(west_entry_x, west_entry_x + maxf(west_entry_blend_width, TERRAIN.step()), x)
+
+
 func _build_terrain() -> void:
 	var grid := TERRAIN.grid_size()
 	var origin := TERRAIN.origin()
 	var step := TERRAIN.step()
 	var stride := 2 if tier == "low" else 1
 	for cz in range(0, grid.y - 1, CHUNK_CELLS):
-		for cx in range(0, grid.x - 1, CHUNK_CELLS):
+		for cx in range(first_grid_column(), grid.x - 1, CHUNK_CELLS):
 			var xs := _indices(cx, mini(cx + CHUNK_CELLS, grid.x - 1), stride)
 			var zs := _indices(cz, mini(cz + CHUNK_CELLS, grid.y - 1), stride)
 			var verts := PackedVector3Array()
@@ -99,11 +124,11 @@ func _build_terrain() -> void:
 			var indices := PackedInt32Array()
 			for iz in zs:
 				for ix in xs:
-					var h := TERRAIN.grid_height(ix, iz)
-					var hl := TERRAIN.grid_height(ix - 1, iz)
-					var hr := TERRAIN.grid_height(ix + 1, iz)
-					var hd := TERRAIN.grid_height(ix, iz - 1)
-					var hu := TERRAIN.grid_height(ix, iz + 1)
+					var h := _grid_height(ix, iz)
+					var hl := _grid_height(ix - 1, iz)
+					var hr := _grid_height(ix + 1, iz)
+					var hd := _grid_height(ix, iz - 1)
+					var hu := _grid_height(ix, iz + 1)
 					verts.append(Vector3(origin.x + ix * step, h, origin.y + iz * step))
 					var n := Vector3(hl - hr, 2.0 * step, hd - hu).normalized()
 					normals.append(n)
@@ -161,14 +186,16 @@ func _build_water() -> void:
 func collision_shape() -> CollisionShape3D:
 	var grid := TERRAIN.grid_size()
 	var step := TERRAIN.step()
+	var first_column := first_grid_column()
+	var columns := grid.x - first_column
 	var shape := HeightMapShape3D.new()
-	shape.map_width = grid.x
+	shape.map_width = columns
 	shape.map_depth = grid.y
 	var data := PackedFloat32Array()
-	data.resize(grid.x * grid.y)
+	data.resize(columns * grid.y)
 	for iz in range(grid.y):
-		for ix in range(grid.x):
-			data[iz * grid.x + ix] = TERRAIN.grid_height(ix, iz) / step
+		for ix in range(columns):
+			data[iz * columns + ix] = _grid_height(ix + first_column, iz) / step
 	shape.map_data = data
 	var holder := CollisionShape3D.new()
 	holder.name = "TerrainCollision"
@@ -176,7 +203,7 @@ func collision_shape() -> CollisionShape3D:
 	holder.scale = Vector3.ONE * step
 	var origin := TERRAIN.origin()
 	var extent := TERRAIN.size()
-	holder.position = Vector3(origin.x + extent.x * 0.5, 0, origin.y + extent.y * 0.5)
+	holder.position = Vector3(origin.x + float(first_column) * step + float(columns - 1) * step * 0.5, 0, origin.y + extent.y * 0.5)
 	return holder
 
 

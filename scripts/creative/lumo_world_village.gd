@@ -10,6 +10,8 @@ const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const RESIDENTS = preload("res://scripts/creative/build_settlement_residents.gd")
 const ORIGIN := Vector3(600, 0, 0)
+const WEST_ENTRY_X := -320.0
+const WEST_ENTRY_BLEND_WIDTH := 20.0
 const MAX_NEAR := 80
 var model
 var region: Node3D
@@ -45,6 +47,11 @@ func setup(child: String, project_slot: int) -> void:
 	source_path = save_path_for(child_key, slot)
 	position = ORIGIN
 	region = REGION.new()
+	# The authored heightmap now starts at -440, not -320. Importing its
+	# western mountains unchanged put a 70m ridge across Sonnendorf's road.
+	# Crop only this projection; all saved plots begin east of the blend.
+	region.terrain_west_entry_x = WEST_ENTRY_X
+	region.terrain_west_entry_blend_width = WEST_ENTRY_BLEND_WIDTH
 	add_child(region)
 	region.build_landscape("settlement")
 	# The original terrain paints paths in world coordinates; translate only
@@ -93,6 +100,10 @@ func setup(child: String, project_slot: int) -> void:
 	set_meta("projected_buildings", town.buildings.size())
 	set_meta("source_path", source_path)
 	set_meta("source_child", child_key)
+
+
+func surface_height(world_x: float, world_z: float) -> float:
+	return region.landscape.surface_height(world_x - ORIGIN.x, world_z - ORIGIN.z)
 
 
 func update_focus(world_position: Vector3, delta: float) -> void:

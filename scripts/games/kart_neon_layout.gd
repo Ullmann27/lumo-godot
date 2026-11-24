@@ -37,11 +37,14 @@ static func arrange(hub: Control) -> void:
 	var m := 10.0
 	var g := 8.0
 	var header_h := 52.0 if short else 62.0
+	var friends_second_row: bool = hub._friends_available and area.x < 680.0
 	var nav_h := 60.0 if short else 66.0
 	_header(hub, Rect2(m, m, area.x - 2 * m, header_h), k)
 	var nav_rect := Rect2(m, area.y - m - nav_h, area.x - 2 * m, nav_h)
 	_nav(hub, nav_rect, k, short)
 	var top := m + header_h + g
+	if friends_second_row:
+		top += MIN_TOUCH + g
 	var bottom := nav_rect.position.y - g
 	if landscape:
 		_landscape(hub, Rect2(m, top, area.x - 2 * m, bottom - top), k, g, short)
@@ -87,7 +90,19 @@ static func _header(hub: Control, r: Rect2, k: float) -> void:
 	var stars_w := 70.0 if narrow else 96.0
 	_place(hub._stars_chip, Rect2(r.end.x - stars_w, r.position.y + (r.size.y - chip) * 0.5, stars_w, chip), k)
 	var px := r.position.x + chip + logo_w + 6
-	var card_w := minf(r.end.x - stars_w - 6 - px, 340.0)
+	var player_end := r.end.x - stars_w - 6
+	hub._friends_entry_bounds = Rect2()
+	if hub._friends_available:
+		if r.size.x >= 660.0:
+			var friends_w := 168.0
+			player_end -= friends_w + 8.0
+			hub._friends_entry_bounds = Rect2(Vector2(player_end + 8.0, r.position.y + (r.size.y - MIN_TOUCH) * 0.5) * k,
+				Vector2(friends_w, MIN_TOUCH) * k)
+		else:
+			var friends_w := minf(r.size.x, 300.0)
+			hub._friends_entry_bounds = Rect2(Vector2(r.position.x + (r.size.x - friends_w) * 0.5, r.end.y + 8.0) * k,
+				Vector2(friends_w, MIN_TOUCH) * k)
+	var card_w := minf(player_end - px, 340.0)
 	var card_h := minf(r.size.y, 50.0 if narrow else 56.0)
 	_place(hub._player, Rect2(px, r.position.y + (r.size.y - card_h) * 0.5, maxf(card_w, 96.0), card_h), k)
 
