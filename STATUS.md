@@ -1,3 +1,13 @@
+# Lumo World: Kart beim Ersteintritt sichtbar — 24.11.2026
+
+Folgezweig `grok/lumo-world-kart-20261124` auf PR #226: Ein neues Spiel stellt
+das Kart sichtbar 4,2 m vor Lumo auf den Inselweg; **Kart suchen** führt ohne
+Fortschritts- oder Speicheränderung zum abgestellten Kart; Nelli, Bruno und
+Tilda sind als **Computerfigur** beschriftet und auf der Karte markiert.
+Godot 4.6.3: alle zehn World-Regressionen headless bestanden, Renderer-Bilder
+unter Xvfb/OpenGL 3. Kein Android-Nachweis.
+[Übergabe](docs/handoffs/LUMO_WORLD_FIRST_ENTRY_20261124.md).
+
 # Lumo World: Kart wiederfinden — 24.11.2026
 
 Ein bestätigter Fortsetzungsfehler ist im isolierten Folgefix korrigiert:

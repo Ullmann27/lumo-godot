@@ -1,3 +1,10 @@
+# Lumo World: Ersteintritt und Kart-Führung — 24.11.2026
+
+Basis PR #226 (`6e25e43d`). Als nächstes: Draft-PR prüfen, danach den
+lumo-lernen-Pin auf den geprüften Commit setzen und den Android-Rundgang mit
+Ersteintritt, Kart suchen, Parken und Wiedereintritt fahren.
+[Übergabe](docs/handoffs/LUMO_WORLD_FIRST_ENTRY_20261124.md).
+
 # Lumo World: Kart-Fortsetzung — 24.11.2026
 
 Der begrenzte Folgefix auf `fix/world-kart-save-20261124` basiert auf
