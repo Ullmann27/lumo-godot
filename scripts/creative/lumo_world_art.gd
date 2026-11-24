@@ -77,6 +77,12 @@ func _treasure_island(root: Node3D) -> void:
 	kit.collision(ground, Vector3(0, -0.65, -29), Vector3(74, 1.3, 88))
 	NATURE.apply(island)
 	ISLAND_ART.apply(island)
+	# Solid compass pedestal beside the spawn and solid welcome-arch pillars
+	# (measured mesh footprints): Lumo and the kart stop at the stone instead of
+	# passing through the purely visual ISLAND_ART dressing and arch model.
+	kit.collision(ground, Vector3(2.45, 0.655, 4.55), Vector3(1.35, 1.31, 1.35))
+	for side in [-1.0, 1.0]:
+		kit.collision(ground, Vector3(side * 2.55, 2.0, 1.36), Vector3(0.86, 4.0, 0.9))
 	ADVENTURE.place(island, "OriginalWelcomeArch", "ruins", "arch_welcome", Transform3D(Basis.IDENTITY, Vector3(0, 0, 1.35)))
 	ADVENTURE.place(island, "OriginalGateArch", "ruins", "arch_gate", Transform3D(Basis.IDENTITY, Vector3(0, 0, -31)))
 	var chest := CHEST.instantiate() as Node3D

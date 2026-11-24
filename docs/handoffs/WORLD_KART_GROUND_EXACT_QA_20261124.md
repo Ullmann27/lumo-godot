@@ -1,0 +1,5 @@
+# World-Kart: isolierte Abnahme des Zwischenstands CH-1
+
+Produktbasis: `6c8371aa46ac2cb30113a5bc25b80f557e5cba92`. Dieser Zweig verändert keine Produktdateien, Tests, Assets, Exportparameter, bestehenden Nachweise oder main. Er ergänzt ausschließlich einen CI-Lauf und diese Erläuterung. Geprüft werden die tatsächlich vorhandenen speziellen World-Skripte für Ersteintritt und Kart-Bodenkontakt mit Godot 4.6.3, getrennten temporären Spielständen, unverändertem Quellcode, zwingenden PASS-Markern und Fehler-/Timeout-Erkennung.
+
+Die allgemeinen erfolgreichen World-Workflows werden dadurch nicht umgedeutet. Ein Fehler bleibt ein Fehler. Keine automatische Freigabe, kein APK-Bau, kein Release und keine Änderung der Flutter-Pin. Physische Android-Tests, echte Touch-Hardware und FPS sind nicht Bestandteil dieser Abnahme. Die noch ungeprüfte CH-2-Dialog-/Quest-Entwicklung ist nicht Bestandteil dieses Zweigs. Die nur auf dem anderen Agent-Rechner liegenden uncommitteten Änderungen (laut Übergabe ca. 450) werden nicht gelöscht oder als verfügbar behauptet.
