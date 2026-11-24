@@ -33,10 +33,69 @@ func _make(stars: int):
 	root.add_child(hub)
 	return hub
 
+
+func _window(dimensions: Vector2i, density: float) -> void:
+	# The production layout converts canvas pixels through the actual window
+	# and Android display density. Resizing only the child left headless at
+	# 64x64 and created a fictitious 20x UI scale before the first assertion.
+	root.get_node("HostBridge")._options["displayDensity"] = density
+	root.size = dimensions
+	await process_frame
+	await process_frame
+	_check(root.size == dimensions, "echte Fenstergröße: " + str(dimensions))
+	_check(is_equal_approx(root.get_node("MobileRuntime").get_ui_density(), density),
+		"echte Android-Dichte: " + str(density))
+
+
+func _track_layouts() -> void:
+	for config in [
+		{"size": Vector2i(412, 915), "density": 1.0},
+		{"size": Vector2i(720, 1280), "density": 2.0},
+		{"size": Vector2i(1384, 1400), "density": 1.0},
+		{"size": Vector2i(1384, 1400), "density": 2.0},
+		{"size": Vector2i(1280, 720), "density": 2.0},
+	]:
+		await _window(config.size, config.density)
+		var hub = _make(17)
+		await process_frame
+		await process_frame
+		var viewport := root.get_visible_rect()
+		var pixels_per_canvas := Vector2(root.size) / viewport.size
+		var tag := "%s @ %s dp" % [root.size, config.density]
+		_check(hub.size.is_equal_approx(viewport.size), "Menü füllt den tatsächlichen Viewport: " + tag)
+		var seen := {}
+		for step in range(CATALOG.TRACKS.size()):
+			seen[hub._featured_track] = true
+			var shown: Array[Control] = []
+			for id in hub._track_buttons:
+				var thumb: Control = hub._track_buttons[id]
+				if thumb.is_visible_in_tree():
+					shown.append(thumb)
+					_check(id != hub._featured_track, "Vorschau ergänzt die gewählte Strecke: " + tag)
+			_check(shown.size() >= 3, "mindestens drei weitere Streckenbilder: " + tag)
+			for index in range(shown.size()):
+				var rect := shown[index].get_global_rect()
+				var touch_dp := rect.size * pixels_per_canvas / float(config.density)
+				_check(touch_dp.x >= 47.99 and touch_dp.y >= 47.99,
+					"Streckenvorschau mindestens 48x48 dp: %s %s" % [tag, touch_dp])
+				_check(hub._highlight.get_global_rect().encloses(rect),
+					"vollständiges Streckenbild im Highlight: " + tag)
+				for other in range(index + 1, shown.size()):
+					_check(not rect.intersects(shown[other].get_global_rect()),
+						"getrennte Streckenbilder: %s %s/%s" % [tag, shown[index].name, shown[other].name])
+			hub._thumb_next.pressed.emit()
+			await process_frame
+			await process_frame
+		_check(seen.size() == CATALOG.TRACKS.size(), "alle Katalogstrecken erreichbar: " + tag)
+		print("[NeonHomeLayout] window=", root.size, " density=", config.density,
+			" viewport=", viewport.size, " canvas_per_dp=", hub._layout_scale, " tracks=", seen.size())
+		hub.free()
+
+
 func _run() -> void:
+	await _window(Vector2i(1280, 720), 1.0)
 	var hub = _make(17)
 	await process_frame
-	hub.size = Vector2(1280, 720)
 	await process_frame
 	_check(hub._highlight != null and hub._highlight.is_visible_in_tree(), "Strecken-Highlight sichtbar")
 	# Alle Strecken des Katalogs stehen im Hauptmenü zur Wahl (nicht nur vier).
@@ -145,10 +204,11 @@ func _run() -> void:
 	_check(hub._progress_label.text.contains("17"), "Sternenpfad nutzt echte Sterne")
 	_check(hub._player.stars == 17 and PATH.level(17) == 2, "Stufe aus echten Sternen (10 je Stufe)")
 	hub.free()
+	await _track_layouts()
 	# Ehrlicher Neustart: 0 Sterne -> Stufe 1, kein vorgetäuschter Fortschritt.
+	await _window(Vector2i(412, 915), 1.0)
 	var fresh = _make(0)
 	await process_frame
-	fresh.size = Vector2(412, 915)
 	await process_frame
 	_check(PATH.level(0) == 1 and PATH.level_progress(0).x == 0, "Neustart bei Stufe 1 mit 0 Sternen")
 	_check(PATH.path_progress(0).x == 0, "Sternenpfad startet ehrlich bei 0")
