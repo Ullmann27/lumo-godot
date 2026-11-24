@@ -3,6 +3,7 @@ extends SceneTree
 const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_interior.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 var checks := 0
 var failures: Array[String] = []
@@ -25,6 +26,14 @@ func _close_vec(a: Vector3, b: Vector3, epsilon := 0.002) -> bool:
 		and absf(a.y - b.y) <= epsilon
 		and absf(a.z - b.z) <= epsilon
 	)
+
+
+func _settle_frame() -> void:
+	# Same-callback build/free destroys materials before Compatibility processes
+	# their deferred updates. Exercise each LOD through a frame before teardown.
+	await process_frame
+	if DisplayServer.get_name() != "headless":
+		await RenderingServer.frame_post_draw
 
 
 func _vehicle(id: String) -> void:
@@ -80,15 +89,20 @@ func _vehicle(id: String) -> void:
 		_check(bool(kart.meshy_close_mesh.get_meta("mechanics_preserved", false)),
 			id + " visual-only mechanics marker")
 	kart.set_lod(0)
+	await _settle_frame()
 	_check(kart.meshy_close_mesh.visible, id + " new shell visible at LOD0")
 	_check(not kart.stock_close_mesh.visible, id + " old LOD0 hidden under new shell")
 	_check(kart.visible_surface_count() > 0, id + " close surfaces")
 	kart.set_lod(1)
+	await _settle_frame()
 	_check(not kart.meshy_close_mesh.visible, id + " Meshy shell leaves far LOD")
 	_check(kart.visible_surface_count() > 0, id + " proven LOD1 fallback")
 	kart.set_lod(2)
+	await _settle_frame()
 	_check(kart.visible_surface_count() > 0, id + " proven LOD2 fallback")
-	kart.free()
+	_check(await TEARDOWN.release_scene(self, kart, "[MeshyKart] " + id),
+		id + " scene released after rendering")
+	await _settle_frame()
 
 
 func _garage(profile: String) -> void:
@@ -97,6 +111,7 @@ func _garage(profile: String) -> void:
 	stage.add_child(platter_parent)
 	root.add_child(stage)
 	var result: Dictionary = GARAGE.build(stage, platter_parent, profile)
+	await _settle_frame()
 	_check(result.has("root") and is_instance_valid(result.root), profile + " garage root")
 	if profile == "high":
 		_check(is_instance_valid(result.get("meshy_tool_bench")), "high Meshy tool workbench")
@@ -116,15 +131,17 @@ func _garage(profile: String) -> void:
 	else:
 		_check(not is_instance_valid(result.get("meshy_tool_bench")), "low omits Meshy workbench")
 		_check(not is_instance_valid(result.get("meshy_turntable")), "low omits Meshy turntable")
-	stage.free()
+	_check(await TEARDOWN.release_scene(self, stage, "[MeshyKart] " + profile + " garage"),
+		profile + " garage released after rendering")
+	await _settle_frame()
 
 
 func _run() -> void:
 	_check(FLEET.ids().size() == 14, "fourteen canonical Karts")
 	for id in FLEET.ids():
-		_vehicle(id)
-	_garage("high")
-	_garage("low")
+		await _vehicle(id)
+	await _garage("high")
+	await _garage("low")
 	print("[MeshyKart] checks=", checks, " failures=", failures.size())
 	if failures.is_empty():
 		print("[MeshyKart] PASS: 14 fitted close shells, preserved chassis/LODs and high-detail garage props")
