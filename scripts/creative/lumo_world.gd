@@ -22,6 +22,27 @@ const BUILD_ZOOM_MIN := 28.0
 const BUILD_ZOOM_MAX := 155.0
 const PERSON_PITCH_MIN := 0.16
 const PERSON_PITCH_MAX := 1.02
+## Entry reach for the parked kart; the guide and the action button share it.
+const KART_REACH := 5.0
+## Local story residents. They are computer-controlled figures, not players.
+const RESIDENT_SPECS := [
+	["nelli_rabbit", Vector3(90, 0, 20), "Nelli"],
+	["bruno_beaver", Vector3(135, 0, -58), "Bruno"],
+	["tilda_duck", Vector3(218, 0, -34), "Tilda"]
+]
+const RESIDENT_ROLE := "Computerfigur"
+## On re-entry the follow camera turns by this angle away from the parked
+## kart, so the kart appears beside Lumo instead of behind the camera.
+const RESUME_VIEW_OFFSET := 0.5
+# The kart collision box starts exactly at the wheel contact plane (local y 0),
+# so a body resting on the floor shows its tyres on the ground, not inside it.
+const KART_BOX_SIZE := Vector3(1.5, 1.2, 2.7)
+const KART_PROBE_UP := 1.0
+const KART_PROBE_DOWN := 1.4
+const KART_GROUND_TOLERANCE := 0.02
+const KART_MAX_TILT := 0.35
+const KART_FIT_SINK := 0.6
+const KART_FALLBACK_CONTACTS: Array[Vector3] = [Vector3(-0.72, 0, -0.9), Vector3(0.72, 0, -0.9), Vector3(-0.72, 0, 0.9), Vector3(0.72, 0, 0.9)]
 
 var model = STATE.new()
 var art = ART.new()
@@ -31,6 +52,10 @@ var fox: Node3D
 var camera: Camera3D
 var kart_body: CharacterBody3D
 var kart_visual: Node3D
+var kart_beacon: Label3D
+var kart_guidance := false
+var kart_contacts: Array[Vector3] = []
+var kart_ground_pending := true
 var player_shape: CollisionShape3D
 var joystick: Control
 var safe_ui: Control
@@ -126,6 +151,8 @@ func _ready() -> void:
 	_create_owned_village(profile)
 	_create_player()
 	_create_kart()
+	if FileAccess.file_exists(save_path) and not save_blocked:
+		camera_yaw = _resume_view_yaw()
 	_create_residents()
 	_create_traffic()
 	_create_portals()
@@ -209,9 +236,9 @@ func _create_kart() -> void:
 	add_child(kart_body)
 	var shape_node := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(1.5, 1.2, 2.7)
+	shape.size = KART_BOX_SIZE
 	shape_node.shape = shape
-	shape_node.position.y = 0.72
+	shape_node.position.y = KART_BOX_SIZE.y * 0.5
 	kart_body.add_child(shape_node)
 	kart_visual = KART.new()
 	kart_visual.name = "OriginalLumoKart"
@@ -220,11 +247,95 @@ func _create_kart() -> void:
 	kart_visual.set_animated_lumo_enabled(true)
 	kart_visual.set_preview_detail(true)
 	kart_visual.reduced_motion = reduced_motion
+	kart_beacon = art._sign(kart_body, "Dein Kart", Vector3(0, 2.6, 0), Color("ffe48a"))
+	kart_beacon.name = "WorldKartBeacon"
 	_set_kart_driver(false)
 	art._sign(self, "Lumo Kart · Parkplatz", Vector3(77, 3.2, 18), Color("9aefff"))
+	_settle_kart.call_deferred()
+
+
+func _kart_wheel_contacts() -> Array[Vector3]:
+	if not kart_contacts.is_empty():
+		return kart_contacts
+	var contacts: Array[Vector3] = []
+	for pivot in kart_visual.wheel_pivots:
+		if is_instance_valid(pivot):
+			var local: Vector3 = kart_visual.to_local(pivot.global_position)
+			contacts.append(Vector3(local.x, 0.0, local.z))
+	if contacts.size() < 3:
+		return KART_FALLBACK_CONTACTS
+	kart_contacts = contacts
+	return kart_contacts
+
+
+func _kart_ground_at(local_point: Vector3) -> Variant:
+	if not kart_body.is_inside_tree():
+		return null
+	var level := Transform3D(Basis(Vector3.UP, kart_body.rotation.y), kart_body.global_position)
+	var from: Vector3 = level * (local_point + Vector3.UP * KART_PROBE_UP)
+	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * (KART_PROBE_UP + KART_PROBE_DOWN), kart_body.collision_mask, [kart_body.get_rid(), player.get_rid()])
+	var hit := kart_body.get_world_3d().direct_space_state.intersect_ray(query)
+	return null if hit.is_empty() else float(hit.position.y)
+
+
+## Places the kart body on the highest floor point under its footprint. Poses
+## already resting on the floor stay untouched within the tolerance, so saved
+## grounded parking places are restored bit-identical.
+func _ground_kart() -> bool:
+	var highest := -INF
+	var points: Array[Vector3] = [Vector3.ZERO]
+	points.append_array(_kart_wheel_contacts())
+	for point in points:
+		var ground: Variant = _kart_ground_at(point)
+		if ground != null:
+			highest = maxf(highest, float(ground))
+	if highest == -INF:
+		return false
+	var lift := highest - kart_body.global_position.y
+	if absf(lift) > KART_GROUND_TOLERANCE:
+		kart_body.global_position.y = highest
+		kart_body.velocity.y = 0.0
+	return true
+
+
+## Tilts and lowers only the visual kart so all four tyres follow the ground
+## plane (hills, ramps, bridge joints) while the physics box stays level.
+func _fit_kart_visual(delta: float, instant: bool) -> void:
+	var contacts := _kart_wheel_contacts()
+	var sum_x := 0.0
+	var sum_z := 0.0
+	var mean := 0.0
+	var slope_x := 0.0
+	var slope_z := 0.0
+	for point in contacts:
+		var ground: Variant = _kart_ground_at(point)
+		var relative := 0.0 if ground == null else clampf(float(ground) - kart_body.global_position.y, -KART_FIT_SINK, KART_PROBE_UP)
+		mean += relative
+		slope_x += relative * point.x
+		slope_z += relative * point.z
+		sum_x += point.x * point.x
+		sum_z += point.z * point.z
+	mean /= float(contacts.size())
+	var roll := clampf(atan(slope_x / maxf(sum_x, 0.001)), -KART_MAX_TILT, KART_MAX_TILT)
+	var pitch := clampf(-atan(slope_z / maxf(sum_z, 0.001)), -KART_MAX_TILT, KART_MAX_TILT)
+	var weight := 1.0 if instant else 1.0 - exp(-14.0 * delta)
+	kart_visual.position.y = lerpf(kart_visual.position.y, clampf(mean, -KART_FIT_SINK, 0.0), weight)
+	kart_visual.rotation.x = lerp_angle(kart_visual.rotation.x, pitch, weight)
+	kart_visual.rotation.z = lerp_angle(kart_visual.rotation.z, roll, weight)
+
+
+func _settle_kart() -> void:
+	if not is_instance_valid(kart_body) or not kart_body.is_inside_tree():
+		return
+	if _ground_kart():
+		kart_ground_pending = false
+		model.remember_kart(kart_body.position, kart_body.rotation.y, true)
+	_fit_kart_visual(0.0, true)
 
 
 func _set_kart_driver(visible_driver: bool) -> void:
+	if is_instance_valid(kart_beacon):
+		kart_beacon.visible = not visible_driver
 	if is_instance_valid(kart_visual.lumo_animation):
 		kart_visual.lumo_animation.visible = visible_driver
 		kart_visual.lumo_animation.set_suspended(not visible_driver)
@@ -233,12 +344,7 @@ func _set_kart_driver(visible_driver: bool) -> void:
 
 
 func _create_residents() -> void:
-	var specs := [
-		["nelli_rabbit", Vector3(90, 0, 20), "Nelli"],
-		["bruno_beaver", Vector3(135, 0, -58), "Bruno"],
-		["tilda_duck", Vector3(218, 0, -34), "Tilda"]
-	]
-	for spec in specs:
+	for spec in RESIDENT_SPECS:
 		var scene := load("res://assets/creative/village/" + str(spec[0]) + ".glb") as PackedScene
 		if scene == null:
 			continue
@@ -256,6 +362,9 @@ func _create_residents() -> void:
 			friend.position.y -= bounds.position.y * friend.scale.y
 		residents.append(friend)
 		art._sign(self, str(spec[2]), spec[1] + Vector3.UP * 3.2, Color("fff1c8"))
+		var role := art._sign(self, RESIDENT_ROLE, spec[1] + Vector3.UP * 2.75, Color("d8ecef"))
+		role.name = "ResidentRole_" + str(spec[2])
+		role.font_size = 26
 
 
 func _create_traffic() -> void:
@@ -628,6 +737,9 @@ func _physics_process(delta: float) -> void:
 	if paused:
 		return
 	time += delta
+	if kart_ground_pending:
+		kart_ground_pending = false
+		_settle_kart()
 	var axis: Vector2 = joystick.axis + Vector2(
 		float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),
 		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
@@ -650,6 +762,11 @@ func _physics_process(delta: float) -> void:
 	if not mission.is_empty():
 		marker.position = mission.at + Vector3.UP * (3.5 + (0.0 if reduced_motion else sin(time * 2.0) * 0.18))
 		marker.rotate_y(0.0 if reduced_motion else delta)
+	if kart_guidance and not driving and kart_in_reach():
+		_end_kart_guidance("Dein Kart ist da. Tippe auf Ins Kart zum Einsteigen.")
+	if kart_guidance:
+		wonder.set_routes(at, [{"at": kart_body.position}])
+	elif not mission.is_empty():
 		wonder.set_routes(at, [mission])
 	_update_camera(delta)
 	var portal := _near_portal()
@@ -667,7 +784,7 @@ func _physics_process(delta: float) -> void:
 			action_button.text = "Freundepost"
 		elif not portal.is_empty():
 			action_button.text = "Ort öffnen"
-	vehicle_button.disabled = not driving and player.position.distance_to(kart_body.position) > 5.0
+	_refresh_vehicle_button()
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
 	for friend in residents:
@@ -747,10 +864,56 @@ func _drive_tick(axis: Vector2, delta: float) -> void:
 				drive_speed *= 0.2
 	if kart_body.position.y < -6.0:
 		kart_body.position = STATE.KART_SPAWN
+		kart_body.velocity = Vector3.ZERO
 		drive_speed = 0.0
+		_settle_kart()
 		status_label.text = "Zurück am sicheren Parkplatz. Bleib mit dem Kart auf den Wegen."
 	_clamp_body(kart_body)
+	_fit_kart_visual(delta, false)
 	kart_visual.set_motion(drive_speed, axis.x, false, false)
+
+
+func _resume_view_yaw() -> float:
+	var toward := kart_body.position - player.position
+	if not kart_in_reach() or Vector2(toward.x, toward.z).length() < 0.5:
+		return 0.0
+	return wrapf(atan2(-toward.x, -toward.z) + RESUME_VIEW_OFFSET, -PI, PI)
+
+
+func kart_in_reach() -> bool:
+	return player.position.distance_to(kart_body.position) <= KART_REACH
+
+
+func _refresh_vehicle_button() -> void:
+	# Far from the kart the same control becomes a guide instead of a dead
+	# button, so a child always has a reachable way to find the vehicle.
+	vehicle_button.disabled = false
+	if driving:
+		vehicle_button.text = "Aussteigen"
+	elif kart_in_reach():
+		vehicle_button.text = "Ins Kart"
+	elif kart_guidance:
+		vehicle_button.text = "Führung aus"
+	else:
+		vehicle_button.text = "Kart suchen"
+
+
+func _toggle_kart_guidance() -> void:
+	if kart_guidance:
+		_end_kart_guidance("Kart-Führung beendet. Auf der Weltkarte findest du dein Kart jederzeit.")
+		return
+	kart_guidance = true
+	wonder.set_routes(player.position, [{"at": kart_body.position}])
+	status_label.text = "Folge den Lichtern zu deinem Kart: %d m entfernt, Ort: %s." % [roundi(player.position.distance_to(kart_body.position)), WORLD_MAP.location_name(kart_body.position)]
+	_refresh_vehicle_button()
+
+
+func _end_kart_guidance(message: String) -> void:
+	kart_guidance = false
+	var mission: Dictionary = model.current()
+	wonder.set_routes(_active_position(), [] if mission.is_empty() else [mission])
+	status_label.text = message
+	_refresh_vehicle_button()
 
 
 func _clamp_body(body: CharacterBody3D) -> void:
@@ -888,8 +1051,10 @@ func _toggle_vehicle() -> void:
 		run_button.text = "Rennen" if walking_fast else "Gehen"
 		status_label.text = "Wieder zu Fuß. Mit Ansprechen redest du mit deinen Freunden."
 	else:
-		if player.position.distance_to(kart_body.position) > 5.0:
+		if not kart_in_reach():
+			_toggle_kart_guidance()
 			return
+		kart_guidance = false
 		driving = true
 		player.velocity = Vector3.ZERO
 		airborne_time = 0.0
@@ -1124,6 +1289,10 @@ func _map_dialog() -> void:
 		map_mission = friend_post.guidance()
 	overview.configure(STATE.BOUNDS, _active_position(), kart_body.rotation.y if driving else fox.rotation.y, map_mission, model.completed, STATE.MISSIONS, portals, reduced_motion)
 	overview.set_kart_position(kart_body.position)
+	var friends: Array[Dictionary] = []
+	for friend in residents:
+		friends.append({"name": str(friend.name), "at": friend.position})
+	overview.set_friends(friends)
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
@@ -1133,7 +1302,7 @@ func _map_dialog() -> void:
 		modal_box.add_child(clue)
 		if friend_post.model.carrying() and map_mission.is_empty():
 			modal_box.add_child(KIT.button("Ziel zeigen lassen", friend_post._show_destination, 180))
-	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden und in der Nähe einsteigen", 16))
+	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden, mit Kart suchen hinführen lassen und in der Nähe einsteigen\nNelli, Bruno und Tilda sind Computerfiguren dieser Welt, keine Online-Mitspieler", 16))
 	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
 	village_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

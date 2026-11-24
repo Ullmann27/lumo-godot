@@ -1,0 +1,31 @@
+Quellstand Produktcode: daa771eebc61317b5fe948260ea7084d7f206e74 (Basis PR #226: 6e25e43d4b1c6a035c8bb2c3a45982b0f9ce46ae)
+Engine: Godot 4.6.3.stable.official.7d41c59c4, Linux x86_64
+
+## Headless (--headless), je: godot --headless --path . --script res://scripts/tests/<test>.gd
+lumo_world_camera_regression: [LumoWorldCamera] PASS 27 checks
+lumo_world_device_regression: [LumoWorldDevice] PASS 59 checks
+lumo_world_errands_controller_regression: [LumoWorldErrandsController] PASS 22 checks
+lumo_world_errands_regression: [LumoWorldErrands] PASS 289 checks
+lumo_world_first_entry_regression: [LumoWorldFirstEntry] PASS 99 checks engine=4.6.3-stable (official)
+lumo_world_hud_regression: [LumoWorldHUD] PASS 939 checks
+lumo_world_kart_persistence_regression: [WorldKartPersistence] PASS 63 checks engine=4.6.3-stable (official) scope=state_and_atlas
+lumo_world_map_regression: [WorldMap] PASS 169 checks
+lumo_world_regression: [LumoWorld] PASS 206 checks
+lumo_world_support_integration_regression: [WorldSupport] PASS 27 checks
+
+## Renderer (Xvfb, --rendering-driver opengl3, gl_compatibility, Mesa llvmpipe 25.0.7, Desktop – kein Android)
+xvfb-run -a -s '-screen 0 1920x1400x24' godot --path . --rendering-driver opengl3 --script res://scripts/tests/lumo_world_first_entry_regression.gd -- --capture=<dir>
+[LumoWorldFirstEntry] PASS 104 checks engine=4.6.3-stable (official)
+xvfb-run ... --script res://scripts/tests/lumo_world_capture.gd -- --out=<dir>
+[LumoWorldCapture] PASS views=8 renderer=gl_compatibility
+
+## Vergleich am Ausgangsstand 6e25e43d (gleiche Engine, vollständiges Projekt)
+lumo_world_camera_regression: [LumoWorldCamera] PASS 27 checks
+lumo_world_device_regression: [LumoWorldDevice] PASS 59 checks
+lumo_world_errands_controller_regression: [LumoWorldErrandsController] PASS 22 checks
+lumo_world_errands_regression: [LumoWorldErrands] PASS 289 checks
+lumo_world_hud_regression: [LumoWorldHUD] PASS 939 checks
+lumo_world_kart_persistence_regression: [WorldKartPersistence] FAIL 63 checks engine=4.6.3-stable (official) scope=state_and_atlas
+lumo_world_map_regression: [WorldMap] PASS 164 checks
+lumo_world_regression: [LumoWorld] PASS 206 checks
+lumo_world_support_integration_regression: [WorldSupport] PASS 27 checks
