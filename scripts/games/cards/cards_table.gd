@@ -27,6 +27,10 @@ const OPPONENT_ANGLES := {1: [180.0], 2: [-152.0, 128.0], 3: [-156.0, 156.0, 104
 const ROSTER: Array[String] = [
 	"squirrel", "owl", "turtle", "lion", "rabbit", "frog", "otter", "badger", "cat",
 ]
+## Ruhiges Tempo für echte Einzelzüge; time_scale bleibt nur die Prüfbeschleunigung.
+const CARD_MOVE_SECONDS := 0.82
+const TURN_THINK_SECONDS := 0.9
+
 const GOLD := Color(1.0, 0.78, 0.25, 0.95)
 const CYAN := Color(0.35, 0.9, 1.0, 0.95)
 const OFF := Color(0, 0, 0, 0)
@@ -84,6 +88,7 @@ var _android_safe_area_enabled := false
 var _android_safe_area: Dictionary = {}
 var _previous_window: Dictionary = {}
 var _busy := false
+var _presenting_player := -1
 var _paused := false
 var _pumping := false
 var _pump_generation := -1
@@ -198,6 +203,8 @@ func _notification(what: int) -> void:
 			_leave()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_CLOSE_REQUEST]:
 		_store()
+		if what == NOTIFICATION_APPLICATION_PAUSED:
+			_pause()
 	elif what in [NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN]:
 		if is_inside_tree() and not is_queued_for_deletion():
 			_resize.call_deferred()
@@ -234,7 +241,7 @@ func _resize() -> void:
 		opening.resize(_ui_scale, insets)
 		return
 	_measure_hand()
-	_layout_all(0.0)
+	_layout_all(0.45 if _busy else 0.0)
 	_refresh_hud()
 
 
@@ -415,6 +422,7 @@ func _open_select() -> void:
 	_intro_index = -1
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_clear_cards()
 	_clear_selection()
 	hud.hide_bubble()
@@ -532,12 +540,16 @@ func _pause() -> void:
 	_cancel_drag()
 	for seat: Node3D in seats:
 		seat.set_suspended(true)
+	for id: int in cards:
+		cards[id].set_suspended(true)
 	_store()
 	hud.show_pause({"text": _pause_text()})
 
 
 func _resume() -> void:
 	_paused = false
+	for id: int in cards:
+		cards[id].set_suspended(false)
 	hud.close_overlay()
 	for seat: Node3D in seats:
 		seat.set_suspended(false)
@@ -552,7 +564,12 @@ func _leave() -> void:
 	if HostBridge.is_embedded():
 		_closed = HostBridge.return_to_app("games")
 	else:
+		_closed = true
 		SceneRouter.goto("games")
+	if _closed:
+		_generation += 1
+		for id: int in cards:
+			cards[id].stop()
 
 
 func _store() -> void:
@@ -574,6 +591,7 @@ func _start_match(id: String, resume: bool) -> void:
 	screen = "play"
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_won_owner.clear()
 	_final_data.clear()
 	var fresh := true
@@ -624,10 +642,14 @@ func _after_deal(deal: bool) -> void:
 	if deal:
 		_busy = true
 		_announce_round()
-		await _wait(0.9 + 0.045 * cards.size())
+		if not await _wait_for_cards():
+			return
+		if not await _wait(0.25):
+			return
 		if generation != _generation:
 			return
 		_busy = false
+		_presenting_player = -1
 	_pump()
 
 
@@ -652,7 +674,7 @@ func _next_round() -> void:
 
 ## Der Zugtakt: lässt Mitspieler ziehen, bis das Kind dran ist oder die Runde endet.
 func _pump() -> void:
-	if (_pumping and _pump_generation == _generation) or rules == null or screen != "play":
+	if (_pumping and _pump_generation == _generation) or rules == null or screen != "play" or _busy or _closed:
 		return
 	_pumping = true
 	_pump_generation = _generation
@@ -681,24 +703,26 @@ func _pump() -> void:
 
 func _ai_turn(player: int) -> void:
 	var generation := _generation
+	_busy = true
+	_presenting_player = player
 	var seat: Node3D = seats[player]
 	_legal_cards.clear()
 	_refresh_hud()
-	hud.set_hint("%s ist dran." % seat.display_name)
+	hud.set_hint("%s überlegt …" % seat.display_name)
 	hud.set_action("")
 	seat.react("think")
 	for other: Node3D in seats:
 		other.look_at_point(seat.chest())
-	await _wait(0.55 + 0.25 * float((int(rules.s.moves) * 7 + player * 3) % 4))
-	if generation != _generation or _paused:
-		seat.calm()
+	if not await _wait(TURN_THINK_SECONDS + 0.16 * float((int(rules.s.moves) * 7 + player * 3) % 4)):
 		return
 	var move: Dictionary = SESSION.ai_move(rules, player)
 	seat.calm()
 	var result: Dictionary = rules.play(player, move)
 	_store()
 	await _play_events(result.events)
-
+	if generation == _generation and not _closed:
+		_busy = false
+		_presenting_player = -1
 
 func _begin_human_turn() -> void:
 	_legal_cards.clear()
@@ -770,6 +794,7 @@ func _human_play(move: Dictionary) -> void:
 		_sfx("card_refuse")
 		return
 	_busy = true
+	_presenting_player = 0
 	_clear_selection()
 	_legal_cards.clear()
 	hud.set_action("")
@@ -779,6 +804,7 @@ func _human_play(move: Dictionary) -> void:
 	if generation != _generation:
 		return
 	_busy = false
+	_presenting_player = -1
 	_intro_after_play()
 	_pump()
 
@@ -958,6 +984,7 @@ func _drag_to(point: Vector2) -> void:
 func _clear_cards() -> void:
 	for id: int in cards:
 		if is_instance_valid(cards[id]):
+			cards[id].stop()
 			cards[id].queue_free()
 	cards.clear()
 	for ghost: Node3D in _ghosts:
@@ -1038,7 +1065,8 @@ func _deal_ticks(count: int) -> void:
 	for index in range(mini(count, 40)):
 		if index % 2 == 0:
 			_sfx("card_deal")
-		await _wait(0.045)
+		if not await _wait(0.045):
+			return
 		if generation != _generation:
 			return
 
@@ -1288,6 +1316,7 @@ func _send(node: Node3D, index: int, count: int, duration: float, delay: float, 
 		node.snap_to(target)
 	elif not node.transform.is_equal_approx(target):
 		node.fly_to(target, quick, delay / maxf(0.01, time_scale), arc)
+		node.set_suspended(_paused)
 
 
 func _build_ladder_marks() -> void:
@@ -1309,13 +1338,32 @@ func _build_ladder_marks() -> void:
 # ------------------------------------------------------- Ereignisse abspielen
 
 
-func _wait(seconds: float) -> void:
-	if reduced_motion:
-		seconds *= 0.25
-	var timer := create_tween()
-	timer.tween_interval(maxf(0.001, seconds / maxf(0.01, time_scale)))
-	await timer.finished
+func _wait(seconds: float) -> bool:
+	# Barriere für den gesamten Zug: Pause hält auch Denk- und Lesezeit an.
+	# Weniger Bewegung darf die Zeit zum Verstehen nicht verkürzen.
+	var generation := _generation
+	var elapsed := 0.0
+	while elapsed < seconds or _paused:
+		if generation != _generation or _closed or not is_inside_tree():
+			return false
+		await get_tree().process_frame
+		if not _paused:
+			elapsed += get_process_delta_time() * maxf(0.01, time_scale)
+	return generation == _generation and not _closed
 
+
+func _wait_for_cards() -> bool:
+	var generation := _generation
+	while generation == _generation and not _closed and is_inside_tree():
+		var moving := false
+		for id: int in cards:
+			if cards[id].is_moving():
+				moving = true
+				break
+		if not moving and not _paused:
+			return true
+		await get_tree().process_frame
+	return false
 
 func _sfx(sound: String) -> void:
 	if sound_enabled:
@@ -1355,11 +1403,16 @@ func _play_events(events: Array) -> void:
 			"skip":
 				pass
 			"round_over":
-				await _wait(0.5)
+				if not await _wait(0.5):
+					return
 	if generation != _generation:
 		return
 	_assign_from_state()
-	_layout_all(0.22)
+	_layout_all(0.3)
+	if not await _wait_for_cards():
+		return
+	if not await _wait(0.18):
+		return
 	_refresh_hud()
 
 
@@ -1383,18 +1436,23 @@ func _show_play(event: Dictionary) -> void:
 	else:
 		_react(player, "play")
 	_sfx("card_play")
-	_send(cards[card], 0, 1, 0.42, 0.0, 0.3)
+	hud.set_hint("%s %s." % ["Du legst" if player == 0 else seats[player].display_name + " legt", DECK.label(card)])
+	_send(cards[card], 0, 1, CARD_MOVE_SECONDS, 0.0, 0.24)
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	for seat: Node3D in seats:
 		seat.look_at_point(Vector3(0.1, ROOM.TABLE_Y, 0))
 	_refresh_hud()
-	await _wait(0.5)
+	if not await _wait_for_cards():
+		return
+	if not await _wait(0.22):
+		return
 
 
 func _show_trick(event: Dictionary) -> void:
 	var winner := int(event.winner)
 	var trick_cards: Array = event.cards
-	await _wait(0.45)
+	if not await _wait(0.45):
+		return
 	hud.set_hint("%s den Stich!" % ("Du gewinnst" if winner == 0 else seats[winner].display_name + " gewinnt"))
 	var best := int(event.best)
 	if cards.has(best):
@@ -1407,7 +1465,8 @@ func _show_trick(event: Dictionary) -> void:
 		var sore: int = (winner + 1 + int(rules.s.r.trick_no)) % rules.players()
 		if sore != winner and sore != 0:
 			_react(sore, "grumpy")
-	await _wait(0.75)
+	if not await _wait(0.75):
+		return
 	var base := 0
 	for id: int in cards:
 		if cards[id].zone == "won" and cards[id].owner_seat == winner:
@@ -1417,9 +1476,12 @@ func _show_trick(event: Dictionary) -> void:
 		_won_owner[card] = winner
 		_place(card, "won", winner, base + index)
 		cards[card].set_glow(OFF)
-		_send(cards[card], 0, 1, 0.5, 0.05 * index, 0.22)
+		_send(cards[card], 0, 1, 0.65, 0.0, 0.18)
+		if not await _wait_for_cards():
+			return
 	_refresh_hud()
-	await _wait(0.65)
+	if not await _wait(0.22):
+		return
 
 
 func _show_lay(event: Dictionary) -> void:
@@ -1428,12 +1490,15 @@ func _show_lay(event: Dictionary) -> void:
 	_place(card, "ladder", -1, 0)
 	_react(player, "play" if player > 0 else "nod")
 	_sfx("card_play")
-	_send(cards[card], 0, 1, 0.46, 0.0, 0.3)
+	_send(cards[card], 0, 1, CARD_MOVE_SECONDS, 0.0, 0.24)
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	if player > 0:
 		hud.set_hint("%s legt %s." % [seats[player].display_name, DECK.label(card)])
 	_refresh_hud()
-	await _wait(0.6)
+	if not await _wait_for_cards():
+		return
+	if not await _wait(0.22):
+		return
 	if int(event.left) == 0:
 		_winner_reaction(player)
 		_burst_at(cards[card].global_position + Vector3(0, 0.1, 0))
@@ -1444,7 +1509,8 @@ func _show_pass(event: Dictionary) -> void:
 	hud.set_hint("%s aus." % ("Du setzt" if player == 0 else seats[player].display_name + " setzt"))
 	_react(player, "grumpy" if player > 0 else "idle")
 	_sfx("card_pass")
-	await _wait(0.75)
+	if not await _wait(0.75):
+		return
 
 
 func _show_ask(event: Dictionary) -> void:
@@ -1462,7 +1528,8 @@ func _show_ask(event: Dictionary) -> void:
 	if target > 0:
 		seats[target].look_at_point(seats[player].chest() if player > 0 else camera.global_position)
 	_sfx("card_select")
-	await _wait(0.95)
+	if not await _wait(0.95):
+		return
 
 
 func _show_give(event: Dictionary) -> void:
@@ -1483,16 +1550,20 @@ func _show_give(event: Dictionary) -> void:
 	for index in range(count):
 		var card := int(given[index])
 		_place(card, "hand" if player == 0 else "fan", player, 100 + index)
-		_send(cards[card], 0, 1, 0.5, 0.08 * index, 0.3)
+		_send(cards[card], 0, 1, CARD_MOVE_SECONDS, 0.0, 0.24)
 		_sfx("card_draw")
-	await _wait(0.6)
+		if not await _wait_for_cards():
+			return
+	if not await _wait(0.2):
+		return
 	_layout_zone("hand" if target == 0 else "fan", target, 0.2)
 	_assign_hand_orders(player)
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	if player == 0:
 		_layout_hand(0.2)
 	_refresh_hud()
-	await _wait(0.35)
+	if not await _wait(0.35):
+		return
 
 
 func _assign_hand_orders(player: int) -> void:
@@ -1515,7 +1586,8 @@ func _show_miss(event: Dictionary) -> void:
 		seats[target].react("grumpy")
 		seats[target].hide_emote()
 	_sfx("card_pass")
-	await _wait(0.6)
+	if not await _wait(0.6):
+		return
 
 
 func _show_draw(event: Dictionary) -> void:
@@ -1525,8 +1597,11 @@ func _show_draw(event: Dictionary) -> void:
 		return
 	_place(card, "hand" if player == 0 else "fan", player, 100)
 	_sfx("card_draw")
-	_send(cards[card], 0, 1, 0.5, 0.0, 0.3)
-	await _wait(0.55)
+	_send(cards[card], 0, 1, CARD_MOVE_SECONDS, 0.0, 0.24)
+	if not await _wait_for_cards():
+		return
+	if not await _wait(0.22):
+		return
 	_assign_hand_orders(player)
 	if player == 0:
 		_layout_hand(0.2)
@@ -1536,7 +1611,8 @@ func _show_draw(event: Dictionary) -> void:
 		hud.set_hint("Glückstreffer! %s noch einmal fragen." % ("Du darfst" if player == 0 else seats[player].display_name + " darf"))
 		_react(player, "happy")
 		_burst_at(seats[player].chest() if player > 0 else Vector3(0, ROOM.TABLE_Y + 0.3, 0.8))
-		await _wait(0.7)
+		if not await _wait(0.7):
+			return
 	_refresh_hud()
 
 
@@ -1551,15 +1627,19 @@ func _show_set(event: Dictionary) -> void:
 	for index in range(set_cards.size()):
 		var card := int(set_cards[index])
 		_place(card, "set", player, maxi(0, set_index) * 4 + DECK.suit(card))
-		_send(cards[card], 0, 1, 0.55, 0.07 * index, 0.34)
-	await _wait(0.7)
+		_send(cards[card], 0, 1, 0.7, 0.0, 0.24)
+		if not await _wait_for_cards():
+			return
+	if not await _wait(0.25):
+		return
 	var toward := _dir(player)
 	_burst_at(toward * (0.62 if player == 0 else 0.8) + Vector3(0, ROOM.TABLE_Y + 0.1, 0))
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	if player == 0:
 		_layout_hand(0.2)
 	_refresh_hud()
-	await _wait(0.45)
+	if not await _wait(0.45):
+		return
 
 
 func _make_burst() -> CPUParticles3D:
@@ -1619,7 +1699,7 @@ func _refresh_hud() -> void:
 	hud.set_game(str(info.title), round_text)
 	hud.set_stars(ProgressStore.total_stars())
 	hud.set_trump(int(rules.s.r.trump) if game == "stich" else -1)
-	var current: int = rules.current()
+	var current: int = _presenting_player if _busy and _presenting_player >= 0 else rules.current()
 	var plates: Array = []
 	for player in range(rules.players()):
 		var detail := ""
@@ -1779,6 +1859,7 @@ func _start_intro(id: String) -> void:
 	screen = "play"
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_won_owner.clear()
 	rules = INTRO.demo(id)
 	_intro_steps = INTRO.steps(id)

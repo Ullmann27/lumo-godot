@@ -8,6 +8,7 @@ extends Node3D
 
 const QUESTS = preload("res://scripts/creative/lumo_world_quests.gd")
 const DIALOG = preload("res://scripts/creative/lumo_world_dialog.gd")
+const ROUTINES = preload("res://scripts/creative/lumo_world_routines.gd")
 const ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VILLAGE = preload("res://scripts/creative/build_village_art.gd")
 const KIT = preload("res://scripts/creative/creative_kit.gd")
@@ -22,6 +23,13 @@ const ANIMATION_RANGE := 70.0
 const QUEST_COLOR := Color("c9a7ff")
 
 var model = QUESTS.new()
+var routines = ROUTINES.new()
+var figure_homes: Dictionary = {}
+var figure_walk_clips: Dictionary = {}
+var figure_gesture_slots: Dictionary = {}
+var figure_indices: Dictionary = {}
+var routine_phase := -1
+var walking_shape := CapsuleShape3D.new()
 var world: Node3D
 var kit = KIT.new()
 var save_valid := true
@@ -68,7 +76,10 @@ func setup(owner_world: Node3D, saved: Variant = {}) -> bool:
 	save_valid = model.restore(saved)
 	_build_paths()
 	_build_places()
+	walking_shape.radius = 0.32
+	walking_shape.height = 1.5
 	_build_figures()
+	_update_routine_signs()
 	_build_marker()
 	refresh()
 	return save_valid
@@ -277,6 +288,8 @@ func _build_figures() -> void:
 			push_warning("[LumoOpenWorld] Figur fehlt: " + id)
 			continue
 		var root := Node3D.new()
+		figure_homes[id] = entry.position
+		figure_indices[id] = figures.size()
 		root.name = "Figure_" + id
 		root.position = entry.position
 		root.rotation.y = float(entry.get("yaw", 0.0))
@@ -297,6 +310,9 @@ func _build_figures() -> void:
 			model_node.position.y = -bounds.position.y * model_node.scale.y
 		for node in model_node.find_children("*", "AnimationPlayer", true, false):
 			var animation_player := node as AnimationPlayer
+			animation_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
+			figure_walk_clips[id] = ROUTINES.walk_clip(animation_player)
+			figure_gesture_slots[id] = 0
 			if animation_player.has_animation("idle"):
 				animation_player.get_animation("idle").loop_mode = Animation.LOOP_LINEAR
 				animation_player.play("idle")
@@ -342,29 +358,53 @@ func refresh() -> void:
 # --- Per-frame -------------------------------------------------------------
 
 func tick(at: Vector3, driving: bool, delta: float) -> void:
-	if not unlocked():
+	if not unlocked() or world.paused:
 		return
-	animation_time += delta
+	if runner != null and not world.modal.visible:
+		_clear_conversation()
+	var step := ROUTINES.safe_delta(delta)
+	if step <= 0.0:
+		return
+	routines.advance(step)
+	animation_time += step
+	_update_routine_signs()
 	for id in figures:
 		var root: Node3D = figures[id]
-		var offset := at - root.position
+		var before := root.position
+		var offset := at - before
 		var distance := Vector2(offset.x, offset.z).length()
-		if distance < 9.0 and distance > 0.3 and not world.paused:
-			root.rotation.y = lerp_angle(root.rotation.y, atan2(offset.x, offset.z), 1.0 - exp(-3.0 * delta))
-		if figure_players.has(id) and not world.reduced_motion:
-			var animation_player: AnimationPlayer = figure_players[id]
-			var near := distance < ANIMATION_RANGE
-			if near and not animation_player.is_playing():
-				animation_player.play()
-			elif not near and animation_player.is_playing():
-				animation_player.pause()
+		var walking_clip := str(figure_walk_clips.get(id, ""))
+		if distance < ANIMATION_RANGE:
+			var candidate: Vector3 = routines.candidate(str(id), figure_homes[id], before,
+				at, step, not walking_clip.is_empty() and figure_players.has(id), driving, world.reduced_motion)
+			if not candidate.is_equal_approx(before):
+				root.position = _safe_local_step(before, candidate)
+			var movement := root.position - before
+			if movement.length_squared() > 0.000001:
+				root.rotation.y = lerp_angle(root.rotation.y, atan2(movement.x, movement.z), 1.0 - exp(-6.0 * step))
+				_play_figure_clip(str(id), walking_clip, true)
+			else:
+				if distance < 9.0 and distance > 0.3:
+					root.rotation.y = lerp_angle(root.rotation.y, atan2(offset.x, offset.z), 1.0 - exp(-3.0 * step))
+				if figure_players.has(id):
+					var player: AnimationPlayer = figure_players[id]
+					if not walking_clip.is_empty() and str(player.current_animation) == walking_clip:
+						_play_figure_clip(str(id), "idle", true)
+				var gesture_slot := int(animation_time / 14.0 + float(figure_indices.get(id, 0)) * 0.13)
+				if gesture_slot != int(figure_gesture_slots.get(id, 0)):
+					figure_gesture_slots[id] = gesture_slot
+					_play_figure_clip(str(id), str(routines.activity(str(id)).get("gesture", "idle")), false)
+			if not root.position.is_equal_approx(before):
+				_sync_figure_position(str(id))
+			if figure_players.has(id) and not world.reduced_motion:
+				(figure_players[id] as AnimationPlayer).advance(step)
 	var target := tracked_route()
 	if is_instance_valid(quest_marker) and not target.is_empty():
 		var lift := 0.0 if world.reduced_motion else sin(animation_time * 2.2) * 0.15
 		quest_marker.position = target.at + Vector3.UP * (4.1 + lift)
 		if not world.reduced_motion:
-			quest_marker.rotate_y(delta * 0.9)
-	observe_clock += delta
+			quest_marker.rotate_y(step * 0.9)
+	observe_clock += step
 	if observe_clock < OBSERVE_INTERVAL or world.paused:
 		return
 	observe_clock = 0.0
@@ -383,6 +423,92 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 	_commit(" ".join(messages))
 	if not gained.is_empty():
 		_show_cards(gained)
+
+
+## Ordinary pause freezes every NPC. During an open NPC conversation only its
+## authored speaking gesture advances; position and the simulated day stay still.
+func _process(delta: float) -> void:
+	if not is_instance_valid(world) or not world.paused or world.reduced_motion:
+		return
+	if not is_instance_valid(world.modal) or not world.modal.visible or not world.modal.has_meta("open_world_dialog"):
+		return
+	# A different dialog may replace the modal content before its old metadata
+	# is cleared. Only the actual NPC choices may keep the speaking gesture alive.
+	if not world.modal_box.has_node("DialogChoice_0"):
+		return
+	if figure_players.has(dialog_figure):
+		(figure_players[dialog_figure] as AnimationPlayer).advance(ROUTINES.safe_delta(delta))
+
+
+func _play_figure_clip(figure_id: String, clip: String, loop: bool) -> void:
+	if world.reduced_motion or not figure_players.has(figure_id) or clip.is_empty():
+		return
+	var player: AnimationPlayer = figure_players[figure_id]
+	if not player.has_animation(clip):
+		return
+	if loop and str(player.current_animation) == clip and player.is_playing():
+		return
+	player.clear_queue()
+	player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
+	player.play(clip, 0.2)
+	if not loop and player.has_animation("idle"):
+		player.queue("idle")
+
+
+func _update_routine_signs() -> void:
+	if routine_phase == routines.phase_index():
+		return
+	routine_phase = routines.phase_index()
+	for id in figures:
+		var entry := model.figure(str(id))
+		var activity: Dictionary = routines.activity(str(id))
+		var role := get_node_or_null("FigureRole_" + str(id)) as Label3D
+		if role != null and not activity.is_empty():
+			role.text = "%s · %s\n%s: %s" % [ROLE_PREFIX, str(entry.role), str(activity.phase), str(activity.title)]
+
+
+func _sync_figure_position(figure_id: String) -> void:
+	var at: Vector3 = figures[figure_id].position
+	# The shared entry is used by figure_at, mission targets and the map.
+	var entry := model.figure(figure_id)
+	entry["position"] = at
+	for field in [["FigureName_", 3.0], ["FigureRole_", 2.58], ["FigureMission_", 3.45]]:
+		var sign := get_node_or_null(str(field[0]) + figure_id) as Node3D
+		if sign != null:
+			sign.position = at + Vector3.UP * float(field[1])
+
+
+## Never put a new physics body in a doorway. Walking is visual-only and is
+## allowed only through checked free space on the same nearby ground surface.
+func _safe_local_step(from: Vector3, to: Vector3) -> Vector3:
+	if not from.is_finite() or not to.is_finite() or not is_inside_tree():
+		return from
+	var space := get_world_3d().direct_space_state
+	var floor_query := PhysicsRayQueryParameters3D.create(
+		to + Vector3.UP * 0.6, to + Vector3.DOWN * 0.6)
+	var floor_hit := space.intersect_ray(floor_query)
+	if floor_hit.is_empty():
+		return from
+	var normal: Vector3 = floor_hit.normal
+	if normal.y < 0.75:
+		return from
+	var ground: Vector3 = floor_hit.position
+	if absf(ground.y - from.y) > 0.25:
+		return from
+	var checked := Vector3(to.x, ground.y, to.z)
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = walking_shape
+	query.margin = 0.03
+	query.transform = Transform3D(Basis.IDENTITY, from + Vector3.UP * 0.95)
+	if not space.intersect_shape(query, 1).is_empty():
+		return from
+	query.motion = checked - from
+	var fraction := space.cast_motion(query)
+	if fraction.size() != 2 or fraction[0] < 0.999:
+		return from
+	query.transform = Transform3D(Basis.IDENTITY, checked + Vector3.UP * 0.95)
+	query.motion = Vector3.ZERO
+	return checked if space.intersect_shape(query, 1).is_empty() else from
 
 
 func _step_message(mission_id: String, done: bool) -> String:
@@ -407,11 +533,7 @@ func interact(at: Vector3) -> bool:
 		return false
 	dialog_figure = model.figure_at(at)
 	var steps := model.steps_for_figure(dialog_figure)
-	if figure_players.has(dialog_figure) and not world.reduced_motion:
-		var animation_player: AnimationPlayer = figure_players[dialog_figure]
-		if animation_player.has_animation("greeting_wave"):
-			animation_player.play("greeting_wave", 0.2)
-			animation_player.queue("idle")
+	_play_figure_clip(dialog_figure, "greeting_wave", false)
 	if steps.is_empty():
 		dialog_mission = ""
 		dialog_step = ""
@@ -435,17 +557,37 @@ func smalltalk_tree(figure_id: String) -> Dictionary:
 		var card := model.card(card_id)
 		card_text = "Meine Karte ist schon in deinem Album: %s. %s" % [str(card.trait), str(card.text)]
 	var greeting := str(model.content.get("smalltalk", {}).get(figure_id, "Schön, dich zu sehen, Lumo!"))
+	var activity: Dictionary = routines.activity(figure_id)
+	var mission_id := model.card_source(card_id)
+	var learning_text := str(activity.get("learning", ""))
+	if not mission_id.is_empty():
+		learning_text += "\nUnser Lernauftrag: " + str(model.mission(mission_id).get("title", "")) + "."
+	learning_text += "\nDu bestimmst das Tempo. Wir können alles in Ruhe besprechen."
 	return {"start": "hello", "nodes": {
 		"hello": {"text": greeting, "choices": [
 			{"label": "Wer bist du?", "next": "who"},
 			{"label": "Zeig mir deine Figurenkarte", "next": "card"},
+			{"label": "Dein Alltag & Lernen", "next": "routine"},
 			{"label": "Tschüss!", "action": "close"}]},
 		"who": {"text": "Ich bin %s, %s am Ort %s. Ich bin eine Computerfigur dieser Welt – keine echte Person aus dem Internet und kein Online-Mitspieler." % [str(entry.name), str(entry.role), place_title], "choices": [
 			{"label": "Noch etwas fragen", "next": "hello"},
 			{"label": "Tschüss!", "action": "close"}]},
 		"card": {"text": card_text, "choices": [
 			{"label": "Noch etwas fragen", "next": "hello"},
-			{"label": "Tschüss!", "action": "close"}]}}}
+			{"label": "Tschüss!", "action": "close"}]},
+		"routine": {"text": "%s · %s\n%s" % [str(activity.get("phase", "")), str(activity.get("title", "")), str(activity.get("detail", ""))], "choices": [
+			{"label": "Was interessiert dich?", "next": "routine_interest"},
+			{"label": "Wie sieht dein Tag aus?", "next": "routine_day"},
+			{"label": "Was können wir gemeinsam lernen?", "next": "routine_learning"},
+			{"label": "Noch etwas fragen", "next": "hello"}]},
+		"routine_interest": {"text": str(activity.get("interest", greeting)), "choices": [
+			{"label": "Was können wir gemeinsam lernen?", "next": "routine_learning"},
+			{"label": "Zurück zum Alltag", "next": "routine"}]},
+		"routine_day": {"text": routines.day_description(figure_id), "choices": [
+			{"label": "Zurück zum Alltag", "next": "routine"}]},
+		"routine_learning": {"text": learning_text, "choices": [
+			{"label": "Zurück zum Alltag", "next": "routine"},
+			{"label": "Weiter erkunden", "action": "close"}]}}}
 
 
 func _render() -> void:
@@ -469,6 +611,35 @@ func _render() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.disabled = not bool(choice.enabled)
 		world.modal_box.add_child(button)
+	if not dialog_mission.is_empty():
+		world.modal_box.add_child(KIT.button("Über deinen Alltag sprechen", _open_routine_dialog, 200))
+	elif not model.steps_for_figure(dialog_figure).is_empty():
+		world.modal_box.add_child(KIT.button("Zum Auftrag", _resume_mission_dialog, 200, Color("1b7d63")))
+	if str(view.id) == "routine_learning":
+		var mission_id := model.card_source(str(entry.get("card", "")))
+		if model.state(mission_id) in ["available", "active"]:
+			world.modal_box.add_child(KIT.button("Lernauftrag auf der Karte verfolgen", _follow.bind(mission_id), 200, Color("1b7d63")))
+
+
+func _open_routine_dialog() -> void:
+	if dialog_figure.is_empty():
+		return
+	dialog_mission = ""
+	dialog_step = ""
+	runner = DIALOG.new(smalltalk_tree(dialog_figure), int(world.grade), model.cards())
+	runner.node_id = "routine"
+	_play_figure_clip(dialog_figure, "agree_nod", false)
+	_render()
+
+
+func _resume_mission_dialog() -> void:
+	var steps := model.steps_for_figure(dialog_figure)
+	if steps.is_empty():
+		return
+	dialog_mission = str(steps[0].mission)
+	dialog_step = str(steps[0].step.id)
+	runner = DIALOG.new(model.dialog(str(steps[0].step.dialog)), int(world.grade), model.cards())
+	_render()
 
 
 func _choose(index: int) -> void:
@@ -495,11 +666,17 @@ func _choose(index: int) -> void:
 				_show_cards(result.cards)
 
 
-func _end_conversation() -> void:
+func _clear_conversation() -> void:
 	runner = null
 	dialog_mission = ""
 	dialog_step = ""
-	world.modal.remove_meta("open_world_dialog")
+	dialog_figure = ""
+	if world.modal.has_meta("open_world_dialog"):
+		world.modal.remove_meta("open_world_dialog")
+
+
+func _end_conversation() -> void:
+	_clear_conversation()
 	world._close_dialog()
 
 
@@ -585,7 +762,10 @@ func open_journal() -> void:
 func _follow(mission_id: String) -> void:
 	if not model.track(mission_id):
 		return
-	world._close_dialog()
+	if runner != null:
+		_end_conversation()
+	else:
+		world._close_dialog()
 	_commit("Du verfolgst jetzt: " + str(model.mission(mission_id).title) + ". Der lila Marker zeigt dir das Ziel.")
 
 

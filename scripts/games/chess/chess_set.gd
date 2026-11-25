@@ -29,6 +29,9 @@ var _glow_time := 0.0
 var _lifted: Node3D
 var _lift_from := -1
 var _anim: Tween
+var _moving := false
+var _suspended := false
+var _retiring: Array[Node3D] = []
 var _board_node: Node3D
 
 
@@ -44,6 +47,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if _suspended:
+		return
 	_glow_time += delta
 	var pulse := 0.75 if reduced_motion else 0.62 + 0.25 * sin(_glow_time * 4.2)
 	for glow: MeshInstance3D in _glows:
@@ -274,8 +279,7 @@ func make_piece(piece: int) -> Node3D:
 ## Stellt das Brett genau nach `board` (64 Felder) auf; vorhandene Figuren
 ## bleiben stehen, wenn sie schon passen.
 func show_board(board: PackedInt32Array) -> void:
-	if is_instance_valid(_anim) and _anim.is_running():
-		_anim.kill()
+	cancel_animation()
 	_lifted = null
 	_lift_from = -1
 	for sq: int in pieces.keys():
@@ -298,7 +302,8 @@ func show_board(board: PackedInt32Array) -> void:
 
 ## Spielt einen Zug als Bewegung: anheben, im Bogen ziehen, absetzen, geschlagene
 ## Figur sinkt weg. `board_after` ist das Brett nach dem Zug.
-func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) -> void:
+func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.65) -> void:
+	cancel_animation()
 	var from := m & 63
 	var to := (m >> 6) & 63
 	var flags := m >> 15
@@ -309,8 +314,6 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) 
 	_lift_from = -1
 	if not is_instance_valid(mover) or reduced_motion:
 		show_board(board_after)
-		# Verzögert melden: Der Aufrufer wartet erst nach diesem Aufruf auf das
-		# Signal (sonst hinge der Tisch bei „Animationen reduzieren“).
 		move_animated.emit.call_deferred()
 		return
 	var victim_sq := to
@@ -319,49 +322,67 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.55) 
 	var victim: Node3D = pieces.get(victim_sq)
 	pieces.erase(from)
 	pieces.erase(victim_sq)
+	if is_instance_valid(victim) and victim != mover:
+		_retiring.append(victim)
 	var duration := seconds / maxf(time_scale, 0.01)
-	if is_instance_valid(_anim) and _anim.is_running():
-		_anim.kill()
-	_anim = create_tween()
 	var start := mover.position
 	var goal := square_center(to)
-	var arc := 0.05 + 0.025 * start.distance_to(goal) / SQUARE
+	var arc := 0.035 + 0.018 * start.distance_to(goal) / SQUARE
+	_moving = true
+	_anim = create_tween()
 	_anim.tween_method(
 		func(t: float) -> void:
 			if is_instance_valid(mover):
-				var p := start.lerp(goal, ease(t, -1.6))
-				p.y = TOP + sin(t * PI) * arc
-				mover.position = p,
-		0.0,
-		1.0,
-		duration
-	)
-	if is_instance_valid(victim) and victim != mover:
-		var sink := create_tween()
-		sink.tween_interval(duration * 0.75)
-		sink.tween_property(victim, "scale", Vector3.ONE * 0.01, duration * 0.4)
-		sink.tween_callback(victim.queue_free)
-	# Rochade: der Turm springt mit.
+				var point := start.lerp(goal, t)
+				point.y += sin(t * PI) * arc
+				mover.position = point
+			if is_instance_valid(victim) and victim != mover:
+				victim.scale = Vector3.ONE * (1.0 - 0.99 * smoothstep(0.72, 1.0, t)),
+		0.0, 1.0, duration
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	# Erst landet der König, dann zieht der Turm. Beide gehören zum selben Zug.
 	if flags & 8:
-		var rook_from := {6: 7, 2: 0, 62: 63, 58: 56}.get(to, -1) as int
-		var rook_to := {6: 5, 2: 3, 62: 61, 58: 59}.get(to, -1) as int
+		var rook_from := int({6: 7, 2: 0, 62: 63, 58: 56}.get(to, -1))
+		var rook_to := int({6: 5, 2: 3, 62: 61, 58: 59}.get(to, -1))
 		var rook: Node3D = pieces.get(rook_from)
 		if is_instance_valid(rook):
 			pieces.erase(rook_from)
-			var hop := create_tween()
-			hop.tween_property(rook, "position", square_center(rook_to), duration)
+			_anim.tween_property(rook, "position", square_center(rook_to), duration * 0.65) \
+				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 			pieces[rook_to] = rook
 	pieces[to] = mover
+	var final_board := board_after.duplicate()
 	_anim.tween_callback(
 		func() -> void:
-			show_board(board_after)
+			# show_board räumt auch die aus der Feldliste entfernte Schlagfigur auf.
+			show_board(final_board)
 			move_animated.emit()
 	)
-
+	if _suspended:
+		_anim.pause()
 
 func is_animating() -> bool:
-	return is_instance_valid(_anim) and _anim.is_running()
+	return _moving
 
+
+func set_suspended(value: bool) -> void:
+	_suspended = value
+	if _anim != null and _anim.is_valid():
+		if value:
+			_anim.pause()
+		else:
+			_anim.play()
+
+
+func cancel_animation() -> void:
+	if _anim != null and _anim.is_valid():
+		_anim.kill()
+	_anim = null
+	_moving = false
+	for node: Node3D in _retiring:
+		if is_instance_valid(node):
+			node.queue_free()
+	_retiring.clear()
 
 ## Hebt eine Figur zum Ziehen an (Finger hält sie).
 func lift(sq: int) -> void:
