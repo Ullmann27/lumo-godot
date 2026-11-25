@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      LUMO_VISUAL_SOURCE: '0e126f71f932b3c21634827adb71d4d37f25acef'
+      LUMO_VISUAL_SOURCE: 'bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd'
       LIBGL_ALWAYS_SOFTWARE: '1'
     defaults:
       run:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: '0e126f71f932b3c21634827adb71d4d37f25acef'
+          ref: 'bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd'
           persist-credentials: false
       - name: Record the immutable scene and probe source
         run: |
@@ -63,6 +63,16 @@ jobs:
             -- --capture="$PWD/table-motion-proof/frames" \
             2>&1 | tee table-motion-proof/TABLE-MOTION.txt
           grep -E 'TABLE_TURN_FLOW_PASS checks=[0-9]+ failures=0 captures=[1-9][0-9]*' table-motion-proof/TABLE-MOTION.txt
+          python3 - <<'PY_RUNTIME'
+          import re
+          from pathlib import Path
+          for name in ("IMPORT.txt", "TABLE-MOTION.txt"):
+              log = (Path("table-motion-proof") / name).read_text()
+              errors = [line for line in log.splitlines()
+                        if re.search(r"SCRIPT ERROR|Parse Error|ERROR:", line)]
+              if errors:
+                  raise RuntimeError(name + ": " + "\n".join(errors))
+          PY_RUNTIME
       - name: Inventory the original unedited images
         run: |
           set -euo pipefail
@@ -83,6 +93,7 @@ jobs:
                              "sha256": hashlib.sha256(data).hexdigest()})
           required = {
               "cards_00_before.png", "cards_01_lumo_card_in_flight.png", "cards_02_settled.png",
+              "cards_01b_lumo_card_midflight.png",
               "chess_top_00_before.png", "chess_top_01_child_in_flight.png",
               "chess_top_02_lumo_in_flight.png", "chess_top_03_settled.png",
               "chess_3d_00_castling_before.png", "chess_3d_01_castling_king_in_flight.png",
