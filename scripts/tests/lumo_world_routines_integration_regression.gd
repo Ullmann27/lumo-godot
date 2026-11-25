@@ -136,5 +136,5 @@ func _frames(count: int) -> void:
 func _finish() -> void:
 	_check(await preload("res://scripts/tests/lumo_scene_teardown.gd").release(self, "[WorldRoutinesIntegration]"), "production scene/audio released")
 	DirAccess.remove_absolute(world_path)
-	print("[WorldRoutinesIntegration] %d checks; %d failures" % [checks, failures.size()])
+	print("[WorldRoutinesIntegration] %s %d checks; %d failures" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)

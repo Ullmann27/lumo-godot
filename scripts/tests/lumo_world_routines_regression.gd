@@ -105,5 +105,5 @@ func _run() -> void:
 	for value in layer.model.progress.values():
 		_check(int(value) == 0, "routine conversations earn no mission progress")
 	layer.free()
-	print("[WorldRoutines] %d checks; %d failures" % [checks, failures.size()])
+	print("[WorldRoutines] %s %d checks; %d failures" % ["PASS" if failures.is_empty() else "FAIL", checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)

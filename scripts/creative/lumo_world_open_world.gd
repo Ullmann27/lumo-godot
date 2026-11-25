@@ -432,6 +432,10 @@ func _process(delta: float) -> void:
 		return
 	if not is_instance_valid(world.modal) or not world.modal.visible or not world.modal.has_meta("open_world_dialog"):
 		return
+	# A different dialog may replace the modal content before its old metadata
+	# is cleared. Only the actual NPC choices may keep the speaking gesture alive.
+	if not world.modal_box.has_node("DialogChoice_0"):
+		return
 	if figure_players.has(dialog_figure):
 		(figure_players[dialog_figure] as AnimationPlayer).advance(ROUTINES.safe_delta(delta))
 
