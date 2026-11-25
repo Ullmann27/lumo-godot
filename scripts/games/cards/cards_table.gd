@@ -88,6 +88,7 @@ var _android_safe_area_enabled := false
 var _android_safe_area: Dictionary = {}
 var _previous_window: Dictionary = {}
 var _busy := false
+var _presenting_player := -1
 var _paused := false
 var _pumping := false
 var _pump_generation := -1
@@ -421,6 +422,7 @@ func _open_select() -> void:
 	_intro_index = -1
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_clear_cards()
 	_clear_selection()
 	hud.hide_bubble()
@@ -589,6 +591,7 @@ func _start_match(id: String, resume: bool) -> void:
 	screen = "play"
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_won_owner.clear()
 	_final_data.clear()
 	var fresh := true
@@ -646,6 +649,7 @@ func _after_deal(deal: bool) -> void:
 		if generation != _generation:
 			return
 		_busy = false
+		_presenting_player = -1
 	_pump()
 
 
@@ -700,6 +704,7 @@ func _pump() -> void:
 func _ai_turn(player: int) -> void:
 	var generation := _generation
 	_busy = true
+	_presenting_player = player
 	var seat: Node3D = seats[player]
 	_legal_cards.clear()
 	_refresh_hud()
@@ -717,6 +722,7 @@ func _ai_turn(player: int) -> void:
 	await _play_events(result.events)
 	if generation == _generation and not _closed:
 		_busy = false
+		_presenting_player = -1
 
 func _begin_human_turn() -> void:
 	_legal_cards.clear()
@@ -788,6 +794,7 @@ func _human_play(move: Dictionary) -> void:
 		_sfx("card_refuse")
 		return
 	_busy = true
+	_presenting_player = 0
 	_clear_selection()
 	_legal_cards.clear()
 	hud.set_action("")
@@ -797,6 +804,7 @@ func _human_play(move: Dictionary) -> void:
 	if generation != _generation:
 		return
 	_busy = false
+	_presenting_player = -1
 	_intro_after_play()
 	_pump()
 
@@ -1428,6 +1436,7 @@ func _show_play(event: Dictionary) -> void:
 	else:
 		_react(player, "play")
 	_sfx("card_play")
+	hud.set_hint("%s %s." % ["Du legst" if player == 0 else seats[player].display_name + " legt", DECK.label(card)])
 	_send(cards[card], 0, 1, CARD_MOVE_SECONDS, 0.0, 0.24)
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	for seat: Node3D in seats:
@@ -1690,7 +1699,7 @@ func _refresh_hud() -> void:
 	hud.set_game(str(info.title), round_text)
 	hud.set_stars(ProgressStore.total_stars())
 	hud.set_trump(int(rules.s.r.trump) if game == "stich" else -1)
-	var current: int = rules.current()
+	var current: int = _presenting_player if _busy and _presenting_player >= 0 else rules.current()
 	var plates: Array = []
 	for player in range(rules.players()):
 		var detail := ""
@@ -1850,6 +1859,7 @@ func _start_intro(id: String) -> void:
 	screen = "play"
 	_paused = false
 	_busy = false
+	_presenting_player = -1
 	_won_owner.clear()
 	rules = INTRO.demo(id)
 	_intro_steps = INTRO.steps(id)

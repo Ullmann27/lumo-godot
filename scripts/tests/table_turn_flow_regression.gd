@@ -29,11 +29,16 @@ func _check(ok: bool, message: String) -> void:
 
 
 func _until(condition: Callable, seconds: float = 12.0) -> bool:
-	var deadline := Time.get_ticks_msec() + int(seconds * 1000.0)
+	var started := Time.get_ticks_msec()
+	var deadline := started + int(seconds * 1000.0)
+	var engine_elapsed := 0.0
 	while not condition.call():
 		if Time.get_ticks_msec() >= deadline:
+			print("[TableTurnFlow] wait timeout wall_seconds=%.3f engine_seconds=%.3f" % [
+				(Time.get_ticks_msec() - started) / 1000.0, engine_elapsed])
 			return false
 		await process_frame
+		engine_elapsed += root.get_process_delta_time()
 	return true
 
 
@@ -342,16 +347,29 @@ func _cards_flow() -> void:
 	_check(card.is_moving() and not card.transform.is_equal_approx(start)
 		and not card.transform.is_equal_approx(target), "Karten: sichtbare Zwischenposition Hand zu Tisch")
 	_check(state.current() == 0 and not cards_table._can_act(), "Karten: trotz Regelübergabe bleibt Kind bis Landung gesperrt")
+	_check(bool(cards_table.hud._plate_data[1].active) and not bool(cards_table.hud._plate_data[0].active),
+		"Karten: sichtbares aktives Namensschild bleibt bis Landung beim Gegner")
 	cards_table._human_play(state.legal_moves(0)[0])
 	_check(int(state.s.moves) == 1, "Karten: Eingabe während KI-Flug verändert Regeln nicht")
 	await _capture("cards_01_lumo_card_in_flight")
+	if not capture_dir.is_empty():
+		await create_timer(0.15).timeout
+		_check(card.is_moving(), "Karten: zusätzlicher Bildbeleg entsteht noch im echten Flug")
+		await _capture("cards_01b_lumo_card_midflight")
 	cards_table._pause()
 	var held: Transform3D = card.transform
 	await create_timer(0.3).timeout
 	_check(card.transform.is_equal_approx(held) and card.is_moving(), "Karten: Pause bewahrt Zwischenposition und Bewegungsstatus")
 	cards_table._resume()
 	_check(await _until(func() -> bool: return cards_table.is_idle()), "Karten: KI-Zug endet geordnet")
-	_check(card.transform.is_equal_approx(target) and cards_table._can_act(), "Karten: nach Landung ist Kind dran")
+	var final_target: Transform3D = cards_table._slot(card, 0, 1)
+	print("[TableTurnFlow] cards settled can_act=%s moving=%s busy=%s final_distance=%.6f earlier_target_shift=%.6f" % [
+		cards_table._can_act(), card.is_moving(), cards_table._busy,
+		card.transform.origin.distance_to(final_target.origin), target.origin.distance_to(final_target.origin)])
+	_check(cards_table._can_act(), "Karten: nach Landung ist Kind dran")
+	_check(card.transform.is_equal_approx(final_target), "Karten: Landung entspricht endgültiger Regelzuordnung")
+	_check(bool(cards_table.hud._plate_data[0].active) and not bool(cards_table.hud._plate_data[1].active),
+		"Karten: sichtbare Übergabe und Eingabefreigabe erfolgen gemeinsam")
 	_check(int(state.s.moves) == 1 and state.check().is_empty(), "Karten: genau ein legaler KI-Zug")
 	await _capture("cards_02_settled")
 	var saved: Dictionary = state.snapshot()
@@ -396,8 +414,34 @@ func _cards_transfer() -> void:
 	_check(await _until(func() -> bool: return second.is_moving()), "Quartett: zweite Karte folgt")
 	_check(not first.is_moving(), "Quartett: Transfers überlappen nicht")
 	await _capture("cards_quartet_sequential_transfer")
-	_check(await _until(func() -> bool: return cards_table.is_idle()), "Quartett: gesamter Ereigniszug endet")
+	var ended := await _until(func() -> bool: return cards_table.is_idle())
+	if not ended:
+		_dump_cards_state("quartett-timeout")
+		await _capture("cards_quartet_timeout")
+		await create_timer(0.4).timeout
+		_dump_cards_state("quartett-after-0.4-engine-seconds")
+		await _capture("cards_quartet_after_timeout")
+	_check(ended, "Quartett: gesamter Ereigniszug endet")
 	_check(fixture.check().is_empty() and int(fixture.s.moves) == 1, "Quartett: konservierter Endzustand nach Transfer")
+
+
+func _dump_cards_state(label: String) -> void:
+	var moving: Array[Dictionary] = []
+	for id: int in cards_table.cards:
+		var card: Node3D = cards_table.cards[id]
+		if not card.is_moving():
+			continue
+		var valid: bool = card._move != null and card._move.is_valid()
+		moving.append({"card": id, "zone": card.zone, "position": str(card.transform.origin),
+			"move_valid": valid, "move_running": valid and card._move.is_running(),
+			"move_seconds": card._move.get_total_elapsed_time() if valid else -1.0,
+			"riffle_valid": card._riffle != null and card._riffle.is_valid(),
+			"suspended": card._suspended})
+	print("[TableTurnFlow] %s state %s" % [label, JSON.stringify({
+		"busy": cards_table._busy, "pumping": cards_table._pumping,
+		"paused": cards_table._paused, "generation": cards_table._generation,
+		"pump_generation": cards_table._pump_generation, "intro_blocking": cards_table._intro_blocking,
+		"moves": cards_table.rules.s.moves, "moving": moving})])
 
 
 func _cards_abort_and_reduced_motion() -> void:
