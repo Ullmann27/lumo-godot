@@ -28,17 +28,22 @@ func _check(ok: bool, message: String) -> void:
 		push_error("[TableTurnFlow] " + message)
 
 
-func _until(condition: Callable, seconds: float = 12.0) -> bool:
+func _until(condition: Callable, seconds: float = 12.0, engine_budget: float = -1.0) -> bool:
 	var started := Time.get_ticks_msec()
 	var deadline := started + int(seconds * 1000.0)
 	var engine_elapsed := 0.0
 	while not condition.call():
-		if Time.get_ticks_msec() >= deadline:
+		if Time.get_ticks_msec() >= deadline or (engine_budget >= 0.0 and engine_elapsed >= engine_budget):
 			print("[TableTurnFlow] wait timeout wall_seconds=%.3f engine_seconds=%.3f" % [
 				(Time.get_ticks_msec() - started) / 1000.0, engine_elapsed])
 			return false
 		await process_frame
 		engine_elapsed += root.get_process_delta_time()
+	if engine_budget >= 0.0:
+		var wall_elapsed := (Time.get_ticks_msec() - started) / 1000.0
+		print("[TableTurnFlow] motion completed wall_seconds=%.3f engine_seconds=%.3f wall_budget=%.1f engine_budget=%.1f" % [
+			wall_elapsed, engine_elapsed, seconds, engine_budget])
+		return engine_elapsed <= engine_budget and wall_elapsed <= seconds
 	return true
 
 
@@ -414,7 +419,10 @@ func _cards_transfer() -> void:
 	_check(await _until(func() -> bool: return second.is_moving()), "Quartett: zweite Karte folgt")
 	_check(not first.is_moving(), "Quartett: Transfers überlappen nicht")
 	await _capture("cards_quartet_sequential_transfer")
-	var ended := await _until(func() -> bool: return cards_table.is_idle())
+	# Die Bewegung wird in Enginezeit animiert. Langsames Software-Rendering
+	# darf ihre zwölf Simulationssekunden nicht in zwölf Wall-Sekunden verkürzen.
+	# Ein separater Wall-Watchdog begrenzt trotzdem einen eingefrorenen Renderer.
+	var ended := await _until(func() -> bool: return cards_table.is_idle(), 60.0, 12.0)
 	if not ended:
 		_dump_cards_state("quartett-timeout")
 		await _capture("cards_quartet_timeout")
