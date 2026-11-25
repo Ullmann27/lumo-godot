@@ -1,0 +1,109 @@
+name: "Lumo 2082 – real table motion captures"
+
+on:
+  push:
+    branches: [qa/lumo-2082-table-motion-20261125]
+    paths: [.github/workflows/lumo-2082-table-motion-capture.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumo-2082-table-motion-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  real-renderer:
+    name: Render the production cards and chess scenes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      LUMO_VISUAL_SOURCE: 'ee4d491e3c592e61b0c03437ecd59bec7f43574d'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'ee4d491e3c592e61b0c03437ecd59bec7f43574d'
+          persist-credentials: false
+      - name: Record the immutable scene and probe source
+        run: |
+          set -euo pipefail
+          mkdir -p table-motion-proof/frames
+          git rev-parse HEAD | tee table-motion-proof/SOURCE-COMMIT.txt
+          test "$(git rev-parse HEAD)" = "$LUMO_VISUAL_SOURCE"
+          git rev-parse HEAD^{tree} | tee table-motion-proof/SOURCE-TREE.txt
+          git ls-tree -r HEAD -- project.godot scripts scenes assets > table-motion-proof/SOURCE-BLOBS.txt
+      - name: Install the existing Godot and Mesa capture toolchain
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get -o Acquire::Retries=2 install -y xvfb libgl1-mesa-dri mesa-utils
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" \
+            https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/godot-bin/godot" --version | tee table-motion-proof/GODOT-VERSION.txt
+          xvfb-run -a -s '-screen 0 1440x900x24' glxinfo -B | tee table-motion-proof/RENDERER.txt
+      - name: Import the exact production assets and autoloads
+        run: |
+          set -euo pipefail
+          timeout 900 godot --headless --single-threaded-scene --path . --editor --import --quit \
+            2>&1 | tee table-motion-proof/IMPORT.txt
+      - name: Observe actual table movement and capture the viewport
+        run: |
+          set -euo pipefail
+          timeout 240 xvfb-run -a -s '-screen 0 1440x900x24' \
+            godot --path . --audio-driver Dummy --rendering-method gl_compatibility \
+            --script res://scripts/tests/table_turn_flow_regression.gd \
+            -- --capture="$PWD/table-motion-proof/frames" \
+            2>&1 | tee table-motion-proof/TABLE-MOTION.txt
+          grep -E 'TABLE_TURN_FLOW_PASS checks=[0-9]+ failures=0 captures=[1-9][0-9]*' table-motion-proof/TABLE-MOTION.txt
+      - name: Inventory the original unedited images
+        run: |
+          set -euo pipefail
+          python3 - <<'PY_IMAGES'
+          import hashlib
+          import json
+          import struct
+          from pathlib import Path
+          root = Path("table-motion-proof")
+          images = []
+          for path in sorted((root / "frames").glob("*.png")):
+              data = path.read_bytes()
+              assert data[:8] == b"\x89PNG\r\n\x1a\n", path
+              width, height = struct.unpack(">II", data[16:24])
+              assert (width, height) == (1440, 900), (path, width, height)
+              images.append({"file": str(path.relative_to(root)), "bytes": len(data),
+                             "width": width, "height": height,
+                             "sha256": hashlib.sha256(data).hexdigest()})
+          required = {
+              "cards_00_before.png", "cards_01_lumo_card_in_flight.png", "cards_02_settled.png",
+              "chess_top_00_before.png", "chess_top_01_child_in_flight.png",
+              "chess_top_02_lumo_in_flight.png", "chess_top_03_settled.png",
+              "chess_3d_00_castling_before.png", "chess_3d_01_castling_king_in_flight.png",
+              "chess_3d_02_castling_rook_in_flight.png", "chess_3d_03_castling_settled.png",
+          }
+          assert required.issubset({Path(image["file"]).name for image in images})
+          assert len({image["sha256"] for image in images}) == len(images), "Duplicate frames"
+          report = {"source_commit": (root / "SOURCE-COMMIT.txt").read_text().strip(),
+                    "probe": "scripts/tests/table_turn_flow_regression.gd",
+                    "scope": "Real production scenes in Godot 4.6.3, GL Compatibility and Mesa/Xvfb",
+                    "state_setup": "Deterministic legal test positions; production move and animation methods",
+                    "android_device_measurement": False, "fps_claim": False,
+                    "time_scale": 1.0, "images": images}
+          (root / "CAPTURES.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          PY_IMAGES
+      - name: Preserve rendered images and all available logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUMO-2082-TABLE-MOTION-${{ github.run_id }}
+          path: table-motion-proof/
+          if-no-files-found: warn
+          retention-days: 30
