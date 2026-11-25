@@ -14,6 +14,7 @@ var glow: MeshInstance3D
 var _move: Tween
 var _riffle: Tween
 var _look := ""
+var _suspended := false
 
 
 func setup(id: int) -> void:
@@ -58,7 +59,17 @@ func set_glow(color: Color) -> void:
 
 
 func is_moving() -> bool:
-	return (_move != null and _move.is_valid() and _move.is_running()) or (_riffle != null and _riffle.is_valid() and _riffle.is_running())
+	return (_move != null and _move.is_valid()) or (_riffle != null and _riffle.is_valid())
+
+
+func set_suspended(value: bool) -> void:
+	_suspended = value
+	for motion: Tween in [_move, _riffle]:
+		if motion != null and motion.is_valid():
+			if value:
+				motion.pause()
+			else:
+				motion.play()
 
 
 func stop() -> void:
@@ -89,7 +100,9 @@ func fly_to(target: Transform3D, duration: float, delay: float = 0.0, arc: float
 	_move = create_tween()
 	if delay > 0.0:
 		_move.tween_interval(delay)
-	_move.tween_method(_step.bind(from, target, arc, spin), 0.0, 1.0, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_move.tween_method(_step.bind(from, target, arc, spin), 0.0, 1.0, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	if _suspended:
+		_move.pause()
 	return _move
 
 
@@ -127,6 +140,8 @@ func riffle(side: float, height: float, duration: float, delay: float = 0.0) -> 
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_riffle.tween_method(func(t: float) -> void: transform = apart.interpolate_with(home, t), 0.0, 1.0, duration * 0.55) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	if _suspended:
+		_riffle.pause()
 
 
 ## Kurzes Kopfschütteln der Karte: „geht gerade nicht“.

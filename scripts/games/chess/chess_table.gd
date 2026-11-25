@@ -25,6 +25,9 @@ const LUMO_ANGLE := 180.0
 ## Das Brett ist größer als ein Spielbrett am Kartentisch: Figuren bleiben am
 ## Handy gut greifbar, und Lumo sitzt trotzdem sichtbar gegenüber.
 const BOARD_SCALE := 1.4
+const TURN_THINK_SECONDS := 0.95
+const LUMO_MOVE_SECONDS := 0.95
+
 const LEVEL_STARS := [1, 2, 3, 4]
 ## Kurzbeschreibung je Stufe (ehrlich: was Lumo auf dieser Stufe tut).
 const LEVEL_TEXT := [
@@ -94,6 +97,8 @@ var _previous_window: Dictionary = {}
 var _density := 1.0
 var _board_rect := Rect2()
 var _closed := false
+var _paused := false
+var _turn_clock := 0.0
 
 var _theme: Theme
 
@@ -172,9 +177,13 @@ func _notification(what: int) -> void:
 		go_back()
 	elif what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_CLOSE_REQUEST]:
 		_store()
+		if what == NOTIFICATION_APPLICATION_PAUSED:
+			_on_pause()
 
 
 func _process(delta: float) -> void:
+	if not _paused:
+		_turn_clock += delta * maxf(0.01, time_scale)
 	if is_instance_valid(lumo):
 		lumo.advance(delta)
 
@@ -839,7 +848,7 @@ func open_rules() -> void:
 		"Verstanden",
 		func() -> void:
 			if back_to in ["lesson", "trial", "match"]:
-				close_overlay()
+				_resume()
 			else:
 				open_home()
 	)
@@ -850,6 +859,13 @@ func _on_pause() -> void:
 	if screen not in ["lesson", "trial", "match"] or not overlay_kind.is_empty():
 		return
 	_store()
+	_paused = true
+	_press_square = -1
+	_dragging = false
+	board2d.drag_square = -1
+	chess.drop_back()
+	chess.set_suspended(true)
+	board2d.set_suspended(true)
 	if is_instance_valid(lumo):
 		lumo.set_suspended(true)
 	_clear_overlay()
@@ -897,6 +913,9 @@ func _on_pause() -> void:
 
 
 func _resume() -> void:
+	_paused = false
+	chess.set_suspended(false)
+	board2d.set_suspended(false)
 	_pending_warn = -1
 	if is_instance_valid(lumo):
 		lumo.set_suspended(false)
@@ -923,7 +942,11 @@ func leave() -> void:
 	if HostBridge.is_embedded():
 		_closed = HostBridge.return_to_app("games")
 	else:
+		_closed = true
 		SceneRouter.goto("games")
+	if _closed:
+		_generation += 1
+		_end_game_state()
 
 
 func _on_view() -> void:
@@ -942,7 +965,7 @@ func _show_position() -> void:
 
 
 func _child_moves() -> PackedInt32Array:
-	if rules == null or busy or finished:
+	if rules == null or busy or finished or _paused:
 		return PackedInt32Array()
 	match screen:
 		"lesson":
@@ -1086,7 +1109,7 @@ func _on_press(point: Vector2) -> void:
 	var sq := square_at_point(point)
 	_press_square = -1
 	_dragging = false
-	if sq < 0 or busy or finished:
+	if sq < 0 or busy or finished or _paused:
 		return
 	_press_point = point
 	var step := _step() if screen == "lesson" else {}
@@ -1218,6 +1241,7 @@ func _step() -> Dictionary:
 
 func start_lesson(id: String) -> void:
 	_generation += 1
+	_end_game_state()
 	close_overlay()
 	lesson_id = id
 	trial_id = ""
@@ -1276,20 +1300,16 @@ func _enter_step() -> void:
 
 
 func _play_demo(uci: String) -> void:
-	var gen := _generation
 	busy = true
-	await get_tree().create_timer(0.6 / time_scale).timeout
-	if gen != _generation or _closed:
+	if not await _wait(0.8):
 		return
 	var m: int = rules.move_from_uci(uci)
 	if m >= 0:
 		rules.make_move(m)
+		if not await _present_move(m, LUMO_MOVE_SECONDS):
+			return
 		_sfx("piece_drop")
-		chess.animate_move(m, rules.board, 0.9)
-		board2d.show_board(rules.board)
-		await chess.move_animated
 	busy = false
-
 
 func _on_next() -> void:
 	if screen != "lesson" or busy:
@@ -1336,26 +1356,25 @@ func _lesson_wrong() -> void:
 
 
 func _next_after(seconds: float) -> void:
-	var gen := _generation
 	busy = true
-	await get_tree().create_timer(seconds / time_scale).timeout
-	if gen != _generation or _closed:
+	if not await _wait(seconds):
 		return
 	busy = false
 	_advance_step()
 
-
 func _lesson_move(m: int) -> void:
+	if busy or _paused:
+		return
 	var step := _step()
 	var type := str(step.get("type", ""))
 	if type == "collect":
-		var from := RULES.move_from(m)
 		var to := RULES.move_to(m)
 		collect_moves += 1
+		busy = true
 		rules.make_move(m)
+		if not await _present_move(m, 0.65):
+			return
 		_sfx("piece_drop")
-		chess.animate_move(m, rules.board)
-		board2d.show_board(rules.board)
 		if stars_left.has(to):
 			stars_left.erase(to)
 			chess.remove_star(to)
@@ -1381,6 +1400,7 @@ func _lesson_move(m: int) -> void:
 			collect_cap = mini(collect_cap, SCHOOL.collect_stars(collect_moves, par))
 			_next_after(1.2)
 		else:
+			busy = false
 			say(
 				(
 					"Super! Noch %d Stern%s."
@@ -1390,10 +1410,11 @@ func _lesson_move(m: int) -> void:
 		_refresh_glow()
 		return
 	if SCHOOL.move_ok(step, rules, m):
+		busy = true
 		rules.make_move(m)
+		if not await _present_move(m, 0.65):
+			return
 		_sfx("piece_drop")
-		chess.animate_move(m, rules.board)
-		board2d.show_board(rules.board)
 		chess.set_props([], [])
 		board2d.set_props([], [])
 		_sfx("answer_correct")
@@ -1471,6 +1492,7 @@ func _slot() -> String:
 
 func start_trial(id: String) -> void:
 	_generation += 1
+	_end_game_state()
 	close_overlay()
 	trial_id = id
 	lesson_id = ""
@@ -1501,6 +1523,7 @@ func start_trial(id: String) -> void:
 
 func start_match(chosen_level: int, resume: bool) -> void:
 	_generation += 1
+	_end_game_state()
 	close_overlay()
 	trial_id = ""
 	lesson_id = ""
@@ -1548,13 +1571,31 @@ func _show_game_buttons() -> void:
 func _end_game_state() -> void:
 	busy = false
 	thinking = false
+	_paused = false
 	selected = -1
+	_press_square = -1
+	_dragging = false
 	_pending_warn = -1
 	_danger_sq = -1
+	if rules != null:
+		chess.show_board(rules.board)
+		board2d.show_board(rules.board)
+	else:
+		chess.cancel_animation()
+		chess.drop_back()
+		board2d.cancel_animation()
+	chess.set_suspended(false)
+	board2d.set_suspended(false)
+	if is_instance_valid(lumo):
+		lumo.set_suspended(false)
+		lumo.calm()
 	if ai != null:
+		# Eine alte Suche darf nach Reset keine Felder der neuen Suche verändern.
 		ai.stopped = true
+		var next_ai: RefCounted = AI.new()
+		next_ai.rng.state = ai.rng.state
+		ai = next_ai
 	rules = null
-
 
 func _child_move(m: int) -> void:
 	if screen == "lesson":
@@ -1597,6 +1638,8 @@ func _child_move(m: int) -> void:
 
 
 func _commit_child_move(m: int) -> void:
+	if busy or _paused or rules == null or finished:
+		return
 	_pending_warn = -1
 	_danger_sq = -1
 	var before: RefCounted = rules.duplicate_state()
@@ -1604,20 +1647,19 @@ func _commit_child_move(m: int) -> void:
 		chess.drop_back()
 		_refresh_glow()
 		return
-	_sfx("piece_drop")
-	chess.animate_move(m, rules.board)
-	board2d.show_board(rules.board)
+	busy = true
 	last_explain = COACH.explain(before, m, false)
+	_store()
+	_refresh_glow()
+	if not await _present_move(m, 0.65):
+		return
+	_sfx("piece_drop")
 	if screen == "trial" or mode == "play":
-		# Lob für Versuche: oft ein kurzes „Gut gemacht!“ vor der Erklärung.
 		var praise := COACH.praise(rng) + " " if mistakes == 0 or rng.randf() < 0.5 else ""
 		say(praise + last_explain, "Du")
-	_refresh_glow()
-	_store()
 	if _check_end():
 		return
 	_lumo_turn()
-
 
 func _lumo_turn() -> void:
 	var gen := _generation
@@ -1627,19 +1669,15 @@ func _lumo_turn() -> void:
 	if is_instance_valid(lumo):
 		lumo.react("think")
 		_lumo_look_board()
-	var started := Time.get_ticks_msec()
+	var started := _turn_clock
 	ai.stopped = false
 	var race := screen == "trial" and str(SCHOOL.trial(trial_id).get("goal", "")) == "race"
 	var result: Dictionary = await ai.think(rules, level, {"race": race})
 	if gen != _generation or _closed or rules == null:
 		return
-	# Kurz nachdenken lassen, auch wenn es schnell ging.
-	var waited := (Time.get_ticks_msec() - started) / 1000.0
-	var pause := (0.7 - waited) / time_scale
-	if pause > 0.0 and not reduced_motion:
-		await get_tree().create_timer(pause).timeout
-		if gen != _generation or _closed or rules == null:
-			return
+	# Auch bei wenig Bewegung bleibt Zeit, den letzten Zug zu verstehen.
+	if not await _wait(maxf(0.0, TURN_THINK_SECONDS - (_turn_clock - started))):
+		return
 	thinking = false
 	var m := int(result.get("move", -1))
 	if m < 0:
@@ -1647,16 +1685,19 @@ func _lumo_turn() -> void:
 		_check_end()
 		return
 	var before: RefCounted = rules.duplicate_state()
-	rules.play(m)
+	if not rules.play(m):
+		busy = false
+		return
 	if is_instance_valid(lumo):
 		lumo.calm()
 		_lumo_look_board(RULES.move_to(m))
 		lumo.react("play")
-	_sfx("piece_drop")
-	chess.animate_move(m, rules.board, 0.75)
-	board2d.show_board(rules.board)
 	last_explain = COACH.explain(before, m, true)
 	_danger_sq = -1
+	_store()
+	if not await _present_move(m, LUMO_MOVE_SECONDS):
+		return
+	_sfx("piece_drop")
 	var danger: Dictionary = {} if mode == "pro" or not hints else COACH.danger(rules)
 	var tail := " Jetzt du!"
 	if not danger.is_empty():
@@ -1668,14 +1709,40 @@ func _lumo_turn() -> void:
 		say(last_explain + tail, "Lumo")
 	else:
 		say(last_explain + tail, "Lumo · %s" % AI.level_name(level))
-	await chess.move_animated
-	if gen != _generation or _closed:
+	if not await _wait(0.24):
 		return
 	busy = false
 	_refresh_glow()
-	_store()
 	_check_end()
 
+
+## Eine Uhr für Denk-/Lesezeit, die auch bei Pause und Szenenwechsel stimmt.
+func _wait(seconds: float) -> bool:
+	var gen := _generation
+	var elapsed := 0.0
+	while elapsed < seconds or _paused:
+		if gen != _generation or _closed or not is_inside_tree():
+			return false
+		await get_tree().process_frame
+		if not _paused:
+			elapsed += get_process_delta_time() * maxf(0.01, time_scale)
+	return gen == _generation and not _closed
+
+
+## Beide Ansichten laufen synchron. Die nächste Aktion wartet auf die Landung.
+func _present_move(m: int, seconds: float) -> bool:
+	var gen := _generation
+	chess.reduced_motion = reduced_motion
+	board2d.reduced_motion = reduced_motion
+	chess.time_scale = time_scale
+	board2d.time_scale = time_scale
+	chess.animate_move(m, rules.board, seconds)
+	board2d.animate_move(m, rules.board, seconds)
+	while chess.is_animating() or board2d.is_animating() or _paused:
+		if gen != _generation or _closed or not is_inside_tree():
+			return false
+		await get_tree().process_frame
+	return gen == _generation and not _closed
 
 ## Partie aufgeben (nur „Gegen Lumo“ und „Für Große“): zählt als verloren.
 func resign() -> void:
@@ -1684,6 +1751,7 @@ func resign() -> void:
 	_generation += 1
 	if ai != null:
 		ai.stopped = true
+	_show_position()
 	finished = true
 	busy = false
 	thinking = false
@@ -1826,6 +1894,8 @@ func _on_hint() -> void:
 	var hint: Dictionary = await COACH.hint(rules, rng.randi() & 0xFFFF)
 	if gen != _generation or _closed:
 		return
+	if not await _wait(0.0):
+		return
 	busy = false
 	if hint.is_empty():
 		return
@@ -1846,7 +1916,7 @@ func _on_why() -> void:
 
 
 func _on_undo() -> void:
-	if busy or rules == null:
+	if busy or _paused or rules == null:
 		return
 	if screen == "lesson":
 		_enter_step()
@@ -1875,4 +1945,4 @@ func _on_undo() -> void:
 
 
 func is_idle() -> bool:
-	return not busy and not thinking and not chess.is_animating()
+	return not busy and not thinking and not chess.is_animating() and not board2d.is_animating()

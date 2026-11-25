@@ -5,6 +5,8 @@ extends Control
 ##
 ## Reine Darstellung – Eingaben verarbeitet der Tisch über `square_at()`.
 
+signal move_animated
+
 const ICONS := "res://assets/chess/icons/%s.webp"
 const NAMES := ["", "pawn", "knight", "bishop", "rook", "queen", "king"]
 ## Anteil von Rand und Intarsienband an der Brett-Textur (0,84 m davon 0,02 je Seite).
@@ -21,6 +23,20 @@ var _icons: Dictionary = {}
 var _top: Texture2D
 var _time := 0.0
 var _font: Font
+var reduced_motion := false
+var time_scale := 1.0
+var _anim: Tween
+var _moving := false
+var _suspended := false
+var _move_from := -1
+var _move_to := -1
+var _move_piece := 0
+var _progress := 0.0
+var _victim_sq := -1
+var _rook_from := -1
+var _rook_to := -1
+var _rook_piece := 0
+var _rook_progress := 0.0
 
 
 func _ready() -> void:
@@ -32,7 +48,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_time += delta
+	if not _suspended:
+		_time += delta
 	if visible and not glow.is_empty():
 		queue_redraw()
 
@@ -48,8 +65,88 @@ func icon(piece: int) -> Texture2D:
 
 
 func show_board(value: PackedInt32Array) -> void:
+	cancel_animation()
 	board = value.duplicate()
 	queue_redraw()
+
+
+## Dieselbe Zugfolge wie das Holzbrett: Ausgangsfeld, Zwischenpositionen, Ziel.
+## Das Endbrett wird erst nach der Landung übernommen (auch bei Umwandlung).
+func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.65) -> void:
+	cancel_animation()
+	_move_from = m & 63
+	_move_to = (m >> 6) & 63
+	var flags := m >> 15
+	_move_piece = board[_move_from]
+	if reduced_motion or _move_piece == 0:
+		show_board(board_after)
+		move_animated.emit.call_deferred()
+		return
+	_moving = true
+	_progress = 0.0
+	_rook_progress = 0.0
+	_victim_sq = _move_to
+	if flags & 4:
+		_victim_sq = _move_to - 8 if (_move_to >> 3) == 5 else _move_to + 8
+	board[_move_from] = 0
+	_rook_from = -1
+	if flags & 8:
+		_rook_from = int({6: 7, 2: 0, 62: 63, 58: 56}.get(_move_to, -1))
+		_rook_to = int({6: 5, 2: 3, 62: 61, 58: 59}.get(_move_to, -1))
+		_rook_piece = board[_rook_from]
+		board[_rook_from] = 0
+	var duration := seconds / maxf(0.01, time_scale)
+	_anim = create_tween()
+	_anim.tween_method(
+		func(t: float) -> void:
+			_progress = t
+			queue_redraw(),
+		0.0, 1.0, duration
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	if _rook_from >= 0:
+		_anim.tween_method(
+			func(t: float) -> void:
+				_rook_progress = t
+				queue_redraw(),
+			0.0, 1.0, duration * 0.65
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var final_board := board_after.duplicate()
+	_anim.tween_callback(
+		func() -> void:
+			show_board(final_board)
+			move_animated.emit()
+	)
+	if _suspended:
+		_anim.pause()
+	queue_redraw()
+
+
+func is_animating() -> bool:
+	return _moving
+
+
+func set_suspended(value: bool) -> void:
+	_suspended = value
+	if _anim != null and _anim.is_valid():
+		if value:
+			_anim.pause()
+		else:
+			_anim.play()
+
+
+func cancel_animation() -> void:
+	if _anim != null and _anim.is_valid():
+		_anim.kill()
+	_anim = null
+	_moving = false
+	drag_square = -1
+
+
+## In Brettkoordinaten, damit auch ein Ansichts-/Formatwechsel weich bleibt.
+func moving_piece_rect() -> Rect2:
+	var start := square_rect(_move_from)
+	var finish := square_rect(_move_to)
+	return Rect2(start.position.lerp(finish.position, _progress), start.size)
 
 
 func set_glow(value: Dictionary) -> void:
@@ -116,7 +213,7 @@ func _draw() -> void:
 				Color("cbdcc9") if (sq & 7) % 2 != (sq >> 3) % 2 else Color("62918c")
 			)
 	var c := cell()
-	var pulse := 0.65 + 0.3 * sin(_time * 4.2)
+	var pulse := 0.8 if reduced_motion else 0.65 + 0.3 * sin(_time * 4.2)
 	for sq: int in glow:
 		var rect := square_rect(sq)
 		match str(glow[sq]):
@@ -157,7 +254,18 @@ func _draw() -> void:
 	for sq in 64:
 		if board[sq] == 0 or sq == drag_square:
 			continue
-		_draw_piece(board[sq], square_rect(sq))
+		if _moving and sq == _victim_sq:
+			var fraction := 1.0 - smoothstep(0.72, 1.0, _progress)
+			var rect := square_rect(sq)
+			_draw_piece(board[sq], rect.grow(-c * 0.48 * (1.0 - fraction)))
+		else:
+			_draw_piece(board[sq], square_rect(sq))
+	if _moving:
+		_draw_piece(_move_piece, moving_piece_rect())
+		if _rook_from >= 0:
+			var start := square_rect(_rook_from)
+			var finish := square_rect(_rook_to)
+			_draw_piece(_rook_piece, Rect2(start.position.lerp(finish.position, _rook_progress), start.size))
 	if drag_square >= 0 and board[drag_square] != 0:
 		var local := get_global_transform_with_canvas().affine_inverse() * drag_point
 		_draw_piece(board[drag_square], Rect2(local - Vector2(c, c) * 0.6, Vector2(c, c) * 1.2))

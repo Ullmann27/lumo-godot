@@ -1,0 +1,69 @@
+name: LUMO 2082 ruhige Tischzüge
+on:
+  push:
+    branches: [fix/intelligence-2082-table-tempo-20261125]
+permissions:
+  contents: read
+concurrency:
+  group: lumo-table-tempo-qa
+  cancel-in-progress: true
+jobs:
+  native-tables:
+    name: Native Tabellenprüfung (${{ matrix.group }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [motion-and-rules, complete-scenes]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exakte Engine 4.6.3 installieren
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p table-tempo-proof
+          git rev-parse HEAD > table-tempo-proof/NATIVE-COMMIT.txt
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c - | tee table-tempo-proof/ENGINE-SHA256.txt
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Vollständiger Singlethread-Import
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --version | tee table-tempo-proof/ENGINE-VERSION.txt
+          test "$(godot --version | cut -d. -f1-3)" = 4.6.3
+          if ! godot --headless --single-threaded-scene --editor --import --quit 2>&1 | tee table-tempo-proof/IMPORT-1.txt; then
+            godot --headless --single-threaded-scene --editor --import --quit 2>&1 | tee table-tempo-proof/IMPORT-2.txt
+          fi
+      - name: Zeitliche Abläufe und unveränderte Regeln
+        if: matrix.group == 'motion-and-rules'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for probe in table_turn_flow_regression cards_rules_regression chess_rules_regression; do
+            python3 tools/run_godot_probe.py --timeout 900 --required PASS --log "table-tempo-proof/$probe.txt" -- godot --headless --single-threaded-scene --audio-driver Dummy --path . --script "res://scripts/tests/$probe.gd"
+          done
+      - name: Vollständige bestehende Kartenszene
+        if: matrix.group == 'complete-scenes'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 1200 --required CARDS_TABLE_RUNTIME_PASS --log table-tempo-proof/cards_table_regression.txt -- godot --headless --single-threaded-scene --audio-driver Dummy --path . --script res://scripts/tests/cards_table_regression.gd
+      - name: Vollständige bestehende Schachszene
+        if: matrix.group == 'complete-scenes'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_godot_probe.py --timeout 1800 --required CHESS_TABLE_PASS --log table-tempo-proof/chess_table_regression.txt -- godot --headless --single-threaded-scene --audio-driver Dummy --path . --script res://scripts/tests/chess_table_regression.gd -- --scene=chess
+      - name: Tatsächliche Logs auch bei Fehlern sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUMO-TABLE-TEMPO-${{ matrix.group }}-${{ github.run_id }}
+          path: table-tempo-proof/
+          if-no-files-found: error
