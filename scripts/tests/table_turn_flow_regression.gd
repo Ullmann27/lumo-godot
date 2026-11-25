@@ -282,6 +282,7 @@ func _chess_abort() -> void:
 	_check(not chess_table.chess.is_animating() and not chess_table.board2d.is_animating(), "Schach: reduzierte Bewegung ohne Flug")
 	_check(await _until(func() -> bool: return chess_table.is_idle()), "Schach: reduzierte Bewegung beendet Zug korrekt")
 	_check(chess_table.board2d.board == chess_table.rules.board, "Schach: reduzierter Endzustand stimmt")
+	_check(chess_table.rules.played.size() == 2, "Schach: alte Coroutine fügt nach Reset keinen Halbzug hinzu")
 
 
 func _fresh_cards(game: String, seed_value: int) -> RefCounted:
@@ -297,6 +298,7 @@ func _cards_fixture(state: RefCounted) -> void:
 	cards_table.rules = state
 	cards_table.screen = "play"
 	cards_table._intro_blocking = true
+	cards_table.hud.close_overlay()
 	cards_table._enter_table(false)
 	cards_table._intro_blocking = false
 	_check(state.check().is_empty(), "Kartentest nutzt gültigen Regelstand")
