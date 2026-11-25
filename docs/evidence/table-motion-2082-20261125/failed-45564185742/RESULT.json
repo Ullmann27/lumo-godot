@@ -1,0 +1,94 @@
+{
+  "status": "failed",
+  "source_commit": "0e126f71f932b3c21634827adb71d4d37f25acef",
+  "source_tree": "1a0e378731ac00d218f1a04472891c0e83f234c3",
+  "workflow_commit": "ee8443bc4178ffbc1a44fe822a7dd0d178600f02",
+  "run_id": 45564185742,
+  "job_id": 139034928615,
+  "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45564185742",
+  "checks": 143,
+  "failed_checks": 2,
+  "captures": 13,
+  "failures": [
+    "Karten: nach Landung ist Kind dran",
+    "Quartett: gesamter Ereigniszug endet"
+  ],
+  "runtime_errors": [
+    "Must be an ancestor of the control."
+  ],
+  "classification": "Diagnostic run; explicitly not a successful acceptance result.",
+  "artifact": {
+    "id": 14999063255,
+    "bytes": 17560462,
+    "sha256": "0ae3d88b1873dbb5e5a5454c1bde6a12a5780834fb2e36a94978a28c19392554",
+    "expires_at": "2026-12-25T07:01:32Z",
+    "downloaded_and_hash_verified": true
+  },
+  "images": [
+    {
+      "file": "frames/cards_00_before.png",
+      "bytes": 1733947,
+      "sha256": "7b0deecb2d0526703cbb0cfca6f06c1498b10effa96143a665bb6d5d38f77f86"
+    },
+    {
+      "file": "frames/cards_01_lumo_card_in_flight.png",
+      "bytes": 1621543,
+      "sha256": "96461a2bf4f43e9755e2b3b77db8c1ca77271f8c37739c7ddb42bcd4dc01054b"
+    },
+    {
+      "file": "frames/cards_02_settled.png",
+      "bytes": 1642354,
+      "sha256": "7fa840d9d076114a1e7770b91dcf6a74e5b9af9a4827ec079f20c9b1a6c59f63"
+    },
+    {
+      "file": "frames/cards_quartet_sequential_transfer.png",
+      "bytes": 1659898,
+      "sha256": "9714b3695a33062ddcf0433691d66f5e773ec7a2554e8474eb4b30e2412f21d9"
+    },
+    {
+      "file": "frames/chess_3d_00_castling_before.png",
+      "bytes": 1533746,
+      "sha256": "f8818a3ae414b3e90f890d01093a6b108b37bec5a4ccaf3bb9a3f2e82cdb92b2"
+    },
+    {
+      "file": "frames/chess_3d_01_castling_king_in_flight.png",
+      "bytes": 1539052,
+      "sha256": "2572fc8e451f3755ba248a2d6037758d15ce501dd0812b5c7a625554ad42b744"
+    },
+    {
+      "file": "frames/chess_3d_02_castling_rook_in_flight.png",
+      "bytes": 1535935,
+      "sha256": "a3869dcdc1628ae500f869061801fd72ebe036e57e3026a3d4c5fe6e8ff7c2d4"
+    },
+    {
+      "file": "frames/chess_3d_03_castling_settled.png",
+      "bytes": 1538168,
+      "sha256": "a41986714d9276e3dffd3afa7c2b393666eaa8b8e930f6796a55ffb9e25fa84d"
+    },
+    {
+      "file": "frames/chess_3d_04_promotion_settled.png",
+      "bytes": 1527314,
+      "sha256": "de7e51268460e4fc11434661fdd89fac8f195eeb7cd2027255d28e48aa27e307"
+    },
+    {
+      "file": "frames/chess_top_00_before.png",
+      "bytes": 759542,
+      "sha256": "cebb3f50038055017aa872b9d4d663e7bdd914f1881e78255a151d17c8b4d848"
+    },
+    {
+      "file": "frames/chess_top_01_child_in_flight.png",
+      "bytes": 761576,
+      "sha256": "7016a3d3e06eb0abfad02c52c12d40ab9179cb7eaf4767b198c66fef9aae48ad"
+    },
+    {
+      "file": "frames/chess_top_02_lumo_in_flight.png",
+      "bytes": 758031,
+      "sha256": "6b4a1eaabd3473fa2593c26abd8fcee24655403d168a585033f4ac44bb80be8e"
+    },
+    {
+      "file": "frames/chess_top_03_settled.png",
+      "bytes": 760203,
+      "sha256": "1d4d1fb4a45795d3dbf76334d28c80db5ce0157d3f077fd1fb8084abc0e1eca9"
+    }
+  ]
+}
