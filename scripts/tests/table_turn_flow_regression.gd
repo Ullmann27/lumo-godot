@@ -65,6 +65,7 @@ func _run() -> void:
 	DirAccess.remove_absolute(CARDS_SESSION.path_for(CHILD))
 	await _chess_flow()
 	await _chess_special_moves()
+	await _chess_pause_controls()
 	await _chess_abort()
 	chess_table.queue_free()
 	await _frames(3)
@@ -165,6 +166,8 @@ func _chess_special_moves() -> void:
 		chess_table.rules = CHESS_RULES.new(str(entry[0]))
 		chess_table._show_position()
 		var move: int = chess_table.rules.move_from_uci(str(entry[1]))
+		if entry[1] == "e1g1":
+			await _capture("chess_3d_00_castling_before")
 		_check(move >= 0 and chess_table.rules.play(move), "Sonderzug legal: " + str(entry[1]))
 		chess_table.chess.animate_move(move, chess_table.rules.board, 0.6)
 		chess_table.board2d.animate_move(move, chess_table.rules.board, 0.6)
@@ -178,6 +181,8 @@ func _chess_special_moves() -> void:
 			_check(not rook.position.is_equal_approx(chess_table.chess.square_center(7)), "Rochade: danach folgt der Turm")
 			await _capture("chess_3d_02_castling_rook_in_flight")
 		_check(await _until(func() -> bool: return not chess_table.chess.is_animating() and not chess_table.board2d.is_animating()), "Sonderzug landet: " + str(entry[1]))
+		if entry[1] == "e1g1":
+			await _capture("chess_3d_03_castling_settled")
 		_check(chess_table.board2d.board == chess_table.rules.board, "Sonderzug 2D-Endbrett: " + str(entry[1]))
 		var count := 0
 		for sq in 64:
@@ -187,7 +192,54 @@ func _chess_special_moves() -> void:
 				_check(node != null and int(node.get_meta("piece")) == chess_table.rules.board[sq]
 					and node.position.is_equal_approx(chess_table.chess.square_center(sq)), "Sonderzug 3D-Figur auf Feld %d" % sq)
 		_check(chess_table.chess.pieces.size() == count and chess_table.chess._retiring.is_empty(), "Sonderzug: keine verlorene/zusätzliche Figur")
-	await _capture("chess_3d_03_settled")
+	await _capture("chess_3d_04_promotion_settled")
+
+
+func _chess_pause_controls() -> void:
+	chess_table.start_lesson("brett")
+	_check(not chess_table.busy and chess_table.find_button("Next").visible, "Lektion: sichtbarer Weiter-Knopf")
+	chess_table._on_pause()
+	var step: int = chess_table.step_index
+	chess_table.find_button("Next").pressed.emit()
+	_check(chess_table.step_index == step, "Pause: echter Weiter-Knopf ändert Lernschritt nicht")
+	chess_table._resume()
+	chess_table.start_lesson("sterne")
+	chess_table._on_pause()
+	var mistakes: int = chess_table.mistakes
+	var glow: Dictionary = chess_table.chess.glow_squares().duplicate()
+	chess_table.find_button("Show").pressed.emit()
+	chess_table.find_button("Undo").pressed.emit()
+	_check(chess_table.mistakes == mistakes and chess_table.chess.glow_squares() == glow,
+		"Pause: echte Hilfe-/Zurück-Knöpfe ändern Lektion nicht")
+	chess_table._resume()
+	chess_table.start_match(0, false)
+	chess_table.hints = false
+	chess_table._on_pause()
+	chess_table.find_button("Hint").pressed.emit()
+	_check(not chess_table.busy and not chess_table.thinking, "Pause: echter Tipp-Knopf startet keine Suche")
+	chess_table._resume()
+	# Der Menüweg, den ein Kind aus Pause wirklich benutzt.
+	chess_table.start_trial("t5")
+	chess_table._commit_child_move(chess_table.rules.move_from_uci("e2e4"))
+	await create_timer(0.25).timeout
+	chess_table._on_pause()
+	chess_table.find_button("o_Menu").pressed.emit()
+	_check(chess_table.screen == "path", "Pause-Menü führt in den Lernweg")
+	for sq: int in chess_table.chess.pieces:
+		var piece: Node3D = chess_table.chess.pieces[sq]
+		_check(piece.position.is_equal_approx(chess_table.chess.square_center(sq)),
+			"Pause-Menü: jede Figur steht auf einem Feld (%d)" % sq)
+	chess_table.start_lesson("sterne")
+	var own_moves: PackedInt32Array = chess_table._child_moves()
+	_check(not own_moves.is_empty(), "Lektion: anhebbare Figur für Menü-Abbruch vorhanden")
+	if not own_moves.is_empty():
+		var square: int = CHESS_RULES.move_from(own_moves[0])
+		chess_table._on_press(chess_table.square_point(square))
+		chess_table._on_pause()
+		chess_table.find_button("o_Menu").pressed.emit()
+		var piece: Node3D = chess_table.chess.pieces[square]
+		_check(piece.position.is_equal_approx(chess_table.chess.square_center(square)),
+			"Pause-Menü legt auch eine angehobene Figur zurück")
 
 
 func _chess_abort() -> void:
@@ -213,6 +265,16 @@ func _chess_abort() -> void:
 	chess_table.start_match(0, false)
 	await create_timer(1.2).timeout
 	_check(chess_table.rules.played.is_empty() and chess_table.is_idle(), "Schach: alte KI-Antwort verändert neue Partie nicht")
+	# Echte mehrbildrige Suche auf einer Stellung außerhalb des Eröffnungsbuchs.
+	chess_table.start_match(3, false)
+	chess_table.rules = CHESS_RULES.new("r3k2r/p1ppqpb1/bn2pnp1/2pP4/1p2P3/2N2N2/PPQBBPPP/R3K2R b KQkq - 0 1")
+	chess_table._show_position()
+	var old_ai: RefCounted = chess_table.ai
+	chess_table._lumo_turn()
+	_check(await _until(func() -> bool: return old_ai.frames >= 2), "Schach: echte alte KI-Coroutine über mehrere Bilder aktiv")
+	print("[TableTurnFlow] cancelled search frames=%d nodes=%d" % [old_ai.frames, old_ai.nodes])
+	chess_table.start_match(0, false)
+	_check(old_ai.stopped and chess_table.ai != old_ai, "Schach: Reset stoppt alte Suche und trennt Arbeitszustand")
 	chess_table.reduced_motion = true
 	chess_table._commit_child_move(chess_table.rules.move_from_uci("e2e4"))
 	await create_timer(0.25).timeout

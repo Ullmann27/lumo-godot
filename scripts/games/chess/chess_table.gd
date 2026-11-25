@@ -1312,7 +1312,7 @@ func _play_demo(uci: String) -> void:
 	busy = false
 
 func _on_next() -> void:
-	if screen != "lesson" or busy:
+	if screen != "lesson" or busy or _paused or not overlay_kind.is_empty():
 		return
 	_advance_step()
 
@@ -1430,7 +1430,7 @@ func _lesson_move(m: int) -> void:
 
 
 func _on_show_me() -> void:
-	if screen != "lesson" or busy:
+	if screen != "lesson" or busy or _paused or not overlay_kind.is_empty():
 		return
 	var step := _step()
 	var solution: Array = SCHOOL.solution(step)
@@ -1598,6 +1598,8 @@ func _end_game_state() -> void:
 	rules = null
 
 func _child_move(m: int) -> void:
+	if busy or _paused or finished:
+		return
 	if screen == "lesson":
 		_lesson_move(m)
 		return
@@ -1886,7 +1888,7 @@ func _store() -> void:
 
 
 func _on_hint() -> void:
-	if screen not in ["trial", "match"] or busy or finished or rules == null or rules.side != 0:
+	if screen not in ["trial", "match"] or busy or _paused or not overlay_kind.is_empty() or finished or rules == null or rules.side != 0:
 		return
 	var gen := _generation
 	busy = true
@@ -1909,6 +1911,8 @@ func _on_hint() -> void:
 
 
 func _on_why() -> void:
+	if _paused or not overlay_kind.is_empty():
+		return
 	if last_explain.is_empty():
 		say("Wir haben noch nicht gezogen. Fang einfach an!")
 	else:
@@ -1916,7 +1920,7 @@ func _on_why() -> void:
 
 
 func _on_undo() -> void:
-	if busy or _paused or rules == null:
+	if busy or _paused or not overlay_kind.is_empty() or rules == null:
 		return
 	if screen == "lesson":
 		_enter_step()
