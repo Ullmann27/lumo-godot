@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      LUMO_VISUAL_SOURCE: 'bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd'
+      LUMO_VISUAL_SOURCE: '62108c0355f860ab9a0a020ecb5f3f941f1032e9'
       LIBGL_ALWAYS_SOFTWARE: '1'
     defaults:
       run:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 'bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd'
+          ref: '62108c0355f860ab9a0a020ecb5f3f941f1032e9'
           persist-credentials: false
       - name: Record the immutable scene and probe source
         run: |
