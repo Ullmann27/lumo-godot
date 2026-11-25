@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: lumo-2082-table-motion-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   real-renderer:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      LUMO_VISUAL_SOURCE: 'ee4d491e3c592e61b0c03437ecd59bec7f43574d'
+      LUMO_VISUAL_SOURCE: '0e126f71f932b3c21634827adb71d4d37f25acef'
       LIBGL_ALWAYS_SOFTWARE: '1'
     defaults:
       run:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 'ee4d491e3c592e61b0c03437ecd59bec7f43574d'
+          ref: '0e126f71f932b3c21634827adb71d4d37f25acef'
           persist-credentials: false
       - name: Record the immutable scene and probe source
         run: |
