@@ -3,7 +3,7 @@ extends SceneTree
 ## proximity/pause/accessibility, individual routines and dialog reachability.
 const ROUTINES = preload("res://scripts/creative/lumo_world_routines.gd")
 const DIALOG = preload("res://scripts/creative/lumo_world_dialog.gd")
-const LAYER = preload("res://scripts/creative/lumo_world_open_world.gd")
+const LAYER_PATH := "res://scripts/creative/lumo_world_open_world.gd"
 var checks := 0
 var failures: Array[String] = []
 
@@ -64,7 +64,7 @@ func _run() -> void:
 	_check(ROUTINES.walk_clip(actor) == "walk", "a real walking clip is recognized")
 	actor.free()
 
-	var layer = LAYER.new()
+	var layer = load(LAYER_PATH).new()
 	_check(layer.model.ready(), "production quest content loads")
 	_check(ROUTINES.PROFILES.size() == 9, "all nine existing NPCs have a routine")
 	var interests: Dictionary = {}
