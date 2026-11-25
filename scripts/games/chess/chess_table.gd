@@ -767,9 +767,17 @@ func open_path() -> void:
 	if first_open >= 0:
 		var target: Button = buttons.get("o_Path_%s" % str(SCHOOL.PATH[first_open][1]))
 		if target != null:
-			(overlay.get_node("Scroll") as ScrollContainer).ensure_control_visible.call_deferred(
-				target
-			)
+			_reveal_path_button.call_deferred(weakref(target), _generation)
+
+
+func _reveal_path_button(target_ref: WeakRef, generation: int) -> void:
+	# Das Kind kann das Menü schon vor dem nächsten Bild wieder verlassen.
+	if generation != _generation or _closed or screen != "path" or overlay_kind != "path":
+		return
+	var target := target_ref.get_ref() as Control
+	var scroll := overlay.get_node_or_null("Scroll") as ScrollContainer
+	if is_instance_valid(target) and not target.is_queued_for_deletion() and scroll != null and scroll.is_ancestor_of(target):
+		scroll.ensure_control_visible(target)
 
 
 func _open_entry(kind: String, id: String) -> void:
