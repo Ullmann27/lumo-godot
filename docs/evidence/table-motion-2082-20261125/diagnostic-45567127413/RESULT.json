@@ -1,0 +1,87 @@
+{
+  "source_commit": "bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd",
+  "source_tree": "5b61662d39960194f834b2e3a455b20ba61edadb",
+  "workflow_commit": "486f0515bd06486e54a78103e04c7cda4dbce42c",
+  "workflow_path": ".github/workflows/lumo-2082-table-motion-capture.yml",
+  "workflow_url": "https://github.com/Ullmann27/lumo-godot/blob/486f0515bd06486e54a78103e04c7cda4dbce42c/.github/workflows/lumo-2082-table-motion-capture.yml",
+  "run_id": 45567127413,
+  "job_id": 139044549166,
+  "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45567127413",
+  "job_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45567127413/job/139044549166",
+  "source_blobs": {
+    "scripts/games/cards/cards_card.gd": "fe6c0cdc461b00b1583a034f1f9cc13196f2c8d7",
+    "scripts/games/cards/cards_table.gd": "6459b98396ec214705e1f6c2213faa9725b6d3f9",
+    "scripts/games/chess/chess_board_2d.gd": "e5d3a80e940a87735757751789b8435afe2a33ff",
+    "scripts/games/chess/chess_set.gd": "a9931d8ce878d6d4d3898fd90b7cdd77908835aa",
+    "scripts/games/chess/chess_table.gd": "d4ca6e7fa2c795fd6936a77a3a25fa85ebdbaf7b",
+    "scripts/tests/table_turn_flow_regression.gd": "309ea9c479bdb386becb6b7e85fbabef35089133"
+  },
+  "artifact": {
+    "id": 15001020721,
+    "url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45567127413/artifacts/15001020721",
+    "bytes": 22542215,
+    "sha256": "283cf99d9af001fb30ddb96eb3b46e01fcf482cbe3b710d03e28e3399cb21b79",
+    "expires_at": "2026-12-25T07:24:58Z",
+    "downloaded_and_hash_verified": true,
+    "all_extracted_file_hashes": "ARTIFACT-SHA256SUMS.txt"
+  },
+  "scope": {
+    "engine": "4.6.3.stable.official.7d41c59c4",
+    "renderer": "GL Compatibility, Mesa llvmpipe under Xvfb",
+    "viewport": [
+      1440,
+      900
+    ],
+    "time_scale": 1.0,
+    "production_scenes_and_animation_methods": true,
+    "positions": "Deterministic legal test positions",
+    "android_device_measurement": false,
+    "fps_claim": false
+  },
+  "status": "failed",
+  "checks": 150,
+  "failed_checks": 1,
+  "captures": 16,
+  "failures": [
+    "Quartett: gesamter Ereigniszug endet"
+  ],
+  "classification": "Diagnostic failure, explicitly not an acceptance pass.",
+  "timeout": {
+    "wall_seconds": 12.161,
+    "engine_seconds": 4.658
+  },
+  "observed_progress": {
+    "card": 27,
+    "zone": "set",
+    "move_valid": true,
+    "move_running": true,
+    "suspended": false,
+    "paused": false,
+    "busy": true,
+    "pumping": false,
+    "generation": 5,
+    "pump_generation": 5,
+    "first_tween_seconds": 0.0,
+    "later_tween_seconds": 0.390909090909091,
+    "first_position": [
+      -0.096274,
+      4.756264,
+      4.381501
+    ],
+    "later_position": [
+      -0.022664,
+      2.506356,
+      1.915345
+    ]
+  },
+  "interpretation": "The renderer progressed through the correct sequence but had simulated only 4.658 seconds when the 12-second wall deadline expired. The two state dumps establish actual continued tween progress.",
+  "resolution": {
+    "commit": "62108c0355f860ab9a0a020ecb5f3f941f1032e9",
+    "scope": "Test clock only; product files unchanged.",
+    "engine_budget_seconds": 12,
+    "independent_wall_watchdog_seconds": 60,
+    "no_assertion_removed": true,
+    "no_product_speedup": true,
+    "successful_followup_run": 45569486039
+  }
+}

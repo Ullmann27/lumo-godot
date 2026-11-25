@@ -1,0 +1,97 @@
+{
+  "source_commit": "62108c0355f860ab9a0a020ecb5f3f941f1032e9",
+  "source_tree": "baf9514e2434d2d395dbb89d6ff4f8c0ae40f6de",
+  "workflow_commit": "c5acad4eee639d39b329e474a32c2028c1696e3b",
+  "workflow_path": ".github/workflows/lumo-2082-table-motion-capture.yml",
+  "workflow_url": "https://github.com/Ullmann27/lumo-godot/blob/c5acad4eee639d39b329e474a32c2028c1696e3b/.github/workflows/lumo-2082-table-motion-capture.yml",
+  "run_id": 45569486039,
+  "job_id": 139052318890,
+  "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45569486039",
+  "job_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45569486039/job/139052318890",
+  "source_blobs": {
+    "scripts/games/cards/cards_card.gd": "fe6c0cdc461b00b1583a034f1f9cc13196f2c8d7",
+    "scripts/games/cards/cards_table.gd": "6459b98396ec214705e1f6c2213faa9725b6d3f9",
+    "scripts/games/chess/chess_board_2d.gd": "e5d3a80e940a87735757751789b8435afe2a33ff",
+    "scripts/games/chess/chess_set.gd": "a9931d8ce878d6d4d3898fd90b7cdd77908835aa",
+    "scripts/games/chess/chess_table.gd": "d4ca6e7fa2c795fd6936a77a3a25fa85ebdbaf7b",
+    "scripts/tests/table_turn_flow_regression.gd": "3f6f41e2731524ca16c917abee11ab8e97e21787"
+  },
+  "artifact": {
+    "id": 15001058610,
+    "url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45569486039/artifacts/15001058610",
+    "bytes": 19189915,
+    "sha256": "18b46520322f0c0a510ae4b6d7bf8100520fe64d885e11afc5bc980e45e42272",
+    "expires_at": "2026-12-25T07:42:34Z",
+    "downloaded_and_hash_verified": true,
+    "all_extracted_file_hashes": "ARTIFACT-SHA256SUMS.txt"
+  },
+  "scope": {
+    "engine": "4.6.3.stable.official.7d41c59c4",
+    "renderer": "GL Compatibility, Mesa llvmpipe under Xvfb",
+    "viewport": [
+      1440,
+      900
+    ],
+    "time_scale": 1.0,
+    "production_scenes_and_animation_methods": true,
+    "positions": "Deterministic legal test positions",
+    "android_device_measurement": false,
+    "fps_claim": false
+  },
+  "status": "success",
+  "checks": 148,
+  "failed_checks": 0,
+  "captures": 14,
+  "strict_import_and_runtime_error_gate": "passed",
+  "product_files_identical_to": "bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd",
+  "product_equality_compare_url": "https://github.com/Ullmann27/lumo-godot/compare/bfc1eda07e65af57b33a6c0f2db3641aab3bf9bd...62108c0355f860ab9a0a020ecb5f3f941f1032e9",
+  "only_change_from_product_commit": "scripts/tests/table_turn_flow_regression.gd: engine-time deadline, independent wall watchdog, elapsed-time logging",
+  "quartet_completion": {
+    "wall_seconds": 20.134,
+    "engine_seconds": 7.591,
+    "engine_budget_seconds": 12,
+    "wall_watchdog_seconds": 60
+  },
+  "cancelled_ai_search": {
+    "frames": 2,
+    "nodes": 768
+  },
+  "card_settled": {
+    "can_act": true,
+    "moving": false,
+    "busy": false,
+    "final_distance_metres": 0.0,
+    "earlier_expected_target_shift_metres": 0.005
+  },
+  "image_integrity": "All 14 original PNGs match CAPTURES.json; no image editing or reconstruction.",
+  "visual_review": {
+    "implementing_reviewer": "All 14 original images viewed individually.",
+    "independent_root_review": "Cards midpoint/final, top-down chess midpoint, 3D castling midpoint/final and original job log reviewed independently.",
+    "critical_findings": [],
+    "observations": [
+      "Card midpoint is visibly tilted above the table between the opponent hand and final slot; opponent remains highlighted until landing, then the child hand and label become highlighted.",
+      "Top-down chess shows the child and opponent pawns at intermediate positions; the final position contains the white pawn on e4 and black pawn on d5.",
+      "3D castling shows the travelling, raised king; final king g1 and rook f1 are distinct and settled.",
+      "The rook is partly occluded by the settled king in the intermediate 3D image, so the king image is the clearer movement illustration.",
+      "The quartet image records transfer status; sequencing is established by temporal assertions and the completion log, not by that still image alone."
+    ]
+  },
+  "headless_same_source": {
+    "run_id": 45568517233,
+    "run_url": "https://github.com/Ullmann27/lumo-godot/actions/runs/45568517233",
+    "jobs": [
+      139049157704,
+      139049158054
+    ],
+    "status": "success",
+    "failures": 0,
+    "temporal_checks": 133,
+    "cards_rules_checks": 212968,
+    "cards_rule_moves": 148154,
+    "chess_rules_checks": 238,
+    "cards_scene_checks": 634,
+    "chess_scene_checks": 919,
+    "quartet_engine_seconds": 6.05,
+    "quartet_wall_seconds": 6.05
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "source_commit": "62108c0355f860ab9a0a020ecb5f3f941f1032e9",
+  "probe": "scripts/tests/table_turn_flow_regression.gd",
+  "scope": "Real production scenes in Godot 4.6.3, GL Compatibility and Mesa/Xvfb",
+  "state_setup": "Deterministic legal test positions; production move and animation methods",
+  "android_device_measurement": false,
+  "fps_claim": false,
+  "time_scale": 1.0,
+  "images": [
+    {
+      "file": "frames/cards_00_before.png",
+      "bytes": 1733740,
+      "width": 1440,
+      "height": 900,
+      "sha256": "0816b121cead0fd353bcf1ba0621aaa848978437324fb07729f560284ef9ce5f"
+    },
+    {
+      "file": "frames/cards_01_lumo_card_in_flight.png",
+      "bytes": 1623004,
+      "width": 1440,
+      "height": 900,
+      "sha256": "49f6cc1eb9d54797634af174f2a0fd5554933cf648a25ac8f2131e4a0081f2c4"
+    },
+    {
+      "file": "frames/cards_01b_lumo_card_midflight.png",
+      "bytes": 1624484,
+      "width": 1440,
+      "height": 900,
+      "sha256": "a25879afc669bb2ee879a4f6fe8d5f909b8d621f854bdfbcda37d7ace4d9c8d5"
+    },
+    {
+      "file": "frames/cards_02_settled.png",
+      "bytes": 1642663,
+      "width": 1440,
+      "height": 900,
+      "sha256": "5c6c0e367941cb20c6d904056f68287c4e86b7b111309a2d4d37c04e8d7bcd53"
+    },
+    {
+      "file": "frames/cards_quartet_sequential_transfer.png",
+      "bytes": 1660353,
+      "width": 1440,
+      "height": 900,
+      "sha256": "492f5dd9288d484c9d124e5efe85500880ead1f906bc96fdcd82fb437e7b0065"
+    },
+    {
+      "file": "frames/chess_3d_00_castling_before.png",
+      "bytes": 1533782,
+      "width": 1440,
+      "height": 900,
+      "sha256": "5079b5988109ae431cde8ac67ae6721f6baf085ec9e20b3e43e70a6a0126c559"
+    },
+    {
+      "file": "frames/chess_3d_01_castling_king_in_flight.png",
+      "bytes": 1539045,
+      "width": 1440,
+      "height": 900,
+      "sha256": "528942dee364f01bc8038f8ee54ffa0dc7d6b4f92472ac683dee56428acc055b"
+    },
+    {
+      "file": "frames/chess_3d_02_castling_rook_in_flight.png",
+      "bytes": 1535849,
+      "width": 1440,
+      "height": 900,
+      "sha256": "e9d974df0db0c0becf15d909f94a717f4a591ef46416158d0a86ebf9c978de5a"
+    },
+    {
+      "file": "frames/chess_3d_03_castling_settled.png",
+      "bytes": 1538184,
+      "width": 1440,
+      "height": 900,
+      "sha256": "85bd6c06a9e481e81ccbc0c7bc54c9e578d25a1e7801ce3ea16c2852fc9fc782"
+    },
+    {
+      "file": "frames/chess_3d_04_promotion_settled.png",
+      "bytes": 1527192,
+      "width": 1440,
+      "height": 900,
+      "sha256": "4c84f9ed47b76c91b8ebb8f99434e4b98ce841e279275a480820ce8814a295e9"
+    },
+    {
+      "file": "frames/chess_top_00_before.png",
+      "bytes": 759536,
+      "width": 1440,
+      "height": 900,
+      "sha256": "8245a407c8bb61b7ef2bfd8b55ecfdc43b76fb4f42e2bd41a6543a770a47bb6b"
+    },
+    {
+      "file": "frames/chess_top_01_child_in_flight.png",
+      "bytes": 761450,
+      "width": 1440,
+      "height": 900,
+      "sha256": "89f47d5ea5e177a7befd28b8ce8b93bdc34fb128e1c57cf0691007cd728f600f"
+    },
+    {
+      "file": "frames/chess_top_02_lumo_in_flight.png",
+      "bytes": 759629,
+      "width": 1440,
+      "height": 900,
+      "sha256": "d0341e95031bc1ce80c0d83276dcb25e915d229388f97fd775441ad670fdfae2"
+    },
+    {
+      "file": "frames/chess_top_03_settled.png",
+      "bytes": 760175,
+      "width": 1440,
+      "height": 900,
+      "sha256": "18b8b4c144c20d756d57c83a03e97132dbb6869bce0e6cadef865ba364d24178"
+    }
+  ]
+}
