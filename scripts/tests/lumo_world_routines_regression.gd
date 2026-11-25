@@ -89,7 +89,7 @@ func _run() -> void:
 		_check(str(runner.view().get("id", "")) == "routine", "daily activity is reachable through real choice: " + id)
 		runner.choose(2)
 		_check(str(runner.view().get("id", "")) == "routine_learning", "learning connection is reachable: " + id)
-		var source := layer.model.card_source(str(entry.card))
+		var source: String = layer.model.card_source(str(entry.card))
 		_check(str(runner.view().get("text", "")).contains(str(layer.model.mission(source).title)), "learning dialog points to an existing task: " + id)
 		var position: Vector3 = entry.position
 		routine.elapsed = 0.0
