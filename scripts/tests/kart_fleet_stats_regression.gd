@@ -1,5 +1,5 @@
 extends SceneTree
-## Flotte, Werte und Tuning: vierzehn Karts mit unterscheidbaren Werten, Comet neutral, Freischalten
+## Flotte, Werte und Tuning: 24 Karts mit unterscheidbaren Werten, Comet neutral, Freischalten
 ## über Fortschrittssterne, Werkstatt (Kauf, Rückgabe, Speichern, beschädigte Dateien, Sterne-Obergrenze)
 ## und echte Wirkung in der Fahrphysik (Tempo, Beschleunigung, Bremsweg, Lenken, Turbo-Dauer).
 
@@ -17,8 +17,11 @@ func _initialize() -> void:
 
 func _check_fleet() -> void:
 	var ids: Array[String] = FLEET.ids()
-	assert(ids.size() == 14, "Vierzehn Karts in der Flotte")
-	assert(ids.has("comet") and ids.has("glider") and ids.has("turbo"), "Alte Kart-Kennungen bleiben gültig")
+	assert(ids.size() == 24, "24 Karts in der Flotte")
+	assert(ids.slice(0, 14) == [
+		"comet", "gecko_velo", "boru_rally", "glider", "nala_comet", "noa_tide", "iva_aurora",
+		"turbo", "zuri_volt", "blitz", "terra", "koloss", "phantom", "stella",
+	], "Alle bisherigen Kart-Kennungen und Startnummern bleiben erhalten")
 	for id in FLEET.IDS:
 		assert(ids.has(id), "Profil-Design %s ist auswählbar" % id)
 	assert(ids.size() == ids.duplicate().size() and _unique(ids), "Kennungen sind eindeutig")
@@ -61,7 +64,7 @@ func _check_fleet() -> void:
 	assert(float(FLEET.entry("terra").traits.offroad) > 0.7, "Terra bleibt abseits der Straße schnell")
 	assert(float(FLEET.entry("koloss").traits.stability) > 0.6, "Koloss steckt Treffer weg")
 	assert(CATALOG.entry(CATALOG.KARTS, "gibt_es_nicht").id == "comet", "Unbekanntes Kart wird zu Comet")
-	assert(CATALOG.KARTS.size() == 14)
+	assert(CATALOG.KARTS.size() == 24)
 	var glider: Dictionary = CATALOG.entry(CATALOG.KARTS, "glider")
 	assert(CATALOG.unlocked(glider, 8, []) and not CATALOG.unlocked(glider, 7, []), "Glider ab 8 Sternen")
 	assert(CATALOG.unlocked(CATALOG.entry(CATALOG.KARTS, "stella"), 0, ["stella"]), "Einmal Freigeschaltetes bleibt offen")
@@ -326,5 +329,5 @@ func _run() -> void:
 	for frame in range(6):
 		await process_frame
 	await create_timer(0.25).timeout
-	print("[KartFleetStats] PASS: vierzehn Karts mit unterscheidbaren Werten, Comet neutral, Werkstatt (Kauf, Rückgabe, Speichern, Schutz vor kaputten Dateien) und Wirkung bei Tempo, Beschleunigung, Bremsen, Lenken und Turbo")
+	print("[KartFleetStats] PASS: 24 Karts mit unterscheidbaren Werten, Comet neutral, Werkstatt (Kauf, Rückgabe, Speichern, Schutz vor kaputten Dateien) und Wirkung bei Tempo, Beschleunigung, Bremsen, Lenken und Turbo")
 	quit(0)

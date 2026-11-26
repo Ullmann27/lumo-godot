@@ -36,7 +36,7 @@ func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 
 func _run() -> void:
 	root.size = Vector2i(1280, 720)
-	assert(CATALOG.KARTS.size() == 14)
+	assert(CATALOG.KARTS.size() == 24)
 	var seen: Dictionary = {}
 	var signatures: Dictionary = {}
 	var shell_geometry: Dictionary = {}
@@ -59,11 +59,12 @@ func _run() -> void:
 		if is_instance_valid(kart.production_vehicle):
 			var sources: Array[String] = kart.production_vehicle.source_paths
 			var platform := PRODUCTION.body_of(str(entry.id))
-			assert(sources.size() == 4, "Three mechanical sources and one Meshy source")
+			assert(sources.size() == (4 if seen.size() <= 14 else 3), "All three mechanical LOD sources and every existing Meshy model")
 			for level in range(3):
 				var suffix := "" if level == 0 else "_lod%d" % level
 				assert(sources[level] == PRODUCTION.MODEL_DIRECTORY + "aurora_" + platform + suffix + ".glb")
-			assert(sources[3] == PRODUCTION.MESHY_SHELL_DIRECTORY + str(entry.id) + ".glb")
+			if seen.size() <= 14:
+				assert(sources[3] == PRODUCTION.MESHY_SHELL_DIRECTORY + str(entry.id) + ".glb")
 			assert(kart.production_vehicle.visible_surface_count() <= 39)
 			assert(kart.far_mesh.mesh == null, "The animated imported chassis needs no rigid proxy")
 		else:
@@ -77,17 +78,18 @@ func _run() -> void:
 		var production = kart.production_vehicle
 		assert(production.get_meta("fleet_design") == entry.id)
 		assert(production.shell_path.ends_with("/%s.glb" % entry.id))
-		var close: MeshInstance3D = production.meshy_close_mesh
-		assert(is_instance_valid(close) and close.is_visible_in_tree(), "Meshy shell is drawn at LOD0")
+		var has_meshy: bool = seen.size() <= 14
+		var close: MeshInstance3D = production.meshy_close_mesh if has_meshy else production.stock_close_mesh
+		assert(is_instance_valid(close) and close.is_visible_in_tree(), "Authored shell is drawn at LOD0")
 		var close_signature := hash(close.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX])
-		assert(not close_geometry.has(close_signature), "Selectable Meshy shells must have distinct geometry")
+		assert(not close_geometry.has(close_signature), "Selectable close shells must have distinct geometry")
 		close_geometry[close_signature] = entry.id
 		var shell_vertices := 0
 		for level in range(3):
 			production.set_lod(level)
 			var shell := production.asset_root.find_child("LOD%d" % level, true, false) as MeshInstance3D
-			assert(shell != null and shell.is_visible_in_tree() == (level > 0))
-			assert(close.is_visible_in_tree() == (level == 0), "Meshy and proven LODs never overlap")
+			assert(shell != null and shell.is_visible_in_tree() == (level > 0 or not has_meshy))
+			assert(close.is_visible_in_tree() == (level == 0), "Close and distant shells never overlap")
 			var vertices := 0
 			var outlines: Array[int] = []
 			for surface in range(shell.mesh.get_surface_count()):
@@ -111,11 +113,20 @@ func _run() -> void:
 			"Dress_Sticker_Rear_L", "Dress_Sticker_Rear_R", "EvolutionCoachwork",
 		], "Seven authored decals and the current splitter/diffuser stay attached: " + str(dressing))
 		assert(is_instance_valid(kart.production_lumo_seat), "Original Lumo retains the pedal and seat fit")
-		if FLEET.IDS.has(str(entry.id)):
-			var info: Dictionary = FLEET.profile(str(entry.id))
-			var signature: String = str(info)
-			assert(not signatures.has(signature), "New designs need distinct physical profiles")
-			signatures[signature] = true
+		var signature: String = str(FLEET.multipliers(entry.stats, entry.traits))
+		assert(not signatures.has(signature), "Each kart needs a distinct physical profile")
+		signatures[signature] = true
+		var stance := 0.91 if production.variant == "glider" else (1.10 if production.variant == "turbo" else 1.0)
+		for pivot: Node3D in kart.wheel_pivots:
+			assert(is_equal_approx(absf(pivot.position.x), 0.77 * stance), "Wheel stance matches its chassis")
+			assert(is_equal_approx(pivot.position.y, 0.35), "Wheel radius matches the chassis ground plane")
+			assert(is_equal_approx(absf(pivot.position.z), 0.66), "Wheelbase matches the chassis")
+		var skeleton: Skeleton3D = kart.lumo_animation.actor.skeleton
+		for side in range(2):
+			var hand := skeleton.find_bone("Hand.L" if side == 0 else "Hand.R")
+			var contact := skeleton.to_global(skeleton.get_bone_global_pose(hand).origin)
+			var grip: Vector3 = kart.steering_wheel.to_global(kart.wheel_rest_grips[side])
+			assert(contact.distance_to(grip) < 0.006, "Lumo's hand remains on the wheel")
 		print(
 			"[KartFleet] %s: %d surfaces, %d vertices" % [entry.id, shape.surfaces, shape.vertices]
 		)
@@ -133,7 +144,7 @@ func _run() -> void:
 	garage.setup.kart = "boru_rally"
 	garage._refresh()
 	await process_frame
-	assert(garage._entries().size() == 14)
+	assert(garage._entries().size() == 24)
 	for view in range(1, 6):
 		garage._choose_preview_view(view)
 		assert(garage.preview_camera.projection == Camera3D.PROJECTION_ORTHOGONAL)
@@ -159,7 +170,7 @@ func _run() -> void:
 	root.add_child(game)
 	game.set_physics_process(false)
 	game.lightweight = true
-	for id in FLEET.IDS:
+	for id in FLEET.ids():
 		game._start_selected_race(
 			{
 				"mode": "training",
@@ -177,7 +188,12 @@ func _run() -> void:
 		assert(game.player.kart_style == id and game.selected_kart == id)
 		for frame in range(90):
 			game._physics_process(1.0 / 60.0)
-		assert(game.speed > 5.0 and game.distance > 4.0, "Every new kart must actually drive")
+		assert(game.speed > 5.0 and game.distance > 4.0, "Every selectable kart must actually drive")
+		var configured: Dictionary = FLEET.multipliers(FLEET.base_stats(id), FLEET.entry(id).traits)
+		for factor in ["speed", "accel", "brake", "grip", "turn", "boost_power", "boost_time", "offroad", "stability"]:
+			assert(is_equal_approx(float(game.kart_factors[factor]), float(configured[factor])),
+				"%s uses its own %s factor in the production race" % [id, factor])
+		print("[KartFleet] road test %s: %.2f m/s after %.2f m" % [id, game.speed, game.distance])
 		game._save_session()
 		var saved := ConfigFile.new()
 		assert(saved.load(game.SESSION) == OK)
@@ -186,5 +202,5 @@ func _run() -> void:
 	game.queue_free()
 	await _settle()
 	await create_timer(0.2).timeout
-	print("[KartFleet] PASS: 14 designs, animated chassis, LOD, budgets, garage views, scenery")
+	print("[KartFleet] PASS: 24 designs, animated chassis, LOD, budgets, garage views, scenery and actual race starts")
 	quit()

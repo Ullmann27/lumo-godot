@@ -10,6 +10,11 @@ const CHASSIS := {
 	"zuri_volt": Vector3(40, .06, 1.0), "blitz": Vector3(30, .92, .02),
 	"terra": Vector3(25, .76, .01), "koloss": Vector3(21, .87, .02),
 	"phantom": Vector3(31, .08, 1.0), "stella": Vector3(36, .24, .16),
+	"kupferpfeil": Vector3(24, .76, .0), "duenenspur": Vector3(27, .71, .02),
+	"schneewacht": Vector3(23, .48, .18), "kristallfalter": Vector3(43, .16, .46),
+	"hafenflitzer": Vector3(29, .57, .05), "glutstrom": Vector3(33, .94, .03),
+	"wolkenkurier": Vector3(38, .22, .72), "mooslaeufer": Vector3(26, .80, .02),
+	"mondsprint": Vector3(42, .03, .97), "werkmeister": Vector3(20, .91, .02),
 }
 const ENGINE_PITCH := {"sprint": 1.16, "dauer": .88, "lader": .93, "leicht": 1.23, "hybrid": 1.04}
 const GEAR_RATIO := {"kurz": 1.18, "lang": .82, "turbo": .92, "gelaende": 1.27, "sperre": 1.06}

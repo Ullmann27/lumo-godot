@@ -1,7 +1,7 @@
 extends RefCounted
 ## Lack, Startnummer und Fantasie-Aufkleber der gebauten Aurora-Karosserien.
 ##
-## Jedes der 14 Kart-Designs bekommt auf seiner Karosserie (comet/glider/turbo):
+## Jedes der 24 Kart-Designs bekommt auf seiner Karosserie (comet/glider/turbo):
 ##  - eine eigene Lackart: matt, metallic (Klarlack mit Flakes) oder perlmutt (Klarlack + Schimmer)
 ##  - seine Startnummer (Platz in der Flotte, fest je Design) auf Nase und beiden Seitenschildern
 ##  - zwei bis vier Fantasie-Aufkleber aus kart_sticker_atlas.png (keine echten Marken)
@@ -36,6 +36,16 @@ const DESIGNS: Dictionary = {
 	"koloss": {"finish": "matte", "stickers": ["checker", "turbotee"]},
 	"phantom": {"finish": "pearl", "stickers": ["kometen", "mondreifen"]},
 	"stella": {"finish": "metallic", "stickers": ["sternkraft", "fuchsstern"]},
+	"kupferpfeil": {"finish": "metallic", "stickers": ["sonnenhafen", "checker"]},
+	"duenenspur": {"finish": "matte", "stickers": ["mondreifen", "checker"]},
+	"schneewacht": {"finish": "matte", "stickers": ["polarlicht", "igelgrip"]},
+	"kristallfalter": {"finish": "pearl", "stickers": ["polarlicht", "sternkraft"]},
+	"hafenflitzer": {"finish": "pearl", "stickers": ["sonnenhafen", "funkeloel"]},
+	"glutstrom": {"finish": "metallic", "stickers": ["blitzbox", "turbotee"]},
+	"wolkenkurier": {"finish": "pearl", "stickers": ["wolkenwerk", "lerncrew"]},
+	"mooslaeufer": {"finish": "matte", "stickers": ["pfotenpower", "igelgrip"]},
+	"mondsprint": {"finish": "pearl", "stickers": ["mondreifen", "kometen"]},
+	"werkmeister": {"finish": "matte", "stickers": ["funkeloel", "checker"]},
 }
 const FINISHES: Array[String] = ["matte", "metallic", "pearl"]
 

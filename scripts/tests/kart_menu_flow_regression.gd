@@ -133,7 +133,7 @@ func _run() -> void:
 				assert(game.garage.preview_world.scale.x >= 0.018, "Track-world preview must fill more of the 3D presentation panel")
 			if step == 2:
 				var kart_grid: GridContainer = game.garage.choices.get_child(0)
-				assert(kart_grid.get_child_count() == 14, "All fourteen karts are offered as cards")
+				assert(kart_grid.get_child_count() == 24, "All 24 karts are offered as cards")
 				var new_kart: Control = kart_grid.get_node("KartCard_gecko_velo")
 				game.garage.choices.get_parent().ensure_control_visible(new_kart)
 				await _settle()

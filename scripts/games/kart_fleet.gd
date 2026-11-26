@@ -1,5 +1,5 @@
 extends RefCounted
-## Die Lumo-Flotte: vierzehn eigene Karts, alle in der Engine gebaut (keine fremden Modelle oder Namen).
+## Die Lumo-Flotte: 24 eigene Karts mit eigenen Fahrprofilen und Blender-Karosserien.
 ## Jedes Kart hat fünf Werte von 0 bis 10. Comet steht mit 6/6/6/6/6 genau in der Mitte, alle
 ## Faktoren sind dort 1,0; die anderen weichen bewusst davon ab. Freigeschaltet wird mit
 ## Fortschrittssternen (verdient, nie bezahlt). Tuning (kart_tuning.gd) erhöht die Werte bis 12.
@@ -127,6 +127,76 @@ static func _build() -> Array[Dictionary]:
 			"stats": {"speed": 9, "accel": 8, "brake": 7, "handling": 8, "turbo": 9},
 			"traits": {"offroad": 0.60, "stability": 0.50},
 			"look": {"body": "champion", "paint": Color("f2c24a"), "trim": Color("fff4cf"), "accent": Color("1d3e8a"), "neon": Color("ffe9a0")},
+		},
+		{
+			"id": "kupferpfeil", "name": "Kupferpfeil", "role": "Klassiker", "tag": "KLASSIKER", "unlock": 124,
+			"description": "Kupfernase und runde Kotflügel. Präzise auf der Bremse, mit einem kleinen Turbo.",
+			"stats": {"speed": 7, "accel": 6, "brake": 8, "handling": 7, "turbo": 5},
+			"traits": {"offroad": 0.54, "stability": 0.52},
+			"look": {"body": "loft", "paint": Color("bd5a41"), "trim": Color("fff0c8"), "accent": Color("6b281e"), "neon": Color("ffc775")},
+		},
+		{
+			"id": "duenenspur", "name": "Dünenspur", "role": "Wüsten-Rallye", "tag": "WÜSTEN-RALLYE", "unlock": 128,
+			"description": "Offener Rallye-Buggy. Zieht kräftig an und hält auf Sand besser die Spur.",
+			"stats": {"speed": 5, "accel": 9, "brake": 7, "handling": 7, "turbo": 5},
+			"traits": {"offroad": 0.78, "stability": 0.51},
+			"look": {"body": "loft", "paint": Color("deae5f"), "trim": Color("913a24"), "accent": Color("5c7175"), "neon": Color("ffe7a3")},
+		},
+		{
+			"id": "schneewacht", "name": "Schneewacht", "role": "Winter-Rallye", "tag": "WINTER-RALLYE", "unlock": 132,
+			"description": "Die breiten Kotflügel geben ihm sein Gesicht. Bremst kräftig und reagiert ruhig auf Treffer.",
+			"stats": {"speed": 5, "accel": 6, "brake": 9, "handling": 8, "turbo": 5},
+			"traits": {"offroad": 0.66, "stability": 0.58},
+			"look": {"body": "loft", "paint": Color("367795"), "trim": Color("e9f4f0"), "accent": Color("d34f35"), "neon": Color("a2f7ff")},
+		},
+		{
+			"id": "kristallfalter", "name": "Kristallfalter", "role": "Aerokart", "tag": "AEROKART", "unlock": 136,
+			"description": "Die gefalteten Flügel tragen einen schnellen Rennwagen. Am Start braucht er etwas länger.",
+			"stats": {"speed": 9, "accel": 5, "brake": 5, "handling": 8, "turbo": 6},
+			"traits": {"offroad": 0.51, "stability": 0.43},
+			"look": {"body": "loft", "paint": Color("8b62ba"), "trim": Color("cbe8ff"), "accent": Color("403878"), "neon": Color("96edfa")},
+		},
+		{
+			"id": "hafenflitzer", "name": "Hafenflitzer", "role": "Hafen-Sprint", "tag": "HAFEN-SPRINT", "unlock": 140,
+			"description": "Die Bögen erinnern an ein Hafenboot. Er lenkt eng und beschleunigt gut aus den Kurven.",
+			"stats": {"speed": 5, "accel": 8, "brake": 7, "handling": 9, "turbo": 5},
+			"traits": {"offroad": 0.57, "stability": 0.46},
+			"look": {"body": "loft", "paint": Color("36958a"), "trim": Color("e6b67c"), "accent": Color("f4e7bb"), "neon": Color("d4fdec")},
+		},
+		{
+			"id": "glutstrom", "name": "Glutstrom", "role": "Vulkan-Sport", "tag": "VULKAN-SPORT", "unlock": 144,
+			"description": "Die roten Kühllamellen umgeben einen kräftigen Turbo. Für enge Kurven früh anbremsen.",
+			"stats": {"speed": 8, "accel": 8, "brake": 5, "handling": 5, "turbo": 9},
+			"traits": {"offroad": 0.50, "stability": 0.50},
+			"look": {"body": "loft", "paint": Color("bd3930"), "trim": Color("ffa051"), "accent": Color("262730"), "neon": Color("ffd475")},
+		},
+		{
+			"id": "wolkenkurier", "name": "Wolkenkurier", "role": "Kurvenkart", "tag": "KURVENKART", "unlock": 148,
+			"description": "Mit Doppelscheinwerfern und hellen Flügeln. Sehr wendig, dafür auf der Geraden gemächlicher.",
+			"stats": {"speed": 4, "accel": 7, "brake": 8, "handling": 9, "turbo": 7},
+			"traits": {"offroad": 0.56, "stability": 0.42},
+			"look": {"body": "loft", "paint": Color("eaccce"), "trim": Color("496fad"), "accent": Color("ff9d6a"), "neon": Color("fff0bf")},
+		},
+		{
+			"id": "mooslaeufer", "name": "Moosläufer", "role": "Wald-Gelände", "tag": "WALD-GELÄNDE", "unlock": 152,
+			"description": "Runde Kotflügel und breite Schutzbügel. Sicher auf Waldboden und flink beim Anfahren.",
+			"stats": {"speed": 5, "accel": 8, "brake": 6, "handling": 8, "turbo": 6},
+			"traits": {"offroad": 0.80, "stability": 0.56},
+			"look": {"body": "loft", "paint": Color("58804c"), "trim": Color("f7c464"), "accent": Color("605137"), "neon": Color("faeb9c")},
+		},
+		{
+			"id": "mondsprint", "name": "Mondsprint", "role": "Weltraum-Sport", "tag": "WELTRAUM-SPORT", "unlock": 156,
+			"description": "Mit zwei schmalen Nasen und viel Tempo auf langen Geraden. Zum Einlenken früh vom Gas gehen.",
+			"stats": {"speed": 9, "accel": 6, "brake": 6, "handling": 5, "turbo": 8},
+			"traits": {"offroad": 0.49, "stability": 0.44},
+			"look": {"body": "loft", "paint": Color("354873"), "trim": Color("bacdd7"), "accent": Color("ca6d8f"), "neon": Color("bdd9ff")},
+		},
+		{
+			"id": "werkmeister", "name": "Werkmeister", "role": "Werkstatt-Kart", "tag": "WERKSTATT-KART", "unlock": 160,
+			"description": "Breite Nase und Seitenfächer. Bleibt bei Stößen stabil und bremst gut, beschleunigt aber langsam.",
+			"stats": {"speed": 6, "accel": 4, "brake": 9, "handling": 6, "turbo": 8},
+			"traits": {"offroad": 0.67, "stability": 0.65},
+			"look": {"body": "loft", "paint": Color("d98234"), "trim": Color("3a6164"), "accent": Color("f6c67d"), "neon": Color("fff0aa")},
 		},
 	]
 	for row in rows:

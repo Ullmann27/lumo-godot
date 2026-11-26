@@ -85,7 +85,7 @@ func _case(pixels: Vector2i, saved: bool, density: float = 1.0,
 	await _settle()
 	var scroll: ScrollContainer = garage.choices.get_parent()
 	var fleet: GridContainer = garage.choices.get_child(0)
-	_check(fleet.get_child_count() == 14, "all fourteen original karts remain reachable")
+	_check(fleet.get_child_count() == 24, "all 24 fleet cards remain reachable")
 	var visible_cards := 0
 	for card in fleet.get_children():
 		scroll.ensure_control_visible(card)

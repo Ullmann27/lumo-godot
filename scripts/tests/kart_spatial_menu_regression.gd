@@ -276,7 +276,7 @@ func _run() -> void:
 		_check(garage.step == 2 and not landing.visible, "garage navigation opens real customizer")
 		_check(garage.preview_viewport.get_instance_id() == viewport_id, "navigation reuses one live viewport")
 		var fleet: GridContainer = garage.choices.get_child(0)
-		_check(fleet.get_child_count() == 14, "all existing karts remain reachable")
+		_check(fleet.get_child_count() == 24, "all 24 fleet cards remain reachable")
 		var gecko: Button = fleet.get_node("KartCard_gecko_velo")
 		garage.choices.get_parent().ensure_control_visible(gecko)
 		await _settle()

@@ -3,7 +3,7 @@ extends Node3D
 ## changes at LOD boundaries; wheel/driver anchors never move or get replaced.
 
 const VARIANTS: Array[String] = ["comet", "glider", "turbo"]
-## The three mechanical platforms carry fourteen individually fitted Blender exteriors.
+## The three mechanical platforms carry independently fitted Blender exteriors.
 const BODY_OF: Dictionary = {
 	"comet": "comet",
 	"boru_rally": "comet",
@@ -19,6 +19,16 @@ const BODY_OF: Dictionary = {
 	"blitz": "turbo",
 	"phantom": "turbo",
 	"stella": "turbo",
+	"kupferpfeil": "comet",
+	"duenenspur": "comet",
+	"schneewacht": "comet",
+	"kristallfalter": "glider",
+	"hafenflitzer": "glider",
+	"glutstrom": "turbo",
+	"wolkenkurier": "glider",
+	"mooslaeufer": "comet",
+	"mondsprint": "turbo",
+	"werkmeister": "comet",
 }
 const WHEELS: Array[String] = ["FL", "RL", "FR", "RR"]
 const MODEL_DIRECTORY := "res://assets/kart/production/karts/"

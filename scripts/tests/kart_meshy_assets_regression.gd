@@ -3,6 +3,10 @@ extends SceneTree
 const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
 const GARAGE = preload("res://scripts/games/kart_garage_interior.gd")
+const MESHY_FLEET: Array[String] = [
+	"comet", "gecko_velo", "boru_rally", "glider", "nala_comet", "noa_tide", "iva_aurora",
+	"turbo", "zuri_volt", "blitz", "terra", "koloss", "phantom", "stella",
+]
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 var checks := 0
@@ -137,8 +141,9 @@ func _garage(profile: String) -> void:
 
 
 func _run() -> void:
-	_check(FLEET.ids().size() == 14, "fourteen canonical Karts")
-	for id in FLEET.ids():
+	_check(FLEET.ids().size() == 24, "24 selectable Karts")
+	for id in MESHY_FLEET:
+		_check(FLEET.has(id), id + " remains in the selectable fleet")
 		await _vehicle(id)
 	await _garage("high")
 	await _garage("low")

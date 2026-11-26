@@ -1,7 +1,7 @@
 """Build the selectable coachwork and transparent catalog renders with Blender 4.3+.
 
 blender -b -t 2 --python tools/lumo_kart_art/karts/build_fleet.py -- --flutter ../lumo-lernen
-Use --only ID to rebuild an individual kart. Dimensions use Godot metres, front = -Z.
+Repeat --only ID to rebuild selected karts. Dimensions use Godot metres, front = -Z.
 Each GLB contains three independent shell meshes, fitted decal anchors and showroom detail.
 The photographed wheels, steering and suspension are imported from the same GLB used in races.
 """
@@ -16,6 +16,7 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_karts as k
+import console_fleet
 
 # Mechanical platform, paint, trim, accent, luminous accent.
 DESIGNS = {
@@ -34,6 +35,8 @@ DESIGNS = {
     "phantom": ("turbo", "1b1233", "ff4fd8", "7a5cff", "ff5ce6"),
     "stella": ("turbo", "f2c24a", "fff4cf", "1d3e8a", "ffe9a0"),
 }
+
+DESIGNS.update(console_fleet.DESIGNS)
 
 
 class Coachwork:
@@ -447,6 +450,7 @@ def stella(c):
 
 BUILD = {f.__name__:f for f in (comet,gecko_velo,boru_rally,glider,nala_comet,noa_tide,
          iva_aurora,turbo,zuri_volt,blitz,terra,koloss,phantom,stella)}
+BUILD.update(console_fleet.BUILD)
 
 
 def station_markers(c):
@@ -560,9 +564,9 @@ def build(design,args):
 
 if __name__=="__main__":
     cli=argparse.ArgumentParser()
-    cli.add_argument("--only",choices=DESIGNS)
+    cli.add_argument("--only", choices=DESIGNS, action="append")
     cli.add_argument("--samples",type=int,default=20)
     cli.add_argument("--flutter",type=Path)
     args=cli.parse_args(sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else [])
-    for design in ([args.only] if args.only else DESIGNS):
+    for design in (args.only or DESIGNS):
         build(design,args)

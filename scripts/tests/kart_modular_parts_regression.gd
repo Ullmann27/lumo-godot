@@ -47,7 +47,7 @@ func _check_world(id: String, light: bool) -> Dictionary:
 
 
 func _check_fleet() -> int:
-	assert(FLEET.ids().size() == 14, "Fleet catalog changed")
+	assert(FLEET.ids().size() == 24, "Fleet catalog changed")
 	var total: int = 0
 	for style in ["comet", "glider", "terra", "phantom"]:
 		var kart = VEHICLE.new()
