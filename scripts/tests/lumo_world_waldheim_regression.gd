@@ -47,6 +47,7 @@ func _run() -> void:
 		_expect(not region.routines.activity(str(entry.id)).is_empty(), "resident has genuine local day phases " + str(entry.id))
 	_expect(world.model.completed == ["meet_nelli", "safe_crossing"], "the old chapter is preserved")
 	_expect(region.model.progress.values().all(func(step): return step == 0), "old saves acquire a fresh Waldheim")
+	_check_exhibit_meshes()
 	_check_floors()
 	await _cross_bridge()
 	world.map_button.pressed.emit()
@@ -112,6 +113,19 @@ func _enter() -> void:
 	await _frames(100)
 	world = current_scene
 	region = world.waldheim if is_instance_valid(world) else null
+
+
+func _check_exhibit_meshes() -> void:
+	for section in [region, world.sternenstadt]:
+		var count := 0
+		for entry in section.find_children("*", "MeshInstance3D", true, false):
+			var model: Mesh = entry.mesh
+			if not model is CylinderMesh:
+				continue
+			count += 1
+			_expect(is_equal_approx(model.top_radius, model.bottom_radius) and model.top_radius <= 8.4,
+				"column, lamp or exhibit matches its authored base radius: " + str(entry.name))
+		_expect(count > 0, "the real region builds its exhibit meshes")
 
 
 func _check_floors() -> void:
