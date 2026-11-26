@@ -3,6 +3,11 @@ extends RefCounted
 ## Missing/unvalidated rigs never silently replace an existing animated driver.
 
 const PATH := "res://assets/characters/rivals/roster.json"
+## Standing, walking figures of the same identities (built from the original
+## standing A-pose, see tools/lumo_animation/animals/). The kart drivers above
+## are fitted into the seated kart pose and must not be used as walkers.
+const FIGURE_PATH := "res://assets/characters/animals/%s/figure.glb"
+const FIGURE_MANIFEST := "res://assets/characters/animals/figures.json"
 const CONTRACT = preload("res://scripts/games/kart_rival_model_contract.gd")
 static var _cache: Array[Dictionary] = []
 static var _validated_scenes: Dictionary = {}
@@ -96,6 +101,26 @@ static func racing_model_path(id: String, level: int = 0) -> String:
 		var selected: String = str(paths[clampi(level, 0, 2)])
 		return selected if selected == expected else ""
 	return ""
+
+
+## Standing figure for World, NPCs, crowds: idle, walk, run, turn_left/right, stop,
+## sit_down, sit_idle, stand_up, wave, listen, talk, think, joy, surprise,
+## disappointed, interact, enter_vehicle, drive, exit_vehicle. "" if unavailable.
+static func figure_model_path(id: String) -> String:
+	for entry in all():
+		if str(entry.id) == id:
+			var path := FIGURE_PATH % id
+			return path if ResourceLoader.exists(path, "PackedScene") else ""
+	return ""
+
+
+## Clip facts (seconds, loop, stride_m, speed_mps) and seat/vehicle offsets per figure.
+static func figure_info(id: String) -> Dictionary:
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(FIGURE_MANIFEST))
+	if not parsed is Dictionary or not parsed.get("figures") is Dictionary:
+		return {}
+	var figures: Dictionary = parsed.figures
+	return figures.get(id, {}) if figures.get(id) is Dictionary else {}
 
 
 static func ready_for_race() -> bool:

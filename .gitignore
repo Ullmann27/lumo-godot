@@ -22,6 +22,8 @@
 !assets/characters/lumo/reference/lumo_reference_manifest.csv.import
 # Lumo Schach: Holz-, Brett- und Symboltexturen mit Mipmaps (scharf unter flachem Blickwinkel).
 !assets/chess/**/*.import
+# Stehende Tierfiguren: Schleifen-Flags der Clips, Auto-LOD und unveränderte Rücksetzspuren.
+!assets/characters/animals/**/*.glb.import
 
 # Export-Output (lokale Builds nicht ins Repo)
 exports/
