@@ -1305,7 +1305,7 @@ func _report_completed_reward() -> bool:
 func _update_mission() -> void:
 	var mission: Dictionary = model.current()
 	marker.visible = not mission.is_empty()
-	mission_label.text = "%s · %d / %d Aufträge\n%s" % [str(mission.get("title", "Deine Welt voller Freunde")), model.completed.size(), STATE.MISSIONS.size(), str(mission.get("lead", "Schatzinsel, Sonnendorf und Sternenstadt stehen dir offen."))]
+	mission_label.text = "%s · %d / %d Aufträge\n%s" % [str(mission.get("title", "Deine Welt voller Freunde")), model.completed.size(), STATE.MISSIONS.size(), str(mission.get("lead", "Schatzinsel, Sonnendorf, Sternenstadt und Sonnenhafen stehen dir offen."))]
 	if mission.is_empty():
 		wonder.set_routes(_active_position(), [])
 		var post_briefing: String = friend_post.briefing()
@@ -1322,7 +1322,7 @@ func _update_mission() -> void:
 func _map_dialog() -> void:
 	_open_dialog(
 		"Deine Lumo World",
-		"Schatzinsel, Sonnendorf, Sternenstadt und dein eigenes Bauland sind eine zusammenhängende Welt. "
+		"Schatzinsel, Sonnendorf, Sternenstadt, die Hafenstadt Sonnenhafen und dein eigenes Bauland sind eine zusammenhängende Welt. "
 		+ "Zu Fuß drehst und zoomst du die Kamera frei hinter Lumo. Mit Bauen zoomst du in die Dorfansicht, "
 		+ "setzt Gebäude mit derselben Dorfwirtschaft und kehrst danach direkt zu Lumo zurück."
 	)

@@ -8,6 +8,7 @@ extends SceneTree
 const PROFILE := "lumo_c12_sonnenhafen_capture"
 const FOLD_INNER := Vector2i(2176, 1812)
 const FOLD_OUTER := Vector2i(1080, 2340)
+const PREVIEW := Vector2i(480, 400)
 var output := "/tmp/sonnenhafen-capture"
 var scene: Node
 var harbour: Node
@@ -34,7 +35,7 @@ func _run() -> void:
 		return
 	DirAccess.make_dir_recursive_absolute(output)
 	DirAccess.remove_absolute("user://lumo_world_" + PROFILE.sha256_text().substr(0, 32) + ".json")
-	root.size = FOLD_INNER
+	root.size = PREVIEW
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	var router: Node = root.get_node("SceneRouter")
 	router.launch_options = {"childKey": PROFILE, "grade": 2, "reduceAnimations": false}
@@ -47,8 +48,10 @@ func _run() -> void:
 		quit(1)
 		return
 	# Let the residents leave their first spots so the town is in motion.
+	# Software renderers are slow: simulate at a small size, capture full size.
+	root.size = PREVIEW
 	_set_hour(10.5)
-	await _frames(240)
+	await _frames(150)
 	# Camera yaw 0 looks south (-Z), PI north, -PI/2 east, PI/2 west.
 	await _view("01_day_bridge_inner", FOLD_INNER, Vector3(200, 0, -90), 0.0, 0.36, 9.0)
 	await _view("02_day_market_inner", FOLD_INNER, Vector3(205, 0, -168), PI + 0.15, 0.42, 9.5)
@@ -61,9 +64,9 @@ func _run() -> void:
 	)
 	await _view("06_day_harbour_inner", FOLD_INNER, Vector3(150, 0, -173), -0.3, 0.30, 11.0)
 	_set_hour(20.2)
-	harbour.evening = harbour.evening_target(20.2)
-	await _frames(60)
-	await _view("07_evening_quay_inner", FOLD_INNER, Vector3(236, 0, -173), -0.47, 0.28, 11.0)
+	harbour.evening = harbour._evening_target(20.2)
+	await _frames(30)
+	await _view("07_evening_quay_inner", FOLD_INNER, Vector3(224, 0, -173.5), -0.47, 0.28, 11.0)
 	await _view("08_evening_market_outer", FOLD_OUTER, Vector3(200, 0, -167), PI, 0.40, 10.0)
 	await _view("09_evening_lighthouse_inner", FOLD_INNER, Vector3(258, 0, -190), 0.0, 0.30, 12.0)
 	print("[SonnenhafenCapture] PASS %d images in %s" % [written.size(), output])
@@ -80,7 +83,7 @@ func _set_hour(hour: float) -> void:
 func _view(
 	label: String, size: Vector2i, at: Vector3, yaw: float, pitch: float, zoom: float
 ) -> void:
-	root.size = size
+	root.size = PREVIEW
 	if scene.paused:
 		scene._close_dialog()
 	scene.player.position = at + Vector3.UP * 0.1
@@ -90,7 +93,9 @@ func _view(
 	scene.camera_pitch = pitch
 	scene.person_zoom = zoom
 	scene.fox.rotation.y = yaw
-	await _frames(70)
+	await _frames(26)
+	root.size = size
+	await _frames(4)
 	var path := output.path_join(label + ".jpg")
 	root.get_texture().get_image().save_jpg(path, 0.86)
 	written.append(path)

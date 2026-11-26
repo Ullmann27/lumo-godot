@@ -278,6 +278,13 @@ func _run() -> void:
 	var room: Dictionary = harbour.layout.data.interiors.hafenkraemer
 	await _place(Vector3(float(room.trade_spot[0]), 0, float(room.trade_spot[1])))
 	_check(harbour.inside == "hafenkraemer", "Lumo is inside the shop (roof cut away)")
+	_check(
+		not (harbour.town.upper_nodes.hafenkraemer as Node3D).visible,
+		"the shop's upper floor and roof are hidden inside"
+	)
+	_check(
+		scene.camera_pitch >= harbour.INTERIOR_PITCH, "the follow camera looks over the shop walls"
+	)
 	_check(scene.action_button.text in ["Handeln", "Ansprechen"], "shop action is offered")
 	harbour.open_shop()
 	await _frames(2)
@@ -296,6 +303,15 @@ func _run() -> void:
 		"selling: 28 + 3 = 31 shells"
 	)
 	await _close_popups()
+	var outside_pitch: float = harbour.saved_pitch
+	await _place(Vector3(180, 0, -154))
+	_check(
+		(
+			is_equal_approx(scene.camera_pitch, outside_pitch)
+			and (harbour.town.upper_nodes.hafenkraemer as Node3D).visible
+		),
+		"leaving the shop restores roof and the child's camera pitch"
+	)
 	_check(await _talk("ole", false), "talking to Ole without glass")
 	_check(
 		(

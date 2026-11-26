@@ -1631,5 +1631,35 @@
     "Ich habe neue Blumen gepflanzt."
    ]
   }
- ]
+ ],
+ "accessoryAnchors": {
+  "rabbit": {
+   "hat": 0.74,
+   "hat_scale": 0.78,
+   "neck": 0.52,
+   "scarf_scale": 0.62,
+   "forward": 0.0
+  },
+  "beaver": {
+   "hat": 0.9,
+   "hat_scale": 0.8,
+   "neck": 0.6,
+   "scarf_scale": 0.62,
+   "forward": 0.0
+  },
+  "duck": {
+   "hat": 0.9,
+   "hat_scale": 0.78,
+   "neck": 0.6,
+   "scarf_scale": 0.6,
+   "forward": 0.0
+  },
+  "human": {
+   "hat": 0.97,
+   "hat_scale": 0.95,
+   "neck": 0.78,
+   "scarf_scale": 0.8,
+   "forward": 0.0
+  }
+ }
 }

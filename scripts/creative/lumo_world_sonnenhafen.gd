@@ -24,6 +24,7 @@ const TALK_REACH := 3.4
 const TRADE_REACH := 3.2
 const CRATE_REACH := 4.5
 const FISH_CRATES := 3
+const INTERIOR_PITCH := 0.98
 const ITEMS := {
 	"seil": {"title": "Seil", "buy": 3, "sell": 1},
 	"laternenglas": {"title": "Laternenglas", "buy": 6, "sell": 3},
@@ -128,7 +129,11 @@ var lesson_index := 0
 var lesson_correct := 0
 var daylight: Dictionary = {}
 var tracked_delivery := false
+## CPU time of the resident simulation (diagnostics for the performance budget).
+var crowd_usec := 0
+var crowd_ticks := 0
 var was_in_region := false
+var saved_pitch := -1.0
 
 
 ## Ground rectangles that the mainland tree scatter keeps free.
@@ -223,60 +228,17 @@ func to_data() -> Dictionary:
 ## An older World save has no "sonnenhafen" section: the region starts fresh.
 ## A damaged section is rejected as a whole and kept unchanged by the World.
 func restore(raw: Variant) -> bool:
-	if not raw is Dictionary:
-		return false
-	if raw.is_empty():
+	if raw is Dictionary and raw.is_empty():
 		return model.restore({})
-	if raw.get("version") != VERSION:
+	if not _valid_section(raw) or not model.restore(raw.get("quests", {})):
 		return false
-	for field in ["wallet", "fishCrates", "deliveryIndex", "deliveriesDone"]:
-		var value = raw.get(field, 0)
-		if (
-			typeof(value) not in [TYPE_INT, TYPE_FLOAT]
-			or not is_finite(float(value))
-			or float(value) != floorf(float(value))
-			or float(value) < 0
-		):
-			return false
-	if int(raw.get("wallet", 0)) > MAX_SHELLS or int(raw.get("fishCrates", 0)) > FISH_CRATES:
-		return false
-	var stock = raw.get("inventory", {})
-	if not stock is Dictionary:
-		return false
-	for item in stock:
-		var count = stock[item]
-		if (
-			not ITEMS.has(str(item))
-			or typeof(count) not in [TYPE_INT, TYPE_FLOAT]
-			or float(count) < 0
-			or float(count) > 99
-			or float(count) != floorf(float(count))
-		):
-			return false
-	var done = raw.get("rewarded", [])
-	if not done is Array:
-		return false
-	for mission_id in done:
-		if not mission_id is String or model.mission(mission_id).is_empty():
-			return false
-	var carry = raw.get("carry", {})
-	if (
-		not carry is Dictionary
-		or (not carry.is_empty() and str(carry.get("kind", "")) not in ["fish", "delivery"])
-	):
-		return false
-	var lesson = raw.get("pendingLesson", {})
-	if not lesson is Dictionary:
-		return false
-	if not lesson.is_empty() and not _valid_request(lesson):
-		return false
-	if not model.restore(raw.get("quests", {})):
-		return false
+	var done: Array = raw.get("rewarded", [])
 	for mission_id in done:
 		if model.state(str(mission_id)) != "done":
 			return false
 	wallet = int(raw.get("wallet", START_SHELLS))
 	inventory.clear()
+	var stock: Dictionary = raw.get("inventory", {})
 	for item in stock:
 		inventory[str(item)] = int(stock[item])
 	rewarded.clear()
@@ -285,9 +247,11 @@ func restore(raw: Variant) -> bool:
 	fish_crates = int(raw.get("fishCrates", 0))
 	delivery_index = int(raw.get("deliveryIndex", 0))
 	deliveries_done = int(raw.get("deliveriesDone", 0))
+	var carry: Dictionary = raw.get("carry", {})
 	carrying = {}
 	if not carry.is_empty():
 		carrying = {"kind": str(carry.kind), "order": int(carry.get("order", -1))}
+	var lesson: Dictionary = raw.get("pendingLesson", {})
 	pending_lesson = {}
 	if not lesson.is_empty():
 		pending_lesson = {
@@ -299,6 +263,46 @@ func restore(raw: Variant) -> bool:
 			"returnGame": "world"
 		}
 	return true
+
+
+## Whole-section validation before anything is changed.
+func _valid_section(raw: Variant) -> bool:
+	if not raw is Dictionary or raw.get("version") != VERSION:
+		return false
+	for field in ["wallet", "fishCrates", "deliveryIndex", "deliveriesDone"]:
+		if not _whole_number(raw.get(field, 0), 0.0, 100000.0):
+			return false
+	var valid := (
+		int(raw.get("wallet", 0)) <= MAX_SHELLS and int(raw.get("fishCrates", 0)) <= FISH_CRATES
+	)
+	var stock = raw.get("inventory", {})
+	var done = raw.get("rewarded", [])
+	var carry = raw.get("carry", {})
+	var lesson = raw.get("pendingLesson", {})
+	valid = (
+		valid
+		and stock is Dictionary
+		and done is Array
+		and carry is Dictionary
+		and lesson is Dictionary
+	)
+	if not valid:
+		return false
+	for item in stock:
+		valid = valid and ITEMS.has(str(item)) and _whole_number(stock[item], 0.0, 99.0)
+	for mission_id in done:
+		valid = valid and mission_id is String and not model.mission(str(mission_id)).is_empty()
+	if not carry.is_empty():
+		valid = valid and str(carry.get("kind", "")) in ["fish", "delivery"]
+	if not lesson.is_empty():
+		valid = valid and _valid_request(lesson)
+	return valid
+
+
+static func _whole_number(value: Variant, low: float, high: float) -> bool:
+	if typeof(value) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(value)):
+		return false
+	return float(value) == floorf(float(value)) and float(value) >= low and float(value) <= high
 
 
 static func _valid_request(lesson: Dictionary) -> bool:
@@ -342,10 +346,16 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 		was_in_region = in_region
 		world._update_mission()
 		if in_region:
-			world.status_label.text = "Willkommen in Sonnenhafen! Die Bewohner sind Computerfiguren dieser Welt."
+			world.status_label.text = (
+				"Willkommen in Sonnenhafen! Die Bewohner sind " + "Computerfiguren dieser Welt."
+			)
+	var started := Time.get_ticks_usec()
 	crowd.tick(step, hour, at, driving)
+	crowd_usec += Time.get_ticks_usec() - started
+	crowd_ticks += 1
 	_sync_figures()
 	inside = town.update_focus(at)
+	_interior_camera()
 	town.tick(step, evening)
 	_update_daylight(step)
 	if not unlocked():
@@ -373,6 +383,20 @@ func _sync_figures() -> void:
 			entry["position"] = live
 
 
+## Inside a shop the roof is cut away; a steeper follow camera looks over
+## the walls into the room. The child's own pitch returns outside.
+func _interior_camera() -> void:
+	if world.get("camera_pitch") == null:
+		return
+	if not inside.is_empty():
+		if saved_pitch < 0.0:
+			saved_pitch = float(world.camera_pitch)
+		world.camera_pitch = maxf(float(world.camera_pitch), INTERIOR_PITCH)
+	elif saved_pitch >= 0.0:
+		world.camera_pitch = saved_pitch
+		saved_pitch = -1.0
+
+
 ## Evening light: the sun lowers and warms, windows and lamps glow.
 func _capture_daylight() -> void:
 	var sun := world.get_node_or_null("Sun") as DirectionalLight3D
@@ -396,12 +420,12 @@ func _capture_daylight() -> void:
 		daylight["horizon"] = sky.sky_horizon_color
 
 
-static func evening_target(at_hour: float) -> float:
+static func _evening_target(at_hour: float) -> float:
 	return smoothstep(17.6, 19.8, at_hour) * 0.92
 
 
 func _update_daylight(step: float) -> void:
-	var target := evening_target(hour)
+	var target := _evening_target(hour)
 	# A new day after the wrap brightens over a few seconds (sunrise).
 	evening = move_toward(evening, target, step * (0.35 if target < evening else 0.08))
 	if daylight.is_empty() or absf(evening - evening_applied) < 0.004:
@@ -474,17 +498,21 @@ func _order_index() -> int:
 func action_label(at: Vector3) -> String:
 	if not unlocked() or bool(world.get("driving")) or not region_contains(at):
 		return ""
-	if _near_spot(at, "fish_hall", CRATE_REACH + 2.0) and str(carrying.get("kind", "")) == "fish":
-		return "Kiste abstellen"
-	if _fish_step_active() and carrying.is_empty() and _near_spot(at, "pier_west_end", CRATE_REACH):
-		return "Kiste nehmen"
-	if not crowd.nearest(at, TALK_REACH).is_empty():
-		return "Ansprechen"
-	if _near_spot(at, "trade_spot_shop", TRADE_REACH):
-		return "Handeln"
-	if _near_spot(at, "kontor_board", TRADE_REACH):
-		return "Lieferbrett"
-	return ""
+	var label := ""
+	var carrying_fish := str(carrying.get("kind", "")) == "fish"
+	if carrying_fish and _near_spot(at, "fish_hall", CRATE_REACH + 2.0):
+		label = "Kiste abstellen"
+	elif (
+		_fish_step_active() and carrying.is_empty() and _near_spot(at, "pier_west_end", CRATE_REACH)
+	):
+		label = "Kiste nehmen"
+	elif not crowd.nearest(at, TALK_REACH).is_empty():
+		label = "Ansprechen"
+	elif _near_spot(at, "trade_spot_shop", TRADE_REACH):
+		label = "Handeln"
+	elif _near_spot(at, "kontor_board", TRADE_REACH):
+		label = "Lieferbrett"
+	return label
 
 
 func _near_spot(at: Vector3, spot_id: String, reach: float) -> bool:
@@ -650,7 +678,7 @@ func _talk(figure_id: String) -> void:
 	else:
 		dialog_mission = ""
 		dialog_step = ""
-		runner = DIALOG.new(smalltalk_tree(figure_id), int(world.grade), [])
+		runner = DIALOG.new(_smalltalk_tree(figure_id), int(world.grade), [])
 	_render()
 
 
@@ -666,7 +694,7 @@ func _home_place(address: String) -> String:
 
 ## Conversation for a resident without a pending mission step: who they are
 ## (honestly a computer figure), their day, interests, friends and memories.
-func smalltalk_tree(figure_id: String) -> Dictionary:
+func _smalltalk_tree(figure_id: String) -> Dictionary:
 	var brain = crowd.brain_of(figure_id)
 	var profile: Dictionary = brain.profile
 	var greeting: String = brain.memory_line()
@@ -709,7 +737,10 @@ func smalltalk_tree(figure_id: String) -> Dictionary:
 			{
 				"text":
 				(
-					"Ich bin %s, %s. Ich wohne %s und bin %s. Ich bin eine Computerfigur dieser Welt – keine echte Person und kein Online-Mitspieler."
+					(
+						"Ich bin %s, %s. Ich wohne %s und bin %s. Ich bin eine Computerfigur "
+						+ "dieser Welt – keine echte Person und kein Online-Mitspieler."
+					)
 					% [
 						str(profile.name),
 						str(profile.role),
@@ -860,13 +891,13 @@ func _show_cards(card_ids: Array[String]) -> void:
 		"Neue Figurenkarte!", "In deinem Sonnenhafen-Album: " + ", ".join(names) + "."
 	)
 	for card_id in card_ids:
-		world.modal_box.add_child(card_panel(card_id, true))
+		world.modal_box.add_child(_card_panel(card_id, true))
 	world.modal_box.add_child(
 		KIT.button("Weiter erkunden", world._close_dialog, 180, Color("1b7d63"))
 	)
 
 
-func card_panel(card_id: String, owned: bool) -> PanelContainer:
+func _card_panel(card_id: String, owned: bool) -> PanelContainer:
 	var card: Dictionary = model.card(card_id)
 	var entry: Dictionary = model.figure(str(card.figure))
 	var panel := PanelContainer.new()
@@ -909,14 +940,14 @@ func open_shop(message := "") -> void:
 	runner = null
 	if not _shop_open():
 		var brain = crowd.brain_of("greta")
-		(
-			world
-			. _open_dialog(
-				"Hafenkrämer",
+		world._open_dialog(
+			"Hafenkrämer",
+			(
 				(
-					"Greta ist gerade nicht im Laden (%s). Sie kommt bald zurück. Auf der Weltkarte siehst du, wo sie ist."
-					% (brain.status_text() if brain != null else "unterwegs")
+					"Greta ist gerade nicht im Laden (%s). Sie kommt bald "
+					+ "zurück. Auf der Weltkarte siehst du, wo sie ist."
 				)
+				% (brain.status_text() if brain != null else "unterwegs")
 			)
 		)
 		world.modal_box.add_child(
@@ -935,7 +966,7 @@ func open_shop(message := "") -> void:
 		var info: Dictionary = ITEMS[item]
 		var button: Button = KIT.button(
 			"%s · %d Muscheln" % [str(info.title), int(info.buy)],
-			buy.bind(item),
+			_buy.bind(item),
 			200,
 			Color("1b7d63")
 		)
@@ -955,13 +986,13 @@ func open_shop(message := "") -> void:
 				"%s (%d im Korb) · bekommst %d"
 				% [str(info.title), int(inventory[item]), int(info.sell)]
 			),
-			sell.bind(str(item)),
+			_sell.bind(str(item)),
 			200,
 			Color("6652b8")
 		)
 		button.name = "Sell_" + str(item)
 		world.modal_box.add_child(button)
-	world.modal_box.add_child(KIT.label("Dein Hafenkorb: " + basket_text(), 16))
+	world.modal_box.add_child(KIT.label("Dein Hafenkorb: " + _basket_text(), 16))
 	world.modal_box.add_child(KIT.button("Fertig", _close_shop, 160))
 
 
@@ -971,7 +1002,7 @@ func _close_shop() -> void:
 	world._close_dialog()
 
 
-func basket_text() -> String:
+func _basket_text() -> String:
 	var parts: Array[String] = []
 	for item in ITEMS:
 		if int(inventory.get(item, 0)) > 0:
@@ -980,7 +1011,7 @@ func basket_text() -> String:
 
 
 ## Buying is only possible with enough shells; the calculation is shown.
-func buy(item: String) -> bool:
+func _buy(item: String) -> bool:
 	var info: Dictionary = ITEMS.get(item, {})
 	var price := int(info.get("buy", 0))
 	if price <= 0 or wallet < price or not _shop_open():
@@ -1000,7 +1031,7 @@ func buy(item: String) -> bool:
 	return true
 
 
-func sell(item: String) -> bool:
+func _sell(item: String) -> bool:
 	var info: Dictionary = ITEMS.get(item, {})
 	var price := int(info.get("sell", 0))
 	if price <= 0 or int(inventory.get(item, 0)) <= 0 or not _shop_open():
@@ -1024,7 +1055,10 @@ func _save_quietly() -> void:
 func open_board(message := "") -> void:
 	runner = null
 	var body := (
-		"Lieferaufträge von Hinnerk. Lies den Zettel genau und bring die Kiste zur richtigen Person. Erledigt: %d."
+		(
+			"Lieferaufträge von Hinnerk. Lies den Zettel genau und bring "
+			+ "die Kiste zur richtigen Person. Erledigt: %d."
+		)
 		% deliveries_done
 	)
 	if not message.is_empty():
@@ -1066,14 +1100,14 @@ func open_board(message := "") -> void:
 			slip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			world.modal_box.add_child(slip)
 			var take: Button = KIT.button(
-				"Auftrag %d nehmen" % (offset + 1), take_order.bind(index), 200, Color("b8762a")
+				"Auftrag %d nehmen" % (offset + 1), _take_order.bind(index), 200, Color("b8762a")
 			)
 			take.name = "TakeOrder_%d" % offset
 			world.modal_box.add_child(take)
 	world.modal_box.add_child(KIT.button("Fertig", world._close_dialog, 160))
 
 
-func take_order(index: int) -> bool:
+func _take_order(index: int) -> bool:
 	if not carrying.is_empty():
 		return false
 	carrying = {"kind": "delivery", "order": posmod(index, ORDERS.size())}
@@ -1145,11 +1179,15 @@ func start_lesson() -> void:
 			"returnGame": "world"
 		}
 	if not world._save():
-		world.status_label.text = "Die Lernrunde konnte noch nicht gespeichert werden. Bitte versuche es erneut."
+		world.status_label.text = (
+			"Die Lernrunde konnte noch nicht gespeichert " + "werden. Bitte versuche es erneut."
+		)
 		return
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app("learn", {"worldMission": pending_lesson.duplicate(true)}):
-			world.status_label.text = "Die Weltschule ist bereit. Der Wechsel zur Lernrunde hat noch nicht geklappt."
+			world.status_label.text = (
+				"Die Weltschule ist bereit. Der Wechsel zur " + "Lernrunde hat noch nicht geklappt."
+			)
 		return
 	lesson_index = 0
 	lesson_correct = 0
@@ -1174,7 +1212,9 @@ func _show_lesson_task() -> void:
 
 func _lesson_answer(value: int, expected: int) -> void:
 	if value != expected:
-		world.status_label.text = "Zerlege die Zahlen in passende Teile und rechne noch einmal in Ruhe."
+		world.status_label.text = (
+			"Zerlege die Zahlen in passende Teile und " + "rechne noch einmal in Ruhe."
+		)
 		return
 	lesson_correct += 1
 	lesson_index += 1
@@ -1196,24 +1236,36 @@ func _lesson_answer(value: int, expected: int) -> void:
 
 ## True when the returning receipt belongs to the harbour learning round.
 func consume_learning_receipt(receipt: Variant) -> bool:
-	if not unlocked() or pending_lesson.is_empty() or not receipt is Dictionary:
-		return false
-	if typeof(receipt.get("completed")) != TYPE_BOOL or receipt.get("completed") != true:
-		return false
-	if str(receipt.get("requestId", "")) != str(pending_lesson.get("requestId", "")):
-		return false
-	if receipt.get("missionId") != "school_numbers" or receipt.get("version") != 1:
-		return false
-	if receipt.get("subject") != "Mathematik" or receipt.get("returnGame") != "world":
-		return false
-	if receipt.get("grade") != pending_lesson.get("grade"):
+	if not unlocked() or pending_lesson.is_empty() or not _receipt_matches(receipt):
 		return false
 	pending_lesson.clear()
 	var results := _event_results("harbour_lesson_done")
-	if results.is_empty():
+	if not results.is_empty():
+		_report(results)
+	return not results.is_empty()
+
+
+func _receipt_matches(receipt: Variant) -> bool:
+	if not receipt is Dictionary:
 		return false
-	_report(results)
-	return true
+	var completed = receipt.get("completed")
+	var same_request := (
+		str(receipt.get("requestId", "")) == str(pending_lesson.get("requestId", ""))
+	)
+	var same_form: bool = (
+		receipt.get("missionId") == "school_numbers"
+		and receipt.get("version") == 1
+		and receipt.get("subject") == "Mathematik"
+		and receipt.get("returnGame") == "world"
+	)
+	var same_grade: bool = receipt.get("grade") == pending_lesson.get("grade")
+	return (
+		typeof(completed) == TYPE_BOOL
+		and completed == true
+		and same_request
+		and same_form
+		and same_grade
+	)
 
 
 # --- Guidance, map, journal ---------------------------------------------------------------------
@@ -1254,7 +1306,7 @@ func hud_line() -> String:
 	return line
 
 
-func follow(mission_id: String) -> void:
+func _follow(mission_id: String) -> void:
 	if model.track(mission_id):
 		world._close_dialog()
 		_commit(
@@ -1295,18 +1347,18 @@ func append_journal() -> void:
 		if state != "done":
 			var button: Button = KIT.button(
 				"Wird verfolgt" if model.tracked == mission_id else "Verfolgen",
-				follow.bind(mission_id),
+				_follow.bind(mission_id),
 				180
 			)
 			button.name = "HarbourFollow_" + mission_id
 			button.disabled = model.tracked == mission_id
 			section.add_child(button)
-	section.add_child(KIT.label("Hafenkorb: " + basket_text(), 16))
+	section.add_child(KIT.label("Hafenkorb: " + _basket_text(), 16))
 	var album := HFlowContainer.new()
 	album.add_theme_constant_override("h_separation", 10)
 	album.add_theme_constant_override("v_separation", 10)
 	for card in model.content.cards:
-		album.add_child(card_panel(str(card.id), str(card.id) in model.cards()))
+		album.add_child(_card_panel(str(card.id), str(card.id) in model.cards()))
 	section.add_child(album)
 	world.modal_box.add_child(section)
 	var count: int = world.modal_box.get_child_count()

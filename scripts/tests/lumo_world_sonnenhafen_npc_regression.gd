@@ -119,6 +119,9 @@ func _run() -> void:
 				if Vector2(closest.x - now.x, closest.z - now.z).length() > 0.3:
 					off_mesh.append("%s@%s" % [id, str(now)])
 	Engine.time_scale = 1.0
+	var average_ms := float(harbour.crowd_usec) / maxf(1.0, float(harbour.crowd_ticks)) / 1000.0
+	print("[SonnenhafenNpc] resident simulation: %.3f ms per frame (14 residents, headless CPU)" % average_ms)
+	# Informational only: wall-clock timings depend on machine load.
 	var simulated: float = float(scene.open_world.routines.elapsed) - start_clock
 	print(
 		(

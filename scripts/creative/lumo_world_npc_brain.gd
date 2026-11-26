@@ -182,6 +182,7 @@ func tick(delta: float, hour: float) -> bool:
 		if bubble_timer <= 0.0:
 			bubble = ""
 	var home_hour := HOME_HOUR - float(profile.get("home_early", 0.0))
+	var needs_plan := false
 	if state in [State.IDLE, State.WALK, State.TALK] and hour >= home_hour and spot != "home":
 		# Evening: end the current activity and head home.
 		partner = ""
@@ -193,28 +194,25 @@ func tick(delta: float, hour: float) -> bool:
 				state = State.IDLE
 				spot = "home"
 				timer = 0.0
-				return true
-			return false
+				needs_plan = true
 		State.GREET:
 			resume_timer -= step
 			if resume_timer <= 0.0:
 				state = resume_state
-			return false
 		State.TALK:
 			social = maxf(0.0, social - step * 0.08)
 			timer -= step
 			if timer <= 0.0:
 				partner = ""
 				talk_lines.clear()
-				return true
-			return false
+				needs_plan = true
 		State.IDLE:
 			social = minf(1.0, social + step * 0.012 * (0.5 + personality("social")))
 			timer -= step
-			return timer <= 0.0
+			needs_plan = timer <= 0.0
 		State.WALK:
 			social = minf(1.0, social + step * 0.006)
-	return false
+	return needs_plan
 
 
 ## Short reaction when Lumo comes close. Returns the greeting or "".
@@ -328,17 +326,10 @@ func to_data() -> Dictionary:
 
 ## Restores memory and relationships; invalid parts keep the authored defaults.
 func restore(raw: Variant) -> bool:
-	if not raw is Dictionary:
-		return false
-	var saved_memory = raw.get("memory", [])
-	if not saved_memory is Array or saved_memory.size() > MEMORY_LIMIT:
+	if not _valid_saved(raw):
 		return false
 	var checked: Array[Dictionary] = []
-	for entry in saved_memory:
-		if not entry is Dictionary or not entry.get("event") is String:
-			return false
-		if str(entry.event) not in ["met", "helped", "delivered", "traded", "heard"]:
-			return false
+	for entry in raw.get("memory", []):
 		checked.append(
 			{
 				"event": str(entry.event),
@@ -346,15 +337,30 @@ func restore(raw: Variant) -> bool:
 				"detail": str(entry.get("detail", "")).substr(0, 120)
 			}
 		)
-	var saved_affinity = raw.get("affinity", {})
-	if not saved_affinity is Dictionary:
+	memory = checked
+	var saved_affinity: Dictionary = raw.get("affinity", {})
+	for other in saved_affinity:
+		if affinity.has(str(other)):
+			affinity[str(other)] = clampf(float(saved_affinity[other]), 0.0, 1.0)
+	return true
+
+
+static func _valid_saved(raw: Variant) -> bool:
+	if not raw is Dictionary:
 		return false
+	var saved_memory = raw.get("memory", [])
+	var saved_affinity = raw.get("affinity", {})
+	var valid: bool = saved_memory is Array and saved_memory.size() <= MEMORY_LIMIT
+	valid = valid and saved_affinity is Dictionary
+	if not valid:
+		return false
+	for entry in saved_memory:
+		if not entry is Dictionary or not entry.get("event") is String:
+			return false
+		if str(entry.event) not in ["met", "helped", "delivered", "traded", "heard"]:
+			return false
 	for other in saved_affinity:
 		var value = saved_affinity[other]
 		if typeof(value) not in [TYPE_INT, TYPE_FLOAT] or not is_finite(float(value)):
 			return false
-	memory = checked
-	for other in saved_affinity:
-		if affinity.has(str(other)):
-			affinity[str(other)] = clampf(float(saved_affinity[other]), 0.0, 1.0)
 	return true

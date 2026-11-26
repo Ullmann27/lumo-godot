@@ -24,6 +24,9 @@ const BODY_HEIGHT := 2.3
 const TALK_SWAP := 3.4
 const STUCK_LIMIT := 7.0
 const ANIMATED_LIMIT := {"low": 6, "medium": 10, "high": 14}
+## Model-size corrections so every headwear covers the baked village hats.
+const ACCESSORY_SCALE := {"cap": 1.45, "baker": 1.4, "scarf": 1.75}
+const ACCESSORY_DROP := {"baker": 0.03, "cap": 0.01}
 
 var world: Node3D
 var town: Node3D
@@ -216,41 +219,45 @@ func _spawn(entry: Dictionary) -> Dictionary:
 	return actor
 
 
+## Hats sit over the baked headwear of the village bodies (per-body anchor
+## from sonnenhafen_residents.json → accessoryAnchors), scarves at the neck.
 func _accessory(entry: Dictionary, visual: Node3D, skeleton: Skeleton3D, bounds: AABB) -> void:
 	var kind := str(entry.get("accessory", ""))
-	if kind.is_empty() or str(entry.body) == "lion":
+	var anchors: Dictionary = content.get("accessoryAnchors", {}).get(str(entry.body), {})
+	if kind.is_empty() or anchors.is_empty():
 		return
-	var path := KIT_DIR + "acc_" + kind + ".glb"
-	var bundle = VILLAGE.bundle_at(path, "sonnenhafen_acc_" + kind)
+	var bundle = VILLAGE.bundle_at(KIT_DIR + "acc_" + kind + ".glb", "sonnenhafen_acc_" + kind)
 	if bundle.parts.is_empty():
 		return
 	var hat := MeshInstance3D.new()
 	hat.name = "Accessory_" + kind
 	hat.mesh = bundle.parts[0].mesh
 	hat.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var top := bounds.end.y
-	var size := clampf(bounds.size.x * 0.62, 0.35, 0.9)
-	if kind == "scarf":
-		top = bounds.position.y + bounds.size.y * 0.58
-		size = clampf(bounds.size.x * 0.7, 0.4, 1.0)
-	if skeleton != null and skeleton.find_bone("head") >= 0:
+	var scarf := kind == "scarf"
+	var height_share := float(anchors.get("neck" if scarf else "hat", 0.9))
+	var anchor := Vector3(
+		bounds.get_center().x,
+		bounds.position.y + bounds.size.y * height_share,
+		bounds.get_center().z + float(anchors.get("forward", 0.0)) * bounds.size.z
+	)
+	var size := bounds.size.x * float(anchors.get("scarf_scale" if scarf else "hat_scale", 0.7))
+	size *= float(ACCESSORY_SCALE.get(kind, 1.0))
+	anchor.y -= bounds.size.y * float(ACCESSORY_DROP.get(kind, 0.0))
+	var placed := Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * size), anchor)
+	var bone_name := "body" if scarf else "head"
+	if skeleton != null and skeleton.find_bone(bone_name) >= 0:
 		var attach := BoneAttachment3D.new()
 		attach.name = "AccessoryMount"
-		attach.bone_name = "head" if kind != "scarf" else "body"
+		attach.bone_name = bone_name
 		skeleton.add_child(attach)
-		var bone_index := skeleton.find_bone(attach.bone_name)
-		var rest := skeleton.get_bone_global_rest(bone_index)
-		var anchor := Vector3(0, top - (0.04 if kind != "scarf" else 0.0), 0.0)
-		hat.transform = Transform3D(
-			rest.basis.inverse().scaled(Vector3.ONE * size), rest.affine_inverse() * anchor
-		)
+		var rest := skeleton.get_bone_global_rest(skeleton.find_bone(bone_name))
+		var to_skeleton := skeleton.global_transform.affine_inverse() * visual.global_transform
+		hat.transform = rest.affine_inverse() * to_skeleton * placed
 		attach.add_child(hat)
 	else:
 		var body := visual.find_child("Body", true, false) as Node3D
 		var holder: Node3D = body if body != null else visual
-		hat.transform = Transform3D(
-			Basis.IDENTITY.scaled(Vector3.ONE * size * 0.8), Vector3(0, top - 0.03, 0.0)
-		)
+		hat.transform = holder.global_transform.affine_inverse() * visual.global_transform * placed
 		holder.add_child(hat)
 
 
@@ -276,6 +283,10 @@ func _labels(root: Node3D, entry: Dictionary, height: float) -> Dictionary:
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		root.add_child(label)
 		made[spec[0]] = label
+		# The World caps the near size of its signs so a close camera never
+		# hides Lumo behind a huge name tag; residents use the same rule.
+		if spec[0] != "bubble" and world != null and world.get("art") != null:
+			world.art.signs.append(label)
 	return made
 
 
@@ -756,6 +767,13 @@ func _procedural_pose(actor: Dictionary, brain) -> void:
 		skeleton.set_bone_pose_rotation(
 			other, skeleton.get_bone_rest(other).basis.get_rotation_quaternion() * answer
 		)
+	else:
+		# Working pose: arms back to rest after waving or talking.
+		for bone in [arm, other]:
+			if bone >= 0:
+				skeleton.set_bone_pose_rotation(
+					bone, skeleton.get_bone_rest(bone).basis.get_rotation_quaternion()
+				)
 	if head >= 0:
 		var nod := Quaternion(
 			Vector3(1, 0, 0),

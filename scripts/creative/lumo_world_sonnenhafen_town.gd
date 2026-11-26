@@ -65,6 +65,11 @@ const GROUND_TINTS := {
 	"kanalpromenade": "d3c9b4"
 }
 const WATER_EDGE_HEIGHT := 1.25
+## Purely decorative modules left out on LOW quality; props with gameplay
+## (stalls, counter, shelves, delivery board, crates) always stay visible.
+const LOW_SKIP := [
+	"shutters", "flower_box", "gutter", "downpipe", "balcony", "lamp_wall", "rope_coil", "anchor"
+]
 const VILLAGE_TILES := [
 	"plaster",
 	"planks",
@@ -166,7 +171,7 @@ func _chunk(x: float) -> int:
 ## the instance into that building's own batch (cut-away interiors).
 func _add(module: String, xform: Transform3D, color := Color.WHITE, group := "") -> void:
 	# LOW quality drops purely decorative details (flower boxes, gutters, ...).
-	if quality == "low" and str(MODULE_CLASS.get(module, "detail")) == "detail":
+	if quality == "low" and module in LOW_SKIP:
 		skipped_details += 1
 		return
 	var key := "%s|%s" % [module, group if not group.is_empty() else "c%d" % _chunk(xform.origin.x)]
