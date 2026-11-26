@@ -1,0 +1,3 @@
+# NextGen learning actor import repair
+
+Strict native imports reported `UVs are required to generate tangents` during `Lumo-Learning-Animated.glb`. Godot 4.6 generates tangents for every morph when forced even if the primitive has no UVs. Disable forced tangent generation only for the recovered actor; keep all authored arrays, rig, animations, originals and other import settings. The guard reads the original GLB, verifies its SHA-256 and rejects any tangent-dependent material or morph without authored tangents. The strict full import, existing completeness actor/route probe, and World regressions must all pass before this candidate can be accepted. No rendered or Android-device result is claimed.

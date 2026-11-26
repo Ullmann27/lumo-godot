@@ -31,6 +31,8 @@ jobs:
               assert json.loads(raw[20:20+length]).get('meshes')
               print(row['kind'], row['sha256'], 'PASS')
           PY
+      - name: Verify original learning actor and tangent-dependent materials
+        run: python3 tools/verify_nextgen_learning_import.py
       - name: Install pinned Godot 4.6.3
         shell: bash
         run: |
@@ -47,8 +49,9 @@ jobs:
           set -euo pipefail
           mkdir -p world-meshy-proof
           godot --headless --single-threaded-scene --path . --editor --import --quit > world-meshy-proof/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' world-meshy-proof/import.log; then exit 1; fi
           python3 tools/validate_project.py
-          for probe in lumo_world_meshy_detail_regression lumo_world_regression; do
+          for probe in lumo_world_meshy_detail_regression lumo_world_regression completeness_2094_regression; do
             log="world-meshy-proof/${probe}.log"
             godot --headless --path . --script "res://scripts/tests/${probe}.gd" --check-only > "$log" 2>&1
             timeout 420s godot --headless --path . --script "res://scripts/tests/${probe}.gd" >> "$log" 2>&1
@@ -56,7 +59,22 @@ jobs:
             if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|\] FAIL' "$log"; then exit 1; fi
           done
           grep -E '^\[WorldMeshy\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_meshy_detail_regression.log
-          grep -E '^\[LumoWorld\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_regression.log
+          grep -E '^\[LumoWorld\] PASS [1-9][0-9]* checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-world-meshy-proof
+          path: world-meshy-proof/
+          retention-days: 14
+ world-meshy-proof/lumo_world_regression.log
+          grep -E '^\[Completeness2094\] PASS [1-9][0-9]* route, actor, and asset checks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-world-meshy-proof
+          path: world-meshy-proof/
+          retention-days: 14
+ world-meshy-proof/completeness_2094_regression.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
