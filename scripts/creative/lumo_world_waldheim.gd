@@ -105,6 +105,9 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 	if at.z >= 48.0 and at.z <= 245.0 and at.x >= 92.0 and at.x <= 255.0:
 		routines.elapsed = world.open_world.routines.elapsed
 		super.tick(at, driving, delta)
+	var target := tracked_route()
+	if is_instance_valid(quest_marker):
+		quest_marker.visible = not target.is_empty() and at.distance_squared_to(target.at) > 36.0
 
 
 func _build_paths() -> void:
@@ -497,6 +500,7 @@ func _open_station(id: String, hint := false) -> void:
 		show_options = false
 	world._open_dialog(str(task.title), body)
 	if show_options:
+		_add_station_comparison(task)
 		for index in range(task.choices.size()):
 			var button := KIT.button(str(task.choices[index]), _submit_station.bind(id, index), 195)
 			button.name = "WaldheimChoice_%d" % index
@@ -505,6 +509,35 @@ func _open_station(id: String, hint := false) -> void:
 	var close := KIT.button("Weiter erkunden", world._close_dialog, 180, Color("1b7d63"))
 	close.name = "WaldheimClose"
 	world.modal_box.add_child(close)
+
+
+func _add_station_comparison(task: Dictionary) -> void:
+	var visual := str(task.visual)
+	if visual not in ["count", "pots", "seeds", "beams", "lights"]:
+		return
+	# The dialog may cover the exhibit on a narrow display. The same authored
+	# measurements remain visible beside the actual input choices.
+	var row := HBoxContainer.new()
+	row.name = "WaldheimStationComparison"
+	row.add_theme_constant_override("separation", 6)
+	world.modal_box.add_child(row)
+	for index in range(task.values.size()):
+		var value := int(task.values[index])
+		var panel := PanelContainer.new()
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		panel.add_theme_stylebox_override("panel", KIT.tinted_panel(Color("294445"), Color("52796c"), 8))
+		row.add_child(panel)
+		var marks: Array[String] = []
+		if visual in ["beams", "lights"]:
+			marks = ["%d m" % value]
+		else:
+			for group in range(0, value, 4):
+				marks.append("• ".repeat(mini(4, value - group)).strip_edges())
+		var title: String = ["Links", "Mitte", "Rechts"][index]
+		var copy := KIT.label(title + "\n" + "\n".join(marks), 18)
+		copy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		copy.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		panel.add_child(copy)
 
 
 func _unfinished_count() -> int:
