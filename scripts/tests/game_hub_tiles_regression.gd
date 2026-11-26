@@ -5,7 +5,8 @@ extends SceneTree
 ## Klassen-/Fachauswahl hat fingergroße Listeneinträge.
 
 const ROUTES := [
-	"kart", "settlement", "jump", "run", "puzzle", "treasure", "rhythm", "build", "stars"
+	"kart", "settlement", "jump", "run", "skypost", "puzzle", "treasure", "world",
+	"rhythm", "build", "stars"
 ]
 const DENSITY: float = 2.625
 

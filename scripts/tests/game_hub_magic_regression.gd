@@ -1,9 +1,11 @@
 extends SceneTree
 ## Native user-visible navigation contract. The baseline with three routes fails.
 const REQUIRED := [
-	"kart", "settlement", "jump", "puzzle", "treasure", "rhythm", "build", "stars"
+	"kart", "settlement", "jump", "run", "skypost", "puzzle", "treasure", "world",
+	"rhythm", "build", "stars"
 ]
 const IDENTITY = preload("res://scripts/tests/helpers/game_hub_original_identity.gd")
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
 
 
 func _initialize() -> void:
@@ -88,7 +90,8 @@ func _run() -> void:
 		elif fireflies.multimesh.instance_count < 12:
 			failed.append("3D portal has too few actual light instances")
 	var village := hub.find_child("GameRoute_settlement", true, false) as Button
-	if village != null:
+	var village_selected := village != null
+	if village_selected:
 		village.pressed.emit()
 		var after: Dictionary = router.get("launch_options")
 		if after.get("livingVillage", false) != true:
@@ -99,10 +102,19 @@ func _run() -> void:
 			if after.get(key) != before[key]:
 				failed.append("Village route corrupted original launch option " + key)
 	hub.queue_free()
+	await process_frame
+	await process_frame
+	var destination := current_scene
+	if village_selected and (destination == null or
+		destination.scene_file_path != "res://scenes/creative/build_settlement_world.tscn"):
+		failed.append("Touching the village tile must open the real settlement scene")
+	if is_instance_valid(destination) and not await TEARDOWN.release_scene(self, destination, "[LumoHub]"):
+		failed.append("The settlement scene did not release its resources")
+	get_root().get_node("GameSoundscape").release_audio()
 	if not failed.is_empty():
 		for reason in failed:
 			printerr("[LumoHub] FAIL " + reason)
 		quit(1)
 		return
-	print("[LumoHub] PASS 8 visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal")
+	print("[LumoHub] PASS %d visible native game entrances, active village route, preserved child settings and 3D reduced-motion portal" % REQUIRED.size())
 	quit(0)
