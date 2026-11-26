@@ -302,6 +302,8 @@ func _set_view(requested: Rect2, id: String, title: String) -> void:
 static func location_name(at: Vector3) -> String:
 	if at.x >= 280:
 		return "Dein Dorf"
+	if at.z >= 76.0 and at.x >= 112.0 and at.x <= 236.0:
+		return "Waldheim"
 	if at.z < -97.0 and at.x >= 60:
 		return "Sonnenhafen"
 	if at.x >= 173:

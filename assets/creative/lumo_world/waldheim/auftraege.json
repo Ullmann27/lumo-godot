@@ -1,0 +1,1532 @@
+{
+  "schemaVersion": 1,
+  "places": [
+    {
+      "id": "home_wh_eda",
+      "title": "Waldhüterin Eda",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        158,
+        0,
+        109
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "home_wh_ivar",
+      "title": "Zimmermann Ivar",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        131,
+        0,
+        151
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "home_wh_mara",
+      "title": "Bachwartin Mara",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        215,
+        0,
+        139
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "home_wh_fina",
+      "title": "Gärtnerin Fina",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        169,
+        0,
+        188
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "home_wh_nuri",
+      "title": "Festorganisator Nuri",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        210,
+        0,
+        204
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "wh_wegzeichen",
+      "title": "Weggabelung",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        181,
+        0,
+        118
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_spurwechsel",
+      "title": "Spurenplatz",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        144,
+        0,
+        121
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_kartenblick",
+      "title": "Kartenpavillon",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        189,
+        0,
+        133
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_brueckenholz",
+      "title": "Brückenwerkbank",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        123,
+        0,
+        142
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_leuchtpunkte",
+      "title": "Laternensteg",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        151,
+        0,
+        164
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_unterstand",
+      "title": "Waldunterstand",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        123,
+        0,
+        173
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_bachpegel",
+      "title": "Pegelsteg",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        227,
+        0,
+        129
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_wasserrinne",
+      "title": "Wasserwerkstatt",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        227,
+        0,
+        160
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_beetplatz",
+      "title": "Setzlingsbeet",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        157,
+        0,
+        184
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_samenkiste",
+      "title": "Saatgutregal",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        175,
+        0,
+        206
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_waldpost",
+      "title": "Postwendekreis",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        215,
+        0,
+        179
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "wh_waldtafel",
+      "title": "Lichtungstafel",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        219,
+        0,
+        210
+      ],
+      "size": [
+        6,
+        6
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "waldsteg",
+      "width": 5.8,
+      "points": [
+        [
+          172,
+          61
+        ],
+        [
+          172,
+          106
+        ],
+        [
+          172,
+          140
+        ],
+        [
+          172,
+          170
+        ],
+        [
+          172,
+          191
+        ],
+        [
+          194,
+          199
+        ],
+        [
+          219,
+          199
+        ]
+      ]
+    },
+    {
+      "id": "handwerk",
+      "width": 3.7,
+      "points": [
+        [
+          172,
+          140
+        ],
+        [
+          134,
+          140
+        ],
+        [
+          136,
+          170
+        ],
+        [
+          172,
+          170
+        ]
+      ]
+    },
+    {
+      "id": "bach",
+      "width": 3.7,
+      "points": [
+        [
+          172,
+          140
+        ],
+        [
+          205,
+          141
+        ],
+        [
+          215,
+          160
+        ],
+        [
+          213,
+          179
+        ],
+        [
+          194,
+          199
+        ]
+      ]
+    },
+    {
+      "id": "gaerten",
+      "width": 3.0,
+      "points": [
+        [
+          172,
+          170
+        ],
+        [
+          159,
+          183
+        ],
+        [
+          165,
+          202
+        ],
+        [
+          194,
+          199
+        ]
+      ]
+    },
+    {
+      "id": "spuren",
+      "width": 3.0,
+      "points": [
+        [
+          172,
+          110
+        ],
+        [
+          155,
+          117
+        ],
+        [
+          143,
+          120
+        ],
+        [
+          134,
+          140
+        ]
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "id": "wh_eda",
+      "name": "Eda",
+      "source": "resident",
+      "visual": "owl",
+      "at": [
+        158,
+        0,
+        109
+      ],
+      "place": "home_wh_eda",
+      "role": "Waldhüterin",
+      "card": "card_wh_eda"
+    },
+    {
+      "id": "wh_ivar",
+      "name": "Ivar",
+      "source": "resident",
+      "visual": "badger",
+      "at": [
+        131,
+        0,
+        151
+      ],
+      "place": "home_wh_ivar",
+      "role": "Zimmermann",
+      "card": "card_wh_ivar"
+    },
+    {
+      "id": "wh_mara",
+      "name": "Mara",
+      "source": "resident",
+      "visual": "otter",
+      "at": [
+        215,
+        0,
+        139
+      ],
+      "place": "home_wh_mara",
+      "role": "Bachwartin",
+      "card": "card_wh_mara"
+    },
+    {
+      "id": "wh_fina",
+      "name": "Fina",
+      "source": "resident",
+      "visual": "rabbit",
+      "at": [
+        169,
+        0,
+        188
+      ],
+      "place": "home_wh_fina",
+      "role": "Gärtnerin",
+      "card": "card_wh_fina"
+    },
+    {
+      "id": "wh_nuri",
+      "name": "Nuri",
+      "source": "resident",
+      "visual": "squirrel",
+      "at": [
+        210,
+        0,
+        204
+      ],
+      "place": "home_wh_nuri",
+      "role": "Festorganisator",
+      "card": "card_wh_nuri"
+    }
+  ],
+  "cards": [
+    {
+      "id": "card_wh_eda",
+      "figure": "wh_eda",
+      "trait": "Weg lesen",
+      "text": "Eda hält die Wegweiser in Waldheim lesbar.",
+      "power": "Waldheim"
+    },
+    {
+      "id": "card_wh_ivar",
+      "figure": "wh_ivar",
+      "trait": "Genau messen",
+      "text": "Ivar misst Holz erst aus und baut dann.",
+      "power": "Waldheim"
+    },
+    {
+      "id": "card_wh_mara",
+      "figure": "wh_mara",
+      "trait": "Wasser beobachten",
+      "text": "Mara prüft Pegel, Strömung und Ausläufe.",
+      "power": "Waldheim"
+    },
+    {
+      "id": "card_wh_fina",
+      "figure": "wh_fina",
+      "trait": "Pflanzen pflegen",
+      "text": "Fina beobachtet, was im Garten wächst.",
+      "power": "Waldheim"
+    },
+    {
+      "id": "card_wh_nuri",
+      "figure": "wh_nuri",
+      "trait": "Zusammenhelfen",
+      "text": "Nuri macht die Arbeit der ganzen Nachbarschaft sichtbar.",
+      "power": "Waldheim"
+    }
+  ],
+  "missions": [
+    {
+      "id": "wegzeichen",
+      "title": "Wo der Waldweg beginnt",
+      "subject": "Orientierung",
+      "giver": "wh_eda",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "wegzeichen_start",
+          "lead": "Sprich mit Eda in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_wegzeichen",
+          "lead": "Geh zu „Weggabelung“ und prüfe die Station.",
+          "event": "solve_wegzeichen"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "wegzeichen_end",
+          "lead": "Berichte Eda von deinem Ergebnis.",
+          "rewardCards": [
+            "card_wh_eda"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spurwechsel",
+      "title": "Über den Wildwechsel",
+      "subject": "Sachunterricht",
+      "giver": "wh_eda",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "spurwechsel_start",
+          "lead": "Sprich mit Eda in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_spurwechsel",
+          "lead": "Geh zu „Spurenplatz“ und prüfe die Station.",
+          "event": "solve_spurwechsel"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "spurwechsel_end",
+          "lead": "Berichte Eda von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "kartenblick",
+      "title": "Zeichen auf der Waldkarte",
+      "subject": "Lesen",
+      "giver": "wh_eda",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "kartenblick_start",
+          "lead": "Sprich mit Eda in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_kartenblick",
+          "lead": "Geh zu „Kartenpavillon“ und prüfe die Station.",
+          "event": "solve_kartenblick"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_eda",
+          "dialog": "kartenblick_end",
+          "lead": "Berichte Eda von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "brueckenholz",
+      "title": "Ein Brett passt genau",
+      "subject": "Mathematik",
+      "giver": "wh_ivar",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "brueckenholz_start",
+          "lead": "Sprich mit Ivar in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_brueckenholz",
+          "lead": "Geh zu „Brückenwerkbank“ und prüfe die Station.",
+          "event": "solve_brueckenholz"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "brueckenholz_end",
+          "lead": "Berichte Ivar von deinem Ergebnis.",
+          "rewardCards": [
+            "card_wh_ivar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leuchtpunkte",
+      "title": "Licht am Steg",
+      "subject": "Logik",
+      "giver": "wh_ivar",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "leuchtpunkte_start",
+          "lead": "Sprich mit Ivar in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_leuchtpunkte",
+          "lead": "Geh zu „Laternensteg“ und prüfe die Station.",
+          "event": "solve_leuchtpunkte"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "leuchtpunkte_end",
+          "lead": "Berichte Ivar von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "unterstand",
+      "title": "Ein freier Eingang",
+      "subject": "Raumverständnis",
+      "giver": "wh_ivar",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "unterstand_start",
+          "lead": "Sprich mit Ivar in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_unterstand",
+          "lead": "Geh zu „Waldunterstand“ und prüfe die Station.",
+          "event": "solve_unterstand"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_ivar",
+          "dialog": "unterstand_end",
+          "lead": "Berichte Ivar von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "bachpegel",
+      "title": "Mara liest den Bachpegel",
+      "subject": "Sachunterricht",
+      "giver": "wh_mara",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_mara",
+          "dialog": "bachpegel_start",
+          "lead": "Sprich mit Mara in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_bachpegel",
+          "lead": "Geh zu „Pegelsteg“ und prüfe die Station.",
+          "event": "solve_bachpegel"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_mara",
+          "dialog": "bachpegel_end",
+          "lead": "Berichte Mara von deinem Ergebnis.",
+          "rewardCards": [
+            "card_wh_mara"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wasserrinne",
+      "title": "Die Rinne zum Hochbeet",
+      "subject": "Natur und Technik",
+      "giver": "wh_mara",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_mara",
+          "dialog": "wasserrinne_start",
+          "lead": "Sprich mit Mara in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_wasserrinne",
+          "lead": "Geh zu „Wasserwerkstatt“ und prüfe die Station.",
+          "event": "solve_wasserrinne"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_mara",
+          "dialog": "wasserrinne_end",
+          "lead": "Berichte Mara von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "beetplatz",
+      "title": "Luft zwischen den Setzlingen",
+      "subject": "Sachunterricht",
+      "giver": "wh_fina",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_fina",
+          "dialog": "beetplatz_start",
+          "lead": "Sprich mit Fina in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_beetplatz",
+          "lead": "Geh zu „Setzlingsbeet“ und prüfe die Station.",
+          "event": "solve_beetplatz"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_fina",
+          "dialog": "beetplatz_end",
+          "lead": "Berichte Fina von deinem Ergebnis.",
+          "rewardCards": [
+            "card_wh_fina"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "samenkiste",
+      "title": "Saatgut gerecht teilen",
+      "subject": "Mathematik",
+      "giver": "wh_fina",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_fina",
+          "dialog": "samenkiste_start",
+          "lead": "Sprich mit Fina in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_samenkiste",
+          "lead": "Geh zu „Saatgutregal“ und prüfe die Station.",
+          "event": "solve_samenkiste"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_fina",
+          "dialog": "samenkiste_end",
+          "lead": "Berichte Fina von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "waldpost",
+      "title": "Mit dem Kart zur Waldpost",
+      "subject": "Orientierung",
+      "giver": "wh_mara",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_mara",
+          "dialog": "waldpost_start",
+          "lead": "Sprich mit Mara in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "drive",
+          "place": "wh_waldpost",
+          "lead": "Fahre selbst mit deinem Kart zum markierten Postwendekreis."
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_nuri",
+          "dialog": "waldpost_end",
+          "lead": "Berichte Nuri von deinem Ergebnis."
+        }
+      ]
+    },
+    {
+      "id": "waldtafel",
+      "title": "Waldheim zeigt, was gelingt",
+      "subject": "Miteinander",
+      "giver": "wh_nuri",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "wh_nuri",
+          "dialog": "waldtafel_start",
+          "lead": "Sprich mit Nuri in Waldheim."
+        },
+        {
+          "id": "try",
+          "kind": "event",
+          "place": "wh_waldtafel",
+          "lead": "Geh zu „Lichtungstafel“ und prüfe die Station.",
+          "event": "solve_waldtafel"
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "wh_nuri",
+          "dialog": "waldtafel_end",
+          "lead": "Berichte Nuri von deinem Ergebnis.",
+          "rewardCards": [
+            "card_wh_nuri"
+          ]
+        }
+      ]
+    }
+  ],
+  "dialogs": {
+    "wegzeichen_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Willkommen am Waldsteg! Wir machen den Waldweg heute bereit für Gäste.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "wegzeichen_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Jetzt finden auch Gäste die Lichtung. Danke fürs genaue Hinsehen!",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "spurwechsel_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Ich habe Abdrücke am Wildwechsel gefunden. Wir suchen einen Weg, auf dem wir die Tiere in Ruhe lassen.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "spurwechsel_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Du hast den Wildwechsel freigelassen. Wir können Tiere auch vom Weg aus beobachten.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "kartenblick_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Am Kartenpavillon sind die Zeichen noch nicht beschriftet. Kannst du das Zeichen für den Bach erkennen?",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "kartenblick_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Die Zeichen passen jetzt zum Waldweg. Die Karte hilft beim Wiederfinden.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "brueckenholz_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Ich baue ein Modell für einen kleinen Steg. Sag mir, welches Brett genau passt.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "brueckenholz_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Das Vier-Meter-Brett liegt auf beiden Seiten sicher auf.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "leuchtpunkte_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Der Laternensteg braucht ein Licht in der Mitte. Die Pfosten zeigen den Abstand.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "leuchtpunkte_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Die Lampe steht in der Mitte. Jetzt sieht man beide Stegenden gleichermaßen.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "unterstand_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Der Unterstand bekommt eine Bank. Finde heraus, wo sie keine Wege versperrt.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "unterstand_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Eine gute Bank braucht Platz, und der Weg bleibt frei.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "bachpegel_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Heute beobachte ich, wie hoch das Wasser am Steg steht. Schau auf den Pegel.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "bachpegel_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Pegel abgelesen. Ein Wasserstand lässt sich immer an einem festen Maßstab vergleichen.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "wasserrinne_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Finas Setzlinge brauchen Wasser. Suche die Rinne, die ohne Schaufeln und Pumpen zum Becken führt.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "wasserrinne_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Das Wasser läuft jetzt in die richtige Richtung. Das Hochbeet bekommt sein Wasser.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "beetplatz_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Ein Setzling wartet. Geh zur Topfreihe und schau, in welchen Topf er noch passt.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "beetplatz_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Jetzt hat jeder Topf drei Setzlinge, und jeder Trieb hat Platz.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "samenkiste_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Drei Familien teilen unser Saatgut. Hilf mir, gerecht einzuteilen.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "samenkiste_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Jede Familie bekommt vier Samen. In allen Schalen liegt gleich viel.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "waldpost_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Nuri braucht die Post aus der Bachwerkstatt. Fahre bitte zum markierten Wendekreis und melde dich dann bei ihm.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "waldpost_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Die Waldpost ist sicher angekommen. Nuri weiß Bescheid.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    },
+    "waldtafel_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Wenn die Bewohner alle Beiträge geschafft haben, stellen wir die gemeinsame Tafel auf.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später wiederkommen",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "waldtafel_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Alle haben etwas beigetragen. Willkommen auf Waldheims Lichtung!",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "smalltalk": {
+    "wh_eda": "Ich passe auf die Wege auf. Wo ein Schild fehlt, kann sich auch eine Eule verlaufen.",
+    "wh_ivar": "Ich mag Holz. Balken haben verschiedene Aufgaben. Wir nehmen nur so viel, wie wirklich passt.",
+    "wh_mara": "Am Bach schaue ich genau hin, bevor ich etwas verändere.",
+    "wh_fina": "Die junge Eiche braucht Platz und Geduld. Ich arbeite lieber langsam und genau.",
+    "wh_nuri": "Ein Fest gelingt, wenn jeder einen Beitrag leisten kann und alle sicher zur Lichtung finden."
+  },
+  "stations": [
+    {
+      "id": "wegzeichen",
+      "place": "wh_wegzeichen",
+      "title": "Weggabelung",
+      "prompt": "Vier Kerben am Pfosten zeigen einen Weg. Am Abzweig tragen drei Markierungen zwei, vier und sechs Kerben. Welcher Weg führt zur Lichtung?",
+      "choices": [
+        "Der Weg mit zwei Kerben",
+        "Der Weg mit vier Kerben",
+        "Der Weg mit sechs Kerben"
+      ],
+      "answer": 1,
+      "hint": "Vergleiche die Anzahl am Pfosten mit der passenden Markierung.",
+      "visual": "count",
+      "values": [
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "spurwechsel",
+      "place": "wh_spurwechsel",
+      "title": "Spurenplatz",
+      "prompt": "Am Spurenplatz sind zwei Reihen breiter Hufabdrücke und eine Reihe Pfotenabdrücke nachgebildet. Bei der Wildbrücke soll Ruhe herrschen. Welchen Weg nehmen wir?",
+      "choices": [
+        "Die Lichtung auf dem markierten Weg umrunden",
+        "Den Hufspuren quer durch die Sträucher folgen",
+        "Direkt über die Steine im Bach klettern"
+      ],
+      "answer": 0,
+      "hint": "Der markierte Weg lässt den Tieren Abstand, auch wenn eine Spur spannend aussieht.",
+      "visual": "tracks",
+      "values": [
+        2,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "kartenblick",
+      "place": "wh_kartenblick",
+      "title": "Kartenpavillon",
+      "prompt": "Auf der Waldkarte siehst du drei Zeichen: eine Wellenlinie, ein Dach und einen Baum. Welches Zeichen steht für den Bach?",
+      "choices": [
+        "Das Dach",
+        "Der Baum",
+        "Die Wellenlinie"
+      ],
+      "answer": 2,
+      "hint": "Das Wasser bewegt sich. Welches Zeichen erinnert an bewegtes Wasser?",
+      "visual": "signs",
+      "values": []
+    },
+    {
+      "id": "brueckenholz",
+      "place": "wh_brueckenholz",
+      "title": "Brückenwerkbank",
+      "prompt": "Die beiden Auflager am Modell sind drei Meter auseinander. Ein Brett soll an jeder Seite einen halben Meter aufliegen. Probe die drei Bretter neben dem Modell.",
+      "choices": [
+        "Drei Meter",
+        "Vier Meter",
+        "Fünf Meter"
+      ],
+      "answer": 1,
+      "hint": "Zähle links und rechts je einen halben Meter zu den drei Metern dazu.",
+      "visual": "beams",
+      "values": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "leuchtpunkte",
+      "place": "wh_leuchtpunkte",
+      "title": "Laternensteg",
+      "prompt": "Vom ersten bis zum letzten Licht sind es acht Meter. Eine einzelne weitere Lampe soll genau in die Mitte. An welcher Stelle von links?",
+      "choices": [
+        "Bei zwei Metern",
+        "Bei vier Metern",
+        "Bei sechs Metern"
+      ],
+      "answer": 1,
+      "hint": "Teile die Strecke in zwei gleich lange Teile. Acht Meter bestehen aus zweimal vier Metern.",
+      "visual": "lights",
+      "values": [
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "unterstand",
+      "place": "wh_unterstand",
+      "title": "Waldunterstand",
+      "prompt": "Die Sitzbank kann in der Tür, hinter dem Tisch oder an der freien Seitenwand stehen. Wo passt sie, wenn der Durchgang für alle frei bleiben soll?",
+      "choices": [
+        "Direkt in den Eingang",
+        "Zwischen Tisch und Tür",
+        "An die freie Seitenwand"
+      ],
+      "answer": 2,
+      "hint": "Suche die Wand, an der niemand vorbeigehen muss, um hereinzukommen.",
+      "visual": "shelter",
+      "values": []
+    },
+    {
+      "id": "bachpegel",
+      "place": "wh_bachpegel",
+      "title": "Pegelsteg",
+      "prompt": "Am Bachpegel liegen die Marken niedrig, mittel und hoch in einer Reihe übereinander. Welche Marke berührt der blaue Wasserbalken?",
+      "choices": [
+        "Niedrig",
+        "Mittel",
+        "Hoch"
+      ],
+      "answer": 1,
+      "hint": "Suche die Höhe der blauen Leiste. Sie ist an derselben Stelle wie der mittlere Strich.",
+      "visual": "gauge",
+      "values": []
+    },
+    {
+      "id": "wasserrinne",
+      "place": "wh_wasserrinne",
+      "title": "Wasserwerkstatt",
+      "prompt": "Drei Rinnen liegen am Modell. Eine steigt an, eine geht geradeaus, eine fällt zum Sammelbecken ab. Welche führt Wasser ohne Pumpe zuverlässig zum Becken?",
+      "choices": [
+        "Die ansteigende Rinne",
+        "Die waagrechte Rinne",
+        "Die abfallende Rinne"
+      ],
+      "answer": 2,
+      "hint": "Wasser fließt von höher gelegenen zu tieferen Stellen. Achte auf das Ende beim Becken.",
+      "visual": "channels",
+      "values": []
+    },
+    {
+      "id": "beetplatz",
+      "place": "wh_beetplatz",
+      "title": "Setzlingsbeet",
+      "prompt": "Drei gleich große Töpfe haben Platz für je drei Setzlinge. Zwei Töpfe sind schon voll. Wo ist noch Raum für genau einen Setzling?",
+      "choices": [
+        "Im linken Topf",
+        "Im mittleren Topf",
+        "Im rechten Topf"
+      ],
+      "answer": 0,
+      "hint": "Zähle die Triebe in jedem Topf. Nur einer hat zwei statt drei.",
+      "visual": "pots",
+      "values": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "id": "samenkiste",
+      "place": "wh_samenkiste",
+      "title": "Saatgutregal",
+      "prompt": "Auf dem Regal liegen zwölf Holzkugeln für die Samen. Drei Familien bekommen gleich viele. Wie viele Samen kommen in jede Schale?",
+      "choices": [
+        "Drei",
+        "Vier",
+        "Sechs"
+      ],
+      "answer": 1,
+      "hint": "Bilde drei gleiche Gruppen oder verteile abwechselnd an alle drei Schalen.",
+      "visual": "seeds",
+      "values": [
+        12,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "waldtafel",
+      "place": "wh_waldtafel",
+      "title": "Lichtungstafel",
+      "prompt": "Der sichere Weg, das Wasser am Beet und der freie Unterstand gehören allen. Wann hängen wir die gemeinsame Tafel auf?",
+      "choices": [
+        "Sobald alle Waldaufträge erledigt sind",
+        "Wenn nur die erste Markierung stimmt",
+        "Nur wenn es besonders schnell ging"
+      ],
+      "answer": 0,
+      "hint": "Frage die Bewohner oder schau im Journal nach. Jeder Auftrag hilft dem Dorf.",
+      "visual": "fest",
+      "values": []
+    }
+  ],
+  "routines": {
+    "wh_eda": {
+      "interest": "Ich merke mir Wege über Biegungen und deutliche Zeichen.",
+      "activities": [
+        "Den Waldpfad prüfen",
+        "Die Karte erklären",
+        "Nach den Spuren sehen",
+        "Die Schilder einsammeln"
+      ],
+      "details": [
+        "Ich schaue, ob der Steg und die Gabelung frei sind.",
+        "Wegzeichen helfen allen. Wir vergleichen sie mit dem Pfosten.",
+        "Ich betrachte nur die Abdrücke am Spurenplatz. Tiere lasse ich in Ruhe.",
+        "Damit die Zeichen morgen wieder gut zu lesen sind, mache ich sie sauber."
+      ],
+      "gesture": "point_portal",
+      "learning": "Zeichen lesen, Waldwege finden und beim Wildwechsel Abstand halten."
+    },
+    "wh_ivar": {
+      "interest": "Ich zeichne gern einen Plan, bevor ich Holz zuschneide.",
+      "activities": [
+        "Bretter sortieren",
+        "Den Tisch fegen",
+        "Lampenhöhen vergleichen",
+        "Werkzeug einräumen"
+      ],
+      "details": [
+        "Ich lege gleich lange Bretter nebeneinander.",
+        "Am freien Tisch sehen wir die Auflager besser.",
+        "Mit gleichmäßigen Abständen wird der Steg übersichtlich.",
+        "Ich setze mich in den Unterstand. Der Eingang bleibt frei."
+      ],
+      "gesture": "agree_nod",
+      "learning": "Die richtige Länge berechnen und freien Platz im Unterstand finden."
+    },
+    "wh_mara": {
+      "interest": "Ich vergleiche am Bach, wo das Wasser flach ist und wohin es fließt.",
+      "activities": [
+        "Den Pegel lesen",
+        "Die Rinnen ansehen",
+        "Post für Nuri sortieren",
+        "Die Messwerte aufschreiben"
+      ],
+      "details": [
+        "Der blaue Balken zeigt, wie hoch das Wasser am Pegel steht.",
+        "Ohne Pumpe fließt Wasser bergab.",
+        "Die Posttasche wartet in der Werkstatt.",
+        "Morgen können wir vergleichen, ob der Pegel gestiegen ist."
+      ],
+      "gesture": "point_portal",
+      "learning": "Wasserstand am Maßstab lesen und eine Rinne zum Sammelbecken auswählen."
+    },
+    "wh_fina": {
+      "interest": "Ich mag Töpfe, in denen jeder neue Trieb genug Platz hat.",
+      "activities": [
+        "Setzlinge ansehen",
+        "Saatgut verteilen",
+        "Die Beete prüfen",
+        "Die Gießkanne abstellen"
+      ],
+      "details": [
+        "Ich zähle, wie viele freie Plätze noch in der Topfreihe sind.",
+        "Die Familien sollen gleich viele Samen bekommen.",
+        "Ich schaue am Rand, ob die neuen Triebe Platz haben.",
+        "Mit Mara prüfe ich morgen wieder das Sammelbecken."
+      ],
+      "gesture": "agree_nod",
+      "learning": "Mengen vergleichen und Samen in gleich große Gruppen teilen."
+    },
+    "wh_nuri": {
+      "interest": "Eine gemeinsame Feier ist schöner, wenn jede Hilfe sichtbar ist.",
+      "activities": [
+        "Gäste begrüßen",
+        "Die Post entgegennehmen",
+        "Die Tafel vorbereiten",
+        "Mit den Nachbarn reden"
+      ],
+      "details": [
+        "Ich erkläre, wo man sich in Waldheim melden kann.",
+        "Auf dem Wendekreis ist genug Platz für die Postfahrt.",
+        "Ich sammle Beiträge zum sicheren Weg, zum Wasser und zum Unterstand.",
+        "Jede Hilfe zählt. Niemand muss als Erster fertig sein."
+      ],
+      "gesture": "greeting_wave",
+      "learning": "Beiträge der Bewohner zusammentragen und Aufgaben gemeinsam abschließen."
+    }
+  }
+}

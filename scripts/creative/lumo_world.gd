@@ -17,6 +17,7 @@ const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 const OPEN_WORLD = preload("res://scripts/creative/lumo_world_open_world.gd")
 const SONNENHAFEN = preload("res://scripts/creative/lumo_world_sonnenhafen.gd")
+const WALDHEIM = preload("res://scripts/creative/lumo_world_waldheim.gd")
 
 const PERSON_ZOOM_MIN := 3.2
 const PERSON_ZOOM_MAX := 13.0
@@ -112,6 +113,9 @@ var open_world_original: Variant = {}
 ## Harbour region south of the mainland (town, residents, missions, trade).
 var sonnenhafen: Node3D
 var sonnenhafen_original: Variant = {}
+var waldheim: Node3D
+var waldheim_original: Variant = {}
+var in_waldheim := false
 var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
 var build_mode := false
@@ -150,6 +154,7 @@ func _ready() -> void:
 				friend_post_original = parser.data.get("friendPost", {})
 				open_world_original = parser.data.get("openWorld", {})
 				sonnenhafen_original = parser.data.get("sonnenhafen", {})
+				waldheim_original = parser.data.get("waldheim", {})
 				save_blocked = not model.restore(parser.data)
 		if save_blocked:
 			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
@@ -179,6 +184,10 @@ func _ready() -> void:
 	add_child(sonnenhafen)
 	if not sonnenhafen.setup(self, sonnenhafen_original) and not save_blocked:
 		checkpoint_message = "Sonnenhafen konnte nicht vollständig geladen werden. Dein gespeicherter Stand bleibt erhalten; du kannst weiter erkunden."
+	waldheim = WALDHEIM.new()
+	add_child(waldheim)
+	if not waldheim.setup(self, waldheim_original) and not save_blocked:
+		checkpoint_message = "Waldheims Auftragsstand konnte nicht geladen werden. Deine gespeicherten Aufträge bleiben erhalten."
 	var vegetation_roots: Array[Node3D] = [art.zones.Gartenlandschaft, own_village.region]
 	camera_clearance.attach(vegetation_roots)
 	wonder = WISPS.new()
@@ -784,6 +793,10 @@ func _physics_process(delta: float) -> void:
 	else:
 		_walk_tick(axis, delta)
 	var at := _active_position()
+	var forest_now: bool = waldheim.region_contains(at)
+	if forest_now != in_waldheim:
+		in_waldheim = forest_now
+		_update_mission()
 	ADVENTURE.set_focus(at + Vector3.UP * 1.5)
 	var mission: Dictionary = model.current()
 	if not mission.is_empty():
@@ -793,6 +806,11 @@ func _physics_process(delta: float) -> void:
 		_end_kart_guidance("Dein Kart ist da. Tippe auf Ins Kart zum Einsteigen.")
 	if kart_guidance:
 		wonder.set_routes(at, [{"at": kart_body.position}])
+	elif not waldheim.tracked_route().is_empty():
+		var forest_route: Dictionary = waldheim.tracked_route()
+		if at.z < WALDHEIM.ENTRY.z - 5.0:
+			forest_route.at = WALDHEIM.ENTRY
+		wonder.set_routes(at, [forest_route])
 	elif not mission.is_empty():
 		wonder.set_routes(at, [mission])
 	elif not sonnenhafen.tracked_route().is_empty() and (sonnenhafen.region_contains(at) or open_world.tracked_route().is_empty()):
@@ -805,7 +823,8 @@ func _physics_process(delta: float) -> void:
 	var figure_available: bool = open_world.available(at)
 	var crossing_available := _near_crossing_button(at)
 	var harbour_action: String = sonnenhafen.action_label(at)
-	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not figure_available and not crossing_available and harbour_action.is_empty())
+	var forest_action: String = waldheim.action_label(at)
+	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not figure_available and not crossing_available and harbour_action.is_empty() and forest_action.is_empty())
 	if crossing_available or str(mission.get("id", "")) == "safe_crossing":
 		action_button.text = "Ampelknopf"
 	elif str(mission.get("id", "")) == "school_numbers":
@@ -819,11 +838,14 @@ func _physics_process(delta: float) -> void:
 			action_button.text = "Ansprechen"
 		elif not harbour_action.is_empty():
 			action_button.text = harbour_action
+		elif not forest_action.is_empty():
+			action_button.text = forest_action
 		elif not portal.is_empty():
 			action_button.text = "Ort öffnen"
 	_refresh_vehicle_button()
 	open_world.tick(at, driving, delta)
 	sonnenhafen.tick(at, driving, delta)
+	waldheim.tick(at, driving, delta)
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
 	for friend in residents:
@@ -1205,6 +1227,8 @@ func _interact() -> void:
 			return
 		if sonnenhafen.interact(player.position):
 			return
+		if waldheim.interact(player.position):
+			return
 		var portal := _near_portal()
 		if not portal.is_empty():
 			_open_dialog(str(portal.title), str(portal.description))
@@ -1313,7 +1337,7 @@ func _report_completed_reward() -> bool:
 func _update_mission() -> void:
 	var mission: Dictionary = model.current()
 	marker.visible = not mission.is_empty()
-	mission_label.text = "%s · %d / %d Aufträge\n%s" % [str(mission.get("title", "Deine Welt voller Freunde")), model.completed.size(), STATE.MISSIONS.size(), str(mission.get("lead", "Schatzinsel, Sonnendorf, Sternenstadt und Sonnenhafen stehen dir offen."))]
+	mission_label.text = "%s · %d / %d Aufträge\n%s" % [str(mission.get("title", "Deine Welt voller Freunde")), model.completed.size(), STATE.MISSIONS.size(), str(mission.get("lead", "Sonnendorf, Sternenstadt, Sonnenhafen und Waldheim stehen dir offen."))]
 	if mission.is_empty():
 		wonder.set_routes(_active_position(), [])
 		var post_briefing: String = friend_post.briefing()
@@ -1325,12 +1349,14 @@ func _update_mission() -> void:
 	var harbour_line: String = sonnenhafen.hud_line() if is_instance_valid(sonnenhafen) else ""
 	if not harbour_line.is_empty() and (sonnenhafen.region_contains(_active_position()) or not sonnenhafen.model.tracked.is_empty()):
 		mission_label.text += "\n" + harbour_line
+	if is_instance_valid(waldheim) and waldheim.unlocked() and (waldheim.region_contains(_active_position()) or not waldheim.tracked_route().is_empty()):
+		mission_label.text = "Waldheim\n" + waldheim.hud_line()
 
 
 func _map_dialog() -> void:
 	_open_dialog(
 		"Deine Lumo World",
-		"Schatzinsel, Sonnendorf, Sternenstadt, die Hafenstadt Sonnenhafen und dein eigenes Bauland sind eine zusammenhängende Welt. "
+		"Schatzinsel, Sonnendorf, Sternenstadt, Sonnenhafen, Waldheim und dein Bauland gehören zu einer Welt. "
 		+ "Zu Fuß drehst und zoomst du die Kamera frei hinter Lumo. Mit Bauen zoomst du in die Dorfansicht, "
 		+ "setzt Gebäude mit derselben Dorfwirtschaft und kehrst danach direkt zu Lumo zurück."
 	)
@@ -1345,16 +1371,23 @@ func _map_dialog() -> void:
 	for friend in residents:
 		friends.append({"name": str(friend.name), "at": friend.position})
 	overview.set_friends(friends)
-	overview.set_world_figures(open_world.map_figures())
+	var quest_figures: Array[Dictionary] = open_world.map_figures()
+	quest_figures.append_array(waldheim.map_figures())
+	overview.set_world_figures(quest_figures)
 	overview.set_region_figures(sonnenhafen.map_figures())
 	overview.add_places(open_world.map_places())
 	overview.add_places(sonnenhafen.map_places())
+	overview.add_places(waldheim.map_places())
 	overview.add_paths(open_world.map_paths())
 	overview.add_paths(sonnenhafen.map_paths())
+	overview.add_paths(waldheim.map_paths())
 	overview.add_lands(sonnenhafen.map_lands())
+	overview.add_lands(waldheim.map_lands())
 	var route: Dictionary = open_world.tracked_route()
 	if not sonnenhafen.tracked_route().is_empty() and (route.is_empty() or sonnenhafen.region_contains(_active_position())):
 		route = sonnenhafen.tracked_route()
+	if not waldheim.tracked_route().is_empty():
+		route = waldheim.tracked_route()
 	overview.set_quest_marker(route)
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
@@ -1368,6 +1401,10 @@ func _map_dialog() -> void:
 	var journal_button := KIT.button("Aufträge & Figurenkarten", _open_journal_from_dialog, 180, Color("7b5cc4"))
 	journal_button.name = "WorldJournalButton"
 	modal_box.add_child(journal_button)
+	if waldheim.unlocked():
+		var forest_journal := KIT.button("Waldheim-Aufträge", waldheim._open_waldheim_journal, 170, Color("426d60"))
+		forest_journal.name = "WorldMapWaldheimJournal"
+		modal_box.add_child(forest_journal)
 	modal_box.add_child(KIT.label("Gehen: Stick oder Pfeiltasten · Kamera: ziehen · Zoom: zwei Finger\nBauen: herauszoomen, Grundstück wählen, Gebäude setzen · Kart: auf der Karte finden, mit Kart suchen hinführen lassen und in der Nähe einsteigen\nNelli, Bruno, Tilda und alle Figuren mit dem Schild Computerfigur gehören zu dieser Welt, keine Online-Mitspieler", 16))
 	modal_box.add_child(KIT.button("Bauansicht öffnen", _open_build_from_dialog, 180, Color("6652b8")))
 	var village_summary := KIT.label(own_village.summary(), 16)
@@ -1380,6 +1417,7 @@ func _open_journal_from_dialog() -> void:
 	_close_dialog()
 	open_world.open_journal()
 	sonnenhafen.append_journal()
+	waldheim.append_journal()
 
 
 func _open_build_from_dialog() -> void:
@@ -1420,6 +1458,8 @@ func _save() -> bool:
 	data["openWorld"] = open_world.to_data() if open_world.save_valid else open_world_original
 	if is_instance_valid(sonnenhafen):
 		data["sonnenhafen"] = sonnenhafen.to_data() if sonnenhafen.save_valid else sonnenhafen_original
+	if is_instance_valid(waldheim):
+		data["waldheim"] = waldheim.to_data() if waldheim.save_valid else waldheim_original
 	file.store_string(JSON.stringify(data))
 	file.flush()
 	var result := file.get_error()

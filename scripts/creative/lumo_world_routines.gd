@@ -74,6 +74,13 @@ const PROFILES := {
 }
 
 var elapsed := 0.0
+var profiles: Dictionary = PROFILES
+var identities: Array[String] = IDS.duplicate()
+
+
+func configure(region_profiles: Dictionary) -> void:
+	profiles = region_profiles
+	identities.assign(region_profiles.keys())
 
 
 static func safe_delta(delta: float) -> float:
@@ -90,9 +97,9 @@ func phase_index() -> int:
 
 
 func activity(figure_id: String) -> Dictionary:
-	if not PROFILES.has(figure_id):
+	if not profiles.has(figure_id):
 		return {}
-	var profile: Dictionary = PROFILES[figure_id]
+	var profile: Dictionary = profiles[figure_id]
 	var phase := phase_index()
 	return {
 		"phase": PHASES[phase], "title": str(profile.activities[phase]),
@@ -102,10 +109,10 @@ func activity(figure_id: String) -> Dictionary:
 
 
 func day_description(figure_id: String) -> String:
-	if not PROFILES.has(figure_id):
+	if not profiles.has(figure_id):
 		return ""
 	var lines: Array[String] = ["Das ist mein Tag in dieser Spielwelt:"]
-	var profile: Dictionary = PROFILES[figure_id]
+	var profile: Dictionary = profiles[figure_id]
 	for index in range(PHASES.size()):
 		lines.append("%s: %s." % [PHASES[index], str(profile.activities[index])])
 	lines.append("Du kannst mich jederzeit ansprechen. Es gibt keine Wartezeit für deinen Auftrag.")
@@ -130,14 +137,14 @@ func candidate(figure_id: String, home: Vector3, current: Vector3,
 		observer: Vector3, delta: float, walking_available: bool,
 		driving := false, reduced_motion := false, paused := false) -> Vector3:
 	var step := safe_delta(delta)
-	if paused or reduced_motion or not walking_available or step <= 0.0 or not PROFILES.has(figure_id):
+	if paused or reduced_motion or not walking_available or step <= 0.0 or not profiles.has(figure_id):
 		return current
 	if not home.is_finite() or not current.is_finite() or not observer.is_finite():
 		return current
 	var distance := Vector2(current.x - observer.x, current.z - observer.z).length()
 	if distance <= (DRIVE_BUFFER if driving else TALK_BUFFER):
 		return current
-	var identity := IDS.find(figure_id)
+	var identity := identities.find(figure_id)
 	# These are short local paths, not unverified travel through buildings.
 	var point_index := posmod(int(elapsed / 18.0) + identity, LOCAL_POINTS.size())
 	var target: Vector3 = home + LOCAL_POINTS[point_index]
