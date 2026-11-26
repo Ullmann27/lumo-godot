@@ -409,6 +409,23 @@
       "loop": true,
       "bytes": 513183,
       "sha256": "bce21b16e2aef46cf231ec44beea6fed90604ccea2a658cda128a0cd86ded0b1"
+    },
+    {
+      "file": "wolkensturm_3300.ogg",
+      "bars": 32,
+      "bpm": 132,
+      "description": "\u00dcber den Wolken",
+      "lead": "analog",
+      "generator": "tools/art/compose_track_scores.py",
+      "seconds": 58.1818,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs": -13.0,
+      "peak_dbfs": -2.07,
+      "seam_delta": 0.01326,
+      "loop": true,
+      "bytes": 521223,
+      "sha256": "718de6a0e0c613b558f684d5c5daf15e0605e4946a7ab46ba17c09bdd4432e3f"
     }
   ],
   "music_generator": "tools/art/compose_track_scores.py"

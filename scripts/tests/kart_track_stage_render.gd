@@ -21,6 +21,7 @@ const SHOTS := {
 	"windwerk_3000": {"f": .052, "back": 55.0, "h": 3.6, "off": -3.5, "abs": 1.0, "ahead": 48.0, "look_lat": -8.5},
 	# Signatur-Strecken (Team B1): Kraterblick-Gerade, der rauchende Vulkan voraus.
 	"vulkanexpress_3100": {"f": 0.53, "back": 34.0, "h": 4.6, "off": -4.0, "abs": 1.0, "ahead": 70.0, "look_lat": 0.0, "lh": 16.0, "fov": 64.0},
+	"wolkensturm_3300": {"f": 0.275, "back": 34.0, "h": 4.4, "off": -4.0, "abs": 1.0, "ahead": 70.0, "look_lat": 0.0, "lh": 10.0, "fov": 64.0},
 	"sonnenhafen": {"f": 0.988, "side": 1.0},
 	"zauberwald": {"f": 0.562, "side": 1.0},
 	"bergwelt": {"f": 0.156, "side": -1.0},

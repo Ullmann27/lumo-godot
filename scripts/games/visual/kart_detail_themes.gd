@@ -33,6 +33,13 @@ const THEMES: Dictionary = {
 		"airship": false, "flock": "gull_flock", "flock_height": 16.0,
 		"string_colors": [Color("ffb04a"), Color("ff6a2a"), Color("ffe38a")],
 	},
+	# Signatur-Strecke Wolkensturm: Skyway-Bankett, Neon, Drohnen, Luftschiff.
+	"wolkensturm_3300": {
+		"ground": "road", "road_wear": ["patch", "manhole"], "clusters": [CITY, NEON, TIRES],
+		"brands": ["wolkenwerk", "funkelfunk", "pixelpost"], "flock": "drone", "flock_scale": 1.6,
+		"lantern": "neon_arrow", "airship_color": Color("5ff0ff"), "airship_height": 40.0,
+		"string_colors": [Color("5ff0ff"), Color("ff4fd8"), Color("fff3b0")],
+	},
 	"sonnenhafen": {
 		"ground": "terrain", "min_ground": -1.5,
 		"road_wear": ["patch", "manhole", "puddle", "oil", "tar", "crack", "patch", "manhole"],

@@ -91,9 +91,9 @@ void fragment() {
 		metal = 0.2;
 	} else if (surface == 8) {
 		float swirl = soft_noise(vec2(lat * 0.35, along * 0.12 - TIME * 0.4));
-		colour = mix(vec3(0.78, 0.84, 0.95), vec3(0.95, 0.97, 1.0), swirl) * (0.95 + grain * 0.05);
+		colour = mix(vec3(0.42, 0.5, 0.68), vec3(0.56, 0.64, 0.8), swirl) * (0.95 + grain * 0.05);
 		float grid = seam(along, 6.0, 0.05);
-		glow += accent * grid * 0.35 * fine;
+		glow += accent * grid * 0.6 * fine;
 		rough = 0.65;
 	}
 	// Mittellinie (gestrichelt) und Randsteine: dieselbe Lesbarkeit auf jedem Belag.

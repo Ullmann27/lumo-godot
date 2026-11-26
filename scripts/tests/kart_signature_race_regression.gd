@@ -139,7 +139,7 @@ func _run() -> void:
 	var lap_marks: Array[float] = []
 	var top_speed := 0.0
 	var next_shot := 0
-	var marks: Array = [300.0, 920.0, 1200.0, 1500.0, 2000.0, 2236.0, 3000.0]
+	var marks: Array = course.SHOT_MARKS
 	for tick in range(30000):
 		var s: float = game.previous_road_distance
 		var lap: int = int(game.distance / game.track_length)

@@ -1,0 +1,82 @@
+{
+  "air_taxi": {
+    "bytes": 85988,
+    "triangles": [
+      584,
+      302,
+      274
+    ]
+  },
+  "floating_platform": {
+    "bytes": 64232,
+    "triangles": [
+      468,
+      288,
+      96
+    ]
+  },
+  "holo_pylon": {
+    "bytes": 41180,
+    "triangles": [
+      296,
+      140,
+      94
+    ]
+  },
+  "island_rock": {
+    "bytes": 84596,
+    "triangles": [
+      688,
+      400,
+      154
+    ]
+  },
+  "lobby_hall": {
+    "bytes": 55656,
+    "triangles": [
+      288,
+      288,
+      144
+    ]
+  },
+  "sky_portal": {
+    "bytes": 70180,
+    "triangles": [
+      504,
+      264,
+      168
+    ]
+  },
+  "sky_tower": {
+    "bytes": 50948,
+    "triangles": [
+      312,
+      192,
+      84
+    ]
+  },
+  "sky_tower_b": {
+    "bytes": 63584,
+    "triangles": [
+      396,
+      240,
+      108
+    ]
+  },
+  "star_tower": {
+    "bytes": 96216,
+    "triangles": [
+      748,
+      388,
+      268
+    ]
+  },
+  "wind_rotor": {
+    "bytes": 71260,
+    "triangles": [
+      452,
+      260,
+      252
+    ]
+  }
+}

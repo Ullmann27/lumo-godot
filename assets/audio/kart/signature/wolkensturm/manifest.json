@@ -1,0 +1,42 @@
+{
+  "track": "wolkensturm",
+  "license": "Eigene Synthese für Lumo, frei nutzbar",
+  "assets": [
+    {
+      "file": "wind.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.454,
+      "bytes": 101297,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "ab297d553820cbf31cc2cb961c1ffe3406e826765afd2e6e9010272865698bb1"
+    },
+    {
+      "file": "city.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.366,
+      "bytes": 111377,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "64a51d9a0bd6a49aa01030c7fdb07af65393b4c98c4d135543a5b243622db47e"
+    },
+    {
+      "file": "hum.ogg",
+      "seconds": 6.0,
+      "loop": true,
+      "peak": 0.422,
+      "bytes": 59625,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "cbe1e972c368848fcdb7762b3aaaea43de9f9b4b26d25404f6609dad0753aa1f"
+    },
+    {
+      "file": "thunder.ogg",
+      "seconds": 5.5,
+      "loop": false,
+      "peak": 0.564,
+      "bytes": 33192,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "f327d0227be6048583392b7ca4d8ffb1444187b3e7dbcd6a7fdc3ebf2ba5250b"
+    }
+  ]
+}

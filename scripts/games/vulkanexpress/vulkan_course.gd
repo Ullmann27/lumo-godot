@@ -144,6 +144,8 @@ const BRIDGE: Vector2 = Vector2(862.0, 978.0)
 ## Ausbruch: Ansage bei ERUPTION_CALL, Ausbruch ab ERUPTION_START (Runde 1 und 2).
 const ERUPTION_CALL: float = 1240.0
 const ERUPTION_START: float = 1420.0
+## Bildstellen für Rennbilder (kart_signature_race_regression --shots).
+const SHOT_MARKS: Array = [300.0, 920.0, 1200.0, 1500.0, 2000.0, 2236.0, 3000.0]
 ## Spannungsstellen (kart_track_thrills.gd liest sie): eine Steilkurve am Kraterrand,
 ## Kuppensprünge mit durchgehender Fahrbahn darunter und der Turbo im Felsentunnel.
 const THRILL_SPECS: Array = [
