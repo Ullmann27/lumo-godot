@@ -56,6 +56,8 @@ func _run() -> void:
 	_check(actual_benches == 2, "exactly two actual park-table benches are visible in the scene")
 	world.map_button.pressed.emit()
 	await _frames(2)
+	_check(world.overview.world_figures.size() == 9 and world.overview.region_figures.size() == 14 and world.overview.supplemental_figures.size() == 8,
+		"the atlas still shows every original figure and all eight new residents")
 	var journal: Button = world.modal_box.get_node_or_null("WorldMapSternenstadtJournal")
 	_check(journal != null, "the actual map includes the city journal action")
 	if journal != null:

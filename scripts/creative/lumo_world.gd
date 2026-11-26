@@ -1389,10 +1389,8 @@ func _map_dialog() -> void:
 	for friend in residents:
 		friends.append({"name": str(friend.name), "at": friend.position})
 	overview.set_friends(friends)
-	var quest_figures: Array[Dictionary] = open_world.map_figures()
-	quest_figures.append_array(waldheim.map_figures())
-	quest_figures.append_array(sternenstadt.map_figures())
-	overview.set_world_figures(quest_figures)
+	overview.set_world_figures(open_world.map_figures())
+	overview.set_supplemental_figures(waldheim.map_figures() + sternenstadt.map_figures())
 	overview.set_region_figures(sonnenhafen.map_figures())
 	overview.add_places(open_world.map_places())
 	overview.add_places(sonnenhafen.map_places())

@@ -54,6 +54,7 @@ var quest_target: Dictionary = {}
 var extra_lands: Array[Rect2] = []
 ## Residents of a region (Sonnenhafen), drawn like the other computer figures.
 var region_figures: Array[Dictionary] = []
+var supplemental_figures: Array[Dictionary] = []
 
 
 func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dictionary, completed_missions: Array, all_missions: Array, portals: Array, reduce_motion := false) -> void:
@@ -65,6 +66,7 @@ func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dict
 	friends.clear()
 	extra_paths.clear()
 	world_figures.clear()
+	supplemental_figures.clear()
 	quest_target = {}
 	active_mission = current_mission.duplicate(true)
 	completed = completed_missions.duplicate(true)
@@ -374,7 +376,7 @@ func draw_atlas(surface: Control) -> void:
 	for friend in friends:
 		if _inside(friend.at):
 			_draw_friend_marker(surface, friend)
-	for figure in world_figures + region_figures:
+	for figure in world_figures + region_figures + supplemental_figures:
 		if _inside(figure.at):
 			_draw_friend_marker(surface, figure)
 	if not quest_target.is_empty():
@@ -579,12 +581,23 @@ func add_places(entries: Array) -> void:
 
 ## Open-world computer figures; same marker style as the story residents.
 func set_world_figures(entries: Array) -> void:
-	world_figures.clear()
-	for entry in entries:
-		if entry is Dictionary and entry.get("at") is Vector3 and not str(entry.get("name", "")).is_empty() and entry.at.is_finite() and world_bounds.has_point(Vector2(entry.at.x, entry.at.z)):
-			world_figures.append({"name": str(entry.name), "at": entry.at})
+	world_figures = _valid_atlas_figures(entries)
 	if is_instance_valid(canvas):
 		canvas.queue_redraw()
+
+
+func set_supplemental_figures(entries: Array) -> void:
+	supplemental_figures = _valid_atlas_figures(entries)
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+func _valid_atlas_figures(entries: Array) -> Array[Dictionary]:
+	var valid: Array[Dictionary] = []
+	for entry in entries:
+		if entry is Dictionary and entry.get("at") is Vector3 and not str(entry.get("name", "")).is_empty() and entry.at.is_finite() and world_bounds.has_point(Vector2(entry.at.x, entry.at.z)):
+			valid.append({"name": str(entry.name), "at": entry.at})
+	return valid
 
 
 ## Walkable open-world paths drawn like the authored footpaths.
