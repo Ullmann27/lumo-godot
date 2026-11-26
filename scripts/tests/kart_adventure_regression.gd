@@ -6,6 +6,7 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
 const ROUTES = preload("res://scripts/games/kart_adventure_routes.gd")
 const TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 
 
 func _initialize() -> void:
@@ -166,7 +167,17 @@ func _run() -> void:
 		var signature: String = str(ROUTES.points(track_id))
 		assert(not signatures.has(signature), "Two themes share an identical track")
 		signatures[signature] = true
-		_check_actions(world, Vector2(span.start, span.end))
+		var tunnel := Vector2(span.start, span.end)
+		var production: Dictionary = world.production_tunnel_layout
+		assert(not production.is_empty(), "Production tunnel was lost")
+		var modules := Vector2(production.start, production.end)
+		assert(not _overlaps(Vector2(tunnel.x - 20.0, tunnel.y + 20.0), modules), "The two tunnel roofs overlap")
+		_check_actions(world, tunnel)
+		_check_actions(world, modules)
+		for spec in THRILLS.specs_for(track_id):
+			if spec.kind == "turbo":
+				var count: int = world.action.pads.filter(func(pad): return pad.get("thrill") == spec.id).size()
+				assert(count == 3, "Moving the turbo section lost a field")
 		_check_geometry(world)
 		var old: Node3D = world.get_node("AdventureTunnel")
 		world.remove_child(old)
@@ -180,6 +191,7 @@ func _run() -> void:
 		records.append({"track_id": track_id, "before_length_m": _baseline_length(track_id), "after_length_m": world.length,
 			"new_tunnel": true, "tunnel_name": span.name, "tunnel_start_m": span.start_m, "tunnel_end_m": span.end_m,
 			"tunnel_length_m": span.length_m, "descent_m": span.descent_m, "ascent_m": span.ascent_m,
+			"production_tunnel_start_m": modules.x, "production_tunnel_end_m": modules.y, "pad_count": world.action.pads.size(),
 			"covered_type": span.covered_type, "clearance_m": span.clearance_m, "actions_clear": true, "low_and_high_geometry_pass": true})
 		world.free()
 	var original = WORLD.new()
@@ -191,5 +203,5 @@ func _run() -> void:
 	assert(TRACKS.definition("sonnenhafen").points == TRACKS._original_definition("sonnenhafen").points)
 	original.free()
 	_write_report(records)
-	print("[KartAdventure] PASS: eleven long routes, authored descents, two tunnel LODs, clear corridor, untouched Sonnenhafen")
+	print("[KartAdventure] PASS: eleven routes, separate tunnel roofs, retained boost fields, two tunnel LODs, untouched Sonnenhafen")
 	quit(0)

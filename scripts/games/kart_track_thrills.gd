@@ -481,12 +481,12 @@ static func of(world) -> Array:
 # ------------------------------------------------------------------ Planung
 
 
-static func _base_blocked(world, kind: String = "") -> Array:
+static func _base_blocked(world) -> Array:
 	var length: float = float(world.length)
 	var blocked: Array = [Vector2(-INF, 70.0), Vector2(length - 45.0, INF)]
 	var tunnel: Dictionary = world.get_meta("adventure_tunnel_plan", {})
-	# Turbo fields lie flat on the road: a tunnel with turbo fields is a tempo passage.
-	if not tunnel.is_empty() and kind != "turbo":
+	# Leave room to see and steer around both portals before gaining speed.
+	if not tunnel.is_empty():
 		blocked.append(Vector2(float(tunnel.start) - 40.0, float(tunnel.end) + 30.0))
 	if not world.jump.is_empty():
 		blocked.append(
@@ -584,7 +584,7 @@ static func plan(world) -> Array:
 	)
 	for source in specs:
 		var spec: Dictionary = source.duplicate(true)
-		var blocked: Array = _base_blocked(world, str(spec.kind)) + placed
+		var blocked: Array = _base_blocked(world) + placed
 		var wish: float = float(spec.at)
 		if wish < 0.0:
 			wish += length
@@ -592,7 +592,10 @@ static func plan(world) -> Array:
 		if str(spec.kind) == "bank":
 			chosen = _bank_start(world, spec, wish, blocked)
 		else:
-			for step in range(81):
+			# A long tunnel can cover the entire 240 m search radius. Keep the three
+			# turbo fields together and find the nearest free section outside it.
+			var steps := ceili(length / 3.0) + 1 if str(spec.kind) == "turbo" else 81
+			for step in range(steps):
 				var offset: float = (
 					floorf(float(step + 1) / 2.0) * 6.0 * (1.0 if step % 2 == 0 else -1.0)
 				)

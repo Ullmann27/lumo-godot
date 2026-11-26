@@ -16,6 +16,7 @@ const PREFERRED: Dictionary = {
 const MAX_CURVATURE: float = 0.045
 const MAX_GRADE: float = 0.25
 const OTHER_ROAD_CLEARANCE: float = 27.0
+const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 
 
 static func supports(track_id: String) -> bool:
@@ -73,12 +74,18 @@ static func _modules(start: float, straight_count: int) -> Array[Dictionary]:
 
 static func _blocked(world) -> Array[Vector2]:
 	var result: Array[Vector2] = [Vector2(0, 35), Vector2(float(world.length) - 35.0, float(world.length))]
+	var adventure: Dictionary = world.adventure_tunnel
+	if not adventure.is_empty():
+		result.append(Vector2(float(adventure.start) - 20.0, float(adventure.end) + 20.0))
+	result.append_array(PASSAGES.blocked_ranges(world))
 	if not world.jump.is_empty():
 		result.append(Vector2(float(world.jump.ramp_start) - 16.0, float(world.jump.gap_end) + 25.0))
 	if not world.loop_layout.is_empty():
 		result.append(Vector2(float(world.loop_layout.start) - 16.0, float(world.loop_layout.start) + 90.0))
 	for kicker in world.action.get("kickers", []):
 		result.append(Vector2(float(kicker.start) - 14.0, float(kicker.take_off) + 40.0))
+	for pad in world.action.get("pads", []):
+		result.append(Vector2(float(pad.start) - 10.0, float(pad.end) + 10.0))
 	for key in ["dives", "edges"]:
 		for zone in world.action.get(key, []):
 			result.append(Vector2(float(zone.start) - 10.0, float(zone.end) + 10.0))
