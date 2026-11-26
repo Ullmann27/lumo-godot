@@ -81,7 +81,10 @@ func _run() -> void:
 		var has_meshy: bool = seen.size() <= 14
 		var close: MeshInstance3D = production.meshy_close_mesh if has_meshy else production.stock_close_mesh
 		assert(is_instance_valid(close) and close.is_visible_in_tree(), "Authored shell is drawn at LOD0")
-		var close_signature := hash(close.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX])
+		var close_surfaces: Array[int] = []
+		for surface in range(close.mesh.get_surface_count()):
+			close_surfaces.append(hash(close.mesh.surface_get_arrays(surface)[Mesh.ARRAY_VERTEX]))
+		var close_signature := hash(close_surfaces)
 		assert(not close_geometry.has(close_signature), "Selectable close shells must have distinct geometry")
 		close_geometry[close_signature] = entry.id
 		var shell_vertices := 0
