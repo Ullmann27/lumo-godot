@@ -929,9 +929,9 @@ const SKIES: Dictionary = {
 	},
 	"mittelmeer":
 	{
-		"zenith": Color("2f6fc4"), "horizon": Color("a9cdea"), "haze": Color("f1d9b8"),
-		"ground": Color("8fa3a8"), "clouds": 0.42, "cloud_color": Color("fffaf2"),
-		"cloud_shadow": Color("aab8cc"), "sun_size": 0.03, "stars": 0.0, "aurora": 0.0, "energy": 1.0,
+		"zenith": Color("25547a"), "horizon": Color("90b5c4"), "haze": Color("e0c4a5"),
+		"ground": Color("7f949b"), "clouds": 0.55, "cloud_color": Color("f6e6cf"),
+		"cloud_shadow": Color("9aafc2"), "sun_size": 0.03, "stars": 0.0, "aurora": 0.0, "energy": 1.0,
 	},
 	"zauberwald":
 	{

@@ -637,6 +637,7 @@ func _shape(kind: String) -> Mesh:
 		"rock": mesh = SHAPES.rock()
 		"premium_rail": mesh = SHAPES.premium_rail()
 		"mountain": mesh = SHAPES.mountain()
+		"coastal_headland": mesh = SHAPES.coastal_headland()
 		"hull": mesh = SHAPES.boat_hull()
 		"sail": mesh = SHAPES.sail()
 		"flower": mesh = SHAPES.flower()
@@ -1051,6 +1052,14 @@ func _terrain() -> void:
 		var h: float=_rng.randf_range(28,56) if track_id!="bergwelt" else _rng.randf_range(62,105)
 		if track_id!="holo_city":
 			var mountain_size := Vector3(_rng.randf_range(45,85),h,_rng.randf_range(34,65))
+			if track_id == "sonnenhafen":
+				# Readable silhouettes behind the lighthouse and the opening jumps.
+				# Preserve the existing RNG stream for subsequent course dressing.
+				if i == 0:
+					mountain_size = Vector3(100.0, 86.0, 56.0)
+				elif i == 1:
+					angle = deg_to_rad(37.0)
+					mountain_size = Vector3(105.0, 102.0, 62.0)
 			if track_id in ["sonnenhafen", "zauberwald"] and length > 1500.0:
 				# Both extended routes now cross the old 245x220m mountain ring.
 				# Preserve every mountain beyond the complete race corridor;
@@ -1069,7 +1078,11 @@ func _terrain() -> void:
 				assert(not _near_road(at,clearance),
 					"Large backdrop must never overlap the actual extended racing lane")
 				relocated_mountains += 1
-			_prop("mountain",at,mountain_size,Color("72a3ad") if track_id!="bergwelt" else Color("7d99ae"))
+			if track_id == "sonnenhafen":
+				var orientation := Basis(Vector3.UP, 0.65 - angle)
+				_prop("coastal_headland", at, mountain_size, Color("b9cbd2"), orientation)
+			else:
+				_prop("mountain", at, mountain_size, Color("7d99ae") if track_id == "bergwelt" else Color("72a3ad"))
 			if track_id=="bergwelt": _prop("mountain",at+Vector3.UP*h*0.58,Vector3(16,h*0.43,15),Color("eaf4f4"))
 	if track_id in ["sonnenhafen", "zauberwald"]:
 		set_meta(track_id + "_mountains_relocated", relocated_mountains)

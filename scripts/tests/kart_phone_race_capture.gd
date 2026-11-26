@@ -44,6 +44,7 @@ func run() -> void:
 	game.message.text = ""
 	game._update_hud()
 	var surfaces: Array[Vector2i] = [
+		Vector2i(1280, 720),
 		Vector2i(904, 2316), Vector2i(2316, 904), Vector2i(1080, 2340),
 		Vector2i(1080, 2520), Vector2i(2520, 1080),
 	]

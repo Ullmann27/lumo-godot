@@ -79,6 +79,42 @@ static func mountain() -> ArrayMesh:
 	], 11, 0.26)
 
 
+## Drawn as a single opaque surface. The ledges descend unevenly towards the
+## sea to give the headland a skyline that reads through coastal haze.
+static func coastal_headland() -> ArrayMesh:
+	const SIDES := 16
+	var terraces: Array[Vector2] = [
+		Vector2(1.0, -0.08), Vector2(0.93, 0.13), Vector2(0.87, 0.37),
+		Vector2(0.78, 0.43), Vector2(0.73, 0.65), Vector2(0.62, 0.73),
+		Vector2(0.41, 0.93), Vector2(0.23, 0.98), Vector2(0.0, 1.0),
+	]
+	var strata: Array[Color] = [
+		Color("80786c"), Color("a09a86"), Color("d4c5a8"),
+		Color("a49682"), Color("cabda4"), Color("a3987b"),
+		Color("b7b296"), Color("828f78"), Color("7d8e75"),
+	]
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for ring in range(terraces.size() - 1):
+		var winding := [0, 1, 2] if ring == terraces.size() - 2 else [0, 1, 2, 1, 3, 2]
+		for side in SIDES:
+			for index in winding:
+				var layer: int = ring + (index >> 1)
+				var theta := float(posmod(side + index % 2, SIDES)) * TAU / SIDES
+				var step := terraces[layer]
+				var radius := step.x * (0.94 + 0.08 * cos(theta * 3.0) + 0.06 * sin(theta * 5.0))
+				var tilt := (cos(theta + 0.4) * 0.16 + sin(theta * 3.0 + 0.8) * 0.06) * step.x
+				surface.set_color(strata[layer])
+				surface.add_vertex(Vector3(
+					cos(theta) * radius + step.y * 0.18,
+					step.y * (0.82 + tilt),
+					sin(theta) * radius
+				))
+	surface.generate_normals()
+	surface.index()
+	return surface.commit()
+
+
 static func sail() -> ArrayMesh:
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
