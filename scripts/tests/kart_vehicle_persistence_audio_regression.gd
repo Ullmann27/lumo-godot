@@ -137,10 +137,13 @@ func _run() -> void:
 	await _open(CHILD_B)
 	_check(game.garage.setup.kart == "comet" and game.workshop.chosen("gecko_velo", "engine") == "serie", "other profile receives no parts or selection")
 	await _close()
-	# A damaged existing file must not be replaced by an empty workshop.
-	var damaged := FileAccess.open(TUNING.path_for(CHILD_B), FileAccess.WRITE)
-	damaged.store_string("[broken")
-	damaged.close()
+	# A structurally readable but incompatible save must not be replaced.
+	# This tests the rejection path without intentionally issuing a parser error
+	# that the strict CI engine-error monitor would treat as a crash.
+	var damaged := ConfigFile.new()
+	damaged.set_value("meta", "version", 999)
+	damaged.set_value("kart_comet", "paint", "feuer")
+	_check(damaged.save(TUNING.path_for(CHILD_B)) == OK, "incompatible fixture saved")
 	var raw := FileAccess.get_file_as_string(TUNING.path_for(CHILD_B))
 	var blocked = TUNING.new(CHILD_B, 200)
 	_check(not blocked.remember_vehicle("gecko_velo", "fox"), "unreadable save rejects replacement")

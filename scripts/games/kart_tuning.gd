@@ -653,11 +653,13 @@ func load_from_disk() -> void:
 	saved_kart = ""
 	saved_driver = ""
 	storage_read_failed = false
+	# A new profile has no file yet. An existing file that cannot be
+	# loaded, or has an incompatible schema, is never overwritten.
+	if not FileAccess.file_exists(path()):
+		return
 	var config := ConfigFile.new()
-	var read_error := config.load(path())
-	if read_error != OK:
-		# Never replace an existing unreadable workshop with empty defaults.
-		storage_read_failed = read_error != ERR_FILE_NOT_FOUND
+	if config.load(path()) != OK or config.get_value("meta", "version", 1) != 1:
+		storage_read_failed = true
 		return
 	saved_kart = str(config.get_value("meta", "selected_kart", ""))
 	saved_driver = str(config.get_value("meta", "selected_driver", ""))
