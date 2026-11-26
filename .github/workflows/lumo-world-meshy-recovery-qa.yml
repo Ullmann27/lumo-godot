@@ -1,0 +1,65 @@
+name: LUMO World recovered Meshy QA
+on:
+  push:
+    branches: [integration/lumo-world-meshy-recovery-20261126]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  world-meshy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify recovered source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib, struct
+          manifest = json.loads(pathlib.Path('assets/creative/lumo_world/meshy/manifest.json').read_text())
+          assert {row['kind'] for row in manifest['models']} == {'house', 'market'}
+          for row in manifest['models']:
+              raw = pathlib.Path(row['path']).read_bytes()
+              assert len(raw) == row['bytes']
+              assert hashlib.sha256(raw).hexdigest() == row['sha256']
+              assert struct.unpack_from('<4sII', raw) == (b'glTF', 2, len(raw))
+              length, kind = struct.unpack_from('<I4s', raw, 12)
+              assert kind == b'JSON' and 20 + length <= len(raw)
+              assert json.loads(raw[20:20+length]).get('meshes')
+              print(row['kind'], row['sha256'], 'PASS')
+          PY
+      - name: Install pinned Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl --fail --location --retry 3 --max-time 180 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot/engine.zip"
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot/engine.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot/engine.zip" -d "$RUNNER_TEMP/godot"
+          mv "$RUNNER_TEMP/godot/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
+          echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+      - name: Import and execute world regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p world-meshy-proof
+          godot --headless --single-threaded-scene --path . --editor --import --quit > world-meshy-proof/import.log 2>&1
+          python3 tools/validate_project.py
+          for probe in lumo_world_meshy_detail_regression lumo_world_regression; do
+            log="world-meshy-proof/${probe}.log"
+            godot --headless --path . --script "res://scripts/tests/${probe}.gd" --check-only > "$log" 2>&1
+            timeout 420s godot --headless --path . --script "res://scripts/tests/${probe}.gd" >> "$log" 2>&1
+            cat "$log"
+            if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|\] FAIL' "$log"; then exit 1; fi
+          done
+          grep -E '^\[WorldMeshy\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_meshy_detail_regression.log
+          grep -E '^\[LumoWorld\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_regression.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lumo-world-meshy-proof
+          path: world-meshy-proof/
+          retention-days: 14

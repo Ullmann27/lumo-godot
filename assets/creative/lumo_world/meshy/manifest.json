@@ -1,0 +1,24 @@
+{
+  "source_branch": "asset/lumo-meshy-intake-20261123",
+  "source_commit": "f137388927588670182ce33fae228cd88e587a4c",
+  "assignment": "docs/kart/MESHY_ASSET_ASSIGNMENT_20261123.json",
+  "models": [
+    {
+      "kind": "market",
+      "path": "assets/creative/lumo_world/meshy/market_stall.glb",
+      "source": "art/lumo_kart/meshy_incoming/garage_models/garage_03.glb",
+      "blob": "895d817ea7b0bddebfb8a682af5ea3dd7a102ced",
+      "bytes": 3894360,
+      "sha256": "1ae949b50fc26121c44ff3734eb1d3fd7f4ba5877afc77f1562e73f8a7e3e386"
+    },
+    {
+      "kind": "house",
+      "path": "assets/creative/lumo_world/meshy/lumo_house.glb",
+      "source": "art/lumo_kart/meshy_incoming/garage_models/garage_04.glb",
+      "blob": "33a3418ed04139d289c14b6b92eecde6eb3b78f7",
+      "bytes": 4998144,
+      "sha256": "15bea2db7cc6d5e840b6ed6216f4c90f8c110c6c379d6df7c9f2ed50467a12a7"
+    }
+  ],
+  "scope": "High/ultra close visual of the first saved house and market in Lumo World. Original far and low visual, physics, save and economy retained. Source SHA256 is recorded by the original import manifest."
+}

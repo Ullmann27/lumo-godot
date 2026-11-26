@@ -7,6 +7,7 @@ const REGION = preload("res://scripts/creative/build_settlement_region.gd")
 const TERRAIN = preload("res://scripts/creative/build_village_terrain.gd")
 const YARDS = preload("res://scripts/creative/build_village_yards.gd")
 const VISUAL = preload("res://scripts/creative/build_settlement_visual.gd")
+const MESHY = preload("res://scripts/creative/lumo_world_meshy_detail.gd")
 const ART = preload("res://scripts/creative/build_village_art.gd")
 const RESIDENTS = preload("res://scripts/creative/build_settlement_residents.gd")
 const ORIGIN := Vector3(600, 0, 0)
@@ -117,6 +118,12 @@ func update_focus(world_position: Vector3, delta: float) -> void:
 		return
 	last_focus = local
 	var buildings: Array = model.player().buildings.duplicate(true)
+	# One house and one market at most; original far batches remain the LOD.
+	var detail_ids: Dictionary = {}
+	for building in buildings:
+		var kind := str(building.kind)
+		if kind in ["house", "market"] and not detail_ids.has(kind):
+			detail_ids[kind] = str(building.id)
 	var distances: Dictionary = {}
 	for building in buildings:
 		distances[str(building.id)] = YARDS.building_at(building).distance_squared_to(local)
@@ -138,6 +145,8 @@ func update_focus(world_position: Vector3, delta: float) -> void:
 				node.rotation.y = yaw
 				node.set_meta("saved_building_id", id)
 				node.set_meta("saved_plot", int(building.plot))
+				if detail_ids.get(str(building.kind), "") == id:
+					MESHY.apply(node, LumoQuality.graphics_choice())
 				add_child(node)
 				facilities[id] = node
 		else:
