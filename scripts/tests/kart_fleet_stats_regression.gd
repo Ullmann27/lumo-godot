@@ -154,8 +154,13 @@ func _check_tuning() -> void:
 	var look: Dictionary = again.look("comet")
 	assert(look.paint == Color("b3202a") and look.has("trim") and look.has("accent") and look.has("neon") and look.has("rim"))
 	assert(again.look("glider").paint == FLEET.entry("glider").look.paint, "Werksfarbe je Kart")
+	assert(again.buy_option("neon", "goldgelb") and again.choose("comet", "neon", "goldgelb"))
 	var reloaded = TUNING.new(child, 0)
 	assert(reloaded.chosen("comet", "paint") == "feuer" and reloaded.owned.has("paint:feuer"), "Aussehen bleibt gespeichert")
+	var saved_neon: Dictionary = reloaded.look("comet")
+	assert(saved_neon.neon_custom and saved_neon.neon == Color("ffe358") and saved_neon.underglow,
+		"Gespeichertem Unterlicht bleiben Farbe und Materialfreigabe erhalten")
+	assert(not reloaded.look("glider").neon_custom, "Werksbeleuchtung anderer Karts bleibt aktiv")
 	assert(reloaded.refund("comet") == 0 and reloaded.chosen("comet", "paint") == "feuer", "Rückgabe lässt das Aussehen")
 	# Beschädigte oder manipulierte Datei: nur gültige Werte kommen durch, ausgegeben wird neu gerechnet.
 	var bad := ConfigFile.new()

@@ -530,6 +530,7 @@ func look(kart_id: String) -> Dictionary:
 		"trim": paint.get("trim", base.trim),
 		"accent": paint.get("accent", base.accent),
 		"neon": neon.get("color", base.neon),
+		"neon_custom": str(neon.id) != "werk",
 		"rim": rims.get("color", Color("c9d6e6")),
 		"rim_neon": str(rims.id) == "neon",
 		"wheel_cover": chosen(kart_id, "wheel_cover"),

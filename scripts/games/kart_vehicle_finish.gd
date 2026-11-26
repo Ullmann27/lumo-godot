@@ -51,6 +51,9 @@ const FINISHES: Array[String] = ["matte", "metallic", "pearl"]
 
 static var _sticker_material: StandardMaterial3D
 static var _sticker_meshes: Dictionary = {}
+static var _underglow_mesh: ArrayMesh
+static var _underglow_pool_mesh: PlaneMesh
+static var _underglow_texture: GradientTexture2D
 
 
 static func finish_of(design: String) -> String:
@@ -133,7 +136,76 @@ static func dress(asset_root: Node3D, design: String, look: Dictionary) -> Array
 			made.append(holder)
 		else:
 			holder.free()
+	if bool(look.get("underglow", false)):
+		made.append(_underglow(asset_root, look.get("neon", Color("5fe3ff"))))
 	return made
+
+
+## Two chassis-mounted LED rails in a shared render surface. This also works
+## with textured close-range shells whose light colours are baked into the GLB.
+static func _underglow(asset_root: Node3D, color: Color) -> MeshInstance3D:
+	if _underglow_mesh == null:
+		var segment := BoxMesh.new()
+		segment.size = Vector3(0.08, 0.033, 0.38)
+		var surface := SurfaceTool.new()
+		surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for side in [-1.0, 1.0]:
+			for offset in [-0.24, 0.24]:
+				surface.append_from(segment, 0, Transform3D(Basis.IDENTITY, Vector3(side, 0, offset)))
+		_underglow_mesh = surface.commit()
+	var rails := MeshInstance3D.new()
+	rails.name = "WorkshopUnderglow"
+	rails.mesh = _underglow_mesh
+	rails.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var front := asset_root.find_child("Steer_FR", true, false) as Node3D
+	var rear := asset_root.find_child("Steer_RR", true, false) as Node3D
+	if front != null and rear != null:
+		rails.scale.x = maxf(0.40, minf(absf(front.position.x), absf(rear.position.x)) - 0.08)
+	else:
+		rails.scale.x = 0.61
+	rails.position.y = 0.21
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.42
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = 1.15
+	rails.material_override = material
+	# The floor falloff keeps the colour recognizable from above, when the
+	# chassis hides the LED rails themselves. It needs no projected light.
+	rails.add_child(_underglow_pool(color, rails.scale.x))
+	asset_root.add_child(rails)
+	return rails
+
+
+static func _underglow_pool(color: Color, rail_scale: float) -> MeshInstance3D:
+	if _underglow_pool_mesh == null:
+		_underglow_pool_mesh = PlaneMesh.new()
+		_underglow_pool_mesh.size = Vector2(2.92, 2.80)
+		var falloff := Gradient.new()
+		falloff.offsets = PackedFloat32Array([0.0, 0.46, 1.0])
+		falloff.colors = PackedColorArray([Color.WHITE, Color(1, 1, 1, 0.56), Color(1, 1, 1, 0)])
+		_underglow_texture = GradientTexture2D.new()
+		_underglow_texture.gradient = falloff
+		_underglow_texture.width = 64
+		_underglow_texture.height = 64
+		_underglow_texture.fill = GradientTexture2D.FILL_RADIAL
+		_underglow_texture.fill_from = Vector2(0.5, 0.5)
+		_underglow_texture.fill_to = Vector2(1.0, 0.5)
+	var pool := MeshInstance3D.new()
+	pool.name = "UnderglowPool"
+	pool.mesh = _underglow_pool_mesh
+	pool.position.y = -0.17
+	pool.scale.x = 1.0 / rail_scale
+	pool.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(color.r, color.g, color.b, 0.72)
+	material.albedo_texture = _underglow_texture
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	pool.material_override = material
+	return pool
 
 
 ## Die Nasen-Nummer liegt fast waagerecht: von vorn lesbar, Oberkante zeigt zum Cockpit.
