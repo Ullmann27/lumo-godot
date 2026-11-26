@@ -67,6 +67,9 @@ var split_blocks: Node3D
 var wonder: Node3D
 var ui: Control
 var header: PanelContainer
+var _header_content: VBoxContainer
+var _material_panel: PanelContainer
+var _compact_landscape := false
 var title: Label
 var task_label: Label
 var stufen_row: HFlowContainer
@@ -419,6 +422,7 @@ func _build_ui() -> void:
 	header.name = "NachhilfeKopf"
 	ui.add_child(header)
 	var top := VBoxContainer.new()
+	_header_content = top
 	top.add_theme_constant_override("separation", 8)
 	header.add_child(top)
 	var title_row := HBoxContainer.new()
@@ -426,6 +430,7 @@ func _build_ui() -> void:
 	top.add_child(title_row)
 	zurueck_button = _button("‹ Zur Aufgabe", return_to_lesson, title_row)
 	zurueck_button.name = "NachhilfeZurueck"
+	zurueck_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var titles := VBoxContainer.new()
 	titles.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	titles.add_theme_constant_override("separation", 0)
@@ -453,6 +458,10 @@ func _build_ui() -> void:
 	wege_row.add_theme_constant_override("h_separation", 6)
 	wege_row.add_theme_constant_override("v_separation", 6)
 	top.add_child(wege_row)
+	_material_panel = _panel(Color("0b1d32", 0.92))
+	_material_panel.name = "NachhilfeMaterialwahl"
+	ui.add_child(_material_panel)
+	_material_panel.hide()
 	bubble = _panel(Color("f0f9ff", 0.97), Color("73d4ed"))
 	bubble.name = "LumoSprechblase"
 	ui.add_child(bubble)
@@ -533,7 +542,7 @@ func _button(caption: String, action: Callable, parent: Control, primary: bool =
 	return button
 
 
-func _style_button(button: Button, primary: bool, selected: bool) -> void:
+func _style_button(button: Button, primary: bool, selected: bool, padding_x: float = 10.0) -> void:
 	var style := StyleBoxFlat.new()
 	style.bg_color = (
 		Color("ffc94a") if primary else (Color("73d4ed") if selected else Color("1d415b"))
@@ -542,6 +551,8 @@ func _style_button(button: Button, primary: bool, selected: bool) -> void:
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(14)
 	style.set_content_margin_all(10)
+	style.set_content_margin(SIDE_LEFT, padding_x)
+	style.set_content_margin(SIDE_RIGHT, padding_x)
 	for state in ["normal", "hover", "focus"]:
 		button.add_theme_stylebox_override(state, style)
 	var pressed := style.duplicate() as StyleBoxFlat
@@ -577,7 +588,7 @@ func _rebuild_selectors() -> void:
 		var button := _button(WEGE_TITEL[weg], select_weg.bind(weg), wege_row)
 		button.name = "Weg_" + weg
 		button.add_theme_font_size_override("font_size", 16)
-		_style_button(button, false, weg == tutor.weg)
+		_style_button(button, false, weg == tutor.weg, 6.0)
 		weg_buttons[weg] = button
 
 
@@ -611,12 +622,6 @@ func _restart() -> void:
 	_run_misses = 0
 	_run_shown = false
 	events.append("plan:%s/%s" % [tutor.weg, tutor.stufe])
-	title.text = "Nachhilfe · %s" % tutor.prompt
-	task_label.text = (
-		"Übungsaufgabe: %d + %d" % [plan.a, plan.b]
-		if plan.zwilling
-		else "Wir schauen uns %d + %d an." % [plan.a, plan.b]
-	)
 	_material_kind = ""
 	split_blocks.visible = false
 	for step: Dictionary in plan.schritte:
@@ -629,7 +634,7 @@ func _restart() -> void:
 
 
 func _enter_step(first: bool = false, acknowledged: Vector3 = Vector3.INF) -> void:
-	feedback.text = "" if not first else tutor.rueckmeldung
+	_set_feedback(tutor.rueckmeldung if first else "")
 	_update_material()
 	var step: Dictionary = tutor.current()
 	_rebuild_choices()
@@ -771,12 +776,14 @@ func _update_actions() -> void:
 	weiter_button.visible = not step.is_empty() and (tutor.lumo_turn() or tutor.vorgezeigt)
 	var next: String = tutor.next_stufe()
 	mehr_button.visible = not next.is_empty()
-	if not next.is_empty():
-		mehr_button.text = "Mehr Hilfe: " + str(STUFEN_TITEL[next])
-	anders_button.visible = tutor.wege.size() > 1
 	zurueck_button.text = "‹ Zur Aufgabe"
 	_style_button(zurueck_button, step.is_empty(), false)
 	_layout()
+	_layout_frames = 2
+
+
+func _set_feedback(message: String) -> void:
+	feedback.text = message
 	_layout_frames = 2
 
 
@@ -791,21 +798,21 @@ func _result(outcome: String, focus: Vector3, hint: String = "") -> void:
 			tutor.advance()
 			_enter_step(false, focus)
 			if feedback.text.is_empty():
-				feedback.text = observation
+				_set_feedback(observation)
 		"gezeigt":
 			_run_shown = true
 			bubble_role.text = "Lumo zeigt"
 			bubble_text.text = _observed_action(tutor.current().aktion)
-			feedback.text = "Ich zeige es dir einmal. Mit „Weiter“ bist du wieder dran."
+			_set_feedback("Ich zeige es dir einmal. Mit „Weiter“ bist du wieder dran.")
 			_perform(tutor.current().aktion)
 			_auto_speak(bubble_text.text + " " + feedback.text)
 			_update_actions()
 		"zu_viel", "falsch":
-			feedback.text = hint
+			_set_feedback(hint)
 			_teacher("encourage", focus)
 			_auto_speak(feedback.text)
 		"noch":
-			feedback.text = ""
+			_set_feedback("")
 
 
 ## Read back the operation that was actually shown or completed, before the
@@ -1049,6 +1056,40 @@ func _sort_now(node: Node) -> void:
 			_sort_now(child)
 
 
+func _set_compact_landscape(value: bool) -> void:
+	if value == _compact_landscape:
+		return
+	_compact_landscape = value
+	wege_row.reparent(_material_panel if value else _header_content, false)
+	_material_panel.visible = value
+	wege_row.alignment = FlowContainer.ALIGNMENT_CENTER if value else FlowContainer.ALIGNMENT_BEGIN
+	for panel: PanelContainer in [header, bubble, footer, _material_panel]:
+		panel.get_theme_stylebox("panel").set_content_margin_all(8 if value else 12)
+	bubble_text.add_theme_font_size_override("font_size", 18 if value else 20)
+
+
+func _layout_labels() -> void:
+	if not valid:
+		return
+	var activity: Dictionary = tutor.plan()
+	title.text = tutor.prompt if _compact_landscape else "Nachhilfe · %s" % tutor.prompt
+	if activity.zwilling:
+		var label := "Übung: %d + %d" if _compact_landscape else "Übungsaufgabe: %d + %d"
+		task_label.text = label % [activity.a, activity.b]
+	else:
+		task_label.text = (
+			"Nachhilfe mit Lumo" if _compact_landscape else "Wir schauen uns %d + %d an." % [activity.a, activity.b]
+		)
+	var next: String = tutor.next_stufe()
+	if not next.is_empty():
+		mehr_button.text = "Mehr Hilfe" if _compact_landscape else "Mehr Hilfe: " + str(STUFEN_TITEL[next])
+	var frame_button: Button = weg_buttons.get("rechenrahmen")
+	if is_instance_valid(frame_button):
+		frame_button.text = "Rahmen" if _compact_landscape else WEGE_TITEL.rechenrahmen
+	# In kurzen Fenstern ist jeder Lösungsweg direkt daneben erreichbar.
+	anders_button.visible = not _compact_landscape and tutor.wege.size() > 1
+
+
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(header):
 		return
@@ -1066,7 +1107,12 @@ func _layout() -> void:
 	var origin := insets.position / scale_value + Vector2(10, 10)
 	var available := logical - (insets.position + insets.size) / scale_value - Vector2(20, 20)
 	var wide := available.x > available.y * 1.1
-	var column := minf(available.x * 0.44, 520.0) if wide else minf(available.x, 760.0)
+	_set_compact_landscape(wide and available.y < 480.0)
+	_layout_labels()
+	feedback.visible = not _compact_landscape or not feedback.text.is_empty()
+	choice_bar.visible = not _compact_landscape or choice_bar.get_child_count() > 0
+	var share := 0.52 if _compact_landscape else 0.44
+	var column := minf(available.x * share, 520.0) if wide else minf(available.x, 760.0)
 	# Hochformat: Sprechblase mit fester Mindesthöhe, damit die Bühne nicht
 	# bei jedem kürzeren Satz springt.
 	var lines := 0.0 if wide else (4.0 if column < 500.0 else 3.0)
@@ -1079,14 +1125,18 @@ func _layout() -> void:
 		# Knopfleiste.
 		var right := left + column + 10
 		var right_width := origin.x + available.x - right
+		var stage_top := origin.y
+		if _compact_landscape:
+			_fit(_material_panel, Vector2(right, origin.y), right_width)
+			stage_top += _material_panel.size.y + 6
 		var footer_width := minf(right_width, 760.0)
 		_fit(footer, Vector2(right + (right_width - footer_width) * 0.5, 0), footer_width)
 		footer.position.y = origin.y + available.y - footer.size.y
 		free_rect = Rect2(
 			right * scale_value,
-			origin.y * scale_value,
+			stage_top * scale_value,
 			right_width * scale_value,
-			maxf(40.0, (footer.position.y - 6 - origin.y) * scale_value)
+			maxf(40.0, (footer.position.y - 6 - stage_top) * scale_value)
 		)
 	else:
 		_fit(footer, Vector2(left, 0), column)
@@ -1404,7 +1454,7 @@ func return_to_lesson() -> void:
 		payload["holo"] = summary(HostBridge.new_result_id())
 	if HostBridge.is_embedded():
 		if not HostBridge.return_to_app("learn", payload):
-			feedback.text = HostBridge.SAVE_FAILURE
+			_set_feedback(HostBridge.SAVE_FAILURE)
 			return
 	_cancel_attention()
 	return_count += 1

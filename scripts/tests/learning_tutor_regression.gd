@@ -273,6 +273,8 @@ func _run() -> void:
 		await _voice()
 	if _wants("layouts"):
 		await _layouts()
+	if _wants("landscape"):
+		await _compact_landscape_layouts()
 	bridge._host = null
 	bridge._return_pending = false
 	print(
@@ -850,6 +852,70 @@ func _voice() -> void:
 
 func _panel_rect(control: Control) -> Rect2:
 	return control.get_global_rect()
+
+
+func _compact_landscape_layouts() -> void:
+	for size_value in [Vector2i(840, 540), Vector2i(2340, 1080)]:
+		root.size = size_value
+		var density := 1.25 if size_value.x == 840 else DENSITY
+		bridge._options["displayDensity"] = density
+		var screen := Rect2(Vector2.ZERO, Vector2(size_value))
+		var minimum := 48.0 * density
+		var game := await _open(
+			_learning("acht_plus_fuenf", "rechenrahmen", "vorzeigen"),
+			true,
+			{"learningVoiceEnabled": true, "localVoiceLicenseAccepted": true}
+		)
+		for step in range(2):
+			var key := "%dx%d Schritt %d" % [size_value.x, size_value.y, step + 1]
+			var speech := _panel_rect(game.bubble)
+			_check(screen.encloses(speech), key + ": Sprechblase vollständig im Bild %s" % speech)
+			_check(speech.encloses(_panel_rect(game.bubble_text)), key + ": ganzer Erklärungstext")
+			_check(not speech.intersects(_panel_rect(game.header)), key + ": Text und Kopf getrennt")
+			_check(not speech.intersects(_panel_rect(game.footer)), key + ": Text und Fuß getrennt")
+			_check(
+				screen.encloses(_panel_rect(game._material_panel))
+				and not game.free_rect.intersects(_panel_rect(game._material_panel)),
+				key + ": Lösungswege liegen außerhalb der Bühne"
+			)
+			var buttons: Array = [game.zurueck_button, game.voice_button]
+			for container: Control in [game.stufen_row, game.wege_row, game.choice_bar, game.actions]:
+				buttons.append_array(container.get_children())
+			for button: Button in buttons:
+				if button.is_visible_in_tree():
+					var rect := _panel_rect(button)
+					_check(
+						screen.encloses(rect) and minf(rect.size.x, rect.size.y) >= minimum,
+						key + ": %s vollständig und mindestens 48 dp" % button.text
+					)
+			var bead: Vector3 = game.frame.bead_position(0, 0)
+			var fox: Vector3 = game.fox.global_position + Vector3.UP
+			for point in [bead, fox]:
+				_check(
+					game.free_rect.has_point(game.camera.unproject_position(point)),
+					key + ": Lumo und Rechenrahmen frei sichtbar"
+				)
+			_check(game.free_rect.size.y >= 112.0 * density, key + ": 3D-Bühne hat nutzbare Höhe")
+			if step == 0:
+				_check(await _press(game.weiter_button), key + ": Weiter erreichbar")
+				await _settle(game)
+		if size_value.x == 2340:
+			root.size = Vector2i(1080, 2340)
+			await _frames(3)
+			_check(
+				game.wege_row.get_parent() == game._header_content and not game._material_panel.visible,
+				"Nach dem Drehen bleiben die Lösungswege am Kopf sichtbar"
+			)
+			root.size = size_value
+			await _frames(3)
+			_check(
+				game.wege_row.get_parent() == game._material_panel
+				and screen.encloses(_panel_rect(game.bubble)),
+				"Zurück im Querformat sind Tafel und Lösungswege wieder vollständig"
+			)
+		await _close(game)
+	bridge._options["displayDensity"] = DENSITY
+	root.size = Vector2i(1080, 2340)
 
 
 ## Fold zu/auf, quer: nichts verdeckt Material und Knöpfe, Ziele ≥ 48 dp.
