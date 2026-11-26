@@ -92,10 +92,17 @@ const PART_MOUNTS: Dictionary = {
 ## Montierte Teile je Steckplatz ("wheel_cover"/"exhaust" -> id); Tests lesen das.
 var mounted_parts: Dictionary = {}
 var _part_nodes: Array[Node3D] = []
-
 ## The sculpted in-code karts remain the fallback for a body that cannot be
 ## loaded. Tests set this to keep that fallback path exercised.
 static var fallback_only: bool = false
+
+## Gefederter Aufbau: Karosserie, Lack-Details und Aufbauteile nicken, rollen und federn um
+## den Sitzpunkt. Räder, Achsen, Lenkrad und Fahrerpunkte bleiben auf dem Fahrwerk.
+var _sprung_body: Node3D
+var _body_pitch := 0.0
+var _body_roll := 0.0
+var _body_heave := 0.0
+var _body_pivot := Vector3(0.0, 0.31, 0.2)
 
 
 static func supports(id: String) -> bool:
@@ -205,6 +212,7 @@ func build(id: String, look: Dictionary, stock: Dictionary) -> bool:
 	var modern_trim: Node3D = EVOLUTION.vehicle_trim(variant)
 	asset_root.add_child(modern_trim)
 	_dressing.append(modern_trim)
+	_build_sprung_body(modern_trim)
 	for mesh: MeshInstance3D in modern_trim.find_children("*", "MeshInstance3D", true, false):
 		for surface in range(mesh.mesh.get_surface_count()):
 			var original := mesh.mesh.surface_get_material(surface) as StandardMaterial3D
@@ -404,6 +412,53 @@ func _apply_appearance(mesh: MeshInstance3D, look: Dictionary, stock: Dictionary
 			mesh.set_surface_override_material(surface, finish)
 
 
+func _build_sprung_body(modern_trim: Node3D) -> void:
+	_sprung_body = Node3D.new()
+	_sprung_body.name = "SprungBody"
+	asset_root.add_child(_sprung_body)
+	var seat := asset_root.find_child("DriverSeat", true, false) as Node3D
+	if seat != null:
+		_body_pivot = _relative_transform(seat, asset_root).origin
+	var body_parts: Array[Node] = [modern_trim]
+	var coachwork := asset_root.find_child("Coachwork", true, false)
+	if coachwork != null:
+		body_parts.append(coachwork)
+	# The whole fleet shell (all LODs, decals, Meshy close-range shell) hangs on the springs.
+	var shell: Node = stock_close_mesh if is_instance_valid(stock_close_mesh) else null
+	while shell != null and shell.get_parent() != asset_root:
+		shell = shell.get_parent()
+	if shell != null:
+		body_parts.append(shell)
+	for part in body_parts:
+		if not part is Node3D or part.get_parent() == _sprung_body:
+			continue
+		# Built before the kart enters the tree: keep the pose via local transforms.
+		var in_root := _relative_transform(part as Node3D, asset_root)
+		part.reparent(_sprung_body, false)
+		(part as Node3D).transform = in_root
+
+
+## Aufbaubewegung in Radiant/Metern (Nicken +: Nase hoch, Rollen +: linke Seite tiefer).
+func set_body_motion(pitch: float, roll: float, heave: float) -> void:
+	if not is_instance_valid(_sprung_body):
+		return
+	_body_pitch = clampf(pitch, -0.08, 0.08) if is_finite(pitch) else 0.0
+	_body_roll = clampf(roll, -0.08, 0.08) if is_finite(roll) else 0.0
+	_body_heave = clampf(heave, -0.06, 0.06) if is_finite(heave) else 0.0
+	var turn := Basis.from_euler(Vector3(_body_pitch, 0.0, _body_roll))
+	var offset := _body_pivot - turn * _body_pivot + Vector3(0.0, _body_heave, 0.0)
+	_sprung_body.transform = Transform3D(turn, offset)
+
+
+## Aktuelle Aufbaubewegung (Nicken, Rollen, Hub) und der gefederte Knoten, für Tests und Garage.
+func body_motion() -> Vector3:
+	return Vector3(_body_pitch, _body_roll, _body_heave)
+
+
+func sprung_node() -> Node3D:
+	return _sprung_body
+
+
 func apply_motion(spin_phase: float, steer: float) -> void:
 	var steering := clampf(steer, -1.0, 1.0) if is_finite(steer) else 0.0
 	for index in range(wheel_rotors.size()):
@@ -569,7 +624,7 @@ func apply_parts(look: Dictionary, animate_slot: String = "") -> void:
 					_mount(packed, node_name, paint, wheel_pivots[index], mirror)
 					_mount(packed, node_name + "Disc", paint, wheel_rotors[index], mirror)
 			"steering", "gearbox", "ballast":
-				var carrier := asset_root
+				var carrier: Node3D = _sprung_body if is_instance_valid(_sprung_body) else asset_root
 				if slot != "ballast":
 					var axle_name := "FrontAxle" if slot == "steering" else "RearAxle"
 					carrier = asset_root.find_child(axle_name, true, false) as Node3D
@@ -580,15 +635,15 @@ func apply_parts(look: Dictionary, animate_slot: String = "") -> void:
 				for pivot in wheel_pivots:
 					_mount(packed, node_name, paint, pivot, _mirror(pivot.position.x < 0.0))
 			"engine", "wing":
-				_mount(packed, node_name, paint, asset_root, Transform3D(Basis(), _anchor(slot)))
+				_mount(packed, node_name, paint, _body_carrier(), Transform3D(Basis(), _anchor(slot)))
 			"booster":
 				var at: Vector3 = _anchor(slot)
-				_mount(packed, node_name, paint, asset_root, Transform3D(Basis(), at))
+				_mount(packed, node_name, paint, _body_carrier(), Transform3D(Basis(), at))
 				_mount(
 					packed,
 					node_name,
 					paint,
-					asset_root,
+					_body_carrier(),
 					_mirror(true).translated(Vector3(-at.x, at.y, at.z))
 				)
 		if slot == animate_slot:
@@ -606,6 +661,10 @@ func apply_parts(look: Dictionary, animate_slot: String = "") -> void:
 	for node in _part_nodes:
 		node.visible = lod_level == 0
 		_dressing.append(node)
+
+
+func _body_carrier() -> Node3D:
+	return _sprung_body if is_instance_valid(_sprung_body) else asset_root
 
 
 ## Montagepunkt eines Leistungsteils am Kart (Godot-Koordinaten des Karts). Dieselben Werte

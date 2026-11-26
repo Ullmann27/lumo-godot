@@ -1,0 +1,1717 @@
+{
+ "schemaVersion": 1,
+ "figures": {
+  "badger": {
+   "id": "badger",
+   "name": "Bruno (Dachs)",
+   "model": "res://assets/characters/animals/badger/figure.glb",
+   "bytes": 1659060,
+   "sha256": "f67ab3d05b60dc48a731eecf117f3a9186a0158bf5f9c5c5f09c35f549ac8b32",
+   "triangles": 16575,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.6064551472663879,
+   "leg_length_m": 0.5331720670949086,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.6974234193563461,
+     "speed_mps": 0.721472502782427
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.2432330518960952,
+     "speed_mps": 1.9629995556254136
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/badger.glb",
+   "source_sha256": "14ed9030b5328de7ebb2d5d44cddad33a890a092c201453b0bcb623272d68157",
+   "tail_weighted": false,
+   "rig_check": {
+    "max_edge_stretch_before": 9.888,
+    "max_edge_stretch_after": 3.264,
+    "repaired_vertices": 1042,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 25.6,
+   "seat_height_m": 0.31531667073221353,
+   "drive_seat_height_m": 0.31531667073221353,
+   "vehicle_entry_offset_m": [
+    -0.29324463690219976,
+    0.0,
+    0.0
+   ]
+  },
+  "cat": {
+   "id": "cat",
+   "name": "Mika (Katze)",
+   "model": "res://assets/characters/animals/cat/figure.glb",
+   "bytes": 1685252,
+   "sha256": "5f706688faac01c903b8d7df27632cf483fc779099f7d7c8f4cc3798a6e252b8",
+   "triangles": 16182,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.6064551472663879,
+   "leg_length_m": 0.5368864152560491,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.6974234193563461,
+     "speed_mps": 0.721472502782427
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.2432330518960952,
+     "speed_mps": 1.9629995556254136
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/cat.glb",
+   "source_sha256": "17db07199e33ca550fc26f2703fad627029b21124ca3816e87f370933aacefaa",
+   "tail_weighted": false,
+   "rig_check": {
+    "max_edge_stretch_before": 4.463,
+    "max_edge_stretch_after": 2.055,
+    "repaired_vertices": 150,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 18.3,
+   "seat_height_m": 0.33037352194528385,
+   "drive_seat_height_m": 0.33037352194528385,
+   "vehicle_entry_offset_m": [
+    -0.295287528390827,
+    0.0,
+    0.0
+   ]
+  },
+  "frog": {
+   "id": "frog",
+   "name": "Frosch",
+   "model": "res://assets/characters/animals/frog/figure.glb",
+   "bytes": 1645712,
+   "sha256": "f00b1328f23a2fb7e332410dbe14aa68f69de1f47c0450c0e197c64e3d85a79c",
+   "triangles": 14776,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.7322345972061157,
+   "leg_length_m": 0.6712340078450691,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.842069786787033,
+     "speed_mps": 0.8711066759865859
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.5010809242725371,
+     "speed_mps": 2.370127775167164
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/frog.glb",
+   "source_sha256": "8a25b10d518963abd9bb0fdee87190296e5b912664202624e376671d6377149b",
+   "tail_weighted": false,
+   "rig_check": {
+    "max_edge_stretch_before": 4.455,
+    "max_edge_stretch_after": 2.166,
+    "repaired_vertices": 244,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 15.8,
+   "seat_height_m": 0.40910642056637087,
+   "drive_seat_height_m": 0.40910642056637087,
+   "vehicle_entry_offset_m": [
+    -0.36917870431478805,
+    0.0,
+    0.0
+   ]
+  },
+  "lion": {
+   "id": "lion",
+   "name": "Löwe",
+   "model": "res://assets/characters/animals/lion/figure.glb",
+   "bytes": 1867144,
+   "sha256": "55970e530a19cf6df483ab6e438f28babe47c10e03ee9f4f49829f8a947ded2e",
+   "triangles": 17907,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.6990200877189636,
+   "leg_length_m": 0.6030505858957473,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.8038731008768081,
+     "speed_mps": 0.8315928629760083
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.4329911798238752,
+     "speed_mps": 2.2626176523534873
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/lion.glb",
+   "source_sha256": "70dc43c4eea3550bb1d2e6a320c8bebfbf483f482e9c27882a5ede690f6eb529",
+   "tail_weighted": true,
+   "rig_check": {
+    "max_edge_stretch_before": 5.156,
+    "max_edge_stretch_after": 2.121,
+    "repaired_vertices": 246,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 13.9,
+   "seat_height_m": 0.3793484916797371,
+   "drive_seat_height_m": 0.3793484916797371,
+   "vehicle_entry_offset_m": [
+    -0.33167782224266107,
+    0.0,
+    0.0
+   ]
+  },
+  "otter": {
+   "id": "otter",
+   "name": "Milo (Otter)",
+   "model": "res://assets/characters/animals/otter/figure.glb",
+   "bytes": 1696752,
+   "sha256": "eae4928b2bae97f0e4c6f83d43a37841e00cd12805866064af8406e9bb155ae7",
+   "triangles": 17128,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.6404438614845276,
+   "leg_length_m": 0.5683346867902311,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.7365104407072066,
+     "speed_mps": 0.7619073524557309
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.3129099160432813,
+     "speed_mps": 2.073015656910444
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/otter.glb",
+   "source_sha256": "3243698db47a4e42354acbf7bf456e733817de9aa3e28861726cc08cc3eed27c",
+   "tail_weighted": true,
+   "rig_check": {
+    "max_edge_stretch_before": 5.896,
+    "max_edge_stretch_after": 2.199,
+    "repaired_vertices": 801,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 20.5,
+   "seat_height_m": 0.33176272299439125,
+   "drive_seat_height_m": 0.33176272299439125,
+   "vehicle_entry_offset_m": [
+    -0.31258407773462715,
+    0.0,
+    0.0
+   ]
+  },
+  "owl": {
+   "id": "owl",
+   "name": "Eule",
+   "model": "res://assets/characters/animals/owl/figure.glb",
+   "bytes": 2037148,
+   "sha256": "5d3fd7e881949726e0e8937ae333f99fc68f3d184eea9632f88d1800ee1cd28b",
+   "triangles": 16593,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.5138902068138123,
+   "leg_length_m": 0.49395218524479934,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.590973737835884,
+     "speed_mps": 0.6113521425888455
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.053474923968315,
+     "speed_mps": 1.6633814588973395
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/owl.glb",
+   "source_sha256": "45843bab81456b9c35e318453d5a9fd1f0598e49ed26e9c3eee66332ab026bac",
+   "tail_weighted": true,
+   "rig_check": {
+    "max_edge_stretch_before": 10.866,
+    "max_edge_stretch_after": 2.193,
+    "repaired_vertices": 2042,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 16.5,
+   "seat_height_m": 0.27357025775179916,
+   "drive_seat_height_m": 0.27357025775179916,
+   "vehicle_entry_offset_m": [
+    -0.27167370188463963,
+    0.0,
+    0.0
+   ]
+  },
+  "rabbit": {
+   "id": "rabbit",
+   "name": "Nova (Hase)",
+   "model": "res://assets/characters/animals/rabbit/figure.glb",
+   "bytes": 1802672,
+   "sha256": "0a99a2fcaf23fb2bc0ef0c9c2fd27ab3d23235b8d2ad241e7c3b08b5c935716f",
+   "triangles": 16498,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.6569451093673706,
+   "leg_length_m": 0.5411864738754675,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.7554868757724761,
+     "speed_mps": 0.7815381473508374
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.3467374742031095,
+     "speed_mps": 2.126427590847015
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/rabbit.glb",
+   "source_sha256": "2556d81de7a7cd5d356eaf9864c9aa37d1f4ed4936a3cfcb008a6355f21bf878",
+   "tail_weighted": true,
+   "rig_check": {
+    "max_edge_stretch_before": 3.59,
+    "max_edge_stretch_after": 2.047,
+    "repaired_vertices": 176,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 12.0,
+   "seat_height_m": 0.3820241724952955,
+   "drive_seat_height_m": 0.3820241724952955,
+   "vehicle_entry_offset_m": [
+    -0.29765256063150713,
+    0.0,
+    0.0
+   ]
+  },
+  "squirrel": {
+   "id": "squirrel",
+   "name": "Eichhörnchen",
+   "model": "res://assets/characters/animals/squirrel/figure.glb",
+   "bytes": 1799160,
+   "sha256": "cd398d64b2eb8eae345749a41415877533cc512b94e40d5603084f2366ea93a5",
+   "triangles": 17144,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.7243427038192749,
+   "leg_length_m": 0.6373587027339158,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.8329941093921661,
+     "speed_mps": 0.8617180441987925
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 1.4849025428295135,
+     "speed_mps": 2.3445829623623897
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/squirrel.glb",
+   "source_sha256": "203176c0111138a29105d239bba7ae37fd223582a93e4bf8a5d0d9e2b9a24586",
+   "tail_weighted": true,
+   "rig_check": {
+    "max_edge_stretch_before": 2.868,
+    "max_edge_stretch_after": 2.055,
+    "repaired_vertices": 192,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 13.9,
+   "seat_height_m": 0.37476655743005444,
+   "drive_seat_height_m": 0.37476655743005444,
+   "vehicle_entry_offset_m": [
+    -0.35054728650365374,
+    0.0,
+    0.0
+   ]
+  },
+  "turtle": {
+   "id": "turtle",
+   "name": "Schildkröte",
+   "model": "res://assets/characters/animals/turtle/figure.glb",
+   "bytes": 1742412,
+   "sha256": "0bedcdd0c46db8fe42a56de0a61bd3a2bb51cfe7f04d0473fd7829e25b82ac5f",
+   "triangles": 16696,
+   "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Tail",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Ear.L",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Ear.R",
+    "Jaw",
+    "Eye.L",
+    "Eye.R",
+    "Lid.L",
+    "Lid.R",
+    "TailMid",
+    "TailTip",
+    "Toe.L",
+    "Toe.R"
+   ],
+   "height_m": 1.6,
+   "hip_height_m": 0.47239404916763306,
+   "leg_length_m": 0.4128584913174915,
+   "clips": {
+    "idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "walk": {
+     "seconds": 0.9666666666666667,
+     "loop": true,
+     "keys": 30,
+     "stride_m": 0.543253156542778,
+     "speed_mps": 0.5619860240097703
+    },
+    "run": {
+     "seconds": 0.6333333333333333,
+     "loop": true,
+     "keys": 20,
+     "stride_m": 0.9684078007936476,
+     "speed_mps": 1.529064948621549
+    },
+    "turn_left": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "turn_right": {
+     "seconds": 1.0,
+     "loop": true,
+     "keys": 31
+    },
+    "stop": {
+     "seconds": 0.8,
+     "loop": false,
+     "keys": 25
+    },
+    "sit_down": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "sit_idle": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "stand_up": {
+     "seconds": 1.2,
+     "loop": false,
+     "keys": 37
+    },
+    "wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "listen": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "talk": {
+     "seconds": 3.0,
+     "loop": true,
+     "keys": 91
+    },
+    "think": {
+     "seconds": 4.0,
+     "loop": true,
+     "keys": 61
+    },
+    "joy": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "surprise": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "disappointed": {
+     "seconds": 2.4,
+     "loop": false,
+     "keys": 37
+    },
+    "interact": {
+     "seconds": 1.8,
+     "loop": false,
+     "keys": 55
+    },
+    "enter_vehicle": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "drive": {
+     "seconds": 2.0,
+     "loop": true,
+     "keys": 31
+    },
+    "exit_vehicle": {
+     "seconds": 1.4,
+     "loop": false,
+     "keys": 43
+    }
+   },
+   "textures": [
+    {
+     "source_size": [
+      2048,
+      2048
+     ],
+     "runtime_size": [
+      1024,
+      1024
+     ]
+    }
+   ],
+   "source_file": "art/lumo_kart/meshy/20261123/drivers/turtle.glb",
+   "source_sha256": "1f0a751e1c7dd60a33ff32471ff7092aae03c7def85420433f532c5a32bad336",
+   "tail_weighted": false,
+   "rig_check": {
+    "max_edge_stretch_before": 100.522,
+    "max_edge_stretch_after": 5.845,
+    "repaired_vertices": 2228,
+    "test_poses": [
+     "drive",
+     "enter",
+     "interact",
+     "joy_arms_up",
+     "run_a",
+     "run_b",
+     "sit",
+     "surprise",
+     "think",
+     "walk",
+     "wave"
+    ]
+   },
+   "build_seconds": 15.1,
+   "seat_height_m": 0.2632148815502704,
+   "drive_seat_height_m": 0.2632148815502704,
+   "vehicle_entry_offset_m": [
+    -0.22707217022462037,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "generator": "tools/lumo_animation/animals/build_standing_animals.py",
+ "contract": "Rest pose = original standing A-pose; feet on y=0; Godot -Z forward. Locomotion clips are in place: move the node with speed_mps (or scale playback by velocity/speed_mps). enter_vehicle starts beside the seat at vehicle_entry_offset_m and ends in drive; exit_vehicle is its reverse."
+}

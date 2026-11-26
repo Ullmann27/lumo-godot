@@ -184,7 +184,10 @@ func _crowd(world: Node3D, tier: String) -> void:
 	var level := 2 if tier == "low" else 1
 	for i in range(spots.size()):
 		var id := ids[i % ids.size()]
-		var path := ROSTER.racing_model_path(id, level)
+		# Stehende Figuren (eigene Ruhepose, Freudenclip), nicht die sitzenden Kart-Fahrer:
+		# deren "celebrate" ist eine Sitzpose und schwebte über dem Boden.
+		var standing := ROSTER.figure_model_path(id)
+		var path := standing if not standing.is_empty() else ROSTER.racing_model_path(id, level)
 		if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
 			continue
 		var holder := Node3D.new()
@@ -193,17 +196,27 @@ func _crowd(world: Node3D, tier: String) -> void:
 		add_child(holder)
 		var model := (load(path) as PackedScene).instantiate() as Node3D
 		holder.add_child(model)
-		# Modelle schauen nach +Z; zum Podest drehen.
+		# Die Figuren schauen nach -Z; diese Achse zum Podest drehen.
 		var to_stage := PERFORMER_AT - spots[i]
-		holder.rotation.y = atan2(to_stage.x, to_stage.z)
+		holder.rotation.y = atan2(-to_stage.x, -to_stage.z)
 		holder.scale = Vector3.ONE * 2.3
 		for node: Node in model.find_children("*", "AnimationPlayer", true, false):
 			var player := node as AnimationPlayer
 			if player.has_animation("idle"):
 				player.get_animation("idle").loop_mode = Animation.LOOP_LINEAR
-				if player.has_animation("celebrate"):
+				var cheer := "celebrate"
+				if player.has_animation("joy"):
+					# Eigene Schleifenkopie, damit "joy" für andere Nutzer einmalig bleibt.
+					var library := AnimationLibrary.new()
+					var looped := player.get_animation("joy").duplicate() as Animation
+					looped.loop_mode = Animation.LOOP_LINEAR
+					library.add_animation("cheer", looped)
+					player.add_animation_library("crowd", library)
+					cheer = "crowd/cheer"
+				elif player.has_animation("celebrate"):
 					player.get_animation("celebrate").loop_mode = Animation.LOOP_LINEAR
-				player.play("celebrate" if i % 2 == 0 and not reduced_motion else "idle")
+				player.set_meta("cheer_clip", cheer)
+				player.play(cheer if i % 2 == 0 and not reduced_motion else "idle")
 				player.seek(float(i) * 0.37, true)
 				if reduced_motion:
 					player.pause()
@@ -345,8 +358,9 @@ func cheer(big: bool) -> void:
 		confetti.restart()
 		confetti.emitting = true
 	for player in crowd_players:
-		if player.has_animation("celebrate") and not reduced_motion:
-			player.play("celebrate", 0.2)
+		var clip := str(player.get_meta("cheer_clip", "celebrate"))
+		if player.has_animation(clip) and not reduced_motion:
+			player.play(clip, 0.2)
 
 
 ## Pro Bild vom Spiel: Liedzeit, Taktlänge, gehaltene Spuren, Combo-Energie.
@@ -388,4 +402,4 @@ func tick(delta: float, song_time: float, beat_len: float, running: bool, held: 
 		for i in range(crowd_players.size()):
 			var player := crowd_players[i]
 			if not reduced_motion:
-				player.play("celebrate" if i % 2 == 0 else "idle", 0.3)
+				player.play(str(player.get_meta("cheer_clip", "celebrate")) if i % 2 == 0 else "idle", 0.3)
