@@ -1,0 +1,936 @@
+{
+ "schemaVersion": 1,
+ "note": "Sonnenhafen-Kapitel von LUMO World: gleiches Missionsschema wie open_world_content.json (Lumo-World-Questmodell), Figuren sind Bewohner aus sonnenhafen_residents.json. Belohnungen sind Spielmünzen (Muscheln), Figurenkarten und Gegenstände dieser Welt; keine Käufe mit echtem Geld.",
+ "places": [
+  {
+   "id": "sh_kraemer",
+   "title": "Hafenkrämer",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    165,
+    0,
+    -154
+   ],
+   "size": [
+    12,
+    15
+   ],
+   "region": "Sonnenhafen",
+   "description": "Gretas Laden: Hier kannst du mit Muscheln handeln."
+  },
+  {
+   "id": "sh_kontor",
+   "title": "Kontor im Speicher",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    234,
+    0,
+    -154
+   ],
+   "size": [
+    12,
+    15
+   ],
+   "region": "Sonnenhafen",
+   "description": "Hinnerks Kontor mit dem Brett für Lieferaufträge."
+  },
+  {
+   "id": "sh_leuchtturm",
+   "title": "Leuchtturm",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    258,
+    0,
+    -217
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "region": "Sonnenhafen",
+   "description": "Oles Leuchtturm am Ende der Mole."
+  },
+  {
+   "id": "sh_fischhalle",
+   "title": "Fischhalle",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    97,
+    0,
+    -160
+   ],
+   "size": [
+    24,
+    12
+   ],
+   "region": "Sonnenhafen",
+   "description": "Hier wird der frische Fang sortiert."
+  },
+  {
+   "id": "sh_westpier",
+   "title": "Fischerpier",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    98,
+    0,
+    -192
+   ],
+   "size": [
+    4,
+    22
+   ],
+   "region": "Sonnenhafen",
+   "description": "Am Fischerpier liegt Jontes Kutter."
+  },
+  {
+   "id": "sh_bruecke",
+   "title": "Sonnenbrücke",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    200,
+    0,
+    -105
+   ],
+   "size": [
+    10,
+    14
+   ],
+   "region": "Sonnenhafen",
+   "description": "Die Brücke vom Festland nach Sonnenhafen."
+  },
+  {
+   "id": "sh_markt",
+   "title": "Hafenmarkt",
+   "kind": "landmark",
+   "material": "original",
+   "at": [
+    200,
+    0,
+    -155
+   ],
+   "size": [
+    36,
+    18
+   ],
+   "region": "Sonnenhafen",
+   "description": "Der Markt mit Brunnen, Fisch-, Obst- und Brotständen."
+  }
+ ],
+ "paths": [
+  {
+   "id": "hafenstrasse",
+   "title": "Hafenstraße",
+   "points": [
+    [
+     200,
+     -84
+    ],
+    [
+     200,
+     -150
+    ]
+   ],
+   "width": 8.0
+  },
+  {
+   "id": "laternengasse",
+   "title": "Laternengasse",
+   "points": [
+    [
+     80,
+     -140
+    ],
+    [
+     266,
+     -140
+    ]
+   ],
+   "width": 6.0
+  },
+  {
+   "id": "kai",
+   "title": "Kai",
+   "points": [
+    [
+     80,
+     -171.5
+    ],
+    [
+     266,
+     -171.5
+    ]
+   ],
+   "width": 9.0
+  },
+  {
+   "id": "fischergasse",
+   "title": "Fischergasse",
+   "points": [
+    [
+     118,
+     -86
+    ],
+    [
+     118,
+     -167
+    ]
+   ],
+   "width": 5.0
+  },
+  {
+   "id": "speichergasse",
+   "title": "Speichergasse",
+   "points": [
+    [
+     249,
+     -117
+    ],
+    [
+     249,
+     -167
+    ]
+   ],
+   "width": 6.0
+  },
+  {
+   "id": "kanalpromenade",
+   "title": "Kanalpromenade",
+   "points": [
+    [
+     80,
+     -114.5
+    ],
+    [
+     266,
+     -114.5
+    ]
+   ],
+   "width": 5.0
+  },
+  {
+   "id": "mole",
+   "title": "Mole",
+   "points": [
+    [
+     258,
+     -176
+    ],
+    [
+     258,
+     -209
+    ]
+   ],
+   "width": 6.0
+  },
+  {
+   "id": "stegweg",
+   "title": "Stegweg",
+   "points": [
+    [
+     118,
+     -86
+    ],
+    [
+     150,
+     -86
+    ]
+   ],
+   "width": 4.0
+  }
+ ],
+ "figures": [
+  {
+   "id": "ida",
+   "source": "resident",
+   "name": "Ida Möwenstein",
+   "role": "Hafenmeisterin",
+   "place": "sh_markt",
+   "at": [
+    150,
+    0,
+    -171.5
+   ],
+   "card": "card_ida"
+  },
+  {
+   "id": "jonte",
+   "source": "resident",
+   "name": "Jonte Krabbe",
+   "role": "Fischer",
+   "place": "sh_westpier",
+   "at": [
+    98,
+    0,
+    -201
+   ],
+   "card": "card_jonte"
+  },
+  {
+   "id": "frieda",
+   "source": "resident",
+   "name": "Frieda Krabbe",
+   "role": "Fischverkäuferin",
+   "place": "sh_markt",
+   "at": [
+    179.6,
+    0,
+    -151
+   ]
+  },
+  {
+   "id": "greta",
+   "source": "resident",
+   "name": "Greta Kornblume",
+   "role": "Krämerin",
+   "place": "sh_kraemer",
+   "at": [
+    161.5,
+    0,
+    -154
+   ],
+   "card": "card_greta"
+  },
+  {
+   "id": "ole",
+   "source": "resident",
+   "name": "Ole Löwenzahn",
+   "role": "Leuchtturmwärter",
+   "place": "sh_leuchtturm",
+   "at": [
+    258,
+    0,
+    -211.5
+   ],
+   "card": "card_ole"
+  },
+  {
+   "id": "hinnerk",
+   "source": "resident",
+   "name": "Hinnerk Taupe",
+   "role": "Kontorschreiber",
+   "place": "sh_kontor",
+   "at": [
+    239.5,
+    0,
+    -156.5
+   ],
+   "card": "card_hinnerk"
+  }
+ ],
+ "cards": [
+  {
+   "id": "card_ida",
+   "figure": "ida",
+   "trait": "Kennt jedes Boot im Hafen",
+   "power": "Überblick",
+   "text": "Ida weiß immer, welches Boot wo anlegt, und hilft allen, sicher anzukommen."
+  },
+  {
+   "id": "card_jonte",
+   "figure": "jonte",
+   "trait": "Liest die Wellen wie ein Buch",
+   "power": "Ausdauer",
+   "text": "Jonte steht früh auf und teilt seinen Fang mit dem ganzen Markt."
+  },
+  {
+   "id": "card_greta",
+   "figure": "greta",
+   "trait": "Rechnet schneller als die Kasse",
+   "power": "Rechnen",
+   "text": "Greta schreibt jeden Preis deutlich auf und erklärt gern, wie man Wechselgeld rechnet."
+  },
+  {
+   "id": "card_ole",
+   "figure": "ole",
+   "trait": "Kennt jeden Stern über dem Meer",
+   "power": "Ruhe",
+   "text": "Ole hält das Leuchtfeuer am Brennen, damit jedes Boot den Heimweg findet."
+  },
+  {
+   "id": "card_hinnerk",
+   "figure": "hinnerk",
+   "trait": "Vergisst keine einzige Lieferung",
+   "power": "Lesen",
+   "text": "Hinnerk liest jede Adresse genau und weiß, wohin jede Kiste gehört."
+  }
+ ],
+ "missions": [
+  {
+   "id": "hafen_willkommen",
+   "title": "Willkommen in Sonnenhafen",
+   "subject": "Erkunden",
+   "giver": "ida",
+   "summary": "Ida zeigt dir den Hafen: den Markt, die Mole und den Leuchtturm.",
+   "reward": {
+    "shells": 10
+   },
+   "steps": [
+    {
+     "id": "meet_ida",
+     "kind": "talk",
+     "figure": "ida",
+     "lead": "Sprich mit Ida, der Hafenmeisterin am Kai.",
+     "dialog": "ida_welcome"
+    },
+    {
+     "id": "see_market",
+     "kind": "visit",
+     "place": "sh_markt",
+     "lead": "Schau dir den Hafenmarkt mit dem Brunnen an."
+    },
+    {
+     "id": "see_lighthouse",
+     "kind": "visit",
+     "place": "sh_leuchtturm",
+     "lead": "Lauf über die Mole bis zum Leuchtturm."
+    },
+    {
+     "id": "back_to_ida",
+     "kind": "talk",
+     "figure": "ida",
+     "lead": "Erzähl Ida, was du gesehen hast.",
+     "dialog": "ida_welcome_back",
+     "rewardCards": [
+      "card_ida"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "frischer_fang",
+   "title": "Frischer Fang",
+   "subject": "Anpacken",
+   "giver": "jonte",
+   "summary": "Jonte braucht Hilfe beim Ausladen seines Kutters.",
+   "reward": {
+    "shells": 8,
+    "items": {
+     "fisch": 2
+    }
+   },
+   "steps": [
+    {
+     "id": "ask_jonte",
+     "kind": "talk",
+     "figure": "jonte",
+     "lead": "Sprich mit Jonte, dem Fischer.",
+     "dialog": "jonte_catch"
+    },
+    {
+     "id": "carry_crates",
+     "kind": "event",
+     "event": "fish_crates_done",
+     "place": "sh_fischhalle",
+     "lead": "Trage drei Fischkisten vom Fischerpier in die Fischhalle."
+    },
+    {
+     "id": "tell_frieda",
+     "kind": "talk",
+     "figure": "frieda",
+     "lead": "Sag Frieda am Fischstand Bescheid.",
+     "dialog": "frieda_fish"
+    },
+    {
+     "id": "thank_jonte",
+     "kind": "talk",
+     "figure": "jonte",
+     "lead": "Geh zurück zu Jonte.",
+     "dialog": "jonte_thanks",
+     "rewardCards": [
+      "card_jonte"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "waren_berechnen",
+   "title": "Waren berechnen",
+   "subject": "Mathematik",
+   "giver": "greta",
+   "summary": "Gretas Preisliste ist nass geworden. Übe in der Weltschule und rechne dann ihre Bestellungen aus.",
+   "reward": {
+    "shells": 12
+   },
+   "learning": true,
+   "steps": [
+    {
+     "id": "ask_greta",
+     "kind": "talk",
+     "figure": "greta",
+     "lead": "Sprich mit Greta im Hafenkrämer.",
+     "dialog": "greta_prices"
+    },
+    {
+     "id": "world_school",
+     "kind": "event",
+     "event": "harbour_lesson_done",
+     "place": "sh_kraemer",
+     "lead": "Löse bei Greta drei Aufgaben in Lumos Weltschule."
+    },
+    {
+     "id": "calculate",
+     "kind": "talk",
+     "figure": "greta",
+     "lead": "Rechne mit Greta die erste Bestellung aus.",
+     "dialog": "greta_calculate",
+     "rewardCards": [
+      "card_greta"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "licht_leuchtturm",
+   "title": "Licht für den Leuchtturm",
+   "subject": "Handeln",
+   "giver": "ole",
+   "summary": "Oles Laternenglas ist gesprungen. Kaufe beim Hafenkrämer ein neues.",
+   "reward": {
+    "shells": 8,
+    "items": {
+     "abzeichen": 1
+    }
+   },
+   "steps": [
+    {
+     "id": "ask_ole",
+     "kind": "talk",
+     "figure": "ole",
+     "lead": "Sprich mit Ole, dem Leuchtturmwärter.",
+     "dialog": "ole_wick"
+    },
+    {
+     "id": "buy_glass",
+     "kind": "event",
+     "event": "bought_laternenglas",
+     "place": "sh_kraemer",
+     "lead": "Kaufe beim Hafenkrämer ein Laternenglas (6 Muscheln)."
+    },
+    {
+     "id": "bring_glass",
+     "kind": "talk",
+     "figure": "ole",
+     "lead": "Bring Ole das Laternenglas.",
+     "dialog": "ole_thanks",
+     "rewardCards": [
+      "card_ole"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "erste_lieferung",
+   "title": "Die erste Lieferung",
+   "subject": "Lesen",
+   "giver": "hinnerk",
+   "summary": "Hinnerk zeigt dir das Lieferbrett im Kontor.",
+   "reward": {
+    "shells": 6
+   },
+   "steps": [
+    {
+     "id": "ask_hinnerk",
+     "kind": "talk",
+     "figure": "hinnerk",
+     "lead": "Sprich mit Hinnerk im Kontor.",
+     "dialog": "hinnerk_orders"
+    },
+    {
+     "id": "deliver",
+     "kind": "event",
+     "event": "delivery_done",
+     "place": "sh_kontor",
+     "lead": "Nimm am Lieferbrett einen Auftrag und bring die Kiste zur richtigen Person."
+    },
+    {
+     "id": "report",
+     "kind": "talk",
+     "figure": "hinnerk",
+     "lead": "Berichte Hinnerk von deiner Lieferung.",
+     "dialog": "hinnerk_thanks",
+     "rewardCards": [
+      "card_hinnerk"
+     ]
+    }
+   ]
+  }
+ ],
+ "dialogs": {
+  "ida_welcome": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Moin, Lumo! Ich bin Ida, die Hafenmeisterin von Sonnenhafen. Bei uns legen Fischkutter, Segelboote und Lieferschiffe an. Möchtest du dich umsehen?",
+     "choices": [
+      {
+       "label": "Ja, gern!",
+       "next": "plan"
+      },
+      {
+       "label": "Was ist ein Hafen?",
+       "next": "explain"
+      }
+     ]
+    },
+    "explain": {
+     "text": "Ein Hafen ist ein geschützter Platz am Wasser. Boote legen hier an, damit man Waren und Fisch sicher an Land bringen kann.",
+     "choices": [
+      {
+       "label": "Verstanden. Ich sehe mich um!",
+       "next": "plan"
+      }
+     ]
+    },
+    "plan": {
+     "text": "Schau dir zuerst den Hafenmarkt mit dem Brunnen an. Danach läufst du über die Mole bis zum Leuchtturm. Dann komm zu mir zurück!",
+     "choices": [
+      {
+       "label": "Ich gehe los",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "ida_welcome_back": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Da bist du ja wieder! Hast du den Markt und den Leuchtturm gesehen? Jetzt kennst du unseren Hafen.",
+     "choices": [
+      {
+       "label": "Der Leuchtturm war toll!",
+       "next": "gift"
+      }
+     ]
+    },
+    "gift": {
+     "text": "Als Willkommensgeschenk bekommst du Muscheln. Damit kannst du beim Hafenkrämer handeln. Muscheln sind Spielmünzen dieser Welt, kein echtes Geld.",
+     "choices": [
+      {
+       "label": "Danke, Ida!",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "jonte_catch": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Ahoi! Ich bin Jonte. Mein Kutter ist voll mit frischem Fisch. Hilfst du mir, drei Fischkisten vom Pier in die Fischhalle zu tragen?",
+     "choices": [
+      {
+       "label": "Klar helfe ich!",
+       "next": "how"
+      }
+     ]
+    },
+    "how": {
+     "text": "Nimm am Fischerpier bei meinem Kutter eine Kiste. Trag sie in die Fischhalle und stell sie dort ab. Dreimal, dann ist alles an Land.",
+     "choices": [
+      {
+       "label": "Los geht's",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "frieda_fish": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Hallo, Lumo! Ich bin Frieda, Jontes Schwester. Die Kisten sind in der Fischhalle? Wunderbar, dann kann ich meinen Stand füllen!",
+     "choices": [
+      {
+       "label": "Alle drei Kisten sind da.",
+       "next": "thanks"
+      }
+     ]
+    },
+    "thanks": {
+     "text": "Sag Jonte, dass der Markt heute frischen Fisch hat. Er wartet am Fischerpier oder in der Fischhalle.",
+     "choices": [
+      {
+       "label": "Ich sage es ihm",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "jonte_thanks": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Frieda hat ihren Stand gefüllt? Danke, Lumo! Allein hätte ich viel länger gebraucht.",
+     "choices": [
+      {
+       "label": "Gern geschehen.",
+       "next": "gift"
+      }
+     ]
+    },
+    "gift": {
+     "text": "Hier sind zwei Fische für deinen Korb. Du kannst sie beim Hafenkrämer verkaufen oder behalten. Und Muscheln für deine Hilfe!",
+     "choices": [
+      {
+       "label": "Danke, Jonte!",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "greta_prices": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Ach je, Lumo! Ich bin Greta. Eine Welle hat meine Preisliste nass gemacht. Jetzt muss ich alle Summen neu ausrechnen. Hilfst du mir?",
+     "choices": [
+      {
+       "label": "Ich rechne gern mit!",
+       "next": "school"
+      }
+     ]
+    },
+    "school": {
+     "text": "Bevor wir an der Theke rechnen, übst du in Lumos Weltschule drei Rechenaufgaben. Danach rechnen wir zusammen die Preise für meine Kundschaft aus.",
+     "choices": [
+      {
+       "label": "Abgemacht!",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "greta_calculate": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Du hast in der Weltschule geübt. Jetzt rechnen wir meine erste Bestellung aus!",
+     "choices": [
+      {
+       "label": "Zeig mir die Bestellung",
+       "next": "task"
+      }
+     ]
+    },
+    "task": {
+     "byGrade": {
+      "1": {
+       "text": "Ein Seil kostet 3 Muscheln. Ein Brötchen kostet 2 Muscheln. Wie viele Muscheln kostet beides zusammen?",
+       "choices": [
+        {
+         "label": "5",
+         "action": "complete"
+        },
+        {
+         "label": "4",
+         "next": "retry"
+        },
+        {
+         "label": "6",
+         "next": "retry"
+        }
+       ]
+      },
+      "2": {
+       "text": "Kapitänin Ida kauft 4 Laternengläser. Jedes kostet 6 Muscheln. Wie viele Muscheln muss sie bezahlen?",
+       "choices": [
+        {
+         "label": "20",
+         "next": "retry"
+        },
+        {
+         "label": "24",
+         "action": "complete"
+        },
+        {
+         "label": "10",
+         "next": "retry"
+        }
+       ]
+      },
+      "3": {
+       "text": "Eine Kiste Äpfel kostet 48 Muscheln. Ich verkaufe sie in 6 gleichen Säckchen. Wie viele Muscheln kostet ein Säckchen?",
+       "choices": [
+        {
+         "label": "6",
+         "next": "retry"
+        },
+        {
+         "label": "42",
+         "next": "retry"
+        },
+        {
+         "label": "8",
+         "action": "complete"
+        }
+       ]
+      },
+      "4": {
+       "text": "Ein Kompass kostet 125 Muscheln und ein Fernrohr 238 Muscheln. Der Kapitän bezahlt mit 400 Muscheln. Wie viel Wechselgeld bekommt er?",
+       "choices": [
+        {
+         "label": "37",
+         "action": "complete"
+        },
+        {
+         "label": "63",
+         "next": "retry"
+        },
+        {
+         "label": "47",
+         "next": "retry"
+        }
+       ]
+      }
+     }
+    },
+    "retry": {
+     "byGrade": {
+      "1": {
+       "text": "Fast! Zähle die Muscheln: erst drei, dann noch zwei dazu.",
+       "choices": [
+        {
+         "label": "Noch einmal rechnen",
+         "next": "task"
+        }
+       ]
+      },
+      "2": {
+       "text": "Fast! Vier Gläser zu je 6 Muscheln: 6 + 6 + 6 + 6 oder 4 · 6.",
+       "choices": [
+        {
+         "label": "Noch einmal rechnen",
+         "next": "task"
+        }
+       ]
+      },
+      "3": {
+       "text": "Fast! Teile 48 gerecht auf 6 Säckchen auf. Prüfe mit 6 · ? = 48.",
+       "choices": [
+        {
+         "label": "Noch einmal rechnen",
+         "next": "task"
+        }
+       ]
+      },
+      "4": {
+       "text": "Fast! Rechne zuerst 125 + 238. Dann ziehe das Ergebnis von 400 ab.",
+       "choices": [
+        {
+         "label": "Noch einmal rechnen",
+         "next": "task"
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  "ole_wick": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Hallo, Lumo. Ich bin Ole und hüte den Leuchtturm. Heute Morgen ist mein Laternenglas gesprungen. Ohne Glas flackert das Licht im Wind.",
+     "choices": [
+      {
+       "label": "Kann ich helfen?",
+       "next": "plan"
+      }
+     ]
+    },
+    "plan": {
+     "text": "Beim Hafenkrämer bei Greta gibt es Laternenglas. Es kostet 6 Muscheln. Kaufst du eines für mich und bringst es mir?",
+     "choices": [
+      {
+       "label": "Ich kaufe das Glas",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "ole_thanks": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Du hast das Laternenglas! Vorsichtig ... so, es passt genau. Heute Abend leuchtet der Turm wieder hell über das Meer.",
+     "choices": [
+      {
+       "label": "Wie weit sieht man das Licht?",
+       "next": "far"
+      }
+     ]
+    },
+    "far": {
+     "text": "Bei klarer Nacht sehen die Boote es von weit draußen. So finden sie sicher nach Hause. Danke, Lumo! Nimm diese Muscheln für deine Mühe.",
+     "choices": [
+      {
+       "label": "Gern geschehen, Ole!",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "hinnerk_orders": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Guten Tag! Ich bin Hinnerk aus dem Kontor. Hier kommen alle Kisten vom Schiff an. Jede Kiste hat einen Lieferzettel mit Namen und Ort.",
+     "choices": [
+      {
+       "label": "Was soll ich tun?",
+       "next": "task"
+      }
+     ]
+    },
+    "task": {
+     "text": "Nimm am Lieferbrett einen Auftrag. Lies den Zettel genau: An wen geht die Kiste, und wo findest du die Person? Bring sie hin und sprich die Person an.",
+     "choices": [
+      {
+       "label": "Ich nehme einen Auftrag",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  },
+  "hinnerk_thanks": {
+   "start": "hello",
+   "nodes": {
+    "hello": {
+     "text": "Die erste Lieferung ist angekommen. Du hast den Zettel genau gelesen. Genau so arbeitet ein gutes Kontor!",
+     "choices": [
+      {
+       "label": "Gibt es noch mehr Aufträge?",
+       "next": "more"
+      }
+     ]
+    },
+    "more": {
+     "text": "Am Lieferbrett hängen immer neue Aufträge. Jede Lieferung bringt dir Muscheln. Du entscheidest selbst, wann du liefern möchtest.",
+     "choices": [
+      {
+       "label": "Danke, Hinnerk!",
+       "action": "complete"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "smalltalk": {}
+}

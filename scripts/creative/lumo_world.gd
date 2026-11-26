@@ -16,6 +16,7 @@ const WORLD_MAP = preload("res://scripts/creative/lumo_world_map.gd")
 const FRIEND_POST = preload("res://scripts/creative/lumo_world_errands_ui.gd")
 const CAMERA_CLEARANCE = preload("res://scripts/creative/lumo_world_camera_clearance.gd")
 const OPEN_WORLD = preload("res://scripts/creative/lumo_world_open_world.gd")
+const SONNENHAFEN = preload("res://scripts/creative/lumo_world_sonnenhafen.gd")
 
 const PERSON_ZOOM_MIN := 3.2
 const PERSON_ZOOM_MAX := 13.0
@@ -108,6 +109,9 @@ var friend_post: Node3D
 var friend_post_original: Variant = {}
 var open_world: Node3D
 var open_world_original: Variant = {}
+## Harbour region south of the mainland (town, residents, missions, trade).
+var sonnenhafen: Node3D
+var sonnenhafen_original: Variant = {}
 var save_pending := false
 var camera_clearance = CAMERA_CLEARANCE.new()
 var build_mode := false
@@ -145,6 +149,7 @@ func _ready() -> void:
 			if not save_blocked:
 				friend_post_original = parser.data.get("friendPost", {})
 				open_world_original = parser.data.get("openWorld", {})
+				sonnenhafen_original = parser.data.get("sonnenhafen", {})
 				save_blocked = not model.restore(parser.data)
 		if save_blocked:
 			checkpoint_message = "Dein gespeicherter Weltstand konnte nicht geöffnet werden. Er bleibt unverändert. Bitte kehre zur Spielewelt zurück."
@@ -152,6 +157,7 @@ func _ready() -> void:
 		model.result_id = HostBridge.new_result_id()
 	kit.environment(self, LumoEnvironmentCreativePresets.PRESET_TREASURE_DAY)
 	art.clear_areas = OPEN_WORLD.clear_areas()
+	art.clear_areas.append_array(SONNENHAFEN.clear_areas())
 	art.build(self)
 	_create_owned_village(profile)
 	_create_player()
@@ -169,6 +175,10 @@ func _ready() -> void:
 	add_child(open_world)
 	if not open_world.setup(self, open_world_original) and not save_blocked:
 		checkpoint_message = "Deine Missionen konnten nicht geladen werden. Der gespeicherte Stand bleibt erhalten; du kannst deine Welt weiter erkunden."
+	sonnenhafen = SONNENHAFEN.new()
+	add_child(sonnenhafen)
+	if not sonnenhafen.setup(self, sonnenhafen_original) and not save_blocked:
+		checkpoint_message = "Sonnenhafen konnte nicht vollständig geladen werden. Dein gespeicherter Stand bleibt erhalten; du kannst weiter erkunden."
 	var vegetation_roots: Array[Node3D] = [art.zones.Gartenlandschaft, own_village.region]
 	camera_clearance.attach(vegetation_roots)
 	wonder = WISPS.new()
@@ -189,6 +199,9 @@ func _ready() -> void:
 	var receipt = SceneRouter.launch_options.get("worldLearningReceipt", {})
 	if not save_blocked and receipt is Dictionary and model.consume_learning_receipt(receipt):
 		checkpoint_message = "Deine Lernrunde ist geschafft! Bruno wartet im Garten."
+		_save()
+	elif not save_blocked and receipt is Dictionary and sonnenhafen.consume_learning_receipt(receipt):
+		checkpoint_message = "Deine Lernrunde ist geschafft! Greta wartet im Hafenkrämer in Sonnenhafen."
 		_save()
 	_update_mission()
 	if not save_blocked and model.is_complete():
@@ -777,6 +790,8 @@ func _physics_process(delta: float) -> void:
 		wonder.set_routes(at, [{"at": kart_body.position}])
 	elif not mission.is_empty():
 		wonder.set_routes(at, [mission])
+	elif not sonnenhafen.tracked_route().is_empty() and (sonnenhafen.region_contains(at) or open_world.tracked_route().is_empty()):
+		wonder.set_routes(at, [sonnenhafen.tracked_route()])
 	elif not open_world.tracked_route().is_empty():
 		wonder.set_routes(at, [open_world.tracked_route()])
 	_update_camera(delta)
@@ -784,7 +799,8 @@ func _physics_process(delta: float) -> void:
 	var friend_available: bool = friend_post.available(at)
 	var figure_available: bool = open_world.available(at)
 	var crossing_available := _near_crossing_button(at)
-	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not figure_available and not crossing_available)
+	var harbour_action: String = sonnenhafen.action_label(at)
+	action_button.disabled = driving or (not model.near_current(at) and portal.is_empty() and not friend_available and not figure_available and not crossing_available and harbour_action.is_empty())
 	if crossing_available or str(mission.get("id", "")) == "safe_crossing":
 		action_button.text = "Ampelknopf"
 	elif str(mission.get("id", "")) == "school_numbers":
@@ -796,10 +812,13 @@ func _physics_process(delta: float) -> void:
 			action_button.text = "Freundepost"
 		elif figure_available:
 			action_button.text = "Ansprechen"
+		elif not harbour_action.is_empty():
+			action_button.text = harbour_action
 		elif not portal.is_empty():
 			action_button.text = "Ort öffnen"
 	_refresh_vehicle_button()
 	open_world.tick(at, driving, delta)
+	sonnenhafen.tick(at, driving, delta)
 	if model.observe_crossing(player.position, signal_green, not driving):
 		_completed_step("Du hast auf Grün und den Verkehr geachtet. Jetzt geht es zur Schule!")
 	for friend in residents:
@@ -1176,6 +1195,8 @@ func _interact() -> void:
 			return
 		if open_world.interact(player.position):
 			return
+		if sonnenhafen.interact(player.position):
+			return
 		var portal := _near_portal()
 		if not portal.is_empty():
 			_open_dialog(str(portal.title), str(portal.description))
@@ -1293,6 +1314,9 @@ func _update_mission() -> void:
 	var quest_line: String = open_world.hud_line() if is_instance_valid(open_world) else ""
 	if not quest_line.is_empty():
 		mission_label.text += "\n" + quest_line
+	var harbour_line: String = sonnenhafen.hud_line() if is_instance_valid(sonnenhafen) else ""
+	if not harbour_line.is_empty() and (sonnenhafen.region_contains(_active_position()) or not sonnenhafen.model.tracked.is_empty()):
+		mission_label.text += "\n" + harbour_line
 
 
 func _map_dialog() -> void:
@@ -1313,10 +1337,16 @@ func _map_dialog() -> void:
 	for friend in residents:
 		friends.append({"name": str(friend.name), "at": friend.position})
 	overview.set_friends(friends)
-	overview.set_world_figures(open_world.map_figures())
+	overview.set_world_figures(open_world.map_figures() + sonnenhafen.map_figures())
 	overview.add_places(open_world.map_places())
+	overview.add_places(sonnenhafen.map_places())
 	overview.add_paths(open_world.map_paths())
-	overview.set_quest_marker(open_world.tracked_route())
+	overview.add_paths(sonnenhafen.map_paths())
+	overview.add_lands(sonnenhafen.map_lands())
+	var route: Dictionary = open_world.tracked_route()
+	if not sonnenhafen.tracked_route().is_empty() and (route.is_empty() or sonnenhafen.region_contains(_active_position())):
+		route = sonnenhafen.tracked_route()
+	overview.set_quest_marker(route)
 	if friend_post.unlocked() and friend_post.model.carrying() and map_mission.is_empty():
 		overview.set_objective_note("Freundepost: Lies deinen Hinweis und finde den richtigen Freund. Du kannst dir auch das Ziel zeigen lassen.")
 	modal_box.add_child(overview)
@@ -1340,6 +1370,7 @@ func _map_dialog() -> void:
 func _open_journal_from_dialog() -> void:
 	_close_dialog()
 	open_world.open_journal()
+	sonnenhafen.append_journal()
 
 
 func _open_build_from_dialog() -> void:
@@ -1378,6 +1409,8 @@ func _save() -> bool:
 	# Keep unreadable or future sidequest data unchanged in the original profile save.
 	data["friendPost"] = friend_post.to_data() if friend_post.save_valid else friend_post_original
 	data["openWorld"] = open_world.to_data() if open_world.save_valid else open_world_original
+	if is_instance_valid(sonnenhafen):
+		data["sonnenhafen"] = sonnenhafen.to_data() if sonnenhafen.save_valid else sonnenhafen_original
 	file.store_string(JSON.stringify(data))
 	file.flush()
 	var result := file.get_error()
@@ -1431,6 +1464,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_J:
 				if not paused and not save_blocked:
 					open_world.open_journal()
+					sonnenhafen.append_journal()
 			KEY_B, KEY_TAB:
 				_toggle_build_mode()
 			_:
