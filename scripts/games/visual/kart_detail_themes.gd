@@ -62,6 +62,9 @@ const THEMES: Dictionary = {
 		"road_wear": ["puddle", "crack", "patch", "puddle", "tar"],
 		"edge": "leaves", "edge_tint": Color(1, 1, 1, 0.95),
 		"clusters": [FOREST, GLADE, HAY, TIRES, FOREST],
+		# Dense woodland leaves short clearings. Check both safe shoulders for
+		# spectators and give the roadside kit more chances to use those gaps.
+		"cluster_spacing": 0.72, "search_both_shoulders": true,
 		"facade_bottom": ["moss"],
 		"brands": ["gluehwurm", "mondmilch", "fuchsflitzer", "blitzbeere"],
 		"flock": "gull_flock", "flock_tint": Color(1.0, 0.75, 0.9), "flock_scale": 0.5, "flock_height": 6.0,

@@ -25,6 +25,7 @@ const CHUNK_M: Dictionary = {"low": 100000.0, "medium": 170.0, "high": 130.0}
 const DENSITY: Dictionary = {"low": 0.0, "medium": 0.62, "high": 1.0}
 ## Sicherheitsrand zwischen Fahrbahnkante und stehendem Kleinteil.
 const CLEARANCE_M: float = 1.4
+const MODEL_EDGE_CLEARANCE_M: float = 0.9
 const DECAL_LIFT_M: float = 0.05
 const PROP_SCALE: float = 1.25
 
@@ -38,6 +39,7 @@ var batches: Dictionary = {}  # "chunk:material" -> KIT.Batch
 var stats: Dictionary = {"wear": 0, "props": 0, "life": 0, "light": 0, "stage": 0, "facade": 0}
 var placed: Array[Dictionary] = []  # für den Test: stehende Teile mit Abstand zur Fahrbahn
 var _occupied: Array[Vector3] = []
+var _model_bounds: Dictionary = {}
 ## Fremde Kulisse (Bäume/Leuchten des Kulissen-Moduls) in 8-m-Zellen: Vector4(x, y, z, Radius).
 var _obstacles: Dictionary = {}
 const OBSTACLE_CELL: float = 8.0
@@ -308,9 +310,36 @@ func _slab(centre: Vector3, along: Vector3, across: Vector3, thickness: float, c
 	_batch(d, "props").add_arrays(KIT.box_arrays(), Transform3D(basis, centre), Color(lin.r, lin.g, lin.b, 1.0))
 
 
-func _put(kind: String, xform: Transform3D, d: float, category: String, tint: Color = Color.WHITE, record: bool = true) -> void:
+func _bounds(kind: String, arrays: Array) -> AABB:
+	if not _model_bounds.has(kind):
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var bounds := AABB(vertices[0], Vector3.ZERO)
+		for vertex: Vector3 in vertices:
+			bounds = bounds.expand(vertex)
+		_model_bounds[kind] = bounds
+	return _model_bounds[kind]
+
+
+func _put(kind: String, xform: Transform3D, d: float, category: String, tint: Color = Color.WHITE) -> void:
 	var arrays: Array = KIT.part(kind)
 	if arrays.is_empty():
+		return
+	# Sites are planned from the nominal centreline. Check the final rotated
+	# model against the sampled road frame as well. The banking, another lane
+	# nearby or a local crowd offset can put it closer than the planned site.
+	var sample: Dictionary = world.sample_road(xform.origin, d)
+	var lateral: float = absf(float(sample.lateral))
+	var half_width: float = float(sample.width) * 0.5
+	var outward: Vector3 = (sample.basis as Basis).x * signf(float(sample.lateral))
+	var local: Vector3 = xform.basis.transposed() * outward
+	var bounds: AABB = _bounds(kind, arrays)
+	var closest := Vector3(
+		bounds.position.x if local.x >= 0.0 else bounds.end.x,
+		bounds.position.y if local.y >= 0.0 else bounds.end.y,
+		bounds.position.z if local.z >= 0.0 else bounds.end.z)
+	var edge_clearance: float = lateral + minf(0.0, local.dot(closest)) - half_width
+	if edge_clearance <= MODEL_EDGE_CLEARANCE_M:
+		stats["edge_skips"] = int(stats.get("edge_skips", 0)) + 1
 		return
 	var phase: float = fposmod(xform.origin.x * 0.137 + xform.origin.z * 0.071, 1.0)
 	var batch: KIT.Batch = _batch(d, "props")
@@ -319,10 +348,8 @@ func _put(kind: String, xform: Transform3D, d: float, category: String, tint: Co
 	if not glow.is_empty():
 		_batch(d, "glow").add_arrays(glow, xform, Color.WHITE, phase)
 	stats[category] = int(stats.get(category, 0)) + 1
-	if record:
-		var sample: Dictionary = world.sample_road(xform.origin, d)
-		placed.append({"kind": kind, "distance": d, "lateral": absf(float(sample.lateral)),
-			"half_width": float(sample.width) * 0.5, "flat": false, "position": xform.origin})
+	placed.append({"kind": kind, "distance": d, "lateral": lateral, "half_width": half_width,
+		"edge_clearance": edge_clearance, "flat": false, "position": xform.origin})
 
 
 func _place(kind: String, site: Dictionary, category: String, offset: Vector3 = Vector3.ZERO, yaw: float = 0.0, scale: float = 1.0, tint: Color = Color.WHITE) -> void:
@@ -682,7 +709,7 @@ func _roadside() -> void:
 	var clusters: Array = theme.get("clusters", [])
 	if clusters.is_empty():
 		return
-	var step: float = lerpf(60.0, 24.0, density)
+	var step: float = lerpf(60.0, 24.0, density) * float(theme.get("cluster_spacing", 1.0))
 	var d: float = 70.0
 	var index: int = 0
 	var brands: Array = theme.get("brands", ["sternenbrause"])
@@ -694,7 +721,10 @@ func _roadside() -> void:
 			_banner_board(d, side, int(KIT.BRAND_CELLS.get(brands[(index / 5) % brands.size()], 13)), 5.6, "props")
 			continue
 		var cluster: Array = clusters[rng.randi() % clusters.size()]
+		var previous_props: int = int(stats.props)
 		_cluster(d, side, cluster)
+		if int(stats.props) == previous_props and bool(theme.get("search_both_shoulders", false)):
+			_cluster(d, -side, cluster)
 	# Reflektorpfosten an den Begrenzungen.
 	if bool(theme.get("reflectors", true)):
 		var spacing: float = 26.0 if profile == "high" else 40.0
@@ -784,7 +814,12 @@ func _life() -> void:
 			d += float(pass_index) * 3.0
 			if pass_index == 0 and absf(_corner_strength(d)) < 0.22:
 				continue
-			if _fan_group(d, -signf(_corner_strength(d)) if absf(_corner_strength(d)) > 0.05 else (1.0 if int(d) % 2 == 0 else -1.0), found, fans):
+			var turn: float = _corner_strength(d)
+			var side: float = -signf(turn) if absf(turn) > 0.05 else (1.0 if int(d) % 2 == 0 else -1.0)
+			var placed_group: bool = _fan_group(d, side, found, fans)
+			if not placed_group and pass_index > 0 and bool(theme.get("search_both_shoulders", false)):
+				placed_group = _fan_group(d, -side, found, fans)
+			if placed_group:
 				found += 1
 				d += 60.0 if profile == "high" else 110.0
 	_marshals()
