@@ -1566,7 +1566,7 @@ func _apply_responsive_layout() -> void:
 	var display_size: Vector2 = window_size
 	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
 	var compact_portrait: bool = display_size.x < display_size.y
-	var short_landscape: bool = not compact_portrait and safe_ui.size.y / ui_scale < 360.0
+	var short_landscape: bool = RACE_HUD.compact_landscape(display_size, safe_ui.size.y / ui_scale)
 	var margin_dp: float = clampf(minf(display_size.x, display_size.y) * 0.025, 10.0, 22.0)
 	if short_landscape:
 		margin_dp = 8.0
@@ -1614,38 +1614,35 @@ func _apply_responsive_layout() -> void:
 				child.size = child.custom_minimum_size
 				child.position = Vector2(spec[0]) * deck_scale * ui_scale - child.size * 0.5
 	elif compact_portrait:
+		# Fixed-height thumb rows leave the road and the kart unobscured on tall screens.
 		var gap: float = 4.0
-		var stick_size: float = clampf(available_width * 0.32, 88.0, 154.0)
-		var pad_width: float = maxf(152.0, available_width - stick_size - gap)
-		var pad_height: float = clampf(display_size.y * 0.29, 176.0, 290.0)
+		var pad_width: float = clampf(available_width * 0.59, 152.0, 200.0)
+		var stick_size: float = clampf(available_width - pad_width - gap * 2.0, 48.0, 138.0)
 		joystick.custom_minimum_size = Vector2.ONE * stick_size * ui_scale
-		pedal_pad.custom_minimum_size = Vector2(pad_width, pad_height) * ui_scale
+		pedal_pad.custom_minimum_size = Vector2(pad_width, 132.0) * ui_scale
 		controls_row.add_theme_constant_override("separation", roundi(gap * ui_scale))
-		controls_gap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		controls_gap.custom_minimum_size = Vector2(gap * ui_scale, 1.0)
-		# Thumb cluster on the right: big enough for a child's thumb, clear of the road middle.
-		var diameter: float = maxf(48.0, minf(84.0, minf(pad_width * 0.29, pad_height * 0.28)))
-		var compact_positions: Dictionary = {
-			"DriftAction": Vector2(pad_width * 0.46, pad_height * 0.2),
-			"BoostAction": Vector2(pad_width * 0.84, pad_height * 0.2),
-			"ItemAction": Vector2(pad_width * 0.46, pad_height * 0.5),
-			"BrakePedal": Vector2(pad_width * 0.84, pad_height * 0.5),
-			"GasPedal": Vector2(pad_width * 0.65, pad_height * 0.82)
+		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		controls_gap.custom_minimum_size = Vector2.ZERO
+		var phone_actions: Dictionary = {
+			"DriftAction": [Vector2(25.0, 25.0), 48.0],
+			"BoostAction": [Vector2(pad_width * 0.5, 25.0), 48.0],
+			"ItemAction": [Vector2(pad_width - 25.0, 25.0), 48.0],
+			"BrakePedal": [Vector2(36.0, 93.0), 64.0],
+			"GasPedal": [Vector2(pad_width - 41.0, 93.0), 76.0],
 		}
-		for child in pedal_pad.get_children():
-			if not child is Control:
-				continue
-			var button: Control = child
-			var button_size: float = diameter * (1.15 if button.name == "GasPedal" else 1.0)
-			button.custom_minimum_size = Vector2.ONE * button_size * ui_scale
-			button.size = button.custom_minimum_size
-			button.position = compact_positions[button.name] * ui_scale - button.size * 0.5
+		for action in pedal_pad.get_children():
+			if action is Control:
+				var spec: Array = phone_actions[action.name]
+				action.custom_minimum_size = Vector2.ONE * float(spec[1]) * ui_scale
+				action.size = action.custom_minimum_size
+				action.position = Vector2(spec[0]) * ui_scale - action.size * 0.5
 	elif short_landscape:
 		# A short landscape needs two rows of thumb actions, not a scaled-down
 		# 300dp-tall cluster. Every action remains at least 48 dp.
-		joystick.custom_minimum_size = Vector2.ONE * 96.0 * ui_scale
-		pedal_pad.custom_minimum_size = Vector2(180, 100) * ui_scale
-		controls_row.add_theme_constant_override("separation", roundi(8.0 * ui_scale))
+		var deck_scale: float = ui_scale * (1.10 if safe_ui.size.y / ui_scale > 360.0 else 1.0)
+		joystick.custom_minimum_size = Vector2.ONE * 96.0 * deck_scale
+		pedal_pad.custom_minimum_size = Vector2(180, 100) * deck_scale
+		controls_row.add_theme_constant_override("separation", roundi(8.0 * deck_scale))
 		controls_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		controls_gap.custom_minimum_size = Vector2.ZERO
 		var short_actions: Dictionary = {
@@ -1658,9 +1655,9 @@ func _apply_responsive_layout() -> void:
 		for child in pedal_pad.get_children():
 			if child is Control:
 				var spec: Array = short_actions[child.name]
-				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * ui_scale
+				child.custom_minimum_size = Vector2.ONE * float(spec[1]) * deck_scale
 				child.size = child.custom_minimum_size
-				child.position = Vector2(spec[0]) * ui_scale - child.size * 0.5
+				child.position = Vector2(spec[0]) * deck_scale - child.size * 0.5
 	else:
 		var size_scale: float = clampf(
 			minf(display_size.y / 720.0, available_width / 700.0), 0.64, 1.0
@@ -1767,7 +1764,7 @@ func _apply_minimap_layout() -> void:
 		return
 	var ui_scale: float = maxf(viewport_size.x / display_size.x, viewport_size.y / display_size.y)
 	var compact: bool = display_size.x < 900.0 or display_size.x < display_size.y
-	var short_landscape: bool = display_size.x >= display_size.y and safe_ui.size.y / ui_scale < 360.0
+	var short_landscape: bool = RACE_HUD.compact_landscape(display_size, safe_ui.size.y / ui_scale)
 	if mode == "arena" or compact or short_landscape or not hud_content.is_visible_in_tree():
 		map_panel.hide()
 		return
@@ -3491,7 +3488,6 @@ func _update_hud() -> void:
 	var grid_rev := countdown > 0.0 and preview_left <= 0.0 and not paused and not finished
 	gas_button.disabled = not (enabled or grid_rev)
 	brake_button.disabled = not enabled
-	gas_button.visible = not auto_gas or grid_rev
 	RACE_HUD.push(self, place, display_speed)
 	_update_jump_hint(enabled)
 
@@ -3811,14 +3807,19 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 	var ahead := Vector3(-sin(player_heading), 0, -cos(player_heading))
 	var right := Vector3(-ahead.z, 0, ahead.x)
 	var speed_ratio: float = clampf(absf(speed) / 25.0, 0.0, 1.0)
-	var chase_distance: float = VISUAL_GRADE.camera_distance(speed_ratio)
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	# From a narrow cover display show more of the next curve from a higher,
+	# steadier angle. Wide and square screens keep their authored chase view.
+	var upright: float = clampf((0.82 - view.x / maxf(view.y, 1.0)) / 0.44, 0.0, 1.0)
+	var chase_distance: float = VISUAL_GRADE.camera_distance(speed_ratio) + upright * 0.5
 	var air_lift: float = 0.28 if airborne and not reduced_motion else 0.0
 	var lateral_lead: float = 0.0 if reduced_motion else clampf(steering, -1.0, 1.0) * 0.24
+	lateral_lead *= 1.0 - upright * 0.45
 	var desired: Vector3 = (
 		player.position
 		- ahead * chase_distance
 		+ right * lateral_lead
-		+ Vector3.UP * (VISUAL_GRADE.CAMERA_HEIGHT + air_lift)
+		+ Vector3.UP * (VISUAL_GRADE.CAMERA_HEIGHT + air_lift + upright * 0.66)
 	)
 	var target: Vector3 = (
 		player.position
@@ -3851,7 +3852,7 @@ func _update_camera(delta: float, snap: bool = false) -> void:
 		if mode != "arena" and not airborne and is_instance_valid(world):
 			var road_roll: float = world.frame(previous_road_distance).x.y
 			roll = clampf(roll + road_roll * 0.08, -VISUAL_GRADE.CAMERA_ROLL_MAX, VISUAL_GRADE.CAMERA_ROLL_MAX)
-		camera.rotate_object_local(Vector3(0, 0, 1), roll)
+		camera.rotate_object_local(Vector3(0, 0, 1), roll * (1.0 - upright * 0.48))
 	_update_camera_speed_effects(delta, snap, speed_ratio)
 
 

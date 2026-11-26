@@ -55,6 +55,7 @@ func _dp(control: Control) -> Vector2:
 
 
 func _run() -> void:
+	root.size = Vector2i(1280, 720)
 	_check_assets()
 	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	game = load("res://scenes/games/kart_island.tscn").instantiate()
@@ -76,6 +77,7 @@ func _run() -> void:
 		_check(action.skin == "kart3d", "%s uses the rendered buttons" % action.name)
 	_check(game.joystick.skin == "kart3d", "the stick uses the rendered stick")
 	await _check_layouts(actions)
+	await _check_dense_cover(actions)
 	await _check_touch()
 	await _check_live_states()
 	_check_bar()
@@ -129,6 +131,55 @@ func _check_layouts(actions: Array) -> void:
 			_check(not bar.get_global_rect().grow(-0.5).intersects(game.top_pause_button.get_global_rect()), "race bar leaves the pause button free " + label)
 			for rect in rectangles:
 				_check(not rect.intersects(game.top_pause_button.get_global_rect()), "pause button clear of the thumb controls " + label)
+
+
+func _check_dense_cover(actions: Array) -> void:
+	var host := root.get_node("HostBridge")
+	host._options["displayDensity"] = 2.625
+	game.auto_gas = true
+	game._update_hud()
+	var surfaces: Array[Vector2i] = [
+		Vector2i(904, 2316), Vector2i(2316, 904), Vector2i(1080, 2340),
+		Vector2i(1080, 2520), Vector2i(2520, 1080),
+	]
+	for pixels in surfaces:
+		root.size = pixels
+		await _settle(3)
+		var portrait: bool = pixels.x < pixels.y
+		var insets := Rect2(0, 44, 0, 52) if portrait else Rect2(38, 0, 42, 26)
+		game._apply_safe_area(insets, Vector2(pixels))
+		game._apply_responsive_layout()
+		await _settle(4)
+		var tag := "dense %dx%d" % [pixels.x, pixels.y]
+		var safe: Rect2 = game.safe_ui.get_global_rect()
+		var zones: Array[Rect2] = [game.joystick.get_global_rect()]
+		for action in actions:
+			var hit: Rect2 = action.get_global_rect()
+			_check(safe.grow(0.5).encloses(hit), "%s %s inside display insets" % [tag, action.name])
+			_check(_dp(action).x / 2.625 >= 47.5, "%s %s at least 48 dp" % [tag, action.name])
+			_check(action.label.visible and action.label.get_minimum_size().x <= action.size.x,
+				"%s %s keeps its readable action name" % [tag, action.name])
+			for other in zones:
+				_check(not hit.grow(-0.5).intersects(other), "%s distinct thumb targets" % tag)
+			zones.append(hit)
+		_check(game.gas_button.is_visible_in_tree() and game.gas_button.label.visible, "%s named Gas with Auto-Gas" % tag)
+		_check(game.brake_button.label.visible, "%s named brake" % tag)
+		print("[CoverControls] %s · Gas %.1f dp · Bremse %.1f dp · Feld %.1f dp" % [
+			tag, _dp(game.gas_button).x / 2.625, _dp(game.brake_button).x / 2.625,
+			_dp(game.pedal_pad).y / 2.625,
+		])
+		var max_deck_height: float = 135.0 if portrait else 114.0
+		_check(_dp(game.pedal_pad).y / 2.625 <= max_deck_height, "%s two rows preserve the road view" % tag)
+		await _touch(6, game.gas_button.get_global_rect().get_center(), true)
+		_check(game.gas_held, "%s independent gas press" % tag)
+		await _touch(7, game.brake_button.get_global_rect().get_center(), true)
+		_check(game.gas_held and game.control_brake == 1.0, "%s independent brake press" % tag)
+		await _touch(6, safe.get_center(), false)
+		await _touch(7, safe.get_center(), false)
+		_check(not game.gas_held and game.control_brake == 0.0, "%s release outside the controls" % tag)
+	host._options.erase("displayDensity")
+	game.auto_gas = false
+	game._update_hud()
 
 
 func _check_touch() -> void:

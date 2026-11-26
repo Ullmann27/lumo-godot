@@ -187,12 +187,19 @@ func _apply_label_size() -> void:
 		# The caption sits on the lower glass of the rendered face, under the symbol.
 		label.position = Vector2(0, side * 0.735)
 		label.size = Vector2(size.x, side * 0.15)
+		var primary_pedal: bool = icon_id == "gas" or icon_id == "brake"
 		var ratio_3d: float = 0.118 if label.text.length() > 5 else 0.142
+		if primary_pedal:
+			ratio_3d = 0.184 if icon_id == "brake" else 0.225
+		elif _side_dp(side) < 60.0:
+			ratio_3d = 0.18 if label.text.length() > 5 else 0.22
 		var font_size: int = maxi(10, roundi(side * ratio_3d))
+		var caption_width: float = LABEL_FONT.get_string_size(label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		if caption_width > side * 0.91:
+			font_size = maxi(1, floori(font_size * side * 0.91 / caption_width))
 		label.add_theme_font_size_override("font_size", font_size)
-		label.add_theme_constant_override("outline_size", maxi(2, roundi(font_size * 0.22)))
-		# A tiny caption is noise: under ~62 px the symbol alone carries the meaning.
-		label.visible = _side_dp(side) >= 60.0
+		label.add_theme_constant_override("outline_size", maxi(2, roundi(font_size * 0.20)))
+		label.visible = not label.text.is_empty()
 		badge.position = Vector2(side * 0.765, -side * 0.035)
 		badge.size = Vector2.ONE * side * 0.26
 		badge.add_theme_font_size_override("font_size", maxi(10, roundi(side * 0.17)))
@@ -363,6 +370,8 @@ func _draw_kart3d(side: float) -> void:
 	var texture: Texture2D = rendered_texture(icon_id, state)
 	if texture == null:
 		texture = rendered_texture(icon_id, "pressed" if held else ("disabled" if disabled else "normal"))
+	if texture == null and ART.has(icon_id):
+		texture = ART[icon_id][2 if disabled else (1 if held else 0)]
 	# Body = 392/512 of the image. The image is 1.12 x the hit square, so the solid
 	# body is 0.86 x the touch target and the glow halo reaches just past it.
 	var depth: float = clampf(press_depth, 0.0, 1.2)

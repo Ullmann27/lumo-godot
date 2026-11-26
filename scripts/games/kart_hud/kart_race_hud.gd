@@ -87,6 +87,13 @@ static func handedness_text(left_handed: bool) -> String:
 	return "Steuerung: Linkshänder (Lenken rechts)" if left_handed else "Steuerung: Rechtshänder (Lenken links)"
 
 
+static func compact_landscape(display_size: Vector2, usable_height_dp: float) -> bool:
+	return display_size.x >= display_size.y and (
+		usable_height_dp < 360.0
+		or (usable_height_dp <= 432.0 and display_size.x >= display_size.y * 2.0)
+	)
+
+
 static func relayout(game: Node, ui_scale: float, short_landscape: bool) -> void:
 	apply_handedness(game)
 	var panel: PanelContainer = game.hud.get_parent()
