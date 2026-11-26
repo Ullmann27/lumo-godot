@@ -63,8 +63,19 @@ func close() -> void:
 func refresh() -> void:
 	if not is_inside_tree():
 		return
+	var old_panel := get_node_or_null("StartPanel") as Control
+	var previous_scroll := (
+		old_panel.find_child("SettingsScroll", true, false) as ScrollContainer
+		if old_panel != null else null
+	)
+	var scroll_offset := previous_scroll.scroll_vertical if previous_scroll != null else 0
 	for child in get_children():
-		remove_child(child)
+		if child.is_queued_for_deletion():
+			continue
+		# A button can change screens from its own pressed signal. Hide the
+		# old panel immediately and let the current input event finish first.
+		child.hide()
+		child.name = "Retired_%d" % child.get_instance_id()
 		child.queue_free()
 	_unit = UI.unit(self)
 	mouse_filter = (
@@ -74,7 +85,7 @@ func refresh() -> void:
 	)
 	match screen:
 		"start":
-			_build_start()
+			_build_start(scroll_offset)
 		"help":
 			_build_help()
 		"loading":
@@ -105,7 +116,7 @@ func _dialog(accent: Color, width_dp: float) -> VBoxContainer:
 	panel.name = "Dialog"
 	panel.add_theme_stylebox_override("panel", UI.panel(accent, u))
 	var width: float = minf(width_dp * u, view.x - m.x - m.z)
-	panel.position = Vector2((view.x - width) * 0.5, m.y)
+	panel.position = Vector2(m.x + (view.x - m.x - m.z - width) * 0.5, m.y)
 	panel.size = Vector2(width, view.y - m.y - m.w)
 	panel.modulate.a = 0.0
 	add_child(panel)
@@ -126,7 +137,9 @@ func _fit_dialog(panel: PanelContainer, column: VBoxContainer) -> void:
 		if not is_inside_tree():
 			return
 		await get_tree().process_frame
-		if not is_inside_tree() or not is_instance_valid(panel) or not is_instance_valid(column):
+		if not is_inside_tree() or not is_instance_valid(panel) or panel.is_queued_for_deletion():
+			return
+		if not is_instance_valid(column):
 			return
 		var view: Vector2 = get_viewport().get_visible_rect().size
 		var m: Vector4 = UI.margins(self, 12.0)
@@ -134,7 +147,10 @@ func _fit_dialog(panel: PanelContainer, column: VBoxContainer) -> void:
 			column.get_combined_minimum_size().y + 36.0 * _unit, view.y - m.y - m.w
 		)
 		panel.size = Vector2(panel.size.x, height)
-		panel.position = Vector2((view.x - panel.size.x) * 0.5, maxf(m.y, (view.y - height) * 0.5))
+		panel.position = Vector2(
+			m.x + (view.x - m.x - m.z - panel.size.x) * 0.5,
+			m.y + (view.y - m.y - m.w - height) * 0.5
+		)
 	panel.modulate.a = 1.0
 
 
@@ -157,11 +173,17 @@ func _button(
 	return button
 
 
-func _row(buttons: Array, columns: int) -> GridContainer:
+func _row(buttons: Array, columns: int, available_width: float = INF) -> GridContainer:
 	var grid := GridContainer.new()
+	var gap := roundi(10.0 * _unit)
 	grid.columns = columns
-	grid.add_theme_constant_override("h_separation", roundi(10.0 * _unit))
-	grid.add_theme_constant_override("v_separation", roundi(10.0 * _unit))
+	if not is_inf(available_width):
+		var button_width := 1.0
+		for button: Button in buttons:
+			button_width = maxf(button_width, button.get_combined_minimum_size().x)
+		grid.columns = clampi(floori((available_width + gap) / (button_width + gap)), 1, columns)
+	grid.add_theme_constant_override("h_separation", gap)
+	grid.add_theme_constant_override("v_separation", gap)
 	for button in buttons:
 		grid.add_child(button)
 	return grid
@@ -170,7 +192,7 @@ func _row(buttons: Array, columns: int) -> GridContainer:
 # ------------------------------------------------------------------ start
 
 
-func _build_start() -> void:
+func _build_start(scroll_offset: int) -> void:
 	var u: float = _unit
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	var m: Vector4 = UI.margins(self, 14.0)
@@ -237,28 +259,37 @@ func _build_start() -> void:
 	add_child(subtitle)
 	var panel := PanelContainer.new()
 	panel.name = "StartPanel"
-	panel.add_theme_stylebox_override("panel", UI.panel(UI.GOLD, u, 0.9))
+	var panel_style := UI.panel(UI.GOLD, u, 0.9)
+	panel.add_theme_stylebox_override("panel", panel_style)
 	panel.position = panel_area.position
 	panel.size = panel_area.size
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(panel)
+	var content := VBoxContainer.new()
+	content.add_theme_constant_override("separation", roundi(10.0 * u))
+	panel.add_child(content)
 	var scroll := ScrollContainer.new()
+	scroll.name = "SettingsScroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	panel.add_child(scroll)
+	scroll.follow_focus = true
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_child(scroll)
 	var column := VBoxContainer.new()
 	column.name = "Column"
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", roundi(9.0 * u))
 	scroll.add_child(column)
+	# The scroll bar may appear after a resize or after adding resume data.
+	# Reserve its gutter so every column remains usable in either case.
+	var content_width := panel_area.size.x - panel_style.get_minimum_size().x
+	var scroll_width := content_width - scroll.get_v_scroll_bar().get_combined_minimum_size().x
 	var mode: String = str(data.get("mode", "delivery"))
 	var stage: String = str(data.get("stage", "entdecken"))
-	# Mode cards.
-	var cards := GridContainer.new()
-	cards.name = "Modes"
-	cards.columns = 3
-	cards.add_theme_constant_override("h_separation", roundi(8.0 * u))
+	var mode_buttons: Array = []
 	for id in TUNING.MODES:
-		cards.add_child(_mode_card(id, id == mode, data.get("best", {}).get(id, "")))
+		mode_buttons.append(_mode_card(id, id == mode, data.get("best", {}).get(id, "")))
+	var cards := _row(mode_buttons, 3, scroll_width)
+	cards.name = "Modes"
 	column.add_child(cards)
 	var about: Label = UI.label(MODE_TEXT[mode], 16.0, u, UI.WHITE)
 	about.name = "ModeText"
@@ -276,16 +307,14 @@ func _build_start() -> void:
 			50.0
 		)
 		stages.append(button)
-	column.add_child(_row(stages, 3))
+	column.add_child(_row(stages, 3, scroll_width))
 	# Glider colour and riddles.
-	var row := HBoxContainer.new()
+	var row := HFlowContainer.new()
 	row.name = "Options"
-	row.add_theme_constant_override("separation", roundi(10.0 * u))
-	var swatches := HBoxContainer.new()
-	swatches.add_theme_constant_override("separation", roundi(6.0 * u))
+	row.add_theme_constant_override("h_separation", roundi(6.0 * u))
+	row.add_theme_constant_override("v_separation", roundi(8.0 * u))
 	for id in GLIDER.COLOUR_ORDER:
-		swatches.add_child(_swatch(id, id == str(data.get("colour", "sternblau"))))
-	row.add_child(swatches)
+		row.add_child(_swatch(id, id == str(data.get("colour", "sternblau"))))
 	if mode == "delivery":
 		var riddles: bool = bool(data.get("riddles", true))
 		var toggle: Button = _button(
@@ -305,14 +334,18 @@ func _build_start() -> void:
 		_caption("Flieger-Farbe" + ("  ·  Adress-Rätsel" if mode == "delivery" else ""))
 	)
 	column.add_child(row)
+	var line: String = str(data.get("best", {}).get("_line", ""))
+	if not line.is_empty():
+		column.add_child(UI.label(line, 14.0, u, UI.MUTED))
 	var save_text: String = str(data.get("save", ""))
 	if save_text.is_empty():
-		column.add_child(_button(
+		content.add_child(_button(
 			"LOSFLIEGEN!", "StartFlight", func() -> void: start_pressed.emit(false), true, UI.GOLD, 62.0
 		))
 	else:
+		column.add_child(UI.label("Gespeichert · " + save_text, 15.0, u, UI.MUTED))
 		var resume: Button = _button(
-			"Weiterfliegen · %s" % save_text,
+			"Weiterfliegen",
 			"ResumeFlight",
 			func() -> void: start_pressed.emit(true),
 			true,
@@ -327,12 +360,9 @@ func _build_start() -> void:
 			UI.CYAN,
 			62.0
 		)
-		column.add_child(
-			_row([resume, fresh], 2 if not wide or panel_area.size.x / u > 420.0 else 1)
-		)
-	var line: String = str(data.get("best", {}).get("_line", ""))
-	if not line.is_empty():
-		column.add_child(UI.label(line, 14.0, u, UI.MUTED))
+		content.add_child(_row([resume, fresh], 2, content_width))
+	if scroll_offset > 0:
+		scroll.set_deferred("scroll_vertical", scroll_offset)
 
 
 func _caption(text: String) -> Label:
@@ -349,7 +379,10 @@ func _mode_card(id: String, selected: bool, best: String) -> Button:
 	button.focus_mode = Control.FOCUS_ALL
 	button.custom_minimum_size = Vector2(90.0, 92.0) * u
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.text = TUNING.MODE_NAMES[id] + ("\n" + best if not best.is_empty() else "")
+	var title: String = TUNING.MODE_NAMES[id]
+	if id == "race":
+		title = title.replace("Wolken", "Wolken\u00ad")
+	button.text = title + ("\n" + best if not best.is_empty() else "")
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.add_theme_font_override("font", UI.UI.HEADING)
 	button.add_theme_font_size_override("font_size", roundi(16.0 * u))
