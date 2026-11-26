@@ -235,6 +235,7 @@ func _run() -> void:
 
 
 func _finish() -> void:
+	_check(await preload("res://scripts/tests/lumo_scene_teardown.gd").release(self, "[SonnenhafenSaves]"), "the real scene and audio are released")
 	print("[SonnenhafenSaves] %s %d checks" % ["PASS" if failures.is_empty() else "FAIL", checks])
 	for failure in failures:
 		print("  FAIL: " + failure)
