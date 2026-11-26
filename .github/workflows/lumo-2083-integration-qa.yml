@@ -1,0 +1,102 @@
+name: LUMO 2083 – zusammengeführte Spielwelt und Kart
+on:
+  push:
+    branches: [integration/intelligence-2083-20261126]
+    paths:
+      - .github/workflows/lumo-2083-integration-qa.yml
+      - scripts/**
+      - assets/**
+      - export_presets.cfg
+permissions:
+  contents: read
+concurrency:
+  group: intelligence-2083-native-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [figures_world, driving, tables, tracks]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Godot 4.6.3 und exakte Quelle
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          git rev-parse HEAD > proof/commit.txt
+          git rev-parse HEAD^{tree} > proof/tree.txt
+          curl -fL --retry 3 -o "$RUNNER_TEMP/godot.zip" https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          ln -s "$RUNNER_TEMP/godot-bin/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot-bin/godot"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Gemeinsamen Quellstand importieren
+        run: |
+          set -euo pipefail
+          godot --version | tee proof/engine.txt
+          if ! timeout 900 godot --headless --single-threaded-scene --editor --import --quit > proof/import.log 2>&1; then
+            tail -120 proof/import.log
+            exit 1
+          fi
+          if grep -E 'SCRIPT ERROR|Parse Error|Compile Error|ERROR:' proof/import.log; then exit 1; fi
+      - name: Tatsächliche Szenen und Regressionen
+        env:
+          PROBE_GROUP: ${{ matrix.group }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          groups = {
+              'figures_world': [
+                  ('lumo_figure_animation_regression', 'PASS', [], 900),
+                  ('lumo_world_sonnenhafen_npc_regression', '[SonnenhafenNpc] PASS', [], 900),
+                  ('lumo_world_sonnenhafen_mission_regression', 'PASS', [], 900),
+                  ('lumo_world_sonnenhafen_save_regression', '[SonnenhafenSaves] PASS', [], 900),
+                  ('lumo_world_open_world_integration_regression', '[LumoOpenWorldIntegration] PASS', [], 600),
+                  ('lumo_world_kart_ground_regression', '[LumoWorldKartGround] PASS', [], 600),
+              ],
+              'driving': [
+                  ('kart_body_motion_regression', 'PASS', [], 900),
+                  ('kart_fahrgefuehl_regression', 'PASS', [], 900),
+                  ('kart_rival_ai_regression', 'PASS', [], 1500),
+                  ('lumo_kart_production_driver_regression', 'PASS', [], 900),
+              ],
+              'tables': [
+                  ('cards_durchspiel_regression', 'PASS', [], 1200),
+                  ('chess_durchspiel_regression', 'PASS', [], 1200),
+                  ('star_collect_durchspiel_regression', 'PASS', [], 600),
+                  ('table_turn_flow_regression', 'PASS', [], 600),
+              ],
+              'tracks': [
+                  ('kart_track_contract', 'PASS', [], 1200),
+                  ('kart_signature_world_regression', '[SignatureWorld] PASS', [], 1200),
+              ] + [
+                  ('kart_signature_race_regression', '[SignatureRace] PASS', ['--track='+track], 1500)
+                  for track in ('vulkanexpress_3100', 'wolkensturm_3300', 'kristallflut_2800')
+              ],
+          }
+          failed = []
+          for name, marker, args, deadline in groups[os.environ['PROBE_GROUP']]:
+              label = name + ('-' + args[0].split('=',1)[1] if args else '')
+              env = dict(os.environ, XDG_DATA_HOME=str(Path(os.environ['RUNNER_TEMP']) / label))
+              cmd = ['python3','tools/run_godot_probe.py','--log',f'proof/{label}.log','--timeout',str(deadline),'--required',marker,'--','godot','--headless','--single-threaded-scene','--audio-driver','Dummy','--path','.','--script',f'res://scripts/tests/{name}.gd']
+              if args:
+                  cmd += ['--', *args]
+              if subprocess.run(cmd, env=env).returncode:
+                  failed.append(label)
+          if failed:
+              raise SystemExit('Failed: ' + ', '.join(failed))
+          PY
+      - name: Originalbelege sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LUMO-2083-NATIVE-${{ matrix.group }}-${{ github.run_id }}
+          path: proof/
+          if-no-files-found: error
