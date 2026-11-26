@@ -20,14 +20,16 @@ func _make_environment_scene(name: String) -> Dictionary:
 
 
 func _run() -> void:
-	await process_frame
-	await process_frame
 	var performance: Node = root.get_node_or_null("PerformanceManager")
 	assert(performance != null, "PerformanceManager autoload was not created")
 	assert(scene_changed.is_connected(Callable(performance, "_on_scene_changed")),
 		"Quality manager must listen to the actual SceneTree.scene_changed signal")
+	# A normal scene can select its own level before the first idle frame.
+	# This choice must survive autoload initialisation and scene transitions.
 	var previous_profile: int = int(performance.get("current_profile"))
-	performance.call("set_profile", 0, false)  # LOW, never persist test preferences
+	performance.call("set_graphics_choice", "low", false)
+	await process_frame
+	await process_frame
 	assert(str(performance.call("get_profile_name")) == "low")
 
 	var first: Dictionary = _make_environment_scene("QualityFirst")

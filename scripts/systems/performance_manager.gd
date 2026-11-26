@@ -25,6 +25,9 @@ var platform: String = ""
 ## wählbar. Das Profil-Enum bleibt HIGH für Welten mit drei Detailstufen.
 ## Kart-Kulisse und Fahreffekte verwenden den separaten Ultra-Schalter.
 var ultra_enabled: bool = false
+# Opt-in Godot desktop sessions. Neither mode is persisted to a child's settings.
+var desktop_presentation := ""
+
 
 
 ## Names of graphics adapters that compute the picture on the processor.
@@ -64,11 +67,24 @@ func _ready() -> void:
 	if software_rendered_mobile():
 		auto_choice = "low"
 		print("[Perf] software_renderer_on_mobile: light profile")
-	# Apply the quality settings again when a different race/learning scene loads.
+	desktop_presentation = _desktop_mode(OS.get_cmdline_user_args())
+	if not desktop_presentation.is_empty():
+		auto_choice = "ultra"
+	# SettingsStore loads before this autoload. Apply once before game scenes
+	# can request their own profile, then apply it to each newly entered scene.
 	get_tree().scene_changed.connect(_on_scene_changed)
-	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
-	await get_tree().process_frame
 	set_graphics_choice(auto_choice, false)
+
+
+func _desktop_mode(arguments: PackedStringArray) -> String:
+	if DisplayServer.get_name() == "headless" or OS.get_name() not in ["Linux", "Windows", "macOS"]:
+		return ""
+	if RenderingServer.get_current_rendering_method() != "forward_plus":
+		return ""
+	for argument in arguments:
+		if argument in ["--lumo-render=desktop-ultra", "--lumo-render=cinematic"]:
+			return argument.get_slice("=", 1)
+	return ""
 
 
 ## Setzt das Quality-Profil und applied alle Schalter.
@@ -140,6 +156,10 @@ func _apply_environment(profile: Profile) -> void:
 	if env_node == null or env_node.environment == null:
 		return
 	var env: Environment = env_node.environment
+	if not desktop_presentation.is_empty():
+		# SSR complements authored probes. Indirect light is reserved for capture.
+		env.ssr_enabled = profile == Profile.HIGH
+		env.ssil_enabled = profile == Profile.HIGH and desktop_presentation == "cinematic"
 	match profile:
 		Profile.LOW:
 			env.glow_enabled = false
