@@ -16,7 +16,15 @@ const CHASSIS := {
 	"wolkenkurier": Vector3(38, .22, .72), "mooslaeufer": Vector3(26, .80, .02),
 	"mondsprint": Vector3(42, .03, .97), "werkmeister": Vector3(20, .91, .02),
 }
-const ENGINE_PITCH := {"sprint": 1.16, "dauer": .88, "lader": .93, "leicht": 1.23, "hybrid": 1.04}
+const ENGINE_PITCH := {"sprint": 1.16, "dauer": .88, "lader": .93, "leicht": 1.23, "hybrid": 1.04, "berg": .78, "axial": .95}
+# Harmonic, resonance gain and low collector contribution for each outlet.
+# The same values voice the showroom kart and spatial opponents.
+const EXHAUST_RESONANCE := {
+	"serie": Vector3(4, .16, 0), "doppel": Vector3(2, .16, .87),
+	"rakete": Vector3(7, .23, 0), "rally": Vector3(3, .35, .32),
+	"schiefer": Vector3(5, .23, 0), "kupfer": Vector3(2, .30, .26),
+	"gitter": Vector3(6, .25, 0), "versatz": Vector3(3, .23, .56),
+}
 const GEAR_RATIO := {"kurz": 1.18, "lang": .82, "turbo": .92, "gelaende": 1.27, "sperre": 1.06}
 const PARTS = preload("res://scripts/games/kart_part_catalog.gd")
 const SAMPLE_RATE := 12000
@@ -83,15 +91,15 @@ func configure(style: String, look: Dictionary) -> void:
 	var exhaust: String = look.get("exhaust", "serie")
 	var levels: Dictionary = look.get("levels", {})
 	var turns := roundi(chassis.x * float(ENGINE_PITCH.get(engine, 1.0)) + float(levels.get("motor", 0)))
-	electric = maxf(chassis.z, .68 if engine == "hybrid" else 0.0)
+	var engine_electric := .92 if engine == "axial" else (.68 if engine == "hybrid" else 0.0)
+	electric = maxf(chassis.z, engine_electric)
 	gear_ratio = GEAR_RATIO.get(look.get("gearbox", "serie"), 1.0)
 	brake_timbre = PARTS.option("brakes", look.get("brakes", "serie")).mul.get("brake", 1.0)
 	regen_brake = look.get("brakes") == "reku"
 	tire_grip = PARTS.option("tires", look.get("tires", "serie")).mul.get("grip", 1.0)
 	boost_timbre = PARTS.option("booster", look.get("booster", "serie")).mul.get("boost_power", 1.0)
-	var twin := exhaust == "doppel"
+	var resonance: Vector3 = EXHAUST_RESONANCE.get(exhaust, EXHAUST_RESONANCE.serie)
 	var nozzle := exhaust == "rakete"
-	var bore := 2.0 if twin else (7.0 if nozzle else 4.0)
 	var collector_turns := maxi(1, roundi(turns * .5))
 	var core := PackedByteArray()
 	var intake := PackedByteArray()
@@ -105,9 +113,9 @@ func configure(style: String, look: Dictionary) -> void:
 		var wobble := chassis.y * sin(shaft)
 		var pulse := sin(shaft + wobble) + .48 * sin(2.0 * shaft - wobble)
 		pulse += .22 * sin(3.0 * shaft + wobble) + .11 * sin(5.0 * shaft)
-		var resonator := sin(bore * shaft + .8 * sin(shaft)) * (.23 if nozzle else .16)
-		if twin:
-			resonator += .87 * sin(collector_turns * cycle + .2 * sin(shaft))
+		var resonator := sin(resonance.x * shaft + .8 * sin(shaft)) * resonance.y
+		if resonance.z > 0.0:
+			resonator += resonance.z * sin(collector_turns * cycle + .2 * sin(shaft))
 		var rotor := .77 * sin(shaft * 2.0) + .21 * sin(shaft * 5.0 + .4 * sin(shaft))
 		var shell := lerpf(pulse * (.79 + .21 * cos(shaft + wobble)), rotor, electric)
 		var reed := .44 * sin(3.0 * shaft + 1.65 * sin(shaft)) + .23 * sin(5.0 * shaft + wobble)
