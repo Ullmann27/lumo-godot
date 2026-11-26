@@ -75,6 +75,17 @@
     34,
     4
    ]
+  },
+  {
+   "id": "hafenweg",
+   "title": "Hafenweg",
+   "rect": [
+    200,
+    -84,
+    7,
+    78
+   ],
+   "nav": false
   }
  ],
  "streets": [
@@ -1031,5 +1042,14 @@
  "spawn_point": [
   200,
   -100
- ]
+ ],
+ "parking": {
+  "rect": [
+   184,
+   -97,
+   10,
+   8
+  ],
+  "title": "Kart-Parkplatz Sonnenhafen"
+ }
 }

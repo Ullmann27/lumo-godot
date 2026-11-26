@@ -99,6 +99,7 @@ var reduced_motion := false
 var quality := "medium"
 var clock := 0.0
 var module_count := 0
+var skipped_details := 0
 var batch_count := 0
 var night := 0.0
 
@@ -164,6 +165,10 @@ func _chunk(x: float) -> int:
 ## Queue one module instance. group "" = shared town chunk; a building id puts
 ## the instance into that building's own batch (cut-away interiors).
 func _add(module: String, xform: Transform3D, color := Color.WHITE, group := "") -> void:
+	# LOW quality drops purely decorative details (flower boxes, gutters, ...).
+	if quality == "low" and str(MODULE_CLASS.get(module, "detail")) == "detail":
+		skipped_details += 1
+		return
 	var key := "%s|%s" % [module, group if not group.is_empty() else "c%d" % _chunk(xform.origin.x)]
 	if not batches.has(key):
 		batches[key] = {"module": module, "group": group, "transforms": [], "colors": []}
@@ -206,7 +211,7 @@ func _flush_batches() -> void:
 		node.multimesh = multi
 		node.position = center
 		var kind := str(MODULE_CLASS.get(str(batch.module), "detail"))
-		node.visibility_range_end = float(RANGES[kind])
+		node.visibility_range_end = float(RANGES[kind]) * (0.75 if quality == "low" else 1.0)
 		node.visibility_range_end_margin = 10.0
 		node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
 		if kind in ["detail", "prop"] or quality == "low":
@@ -305,6 +310,19 @@ func _ground() -> void:
 			holder, layout.rect(street.rect), lift, "cobble", tint, "Street_" + str(street.id)
 		)
 		lift += 0.003
+	if layout.data.has("parking"):
+		var parking: Rect2 = layout.rect(layout.data.parking.rect)
+		_village_quad(holder, parking, 0.035, "cobble", Color("b9c4cc"), "KartParking")
+		for line in range(3):
+			var x := parking.position.x + 0.2 + float(line) * (parking.size.x - 0.4) * 0.5
+			_village_quad(
+				holder,
+				Rect2(x - 0.1, parking.position.y + 0.6, 0.2, parking.size.y - 1.2),
+				0.04,
+				"plain",
+				Color("f4f1e8"),
+				"ParkingLine_%d" % line
+			)
 	for path in layout.data.get("mainland_paths", []):
 		_village_quad(
 			holder, layout.rect(path.rect), 0.03, "cobble", Color("d1c6b2"), "Path_" + str(path.id)

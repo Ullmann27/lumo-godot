@@ -163,8 +163,27 @@ func setup(owner_world: Node3D, saved: Variant = {}) -> bool:
 	save_valid = restore(saved) and crowd_ok
 	_capture_daylight()
 	_build_markers()
+	_signs()
 	_sync_figures()
 	return save_valid
+
+
+## Readable wayfinding from the mainland: town name, harbour road, kart parking.
+func _signs() -> void:
+	var art = world.get("art")
+	if art == null:
+		return
+	art._sign(self, "SONNENHAFEN", Vector3(200, 7.2, -110), Color("ffd27a"))
+	art._sign(self, "Sonnenhafen · Hafenstadt ↓", Vector3(208.5, 3.4, -82), Color("b6ffdf"))
+	art._sign(self, "Hafenweg nach Sonnenhafen ↓", Vector3(208.5, 3.4, -10), Color("b6ffdf"))
+	if layout.data.has("parking"):
+		var parking: Rect2 = layout.rect(layout.data.parking.rect)
+		art._sign(
+			self,
+			str(layout.data.parking.title),
+			Vector3(parking.get_center().x, 3.0, parking.get_center().y),
+			Color("9aefff")
+		)
 
 
 func unlocked() -> bool:

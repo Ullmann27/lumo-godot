@@ -383,6 +383,26 @@ func _run() -> void:
 	_check(model.cards().size() == 5, "five Sonnenhafen figure cards")
 	_check(harbour.rewarded.size() == 5, "every mission rewarded exactly once")
 
+	# --- Journal and map ---------------------------------------------------------------
+	await _close_popups()
+	scene._open_journal_from_dialog()
+	await _frames(2)
+	var journal: Node = scene.modal_box.find_child("SonnenhafenJournal", true, false)
+	_check(journal != null, "the journal lists the Sonnenhafen missions")
+	_check(
+		(
+			journal != null
+			and journal.find_children("HarbourCard_*", "PanelContainer", true, false).size() == 5
+		),
+		"the journal shows five harbour cards"
+	)
+	await _close_popups()
+	scene._map_dialog()
+	await _frames(2)
+	_check(scene.overview.region_figures.size() == 14, "the world map shows the fourteen residents")
+	_check(scene.overview.world_figures.size() == 9, "chapter-two figures stay separate on the map")
+	await _close_popups()
+
 	# --- Persistence ------------------------------------------------------------------
 	await _close_popups()
 	_check(scene._save(), "World saves the region")

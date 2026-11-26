@@ -52,6 +52,8 @@ var world_figures: Array[Dictionary] = []
 var quest_target: Dictionary = {}
 ## Additional land areas (for example the Sonnenhafen quay platform).
 var extra_lands: Array[Rect2] = []
+## Residents of a region (Sonnenhafen), drawn like the other computer figures.
+var region_figures: Array[Dictionary] = []
 
 
 func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dictionary, completed_missions: Array, all_missions: Array, portals: Array, reduce_motion := false) -> void:
@@ -370,7 +372,7 @@ func draw_atlas(surface: Control) -> void:
 	for friend in friends:
 		if _inside(friend.at):
 			_draw_friend_marker(surface, friend)
-	for figure in world_figures:
+	for figure in world_figures + region_figures:
 		if _inside(figure.at):
 			_draw_friend_marker(surface, figure)
 	if not quest_target.is_empty():
@@ -593,6 +595,15 @@ func add_paths(entries: Array) -> void:
 
 
 ## The followed open-world mission step; drawn as its own diamond marker.
+func set_region_figures(entries: Array) -> void:
+	region_figures.clear()
+	for entry in entries:
+		if entry is Dictionary and entry.get("at") is Vector3:
+			region_figures.append(entry)
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
 func add_lands(entries: Array) -> void:
 	for entry in entries:
 		if entry is Rect2:

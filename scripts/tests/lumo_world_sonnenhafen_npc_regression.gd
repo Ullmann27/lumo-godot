@@ -175,10 +175,27 @@ func _run() -> void:
 	)
 	_check(reached_total >= 40, "the town is busy: %d targets reached" % reached_total)
 
+	# --- Pause: an open dialog freezes every resident and the day -------------------
+	scene._open_dialog("Pause", "Die Welt wartet.")
+	var frozen: Dictionary = {}
+	for id in crowd.order:
+		frozen[id] = (crowd.actors[id].root as Node3D).position
+	var paused_clock: float = harbour.clock
+	await _frames(60)
+	var still := true
+	for id in crowd.order:
+		still = still and (crowd.actors[id].root as Node3D).position == frozen[id]
+	_check(
+		still and harbour.clock == paused_clock,
+		"an open dialog freezes all residents and the harbour day"
+	)
+	scene._close_dialog()
+
 	# --- Far simulation (Lumo on the mainland) ------------------------------------
 	scene.player.position = Vector3(110, 0.1, 18)
 	scene.last_safe = scene.player.position
 	var far_before: int = int(crowd.stats.far_moves)
+	print("[SonnenhafenNpc] far phase starts at physics frame %d" % Engine.get_physics_frames())
 	Engine.time_scale = TIME_SCALE
 	await _frames(900)
 	Engine.time_scale = 1.0
@@ -187,13 +204,19 @@ func _run() -> void:
 		all_far = all_far and not bool(crowd.actors[id].near)
 	_check(all_far, "distant residents switch to simplified simulation")
 	_check(int(crowd.stats.far_moves) > far_before, "distant residents keep following their paths")
-	_check(int(crowd.stats.teleports) == 0, "no teleport in the simplified simulation either")
+	_check(
+		int(crowd.stats.teleports) == 0,
+		(
+			"no teleport in the simplified simulation either "
+			+ str(crowd.stats.get("last_teleport", ""))
+		)
+	)
 
 	# --- Evening: residents go home and disappear only at their own door ----------
 	scene.player.position = Vector3(200, 0.1, -128)
-	scene.open_world.routines.elapsed = 630.0
+	scene.open_world.routines.elapsed = 610.0
 	Engine.time_scale = TIME_SCALE
-	await _frames(1200)
+	await _frames(1300)
 	Engine.time_scale = 1.0
 	var home_count := 0
 	var wrong_door: Array[String] = []

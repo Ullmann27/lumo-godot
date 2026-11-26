@@ -285,7 +285,8 @@ func _derive_walkable() -> void:
 			Rect2(area.position.x + rail, area.position.y, area.size.x - rail * 2.0, area.size.y)
 		)
 	for path in data.get("mainland_paths", []):
-		walkable.append(rect(path.rect))
+		if bool(path.get("nav", true)):
+			walkable.append(rect(path.rect))
 	for pier in data.get("piers", []):
 		var area := rect(pier.rect)
 		walkable.append(
@@ -495,4 +496,6 @@ func clear_areas() -> Array[Rect2]:
 		areas.append(rect(path.rect).grow(3.0))
 	for bridge in data.bridges:
 		areas.append(rect(bridge.rect).grow(3.0))
+	if data.has("parking"):
+		areas.append(rect(data.parking.rect).grow(2.0))
 	return areas

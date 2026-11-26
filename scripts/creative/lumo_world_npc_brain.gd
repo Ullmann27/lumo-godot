@@ -14,7 +14,7 @@ enum State { IDLE, WALK, TALK, GREET, HOME }
 const PHASES: Array[String] = ["Morgen", "Mittag", "Nachmittag", "Abend"]
 const DAY_START := 8.0
 const DAY_END := 22.0
-const HOME_HOUR := 20.4
+const HOME_HOUR := 20.0
 const MEMORY_LIMIT := 8
 const RECENT_LIMIT := 4
 const GREET_RANGE := 4.5
@@ -94,7 +94,8 @@ func plan(hour: float, friends_near: Array = [], distance_of: Callable = Callabl
 		if not trait_name.is_empty():
 			score *= 0.6 + personality(trait_name)
 		if spot_id == spot:
-			score *= 0.2
+			# A new activity always takes the resident somewhere else.
+			score *= 0.0 if entries.size() > 1 else 0.2
 		elif spot_id in recent:
 			score *= 0.55
 		if distance_of.is_valid():
@@ -151,6 +152,15 @@ func begin(plan_data: Dictionary) -> void:
 			timer = float(plan_data.duration)
 			partner = ""
 			state = State.WALK
+
+
+## Small working walk inside the current spot (fetching, carrying, looking),
+## so a long activity is never spent standing on one point.
+func shuffle() -> bool:
+	if state != State.IDLE or spot == "home" or timer < 5.0:
+		return false
+	state = State.WALK
+	return true
 
 
 func arrived() -> void:

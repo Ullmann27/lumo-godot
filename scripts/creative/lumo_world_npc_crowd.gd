@@ -197,7 +197,11 @@ func _spawn(entry: Dictionary) -> Dictionary:
 		"facing": 0.0,
 		"gesture": 0.0,
 		"last_tick_position": Vector3.ZERO,
-		"stuck_events": 0
+		"stuck_events": 0,
+		"shuffling": false,
+		"shuffle_after": 11.0,
+		"skip_move": false,
+		"last_step": 0.0
 	}
 	agent.velocity_computed.connect(_on_velocity.bind(str(entry.id)))
 	# Warm start: the day begins with each resident at its first morning spot.
@@ -423,6 +427,8 @@ func _tick_actor(
 	elif brain.state == BRAIN.State.IDLE:
 		actor.idle_time += step
 		actor.max_idle = maxf(actor.max_idle, actor.idle_time)
+		if actor.idle_time >= float(actor.shuffle_after) and _shuffle(actor):
+			actor.idle_time = 0.0
 	if brain.state != BRAIN.State.IDLE:
 		actor.idle_time = 0.0
 	# Movement since the previous tick, including the avoidance callback move.
@@ -431,8 +437,23 @@ func _tick_actor(
 	moved.y = 0.0
 	var length := moved.length()
 	stats.max_step = maxf(stats.max_step, length)
-	if length > WALK_SPEED * 1.5 * step + 0.05:
+	# The avoidance callback after the previous tick moved with that tick's delta.
+	var allowed := WALK_SPEED * 1.5 * maxf(step, float(actor.last_step)) + 0.05
+	actor.last_step = step
+	if length > allowed:
 		stats.teleports += 1
+		stats["last_teleport"] = (
+			"%s %.3f m step %.4f state %d near %s skip %s frame %d"
+			% [
+				actor.id,
+				length,
+				step,
+				brain.state,
+				str(actor.near),
+				str(actor.skip_move),
+				Engine.get_physics_frames()
+			]
+		)
 	actor.travelled += length
 	if length > 0.0005:
 		actor.facing = lerp_angle(actor.facing, atan2(moved.x, moved.z), 1.0 - exp(-8.0 * step))
@@ -447,6 +468,8 @@ func _update_mode(actor: Dictionary, distance: float) -> void:
 		actor.near = false
 		agent.avoidance_enabled = false
 		actor.path = PackedVector3Array()
+		# The avoidance callback may already have moved the body this frame.
+		actor.skip_move = true
 	elif not actor.near and distance < NEAR_RANGE:
 		actor.near = true
 		agent.avoidance_enabled = true
@@ -499,7 +522,8 @@ func _on_velocity(safe: Vector3, id: String) -> void:
 	if not actors.has(id):
 		return
 	var actor: Dictionary = actors[id]
-	if actor.brain.state != BRAIN.State.WALK or not actor.near:
+	# Avoidance keeps reporting while the World is paused (dialogs): never move then.
+	if actor.brain.state != BRAIN.State.WALK or not actor.near or bool(world.get("paused")):
 		return
 	var move := Vector3(safe.x, 0.0, safe.z) * last_delta
 	var limit := WALK_SPEED * 1.25 * last_delta
@@ -521,6 +545,9 @@ func _on_velocity(safe: Vector3, id: String) -> void:
 
 
 func _walk_polyline(actor: Dictionary, step: float) -> void:
+	if actor.skip_move:
+		actor.skip_move = false
+		return
 	var target: Vector3 = actor.target
 	var path: PackedVector3Array = actor.path
 	if path.is_empty():
@@ -550,12 +577,37 @@ func _walk_polyline(actor: Dictionary, step: float) -> void:
 		_arrive(actor)
 
 
+func _shuffle(actor: Dictionary) -> bool:
+	var brain = actor.brain
+	var base: Vector3 = layout.spot(brain.spot)
+	if not base.is_finite():
+		return false
+	var rng: RandomNumberGenerator = brain.rng
+	actor.shuffle_after = rng.randf_range(9.0, 15.0)
+	for attempt in range(4):
+		var angle := rng.randf() * TAU
+		var radius := rng.randf_range(1.2, 2.6)
+		var probe := base + Vector3(cos(angle), 0.0, sin(angle)) * radius
+		if (
+			layout.is_walkable(Vector2(probe.x, probe.z))
+			and probe.distance_to(actor.root.position) > 0.9
+		):
+			if brain.shuffle():
+				actor.target = Vector3(probe.x, 0.0, probe.z)
+				actor.path = PackedVector3Array()
+				actor.shuffling = true
+				return true
+	return false
+
+
 func _arrive(actor: Dictionary) -> void:
 	var brain = actor.brain
+	var was_shuffling: bool = actor.shuffling
+	actor.shuffling = false
 	brain.arrived()
 	actor.velocity = Vector3.ZERO
 	(actor.agent as NavigationAgent3D).velocity = Vector3.ZERO
-	if not brain.spot.is_empty():
+	if not brain.spot.is_empty() and not was_shuffling:
 		actor.spots_reached[brain.spot] = int(actor.spots_reached.get(brain.spot, 0)) + 1
 	if brain.state == BRAIN.State.HOME:
 		_show(actor, false)
