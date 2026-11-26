@@ -81,10 +81,9 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 	sign.text = "LUMO"
 	sign.font_size = 68
 	sign.pixel_size = 0.012
-	# Neon-Schrift: warmweißer Kern mit magentafarbenem Leuchtsaum.
-	sign.modulate = Color("fff6ea")
-	sign.outline_modulate = Color("ff4fc8")
-	sign.outline_size = 10
+	sign.modulate = Color("c1af96")
+	sign.outline_modulate = Color("323a44")
+	sign.outline_size = 4
 	sign.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 	sign.position = Vector3(0.0, 2.07, 3.90)
 	sign.rotation.y = PI
@@ -94,7 +93,7 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 	motto.text = "DEIN KART. DEIN ABENTEUER."
 	motto.font_size = 24
 	motto.pixel_size = 0.009
-	motto.modulate = Color("ffe2a8")
+	motto.modulate = Color("ab967e")
 	motto.outline_size = 2
 	motto.position = Vector3(0.0, 1.63, 3.90)
 	motto.rotation.y = PI
@@ -102,9 +101,9 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 	var sign_light := OmniLight3D.new()
 	sign_light.name = "NeonSignFill"
 	sign_light.position = Vector3(0.0, 3.4, 3.4)
-	sign_light.light_color = Color("9bd7e5")
-	sign_light.light_energy = 0.45 if rich else 0.28
-	sign_light.omni_range = 7.0
+	sign_light.light_color = Color("c8ae95")
+	sign_light.light_energy = 0.27 if rich else 0.19
+	sign_light.omni_range = 5.3
 	sign_light.light_specular = 0.18
 	sign_light.shadow_enabled = false
 	root.add_child(sign_light)
@@ -122,12 +121,12 @@ static func build(stage: Node3D, turntable_parent: Node3D, profile: String = "hi
 
 	var hero := SpotLight3D.new()
 	hero.name = "GarageHeroSpot"
-	hero.position = Vector3(0.2, 4.6, -2.6)
-	# Hauptlicht von vorn oben: das Kart ist der Star, der Lichtkegel liegt auf dem Teller.
-	hero.light_color = Color("fff1dc")
-	hero.light_energy = 2.4 if rich else 1.8
+	hero.position = Vector3(-1.35, 4.8, -2.75)
+	# Warmes Hauptlicht von vorn oben. Der breite Kegel erfasst auch den Werkstatt-Lumo.
+	hero.light_color = Color("fff0d6")
+	hero.light_energy = 2.8 if rich else 2.05
 	hero.spot_range = 10.0
-	hero.spot_angle = 27.0
+	hero.spot_angle = 32.0
 	hero.light_specular = 1.0
 	# The existing stage key already supplies contact shadows. A second shadow
 	# pass from this fill added geometry cost without clarifying the car.

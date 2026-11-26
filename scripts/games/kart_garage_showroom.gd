@@ -16,8 +16,8 @@ const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
 const WOOD := Color("c98a52")
 const RED := Color("e8423a")
 const YELLOW := Color("ffc532")
-const MAGENTA := Color("ff4fc8")
-const ORANGE := Color("ff9a3c")
+const SIGN_BRASS := Color("b89069")
+const ORANGE := Color("ea9a66")
 const CYAN := Color("3ae0ff")
 const GREEN := Color("5fd068")
 const GOLD := Color("ffbf3c")
@@ -44,8 +44,8 @@ static func build(root: Node3D, materials: Dictionary, profile: String) -> Dicti
 		"gold": INTERIOR._mat(GOLD, 0.85, 0.22),
 		"dark": INTERIOR._mat(Color("1a2230"), 0.1, 0.6),
 		"blue": INTERIOR._mat(Color("2f7bff"), 0.2, 0.32),
-		"neon_magenta": INTERIOR._emit(MAGENTA, MAGENTA, 2.2),
-		"neon_orange": INTERIOR._emit(ORANGE, ORANGE, 1.8),
+		"sign_trim": INTERIOR._emit(SIGN_BRASS, SIGN_BRASS, 0.30),
+		"neon_orange": INTERIOR._emit(ORANGE, ORANGE, 0.58),
 		"neon_cyan": INTERIOR._emit(CYAN, CYAN, 1.6),
 		"stain": _stain_material(),
 	}
@@ -293,7 +293,7 @@ static func _tube(parent: Node3D, mesh_name: String, from: Vector3, to: Vector3,
 static func _led_backdrop(parent: Node3D) -> void:
 	var gradient := Gradient.new()
 	gradient.offsets = PackedFloat32Array([0.0, 0.45, 0.78, 1.0])
-	gradient.colors = PackedColorArray([Color("3a2a8c"), Color("b83f9e"), Color("ff7a4a"), Color("ffb35a")])
+	gradient.colors = PackedColorArray([Color("16242f"), Color("37303d"), Color("855a4c"), Color("c28d62")])
 	var texture := GradientTexture2D.new()
 	texture.gradient = gradient
 	texture.width = 8
@@ -303,7 +303,7 @@ static func _led_backdrop(parent: Node3D) -> void:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_texture = texture
-	material.albedo_color = Color(0.92, 0.92, 0.92)
+	material.albedo_color = Color(0.88, 0.88, 0.88)
 	var wall := MeshInstance3D.new()
 	wall.name = "SunsetLedWall"
 	var quad := QuadMesh.new()
@@ -360,7 +360,7 @@ static func _ceiling(parent: Node3D, mats: Dictionary) -> void:
 		parent.add_child(bulb)
 
 
-## Neonrahmen um das LUMO-Schild: Magenta außen, Orange als Unterstrich.
+## Schmale, warm getönte Leuchten kennzeichnen das Studio hinter dem Drehteller.
 static func _neon_frame(parent: Node3D, mats: Dictionary) -> void:
 	var z := SIGN_CENTER.z
 	var x0 := -SIGN_HALF.x
@@ -369,8 +369,8 @@ static func _neon_frame(parent: Node3D, mats: Dictionary) -> void:
 	var y1 := SIGN_CENTER.y + SIGN_HALF.y
 	var corners := [Vector3(x0, y0, z), Vector3(x1, y0, z), Vector3(x1, y1, z), Vector3(x0, y1, z)]
 	for k in range(4):
-		_tube(parent, "NeonFrame%d" % k, corners[k], corners[(k + 1) % 4], 0.028, mats.neon_magenta)
-	_tube(parent, "NeonUnderline", Vector3(-1.2, y0 - 0.12, z), Vector3(1.2, y0 - 0.12, z), 0.022, mats.neon_orange)
+		_tube(parent, "NeonFrame%d" % k, corners[k], corners[(k + 1) % 4], 0.016, mats.sign_trim)
+	_tube(parent, "NeonUnderline", Vector3(-1.2, y0 - 0.12, z), Vector3(1.2, y0 - 0.12, z), 0.014, mats.neon_orange)
 
 
 ## Gelb-schwarze Warnstreifen als Ring um den Drehteller.
@@ -422,20 +422,23 @@ static func _floor_marks(parent: Node3D, mats: Dictionary) -> void:
 
 
 static func _lights(parent: Node3D, rich: bool) -> void:
-	# Farbige Lichtstimmung: Magenta tief hinter dem Kart (Kantenlicht), Orange von der Werkbank.
-	var accent := OmniLight3D.new()
-	accent.name = "ShowroomMagentaBack"
-	accent.position = Vector3(0.4, 0.9, 2.2)
-	accent.light_color = MAGENTA
-	accent.light_energy = 1.1 if rich else 0.7
-	accent.omni_range = 4.0
-	accent.light_specular = 0.9
+	# Kühle Kontur von hinten rechts, begrenzt auf Kart, Räder und Tellerkante.
+	var accent := SpotLight3D.new()
+	accent.name = "ShowroomCoolRim"
+	accent.position = Vector3(2.05, 2.1, 2.4)
+	accent.light_color = Color("a9d8ff")
+	accent.light_energy = 0.96 if rich else 0.63
+	accent.spot_range = 6.0
+	accent.spot_angle = 26.0
+	accent.light_specular = 0.65
+	accent.shadow_enabled = false
 	parent.add_child(accent)
+	accent.look_at(accent.global_position - Vector3(1.85, 1.48, 2.35))
 	var warm := OmniLight3D.new()
 	warm.name = "ShowroomWarmBench"
 	warm.position = Vector3(-3.4, 2.2, 1.4)
 	warm.light_color = Color("ffb36b")
-	warm.light_energy = 0.9 if rich else 0.6
+	warm.light_energy = 0.78 if rich else 0.55
 	warm.omni_range = 5.5
 	warm.light_specular = 0.35
 	parent.add_child(warm)
