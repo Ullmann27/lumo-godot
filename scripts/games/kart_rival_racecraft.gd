@@ -72,7 +72,7 @@ static func curvature(world, road_distance: float) -> float:
 static func corner_speed(bend: float, difficulty: String, kart_id: String, index: int) -> float:
 	if absf(bend) < 0.0001:
 		return INF
-	var grip: float = 17.0 if difficulty == "pro" else 12.5 if difficulty == "flott" else 8.0
+	var grip: float = 19.5 if difficulty == "pro" else 12.5 if difficulty == "flott" else 8.0
 	grip *= POWERTRAIN.DYNAMICS_SCALE
 	grip *= float(factors(kart_id, index, difficulty).grip) * float(style(index).corner)
 	return maxf(7.0, sqrt(grip / absf(bend)))
@@ -178,3 +178,16 @@ static func may_boost(
 		if obstacle.x > 0.0 and obstacle.x < cruise * 1.6 and absf(obstacle.y - current) < 1.8:
 			return false
 	return true
+
+
+## A bump from another kart: the sideways push fades as the tyres catch it again.
+static func apply_contact_push(rival: Node3D, delta: float) -> void:
+	if not rival.has_meta(&"contact_push"):
+		return
+	var push: Vector3 = rival.get_meta(&"contact_push")
+	rival.position += push * delta
+	push *= exp(-14.0 * delta)
+	if push.length() < 0.05:
+		rival.remove_meta(&"contact_push")
+	else:
+		rival.set_meta(&"contact_push", push)

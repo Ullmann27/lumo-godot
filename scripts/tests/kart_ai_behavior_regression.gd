@@ -309,6 +309,10 @@ func _measure_unobstructed_line() -> Dictionary:
 		game.opponents[i].queue_free()
 	game.opponents.resize(1)
 	game.item_box_distances.clear()
+	# Sammelzonen-Prismen are pickups too: rivals steer for them on purpose
+	# (kart_item_zones.rival_lane), which is not a line-keeping error.
+	game.catalog_box_distances.clear()
+	game.catalog_box_laterals.clear()
 	game.world.action_obstacles.clear()
 	var start: float = 30.0
 	var best: float = INF

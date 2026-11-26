@@ -17,6 +17,13 @@ const PARTS = preload("res://scripts/games/kart_part_catalog.gd")
 const SAMPLE_RATE := 12000
 const FRAMES := 6000
 const RADIUS := 40.0
+## Sequential kart gearbox heard in the motor: wheel-rate thresholds of the
+## upshifts. The motor climbs within a gear, drops on each shift and pulls up
+## again; electric motors (electric >= 0.9) have one long gear.
+const SHIFT_POINTS: Array[float] = [0.26, 0.50, 0.76]
+## How much of the motor speed follows the gear (the rest follows road speed).
+const GEAR_SHARE := 0.42
+const SHIFT_DIP := 0.11
 
 var body
 var induction
@@ -31,6 +38,9 @@ var boost_timbre := 1.0
 var previous_speed := 0.0
 var regen_brake := false
 var distance_sq := INF
+var gear := 0
+var shifts := 0
+var _shift_dip := 0.0
 
 
 func _init(parent: Node, spatial: bool) -> void:
@@ -60,6 +70,9 @@ func configure(style: String, look: Dictionary) -> void:
 	rpm = 0.0
 	load_amount = 0.0
 	previous_speed = 0.0
+	gear = 0
+	shifts = 0
+	_shift_dip = 0.0
 	var chassis: Vector3 = CHASSIS.get(style, CHASSIS.comet)
 	var engine: String = look.get("engine", "serie")
 	var exhaust: String = look.get("exhaust", "serie")
@@ -117,7 +130,7 @@ func advance(step: float, speed: float, throttle: float, brake: float, boost: bo
 	var acceleration := (road_speed - previous_speed) / maxf(step, .001)
 	previous_speed = road_speed
 	var wheel_rate := clampf(road_speed * gear_ratio / 43.0, 0.0, 1.35)
-	var shaft_rate := wheel_rate * .83
+	var shaft_rate := _geared(wheel_rate) * .83
 	if free_rev:
 		shaft_rate = maxf(shaft_rate, .82 * throttle)
 	var target_load := throttle * (1.0 if free_rev else 1.0 - brake)
@@ -126,7 +139,12 @@ func advance(step: float, speed: float, throttle: float, brake: float, boost: bo
 		shaft_rate += .14
 		target_load = 1.0
 	shaft_rate += .15 * target_load
-	rpm = move_toward(rpm, shaft_rate, step * (2.2 if rpm < shaft_rate else 1.25))
+	if _shift_dip > 0.0:
+		# The clutch opens for a moment: the motor falls and the load eases.
+		target_load *= 0.55
+		_shift_dip = maxf(0.0, _shift_dip - step)
+	var falling := 6.0 if _shift_dip > 0.0 else 1.25
+	rpm = move_toward(rpm, shaft_rate, step * (2.2 if rpm < shaft_rate else falling))
 	load_amount = move_toward(load_amount, target_load, step * 5.0)
 	var pitch := .80 + 1.84 * rpm
 	var regen := brake * minf(1.0, wheel_rate) * (1.0 if regen_brake else electric)
@@ -137,6 +155,30 @@ func advance(step: float, speed: float, throttle: float, brake: float, boost: bo
 	if not body.playing:
 		body.play()
 		induction.play()
+
+
+## Road-following motor speed with the saw tooth of the gears laid in.
+func _geared(wheel_rate: float) -> float:
+	if electric >= 0.9:
+		gear = 0
+		return wheel_rate
+	var wanted := 0
+	for point in SHIFT_POINTS:
+		if wheel_rate > point:
+			wanted += 1
+	# Shift down a little later than up, so the motor does not hunt at a threshold.
+	if wanted < gear and wheel_rate > SHIFT_POINTS[gear - 1] - 0.04:
+		wanted = gear
+	if wanted > gear:
+		shifts += 1
+		_shift_dip = SHIFT_DIP
+	gear = wanted
+	var low := 0.0 if gear == 0 else SHIFT_POINTS[gear - 1]
+	var high := SHIFT_POINTS[gear] if gear < SHIFT_POINTS.size() else 1.35
+	var within := clampf((wheel_rate - low) / maxf(0.01, high - low), 0.0, 1.0)
+	# Inside a gear the motor sweeps from ~60 % to 100 % of the shift speed.
+	var geared := lerpf(high * 0.6, high, within) if gear < SHIFT_POINTS.size() else wheel_rate
+	return lerpf(wheel_rate, geared, GEAR_SHARE)
 
 
 func stop() -> void:

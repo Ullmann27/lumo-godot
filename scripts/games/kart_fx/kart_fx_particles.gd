@@ -11,6 +11,12 @@ const PINNED := 4
 var capacity: int = 0
 var fx_time: float = 0.0
 var spawned_total: int = 0
+## Per-tick birth budget (0 = unlimited): bounds the CPU work of one frame even
+## when every effect fires at once. Births beyond it are dropped, not queued.
+var tick_cap: int = 0
+var tick_spawned: int = 0
+var tick_peak: int = 0
+var dropped_total: int = 0
 var _cursor: int = 0
 var _death := PackedFloat32Array()
 var _birth := PackedFloat32Array()
@@ -62,6 +68,7 @@ func clear() -> void:
 
 
 func advance(delta: float, focus: Vector3) -> void:
+	tick_spawned = 0
 	fx_time += maxf(0.0, delta)
 	_material.set_shader_parameter("fx_time", fx_time)
 	visible = fx_time < _last_death
@@ -86,6 +93,11 @@ func spawn(
 	data: Color,
 	bounce_y: float = NO_BOUNCE
 ) -> void:
+	if tick_cap > 0 and tick_spawned >= tick_cap:
+		dropped_total += 1
+		return
+	tick_spawned += 1
+	tick_peak = maxi(tick_peak, tick_spawned)
 	if spark_layout:
 		var cooling := 2.0 if data.b > 0.5 else 0.0
 		data = Color(data.r, data.g, cooling + clampf(data.a, 0.0, 1.0),
