@@ -3243,9 +3243,12 @@ func _drive_opponents(delta: float) -> void:
 		if float(passage_rule.lane) < INF:
 			target_lane = float(passage_rule.lane)
 		target_lane = THRILLS.rival_gap_guard(world, float(sampled.distance), target_lane, i)
+		var traffic_limit: float = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, INF)
 		var look_ahead: float = float(profile.look_ahead)
 		if absf(rival.motion_speed) < 4.0 and absf(target_lane - float(sampled.lateral)) > 0.6:
 			look_ahead = 1.5
+			if traffic_limit < 0.1 and float(passage_rule.lane) == INF and float(passage_rule.speed) > 0.0:
+				look_ahead = 0.0  # Steer laterally out of the blocked lane before moving forward.
 		var aim: Vector3 = world.position_at(float(sampled.distance) + look_ahead, target_lane)
 		var desired_heading: float = atan2(-(aim.x - rival.position.x), -(aim.z - rival.position.z))
 		var angle: float = angle_difference(opponent_headings[i], desired_heading)
@@ -3278,7 +3281,7 @@ func _drive_opponents(delta: float) -> void:
 			float(rival.get_meta(&"racecraft_planned_speed", absf(rival.motion_speed))),
 			target_speed, opponent_boost_times[i] > 0.0, delta, i, difficulty
 		)
-		target_speed = RIVAL_RACECRAFT.traffic_speed(float(sampled.lateral), traffic, target_speed)
+		target_speed = minf(target_speed, traffic_limit)
 		rival.set_meta(&"racecraft_planned_speed", target_speed)
 		opponent_stuns[i] = maxf(0, opponent_stuns[i] - delta)
 		_sync_rival_item_fx(i)

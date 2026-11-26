@@ -43,6 +43,15 @@ func _run() -> void:
 		CRAFT.traffic_speed(3.0, boxed, 25.0) == 25.0,
 		"Traffic in a free adjacent lane must not slow us"
 	)
+	var vine := PackedVector3Array([Vector3(1.4, 3.6, 0.0)])
+	_check(
+		CRAFT.manoeuvre_speed(3.2, 0.0, vine, 0.0, Vector2.UP, STEP) > 0.0,
+		"A blocked kart may creep sideways to increase its clearance"
+	)
+	_check(
+		is_zero_approx(CRAFT.manoeuvre_speed(3.2, 4.2, vine, 0.0, Vector2.DOWN, STEP)),
+		"A kart inside the safety margin must not creep towards the obstacle"
+	)
 	_check(
 		CRAFT.may_boost(0.0, 0.0, 0.0, free, 22.0, false, false),
 		"A leader may boost on a safe straight"

@@ -158,7 +158,9 @@ static func manoeuvre_speed(
 	var step: Vector2 = direction * 2.0 * delta
 	for obstacle in traffic:
 		var separation := Vector2(obstacle.x, obstacle.y - current)
-		if (separation - step).length() < 1.65:
+		# A kart already inside the safety margin may creep only if its
+		# clearance improves. Otherwise the safety check traps it there.
+		if (separation - step).length_squared() < minf(1.65 * 1.65, separation.length_squared()):
 			return speed
 	return 2.0
 
