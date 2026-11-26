@@ -85,11 +85,9 @@ func _ready() -> void:
 		voice.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(voice)
 		_pool.append(voice)
-	# Synchronisiere mit gespeicherten Settings, falls vorhanden.
-	if Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("is_audio_muted"):
-			_muted = store.call("is_audio_muted")
+	# The project autoload is ready before the sound players start.
+	_muted = SettingsStore.is_audio_muted()
+	AudioServer.set_bus_mute(0, _muted)
 	print("[Audio] manager ready (muted:%s)" % _muted)
 
 
@@ -103,10 +101,7 @@ func _exit_tree() -> void:
 
 func set_muted(b: bool) -> void:
 	_muted = b
-	if Engine.has_singleton("SettingsStore"):
-		var store: Node = Engine.get_singleton("SettingsStore")
-		if store.has_method("set_audio_muted"):
-			store.call("set_audio_muted", b)
+	SettingsStore.set_audio_muted(b)
 	AudioServer.set_bus_mute(0, b)
 
 

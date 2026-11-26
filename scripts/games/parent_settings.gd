@@ -1,70 +1,64 @@
-## ParentSettings - einfaches Settings-Panel: Quality-Profile waehlen
-##   + Audio-Toggle (Master-Bus mute) + Zurueck zum Home.
-##
-## Die Qualitätswahl wird als gemeinsame Einstellung gespeichert.
+## Standalone native parent settings. Flutter has its own parent area.
 extends Node
 
-@export var low_button_path: NodePath
-@export var medium_button_path: NodePath
-@export var high_button_path: NodePath
-@export var audio_button_path: NodePath
-@export var back_button_path: NodePath
-@export var profile_label_path: NodePath
-
-var _audio_muted: bool = false
-
+@onready var panel: ScrollContainer = %Settings
+@onready var column: VBoxContainer = %Contents
+@onready var quality: OptionButton = %Quality
+@onready var sound: Button = %Sound
+@onready var back: Button = %Back
 
 func _ready() -> void:
-	_wire_button(low_button_path, _on_low)
-	_wire_button(medium_button_path, _on_medium)
-	_wire_button(high_button_path, _on_high)
-	_wire_button(audio_button_path, _on_audio_toggle)
-	_wire_button(back_button_path, _back_to_home)
-	if Engine.has_singleton("AudioManager"):
-		_audio_muted = Engine.get_singleton("AudioManager").is_muted()
-	_update_profile_label()
-	print("[Parent] scene_loaded")
+	for choice in LumoQuality.GRAPHICS_CHOICES:
+		if choice == "ultra" and PerformanceManager.software_rendered_mobile():
+			continue
+		quality.add_item(LumoQuality.GRAPHICS_LABELS[choice])
+		quality.set_item_metadata(quality.item_count - 1, choice)
+	quality.item_selected.connect(_select_quality)
+	EventBus.quality_profile_changed.connect(_refresh_quality)
+	sound.pressed.connect(_toggle_sound)
+	back.pressed.connect(func(): SceneRouter.goto("home"))
+	get_viewport().size_changed.connect(_layout)
+	MobileRuntime.safe_area_changed.connect(_layout)
+	_refresh_quality("")
+	_refresh_sound()
+	_layout()
 
+func _select_quality(index: int) -> void:
+	LumoQuality.set_graphics_choice(str(quality.get_item_metadata(index)))
 
-func _wire_button(path: NodePath, cb: Callable) -> void:
-	var b: Button = get_node_or_null(path) as Button
-	if b != null:
-		b.pressed.connect(cb)
+func _refresh_quality(_tier: String) -> void:
+	var active := LumoQuality.graphics_choice()
+	for i in quality.item_count:
+		if quality.get_item_metadata(i) == active:
+			quality.select(i)
+			return
 
+func _toggle_sound() -> void:
+	AudioManager.set_muted(not AudioManager.is_muted())
+	_refresh_sound()
 
-func _on_low() -> void:
-	PerformanceManager.set_profile(PerformanceManager.Profile.LOW)
-	_update_profile_label()
+func _refresh_sound() -> void:
+	sound.set_pressed_no_signal(not AudioManager.is_muted())
+	sound.text = "Ton eingeschaltet" if sound.button_pressed else "Ton ausgeschaltet"
 
-
-func _on_medium() -> void:
-	PerformanceManager.set_profile(PerformanceManager.Profile.MEDIUM)
-	_update_profile_label()
-
-
-func _on_high() -> void:
-	PerformanceManager.set_profile(PerformanceManager.Profile.HIGH)
-	_update_profile_label()
-
-
-func _on_audio_toggle() -> void:
-	_audio_muted = not _audio_muted
-	if Engine.has_singleton("AudioManager"):
-		Engine.get_singleton("AudioManager").set_muted(_audio_muted)
-	else:
-		AudioServer.set_bus_mute(0, _audio_muted)
-	print("[Parent] audio_muted:%s" % _audio_muted)
-	_update_profile_label()
-
-
-func _update_profile_label() -> void:
-	var label: Label = get_node_or_null(profile_label_path) as Label
-	if label == null:
-		return
-	var p: String = LumoQuality.GRAPHICS_LABELS[LumoQuality.graphics_choice()]
-	var audio: String = "AUS" if _audio_muted else "AN"
-	label.text = "Profil: %s\nAudio: %s" % [p.to_upper(), audio]
-
-
-func _back_to_home() -> void:
-	SceneRouter.goto("home")
+func _layout() -> void:
+	var viewport := get_viewport()
+	var space := viewport.get_visible_rect().size
+	var scale_factor := maxf(0.01, float(viewport.get_window().size.x) / maxf(1.0, space.x))
+	var dp := MobileRuntime.get_ui_density() / scale_factor
+	var edges := MobileRuntime.get_safe_area_insets()
+	var left := edges.position.x / scale_factor + 16.0 * dp
+	var right := space.x - edges.size.x / scale_factor - 16.0 * dp
+	var width := maxf(1.0, minf(right - left, 460.0 * dp))
+	panel.offset_left = (left + right - width) * 0.5
+	panel.offset_right = panel.offset_left + width
+	panel.offset_top = edges.position.y / scale_factor + 16.0 * dp
+	panel.offset_bottom = -edges.size.y / scale_factor - 16.0 * dp
+	column.add_theme_constant_override("separation", roundi(12.0 * dp))
+	%Title.add_theme_font_size_override("font_size", maxi(1, roundi(28.0 * dp)))
+	%QualityLabel.add_theme_font_size_override("font_size", maxi(1, roundi(17.0 * dp)))
+	for button: Button in [quality, sound, back]:
+		button.custom_minimum_size.y = 52.0 * dp
+		button.add_theme_font_size_override("font_size", maxi(1, roundi(18.0 * dp)))
+	quality.get_popup().add_theme_font_size_override("font_size", maxi(1, roundi(18.0 * dp)))
+	quality.get_popup().add_theme_constant_override("v_separation", maxi(1, roundi(24.0 * dp)))
