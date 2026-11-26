@@ -48,14 +48,21 @@ static func exists(name: String) -> bool:
 
 
 static func bundle(name: String) -> Bundle:
-	var entry: Bundle = _bundles[name].get_ref() if _bundles.has(name) else null
+	return bundle_at(DIR + name + ".glb", name)
+
+
+## Same shared atlas material for kit models stored outside DIR (for example
+## the Sonnenhafen town kit). The key keeps the weak cache per file.
+static func bundle_at(path: String, key := "") -> Bundle:
+	var cache_key := path if key.is_empty() else key
+	var entry: Bundle = _bundles[cache_key].get_ref() if _bundles.has(cache_key) else null
 	if entry != null:
 		return entry
 	entry = Bundle.new()
 	entry.material = material()
 	entry.foliage = foliage_material()
-	if exists(name):
-		var scene: PackedScene = load(DIR + name + ".glb")
+	if ResourceLoader.exists(path):
+		var scene: PackedScene = load(path)
 		var source: Node = scene.instantiate() if scene != null else null
 		if source != null:
 			for node in source.find_children("*", "MeshInstance3D", true, false):
@@ -86,7 +93,7 @@ static func bundle(name: String) -> Bundle:
 					for surface in range(mesh_node.mesh.get_surface_count()):
 						entry.triangles += (mesh_node.mesh as ArrayMesh).surface_get_array_index_len(surface) / 3
 			source.free()
-	_bundles[name] = weakref(entry)
+	_bundles[cache_key] = weakref(entry)
 	return entry
 
 

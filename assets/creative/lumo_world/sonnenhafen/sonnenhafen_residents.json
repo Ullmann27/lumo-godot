@@ -1,0 +1,1665 @@
+{
+ "schemaVersion": 1,
+ "note": "Bewohner von Sonnenhafen: Computerfiguren mit Persönlichkeit, Wohnort, Beruf, Interessen, Beziehungen und Tagesablauf. Gehfiguren nutzen nur Modelle mit echtem Gehzyklus (Dorf-Figuren mit Walk-Clip oder Gliederfiguren mit Schwunggelenken); sitzende Kart-Rigs werden nie als Gehfiguren verwendet.",
+ "bodies": {
+  "duck": "res://assets/creative/village/tilda_duck.glb",
+  "rabbit": "res://assets/creative/village/nelli_rabbit.glb",
+  "beaver": "res://assets/creative/village/bruno_beaver.glb",
+  "lion": "res://assets/creative/village/lion_village.glb",
+  "human": "res://assets/creative/village/carpenter_village.glb"
+ },
+ "residents": [
+  {
+   "id": "ida",
+   "name": "Ida Möwenstein",
+   "role": "Hafenmeisterin",
+   "body": "duck",
+   "tint": "eef3f6",
+   "accessory": "cap",
+   "scale": 1.0,
+   "personality": {
+    "social": 0.6,
+    "diligent": 0.9,
+    "curious": 0.4,
+    "calm": 0.7
+   },
+   "traits": "ordentlich, freundlich, behält den Überblick",
+   "home": "nb3_canal:2",
+   "work": "kai_mid",
+   "interests": [
+    "Boote und ihre Namen",
+    "das Wetter auf See",
+    "alte Seekarten"
+   ],
+   "relations": {
+    "jonte": {
+     "kind": "Freund",
+     "affinity": 0.8,
+     "line": "Jonte, wie war der Fang heute Morgen?"
+    },
+    "ole": {
+     "kind": "Kollege",
+     "affinity": 0.7,
+     "line": "Ole, brennt das Leuchtfeuer heute Abend wieder hell?"
+    },
+    "hinnerk": {
+     "kind": "Kollege",
+     "affinity": 0.6,
+     "line": "Hinnerk, sind alle Lieferscheine gestempelt?"
+    },
+    "wilma": {
+     "kind": "Nachbarin",
+     "affinity": 0.5
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "kai_mid",
+      "activity": "Boote zählen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "pier_mid_end",
+      "activity": "Taue prüfen",
+      "weight": 2
+     },
+     {
+      "spot": "pier_market_end",
+      "activity": "Ankunft der Boote ansehen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "kai_market",
+      "activity": "Hafenbuch führen",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Mittagspause im Café",
+      "weight": 1.5,
+      "trait": "social"
+     },
+     {
+      "spot": "kai_east",
+      "activity": "Kran begutachten",
+      "weight": 1
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "pier_west_end",
+      "activity": "Fischkutter einweisen",
+      "weight": 2
+     },
+     {
+      "spot": "kai_mid",
+      "activity": "Liegeplätze verteilen",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "canal_bench_e",
+      "activity": "Kurz verschnaufen",
+      "weight": 1,
+      "trait": "calm"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "lighthouse",
+      "activity": "Abendrunde zum Leuchtturm",
+      "weight": 1.5
+     },
+     {
+      "spot": "canal_bench_e",
+      "activity": "Sonnenuntergang ansehen",
+      "weight": 2,
+      "trait": "calm"
+     },
+     {
+      "spot": "kai_mid",
+      "activity": "Letzte Kontrolle",
+      "weight": 1.5
+     }
+    ]
+   },
+   "greetings": [
+    "Moin, Lumo! Willkommen im Hafen.",
+    "Heute ist gutes Hafenwetter.",
+    "Pass gut auf die Kante am Kai auf."
+   ],
+   "chat": [
+    "Heute kommen noch zwei Boote herein.",
+    "Der Wind dreht am Nachmittag.",
+    "Die Kaimauer ist frisch gefegt."
+   ]
+  },
+  {
+   "id": "jonte",
+   "name": "Jonte Krabbe",
+   "role": "Fischer",
+   "body": "beaver",
+   "tint": "e8d8c8",
+   "accessory": "souwester",
+   "scale": 1.05,
+   "personality": {
+    "social": 0.5,
+    "diligent": 0.8,
+    "curious": 0.3,
+    "calm": 0.5
+   },
+   "traits": "fleißig, geduldig, erzählt gern Seemannsgeschichten",
+   "home": "sb2_quay:1",
+   "work": "pier_west_end",
+   "interests": [
+    "Fischfang",
+    "Wellen lesen",
+    "Netze knoten"
+   ],
+   "relations": {
+    "frieda": {
+     "kind": "Schwester",
+     "affinity": 0.9,
+     "line": "Frieda, ich habe frischen Fang für deinen Stand!"
+    },
+    "ida": {
+     "kind": "Freundin",
+     "affinity": 0.8
+    },
+    "nora": {
+     "kind": "Kollegin",
+     "affinity": 0.7,
+     "line": "Nora, ein Netz hat ein Loch. Kannst du es flicken?"
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "pier_west_end",
+      "activity": "Den Kutter klarmachen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "fish_hall",
+      "activity": "Fischkisten tragen",
+      "weight": 2.5
+     },
+     {
+      "spot": "net_racks",
+      "activity": "Netze aufhängen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "fish_hall",
+      "activity": "Fang sortieren",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "fish_stall",
+      "activity": "Fisch zum Markt bringen",
+      "weight": 2
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Fischbrötchen essen",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "net_racks",
+      "activity": "Netze flicken",
+      "weight": 2.5
+     },
+     {
+      "spot": "pier_west_end",
+      "activity": "Kutter schrubben",
+      "weight": 2
+     },
+     {
+      "spot": "kai_west",
+      "activity": "Wolken beobachten",
+      "weight": 1,
+      "trait": "calm"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "kai_west",
+      "activity": "Feierabend am Wasser",
+      "weight": 2,
+      "trait": "calm"
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Seemannsgarn erzählen",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Ahoi, Lumo!",
+    "Riechst du das Meer? Herrlich!",
+    "Heute schwimmen die Fische schnell."
+   ],
+   "chat": [
+    "Die Möwen waren heute frech.",
+    "Mein Kutter braucht neue Farbe.",
+    "Bei Ostwind beißen die Fische besser."
+   ]
+  },
+  {
+   "id": "greta",
+   "name": "Greta Kornblume",
+   "role": "Krämerin",
+   "body": "duck",
+   "tint": "f6e2c4",
+   "accessory": "scarf",
+   "scale": 0.98,
+   "personality": {
+    "social": 0.8,
+    "diligent": 0.8,
+    "curious": 0.6,
+    "calm": 0.6
+   },
+   "traits": "herzlich, rechnet gern, hat für alles ein Kästchen",
+   "home": "nb2_lane:4",
+   "work": "shop_keeper",
+   "interests": [
+    "Zahlen und Preise",
+    "Gewürze aus fernen Häfen",
+    "ordentliche Regale"
+   ],
+   "relations": {
+    "hinnerk": {
+     "kind": "Lieferant",
+     "affinity": 0.7,
+     "line": "Hinnerk, bringst du morgen die Seile?"
+    },
+    "mila": {
+     "kind": "Freundin",
+     "affinity": 0.8,
+     "line": "Mila, deine Zimtschnecken waren wieder köstlich!"
+    },
+    "ben": {
+     "kind": "Nachbarsjunge",
+     "affinity": 0.6
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "shop_keeper",
+      "activity": "Laden aufschließen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "shop_shelf_w",
+      "activity": "Regale auffüllen",
+      "weight": 2
+     },
+     {
+      "spot": "shop_shelf_n",
+      "activity": "Preise schreiben",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "shop_keeper",
+      "activity": "Kundschaft bedienen",
+      "weight": 3
+     },
+     {
+      "spot": "shop_shelf_n",
+      "activity": "Gläser abstauben",
+      "weight": 1.2
+     },
+     {
+      "spot": "shop_inside",
+      "activity": "Waren zählen",
+      "weight": 1.5,
+      "trait": "diligent"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "shop_keeper",
+      "activity": "Kasse zählen",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "shop_shelf_w",
+      "activity": "Neue Ware einräumen",
+      "weight": 2
+     },
+     {
+      "spot": "bread_stall",
+      "activity": "Brot holen",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "shop_keeper",
+      "activity": "Laden schließen",
+      "weight": 2
+     },
+     {
+      "spot": "bakery_door",
+      "activity": "Mit Mila plaudern",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Guten Tag, Lumo! Schau dich gern um.",
+    "Bei mir gibt es Seile, Laternen und Leckereien.",
+    "Möchtest du handeln? Komm an die Theke."
+   ],
+   "chat": [
+    "Die Preise schreibe ich immer ganz deutlich.",
+    "Heute habe ich neue Muschelketten.",
+    "Ich zähle jeden Abend meine Kasse."
+   ]
+  },
+  {
+   "id": "ole",
+   "name": "Ole Löwenzahn",
+   "role": "Leuchtturmwärter",
+   "body": "lion",
+   "tint": "fff0dc",
+   "accessory": "cap",
+   "scale": 0.95,
+   "personality": {
+    "social": 0.3,
+    "diligent": 0.8,
+    "curious": 0.7,
+    "calm": 0.9
+   },
+   "traits": "ruhig, gewissenhaft, kennt jeden Stern",
+   "home": "sb4_lane:0",
+   "work": "lighthouse",
+   "interests": [
+    "Sterne",
+    "Licht und Linsen",
+    "Seevögel"
+   ],
+   "relations": {
+    "ida": {
+     "kind": "Kollegin",
+     "affinity": 0.7,
+     "line": "Ida, heute Nacht wird es klar. Gute Sicht!"
+    },
+    "lotte": {
+     "kind": "Freundin",
+     "affinity": 0.7,
+     "line": "Lotte, hast du noch Dochte für mich?"
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "lighthouse",
+      "activity": "Linsen putzen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "mole_mid",
+      "activity": "Die Mole ablaufen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "mole_mid",
+      "activity": "Seevögel beobachten",
+      "weight": 2,
+      "trait": "curious"
+     },
+     {
+      "spot": "speicher_kai_gate",
+      "activity": "Lampenöl holen",
+      "weight": 1.5
+     },
+     {
+      "spot": "lighthouse",
+      "activity": "Logbuch schreiben",
+      "weight": 2
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "lighthouse",
+      "activity": "Lampe prüfen",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "kai_east",
+      "activity": "Wetter am Kai prüfen",
+      "weight": 1.5
+     },
+     {
+      "spot": "lamp_workshop",
+      "activity": "Bei Lotte vorbeischauen",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "lighthouse",
+      "activity": "Leuchtfeuer anzünden",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "mole_mid",
+      "activity": "Sterne zählen",
+      "weight": 1.5,
+      "trait": "curious"
+     }
+    ]
+   },
+   "home_early": -0.6,
+   "greetings": [
+    "Hallo, Lumo. Siehst du die Möwen dort?",
+    "Mein Leuchtturm zeigt allen Booten den Weg.",
+    "Nachts zähle ich die Sterne."
+   ],
+   "chat": [
+    "Die Linse glänzt wieder.",
+    "Heute Nacht wird es klar.",
+    "Ein Kormoran saß auf der Mole."
+   ]
+  },
+  {
+   "id": "hinnerk",
+   "name": "Hinnerk Taupe",
+   "role": "Kontorschreiber",
+   "body": "beaver",
+   "tint": "d8e0e8",
+   "accessory": "cap",
+   "scale": 0.97,
+   "personality": {
+    "social": 0.5,
+    "diligent": 0.9,
+    "curious": 0.5,
+    "calm": 0.6
+   },
+   "traits": "genau, hilfsbereit, liebt Listen",
+   "home": "nb3_lane:2",
+   "work": "kontor_keeper",
+   "interests": [
+    "Lieferscheine",
+    "Landkarten",
+    "pünktliche Boote"
+   ],
+   "relations": {
+    "greta": {
+     "kind": "Kundin",
+     "affinity": 0.7
+    },
+    "kalle": {
+     "kind": "Kollege",
+     "affinity": 0.8,
+     "line": "Kalle, die Kisten für den Leuchtturm stehen bereit."
+    },
+    "ida": {
+     "kind": "Kollegin",
+     "affinity": 0.6
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "kontor_keeper",
+      "activity": "Lieferaufträge sortieren",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "kontor_board",
+      "activity": "Aufträge anheften",
+      "weight": 2
+     },
+     {
+      "spot": "kontor_pallets",
+      "activity": "Kisten beschriften",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "kontor_keeper",
+      "activity": "Lieferscheine stempeln",
+      "weight": 2.5
+     },
+     {
+      "spot": "crane",
+      "activity": "Mit Kalle sprechen",
+      "weight": 1.2,
+      "trait": "social"
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Mittag im Café",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "kontor_board",
+      "activity": "Neue Aufträge schreiben",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "kontor_pallets",
+      "activity": "Kisten zählen",
+      "weight": 2
+     },
+     {
+      "spot": "warehouse_gate",
+      "activity": "Speicher Nord prüfen",
+      "weight": 1
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "kontor_keeper",
+      "activity": "Kontorbuch abschließen",
+      "weight": 2
+     },
+     {
+      "spot": "bookshop",
+      "activity": "Ein Buch ausleihen",
+      "weight": 1,
+      "trait": "curious"
+     }
+    ]
+   },
+   "greetings": [
+    "Guten Tag! Im Kontor gibt es Lieferaufträge.",
+    "Jede Kiste hat eine Nummer.",
+    "Hast du Zeit für eine Lieferung?"
+   ],
+   "chat": [
+    "Drei Kisten für den Leuchtturm.",
+    "Die Liste ist fast fertig.",
+    "Ich mag ordentliche Stempel."
+   ]
+  },
+  {
+   "id": "mila",
+   "name": "Mila Sanddorn",
+   "role": "Bäckerin",
+   "body": "rabbit",
+   "tint": "fbf4ee",
+   "accessory": "baker",
+   "scale": 0.96,
+   "personality": {
+    "social": 0.8,
+    "diligent": 0.7,
+    "curious": 0.5,
+    "calm": 0.5
+   },
+   "traits": "fröhlich, früh wach, backt die besten Zimtschnecken",
+   "home": "nb1_lane:1",
+   "work": "bread_stall_vendor",
+   "interests": [
+    "Backen",
+    "Rezepte",
+    "Musik"
+   ],
+   "relations": {
+    "greta": {
+     "kind": "Freundin",
+     "affinity": 0.8
+    },
+    "theo": {
+     "kind": "Kunde",
+     "affinity": 0.6,
+     "line": "Theo, möchtest du heute Brötchen fürs Café?"
+    },
+    "ben": {
+     "kind": "Kunde",
+     "affinity": 0.7
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "bakery_door",
+      "activity": "Brötchen backen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "bread_stall_vendor",
+      "activity": "Brotstand aufbauen",
+      "weight": 2.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "bread_stall_vendor",
+      "activity": "Brot verkaufen",
+      "weight": 3
+     },
+     {
+      "spot": "bakery_door",
+      "activity": "Neuen Teig kneten",
+      "weight": 1.5,
+      "trait": "diligent"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "bread_stall_vendor",
+      "activity": "Kuchen verkaufen",
+      "weight": 2.5
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Kuchen ins Café bringen",
+      "weight": 1.5,
+      "trait": "social"
+     },
+     {
+      "spot": "fountain_s",
+      "activity": "Kurze Pause am Brunnen",
+      "weight": 1,
+      "trait": "calm"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "bakery_door",
+      "activity": "Backstube putzen",
+      "weight": 2
+     },
+     {
+      "spot": "bench_market_w",
+      "activity": "Mit Nachbarn plaudern",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Hallo, Lumo! Es duftet nach Zimt.",
+    "Frisches Brot für alle!",
+    "Magst du Brötchen?"
+   ],
+   "chat": [
+    "Heute gibt es Zimtschnecken.",
+    "Der Ofen war schon um fünf heiß.",
+    "Ich probiere ein neues Rezept."
+   ]
+  },
+  {
+   "id": "paul",
+   "name": "Paul Seestern",
+   "role": "Segelmacher",
+   "body": "rabbit",
+   "tint": "e4dcd0",
+   "accessory": "cap",
+   "scale": 1.02,
+   "personality": {
+    "social": 0.5,
+    "diligent": 0.7,
+    "curious": 0.8,
+    "calm": 0.6
+   },
+   "traits": "geschickt, neugierig, misst alles zweimal",
+   "home": "nb2_lane:5",
+   "work": "sail_loft",
+   "interests": [
+    "Segel und Wind",
+    "Knoten",
+    "Muster nähen"
+   ],
+   "relations": {
+    "nora": {
+     "kind": "Freundin",
+     "affinity": 0.7,
+     "line": "Nora, ich brauche starkes Garn für ein Segel."
+    },
+    "ida": {
+     "kind": "Kundin",
+     "affinity": 0.5
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "sail_loft",
+      "activity": "Segeltuch zuschneiden",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "pier_market_end",
+      "activity": "Segel am Boot messen",
+      "weight": 2,
+      "trait": "curious"
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "sail_loft",
+      "activity": "Nähte nähen",
+      "weight": 2.5
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Mittag mit Freunden",
+      "weight": 1.5,
+      "trait": "social"
+     },
+     {
+      "spot": "pier_market_end",
+      "activity": "Das Segelboot prüfen",
+      "weight": 1.5
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "net_loft",
+      "activity": "Garn bei Nora holen",
+      "weight": 1.5,
+      "trait": "social"
+     },
+     {
+      "spot": "sail_loft",
+      "activity": "Segel flicken",
+      "weight": 2.5
+     },
+     {
+      "spot": "kai_market",
+      "activity": "Wind prüfen",
+      "weight": 1,
+      "trait": "curious"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "sail_loft",
+      "activity": "Werkzeug aufräumen",
+      "weight": 1.5
+     },
+     {
+      "spot": "canal_bench_w",
+      "activity": "Am Kanal sitzen",
+      "weight": 1.5,
+      "trait": "calm"
+     }
+    ]
+   },
+   "greetings": [
+    "Hallo, Lumo! Spürst du den Wind?",
+    "Ein gutes Segel fängt jeden Windhauch.",
+    "Kannst du einen Knoten binden?"
+   ],
+   "chat": [
+    "Das neue Segel ist fast fertig.",
+    "Ich brauche mehr starkes Garn.",
+    "Der Wind kommt heute von Westen."
+   ]
+  },
+  {
+   "id": "frieda",
+   "name": "Frieda Krabbe",
+   "role": "Fischverkäuferin",
+   "body": "duck",
+   "tint": "e2ecf4",
+   "accessory": "souwester",
+   "scale": 0.98,
+   "personality": {
+    "social": 0.9,
+    "diligent": 0.6,
+    "curious": 0.5,
+    "calm": 0.4
+   },
+   "traits": "laut lachend, gesellig, kennt alle Rezepte mit Fisch",
+   "home": "sb1_lane:2",
+   "work": "fish_stall_vendor",
+   "interests": [
+    "Kochen",
+    "Neuigkeiten am Markt",
+    "Lieder"
+   ],
+   "relations": {
+    "jonte": {
+     "kind": "Bruder",
+     "affinity": 0.9
+    },
+    "wilma": {
+     "kind": "Freundin",
+     "affinity": 0.8,
+     "line": "Wilma, hast du schon das Neueste gehört?"
+    },
+    "mila": {
+     "kind": "Nachbarin",
+     "affinity": 0.6
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "fish_hall_east",
+      "activity": "Fisch abholen",
+      "weight": 2.5
+     },
+     {
+      "spot": "fish_stall_vendor",
+      "activity": "Stand aufbauen",
+      "weight": 3,
+      "trait": "diligent"
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "fish_stall_vendor",
+      "activity": "Fisch verkaufen",
+      "weight": 3
+     },
+     {
+      "spot": "fish_stall_2_vendor",
+      "activity": "Am zweiten Stand helfen",
+      "weight": 1.5
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "fish_stall_vendor",
+      "activity": "Rezepte verraten",
+      "weight": 2.5,
+      "trait": "social"
+     },
+     {
+      "spot": "fountain_n",
+      "activity": "Mit Leuten plaudern",
+      "weight": 1.5,
+      "trait": "social"
+     },
+     {
+      "spot": "fish_hall",
+      "activity": "Eis nachfüllen",
+      "weight": 1.5
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "fish_stall_vendor",
+      "activity": "Stand abbauen",
+      "weight": 2
+     },
+     {
+      "spot": "bench_market_e",
+      "activity": "Den Tag erzählen",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Frischer Fisch, Lumo! Hast du Hunger?",
+    "Hallo! Heute ist der Markt voll.",
+    "Weißt du schon das Neueste?"
+   ],
+   "chat": [
+    "Jonte hat heute viel gefangen.",
+    "Hast du das Segelboot gesehen?",
+    "Ich koche heute Fischsuppe."
+   ]
+  },
+  {
+   "id": "kalle",
+   "name": "Kalle Kiel",
+   "role": "Hafenarbeiter am Kran",
+   "body": "beaver",
+   "tint": "f0e4d4",
+   "accessory": "souwester",
+   "scale": 1.08,
+   "personality": {
+    "social": 0.6,
+    "diligent": 0.8,
+    "curious": 0.4,
+    "calm": 0.7
+   },
+   "traits": "stark, gemütlich, hebt jede Kiste",
+   "home": "nb3_canal:3",
+   "work": "crane",
+   "interests": [
+    "Kräne und Seile",
+    "schwere Kisten",
+    "Brettspiele"
+   ],
+   "relations": {
+    "hinnerk": {
+     "kind": "Kollege",
+     "affinity": 0.8
+    },
+    "ida": {
+     "kind": "Chefin",
+     "affinity": 0.6,
+     "line": "Ida, der Kran ist geölt!"
+    },
+    "theo": {
+     "kind": "Freund",
+     "affinity": 0.7
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "crane",
+      "activity": "Kran ölen",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "speicher_kai_gate",
+      "activity": "Speichertor öffnen",
+      "weight": 2
+     },
+     {
+      "spot": "kai_east",
+      "activity": "Kisten stapeln",
+      "weight": 2
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "crane",
+      "activity": "Kisten verladen",
+      "weight": 3
+     },
+     {
+      "spot": "warehouse_gate",
+      "activity": "Säcke tragen",
+      "weight": 2
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Kaffee holen",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "kai_east",
+      "activity": "Kisten zählen",
+      "weight": 2
+     },
+     {
+      "spot": "crane",
+      "activity": "Seile prüfen",
+      "weight": 2.5
+     },
+     {
+      "spot": "kontor_door",
+      "activity": "Lieferschein abgeben",
+      "weight": 1.5
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "speicher_kai_gate",
+      "activity": "Speicher abschließen",
+      "weight": 2
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Brettspiel im Café",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Hallo, Lumo! Vorsicht, hier schwebt eine Kiste.",
+    "Der Kran hebt alles hoch.",
+    "Hilfst du mal beim Zählen?"
+   ],
+   "chat": [
+    "Zwanzig Kisten heute!",
+    "Der Kran quietscht nicht mehr.",
+    "Später spielen wir eine Runde."
+   ]
+  },
+  {
+   "id": "lotte",
+   "name": "Lotte Laterne",
+   "role": "Laternenmacherin",
+   "body": "rabbit",
+   "tint": "f0e6f6",
+   "accessory": "strawhat",
+   "scale": 0.94,
+   "personality": {
+    "social": 0.6,
+    "diligent": 0.7,
+    "curious": 0.7,
+    "calm": 0.6
+   },
+   "traits": "kreativ, aufmerksam, liebt warmes Licht",
+   "home": "nb2_lane:7",
+   "work": "lamp_workshop",
+   "interests": [
+    "Licht und Farben",
+    "Glas",
+    "Sternbilder"
+   ],
+   "relations": {
+    "ole": {
+     "kind": "Freund",
+     "affinity": 0.7
+    },
+    "ben": {
+     "kind": "Schüler",
+     "affinity": 0.7,
+     "line": "Ben, magst du heute eine Laterne bemalen?"
+    },
+    "paul": {
+     "kind": "Nachbar",
+     "affinity": 0.5
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "lamp_workshop",
+      "activity": "Laternenglas schneiden",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "lane_mid",
+      "activity": "Laternen putzen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "lamp_workshop",
+      "activity": "Laternen bemalen",
+      "weight": 2.5
+     },
+     {
+      "spot": "lane_west",
+      "activity": "Laternen prüfen",
+      "weight": 1.5
+     },
+     {
+      "spot": "bookshop",
+      "activity": "Ein Buch über Licht holen",
+      "weight": 1,
+      "trait": "curious"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "lane_east",
+      "activity": "Laternen prüfen",
+      "weight": 2
+     },
+     {
+      "spot": "lamp_workshop",
+      "activity": "Dochte vorbereiten",
+      "weight": 2
+     },
+     {
+      "spot": "ice_cream",
+      "activity": "Ein Eis holen",
+      "weight": 1,
+      "trait": "social"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "lane_west",
+      "activity": "Laternen anzünden",
+      "weight": 2.5,
+      "trait": "diligent"
+     },
+     {
+      "spot": "lane_mid",
+      "activity": "Laternen anzünden",
+      "weight": 2.5
+     },
+     {
+      "spot": "lane_east",
+      "activity": "Laternen anzünden",
+      "weight": 2.5
+     },
+     {
+      "spot": "kai_market",
+      "activity": "Laternen am Kai anzünden",
+      "weight": 2
+     }
+    ]
+   },
+   "greetings": [
+    "Hallo, Lumo! Abends leuchtet hier alles.",
+    "Siehst du die bunten Laternen?",
+    "Licht macht Wege sicher."
+   ],
+   "chat": [
+    "Heute bemale ich eine blaue Laterne.",
+    "Am Abend zünde ich alle Lampen an.",
+    "Glas muss man vorsichtig tragen."
+   ]
+  },
+  {
+   "id": "ben",
+   "name": "Ben Brise",
+   "role": "Schüler",
+   "body": "rabbit",
+   "tint": "eadcc8",
+   "accessory": "cap",
+   "scale": 0.7,
+   "personality": {
+    "social": 0.9,
+    "diligent": 0.4,
+    "curious": 0.9,
+    "calm": 0.3
+   },
+   "traits": "neugierig, flink, will alles wissen",
+   "home": "nb2_canal:3",
+   "work": "fountain_n",
+   "interests": [
+    "Boote zählen",
+    "Möwen",
+    "Rechenrätsel"
+   ],
+   "relations": {
+    "lotte": {
+     "kind": "Lehrerin",
+     "affinity": 0.7
+    },
+    "greta": {
+     "kind": "Nachbarin",
+     "affinity": 0.6,
+     "line": "Greta, wie viele Muscheln kostet ein Eis?"
+    },
+    "mila": {
+     "kind": "Bäckerin",
+     "affinity": 0.7
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "fountain_n",
+      "activity": "Am Brunnen spielen",
+      "weight": 2.5,
+      "trait": "curious"
+     },
+     {
+      "spot": "pier_market_end",
+      "activity": "Boote zählen",
+      "weight": 2,
+      "trait": "curious"
+     },
+     {
+      "spot": "bread_stall",
+      "activity": "Brötchen holen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "ice_cream",
+      "activity": "Ein Eis essen",
+      "weight": 2,
+      "trait": "social"
+     },
+     {
+      "spot": "fountain_s",
+      "activity": "Möwen füttern",
+      "weight": 2,
+      "trait": "curious"
+     },
+     {
+      "spot": "kai_market",
+      "activity": "Am Kai rennen",
+      "weight": 1.5
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "lamp_workshop",
+      "activity": "Bei Lotte malen",
+      "weight": 2,
+      "trait": "social"
+     },
+     {
+      "spot": "pier_mid_end",
+      "activity": "Fische beobachten",
+      "weight": 2,
+      "trait": "curious"
+     },
+     {
+      "spot": "fountain_n",
+      "activity": "Rechenrätsel lösen",
+      "weight": 1.5
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "canal_view_w",
+      "activity": "Am Kanal sitzen",
+      "weight": 1.5,
+      "trait": "calm"
+     },
+     {
+      "spot": "fountain_n",
+      "activity": "Noch einmal spielen",
+      "weight": 1.5
+     }
+    ]
+   },
+   "home_early": 0.6,
+   "greetings": [
+    "Hallo! Bist du neu hier? Ich bin Ben!",
+    "Weißt du, wie viele Boote im Hafen sind?",
+    "Ich habe heute sieben Möwen gezählt!"
+   ],
+   "chat": [
+    "Ich habe heute zwölf Boote gezählt!",
+    "Wie viele Muscheln hast du?",
+    "Ich kann schon bis tausend zählen."
+   ]
+  },
+  {
+   "id": "nora",
+   "name": "Nora Netz",
+   "role": "Netzflickerin",
+   "body": "human",
+   "tint": "ffffff",
+   "accessory": "strawhat",
+   "scale": 1.0,
+   "personality": {
+    "social": 0.5,
+    "diligent": 0.8,
+    "curious": 0.5,
+    "calm": 0.8
+   },
+   "traits": "geduldig, ruhig, hat flinke Hände",
+   "home": "sb2_quay:0",
+   "work": "net_racks",
+   "interests": [
+    "Knoten",
+    "Muster",
+    "das Meer am Morgen"
+   ],
+   "relations": {
+    "jonte": {
+     "kind": "Kollege",
+     "affinity": 0.7
+    },
+    "paul": {
+     "kind": "Freund",
+     "affinity": 0.7
+    },
+    "wilma": {
+     "kind": "Nachbarin",
+     "affinity": 0.6
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "net_racks",
+      "activity": "Netze ausbreiten",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "net_loft",
+      "activity": "Garn holen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "net_racks",
+      "activity": "Netze flicken",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "fish_hall",
+      "activity": "Netze zur Halle bringen",
+      "weight": 1.5
+     },
+     {
+      "spot": "bench_kai",
+      "activity": "Pause am Kai",
+      "weight": 1,
+      "trait": "calm"
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "net_loft",
+      "activity": "Knoten üben",
+      "weight": 2
+     },
+     {
+      "spot": "net_racks",
+      "activity": "Netze prüfen",
+      "weight": 2.5
+     },
+     {
+      "spot": "kai_west",
+      "activity": "Auf die Boote warten",
+      "weight": 1
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "net_loft",
+      "activity": "Netze einräumen",
+      "weight": 2
+     },
+     {
+      "spot": "bench_kai",
+      "activity": "Den Abend genießen",
+      "weight": 1.5,
+      "trait": "calm"
+     }
+    ]
+   },
+   "greetings": [
+    "Hallo, Lumo. Siehst du die Knoten im Netz?",
+    "Ein Netz braucht viel Geduld.",
+    "Schön, dass du da bist."
+   ],
+   "chat": [
+    "Das Netz hatte drei Löcher.",
+    "Ich übe einen neuen Knoten.",
+    "Morgen wird das Meer ruhig."
+   ]
+  },
+  {
+   "id": "theo",
+   "name": "Theo Tide",
+   "role": "Café-Wirt",
+   "body": "beaver",
+   "tint": "fff6e8",
+   "accessory": "baker",
+   "scale": 1.0,
+   "personality": {
+    "social": 0.9,
+    "diligent": 0.6,
+    "curious": 0.5,
+    "calm": 0.6
+   },
+   "traits": "gastfreundlich, erzählt Witze, kennt alle Gäste",
+   "home": "nb2_lane:3",
+   "work": "cafe_door",
+   "interests": [
+    "Kakao",
+    "Witze",
+    "Geschichten der Gäste"
+   ],
+   "relations": {
+    "mila": {
+     "kind": "Lieferantin",
+     "affinity": 0.7
+    },
+    "kalle": {
+     "kind": "Freund",
+     "affinity": 0.7,
+     "line": "Kalle, heute Abend Brettspiel?"
+    },
+    "wilma": {
+     "kind": "Stammgast",
+     "affinity": 0.8,
+     "line": "Wilma, dein Tee steht bereit!"
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "cafe_door",
+      "activity": "Café öffnen",
+      "weight": 3,
+      "trait": "diligent"
+     },
+     {
+      "spot": "bread_stall",
+      "activity": "Brötchen kaufen",
+      "weight": 1.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "cafe_door",
+      "activity": "Gäste bedienen",
+      "weight": 3
+     },
+     {
+      "spot": "lane_mid",
+      "activity": "Tische draußen aufstellen",
+      "weight": 1.5
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "cafe_door",
+      "activity": "Kakao kochen",
+      "weight": 2.5
+     },
+     {
+      "spot": "fruit_stall",
+      "activity": "Obst kaufen",
+      "weight": 1.5
+     },
+     {
+      "spot": "canal_bench_w",
+      "activity": "Kurze Pause",
+      "weight": 1,
+      "trait": "calm"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "cafe_door",
+      "activity": "Abendgäste begrüßen",
+      "weight": 2.5,
+      "trait": "social"
+     },
+     {
+      "spot": "lane_mid",
+      "activity": "Stühle hereinholen",
+      "weight": 1.5
+     }
+    ]
+   },
+   "home_early": -0.5,
+   "greetings": [
+    "Willkommen, Lumo! Ein Kakao gefällig?",
+    "Im Café Kompass ist immer Platz.",
+    "Kennst du den Witz von der Möwe?"
+   ],
+   "chat": [
+    "Heute war das Café voll.",
+    "Mila bringt gleich Kuchen.",
+    "Ich habe einen neuen Witz!"
+   ]
+  },
+  {
+   "id": "wilma",
+   "name": "Wilma Welle",
+   "role": "Rentnerin und Geschichtenerzählerin",
+   "body": "duck",
+   "tint": "f8f0f8",
+   "accessory": "strawhat",
+   "scale": 0.92,
+   "personality": {
+    "social": 1.0,
+    "diligent": 0.3,
+    "curious": 0.7,
+    "calm": 0.8
+   },
+   "traits": "gesellig, weise, kennt jede Geschichte des Hafens",
+   "home": "nb1_canal:1",
+   "work": "canal_bench_w",
+   "interests": [
+    "alte Hafengeschichten",
+    "Blumen",
+    "Möwen füttern"
+   ],
+   "relations": {
+    "frieda": {
+     "kind": "Freundin",
+     "affinity": 0.8
+    },
+    "theo": {
+     "kind": "Café-Wirt",
+     "affinity": 0.8
+    },
+    "ida": {
+     "kind": "Nachbarin",
+     "affinity": 0.5,
+     "line": "Ida, früher lagen hier hundert Boote!"
+    },
+    "nora": {
+     "kind": "Nachbarin",
+     "affinity": 0.6
+    }
+   },
+   "schedule": {
+    "Morgen": [
+     {
+      "spot": "canal_view_w",
+      "activity": "Blumen gießen",
+      "weight": 2,
+      "trait": "calm"
+     },
+     {
+      "spot": "canal_bench_w",
+      "activity": "Möwen füttern",
+      "weight": 2.5
+     }
+    ],
+    "Mittag": [
+     {
+      "spot": "cafe_door",
+      "activity": "Tee im Café",
+      "weight": 2,
+      "trait": "social"
+     },
+     {
+      "spot": "bench_market_w",
+      "activity": "Leute beobachten",
+      "weight": 2,
+      "trait": "curious"
+     },
+     {
+      "spot": "fruit_stall",
+      "activity": "Obst kaufen",
+      "weight": 1
+     }
+    ],
+    "Nachmittag": [
+     {
+      "spot": "bench_market_e",
+      "activity": "Geschichten erzählen",
+      "weight": 2.5,
+      "trait": "social"
+     },
+     {
+      "spot": "fountain_s",
+      "activity": "Am Brunnen sitzen",
+      "weight": 1.5,
+      "trait": "calm"
+     },
+     {
+      "spot": "bookshop",
+      "activity": "Bücher ansehen",
+      "weight": 1,
+      "trait": "curious"
+     }
+    ],
+    "Abend": [
+     {
+      "spot": "canal_bench_w",
+      "activity": "Abendsonne genießen",
+      "weight": 2,
+      "trait": "calm"
+     },
+     {
+      "spot": "cafe_door",
+      "activity": "Noch ein Tee",
+      "weight": 1.5,
+      "trait": "social"
+     }
+    ]
+   },
+   "greetings": [
+    "Ach, Lumo! Soll ich dir eine Hafengeschichte erzählen?",
+    "Früher lagen hier hundert Boote.",
+    "Die Möwen kennen mich alle."
+   ],
+   "chat": [
+    "Früher war der Kanal ein Fluss.",
+    "Der Leuchtturm ist älter als ich!",
+    "Ich habe neue Blumen gepflanzt."
+   ]
+  }
+ ],
+ "accessoryAnchors": {
+  "rabbit": {
+   "hat": 0.74,
+   "hat_scale": 0.78,
+   "neck": 0.52,
+   "scarf_scale": 0.62,
+   "forward": 0.0
+  },
+  "beaver": {
+   "hat": 0.9,
+   "hat_scale": 0.8,
+   "neck": 0.6,
+   "scarf_scale": 0.62,
+   "forward": 0.0
+  },
+  "duck": {
+   "hat": 0.9,
+   "hat_scale": 0.78,
+   "neck": 0.6,
+   "scarf_scale": 0.6,
+   "forward": 0.0
+  },
+  "human": {
+   "hat": 0.97,
+   "hat_scale": 0.95,
+   "neck": 0.78,
+   "scarf_scale": 0.8,
+   "forward": 0.0
+  }
+ }
+}

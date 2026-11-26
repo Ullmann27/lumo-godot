@@ -50,6 +50,10 @@ var extra_paths: Array[Dictionary] = []
 ## Open-world computer figures, kept apart from the three story residents.
 var world_figures: Array[Dictionary] = []
 var quest_target: Dictionary = {}
+## Additional land areas (for example the Sonnenhafen quay platform).
+var extra_lands: Array[Rect2] = []
+## Residents of a region (Sonnenhafen), drawn like the other computer figures.
+var region_figures: Array[Dictionary] = []
 
 
 func configure(bounds: Rect2, at: Vector3, heading: float, current_mission: Dictionary, completed_missions: Array, all_missions: Array, portals: Array, reduce_motion := false) -> void:
@@ -298,6 +302,8 @@ func _set_view(requested: Rect2, id: String, title: String) -> void:
 static func location_name(at: Vector3) -> String:
 	if at.x >= 280:
 		return "Dein Dorf"
+	if at.z < -97.0 and at.x >= 60:
+		return "Sonnenhafen"
 	if at.x >= 173:
 		return "Sternenstadt"
 	if at.x >= 64:
@@ -332,6 +338,8 @@ func draw_atlas(surface: Control) -> void:
 	_draw_land(surface, Rect2(-35, -72, 72, 86), Color("6e9b64"))
 	_draw_land(surface, Rect2(62, -98, 214, 174), Color("789568"))
 	_draw_land(surface, Rect2(280, -238, 640, 476), LAND)
+	for land in extra_lands:
+		_draw_land(surface, land, Color("b7a98c"))
 	_draw_road(surface, Vector3(34, 0, 6), Vector3(64, 0, 6), 5)
 	_draw_road(surface, Vector3(68, 0, 0), Vector3(270, 0, 0), 4)
 	_draw_road(surface, Vector3(271, 0, 6), Vector3(497.2, 0, 6), 3)
@@ -364,7 +372,7 @@ func draw_atlas(surface: Control) -> void:
 	for friend in friends:
 		if _inside(friend.at):
 			_draw_friend_marker(surface, friend)
-	for figure in world_figures:
+	for figure in world_figures + region_figures:
 		if _inside(figure.at):
 			_draw_friend_marker(surface, figure)
 	if not quest_target.is_empty():
@@ -587,6 +595,23 @@ func add_paths(entries: Array) -> void:
 
 
 ## The followed open-world mission step; drawn as its own diamond marker.
+func set_region_figures(entries: Array) -> void:
+	region_figures.clear()
+	for entry in entries:
+		if entry is Dictionary and entry.get("at") is Vector3:
+			region_figures.append(entry)
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
+func add_lands(entries: Array) -> void:
+	for entry in entries:
+		if entry is Rect2:
+			extra_lands.append(entry)
+	if is_instance_valid(canvas):
+		canvas.queue_redraw()
+
+
 func set_quest_marker(target: Dictionary) -> void:
 	quest_target = {}
 	if target.get("at") is Vector3 and target.at.is_finite() and world_bounds.has_point(Vector2(target.at.x, target.at.z)):

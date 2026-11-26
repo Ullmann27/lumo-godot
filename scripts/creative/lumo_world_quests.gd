@@ -12,7 +12,9 @@ const CONTENT_PATH := "res://assets/creative/lumo_world/open_world_content.json"
 const VERSION := 1
 const TALK_REACH := 3.8
 const DRIVE_REACH := 9.0
-const STEP_KINDS := ["talk", "show_card", "visit", "drive"]
+## "event" steps finish when a region reports a named event (a trade, a
+## carried crate, a returned learning receipt); see notify_event().
+const STEP_KINDS := ["talk", "show_card", "visit", "drive", "event"]
 
 var content: Dictionary = {}
 var errors: Array[String] = []
@@ -94,7 +96,12 @@ static func validate_content(raw: Variant) -> Array[String]:
 		if not figure is Dictionary or str(figure.get("id", "")).is_empty() or figures.has(str(figure.id)):
 			found.append("invalid or duplicate figure")
 			continue
-		if str(figure.get("source", "")) != "roster" or str(figure.id) not in roster_ids:
+		var source := str(figure.get("source", ""))
+		if source == "resident":
+			# Region residents (e.g. Sonnenhafen) bring their own name and body.
+			if str(figure.get("name", "")).is_empty():
+				found.append("resident %s needs a name" % str(figure.id))
+		elif source != "roster" or str(figure.id) not in roster_ids:
 			found.append("figure %s is not an original roster figure" % str(figure.id))
 		if not places.has(str(figure.get("place", ""))) or not _finite_numbers(figure.get("at"), 3) or str(figure.get("role", "")).is_empty():
 			found.append("figure %s needs role, place and position" % str(figure.id))
@@ -108,7 +115,8 @@ static func validate_content(raw: Variant) -> Array[String]:
 			found.append("card %s needs a known figure and text" % str(card.id))
 		cards[str(card.id)] = card
 	for id in figures:
-		if not cards.has(str(figures[id].get("card", ""))):
+		var needs_card: bool = str(figures[id].get("source", "")) != "resident" or figures[id].has("card")
+		if needs_card and not cards.has(str(figures[id].get("card", ""))):
 			found.append("figure %s has no card" % id)
 	var dialogs = raw.get("dialogs", {})
 	if not dialogs is Dictionary:
@@ -143,6 +151,8 @@ static func validate_content(raw: Variant) -> Array[String]:
 					found.append("step %s dialog: %s" % [str(step.id), dialog_errors[0]])
 			elif not places.has(str(step.get("place", ""))):
 				found.append("step %s needs a known place" % str(step.id))
+			if kind == "event" and str(step.get("event", "")).is_empty():
+				found.append("step %s needs an event name" % str(step.id))
 			if kind == "show_card" and not cards.has(str(step.get("requiresCard", ""))):
 				found.append("step %s requires an unknown card" % str(step.id))
 			if not step.get("rewardCards", []) is Array:
@@ -171,7 +181,7 @@ func _prepare(raw: Dictionary) -> Dictionary:
 	prepared["figureIndex"] = {}
 	for figure in prepared.figures:
 		figure["position"] = vec3(figure.at)
-		figure["name"] = names.get(str(figure.id), str(figure.id))
+		figure["name"] = str(figure.name) if str(figure.get("source", "")) == "resident" else names.get(str(figure.id), str(figure.id))
 		prepared.figureIndex[str(figure.id)] = figure
 	prepared["cardIndex"] = {}
 	for card in prepared.cards:
@@ -317,6 +327,29 @@ func can_complete(mission_id: String, step_id: String, at: Vector3, driving: boo
 func complete(mission_id: String, step_id: String, at: Vector3, driving: bool) -> Dictionary:
 	if not can_complete(mission_id, step_id, at, driving):
 		return {"ok": false, "cards": []}
+	return _advance(mission_id)
+
+
+## Event steps of started missions finish when their event is reported.
+## Returns one result per completed step (normally zero or one).
+func notify_event(event_id: String) -> Array[Dictionary]:
+	var results: Array[Dictionary] = []
+	if event_id.is_empty():
+		return results
+	for mission_id in mission_ids():
+		var step := current_step(mission_id)
+		if str(step.get("kind", "")) != "event" or str(step.get("event", "")) != event_id:
+			continue
+		if state(mission_id) != "active":
+			continue
+		var result := _advance(mission_id)
+		result["mission"] = mission_id
+		result["step"] = step
+		results.append(result)
+	return results
+
+
+func _advance(mission_id: String) -> Dictionary:
 	var before := cards()
 	progress[mission_id] = int(progress[mission_id]) + 1
 	var gained: Array[String] = []
