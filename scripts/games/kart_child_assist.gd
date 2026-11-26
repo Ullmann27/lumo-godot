@@ -1,7 +1,21 @@
 extends RefCounted
-## Driving help for the child's own kart on Entdecken (the beginner level that
-## promises "sanfte Lenkhilfe am Fahrbahnrand"). Pure function of the real
-## driving state; movement itself stays physical.
+## Touch response for the child's kart and extra roadside assistance on Entdecken.
+## Both only shape steering input; movement itself stays physical.
+
+
+## Small thumb corrections on a touch display should not throw the kart into
+## the rail at speed. Preserve full left/right travel and direct expert input.
+static func touch_axis(axis: float, speed: float, difficulty: String) -> float:
+	if difficulty == "pro":
+		return axis
+	var deflection: float = clampf(inverse_lerp(0.12, 1.0, absf(axis)), 0.0, 1.0)
+	var pace: float = smoothstep(12.0, 35.0, absf(speed))
+	var response: float
+	if difficulty == "gemuetlich":
+		response = lerpf(0.58, 0.30, pace)
+	else:
+		response = lerpf(0.82, 0.60, pace)
+	return signf(axis) * lerpf(deflection * deflection, deflection, response)
 
 
 ## Steering help at the road edge, for the child's kart: it grows
