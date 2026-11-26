@@ -1467,7 +1467,7 @@ func _show_play(event: Dictionary) -> void:
 	_layout_zone("hand" if player == 0 else "fan", player, 0.2)
 	for seat: Node3D in seats:
 		seat.look_at_point(Vector3(0.1, ROOM.TABLE_Y, 0))
-	_refresh_hud()
+	_refresh_hud(int(event.get("target", -1)))
 	if not await _wait_for_cards():
 		return
 	if not await _wait(0.22):
@@ -1479,8 +1479,15 @@ func _show_trick(event: Dictionary) -> void:
 	var trick_cards: Array = event.cards
 	if not await _wait(0.45):
 		return
-	hud.set_hint("%s den Stich!" % ("Du gewinnst" if winner == 0 else seats[winner].display_name + " gewinnt"))
 	var best := int(event.best)
+	if game == "ziel":
+		var target := int(event.target)
+		var rank := DECK.rank(best)
+		var distance := absi(rank - target)
+		var player_name := "Du gewinnst" if winner == 0 else _name_of(winner) + " gewinnt"
+		hud.set_hint("Ziel %d · %s mit %d. Abstand: %d." % [target, player_name, rank, distance])
+	else:
+		hud.set_hint("%s den Stich!" % ("Du gewinnst" if winner == 0 else seats[winner].display_name + " gewinnt"))
 	if cards.has(best):
 		cards[best].set_glow(GOLD)
 	_sfx("trick_win")
@@ -1709,7 +1716,7 @@ func _burst_at(at: Vector3) -> void:
 # ------------------------------------------------------------------ Anzeige
 
 
-func _refresh_hud() -> void:
+func _refresh_hud(shown_target: int = -1) -> void:
 	if not is_instance_valid(hud):
 		return
 	if rules == null or screen != "play":
@@ -1721,7 +1728,7 @@ func _refresh_hud() -> void:
 	if not _intro_steps.is_empty():
 		round_text = "Einführung"
 	if game == "ziel":
-		round_text += "   ·   Ziel %d" % rules.target_rank()
+		round_text += "   ·   Ziel %d" % (shown_target if shown_target > 0 else rules.target_rank())
 	hud.set_game(str(info.title), round_text)
 	hud.set_stars(ProgressStore.total_stars())
 	hud.set_trump(int(rules.s.r.trump) if game == "stich" else -1)
@@ -1731,7 +1738,10 @@ func _refresh_hud() -> void:
 		var detail := ""
 		var extra := ""
 		match game:
-			"stich", "ziel":
+			"ziel":
+				var count := int(rules.s.r.tricks[player])
+				detail = "%d Treffer" % count
+			"stich":
 				var count := int(rules.s.r.tricks[player])
 				detail = "%d Stich%s" % [count, "" if count == 1 else "e"]
 			"leiter":
@@ -1793,7 +1803,9 @@ func _round_rows(points: Array, detail_for: Callable) -> Array:
 
 func _round_detail(entry: Dictionary, player: int) -> String:
 	match game:
-		"stich", "ziel":
+		"ziel":
+			return "%d Treffer · gesamt %d" % [int(entry.tricks[player]), int(rules.s.scores[player])]
+		"stich":
 			var count := int(entry.tricks[player])
 			return "%d Stich%s · gesamt %d" % [count, "" if count == 1 else "e", int(rules.s.scores[player])]
 		"leiter":

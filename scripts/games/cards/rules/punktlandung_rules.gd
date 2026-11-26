@@ -41,6 +41,17 @@ func _trick_winner(trick: Array) -> int:
 	return int(best.p)
 
 
+func _apply(player: int, move: Dictionary) -> Array:
+	# The common turn advances trick_no before returning its events. Keep
+	# the target that the players actually saw, even on the last card.
+	var resolved_target := target_rank()
+	var events := super._apply(player, move)
+	for event: Dictionary in events:
+		if event.t in ["play", "trick"]:
+			event["target"] = resolved_target
+	return events
+
+
 func view(player: int) -> Dictionary:
 	var result := super.view(player)
 	result.erase("trump")
