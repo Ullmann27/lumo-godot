@@ -2,6 +2,7 @@ extends SceneTree
 ## Exercise Godot's actual GUI dispatch, in addition to unit-level input checks.
 
 const SCENE_TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const STEP := 1.0 / 60.0
 var game
 
 
@@ -38,6 +39,63 @@ func _resume_touch() -> void:
 	_touch(4, at, false)
 	await process_frame
 	assert(not game.paused, "Real GUI touch resumes the paused race")
+
+
+func _touch_turn(difficulty: String, deflection: float, pace: float) -> float:
+	# Reset the car to the same point and pace, then measure real yaw from a
+	# physical screen press. The HUD and normal physics process see the touch.
+	var start := 70.0
+	game.difficulty = difficulty
+	game.speed = pace
+	game.distance = start
+	game.previous_road_distance = start
+	game.player.transform = game.world.reset_transform(start)
+	game.player_heading = game._heading(start)
+	game.physical_velocity = game.world.forward(start) * pace
+	game.boost_time = 0.0
+	game.auto_gas = true
+	var heading: float = game.player_heading
+	var stick: Rect2 = game.joystick.get_global_rect()
+	var aim: Vector2 = stick.get_center() + Vector2(stick.size.x * 0.31 * deflection, 0.0)
+	var physical: Vector2 = aim * Vector2(root.size) / root.get_visible_rect().size
+	_touch(5, physical, true)
+	await process_frame
+	assert(is_equal_approx(game.steering, deflection), "Analog input reached the actual racing controls")
+	for frame in range(6):
+		game._physics_process(STEP)
+	var yaw: float = absf(angle_difference(heading, game.player_heading))
+	_touch(5, physical, false)
+	await process_frame
+	assert(is_zero_approx(game.steering), "Releasing the touch leaves the stick neutral")
+	return yaw
+
+
+func _cover_steering(display: Vector2i) -> void:
+	root.get_node("HostBridge")._options["displayDensity"] = 2.625
+	root.size = display
+	await process_frame
+	await process_frame
+	var insets := Rect2(38, 0, 42, 26) if display.x > display.y else Rect2(0, 38, 0, 42)
+	game._apply_safe_area(insets, Vector2(display))
+	game._apply_responsive_layout()
+	game.paused = false
+	game.modal.hide()
+	game._update_hud()
+	await process_frame
+	var light: float = await _touch_turn("gemuetlich", 0.10, 40.0)
+	var expert_light: float = await _touch_turn("pro", 0.10, 40.0)
+	assert(light <= 0.0001 and expert_light > 0.02, "Thumb jitter leaves Entdecken neutral")
+	var slower: float = await _touch_turn("gemuetlich", 0.45, 14.0)
+	var beginner: float = await _touch_turn("gemuetlich", 0.45, 40.0)
+	var adventure: float = await _touch_turn("flott", 0.45, 40.0)
+	var expert: float = await _touch_turn("pro", 0.45, 40.0)
+	assert(beginner > 0.035 and beginner < expert * 0.55, "Small high-speed corrections remain useful and gentle")
+	assert(beginner < adventure and adventure < expert, "The three touch responses remain distinct")
+	assert(slower > beginner, "Slow travel keeps more steering response")
+	var full_beginner: float = await _touch_turn("gemuetlich", 1.0, 40.0)
+	var full_expert: float = await _touch_turn("pro", 1.0, 40.0)
+	assert(is_equal_approx(full_beginner, full_expert), "Full stick throw retains turning authority")
+	print("[KartTouchSteering] %s @2.625 PASS. Yaw in 100 ms at high pace, 45%% throw: %.2f° / %.2f° / %.2f°." % [display, rad_to_deg(beginner), rad_to_deg(adventure), rad_to_deg(expert)])
 
 
 func _run() -> void:
@@ -124,6 +182,8 @@ func _run() -> void:
 	safe_bounds = game.safe_ui.get_global_rect()
 	for control in [game.joystick, game.boost_button, game.drift_button, game.modal]:
 		_assert_inside(control, safe_bounds)
+	await _cover_steering(Vector2i(2520, 1080))
+	await _cover_steering(Vector2i(1080, 2520))
 	game._notification(Node.NOTIFICATION_APPLICATION_PAUSED)
 	assert(game.paused and game.steering == 0)
 	DirAccess.remove_absolute(game.SESSION)
