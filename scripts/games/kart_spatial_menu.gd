@@ -413,6 +413,8 @@ func _apply_responsive_layout() -> void:
 	var portrait := available.x < available.y
 	var landscape_workshop := step == 2 and not portrait
 	var side_toolbar := landscape_workshop and available.x >= 590.0
+	var two_rows := side_toolbar and available.y >= 640.0  # tall landscape: chooser above actions
+	var row_one := maxf(48.0, view_choice.get_combined_minimum_size().y / scale_factor) + 6.0
 	var parts_open: bool = step == 2 and parts_bay != null and parts_bay.is_open()
 	var narrow := available.x < 520.0
 	var short_view := available.y < 440.0
@@ -475,8 +477,8 @@ func _apply_responsive_layout() -> void:
 	var parts_rect := choices_rect
 	if landscape_workshop:
 		# Reserve the toolbar above the list without reducing the height of the photo.
-		choices_rect.position.y += 56.0
-		choices_rect.size.y = maxf(48.0, choices_rect.size.y - 56.0)
+		choices_rect.position.y += row_one + 56.0 if two_rows else 56.0
+		choices_rect.size.y = maxf(48.0, choices_rect.size.y - (row_one + 56.0 if two_rows else 56.0))
 		parts_rect.size.y = available.y - margin - top
 	if parts_open:
 		# The parts editor owns its drawer. Its measured outer edge defines the camera stage.
@@ -545,12 +547,15 @@ func _apply_responsive_layout() -> void:
 	_set_physical_minimum(view_choice, Vector2(112, 48), scale_factor)
 	_set_physical_font(view_choice, 14, scale_factor)
 	view_choice.fit_to_longest_item = not side_toolbar
-	view_choice.clip_text = side_toolbar
-	view_choice.set_item_text(0, "Rundum" if side_toolbar or narrow else "Rundum ansehen")
+	view_choice.clip_text = side_toolbar and not two_rows
+	var short_label := (side_toolbar and not two_rows) or narrow
+	view_choice.set_item_text(0, "Rundum" if short_label else "Rundum ansehen")
 	var actions := Rect2()
 	if landscape_workshop:
 		var view_width := choices_rect.size.x
-		if side_toolbar:
+		if two_rows:  # Fold 2176x1812 cut a shared row to "R" and "We…"
+			actions = Rect2(margin, top + row_one, choices_rect.size.x, 48.0)
+		elif side_toolbar:
 			view_width = roundf(choices_rect.size.x * 0.42)
 			actions = Rect2(margin + view_width + 4.0, top, choices_rect.size.x - view_width - 4.0, 48.0)
 		_stage_rect(view_choice, Rect2(margin, top, view_width, 48.0), scale_factor)

@@ -434,6 +434,7 @@ func _build_sprung_body(modern_trim: Node3D) -> void:
 			continue
 		# Built before the kart enters the tree: keep the pose via local transforms.
 		var in_root := _relative_transform(part as Node3D, asset_root)
+		part.owner = null
 		part.reparent(_sprung_body, false)
 		(part as Node3D).transform = in_root
 

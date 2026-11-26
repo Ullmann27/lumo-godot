@@ -55,6 +55,10 @@ Einmalig: `stop` 0,8 s, `sit_down` 1,2 s, `stand_up` 1,2 s, `wave` 2,0 s, `joy` 
 `surprise` 1,6 s, `disappointed` 2,4 s, `interact` 1,8 s, `enter_vehicle` 1,6 s,
 `exit_vehicle` 1,4 s.
 
+Kompatible Namen (die Welt, das Konzert und die Tische nutzen sie schon für die Fahrer):
+`greeting_wave` (= `wave`), `celebrate` (= `joy`), `agree_nod` 1,5 s (zweimal nicken),
+`point_portal` 2,0 s (zur rechten Seite zeigen), `card_play` 1,5 s (Karte zeigen und ablegen).
+
 | Bedeutung | Clip |
 |---|---|
 | Ruhen/Atmen, Blinzeln, Umschauen | `idle` |
@@ -95,6 +99,19 @@ Aufeinanderfolgende Clips passen ohne Sprung zusammen (geprüft, Abstand jedes K
 setzen; die Figur steht zu Beginn um `vehicle_entry_offset_m` (links, ca. −0,55 × Beinlänge)
 versetzt, macht zwei Schritte hinüber und setzt sich auf `drive_seat_height_m`.
 `exit_vehicle` ist die Umkehrung und endet stehend am selben seitlichen Punkt.
+
+## Angeschlossen
+
+| Ort | Datei | Stand |
+|---|---|---|
+| Offene Welt (NPCs) | `scripts/creative/lumo_world_open_world.gd` | stehende Figur, Rückfall Fahrer; Gehtempo der Routine (0,65 m/s) über `speed_scale` an die Schrittlänge angepasst |
+| Rhythmus-Konzert (Publikum) | `scripts/creative/rhythm_concert_art.gd` | stehend, zur Bühne gedreht, `joy` als Schleifen-Kopie |
+| Karten-, Schach-, Memory-Tisch | `scripts/games/cards/cards_seat.gd` | **bleibt Fahrer-Rig**: die Figuren sitzen dort wirklich (Sitzclips) |
+| Dorf: Boote, Fuhrwerk | `build_village_life.gd`, `build_village_neighbors_view.gd` | **bleibt Fahrer-Rig**: Mitfahrer sitzen |
+| Kart, Zieleinlauf | `kart_production_driver.gd` | **bleibt Fahrer-Rig**: Jubel im Sitz |
+
+Eine Siegerehrung mit stehenden Figuren gibt es im Projekt nicht (gesucht nach Podest/Sieger/
+Zeremonie); Sieger jubeln im Kart bzw. am Tisch.
 
 ## Was die Figuren nicht können
 

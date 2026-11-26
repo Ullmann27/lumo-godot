@@ -759,3 +759,54 @@ def vehicle_pose(sk, t, entering=True, side_offset=None):
     p['Head'] = offset(p['Head'], (.12 * duck, 0.0, -.15 * duck))
     p['blink'] = pulse(u, .5, .04)
     return p
+
+
+# ---------------------------------------------------------------- compatible gestures
+# Names already used by the World, concert and table code for the seated drivers.
+def nod_pose(sk, t):
+    """agree_nod: two friendly nods with a small smile."""
+    p = idle_pose(sk, t * .4)
+    nod = math.sin(TAU * 2 * t) * math.sin(math.pi * t)
+    p['Head'] = offset(p['Head'], (.16 * nod, .03 * math.sin(math.pi * t), 0.0))
+    p['Neck'] = offset(p['Neck'], (.05 * nod, 0.0, 0.0))
+    p['Chest'] = offset(p['Chest'], (-.02 * nod, 0.0, 0.0))
+    p['jaw'] = .2 * math.sin(math.pi * t)
+    p['blink'] = max(p['blink'], .3 * math.sin(math.pi * t))
+    p['ears'] = {s: (.06 * nod, .02) for s, _ in SIDES}
+    return p
+
+
+def point_pose(sk, t):
+    """point_portal: turn towards the right, stretch the arm and point there."""
+    p = idle_pose(sk, t * .4)
+    up = smooth(t / .25) * (1 - smooth((t - .78) / .22))
+    side, sign = 'R', 1.0
+    aim = Vector((sign * .72 * sk.arm, .5 * sk.arm, .12 * sk.arm))
+    h = p['hands'][side]
+    h['pos'] = h['pos'].lerp(aim, up)
+    h['pole'] = h['pole'].lerp(Vector((sign * .3, -.6, -1)), up)
+    h['wrist'] = (-.15 * up, 0.0, 0.0)
+    p['Chest'] = offset(p['Chest'], (0.0, -.03 * up, -.16 * up))
+    p['Head'] = offset(p['Head'], (0.0, 0.0, -.3 * up))
+    p['gaze'] = (-.3 * up, 0.0)
+    p['jaw'] = .3 * up * (.6 + .4 * math.sin(TAU * 4 * t))
+    p['tail'] = [(0.0, .12 * up * math.sin(TAU * 2 * t + i * .6)) for i in range(3)]
+    return p
+
+
+def card_pose(sk, t):
+    """card_play (standing): hold a card up in front, then lay it down."""
+    p = idle_pose(sk, t * .4)
+    show = smooth(t / .3) * (1 - smooth((t - .55) / .2))
+    lay = smooth((t - .5) / .2) * (1 - smooth((t - .8) / .2))
+    side, sign = 'R', 1.0
+    h = p['hands'][side]
+    h['pos'] = h['pos'].lerp(Vector((sign * .2 * sk.arm, .55 * sk.arm, -.05 * sk.arm)), show)
+    h['pos'] = h['pos'].lerp(Vector((sign * .12 * sk.arm, .75 * sk.arm, -.6 * sk.arm)), lay)
+    h['pole'] = h['pole'].lerp(Vector((sign * .8, -.3, -1)), max(show, lay))
+    h['wrist'] = (-.5 * show + .3 * lay, 0.0, 0.0)
+    p['Head'] = offset(p['Head'], (.12 * lay - .05 * show, 0.0, .05 * show))
+    p['Chest'] = offset(p['Chest'], (-.08 * lay, 0.0, .05 * show))
+    p['gaze'] = (.05, -.25 * lay + .1 * show)
+    p['jaw'] = .15 * show
+    return p
