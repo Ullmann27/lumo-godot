@@ -44,9 +44,12 @@ func _run() -> void:
 	_expect_grounded(scene, "parked on the island bridge")
 	await _slopes(scene)
 	await _decoration(scene)
+	await _airborne_exit(scene)
 	await _fall_reset(scene)
 	for height in [-0.119, 0.2, 0.55]:
 		await _reenter_with_height(height)
+	await _reenter_unsupported(Vector3(50, 0.2, 30), "between the island and mainland")
+	await _reenter_unsupported(Vector3(37.4, 0.2, 13), "past the island shoreline")
 	DirAccess.remove_absolute(world_path)
 	_finish()
 
@@ -180,6 +183,18 @@ func _decoration(scene: Node) -> void:
 	_check(not top.is_empty() and float(top.position.y) > 1.2, "the compass pedestal is solid up to its top plate")
 
 
+func _airborne_exit(scene: Node) -> void:
+	scene.kart_body.position = Vector3(50, 0.15, 10.5)
+	scene.kart_body.rotation.y = -PI * 0.5
+	scene.drive_speed = 0.0
+	scene.kart_body.velocity = Vector3.ZERO
+	scene._drive_tick(Vector2.ZERO, 1.0 / 60.0)
+	_check(not scene.kart_body.is_on_floor(), "the kart is falling beside the island bridge")
+	_check(scene._safe_vehicle_exit() != null, "an adjacent bridge exit is available to the raycast")
+	scene.vehicle_button.pressed.emit()
+	_check(scene.driving and not scene.fox.visible, "the exit control keeps Lumo seated until the kart has landed")
+
+
 func _fall_reset(scene: Node) -> void:
 	scene.kart_body.position = Vector3(0, -7.0, 70)
 	scene.kart_body.velocity = Vector3.ZERO
@@ -197,11 +212,7 @@ func _fall_reset(scene: Node) -> void:
 ## Saves written before the collision box fix rest 0.119 m too low; the old
 ## first-entry pose floated at 0.2 m. Both must load with tyres on the floor.
 func _reenter_with_height(height: float) -> void:
-	var data: Dictionary = STATE.new().to_data()
-	data.kart = {"position": [STATE.KART_START.x, height, STATE.KART_START.z], "yaw": STATE.KART_START_YAW}
-	var file := FileAccess.open(world_path, FileAccess.WRITE)
-	file.store_string(JSON.stringify(data))
-	file.close()
+	_write_kart_save(Vector3(STATE.KART_START.x, height, STATE.KART_START.z), STATE.KART_START_YAW)
 	var scene = await _enter_world()
 	_check(scene != null and not scene.save_blocked, "a save with kart height %.3f opens" % height)
 	if scene == null:
@@ -210,6 +221,32 @@ func _reenter_with_height(height: float) -> void:
 	_check(xz.length() < 0.001, "re-entry keeps the saved parking place (height %.3f)" % height)
 	_expect_grounded(scene, "re-entry from saved height %.3f" % height)
 	_check(absf(scene.model.kart_position.y - scene.kart_body.position.y) < 0.001, "the grounded height replaces the saved height %.3f" % height)
+
+
+func _reenter_unsupported(pose: Vector3, tag: String) -> void:
+	_write_kart_save(pose, 0.0, ["meet_nelli"])
+	var scene = await _enter_world()
+	_check(scene != null and not scene.save_blocked, "a structurally valid save %s still opens" % tag)
+	if scene == null:
+		return
+	var xz := Vector2(scene.kart_body.position.x - STATE.KART_SPAWN.x, scene.kart_body.position.z - STATE.KART_SPAWN.z)
+	_check(xz.length() < 0.001, "unsupported pose %s recovers to the marked parking place" % tag)
+	_expect_grounded(scene, "re-entry after an unsupported pose " + tag)
+	_check(scene._save(), "the repaired pose saves " + tag)
+	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(world_path))
+	var restored = STATE.new()
+	_check(restored.restore(saved) and restored.kart_position.is_equal_approx(scene.kart_body.position),
+		"the file contains the repaired kart pose " + tag)
+	_check(restored.completed == ["meet_nelli"], "restoring the kart keeps the child's completed mission " + tag)
+
+
+func _write_kart_save(position: Vector3, yaw: float, completed: Array = []) -> void:
+	var data: Dictionary = STATE.new().to_data()
+	data.kart = {"position": [position.x, position.y, position.z], "yaw": yaw}
+	data.completed = completed
+	var file := FileAccess.open(world_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
 
 
 func _frames(count: int) -> void:

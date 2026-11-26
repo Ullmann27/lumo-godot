@@ -273,7 +273,6 @@ func _create_kart() -> void:
 	kart_beacon.name = "WorldKartBeacon"
 	_set_kart_driver(false)
 	art._sign(self, "Lumo Kart · Parkplatz", Vector3(77, 3.2, 18), Color("9aefff"))
-	_settle_kart.call_deferred()
 
 
 func _kart_wheel_contacts() -> Array[Vector3]:
@@ -297,21 +296,24 @@ func _kart_ground_at(local_point: Vector3) -> Variant:
 	var from: Vector3 = level * (local_point + Vector3.UP * KART_PROBE_UP)
 	var query := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * (KART_PROBE_UP + KART_PROBE_DOWN), kart_body.collision_mask, [kart_body.get_rid(), player.get_rid()])
 	var hit := kart_body.get_world_3d().direct_space_state.intersect_ray(query)
-	return null if hit.is_empty() else float(hit.position.y)
+	return null if hit.is_empty() or hit.normal.y < cos(kart_body.floor_max_angle) else float(hit.position.y)
 
 
-## Places the kart body on the highest floor point under its footprint. Poses
-## already resting on the floor stay untouched within the tolerance, so saved
-## grounded parking places are restored bit-identical.
+## Restore the saved position when the centre and all four tyres find floor
+## within suspension travel. One hit at a shoreline is insufficient.
 func _ground_kart() -> bool:
-	var highest := -INF
-	var points: Array[Vector3] = [Vector3.ZERO]
-	points.append_array(_kart_wheel_contacts())
-	for point in points:
+	var center: Variant = _kart_ground_at(Vector3.ZERO)
+	if center == null:
+		return false
+	var highest := float(center)
+	var lowest := highest
+	for point in _kart_wheel_contacts():
 		var ground: Variant = _kart_ground_at(point)
-		if ground != null:
-			highest = maxf(highest, float(ground))
-	if highest == -INF:
+		if ground == null:
+			return false
+		highest = maxf(highest, float(ground))
+		lowest = minf(lowest, float(ground))
+	if highest - lowest > KART_FIT_SINK:
 		return false
 	var lift := highest - kart_body.global_position.y
 	if absf(lift) > KART_GROUND_TOLERANCE:
@@ -346,13 +348,12 @@ func _fit_kart_visual(delta: float, instant: bool) -> void:
 	kart_visual.rotation.z = lerp_angle(kart_visual.rotation.z, roll, weight)
 
 
-func _settle_kart() -> void:
-	if not is_instance_valid(kart_body) or not kart_body.is_inside_tree():
-		return
-	if _ground_kart():
-		kart_ground_pending = false
-		model.remember_kart(kart_body.position, kart_body.rotation.y, true)
+func _settle_kart() -> bool:
+	if not _ground_kart():
+		return false
+	model.remember_kart(kart_body.position, kart_body.rotation.y, true)
 	_fit_kart_visual(0.0, true)
+	return true
 
 
 func _set_kart_driver(visible_driver: bool) -> void:
@@ -761,7 +762,11 @@ func _physics_process(delta: float) -> void:
 	time += delta
 	if kart_ground_pending:
 		kart_ground_pending = false
-		_settle_kart()
+		if not _settle_kart():
+			kart_body.position = STATE.KART_SPAWN
+			kart_body.rotation.y = 0.0
+			_settle_kart()
+			camera_yaw = _resume_view_yaw()
 	var axis: Vector2 = joystick.axis + Vector2(
 		float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT)) - float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),
 		float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)) - float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
@@ -1063,6 +1068,9 @@ func _toggle_vehicle() -> void:
 	if driving:
 		if absf(drive_speed) > 0.75:
 			status_label.text = "Halte zuerst an. Mit der Bremse kommst du ruhig zum Stehen."
+			return
+		if not kart_body.is_on_floor():
+			status_label.text = "Warte, bis dein Kart wieder auf dem Boden steht."
 			return
 		var exit_at: Variant = _safe_vehicle_exit()
 		if exit_at == null:
