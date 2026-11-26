@@ -4,6 +4,7 @@ extends SceneTree
 const VEHICLE = preload("res://scripts/games/kart_vehicle.gd")
 const CATALOG = preload("res://scripts/games/kart_catalog.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+const PRODUCTION = preload("res://scripts/games/kart_production_vehicle.gd")
 const GARAGE = "res://scripts/games/kart_garage_menu.gd"
 const WORLD = preload("res://scripts/games/kart_world.gd")
 
@@ -34,10 +35,12 @@ func _geometry(node: Node3D, kart, result: Dictionary) -> void:
 
 
 func _run() -> void:
+	root.size = Vector2i(1280, 720)
 	assert(CATALOG.KARTS.size() == 14)
 	var seen: Dictionary = {}
 	var signatures: Dictionary = {}
 	var shell_geometry: Dictionary = {}
+	var close_geometry: Dictionary = {}
 	for entry in CATALOG.KARTS:
 		assert(not seen.has(entry.id), "Garage IDs must be unique")
 		seen[entry.id] = true
@@ -54,7 +57,13 @@ func _run() -> void:
 		assert(shape.vertices > 1000)
 		assert(shape.surfaces <= 64, "Fleet must retain the mobile draw-surface budget")
 		if is_instance_valid(kart.production_vehicle):
-			assert(kart.production_vehicle.source_paths.size() == 3)
+			var sources: Array[String] = kart.production_vehicle.source_paths
+			var platform := PRODUCTION.body_of(str(entry.id))
+			assert(sources.size() == 4, "Three mechanical sources and one Meshy source")
+			for level in range(3):
+				var suffix := "" if level == 0 else "_lod%d" % level
+				assert(sources[level] == PRODUCTION.MODEL_DIRECTORY + "aurora_" + platform + suffix + ".glb")
+			assert(sources[3] == PRODUCTION.MESHY_SHELL_DIRECTORY + str(entry.id) + ".glb")
 			assert(kart.production_vehicle.visible_surface_count() <= 39)
 			assert(kart.far_mesh.mesh == null, "The animated imported chassis needs no rigid proxy")
 		else:
@@ -68,11 +77,17 @@ func _run() -> void:
 		var production = kart.production_vehicle
 		assert(production.get_meta("fleet_design") == entry.id)
 		assert(production.shell_path.ends_with("/%s.glb" % entry.id))
+		var close: MeshInstance3D = production.meshy_close_mesh
+		assert(is_instance_valid(close) and close.is_visible_in_tree(), "Meshy shell is drawn at LOD0")
+		var close_signature := hash(close.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX])
+		assert(not close_geometry.has(close_signature), "Selectable Meshy shells must have distinct geometry")
+		close_geometry[close_signature] = entry.id
 		var shell_vertices := 0
 		for level in range(3):
 			production.set_lod(level)
 			var shell := production.asset_root.find_child("LOD%d" % level, true, false) as MeshInstance3D
-			assert(shell != null and shell.is_visible_in_tree())
+			assert(shell != null and shell.is_visible_in_tree() == (level > 0))
+			assert(close.is_visible_in_tree() == (level == 0), "Meshy and proven LODs never overlap")
 			var vertices := 0
 			var outlines: Array[int] = []
 			for surface in range(shell.mesh.get_surface_count()):
@@ -86,7 +101,15 @@ func _run() -> void:
 			else:
 				assert(vertices < shell_vertices, "Each shell LOD must reduce geometry")
 			shell_vertices = vertices
-		assert(production.dressing_nodes().size() == 7)
+		var dressing: Array[String] = []
+		for detail in production.dressing_nodes():
+			dressing.append(str(detail.name))
+		dressing.sort()
+		assert(dressing == [
+			"Dress_Number_L", "Dress_Number_Nose", "Dress_Number_R",
+			"Dress_Sticker_Front_L", "Dress_Sticker_Front_R",
+			"Dress_Sticker_Rear_L", "Dress_Sticker_Rear_R", "EvolutionCoachwork",
+		], "Seven authored decals and the current splitter/diffuser stay attached: " + str(dressing))
 		assert(is_instance_valid(kart.production_lumo_seat), "Original Lumo retains the pedal and seat fit")
 		if FLEET.IDS.has(str(entry.id)):
 			var info: Dictionary = FLEET.profile(str(entry.id))

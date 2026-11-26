@@ -430,6 +430,7 @@ func _apply_responsive_layout() -> void:
 		if workshop_in_footer:
 			footer.move_child(workshop_button, next_button.get_index())
 	workshop_button.text = "Werkstatt" if workshop_in_footer else "Lack, Teile & Effekte"
+	workshop_button.tooltip_text = "Werkstatt · %d Sterne verfügbar" % workshop.available() if workshop != null else "Werkstatt"
 	var margin := 12.0 if narrow or short_view else 20.0
 	var header_height := 0.0 if ultra_short else (48.0 if short_view else 64.0)
 	var footer_height := 52.0 if short_view else 60.0

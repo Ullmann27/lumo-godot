@@ -15,7 +15,7 @@ func _initialize() -> void:
 func _settle() -> void:
 	await process_frame
 	await process_frame
-	await RenderingServer.frame_post_draw
+	await process_frame
 
 
 func _inside(control: Control, label: String) -> void:
@@ -46,13 +46,18 @@ func _check_cards() -> void:
 	assert(not grid.get_node("KartCard_glider").disabled and grid.get_node("KartCard_turbo").disabled == false, "Glider (8) und Aurora GT (18) sind offen")
 	assert(grid.get_node("KartCard_blitz").disabled and grid.get_node("KartCard_stella").disabled, "Blitz und Stella gesperrt")
 	assert(grid.get_node("KartCard_stella").lock_label.visible and "noch 100" in grid.get_node("KartCard_stella").lock_label.text, "Gesperrte Karte nennt die fehlenden Sterne")
-	assert(garage.kart_panel.visible and is_instance_valid(garage.kart_bars), "Wertebalken stehen unter der Vorschau")
+	var parts = garage.parts_bay
+	assert(parts.stats_button.is_visible_in_tree(), "Fahrwerte sind über die Garage erreichbar")
 	# Auswahl wirkt auf Einstellung, Wertebalken und Vorschau.
 	grid.get_node("KartCard_glider").pressed.emit()
 	await _settle()
 	assert(garage.setup.kart == "glider")
-	assert(is_equal_approx(float(garage.kart_bars.base.handling), 9.0) and is_equal_approx(float(garage.kart_bars.base.speed), 5.0), "Wertebalken zeigen Glider")
-	assert("Glider" in garage.kart_summary.text and "Wendig" in garage.kart_summary.text)
+	parts.stats_button.pressed.emit()
+	await _settle()
+	assert(parts.stats_panel.is_visible_in_tree(), "Werte öffnen die sichtbare Fahrzeugübersicht")
+	assert(is_equal_approx(float(parts.stats_bars.base.handling), 9.0) and is_equal_approx(float(parts.stats_bars.base.speed), 5.0), "Wertebalken zeigen Glider")
+	assert("Glider" in parts.stats_title.text and "Wendig" in garage.kart_summary.text)
+	assert(garage.handle_back() and not parts.stats_panel.visible, "Zurück schließt die Fahrzeugübersicht")
 	assert(garage.preview_kart.kart_style == "glider", "Die 3D-Vorschau zeigt den Glider")
 	grid = garage.choices.get_child(0)
 	grid.get_node("KartCard_blitz").pressed.emit()
@@ -67,7 +72,7 @@ func _check_workshop() -> void:
 	garage.workshop.save_enabled = false
 	garage._refresh()
 	await _settle()
-	assert(garage.workshop_button.visible and not garage.workshop_button.disabled and "12" in garage.workshop_button.text, "Werkstatt-Knopf zeigt das Budget")
+	assert(garage.workshop_button.is_visible_in_tree() and not garage.workshop_button.disabled and "12" in garage.workshop_button.tooltip_text, "Werkstatt-Knopf ist erreichbar und sein Hinweis nennt das Budget")
 	garage.workshop_button.pressed.emit()
 	await _settle()
 	var view = garage.workshop_view
@@ -99,6 +104,13 @@ func _check_workshop() -> void:
 	# Aussehen: ansehen, nicht gekauft, kaufen. Erst kommen mehr Fortschrittssterne dazu.
 	view.tuning.report_lifetime(200)
 	view._refresh_all()
+	var capture_dir := OS.get_environment("LUMO_WORKSHOP_CAPTURE_DIR")
+	if not capture_dir.is_empty():
+		DirAccess.make_dir_recursive_absolute(capture_dir)
+		view.reduced_motion = true
+		await _settle()
+		RenderingServer.force_draw(true)
+		assert(root.get_texture().get_image().save_png(capture_dir.path_join("lack-serie.png")) == OK)
 	var paint_row = _find(view, "Look_paint")
 	var swatch: Button = _find(paint_row, "Swatch_feuer")
 	swatch.pressed.emit()
@@ -107,6 +119,11 @@ func _check_workshop() -> void:
 	assert(buy.visible and "6" in buy.text, "Kaufknopf mit Preis")
 	assert(view.tuning.chosen("comet", "paint") == "werk", "Erst ansehen, noch nichts gewählt")
 	assert(view.preview_kart.chassis_look.paint == Color("b3202a"), "Vorschau zeigt den neuen Lack sofort")
+	var finish := view.preview_kart.production_vehicle.meshy_close_mesh.get_active_material(0) as ShaderMaterial
+	assert(finish != null and finish.get_shader_parameter("selected_paint").is_equal_approx(Color("b3202a")), "Neuer Lack erreicht das sichtbare Modell")
+	if not capture_dir.is_empty():
+		RenderingServer.force_draw(true)
+		assert(root.get_texture().get_image().save_png(capture_dir.path_join("lack-rot.png")) == OK)
 	var before: int = view.tuning.available()
 	buy.pressed.emit()
 	await _settle()
@@ -164,6 +181,7 @@ func _check_layouts() -> void:
 		assert(view.body.columns == (1 if size.x < size.y else 2), "Spalten passen zur Ausrichtung (%s)" % size)
 		if size == Vector2i(1280, 720):
 			DirAccess.make_dir_recursive_absolute("res://exports/holographic-proof")
+			RenderingServer.force_draw(true)
 			root.get_texture().get_image().save_png("res://exports/holographic-proof/workshop-1280x720.png")
 		garage.handle_back()
 		await _settle()
@@ -172,12 +190,15 @@ func _check_layouts() -> void:
 func _drain() -> void:
 	for frame in range(6):
 		await process_frame
-	await RenderingServer.frame_post_draw
+	RenderingServer.force_draw(true)
 	await create_timer(0.25).timeout
 
 
 func _run() -> void:
 	assert(DisplayServer.get_name() != "headless")
+	# Layout uses the real window geometry. Draw only the evidence frames to
+	# avoid spending the software-renderer's budget on unchanged waiting frames.
+	RenderingServer.render_loop_enabled = false
 	DirAccess.remove_absolute("user://kart_preferences.cfg")
 	game = load(GAME).instantiate()
 	root.add_child(game)
