@@ -57,18 +57,11 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = MOUSE_FILTER_STOP
 	theme = UI.create()
-	var background := TextureRect.new()
-	background.texture = preload("res://assets/kart/menu/lumo-world.webp")
-	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	var background := ColorRect.new()
+	background.color = Color("101923")
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
-	var veil := ColorRect.new()
-	veil.color = Color(0.012, 0.035, 0.10, 0.86)
-	veil.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(veil)
 	page_margin = MarginContainer.new()
 	page_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right", "top", "bottom"]:
@@ -119,15 +112,15 @@ func _label(value: String, font_size: int, color: Color, heading: bool = false) 
 	return label
 
 
-func _glass(selected: bool = false, tint: Color = Color(0.025, 0.085, 0.18, 0.89)) -> StyleBoxFlat:
+func _glass(selected: bool = false, tint: Color = Color("1a2834")) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.055, 0.30, 0.42, 0.96) if selected else tint
-	style.border_color = Color("65e7f0") if selected else Color(0.4, 0.7, 0.9, 0.26)
-	style.set_border_width_all(2 if selected else 1)
-	style.set_corner_radius_all(20)
+	style.bg_color = Color("233b42") if selected else tint
+	style.border_color = Color("74cbb4") if selected else Color("3a505e")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(12)
 	style.set_content_margin_all(12)
 	style.shadow_color = Color(0, 0.02, 0.06, 0.45)
-	style.shadow_size = 8
+	style.shadow_size = 3
 	style.shadow_offset = Vector2(0, 5)
 	return style
 
@@ -138,12 +131,21 @@ func _button(value: String, callback: Callable, primary: bool = false) -> Button
 	button.custom_minimum_size = Vector2(120, 56)
 	button.add_theme_font_size_override("font_size", 18)
 	button.add_theme_font_override("font", UI.HEADING if primary else UI.BODY)
-	button.add_theme_color_override("font_color", Color("f4f8ff"))
+	var face := Color("302410") if primary else Color("f4f8ff")
+	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(state, face)
 	button.add_theme_color_override("font_disabled_color", Color("8295ab"))
-	button.add_theme_stylebox_override("normal", _glass(primary))
-	button.add_theme_stylebox_override("hover", _glass(true))
-	button.add_theme_stylebox_override("pressed", _glass(true))
-	button.add_theme_stylebox_override("focus", _glass(true))
+	var normal := _glass()
+	var hover := _glass(true)
+	if primary:
+		normal.bg_color = GOLD
+		normal.border_color = Color("edb951")
+		hover.bg_color = Color("ffe7ab")
+		hover.border_color = GOLD
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", hover)
+	button.add_theme_stylebox_override("focus", hover)
 	button.add_theme_stylebox_override("disabled", _glass(false, Color(0.04, 0.06, 0.11, 0.7)))
 	button.pressed.connect(callback)
 	return button

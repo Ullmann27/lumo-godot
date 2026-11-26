@@ -14,6 +14,13 @@ const BETTER := Color("7dff9a")
 const WORSE := Color("ffb26b")
 const SAME := Color("c9d6e6")
 const THUMBS := "res://assets/kart/production/parts/thumbs/%s.png"
+const STAGE = preload("res://scripts/games/kart_garage_interior.gd")
+const LIFT_SLOTS := ["tires", "wheel_cover", "brakes", "suspension"]
+const LIFT_HEIGHT := 0.42
+const COMPACT_WIDTH_DP := 470.0
+const INK := Color("f3f6fa")
+const ACCENT := Color("78dbbf")
+const PANEL := Color("13212e")
 
 var menu
 var open_button: Button
@@ -24,6 +31,7 @@ var stats_bars
 var stats_title: Label
 var title_label: Label
 var category: OptionButton
+var part_title: Label
 var tile_scroll: ScrollContainer
 var body_scroll: ScrollContainer
 var tile_row: HBoxContainer
@@ -45,6 +53,11 @@ var _scale := 1.0
 var _inspection: Node3D
 var _drawer := Rect2()
 var _angle_before := 0.0
+var _focused := false
+var _compact_portrait := false
+var _lift: Node3D
+var _lift_kart: Node3D
+var _lift_rest := Vector3.ZERO
 
 
 func setup(owner_menu) -> void:
@@ -67,15 +80,19 @@ func is_open() -> bool:
 	return _open
 
 
-func _style(fill: Color, border: Color, radius: int = 22) -> StyleBoxFlat:
+func uses_compact_inspection(width_dp: float) -> bool:
+	return _focused and width_dp < COMPACT_WIDTH_DP
+
+
+func _style(fill: Color, border: Color, radius: int = 14) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
 	style.border_color = border
-	style.set_border_width_all(2)
+	style.set_border_width_all(1)
 	style.set_corner_radius_all(radius)
 	style.set_content_margin_all(10)
 	style.shadow_color = Color(0, 0.02, 0.08, 0.45)
-	style.shadow_size = 8
+	style.shadow_size = 4
 	style.shadow_offset = Vector2(0, 3)
 	return style
 
@@ -149,7 +166,7 @@ func _build_panel() -> void:
 	panel = PanelContainer.new()
 	panel.name = "PartsConfigurator"
 	panel.add_theme_stylebox_override(
-		"panel", _style(Color(0.03, 0.09, 0.22, 0.96), Color(1.0, 0.7, 0.3, 0.9), 26)
+		"panel", _style(PANEL, Color("3c5364"), 16)
 	)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(panel)
@@ -159,7 +176,7 @@ func _build_panel() -> void:
 	var head := HBoxContainer.new()
 	head.add_theme_constant_override("separation", 8)
 	column.add_child(head)
-	title_label = _label("Teilewerkstatt", 20, Color("f2f7ff"))
+	title_label = _label("Teilewerkstatt", 20, INK)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title_label)
 	category = OptionButton.new()
@@ -167,13 +184,17 @@ func _build_panel() -> void:
 	category.tooltip_text = "Teile-Kategorie wählen"
 	category.fit_to_longest_item = false
 	category.add_theme_font_override("font", UI.HEADING)
-	category.add_theme_stylebox_override("normal", _style(Color("143f57"), Color("63d9ed"), 12))
-	category.add_theme_stylebox_override("hover", _style(Color("20576b"), Color("aeffff"), 12))
-	category.add_theme_stylebox_override("pressed", _style(Color("20576b"), Color("aeffff"), 12))
+	category.add_theme_stylebox_override("normal", _style(Color("243846"), Color("567a83"), 10))
+	category.add_theme_stylebox_override("hover", _style(Color("284855"), ACCENT, 10))
+	category.add_theme_stylebox_override("pressed", _style(Color("284855"), ACCENT, 10))
 	for id in TUNING.PART_SLOTS:
 		category.add_item(TUNING.SLOT_NAMES[id])
 	category.item_selected.connect(func(index: int): _on_slot(TUNING.PART_SLOTS[index]))
 	head.add_child(category)
+	part_title = _label("", 24, INK)
+	part_title.name = "InspectedPart"
+	part_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	column.add_child(part_title)
 	# Steckplätze, Teilebilder und Prüfstand rollen senkrecht, wenn der Konfigurator flach ist
 	# (Querformat: linke Spalte); „Zurück“ und „Montieren“ bleiben immer unten sichtbar.
 	body_scroll = ScrollContainer.new()
@@ -201,11 +222,11 @@ func _build_panel() -> void:
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 10)
 	body_scroll.get_parent().add_child(actions)
-	back_button = _action("← Zurück", _on_back, Color(0.06, 0.16, 0.32, 0.96), Color.WHITE)
+	back_button = _action("Zurück", _on_back, Color("253846"), INK)
 	back_button.name = "PartsBackButton"
 	back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(back_button)
-	mount_button = _action("Montieren", _on_mount, Color("ffd645"), Color("2b1a00"))
+	mount_button = _action("Montieren", _on_mount, Color("ffd16b"), Color("30210e"))
 	mount_button.name = "PartsMountButton"
 	mount_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(mount_button)
@@ -216,13 +237,13 @@ func _build_dyno(column: VBoxContainer) -> void:
 	var frame := PanelContainer.new()
 	frame.name = "PartsDyno"
 	frame.add_theme_stylebox_override(
-		"panel", _style(Color(0.01, 0.05, 0.13, 0.9), Color(0.4, 0.88, 1.0, 0.45), 16)
+		"panel", _style(Color("192c38"), Color("365561"), 12)
 	)
 	column.add_child(frame)
 	dyno_box = VBoxContainer.new()
 	dyno_box.add_theme_constant_override("separation", 4)
 	frame.add_child(dyno_box)
-	dyno_title = _label("Prüfstand", 15, Color("9fe8ff"))
+	dyno_title = _label("Prüfstand", 15, ACCENT)
 	dyno_title.clip_text = true
 	dyno_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	dyno_box.add_child(dyno_title)
@@ -267,6 +288,7 @@ func _on_open() -> void:
 	_angle_before = menu.preview_angle
 	menu._choose_preview_view(0, false)
 	_open = true
+	_focused = false
 	pending = {}
 	stats_panel.hide()
 	_on_slot(slot)
@@ -284,10 +306,12 @@ func _on_stats() -> void:
 
 func _on_slot(slot_id: String) -> void:
 	slot = slot_id
+	_focused = false
 	category.select(TUNING.PART_SLOTS.find(slot))
 	tile_scroll.scroll_horizontal = 0
 	body_scroll.scroll_vertical = 0
 	_build_tiles()
+	_sync_focus()
 	_focus_camera()
 
 
@@ -305,16 +329,16 @@ func _build_tiles() -> void:
 		tile.focus_mode = Control.FOCUS_ALL
 		tile.set_pressed_no_signal(id == current)
 		tile.add_theme_stylebox_override(
-			"normal", _style(Color(0.05, 0.13, 0.27, 0.95), Color(0.4, 0.7, 0.95, 0.5), 18)
+			"normal", _style(Color("21333f"), Color("465f6b"), 12)
 		)
 		tile.add_theme_stylebox_override(
-			"hover", _style(Color(0.08, 0.2, 0.38, 0.97), Color(0.7, 0.95, 1.0, 0.9), 18)
+			"hover", _style(Color("28434e"), ACCENT, 12)
 		)
 		tile.add_theme_stylebox_override(
-			"pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18)
+			"pressed", _style(Color("30483f"), ACCENT, 12)
 		)
 		tile.add_theme_stylebox_override(
-			"hover_pressed", _style(Color(0.35, 0.22, 0.05, 0.97), Color("ffd645"), 18)
+			"hover_pressed", _style(Color("30483f"), ACCENT, 12)
 		)
 		tile.add_theme_stylebox_override("focus", _style(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 18))
 		tile.pressed.connect(_on_tile.bind(id))
@@ -388,6 +412,7 @@ func _current(slot_id: String) -> String:
 func _on_tile(id: String) -> void:
 	if id == _current(slot):
 		tiles[id].set_pressed_no_signal(true)
+		_enter_focus()
 		return
 	if id == _saved(slot):
 		pending.erase(slot)
@@ -400,7 +425,23 @@ func _on_tile(id: String) -> void:
 	if vehicle != null:
 		vehicle.apply_parts(preview_look(), "" if menu.reduced_motion else slot)
 	_refresh_dyno()
+	_enter_focus()
+
+
+func _enter_focus() -> void:
+	_focused = true
+	_sync_focus()
 	_focus_camera()
+	menu._apply_responsive_layout.call_deferred()
+
+
+func _sync_focus() -> void:
+	var close_view := _compact_portrait and _focused
+	category.visible = not close_view
+	tile_scroll.visible = not close_view
+	part_title.visible = close_view
+	if close_view:
+		part_title.text = str(TUNING.option(slot, _current(slot)).name)
 
 
 ## Prüfstand: misst das montierte Kart und das Kart mit dem angetippten Teil (kart_dyno.gd,
@@ -476,7 +517,7 @@ func _sync_action() -> void:
 	title_label.text = "%d Teile gewählt" % pending.size() if pending.size() > 1 else "Teilewerkstatt"
 	var price := _pending_price()
 	var workshop = _workshop()
-	mount_button.text = "Montieren"
+	mount_button.text = "Fertig" if pending.is_empty() else "Montieren"
 	mount_button.disabled = false
 	if price <= 0 or workshop == null:
 		return
@@ -488,6 +529,8 @@ func _sync_action() -> void:
 
 
 func _apply_dyno_font() -> void:
+	dyno_grid.add_theme_constant_override("h_separation", roundi(8 * _scale))
+	dyno_grid.add_theme_constant_override("v_separation", roundi(3 * _scale))
 	for label in dyno_grid.get_children():
 		label.add_theme_font_size_override("font_size", roundi((13 if label.get_index() % 3 == 2 else 14) * _scale))
 	dyno_title.add_theme_font_size_override("font_size", roundi(15 * _scale))
@@ -512,6 +555,12 @@ func _on_mount() -> void:
 
 
 func _on_back() -> void:
+	if _compact_portrait and _focused:
+		_focused = false
+		_sync_focus()
+		_focus_camera()
+		menu._apply_responsive_layout.call_deferred()
+		return
 	pending = {}
 	var vehicle = _vehicle()
 	if vehicle != null:
@@ -521,6 +570,8 @@ func _on_back() -> void:
 
 func _close() -> void:
 	_clear_inspection()
+	_clear_lift()
+	_focused = false
 	_open = false
 	menu.preview_angle = _angle_before
 	menu.preview_pivot.rotation.y = _angle_before
@@ -575,7 +626,8 @@ func _inspect_internal(vehicle, kart: Node3D) -> bool:
 	if not bounds.has_surface():
 		_clear_inspection()
 		return false
-	var target := kart.to_global(Vector3(1.78, 0.73, -1.12))
+	var offset := Vector3(-1.22, 0.80, -0.76) if _focused and slot in LIFT_SLOTS else Vector3(1.78, 0.73, -1.12)
+	var target := kart.to_global(offset)
 	_inspection.global_position += target - bounds.get_center()
 	return true
 
@@ -590,9 +642,79 @@ func _focus_camera() -> void:
 	menu.preview_angle = PI * 0.86 if rear else -0.25
 	menu.preview_pivot.rotation.y = menu.preview_angle
 	menu._camera_zoom = 1.0
-	if slot in ["steering", "brakes", "gearbox", "ballast"]:
+	_sync_lift(menu.preview_kart)
+	if slot in ["steering", "brakes", "gearbox", "ballast"] or (_focused and slot == "suspension"):
 		_inspect_internal(vehicle, menu.preview_kart)
 	menu._fit_welcome_camera.call_deferred()
+
+
+func _sync_lift(kart: Node3D) -> void:
+	if not _focused or slot not in LIFT_SLOTS or not is_instance_valid(kart):
+		_clear_lift()
+		return
+	if is_instance_valid(_lift) and _lift_kart == kart:
+		return
+	_clear_lift()
+	_lift_kart = kart
+	_lift_rest = kart.position
+	kart.position.y += LIFT_HEIGHT
+	_lift = Node3D.new()
+	_lift.name = "WorkshopInspectionLift"
+	menu.preview_pivot.add_child(_lift)
+	_lift.position = _lift_rest
+	var materials: Dictionary = menu.garage_interior.showroom.materials
+	var frame: Material = materials.dark
+	var steel: Material = materials.chrome
+	var safety: Material = materials.yellow
+	STAGE._box(_lift, "LiftBasePlate", Vector3(0.90, 0.05, 1.32), Vector3(0, 0.05, 0), frame, false)
+	STAGE._box(_lift, "LiftTopPlate", Vector3(0.92, 0.07, 1.28), Vector3(0, 0.48, 0), safety, false)
+	for side in [-0.32, 0.32]:
+		for slope in [-1.0, 1.0]:
+			var arm := STAGE._box(_lift, "ScissorArm", Vector3(0.07, 0.07, 0.86), Vector3(side + slope * 0.04, 0.27, 0), safety, false)
+			arm.rotation.x = slope * 0.48
+		STAGE._cylinder(_lift, "ScissorPivot", 0.045, 0.23, Vector3(side, 0.27, 0), steel).rotation.z = PI * 0.5
+		STAGE._box(_lift, "FrameContact", Vector3(0.20, 0.08, 0.83), Vector3(side, 0.54, 0), frame, false)
+
+
+func _clear_lift() -> void:
+	if is_instance_valid(_lift_kart):
+		_lift_kart.position = _lift_rest
+	_lift_kart = null
+	if is_instance_valid(_lift):
+		_lift.queue_free()
+		_lift.hide()
+	_lift = null
+
+
+func _selected_bounds(kart: Node3D, projection: Transform3D) -> AABB:
+	var vehicle = _vehicle()
+	if vehicle == null:
+		return AABB()
+	var subject: Node3D = _inspection
+	if not is_instance_valid(subject):
+		var node_name := str(TUNING.option(slot, _current(slot)).get("node", ""))
+		if not node_name.is_empty():
+			subject = vehicle.asset_root.find_child("Mount_" + node_name, true, false) as Node3D
+	var bounds := AABB()
+	if is_instance_valid(subject):
+		for mesh in subject.find_children("*", "MeshInstance3D", true, false):
+			var box: AABB = projection * mesh.global_transform * mesh.get_aabb()
+			bounds = box if not bounds.has_surface() else bounds.merge(box)
+	var focus := Vector3(0, 0.64, 0.10)
+	if slot in LIFT_SLOTS and not vehicle.wheel_pivots.is_empty():
+		focus = vehicle.wheel_pivots[0].position
+		# Include the exposed corner and the scissor arms below it.
+		var wheel_section := projection * kart.global_transform * AABB(
+			focus + Vector3(-0.46, -0.70, -0.50), Vector3(1.50, 1.28, 1.26)
+		)
+		return wheel_section.merge(bounds) if bounds.has_surface() else wheel_section
+	if bounds.has_surface():
+		return bounds.grow(0.29)
+	if slot in ["engine", "wing", "booster", "exhaust", "gearbox"]:
+		focus.z = 0.92
+	elif slot == "steering":
+		focus.z = -0.55
+	return projection * kart.global_transform * AABB(focus - Vector3(0.68, 0.37, 0.48), Vector3(1.36, 0.74, 0.96))
 
 
 ## A product camera can frame the silhouette exactly without moving behind a studio wall
@@ -602,15 +724,19 @@ func fit_camera(region: Rect2) -> void:
 	if not is_instance_valid(kart) or not region.has_area():
 		return
 	var camera: Camera3D = menu.preview_camera
+	_sync_lift(kart)
 	var aspect := Vector2(menu.preview_viewport.size).aspect()
 	var direction := Vector3(-2.45, 1.65, -3.8).normalized()
+	if _focused and slot in LIFT_SLOTS:
+		direction = Vector3(-2.6, 0.79, -3.6).normalized()
 	var basis := Basis.looking_at(-direction)
+	var projection := Transform3D(basis.inverse(), Vector3.ZERO)
 	var bounds := AABB()
 	var found := false
 	for mesh in kart.find_children("*", "MeshInstance3D", true, false):
 		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == kart.far_mesh:
 			continue
-		var box: AABB = Transform3D(basis.inverse(), Vector3.ZERO) * mesh.global_transform * mesh.get_aabb()
+		var box: AABB = projection * mesh.global_transform * mesh.get_aabb()
 		bounds = bounds.merge(box) if found else box
 		found = true
 	if not found:
@@ -621,6 +747,10 @@ func fit_camera(region: Rect2) -> void:
 		var head := skeleton.to_global(skeleton.get_bone_global_pose(skeleton.find_bone("Head")).origin)
 		for side in [-0.5, 0.5]:
 			bounds = bounds.expand(basis.inverse() * (head + Vector3(side, 0.50, 0)))
+	if _focused:
+		var selected := _selected_bounds(kart, projection)
+		if selected.has_surface():
+			bounds = selected
 	var centre := bounds.get_center()
 	var span := maxf(bounds.size.y / region.size.y, bounds.size.x / (region.size.x * aspect)) * 1.12
 	camera.keep_aspect = Camera3D.KEEP_HEIGHT
@@ -642,7 +772,9 @@ func _sync() -> void:
 	)
 	if not garage_page and _open:
 		_clear_inspection()
+		_clear_lift()
 		pending.clear()
+		_focused = false
 		_open = false
 	open_button.visible = garage_page and not _open
 	stats_button.visible = garage_page and not _open
@@ -659,6 +791,8 @@ func _sync() -> void:
 ## Auf schmalen Bildschirmen sitzen sie zwischen freier Bühne und Kartauswahl.
 func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> void:
 	_scale = ui_scale
+	_compact_portrait = menu.size.x < menu.size.y and menu.size.x / ui_scale < COMPACT_WIDTH_DP
+	_sync_focus()
 	var button_height: float = 52.0 * ui_scale
 	var gap: float = 10.0 * ui_scale
 	for button in [open_button, stats_button, mount_button, back_button]:
@@ -676,6 +810,7 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> v
 	var item_padding := maxi(roundi(16 * ui_scale), ceili(48.0 * ui_scale - font_height))
 	popup.add_theme_constant_override("v_separation", item_padding + item_padding % 2)
 	title_label.add_theme_font_size_override("font_size", roundi((18 if compact else 21) * ui_scale))
+	part_title.add_theme_font_size_override("font_size", roundi(24 * ui_scale))
 	title_label.clip_text = true
 	back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	back_button.text = "Zurück"

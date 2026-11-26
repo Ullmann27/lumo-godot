@@ -485,6 +485,8 @@ func _apply_responsive_layout() -> void:
 		# The parts editor owns its drawer. Its measured outer edge defines the camera stage.
 		if portrait:
 			var height := clampf(available.y * 0.49, 225.0, 482.0)
+			if parts_bay.uses_compact_inspection(available.x):
+				height = clampf(available.y * 0.38, 224.0, 350.0)
 			parts_rect = Rect2(margin, available.y - margin - height, available.x - 2 * margin, height)
 		else:
 			parts_rect = Rect2(margin, margin, minf(available.x * 0.43, 530), available.y - 2 * margin)
