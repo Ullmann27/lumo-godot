@@ -1,0 +1,135 @@
+{
+  "scope": "Linux, Vulkan Forward Mobile, Mesa llvmpipe, CPU-Softwaretreiber. Gleichzeitig liefen weitere Tests. Die Godot-Viewport-Zeit schließt die übrige CPU-Spielarbeit aus.",
+  "physical_device_tested": false,
+  "metrics": {
+    "active": {
+      "nodes": 124.0,
+      "resident_kib_linux": 931840,
+      "resources": 63.0,
+      "texture_bytes": 89603584.0,
+      "video_bytes": 122582640.0
+    },
+    "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "after_unload": {
+      "nodes": 23.0,
+      "resident_kib_linux": 929064,
+      "resources": 63.0,
+      "texture_bytes": 89603584.0,
+      "video_bytes": 121828128.0
+    },
+    "before": {
+      "nodes": 23.0,
+      "resident_kib_linux": 259716,
+      "resources": 17.0,
+      "texture_bytes": 0.0,
+      "video_bytes": 0.0
+    },
+    "engine": "4.6.3-stable (official)",
+    "entry": "native_boot",
+    "first_draw_ms": 60799.723,
+    "profile": "medium",
+    "renderer": "mobile",
+    "route": "quiz",
+    "sample_frames": 60,
+    "samples": {
+      "draw_calls": {
+        "max": 43.0,
+        "mean": 43.0,
+        "observations": 60,
+        "p50": 43.0,
+        "p95": 43.0,
+        "p99": 43.0
+      },
+      "frame_ms": {
+        "max": 4516.24,
+        "mean": 467.055933333333,
+        "observations": 60,
+        "p50": 391.618,
+        "p95": 612.523,
+        "p99": 4516.24
+      },
+      "navigation_ms": {
+        "max": 0.098,
+        "mean": 0.01715,
+        "observations": 60,
+        "p50": 0.003,
+        "p95": 0.086,
+        "p99": 0.098
+      },
+      "physics_active_3d": {
+        "max": 0.0,
+        "mean": 0.0,
+        "observations": 60,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "physics_ms": {
+        "max": 0.685,
+        "mean": 0.182683333333333,
+        "observations": 60,
+        "p50": 0.064,
+        "p95": 0.619,
+        "p99": 0.685
+      },
+      "primitives": {
+        "max": 79386.0,
+        "mean": 79376.8333333333,
+        "observations": 60,
+        "p50": 79376.0,
+        "p95": 79386.0,
+        "p99": 79386.0
+      },
+      "process_ms": {
+        "max": 4506.978,
+        "mean": 478.287883333333,
+        "observations": 60,
+        "p50": 391.142,
+        "p95": 542.789,
+        "p99": 4506.978
+      },
+      "render_objects": {
+        "max": 174.0,
+        "mean": 169.416666666667,
+        "observations": 60,
+        "p50": 169.0,
+        "p95": 174.0,
+        "p99": 174.0
+      },
+      "viewport_cpu_ms": {
+        "max": 6.06500005722046,
+        "mean": 0.684525428687112,
+        "observations": 59,
+        "p50": 0.40599998831749,
+        "p95": 1.92599999904633,
+        "p99": 6.06500005722046
+      },
+      "viewport_gpu_ms": {
+        "max": 4500.38916015625,
+        "mean": 433.313579753294,
+        "observations": 59,
+        "p50": 356.587005615234,
+        "p95": 683.309997558594,
+        "p99": 4500.38916015625
+      }
+    },
+    "scene": "res://scenes/games/quiz_studio.tscn",
+    "source": "62f3f42c7e898aac1214454a020597ad8b022df6",
+    "structure": {
+      "animation_players": 1,
+      "custom_mesh_shaders": 0,
+      "lights": 4,
+      "mesh_instances": 37,
+      "mesh_material_instances": 18,
+      "multimesh_nodes": 2,
+      "navigation_agents": 0,
+      "particle_capacity": 0,
+      "particle_emitters": 0,
+      "playing_animation_players": 1,
+      "shadow_lights": 1,
+      "skeletons": 1
+    },
+    "viewport": "(960, 540)",
+    "warmup_frames": 24
+  }
+}

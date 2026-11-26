@@ -68,18 +68,37 @@ func _run() -> void:
 	var samples := {"frame_ms": PackedFloat64Array()}
 	for key in monitor_ids:
 		samples[key] = PackedFloat64Array()
+	var viewport := root.get_viewport_rid()
+	# RenderingDevice exposes delayed timestamp queries. The reported GPU
+	# time still belongs to a software device when using lavapipe.
+	var timed_viewport := RenderingServer.get_rendering_device() != null
+	if timed_viewport:
+		RenderingServer.viewport_set_measure_render_time(viewport, true)
+		samples["viewport_cpu_ms"] = PackedFloat64Array()
+		samples["viewport_gpu_ms"] = PackedFloat64Array()
 	var last := Time.get_ticks_usec()
 	for _i in SAMPLE_FRAMES:
 		await process_frame
 		var now := Time.get_ticks_usec()
 		samples.frame_ms.append((now - last) / 1000.0)
 		last = now
+		if timed_viewport:
+			var cpu_ms := RenderingServer.viewport_get_measured_render_time_cpu(viewport)
+			var gpu_ms := RenderingServer.viewport_get_measured_render_time_gpu(viewport)
+			if cpu_ms > 0.0:
+				samples.viewport_cpu_ms.append(cpu_ms)
+			if gpu_ms > 0.0:
+				samples.viewport_gpu_ms.append(gpu_ms)
 		for key in monitor_ids:
 			var value := Performance.get_monitor(monitor_ids[key])
 			samples[key].append(value * 1000.0 if key.ends_with("_ms") else value)
 	var result := {}
 	for key in samples:
-		result[key] = Stats.statistics(samples[key])
+		if not samples[key].is_empty():
+			result[key] = Stats.statistics(samples[key])
+			result[key]["observations"] = samples[key].size()
+	if timed_viewport:
+		RenderingServer.viewport_set_measure_render_time(viewport, false)
 	var active := _residency()
 	var structure := _structure(current_scene)
 	unload_current_scene()
