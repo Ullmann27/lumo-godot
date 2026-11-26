@@ -102,6 +102,19 @@ func uses_compact_inspection(width_dp: float) -> bool:
 	return _focused and width_dp < COMPACT_WIDTH_DP
 
 
+func preview_framing_point(kart: Node3D) -> Vector3:
+	if _open and _focused and _compact_portrait:
+		return _selected_bounds(kart, Transform3D.IDENTITY).get_center()
+	return kart.global_position + Vector3.UP * 0.5
+
+
+func restore_preview() -> void:
+	var vehicle = _vehicle()
+	if vehicle != null:
+		vehicle.apply_parts(preview_look())
+	_focus_camera()
+
+
 func _style(fill: Color, border: Color, radius: int = 14) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill

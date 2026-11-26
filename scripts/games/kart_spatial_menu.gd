@@ -179,10 +179,14 @@ func _refresh_preview() -> void:
 	# Die Streckenwahl zeigt Bilder: beim Blättern nicht jedes Mal die ganze Welt bauen.
 	if track_stage != null and track_stage.defers_world():
 		return
+	var previous_id := preview_kart.get_instance_id() if is_instance_valid(preview_kart) else 0
 	super._refresh_preview()
 	# Nova und Milo erscheinen im Menü als dieselben 3D-Figuren wie im Rennen.
 	if is_instance_valid(preview_kart) and preview_kart.has_method("set_reference_rival_enabled"):
 		preview_kart.set_reference_rival_enabled(true)
+	if step == 2 and parts_bay != null and parts_bay.is_open() and is_instance_valid(preview_kart):
+		if previous_id != preview_kart.get_instance_id():
+			parts_bay.restore_preview()
 
 
 func _update_track_goals() -> void:
@@ -921,7 +925,10 @@ func _preview_kart_problem() -> String:
 		return "kart_position_ungueltig"
 	if preview_kart.global_transform.basis.get_scale().length() < 0.3:
 		return "kart_winzig"
-	if not preview_camera.is_position_in_frustum(where + Vector3.UP * 0.5):
+	var subject := where + Vector3.UP * 0.5
+	if step == 2 and parts_bay != null and parts_bay.is_open():
+		subject = parts_bay.preview_framing_point(preview_kart)
+	if not preview_camera.is_position_in_frustum(subject):
 		return "kart_ausserhalb_bild"
 	return ""
 
