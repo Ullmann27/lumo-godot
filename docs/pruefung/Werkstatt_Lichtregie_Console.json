@@ -1,0 +1,110 @@
+{
+  "device": "Lokales Godot OpenGL Compatibility/llvmpipe; simulierte Fold-Abmessungen",
+  "camera_exact_match": [
+    {
+      "camera": "[X: (-0.944497, 0.0, -0.328521), Y: (-0.054544, 0.986121, 0.156815), Z: (0.323961, 0.16603, -0.931388), O: (3.253417, 2.344994, -9.676794)]",
+      "camera_fov": 35.0,
+      "camera_h_offset": -1.59787011146545,
+      "camera_size": 2.79999995231628,
+      "camera_v_offset": 0.294061869382858,
+      "density": 2.625,
+      "host_visible": true,
+      "kart": "comet",
+      "profile": "medium",
+      "region": "[P: (0.402918, 0.221425), S: (0.587431, 0.646917)]",
+      "size": [
+        2176,
+        1812
+      ]
+    },
+    {
+      "camera": "[X: (-0.944497, 0.0, -0.328521), Y: (-0.054544, 0.986121, 0.156815), Z: (0.323961, 0.16603, -0.931388), O: (3.909698, 2.792995, -12.20102)]",
+      "camera_fov": 40.0,
+      "camera_h_offset": 0.0,
+      "camera_size": 2.79999995231628,
+      "camera_v_offset": -1.17454957962036,
+      "density": 2.625,
+      "host_visible": true,
+      "kart": "comet",
+      "profile": "medium",
+      "region": "[P: (0.02323, 0.232322), S: (0.95354, 0.288791)]",
+      "size": [
+        904,
+        2316
+      ]
+    }
+  ],
+  "roi_normalized": {
+    "leuchtschild": [
+      0.4,
+      0.235,
+      0.69,
+      0.38
+    ],
+    "karosserie": [
+      0.57,
+      0.49,
+      0.82,
+      0.66
+    ]
+  },
+  "before": {
+    "sha256": "0746c5b10ab6107f64175a69237d9ef838521b3fb10c2042031a759b0a3895aa",
+    "statistics": {
+      "leuchtschild": {
+        "roi_pixels": [
+          870,
+          426,
+          1501,
+          689
+        ],
+        "digital_luma_median": 105.47920227050781,
+        "digital_luma_p95": 254.56680297851562,
+        "magenta_pixel_percent": 39.08938072827849
+      },
+      "karosserie": {
+        "roi_pixels": [
+          1240,
+          888,
+          1784,
+          1196
+        ],
+        "digital_luma_median": 82.31400299072266,
+        "digital_luma_p95": 226.7009735107422,
+        "magenta_pixel_percent": 0.36167876241405655
+      }
+    }
+  },
+  "after": {
+    "sha256": "4e99449ada9ab9fe2a38062f116b2553b791ed8920483afed258c7b88450b757",
+    "statistics": {
+      "leuchtschild": {
+        "roi_pixels": [
+          870,
+          426,
+          1501,
+          689
+        ],
+        "digital_luma_median": 61.82339859008789,
+        "digital_luma_p95": 212.2436065673828,
+        "magenta_pixel_percent": 0.0
+      },
+      "karosserie": {
+        "roi_pixels": [
+          1240,
+          888,
+          1784,
+          1196
+        ],
+        "digital_luma_median": 83.87480163574219,
+        "digital_luma_p95": 227.1914825439453,
+        "magenta_pixel_percent": 0.13548032849503439
+      }
+    }
+  },
+  "criteria": {
+    "sign_p95_reduction_percent": 16.625575650845846,
+    "body_luma_median_change_percent": 1.8961520376981733
+  },
+  "passed": true
+}
