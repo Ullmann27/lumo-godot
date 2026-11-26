@@ -142,7 +142,7 @@ func _build_paths() -> void:
 		_solid(bridge, Vector3(x, 1.85, 98), Vector3(0.42, 3.7, 0.43), WOOD).material_override = timber
 	kit.box(bridge, Vector3(172, 3.60, 98), Vector3(8.0, 0.38, 0.6), WOOD).material_override = timber
 	for x in [168.2, 175.8]:
-		kit.cylinder(bridge, Vector3(x, 2.76, 98.48), 0.175, 0.39, Color("c79357"), 12).material_override = ADVENTURE.material("brass")
+		kit.cylinder(bridge, Vector3(x, 2.76, 98.48), 0.175, 0.39, Color("c79357")).material_override = ADVENTURE.material("brass")
 		kit.sphere(bridge, Vector3(x, 2.79, 98.52), Vector3(0.24, 0.31, 0.24), ORANGE, true)
 	_sign_at(self, "WALDHEIM", Vector3(172, 3.11, 98), TEAL)
 	_sign_at(self, "Waldheim · über den Steg", Vector3(165, 2.5, 65), ORANGE)
@@ -196,7 +196,7 @@ func _build_creek() -> void:
 
 
 func _build_turnaround(at: Vector3) -> void:
-	var circle := kit.cylinder(self, at + Vector3.UP * 0.028, 8.4, 0.035, Color("bcae95"), 40)
+	var circle := kit.cylinder(self, at + Vector3.UP * 0.028, 8.4, 0.035, Color("bcae95"))
 	circle.material_override = kit.textured("stone", Color("c4b792"))
 	var ring := TorusMesh.new()
 	ring.inner_radius = 7.4
@@ -385,7 +385,7 @@ func _display_groups(root: Node3D, visual: String, original: Array, solved: bool
 		for item in range(count):
 			var point := Vector3(x - 0.58 + float(item % 4) * 0.37, 1.21, -0.29 + floorf(float(item) / 4.0) * 0.24)
 			if visual == "pots":
-				kit.cylinder(root, point, 0.052, 0.31, Color("5f794a"), 8)
+				kit.cylinder(root, point, 0.052, 0.31, Color("5f794a"))
 				kit.sphere(root, point + Vector3.UP * 0.18, Vector3(0.16, 0.12, 0.1), color)
 			elif visual == "tracks":
 				if index == 2:
@@ -418,13 +418,13 @@ func _display_measurements(root: Node3D, visual: String, values: Array, solved: 
 				kit.box(root, Vector3(x, 1.22, 0), Vector3(length, 0.24, 0.43), ink)
 				_sample_label(root, "%d m" % int(values[index]), x)
 			"lights":
-				kit.cylinder(root, Vector3(x, 1.35, 0), 0.06, 0.61, WOOD, 8)
+				kit.cylinder(root, Vector3(x, 1.35, 0), 0.06, 0.61, WOOD)
 				kit.sphere(root, Vector3(x, 1.7, 0), Vector3.ONE * 0.18, ink, solved and index == 1)
 				_sample_label(root, "%d m" % int(values[index]), x)
 			"channels":
 				var rail := kit.box(root, Vector3(x, 1.47, 0), Vector3(1.56, 0.12, 0.34), ink)
 				rail.rotation.z = float(1 - index) * 0.28
-				var bucket := kit.cylinder(root, Vector3(x + 0.61, 1.21, 0), 0.17, 0.24, ORANGE, 12)
+				var bucket := kit.cylinder(root, Vector3(x + 0.61, 1.21, 0), 0.17, 0.24, ORANGE)
 				if solved and index == 2:
 					bucket.material_override = kit.material(Color("63bcd4"), true)
 				_sample_label(root, ["Bergauf", "Gerade", "Bergab"][index], x)

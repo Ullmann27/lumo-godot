@@ -48,13 +48,13 @@ func _build_places() -> void:
 	booth.position = model.place("stadt_stand").position + Vector3(0, 0, -1.6)
 	_solid(booth, Vector3(0, 0.44, 0), Vector3(3.4, 0.88, 1.0), Color.WHITE).material_override = ADVENTURE.material("wood")
 	for x in [-1.55, 1.55]:
-		kit.cylinder(booth, Vector3(x, 1.59, -0.47), 0.065, 1.74, Color("966c50"), 9)
+		kit.cylinder(booth, Vector3(x, 1.59, -0.47), 0.065, 1.74, Color("966c50"))
 	for stripe in range(9):
 		var cloth := kit.box(booth, Vector3(-1.6 + float(stripe) * 0.4, 2.48, 0), Vector3(0.4, 0.06, 1.35), CITY_GREEN if stripe % 2 == 0 else Color("eee1ba"))
 		cloth.rotation.x = -0.08
 	for index in range(2):
 		kit.sphere(booth, Vector3(-0.95 + float(index) * 0.20, 1.05, 0.1), Vector3.ONE * 0.20, Color("be5b46"))
-	kit.cylinder(booth, Vector3(0, 1.05, 0.1), 0.16, 0.32, Color("c68138"), 12)
+	kit.cylinder(booth, Vector3(0, 1.05, 0.1), 0.16, 0.32, Color("c68138"))
 	kit.sphere(booth, Vector3(0, 1.07, 0.1), Vector3(0.25, 0.14, 0.25), WARM, true)
 	for index in range(4):
 		kit.box(booth, Vector3(0.63 + float(index) * 0.09, 0.95, 0.06), Vector3(0.042, 0.042, 0.36), [CITY_GREEN, WARM, Color("a15c54"), Color("487a93")][index])
@@ -71,7 +71,7 @@ func _build_places() -> void:
 		var label: Label3D = world.art._sign(self, str(place.title), at + Vector3.UP * 2.5, WARM)
 		label.font_size = 27
 		label.visibility_range_end = 23.0
-		kit.cylinder(self, at + Vector3.UP * 0.9, 0.066, 1.8, Color("97714e"), 9)
+		kit.cylinder(self, at + Vector3.UP * 0.9, 0.066, 1.8, Color("97714e"))
 
 
 func purchase_receipt() -> Dictionary:
