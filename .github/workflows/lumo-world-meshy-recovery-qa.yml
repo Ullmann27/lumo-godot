@@ -59,22 +59,8 @@ jobs:
             if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|\] FAIL' "$log"; then exit 1; fi
           done
           grep -E '^\[WorldMeshy\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_meshy_detail_regression.log
-          grep -E '^\[LumoWorld\] PASS [1-9][0-9]* checks
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lumo-world-meshy-proof
-          path: world-meshy-proof/
-          retention-days: 14
- world-meshy-proof/lumo_world_regression.log
-          grep -E '^\[Completeness2094\] PASS [1-9][0-9]* route, actor, and asset checks
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lumo-world-meshy-proof
-          path: world-meshy-proof/
-          retention-days: 14
- world-meshy-proof/completeness_2094_regression.log
+          grep -E '^\[LumoWorld\] PASS [1-9][0-9]* checks$' world-meshy-proof/lumo_world_regression.log
+          grep -E '^\[Completeness2094\] PASS [1-9][0-9]* route, actor, and asset checks$' world-meshy-proof/completeness_2094_regression.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
