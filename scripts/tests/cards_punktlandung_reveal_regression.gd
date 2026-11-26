@@ -78,6 +78,10 @@ func _observe_resolution() -> void:
 	_check(hint.ends_with("Abstand: %d." % best_distance), "turn %d explains the winning distance" % turn)
 	_check(table.hud.round_label.text.ends_with("Ziel %d" % expected_target),
 		"turn %d keeps the matching target in the header" % turn)
+	var label: Label = table.hud.hint_label
+	var safe: Control = table.hud.safe
+	_check(label.is_visible_in_tree() and safe.get_global_rect().encloses(label.get_global_rect()),
+		"turn %d keeps the complete explanation inside the game display" % turn)
 	if not reveal_capture_requested:
 		reveal_capture_requested = true
 		_capture.call_deferred("Punktlandung-Abstand")
@@ -91,12 +95,19 @@ func _press(id: String) -> void:
 func _run() -> void:
 	capture_dir = OS.get_environment("LUMO_PUNKTLANDUNG_BELEGE")
 	if not capture_dir.is_empty():
+		if DisplayServer.get_name() == "headless":
+			printerr("[Punktlandung] A renderer is required for image evidence")
+			quit(1)
+			return
 		DirAccess.make_dir_recursive_absolute(capture_dir)
-	root.size = Vector2i(860, 780)
+	var narrow_cover := "--fold-cover" in OS.get_cmdline_user_args()
+	root.size = Vector2i(1080, 2340) if narrow_cover else Vector2i(860, 780)
 	var bridge: Node = root.get_node("HostBridge")
 	var previous_host: Object = bridge._host
 	var previous_options: Dictionary = bridge._options
 	var host := Host.new()
+	if narrow_cover:
+		host.options["displayDensity"] = 2.625
 	bridge._host = host
 	bridge._options = host.options
 	var path: String = SESSION.path_for(CHILD)

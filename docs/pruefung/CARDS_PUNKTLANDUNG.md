@@ -6,8 +6,10 @@ Die drei [Spielbilder](Cards_Punktlandung_2085.webp) stammen aus einer durchgehe
 | --- | --- |
 | Lokaler Godot-Lauf ohne Renderer | 47/47, sieben vollständige Zahlenvergleiche |
 | Lokaler X11-Lauf mit OpenGL Compatibility und echten Spielbildern bei 860 × 780 | 50/50, sieben vollständige Zahlenvergleiche und drei verifizierte Einzelbilder |
+| Lokaler X11-Lauf im [schmalen Fold-Format](Cards_Fold_Cover_2085.webp) bei 1080 × 2340 und Dichte 2,625 | 57/57, sieben Vergleiche mit räumlich geprüfter Textfläche und drei echten Spielbildern |
+| Gesamte native Cards-Tischregression nach der Änderung | 634/634 |
 | Android-Emulator der Folgefassung und physische Geräte | NICHT GETESTET |
 
 Beide Läufe bedienen die Auswahl, Einführung, Einstellungen, Handkarten und den Ergebnisbildschirm durch Touch-Ereignisse. Sie prüfen den Zahlenabstand anhand der gespielten Karten, die bestätigte Rückgabe an die Spielewelt und die Freigabe der 3D-Szene.
 
-Prüfskript: scripts/tests/cards_punktlandung_reveal_regression.gd. Für den gerenderten Lauf LUMO_PUNKTLANDUNG_BELEGE auf einen beschreibbaren Ordner setzen und Godot mit --disable-render-loop starten. Das Skript aktiviert den Renderer für die drei Aufnahmen.
+Prüfskript: scripts/tests/cards_punktlandung_reveal_regression.gd. Für den gerenderten Lauf LUMO_PUNKTLANDUNG_BELEGE auf einen beschreibbaren Ordner setzen und Godot mit --disable-render-loop starten. Das Skript aktiviert den Renderer für die drei Aufnahmen. Für das schmale Format die Argumente -- --fold-cover ergänzen.
