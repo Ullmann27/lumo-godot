@@ -139,7 +139,13 @@ func _write_report(records: Array[Dictionary]) -> void:
 
 
 func _run() -> void:
-	assert(TRACKS.IDS.size() == 12 and ROUTES.IDS.size() == 11)
+	# Die elf Abenteuerrouten und Sonnenhafen bleiben im Katalog. Spätere Strecken
+	# (Windwerk, Riesengarten, Signatur-Strecken) erweitern ihn, ohne diese Prüfung
+	# zu berühren; früher stand hier die Gesamtzahl 12.
+	assert(ROUTES.IDS.size() == 11, "Adventure route set changed")
+	assert("sonnenhafen" in TRACKS.IDS, "Sonnenhafen left the catalog")
+	for route_id in ROUTES.IDS:
+		assert(route_id in TRACKS.IDS, "Adventure route missing from the catalog: %s" % route_id)
 	var signatures: Dictionary = {}
 	var records: Array[Dictionary] = []
 	var reference_length: float = _baseline_length("sonnenhafen")
