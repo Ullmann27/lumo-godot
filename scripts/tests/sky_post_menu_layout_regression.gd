@@ -102,6 +102,12 @@ func _check_start() -> void:
 		else:
 			_check(panel.get_global_rect().encloses(box) and box.position.y >= clip.end.y,
 				"%s %s has an independently visible footer" % [root.size, button.name])
+		if button.name == "ResumeFlight":
+			var font := button.get_theme_font("font")
+			var font_size := button.get_theme_font_size("font_size")
+			var text_width := font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+			var padding := button.get_theme_stylebox("normal").get_minimum_size().x
+			_check(text_width + padding <= button.size.x, "the continue label fits without clipping")
 
 
 func _run() -> void:

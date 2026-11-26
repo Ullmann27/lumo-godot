@@ -8,7 +8,7 @@ Wenn eine Schaltfläche die Ansicht wechselt, wird das alte Menü sofort ausgebl
 
 | Prüfung | Befund |
 | --- | --- |
-| Lokaler X11-Lauf mit Godot 4.6.3 und OpenGL Compatibility | **210/210**. Das Menü blieb in fünf Fensterformaten innerhalb der sicheren Fläche. Bei 640 × 480 ließen sich Hilfe, Wolkenrennen, Lieferflug, Extrem, letzter Lack und Rätsel über Touch bedienen. Der gestartete Flug ließ sich pausieren, speichern und mit derselben Ergebnis-ID fortsetzen. |
+| Lokaler X11-Lauf mit Godot 4.6.3 und OpenGL Compatibility | **211/211**. Das Menü blieb in fünf Fensterformaten innerhalb der sicheren Fläche. Bei 640 × 480 ließen sich Hilfe, Wolkenrennen, Lieferflug, Extrem, letzter Lack und Rätsel über Touch bedienen. Der gestartete Flug ließ sich pausieren, speichern und mit derselben Ergebnis-ID fortsetzen. |
 | Native Flugtests mit Flugbot | **94/94**. Alle drei Lieferstufen, alle drei Wolkenrennen mit Gegnern im Ziel, Freiflug mit Album, Rettung, Kindwechsel, gespeicherte Tour und einmalige Sternbelohnung bestanden. |
 | Android-Emulator und physischer Fold7 mit dieser Änderung | **NICHT GETESTET**. Die Fold-Fenstermaße und die Dichte 2,625 wurden lokal nachgebildet. |
 

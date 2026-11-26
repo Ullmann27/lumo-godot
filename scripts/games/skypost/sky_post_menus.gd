@@ -345,7 +345,7 @@ func _build_start(scroll_offset: int) -> void:
 	else:
 		column.add_child(UI.label("Gespeichert · " + save_text, 15.0, u, UI.MUTED))
 		var resume: Button = _button(
-			"Weiterfliegen",
+			"Fortsetzen",
 			"ResumeFlight",
 			func() -> void: start_pressed.emit(true),
 			true,
