@@ -278,6 +278,8 @@ var opponents: Array[LumoRaceKart] = []
 var opponent_distances: Array[float] = [-4, -7, -10, -13, -16]
 var opponent_lanes: Array[float] = [-3.2, -1.65, -0.1, 1.45, 3.0]
 var rival_contact_timer: float = 0.0
+## Sideways velocity (m/s) two touching karts receive; decays with their grip.
+const CONTACT_IMPULSE: float = 3.2
 var checkpoint_index: int = 0
 var result_id: String = ""
 var result_payload: Dictionary = {}
@@ -3270,6 +3272,7 @@ func _drive_opponents(delta: float) -> void:
 			target_speed = move_toward(float(rival.motion_speed), limited_target, POWERTRAIN.acceleration(precision_factors, braking_now) * delta)
 		var drive_velocity: Vector3 = world.surface_velocity(sampled, forward, target_speed)
 		rival.position += drive_velocity * delta
+		RIVAL_RACECRAFT.apply_contact_push(rival, delta)
 		var next: Dictionary = world.sample_road(rival.position, float(sampled.distance))
 		var travel: float = fposmod(float(next.distance) - float(sampled.distance) + track_length * 0.5, track_length) - track_length * 0.5
 		opponent_distances[i] += travel
@@ -3500,14 +3503,26 @@ func _track_events() -> void:
 		if rival_contact_timer <= 0 and away.length() < 1.45:
 			rival_contact_timer = 0.6
 			_sound_effect("collision")
+			# Kart-to-kart contact pushes both karts apart through their velocity
+			# (no positional jump); kart_fx adds the bump, sparks when they rub at speed.
+			var rival_heading: float = opponent_headings[i] if i < opponent_headings.size() else player_heading
+			var rival_velocity := Vector3(-sin(rival_heading), 0, -cos(rival_heading)) * absf(opponents[i].motion_speed)
+			var relative: Vector3 = physical_velocity - rival_velocity
+			relative.y = 0.0
+			var rubbing: bool = minf(absf(speed), absf(opponents[i].motion_speed)) > 8.0
+			var closing: float = maxf(relative.length(), 3.5 if rubbing else 0.0)
+			var apart: Vector3 = away.normalized() if away.length() > 0.01 else (player.basis.x as Vector3)
+			if is_instance_valid(drive_fx):
+				drive_fx.kart_contact(player, opponents[i], race_root.global_basis * apart, closing)
 			if shield_time <= 0:
 				hit_timer = maxf(hit_timer, 0.25)
-				var push: Vector3 = away.normalized() * 0.18
+				var push: Vector3 = apart * CONTACT_IMPULSE
 				if not PASSAGES.zone_at(world, previous_road_distance).is_empty():
 					# Waiting zone / deck: a rival never shoves the child sideways into danger.
 					var along: Vector3 = world.forward(previous_road_distance)
 					push = along * minf(0.0, push.dot(along))
-				player.position += push
+				physical_velocity += push
+			opponents[i].set_meta(&"contact_push", -apart * CONTACT_IMPULSE * 0.8)
 	var lap: int = int(distance / track_length)
 	for i in range(gems.size()):
 		var key: int = _gem_key(lap, i)

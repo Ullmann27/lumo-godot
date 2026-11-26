@@ -17,6 +17,8 @@ extends RefCounted
 
 const KIT = preload("res://scripts/games/visual/kart_detail_kit.gd")
 const THEMES = preload("res://scripts/games/visual/kart_detail_themes.gd")
+## Pfützen melden ihre Lage an die Fahreffekte (Wasserspritzer unter den Reifen).
+const FX_GROUND = preload("res://scripts/games/kart_fx/kart_fx_ground.gd")
 const ROOT_NAME: String = "KartDetailLayer"
 const META: String = "kart_detail_layer"
 const CHUNK_M: Dictionary = {"low": 100000.0, "medium": 170.0, "high": 130.0}
@@ -97,6 +99,7 @@ func _run(target: Node3D, wanted_track: String, wanted_profile: String) -> void:
 	if old != null:
 		world.remove_child(old)
 		old.queue_free()
+	FX_GROUND.clear_wet_spots(world)
 	root = Node3D.new()
 	root.name = ROOT_NAME
 	world.add_child(root)
@@ -349,6 +352,8 @@ func _road_decal(tile: String, d: float, lateral: float, along: float, across: f
 		color = Color(color.r * road_tint.r, color.g * road_tint.g, color.b * road_tint.b, color.a)
 	_batch(d, "decal").add_quad(corners, up, KIT.wear_rect(tile), color, Vector2(1.0 if wet else 0.0, 0.0))
 	stats.wear += 1
+	if wet:
+		FX_GROUND.add_wet_spot(world, d, lateral, along, across)
 
 
 func _corner_strength(d: float) -> float:

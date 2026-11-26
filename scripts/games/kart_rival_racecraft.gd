@@ -178,3 +178,16 @@ static func may_boost(
 		if obstacle.x > 0.0 and obstacle.x < cruise * 1.6 and absf(obstacle.y - current) < 1.8:
 			return false
 	return true
+
+
+## A bump from another kart: the sideways push fades as the tyres catch it again.
+static func apply_contact_push(rival: Node3D, delta: float) -> void:
+	if not rival.has_meta(&"contact_push"):
+		return
+	var push: Vector3 = rival.get_meta(&"contact_push")
+	rival.position += push * delta
+	push *= exp(-14.0 * delta)
+	if push.length() < 0.05:
+		rival.remove_meta(&"contact_push")
+	else:
+		rival.set_meta(&"contact_push", push)
