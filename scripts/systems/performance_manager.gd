@@ -22,8 +22,8 @@ const _PROFILE_NAMES: Dictionary = {
 var current_profile: Profile = Profile.MEDIUM
 var platform: String = ""
 ## ULTRA: zusaetzliche Stufe ueber HIGH fuer sehr starke Geraete, nur manuell
-## waehlbar (set_ultra). Das Profil-Enum bleibt HIGH, damit alle anderen Welten
-## und LumoQuality unveraendert bleiben; nur Kart-Kulisse liest is_ultra().
+## wählbar. Das Profil-Enum bleibt HIGH für Welten mit drei Detailstufen.
+## Kart-Kulisse und Fahreffekte verwenden den separaten Ultra-Schalter.
 var ultra_enabled: bool = false
 
 
@@ -51,48 +51,58 @@ func _ready() -> void:
 	EventBus.platform_detected.emit(platform)
 	print("[Perf] platform_detected:%s" % platform)
 	# Default-Profil je Plattform; persistierte Wahl gewinnt wenn vorhanden.
-	var auto_profile: Profile = Profile.MEDIUM
-	match platform:
-		"Linux", "macOS", "Windows":
-			auto_profile = Profile.HIGH
-		"Android", "iOS", "Web":
-			auto_profile = Profile.MEDIUM
-		_:
-			auto_profile = Profile.MEDIUM
+	var auto_choice: String = "high" if platform in ["Linux", "macOS", "Windows"] else "medium"
 	var store: Node = get_node_or_null("/root/SettingsStore")
-	if store != null and store.has_method("get_profile"):
-		match store.call("get_profile"):
-			"low":
-				auto_profile = Profile.LOW
-			"medium":
-				auto_profile = Profile.MEDIUM
-			"high":
-				auto_profile = Profile.HIGH
+	if store != null:
+		var stored: String = str(store.call("get_graphics_choice"))
+		if stored.is_empty():
+			stored = str(store.call("get_profile"))
+		if stored in LumoQuality.GRAPHICS_CHOICES:
+			auto_choice = stored
 	# A phone whose pictures are computed by the processor (an emulator, or a
 	# device without a usable graphics chip) starts with the light profile.
 	if software_rendered_mobile():
-		auto_profile = Profile.LOW
+		auto_choice = "low"
 		print("[Perf] software_renderer_on_mobile: light profile")
 	# Apply the quality settings again when a different race/learning scene loads.
 	get_tree().scene_changed.connect(_on_scene_changed)
 	# Warte einen Frame damit der erste WorldEnvironment im Tree ist.
 	await get_tree().process_frame
-	set_profile(auto_profile, false)
+	set_graphics_choice(auto_choice, false)
 
 
 ## Setzt das Quality-Profil und applied alle Schalter.
 ## persist=true: schreibt nach user://settings.cfg (default true)
 func set_profile(profile: Profile, persist: bool = true) -> void:
+	if persist:
+		set_graphics_choice(_PROFILE_NAMES.get(profile, "medium"), true)
+		return
+	_apply_profile(profile)
+
+
+func set_graphics_choice(name: String, persist: bool = true) -> void:
+	if name not in LumoQuality.GRAPHICS_CHOICES:
+		return
+	var index: int = LumoQuality.TIERS.find(LumoQuality.base_tier(name))
+	ultra_enabled = name == "ultra"
+	_apply_profile(index as Profile)
+	if persist:
+		var store: Node = get_node_or_null("/root/SettingsStore")
+		if store != null:
+			store.call("set_graphics_choice", name)
+
+
+func get_graphics_choice() -> String:
+	return "ultra" if is_ultra() else get_profile_name()
+
+
+func _apply_profile(profile: Profile) -> void:
 	current_profile = profile
 	var name: String = _PROFILE_NAMES.get(profile, "medium")
 	print("[Perf] quality_profile:%s" % name)
 	_apply_environment(profile)
 	_apply_viewport(profile)
 	EventBus.quality_profile_changed.emit(name)
-	if persist:
-		var store: Node = get_node_or_null("/root/SettingsStore")
-		if store != null and store.has_method("set_profile"):
-			store.call("set_profile", name)
 
 
 ## Schaltet die ULTRA-Kulisse (volle Dichte, 8 Lichter, weite Sicht) an/aus.

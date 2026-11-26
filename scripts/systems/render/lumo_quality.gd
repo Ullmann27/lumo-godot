@@ -2,14 +2,16 @@ class_name LumoQuality
 extends RefCounted
 ## LumoRenderKit · one quality tier for every Lumo world.
 ##
-## Single source of truth is the PerformanceManager autoload (persisted via
-## SettingsStore). Kart's own "graphics_profile" uses the same three names and
-## writes its explicit choice through set_tier(), so a choice made in Kart is
-## the app-wide tier and every other world follows it.
+## SettingsStore persists the selected tier. Shared environments retain their
+## three base budgets, while Kart's scenery and effects also use Sehr hoch.
 ## Budgets are plain numbers a scene reads; nothing here touches the tree.
 ## Fold7 values are NOT device-measured yet; they keep today's behaviour.
 
 const TIERS: Array[String] = ["low", "medium", "high"]
+const GRAPHICS_CHOICES: Array[String] = ["low", "medium", "high", "ultra"]
+const GRAPHICS_LABELS := {
+	"low": "Leicht", "medium": "Ausgewogen", "high": "Hoch", "ultra": "Sehr hoch",
+}
 const BUDGETS: Dictionary = {
 	"low":
 	{
@@ -61,16 +63,28 @@ static func tier() -> String:
 	return "medium"
 
 
-## Make `name` the app-wide tier and persist it (PerformanceManager + SettingsStore).
-static func set_tier(name: String) -> void:
+static func base_tier(name: String) -> String:
+	return "high" if name == "ultra" else name
+
+
+static func graphics_choice() -> String:
 	var performance: Node = _performance()
-	if performance == null or name not in TIERS:
-		return
-	if tier() != name:
-		performance.call("set_profile", TIERS.find(name), true)
+	return str(performance.call("get_graphics_choice")) if performance != null else "medium"
+
+
+static func set_graphics_choice(name: String, persist: bool = true) -> void:
+	var performance: Node = _performance()
+	if performance != null and name in GRAPHICS_CHOICES:
+		performance.call("set_graphics_choice", name, persist)
+
+
+## Make a base tier the app-wide choice and persist it.
+static func set_tier(name: String) -> void:
+	if name in TIERS:
+		set_graphics_choice(name)
 
 
 ## Render budget for a tier; an unknown name falls back to the active tier.
 static func budget(name: String = "") -> Dictionary:
-	var key: String = name if name in TIERS else tier()
+	var key: String = base_tier(name) if name in GRAPHICS_CHOICES else tier()
 	return BUDGETS[key]

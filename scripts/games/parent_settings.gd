@@ -1,8 +1,7 @@
 ## ParentSettings - einfaches Settings-Panel: Quality-Profile waehlen
 ##   + Audio-Toggle (Master-Bus mute) + Zurueck zum Home.
 ##
-## Speichert KEINE Persistenz aktuell (user://settings.cfg waere naechster
-## Schritt). Anpassungen wirken zur Laufzeit.
+## Die Qualitätswahl wird als gemeinsame Einstellung gespeichert.
 extends Node
 
 @export var low_button_path: NodePath
@@ -62,9 +61,7 @@ func _update_profile_label() -> void:
 	var label: Label = get_node_or_null(profile_label_path) as Label
 	if label == null:
 		return
-	var p: String = (
-		PerformanceManager.get_profile_name() if Engine.has_singleton("PerformanceManager") else "?"
-	)
+	var p: String = LumoQuality.GRAPHICS_LABELS[LumoQuality.graphics_choice()]
 	var audio: String = "AUS" if _audio_muted else "AN"
 	label.text = "Profil: %s\nAudio: %s" % [p.to_upper(), audio]
 

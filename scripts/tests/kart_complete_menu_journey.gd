@@ -89,9 +89,17 @@ func _run() -> void:
 		var was_muted: bool = game.muted
 		await _tap(game.modal_column.get_node("AudioToggle"))
 		assert(game.muted != was_muted, "Menu audio control must change real preferences")
-		var old_graphics: String = game.graphics_profile
-		await _tap(game.modal_column.get_node("GraphicsProfileToggle"))
-		assert(game.graphics_profile != old_graphics and game.menu_active)
+		var detail: Button = game.modal_column.get_node("GraphicsProfileToggle")
+		var choices := LumoQuality.TIERS if PerformanceManager.software_rendered_mobile() else LumoQuality.GRAPHICS_CHOICES
+		var current: int = choices.find(game._graphics_choice())
+		for _step in choices:
+			await _tap(detail)
+			current = (current + 1) % choices.size()
+			var choice: String = choices[current]
+			assert(detail.text == "Grafik: " + LumoQuality.GRAPHICS_LABELS[choice])
+			assert(game._graphics_choice() == choice and game.menu_active)
+			assert(SettingsStore.get_graphics_choice() == choice)
+			assert(game.graphics_profile == LumoQuality.base_tier(choice))
 		assert(not is_instance_valid(game.player), "Menu preferences must not build or mutate a race")
 		var old_gas: bool = game.auto_gas
 		await _tap(game.modal_column.get_node("GasModeToggle"))

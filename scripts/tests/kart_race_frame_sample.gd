@@ -11,7 +11,7 @@ func _initialize() -> void:
 
 func _run() -> void:
 	var args := OS.get_cmdline_user_args()
-	if args.size() != 4 or args[1] not in LumoQuality.TIERS or DisplayServer.get_name() == "headless":
+	if args.size() != 4 or args[1] not in LumoQuality.GRAPHICS_CHOICES or DisplayServer.get_name() == "headless":
 		quit(1)
 		return
 	var requested_size := root.size
@@ -21,8 +21,8 @@ func _run() -> void:
 	game.set_physics_process(false)
 	await process_frame
 	await process_frame
-	LumoQuality.set_tier(args[1])
-	game.graphics_profile = args[1]
+	LumoQuality.set_graphics_choice(args[1], false)
+	game.graphics_profile = LumoQuality.base_tier(args[1])
 	game.lightweight = args[1] == "low"
 	game._start_selected_race({"mode": "race", "driver": "fox", "kart": "comet",
 		"track": args[0], "difficulty": "flott"})
@@ -50,14 +50,19 @@ func _run() -> void:
 	times.sort()
 	draws.sort()
 	var dir := args[3]
+	var scenery: Dictionary = game.world.get_meta("scenery_stats", {})
+	var scenery_tier: String = str(scenery.get("quality", ""))
+	var fx_tier: String = str(game.drive_fx.get("profile"))
 	var ok := DirAccess.make_dir_recursive_absolute(dir) == OK
+	ok = ok and (not scenery.has("quality") or scenery_tier == args[1]) and fx_tier == args[1]
 	var frame_image := root.get_texture().get_image()
 	ok = ok and requested_size == frame_image.get_size() and draws[15] > 0
 	if ok:
 		ok = frame_image.save_webp(dir.path_join("%s_%s_%dx%d.webp" % [args[0], args[1], root.size.x, root.size.y]), true, 0.9) == OK
-	print("[KartFrameSample] ", JSON.stringify({"track": args[0], "tier": args[1], "metres": game.distance,
+	print("[KartFrameSample] ", JSON.stringify({"track": args[0], "tier": game._graphics_choice(), "metres": game.distance,
 		"width": root.size.x, "height": root.size.y, "renderer": RenderingServer.get_current_rendering_method(),
 		"adapter": RenderingServer.get_video_adapter_name(), "frames": times.size(),
+		"scenery_tier": scenery_tier, "effects_tier": fx_tier,
 		"median_ms": (times[14] + times[15]) / 2.0, "p95_ms": times[28], "median_draw_calls": draws[15]}))
 	game.abandoned = true
 	ok = await TEARDOWN.release_scene(self, game, "[KartFrameSample]") and ok

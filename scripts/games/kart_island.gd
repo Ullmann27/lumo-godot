@@ -2101,6 +2101,8 @@ func _physics_process(delta: float) -> void:
 			axis += 1
 		if absf(axis) < 0.01:
 			axis = steering
+			if joystick.touch_id >= 0:
+				axis = CHILD_ASSIST.touch_axis(axis, speed, difficulty)
 		axis = clampf(axis, -1, 1)
 		var braking: float = maxf(brake, control_brake)
 		if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN):
@@ -4366,15 +4368,16 @@ func _append_preferences() -> void:
 	sound.name = "AudioToggle"
 	sound.disabled = not host_sound_enabled
 	modal_column.add_child(sound)
-	var detail := _button("Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}.get(graphics_profile, "Hoch"), func(): pass)
+	var detail := _button("Grafik: " + LumoQuality.GRAPHICS_LABELS[_graphics_choice()], func(): pass)
 	detail.pressed.connect(
 		func():
-			graphics_profile = {"high": "medium", "medium": "low", "low": "high"}.get(graphics_profile, "high")
+			var choices := LumoQuality.TIERS if PerformanceManager.software_rendered_mobile() else LumoQuality.GRAPHICS_CHOICES
+			var next_choice: String = choices[(choices.find(_graphics_choice()) + 1) % choices.size()]
+			graphics_profile = LumoQuality.base_tier(next_choice)
 			lightweight = graphics_profile == "low"
-			# Apply the user-selected visual tier across all Godot game worlds.
-			LumoQuality.set_tier(graphics_profile)
+			LumoQuality.set_graphics_choice(next_choice)
 			_save_preferences()
-			detail.text = "Grafik: " + {"high": "Hoch", "medium": "Ausgewogen", "low": "Leicht"}[graphics_profile]
+			detail.text = "Grafik: " + LumoQuality.GRAPHICS_LABELS[next_choice]
 			if menu_active:
 				garage.graphics_profile = graphics_profile
 				garage.preview_signature = ""
@@ -5144,10 +5147,23 @@ func _load_preferences() -> void:
 	# Die Stufe gehört zum Kind. Der frühere gemeinsame Wert "race/difficulty" stammte
 	# aus der erzwungenen Startstufe "Extrem" und war keine Wahl – er zählt nicht mehr.
 	difficulty = known_level(str(config.get_value("levels", _level_key(), "gemuetlich")))
-	graphics_profile = str(config.get_value("race", "graphics_profile", "low" if lightweight else "high"))
-	if graphics_profile not in ["high", "medium", "low"]:
-		graphics_profile = "high"
+	var choice: String = SettingsStore.get_graphics_choice()
+	if choice.is_empty():
+		var inherited: String = "low" if lightweight else LumoQuality.tier()
+		choice = str(config.get_value("race", "graphics_profile", inherited))
+		if choice not in LumoQuality.TIERS:
+			choice = inherited
+	if PerformanceManager.software_rendered_mobile():
+		choice = "low"
+	graphics_profile = LumoQuality.base_tier(choice)
 	lightweight = graphics_profile == "low"
+	LumoQuality.set_graphics_choice(choice, false)
+
+
+func _graphics_choice() -> String:
+	if graphics_profile == "high" and PerformanceManager.is_ultra():
+		return "ultra"
+	return graphics_profile
 
 
 ## Schlüssel des Kindes für seine gespeicherte Gegnerstufe (wie beim Streckenpass).
