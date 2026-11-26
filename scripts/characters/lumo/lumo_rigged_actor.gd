@@ -9,8 +9,18 @@ const WALK = preload("res://scripts/characters/lumo/lumo_walk_locomotion.gd")
 const PLATFORM_POSE = preload("res://scripts/characters/lumo/lumo_platform_pose.gd")
 const TEACHER_POSE = preload("res://scripts/characters/lumo/lumo_teacher_pose.gd")
 const FACIAL_POSE = preload("res://scripts/characters/lumo/lumo_facial_pose.gd")
-static var _cached_model: PackedScene
-static var _cached_load_kind := ""
+const LEARNING_MODEL := "res://assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb"
+static var _models: Dictionary = {}
+static var _load_kinds: Dictionary = {}
+@export var prefer_learning_model := false
+var using_learning_model := false
+var _mouth_mesh: MeshInstance3D
+var _lid_mesh: MeshInstance3D
+var _mouth_index := -1
+var _blink_index := -1
+var _blink_clock := 0.0
+var _mouth_media := -1.0
+var _mouth_age := 1.0
 var model_load_kind := ""
 const CLIPS: Array[String] = [
 	"idle", "greeting_wave", "celebrate", "point_portal", "agree_nod",
@@ -38,55 +48,73 @@ var teacher_enabled: bool = false
 var _teacher_previous_process_mode: int = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_IDLE
 
 
+func _load_model(path: String) -> PackedScene:
+	if _models.has(path):
+		return _models[path] as PackedScene
+	var packed: PackedScene
+	if ResourceLoader.exists(path, "PackedScene"):
+		packed = ResourceLoader.load(path, "PackedScene") as PackedScene
+		if packed != null:
+			_load_kinds[path] = "imported_packed_scene"
+	elif FileAccess.file_exists(path):
+		var document := GLTFDocument.new()
+		var state := GLTFState.new()
+		if document.append_from_file(path, state) != OK:
+			return null
+		var source := document.generate_scene(state)
+		if source == null:
+			return null
+		packed = PackedScene.new()
+		var error := packed.pack(source)
+		source.free()
+		if error != OK:
+			return null
+		_load_kinds[path] = "source_fixture"
+	if packed != null:
+		_models[path] = packed
+	return packed
+
+
 func _ready() -> void:
-	if _cached_model == null:
-		var selected_model := MODEL
-		if not ResourceLoader.exists(selected_model, "PackedScene") and not FileAccess.file_exists(selected_model):
-			selected_model = ORIGINAL_MODEL
-		# Exported games resolve the GLB through Godot's imported PackedScene.
-		# Do not require raw source bytes, and never put loading side effects
-		# inside assert(): release builds remove those expressions.
-		if ResourceLoader.exists(selected_model, "PackedScene"):
-			_cached_model = ResourceLoader.load(selected_model, "PackedScene") as PackedScene
-			_cached_load_kind = "imported_packed_scene"
-		elif FileAccess.file_exists(selected_model):
-			# Bare headless review fixtures can run before editor import.
-			var document := GLTFDocument.new()
-			var state := GLTFState.new()
-			var error := document.append_from_file(selected_model, state)
-			if error != OK:
-				push_warning("[LumoRig] Source model cannot be loaded; retain existing visual")
-				return
-			var source := document.generate_scene(state)
-			if source == null:
-				return
-			var packed := PackedScene.new()
-			error = packed.pack(source)
-			source.free()
-			if error != OK:
-				return
-			_cached_model = packed
-			_cached_load_kind = "source_fixture"
-	if _cached_model == null:
-		push_warning("[LumoRig] Model is unavailable; retain existing visual")
-		return
-	visual = _cached_model.instantiate() as Node3D
+	var paths: Array[String] = [MODEL, ORIGINAL_MODEL]
+	if prefer_learning_model:
+		paths.push_front(LEARNING_MODEL)
+	for path in paths:
+		var packed := _load_model(path)
+		if packed == null:
+			continue
+		var candidate := packed.instantiate() as Node3D
+		if candidate == null:
+			continue
+		var candidate_skeleton: Skeleton3D
+		var candidate_player: AnimationPlayer
+		for node in candidate.find_children("*", "Skeleton3D", true, false):
+			if (node as Skeleton3D).get_bone_count() == 65:
+				candidate_skeleton = node as Skeleton3D
+				break
+		for node in candidate.find_children("*", "AnimationPlayer", true, false):
+			var animations := node as AnimationPlayer
+			var complete := true
+			for clip in CLIPS:
+				if not animations.has_animation(clip):
+					complete = false
+					break
+			if complete and (path != LEARNING_MODEL or animations.has_animation("learn_listen")):
+				candidate_player = animations
+				break
+		if candidate_skeleton == null or candidate_player == null:
+			candidate.free()
+			continue
+		visual = candidate
+		skeleton = candidate_skeleton
+		player = candidate_player
+		using_learning_model = path == LEARNING_MODEL
+		model_load_kind = str(_load_kinds.get(path, ""))
+		break
 	if visual == null:
+		push_warning("[LumoRig] No compatible 65-bone model with the required clips")
 		return
 	add_child(visual)
-	for node in visual.find_children("*", "Skeleton3D", true, false):
-		skeleton = node
-	for node in visual.find_children("*", "AnimationPlayer", true, false):
-		player = node
-	if skeleton == null or player == null or skeleton.get_bone_count() != 65:
-		push_warning("[LumoRig] Incompatible skeleton; retain existing visual")
-		return
-	for clip in CLIPS:
-		if not player.has_animation(clip):
-			push_warning("[LumoRig] Missing animation: " + clip)
-			player = null
-			return
-	model_load_kind = _cached_load_kind
 	for clip in ["idle", "kart_seated", "kart_steer_left", "kart_steer_right"]:
 		player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 	player.animation_finished.connect(_finished)
@@ -94,9 +122,37 @@ func _ready() -> void:
 	facial_pose = FACIAL_POSE.new()
 	if not facial_pose.bind(visual, skeleton):
 		facial_pose = null
-	mouth_supported = facial_pose != null
+	if using_learning_model:
+		_bind_learning_morphs()
+	mouth_supported = facial_pose != null or _mouth_index >= 0
 	play_behavior("idle")
 
+
+func _bind_learning_morphs() -> void:
+	for node in visual.find_children("*", "MeshInstance3D", true, false):
+		var part := node as MeshInstance3D
+		if part.mesh == null:
+			continue
+		for index in range(part.mesh.get_blend_shape_count()):
+			var shape := str(part.mesh.get_blend_shape_name(index))
+			if part.name.begins_with("MouthVisemes") and shape == "viseme_A":
+				_mouth_mesh = part
+				_mouth_index = index
+			elif part.name.begins_with("Eyelid") and shape == "blink":
+				_lid_mesh = part
+				_blink_index = index
+	# Amplitude is not phoneme recognition. Never claim phoneme lip sync.
+	phoneme_lipsync_supported = false
+
+
+func _reset_learning_face() -> void:
+	_mouth_media = -1.0
+	_mouth_age = 1.0
+	_blink_clock = 0.0
+	if is_instance_valid(_mouth_mesh) and _mouth_index >= 0:
+		_mouth_mesh.set_blend_shape_value(_mouth_index, 0.0)
+	if is_instance_valid(_lid_mesh) and _blink_index >= 0:
+		_lid_mesh.set_blend_shape_value(_blink_index, 0.0)
 
 func is_usable() -> bool:
 	return is_instance_valid(skeleton) and is_instance_valid(player) and not model_load_kind.is_empty()
@@ -122,6 +178,15 @@ func _process(delta: float) -> void:
 func _advance_face(delta: float) -> void:
 	if facial_pose != null and not suspended and not reduced_motion:
 		facial_pose.advance(delta)
+	if not using_learning_model or suspended or reduced_motion or not is_finite(delta) or delta <= 0.0:
+		return
+	_mouth_age += minf(delta, 1.0)
+	if _mouth_age > 0.35 and is_instance_valid(_mouth_mesh) and _mouth_index >= 0:
+		_mouth_mesh.set_blend_shape_value(_mouth_index, 0.0)
+	if facial_pose == null and is_instance_valid(_lid_mesh) and _blink_index >= 0:
+		_blink_clock = fmod(_blink_clock + delta, 4.1)
+		var weight := sin(_blink_clock * PI / 0.17) if _blink_clock <= 0.17 else 0.0
+		_lid_mesh.set_blend_shape_value(_blink_index, maxf(0.0, weight))
 
 
 ## The owner supplies actual horizontal velocity from navigation/physics.
@@ -291,7 +356,13 @@ func teacher_react(event: String) -> bool:
 	if not clips.has(event) or suspended or not _enable_teacher_mode():
 		return false
 	teacher_pose.react(event)
-	return play_behavior(str(clips[event]))
+	var selected := str(clips[event])
+	if using_learning_model:
+		var learning_clips := {"explain": "learn_explain", "encourage": "learn_encourage", "correct": "learn_nod", "celebrate": "learn_celebrate", "welcome": "greeting_wave"}
+		var authored := str(learning_clips.get(event, selected))
+		if player.has_animation(authored):
+			selected = authored
+	return play_behavior(selected)
 
 
 func set_teacher_speaking(value: bool) -> bool:
@@ -324,7 +395,7 @@ func play_behavior(behavior: String) -> bool:
 		current_behavior = behavior
 		behavior_started.emit(behavior)
 		return true
-	if not CLIPS.has(behavior):
+	if not CLIPS.has(behavior) and not (using_learning_model and behavior.begins_with("learn_") and player.has_animation(behavior)):
 		return false
 	if walking:
 		walking = false
@@ -349,8 +420,10 @@ func set_suspended(value: bool) -> void:
 	if suspended == value:
 		return
 	suspended = value
-	if value and facial_pose != null:
-		facial_pose.reset()
+	if value:
+		if facial_pose != null:
+			facial_pose.reset()
+		_reset_learning_face()
 		apply_speech_sample(0.0, 0.0, false)
 	if player == null:
 		return
@@ -367,8 +440,10 @@ func set_suspended(value: bool) -> void:
 
 func set_reduced_motion(value: bool) -> void:
 	reduced_motion = value
-	if value and facial_pose != null:
-		facial_pose.reset()
+	if value:
+		if facial_pose != null:
+			facial_pose.reset()
+		_reset_learning_face()
 		apply_speech_sample(0.0, 0.0, false)
 	if platform_active and platform_pose != null:
 		platform_pose.set_style(_effective_platform_style())
@@ -386,6 +461,15 @@ func apply_speech_sample(media_seconds: float, envelope: float, speaking: bool) 
 	audio_active = speaking
 	if facial_pose != null:
 		facial_pose.speech_sample(media_seconds, envelope, speaking)
+	if using_learning_model and is_instance_valid(_mouth_mesh) and _mouth_index >= 0:
+		if not speaking or not is_finite(media_seconds) or media_seconds < 0.0 or not is_finite(envelope):
+			_mouth_media = -1.0
+			_mouth_age = 1.0
+			_mouth_mesh.set_blend_shape_value(_mouth_index, 0.0)
+		elif not is_equal_approx(media_seconds, _mouth_media):
+			_mouth_media = media_seconds
+			_mouth_age = 0.0
+			_mouth_mesh.set_blend_shape_value(_mouth_index, last_audio_envelope * 0.85)
 
 
 func get_current_behavior() -> String:
