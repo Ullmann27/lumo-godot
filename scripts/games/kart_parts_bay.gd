@@ -733,7 +733,10 @@ func fit_camera(region: Rect2) -> void:
 	var projection := Transform3D(basis.inverse(), Vector3.ZERO)
 	var bounds := AABB()
 	var found := false
-	for mesh in kart.find_children("*", "MeshInstance3D", true, false):
+	var stage_meshes := kart.find_children("*", "MeshInstance3D", true, false)
+	if is_instance_valid(_lift):
+		stage_meshes.append_array(_lift.find_children("*", "MeshInstance3D", true, false))
+	for mesh in stage_meshes:
 		if not mesh.is_visible_in_tree() or mesh.skin != null or mesh == kart.far_mesh:
 			continue
 		var box: AABB = projection * mesh.global_transform * mesh.get_aabb()
@@ -747,7 +750,7 @@ func fit_camera(region: Rect2) -> void:
 		var head := skeleton.to_global(skeleton.get_bone_global_pose(skeleton.find_bone("Head")).origin)
 		for side in [-0.5, 0.5]:
 			bounds = bounds.expand(basis.inverse() * (head + Vector3(side, 0.50, 0)))
-	if _focused:
+	if _focused and _compact_portrait:
 		var selected := _selected_bounds(kart, projection)
 		if selected.has_surface():
 			bounds = selected
