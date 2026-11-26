@@ -260,6 +260,7 @@ func _park(root: Node3D) -> void:
 		kit.box(root, Vector3(x, 0.5, -67), Vector3(0.16, 1, 1.8), Color("5b6656"))
 	for z in [-65.2, -68.8]:
 		var bench := kit.box(root, Vector3(239, 0.65, z), Vector3(4.4, 0.2, 0.65), Color.WHITE)
+		bench.set_meta("park_picnic_bench", true)
 		bench.material_override = ADVENTURE.material("wood")
 	_sign(root, "Freundschaftspark", Vector3(239, 3.4, -73), Color("baf2ae"))
 

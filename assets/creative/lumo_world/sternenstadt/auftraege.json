@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 1,
+  "places": [
+    {
+      "id": "platz_brunnen",
+      "title": "Freundschaftspark · Brunnen",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        221,
+        0,
+        -53
+      ],
+      "size": [
+        6,
+        6
+      ]
+    },
+    {
+      "id": "bank_beobachtung",
+      "title": "Freundschaftspark · Sitzplatz",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        236,
+        0,
+        -63
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "klinik_tor",
+      "title": "Klinik-Vorplatz",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        193,
+        0,
+        -16
+      ],
+      "size": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "markt_passage",
+      "title": "Marktpassage",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        234,
+        0,
+        -16
+      ],
+      "size": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "park_eingang",
+      "title": "Eingang zum Freundschaftspark",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        234,
+        0,
+        -54
+      ],
+      "size": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "stadt_stand",
+      "title": "Marktstand bei der Sternenpost",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        229,
+        0,
+        -12
+      ],
+      "size": [
+        5,
+        5
+      ]
+    },
+    {
+      "id": "zuhause_jori",
+      "title": "Sternenstadt · Stadtplan",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        183,
+        0,
+        -17
+      ],
+      "size": [
+        4,
+        4
+      ]
+    },
+    {
+      "id": "zuhause_amina",
+      "title": "Markt · Amina",
+      "kind": "landmark",
+      "material": "original",
+      "at": [
+        223,
+        0,
+        -8
+      ],
+      "size": [
+        4,
+        4
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "postroute",
+      "width": 2.5,
+      "points": [
+        [
+          183,
+          -17
+        ],
+        [
+          194,
+          -16
+        ],
+        [
+          214,
+          -13
+        ],
+        [
+          234,
+          -16
+        ],
+        [
+          237,
+          -38
+        ],
+        [
+          234,
+          -54
+        ],
+        [
+          236,
+          -62
+        ]
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "id": "stadt_ruth",
+      "name": "Ruth",
+      "role": "Parkpflegerin",
+      "source": "resident",
+      "visual": "turtle",
+      "place": "platz_brunnen",
+      "at": [
+        225,
+        0,
+        -51
+      ],
+      "card": "karte_stadt_ruth"
+    },
+    {
+      "id": "stadt_jori",
+      "name": "Jori",
+      "role": "Stadtführer",
+      "source": "resident",
+      "visual": "frog",
+      "place": "zuhause_jori",
+      "at": [
+        183,
+        0,
+        -17
+      ],
+      "card": "karte_stadt_jori"
+    },
+    {
+      "id": "stadt_amina",
+      "name": "Amina",
+      "role": "Markthändlerin",
+      "source": "resident",
+      "visual": "cat",
+      "place": "zuhause_amina",
+      "at": [
+        223,
+        0,
+        -8
+      ],
+      "card": "karte_stadt_amina"
+    }
+  ],
+  "cards": [
+    {
+      "id": "karte_stadt_ruth",
+      "figure": "stadt_ruth",
+      "trait": "Aufmerksam hinschauen",
+      "text": "Ruth kümmert sich um einen ruhigen, einladenden Park.",
+      "power": "Sternenstadt"
+    },
+    {
+      "id": "karte_stadt_jori",
+      "figure": "stadt_jori",
+      "trait": "Wege merken",
+      "text": "Jori erklärt den Zusammenhang von Karte und Weg.",
+      "power": "Sternenstadt"
+    },
+    {
+      "id": "karte_stadt_amina",
+      "figure": "stadt_amina",
+      "trait": "Fair einkaufen",
+      "text": "Amina rechnet mit echten Preisen am kleinen Stand.",
+      "power": "Sternenstadt"
+    }
+  ],
+  "missions": [
+    {
+      "id": "parkblick",
+      "title": "Der Platz zum Ausruhen",
+      "subject": "Beobachten",
+      "giver": "stadt_ruth",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "stadt_ruth",
+          "dialog": "parkblick_start",
+          "lead": "Sprich mit Ruth."
+        },
+        {
+          "id": "sicht",
+          "kind": "event",
+          "place": "bank_beobachtung",
+          "event": "parkbank_gezaehlt",
+          "lead": "Geh zum Holztisch und zähle die Bänke."
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "stadt_ruth",
+          "dialog": "parkblick_end",
+          "lead": "Berichte Ruth von deinem Ergebnis.",
+          "rewardCards": [
+            "karte_stadt_ruth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stadtroute",
+      "title": "Drei Orte im Stadtplan",
+      "subject": "Orientierung",
+      "giver": "stadt_jori",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "stadt_jori",
+          "dialog": "stadtroute_start",
+          "lead": "Sprich mit Jori."
+        },
+        {
+          "id": "klinik",
+          "kind": "visit",
+          "place": "klinik_tor",
+          "lead": "Geh zum Vorplatz der Klinik."
+        },
+        {
+          "id": "passage",
+          "kind": "visit",
+          "place": "markt_passage",
+          "lead": "Folge der Straße bis in die Marktpassage."
+        },
+        {
+          "id": "park",
+          "kind": "visit",
+          "place": "park_eingang",
+          "lead": "Biege auf den Weg zum Freundschaftspark ab."
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "stadt_jori",
+          "dialog": "stadtroute_end",
+          "lead": "Berichte Jori von deinem Ergebnis.",
+          "rewardCards": [
+            "karte_stadt_jori"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marktlicht",
+      "title": "Eine Laterne für den Park",
+      "subject": "Handel und Rechnen",
+      "giver": "stadt_amina",
+      "steps": [
+        {
+          "id": "start",
+          "kind": "talk",
+          "figure": "stadt_amina",
+          "dialog": "marktlicht_start",
+          "lead": "Sprich mit Amina."
+        },
+        {
+          "id": "kauf",
+          "kind": "event",
+          "place": "stadt_stand",
+          "event": "stadt_laterne_gekauft",
+          "lead": "Kaufe am Marktstand die Laterne für diesen Auftrag."
+        },
+        {
+          "id": "report",
+          "kind": "talk",
+          "figure": "stadt_amina",
+          "dialog": "marktlicht_end",
+          "lead": "Berichte Amina von deinem Ergebnis.",
+          "rewardCards": [
+            "karte_stadt_amina"
+          ]
+        }
+      ]
+    }
+  ],
+  "dialogs": {
+    "parkblick_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Mehrere Gäste möchten eine Pause machen. Schau am Holztisch im Freundschaftspark nach: Wie viele Bänke stehen direkt am Tisch?",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "parkblick_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Zwei Bänke stehen am Tisch. Jetzt weiß ich, wo ich die Gäste hinbitten kann.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "stadtroute_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Unser Stadtplan soll Familien helfen, den Park zu finden. Geh nacheinander zum Klinik-Vorplatz, durch die Marktpassage und zum Parkeingang. Folge den Markierungen und erzähle mir danach vom Weg.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "stadtroute_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Die drei Orte sind jetzt richtig auf der Karte verbunden. Andere Familien können denselben Weg finden.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "marktlicht_start": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Ruth braucht eine kleine Laterne für den Parkeingang. Du bekommst sechs Auftragsmarken. Wähle am Marktstand den passenden Artikel und behalte das Rückgeld.",
+          "choices": [
+            {
+              "label": "Auftrag übernehmen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    },
+    "marktlicht_end": {
+      "start": "entry",
+      "nodes": {
+        "entry": {
+          "text": "Die Laterne kostet vier Marken. Zwei Marken sind übrig. Ich bringe die Laterne zu Ruth.",
+          "choices": [
+            {
+              "label": "Auftrag abschließen",
+              "action": "complete"
+            },
+            {
+              "label": "Später",
+              "action": "close"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "smalltalk": {
+    "stadt_ruth": "Ruth kümmert sich um einen ruhigen, einladenden Park.",
+    "stadt_jori": "Jori erklärt den Zusammenhang von Karte und Weg.",
+    "stadt_amina": "Amina rechnet mit echten Preisen am kleinen Stand."
+  },
+  "routines": {
+    "stadt_ruth": {
+      "interest": "Im Park will ich genug Platz zum Ausruhen schaffen.",
+      "activities": [
+        "Zum Brunnen gehen",
+        "Die Bänke prüfen",
+        "Gäste begrüßen",
+        "Den Park verlassen"
+      ],
+      "details": [
+        "Ich sehe nach, ob der Weg am Wasser frei ist.",
+        "Die Bänke sollen gut erreichbar sein.",
+        "Ich frage, ob noch jemand einen ruhigen Platz braucht.",
+        "Morgen kümmere ich mich wieder um den Park."
+      ],
+      "gesture": "agree_nod",
+      "learning": "Zähle und vergleiche Plätze im echten Park."
+    },
+    "stadt_jori": {
+      "interest": "Ich erkläre Wege gern so, dass jemand sie selbst wiederfindet.",
+      "activities": [
+        "Die Karte lesen",
+        "Am Klinikplatz nachsehen",
+        "Marktwege vergleichen",
+        "Den Stadtplan aufräumen"
+      ],
+      "details": [
+        "Ich beginne mit drei Orten, die wir gut erkennen.",
+        "Der Vorplatz ist ein guter Ausgangspunkt.",
+        "Die Marktpassage ist der nächste sichere Orientierungspunkt.",
+        "Ich merke mir, wo demnächst ein neues Schild helfen könnte."
+      ],
+      "gesture": "point_portal",
+      "learning": "Nutze einen Stadtplan, um erkennbare Orte in der richtigen Reihenfolge zu finden."
+    },
+    "stadt_amina": {
+      "interest": "Beim Einkaufen sollen alle Preise gut zu lesen sein.",
+      "activities": [
+        "Waren aufstellen",
+        "Das Rückgeld prüfen",
+        "Verkaufen",
+        "Den Stand schließen"
+      ],
+      "details": [
+        "Jeder Artikel bekommt sein eigenes Schild.",
+        "Sechs minus vier sind zwei. Die Marken bleiben beim Auftrag.",
+        "Wir kaufen nur das, was wir für den Park brauchen.",
+        "Die unverkauften Waren stelle ich zurück."
+      ],
+      "gesture": "agree_nod",
+      "learning": "Lies Preise, finde den passenden Artikel und rechne das Rückgeld aus."
+    }
+  }
+}
