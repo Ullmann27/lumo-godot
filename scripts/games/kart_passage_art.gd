@@ -259,6 +259,8 @@ static func _build_flow(world, entry: Dictionary) -> void:
 	match str(entry.theme):
 		"garden":
 			return  # Riesengarten baut seinen Kürbis selbst (garden/kart_garden_landmarks.gd).
+		"signature":
+			return  # Signatur-Strecken bauen ihre Abzweige selbst (kart_signature/).
 		"forest":
 			_build_root_chicane(world, entry)
 			return

@@ -315,7 +315,8 @@ func _run() -> void:
 		printerr("[KartSpectacle] FAIL actual MultiMesh readback requires GL/Vulkan, use Xvfb")
 		quit(1)
 		return
-	_check(TRACKS.IDS.size() == 15, "all 15 production circuits are covered")
+	# 15 Produktionsstrecken plus die Signatur-Strecken (Team B1); jede wird unten geprüft.
+	_check(TRACKS.IDS.size() >= 15, "all %d production circuits are covered" % TRACKS.IDS.size())
 	for track in TRACKS.IDS:
 		var world = WORLD.new()
 		root.add_child(world)

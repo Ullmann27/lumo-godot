@@ -1,6 +1,8 @@
 extends RefCounted
 ## Entwurfswerte der LUMO-Passagen je Strecke (Meter auf der fertig geglätteten Fahrbahn).
 ## Logik: kart_passages.gd. Aufbau und Bewegung: kart_passage_art.gd.
+## Signatur-Strecken (Team B1) führen ihre Passagen in eigenen Datendateien.
+const VULKAN_PASSAGES = preload("res://scripts/games/vulkanexpress/vulkan_passages.gd")
 
 ## Entwurf je Strecke. "bridge": schmales Deck ohne Planke über einer Lücke, davor ebener,
 ## griffiger Vorplatz voller Breite. "swing": bewegtes Hindernis mit Wartelinie.
@@ -355,4 +357,5 @@ const SPECS: Dictionary = {
 			"approach_text": "Kiri ruft! Bei Rot kurz warten, bei Grün vorbei.",
 		},
 	],
+	"vulkanexpress_3100": VULKAN_PASSAGES.SPECS,
 }

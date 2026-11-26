@@ -1,0 +1,74 @@
+{
+  "basalt_columns": {
+    "bytes": 52912,
+    "triangles": [
+      368,
+      234,
+      130
+    ]
+  },
+  "bridge_tower": {
+    "bytes": 62464,
+    "triangles": [
+      296,
+      296,
+      128
+    ]
+  },
+  "crystal_cluster": {
+    "bytes": 48372,
+    "triangles": [
+      280,
+      208,
+      130
+    ]
+  },
+  "geyser_vent": {
+    "bytes": 60936,
+    "triangles": [
+      452,
+      270,
+      88
+    ]
+  },
+  "locomotive": {
+    "bytes": 193328,
+    "triangles": [
+      1752,
+      884,
+      382
+    ]
+  },
+  "station": {
+    "bytes": 86060,
+    "triangles": [
+      468,
+      300,
+      216
+    ]
+  },
+  "stone_arch": {
+    "bytes": 31320,
+    "triangles": [
+      168,
+      108,
+      108
+    ]
+  },
+  "tunnel_portal": {
+    "bytes": 43456,
+    "triangles": [
+      228,
+      156,
+      108
+    ]
+  },
+  "wagon": {
+    "bytes": 79132,
+    "triangles": [
+      476,
+      332,
+      236
+    ]
+  }
+}

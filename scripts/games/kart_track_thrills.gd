@@ -28,6 +28,8 @@ extends RefCounted
 ##     die Landebahn wird beim Planen auf 55 m Geradeauslauf geprüft.
 
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+## Signatur-Strecken (Team B1) führen ihre Spannungsstellen im eigenen Kurs.
+const VULKAN = preload("res://scripts/games/vulkanexpress/vulkan_course.gd")
 const META: String = "thrill_plan"
 const OFF_META: String = "thrills_off"
 const ROAD_HALF: float = 5.4
@@ -456,6 +458,7 @@ const SPECS: Dictionary = {
 			"height": 1.6
 		},
 	],
+	VULKAN.ID: VULKAN.THRILL_SPECS,
 }
 
 

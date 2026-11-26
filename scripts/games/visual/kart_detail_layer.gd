@@ -541,6 +541,9 @@ func _stage() -> void:
 	# die Kleinigkeiten drumherum dazu.
 	# Streckenname auf Bannern beidseitig der Startgeraden + Werbebanden.
 	var cell: int = KIT.track_banner_cell(track_id)
+	# Strecken ohne eigenes Namensbanner zeigen die Lumo-Kart-Marke statt "Sonnenhafen".
+	if not KIT.BANNER_TRACKS.has(track_id):
+		cell = int(KIT.BRAND_CELLS.lumo_kart)
 	for side in [-1.0, 1.0]:
 		for k in range(3 if profile != "low" else 1):
 			var d: float = 14.0 + k * 22.0

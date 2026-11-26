@@ -8,6 +8,8 @@ const HARBOR_LONG = preload("res://scripts/games/kart_sonnenhafen_long_course.gd
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
 const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
 const WINDWERK = preload("res://scripts/games/windwerk/kart_windwerk_course.gd")
+## Signatur-Strecken mit eigener Welt (scripts/games/kart_signature/, Team B1).
+const SIGNATURE = preload("res://scripts/games/kart_signature/kart_signature_tracks.gd")
 static var IDS: Array[String] = _all_ids()
 
 static func _all_ids() -> Array[String]:
@@ -16,11 +18,14 @@ static func _all_ids() -> Array[String]:
 	result.append(JUNGLE.ID)
 	result.append(GARDEN.ID)
 	result.append(WINDWERK.ID)
+	result.append_array(SIGNATURE.IDS)
 	result.make_read_only()
 	return result
 
 
 static func definition(id: String) -> Dictionary:
+	if SIGNATURE.has(id):
+		return SIGNATURE.definition(id)
 	if id == WINDWERK.ID:
 		return WINDWERK.definition()
 	if id == JUNGLE.ID:

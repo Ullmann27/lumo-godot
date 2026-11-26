@@ -41,6 +41,10 @@ SCORES = {
     "wolkenwerkstatt": Score("Fracht am Himmel", 112, 50, LYDIAN, [0,4,1,5,3,0,2,1], [0,3,4,6,2,1,4,3], "pluck", "glide"),
     "eisturm": Score("Die gläserne Wendel", 114, 47, MINOR, [0,5,1,4,2,6,3,0], [2,4,6,4,3,1,0,2], "mallet", "motor"),
     "dschungeltempel": Score("Lianenhalle", 110, 49, DORIAN, [0,3,4,0,5,2,3,4], [0,2,4,1,3,5,2,1], "wood", "samba"),
+    # Signatur-Strecken (Team B1, 26.11.2026).
+    "vulkanexpress_3100": Score("Feuerinsel-Express", 128, 47, DORIAN, [0,5,3,4,0,2,5,4], [4,2,4,5,3,1,2,0], "guitar", "motor"),
+    "wolkensturm_3300": Score("Über den Wolken", 132, 50, LYDIAN, [0,4,5,1,0,3,4,6], [2,4,6,4,5,3,1,4], "analog", "glide"),
+    "kristallflut_2800": Score("Lied der Tiefe", 114, 49, IONIAN, [0,5,3,4,1,5,3,6], [4,6,5,2,3,1,0,2], "mallet", "samba"),
 }
 PATTERNS = {
     "pocket": ([0,1.75,2.5], [0,.75,2.5,3.25], [.50,1.25,2.75], .075),

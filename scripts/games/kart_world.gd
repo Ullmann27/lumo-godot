@@ -7,6 +7,8 @@ const TRACKS = preload("res://scripts/games/kart_tracks.gd")
 const JUNGLE = preload("res://scripts/games/kart_jungle_course.gd")
 ## Lumos Riesengarten: eigene Strecke mit eigenem Aufbau (scripts/games/garden/).
 const GARDEN = preload("res://scripts/games/garden/kart_garden_course.gd")
+## Signatur-Strecken (Vulkanexpress …): eigene Welt, eigene Fahrbahn (scripts/games/kart_signature/).
+const SIGNATURE = preload("res://scripts/games/kart_signature/kart_signature_tracks.gd")
 const ADVENTURE_TUNNELS = preload("res://scripts/games/kart_adventure_tunnels.gd")
 const SHAPES = preload("res://scripts/games/kart_world_meshes.gd")
 const SKY_ISLANDS = preload("res://scripts/games/kart_sky_islands.gd")
@@ -142,6 +144,9 @@ func build(
 	if track_id == GARDEN.ID:
 		load("res://scripts/games/garden/kart_garden_world.gd").build(self, geometry_only)
 		return
+	if SIGNATURE.has(track_id):
+		SIGNATURE.build(self, geometry_only)
+		return
 	if track_id == JUNGLE.ID:
 		# Strecken 2.0 (kart_track_thrills.gd) und Fahrspaß-Höhepunkte (kart_track_highlights.gd):
 		# Dschungelherz hatte vorher keinen einzigen Sprung; beide Pläne nutzen den Action-Baukasten.
@@ -273,11 +278,13 @@ func _make_curve() -> void:
 		curve = TRACKS.WINDWERK.make_curve()
 	elif track_id == GARDEN.ID:
 		curve = GARDEN.make_curve()
+	elif SIGNATURE.has(track_id):
+		curve = SIGNATURE.make_curve(track_id)
 	else:
 		_make_legacy_curve()
 	length = curve.get_baked_length()
 	PASSAGES.plan(self)
-	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID, TRACKS.WINDWERK.ID] else ADVENTURE_TUNNELS.layout(self)
+	adventure_tunnel = {} if track_id in [JUNGLE.ID, GARDEN.ID, TRACKS.WINDWERK.ID] or SIGNATURE.has(track_id) else ADVENTURE_TUNNELS.layout(self)
 	set_meta("adventure_tunnel_plan", adventure_tunnel.duplicate())
 	_road_samples.clear()
 	_road_distances.clear()
@@ -331,6 +338,8 @@ func road_width_at(distance: float) -> float:
 		return deck * 2.0
 	if track_id == GARDEN.ID:
 		return GARDEN.width_at(distance)
+	if SIGNATURE.has(track_id):
+		return SIGNATURE.width_at(track_id, distance)
 	return JUNGLE.width_at(distance) if track_id == JUNGLE.ID else WIDTH
 
 func wall_lateral_at(distance: float) -> float:
@@ -345,6 +354,8 @@ func wall_lateral_at(distance: float) -> float:
 			base_wall = JUNGLE.wall_at(distance)
 		elif track_id == GARDEN.ID:
 			base_wall = GARDEN.wall_at(distance)
+		elif SIGNATURE.has(track_id):
+			base_wall = SIGNATURE.wall_at(track_id, distance)
 	return TRACK_PIECES.wall_lateral(self, fposmod(distance, length), base_wall)
 
 
@@ -569,6 +580,8 @@ func reset_transform(distance: float, lateral: float = 0.0) -> Transform3D:
 func resolve_tunnel_motion(from: Vector3, desired: Vector3) -> Dictionary:
 	if track_id == GARDEN.ID:
 		return GARDEN.resolve_motion(self, from, desired)
+	if SIGNATURE.has(track_id):
+		return SIGNATURE.resolve_motion(self, from, desired)
 	if not is_instance_valid(production_tunnels):
 		return {"position": desired, "normal": Vector3.ZERO, "collided": false}
 	return production_tunnels.resolve_motion(from, desired)
@@ -579,6 +592,8 @@ func clip_tunnel_camera(anchor: Vector3, desired: Vector3) -> Vector3:
 		return JUNGLE.clip_camera(self, anchor, desired)
 	if track_id == GARDEN.ID:
 		return GARDEN.clip_camera(self, anchor, desired)
+	if SIGNATURE.has(track_id):
+		return SIGNATURE.clip_camera(self, anchor, desired)
 	if not is_instance_valid(production_tunnels):
 		return desired
 	return production_tunnels.clip_camera(anchor, desired)

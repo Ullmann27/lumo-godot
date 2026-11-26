@@ -2039,6 +2039,15 @@ func _advance_jungle_world(delta: float) -> void:
 		jungle_environment.advance(delta, player.global_position, not paused, reduced_motion)
 
 
+## Signatur-Strecken (scripts/games/kart_signature/): Ereignisse, Licht und Klang der Welt.
+func _advance_signature_world(delta: float) -> void:
+	if not is_instance_valid(world):
+		return
+	var scenery = world.get_node_or_null("SignatureEnvironment")
+	if scenery != null:
+		scenery.advance_race(self, delta)
+
+
 ## Lumos Riesengarten: Rennereignisse der Strecke (Ringe, Tropfen, Gartenbahn, Sprenger).
 func _advance_garden_world(delta: float) -> void:
 	if track_id != "riesengarten_2400" or not is_instance_valid(world):
@@ -2053,6 +2062,7 @@ func _physics_process(delta: float) -> void:
 		return
 	_advance_jungle_world(delta)
 	_advance_garden_world(delta)
+	_advance_signature_world(delta)
 	if finished and finish_cine_left > 0.0:
 		if not paused:
 			_update_finish_cine(delta)
@@ -4466,6 +4476,8 @@ func _finish(cinematic: bool = true) -> void:
 		var garden = world.get_node_or_null("RiesengartenEnvironment")
 		if garden != null:
 			garden.celebrate_finish()
+	if is_instance_valid(world) and world.get_node_or_null("SignatureEnvironment") != null:
+		world.get_node("SignatureEnvironment").celebrate_finish()
 	var place: int = _place()
 	var earned: int = 3
 	if mode == "training":

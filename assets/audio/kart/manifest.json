@@ -392,6 +392,23 @@
       "loop": true,
       "bytes": 597795,
       "sha256": "2325d8cd3bc4eb58e30a0bd298a951d0ffd0a4cf434853a7364b881a9691df3e"
+    },
+    {
+      "file": "vulkanexpress_3100.ogg",
+      "bars": 32,
+      "bpm": 128,
+      "description": "Feuerinsel-Express",
+      "lead": "guitar",
+      "generator": "tools/art/compose_track_scores.py",
+      "seconds": 60.0,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs": -12.2,
+      "peak_dbfs": -2.03,
+      "seam_delta": 0.01421,
+      "loop": true,
+      "bytes": 513183,
+      "sha256": "bce21b16e2aef46cf231ec44beea6fed90604ccea2a658cda128a0cd86ded0b1"
     }
   ],
   "music_generator": "tools/art/compose_track_scores.py"

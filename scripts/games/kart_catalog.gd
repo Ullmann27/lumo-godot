@@ -3,6 +3,8 @@ extends RefCounted
 ## Kart is a reward game: learning happens in the app, never inside a race.
 const EXPANSION = preload("res://scripts/games/kart_expansion_tracks.gd")
 const FLEET = preload("res://scripts/games/kart_fleet.gd")
+## Signatur-Strecken mit eigener Welt (Team B1): Einträge stehen im jeweiligen Kurs.
+const SIGNATURE = preload("res://scripts/games/kart_signature/kart_signature_tracks.gd")
 const BASE_TRACKS: Array[Dictionary] = [
 	{"id": "sonnenhafen", "name": "Sonnenhafen", "tag": "MEER · BRÜCKEN · WEITE KURVEN", "color": Color("64dfeb"), "description": "Über die Hafenbrücke, am Leuchtturm vorbei und direkt ans Meer."},
 	{"id": "zauberwald", "name": "Zauberwald", "tag": "WALD · LEUCHTEN · GEHEIMNISSE", "color": Color("87eac1"), "description": "Leuchtende Pilze und große Baumwipfel begleiten deine Fahrt."},
@@ -29,6 +31,7 @@ static func _all_tracks() -> Array[Dictionary]:
 		"tag": "WINDWERK · 3,0 KM", "color": Color("45d3bd"),
 		"description": "Rase ins Turbinental, über die Weichen und durch die Signaltore der Windbahn."
 	})
+	result.append_array(SIGNATURE.catalog())
 	result.make_read_only()
 	return result
 

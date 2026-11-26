@@ -1,0 +1,69 @@
+{
+  "track": "vulkanexpress",
+  "license": "Eigene Synthese für Lumo, frei nutzbar",
+  "assets": [
+    {
+      "file": "surf.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.522,
+      "bytes": 124848,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "1c15dfeafd9f82a8ca84b3cc3ccb5ac26c8bca34a55ee47f76dfccdf4901975e"
+    },
+    {
+      "file": "lava.ogg",
+      "seconds": 10.0,
+      "loop": true,
+      "peak": 0.518,
+      "bytes": 122294,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "d9e11e8e0990668eacc9f4f531faa1f03e93f9ab68dc299d242e5f783b28eeee"
+    },
+    {
+      "file": "cave.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.324,
+      "bytes": 68760,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "80c0dcec61b0180ad0618c102a4deeda47ae615855bd6ec95f3f803f55482369"
+    },
+    {
+      "file": "steam.ogg",
+      "seconds": 8.0,
+      "loop": true,
+      "peak": 0.508,
+      "bytes": 87718,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "28cbe65d991238a2134076b018f35355f3444b4ad2284894333211eab86c810d"
+    },
+    {
+      "file": "rumble.ogg",
+      "seconds": 3.2,
+      "loop": false,
+      "peak": 0.668,
+      "bytes": 15931,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "9821429f2e811760fd0eb598ce081ac54e7217c9a6a9b1599432fdbd36507ecf"
+    },
+    {
+      "file": "eruption.ogg",
+      "seconds": 4.5,
+      "loop": false,
+      "peak": 0.718,
+      "bytes": 41680,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "6df914ac5f5e460be610e88a4560002b92096c73dfd161eb7e10fffe5d950605"
+    },
+    {
+      "file": "whistle.ogg",
+      "seconds": 1.7,
+      "loop": false,
+      "peak": 0.58,
+      "bytes": 20103,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "ec3ac76bc5554d5f608f105fd88aa5083f70d266d8840114914dac9fa0c57edd"
+    }
+  ]
+}

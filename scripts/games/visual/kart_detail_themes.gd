@@ -25,6 +25,14 @@ const LAB: Array = [["abacus", 0.0, 0.8, 1.0], ["crate", 2.0, 0.4, 0.5], ["plant
 const JUNGLE: Array = [["fern", 0.0, 0.0, 0.8], ["mushroom_cluster", 1.4, 0.6, 0.7], ["stump", -1.2, 0.8, 0.5], ["bush_round", 0.3, 1.8, 0.9]]
 
 const THEMES: Dictionary = {
+	# Signatur-Strecke Vulkanexpress (Team B1): Basaltbankett, keine Pfützen, kein Luftschiff.
+	"vulkanexpress_3100": {
+		"ground": "road", "road_wear": ["crack", "tar", "patch"], "edge": "sand",
+		"edge_tint": Color(0.32, 0.28, 0.28, 0.9), "clusters": [VOLCANO, PIT, TIRES],
+		"brands": ["lavalolli", "raketenroller", "sternenbrause"], "lantern": "lamp_post_small",
+		"airship": false, "flock": "gull_flock", "flock_height": 16.0,
+		"string_colors": [Color("ffb04a"), Color("ff6a2a"), Color("ffe38a")],
+	},
 	"sonnenhafen": {
 		"ground": "terrain", "min_ground": -1.5,
 		"road_wear": ["patch", "manhole", "puddle", "oil", "tar", "crack", "patch", "manhole"],
