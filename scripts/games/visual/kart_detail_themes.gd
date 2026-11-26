@@ -40,6 +40,13 @@ const THEMES: Dictionary = {
 		"lantern": "neon_arrow", "airship_color": Color("5ff0ff"), "airship_height": 40.0,
 		"string_colors": [Color("5ff0ff"), Color("ff4fd8"), Color("fff3b0")],
 	},
+	# Signatur-Strecke Kristallflut: Hafen und Küste ohne Pfützen auf dem Steinbelag.
+	"kristallflut_2800": {
+		"ground": "road", "road_wear": ["crack", "patch"], "edge": "sand",
+		"edge_tint": Color(1, 1, 1, 0.8), "clusters": [HARBOUR_QUAY, HARBOUR_BOXES, TIRES],
+		"brands": ["milos_muscheln", "sternenbrause", "kometen_kakao"], "flock": "gull_flock",
+		"flock_height": 12.0, "lantern": "buoy", "airship_color": Color("3fd8d0"),
+	},
 	"sonnenhafen": {
 		"ground": "terrain", "min_ground": -1.5,
 		"road_wear": ["patch", "manhole", "puddle", "oil", "tar", "crack", "patch", "manhole"],

@@ -1,0 +1,74 @@
+{
+  "coral": {
+    "bytes": 54544,
+    "triangles": [
+      356,
+      206,
+      134
+    ]
+  },
+  "crystal_spire": {
+    "bytes": 48548,
+    "triangles": [
+      280,
+      208,
+      130
+    ]
+  },
+  "fountain": {
+    "bytes": 66184,
+    "triangles": [
+      508,
+      284,
+      134
+    ]
+  },
+  "lighthouse": {
+    "bytes": 78772,
+    "triangles": [
+      632,
+      302,
+      178
+    ]
+  },
+  "pier_gate": {
+    "bytes": 25688,
+    "triangles": [
+      96,
+      96,
+      72
+    ]
+  },
+  "ruin_arch": {
+    "bytes": 61868,
+    "triangles": [
+      464,
+      272,
+      120
+    ]
+  },
+  "ruin_column": {
+    "bytes": 27432,
+    "triangles": [
+      200,
+      102,
+      46
+    ]
+  },
+  "ship": {
+    "bytes": 56732,
+    "triangles": [
+      268,
+      268,
+      136
+    ]
+  },
+  "tunnel_ring": {
+    "bytes": 64436,
+    "triangles": [
+      408,
+      264,
+      168
+    ]
+  }
+}

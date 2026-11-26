@@ -28,6 +28,7 @@ const THEMES: Dictionary = {
 	"windwerk_3000": ["wind", Color("d4d4c1"), Color("54e4cb"), Color("6a9f7f"), "Wind-Sprint"],
 	"vulkanexpress_3100": ["volcano", Color("3a3034"), Color("ff8a3c"), Color("7a4a34"), "Glut-Sprint"],
 	"wolkensturm_3300": ["sky", Color("6f7ba8"), Color("5ff0ff"), Color("93c56e"), "Wolken-Sprint"],
+	"kristallflut_2800": ["coast", Color("c9c4ae"), Color("3fd8d0"), Color("5f9a5a"), "Flut-Sprint"],
 }
 
 

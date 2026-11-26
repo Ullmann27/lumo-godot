@@ -105,15 +105,7 @@ func _storm() -> void:
 		var at: Vector3 = world.position_at(d, -250.0)
 		dark.append(Vector4(at.x, float(course.CLOUD_DECK) + 20.0, at.z, 30.0))
 	storm_clouds = puffs(
-		"Gewitterwolken",
-		dark,
-		9,
-		Color(0.4, 0.43, 0.56, 0.7),
-		90.0,
-		55.0,
-		0.008,
-		false,
-		WIND * 0.5
+		"Gewitterwolken", dark, 9, Color(0.4, 0.43, 0.56, 0.7), 90.0, 55.0, 0.008, false, WIND * 0.5
 	)
 	var bolt_material := StandardMaterial3D.new()
 	bolt_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED

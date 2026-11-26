@@ -31,6 +31,7 @@ const PASSAGES = preload("res://scripts/games/kart_passages.gd")
 ## Signatur-Strecken (Team B1) führen ihre Spannungsstellen im eigenen Kurs.
 const VULKAN = preload("res://scripts/games/vulkanexpress/vulkan_course.gd")
 const WOLKEN = preload("res://scripts/games/wolkensturm/wolken_course.gd")
+const FLUT = preload("res://scripts/games/kristallflut/flut_course.gd")
 const META: String = "thrill_plan"
 const OFF_META: String = "thrills_off"
 const ROAD_HALF: float = 5.4
@@ -461,6 +462,7 @@ const SPECS: Dictionary = {
 	],
 	VULKAN.ID: VULKAN.THRILL_SPECS,
 	WOLKEN.ID: WOLKEN.THRILL_SPECS,
+	FLUT.ID: FLUT.THRILL_SPECS,
 }
 
 

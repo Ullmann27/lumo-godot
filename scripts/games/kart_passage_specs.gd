@@ -4,6 +4,7 @@ extends RefCounted
 ## Signatur-Strecken (Team B1) führen ihre Passagen in eigenen Datendateien.
 const VULKAN_PASSAGES = preload("res://scripts/games/vulkanexpress/vulkan_passages.gd")
 const WOLKEN_PASSAGES = preload("res://scripts/games/wolkensturm/wolken_passages.gd")
+const FLUT_PASSAGES = preload("res://scripts/games/kristallflut/flut_passages.gd")
 
 ## Entwurf je Strecke. "bridge": schmales Deck ohne Planke über einer Lücke, davor ebener,
 ## griffiger Vorplatz voller Breite. "swing": bewegtes Hindernis mit Wartelinie.
@@ -360,4 +361,5 @@ const SPECS: Dictionary = {
 	],
 	"vulkanexpress_3100": VULKAN_PASSAGES.SPECS,
 	"wolkensturm_3300": WOLKEN_PASSAGES.SPECS,
+	"kristallflut_2800": FLUT_PASSAGES.SPECS,
 }

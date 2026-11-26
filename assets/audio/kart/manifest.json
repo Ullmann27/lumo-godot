@@ -426,6 +426,23 @@
       "loop": true,
       "bytes": 521223,
       "sha256": "718de6a0e0c613b558f684d5c5daf15e0605e4946a7ab46ba17c09bdd4432e3f"
+    },
+    {
+      "file": "kristallflut_2800.ogg",
+      "bars": 32,
+      "bpm": 114,
+      "description": "Lied der Tiefe",
+      "lead": "mallet",
+      "generator": "tools/art/compose_track_scores.py",
+      "seconds": 67.3684,
+      "sample_rate": 32000,
+      "channels": 2,
+      "lufs": -13.6,
+      "peak_dbfs": -2.1,
+      "seam_delta": 0.00268,
+      "loop": true,
+      "bytes": 583759,
+      "sha256": "cc1e44c542041d4c115e68e2e242e57c1d9e9dce553afbbb46ff0e91a8366c17"
     }
   ],
   "music_generator": "tools/art/compose_track_scores.py"

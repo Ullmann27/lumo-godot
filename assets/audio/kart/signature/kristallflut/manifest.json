@@ -1,0 +1,69 @@
+{
+  "track": "kristallflut",
+  "license": "Eigene Synthese für Lumo, frei nutzbar",
+  "assets": [
+    {
+      "file": "harbour.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.42,
+      "bytes": 97107,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "6173c45b567ab8138f95c5fafb9e539fab9ea4bdce5f85da0652db6f00755eac"
+    },
+    {
+      "file": "waterfall.ogg",
+      "seconds": 10.0,
+      "loop": true,
+      "peak": 0.458,
+      "bytes": 86506,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "88d76b49f23191bd84293b4c98a90e35f4803f1caad94a10ac783d184c87fa9b"
+    },
+    {
+      "file": "surf.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.546,
+      "bytes": 124657,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "11fb5506e2d85c58324fc28183bc5df737b5f90fdb03a398eac013297b207023"
+    },
+    {
+      "file": "underwater.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.374,
+      "bytes": 70809,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "84346c4ca17d49f4c7c21e6030b15e7d7a07d6eb76f4553b0f0969a7329ad4ec"
+    },
+    {
+      "file": "grotto.ogg",
+      "seconds": 12.0,
+      "loop": true,
+      "peak": 0.318,
+      "bytes": 58101,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "f63d43bcb6b94c5bbee6ceded2e9df7e4b5bc7e97320432a6581cdab38264071"
+    },
+    {
+      "file": "fountain.ogg",
+      "seconds": 8.0,
+      "loop": true,
+      "peak": 0.363,
+      "bytes": 76556,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "7bab938c9711c83754c61b431205cad3969915504c81e98212ca3d8f0fa524cb"
+    },
+    {
+      "file": "tide.ogg",
+      "seconds": 4.0,
+      "loop": false,
+      "peak": 0.434,
+      "bytes": 33353,
+      "generator": "tools/art/compose_signature_ambience.py",
+      "sha256": "410a83d6836428d63b0508df87b88d0ec3210d254f626c1a4075549022bc7e5f"
+    }
+  ]
+}

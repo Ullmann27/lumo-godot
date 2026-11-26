@@ -6,11 +6,13 @@ extends RefCounted
 const GEOMETRY = preload("res://scripts/games/kart_signature/kart_signature_geometry.gd")
 const VULKAN = preload("res://scripts/games/vulkanexpress/vulkan_course.gd")
 const WOLKEN = preload("res://scripts/games/wolkensturm/wolken_course.gd")
+const FLUT = preload("res://scripts/games/kristallflut/flut_course.gd")
 const COURSES: Dictionary = {
 	VULKAN.ID: VULKAN,
 	WOLKEN.ID: WOLKEN,
+	FLUT.ID: FLUT,
 }
-const IDS: Array[String] = [VULKAN.ID, WOLKEN.ID]
+const IDS: Array[String] = [VULKAN.ID, WOLKEN.ID, FLUT.ID]
 const WORLD_PATH: String = "res://scripts/games/kart_signature/kart_signature_world.gd"
 ## Kinderkart: Mitte bleibt 0,9 m innerhalb der Fahrbahnkante (wie Riesengarten).
 const WALL_INSET: float = 0.9

@@ -8,6 +8,10 @@ uniform vec4 foam : source_color = vec4(0.92, 0.97, 1.0, 1.0);
 uniform float wave_height = 0.35;
 uniform float wave_scale = 0.045;
 uniform float glint = 0.6;
+// Aussparungen (x, z, Radius): dort, wo eine Felsröhre unter den Meeresspiegel taucht,
+// wird die Wasseroberfläche nicht gezeichnet (sonst stünde sie quer im Tunnel).
+uniform vec4 holes[24];
+uniform int hole_count = 0;
 
 varying vec3 v_world;
 
@@ -23,6 +27,11 @@ void vertex() {
 }
 
 void fragment() {
+	for (int i = 0; i < hole_count; i++) {
+		if (distance(v_world.xz, holes[i].xy) < holes[i].z) {
+			discard;
+		}
+	}
 	vec2 p = v_world.xz * wave_scale;
 	float ripple = sin(p.x * 7.0 + TIME * 1.3) * sin(p.y * 6.0 - TIME * 1.1);
 	float ripple2 = sin((p.x + p.y) * 11.0 - TIME * 2.0);

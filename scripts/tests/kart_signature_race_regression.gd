@@ -66,7 +66,7 @@ func _steer(value: float) -> void:
 func _lane(world, course, s: float, lap: int) -> float:
 	var d: float = fposmod(s, world.length)
 	for split in course.SPLITS:
-		if d > float(split.start) - 70.0 and d < float(split.end):
+		if d > float(split.start) - 45.0 and d < float(split.end):
 			var half: float = world.road_width_at(float(split.start) + 20.0) * 0.5
 			var narrow_side: float = signf(float(split.lateral))
 			var narrow_mid: float = (
@@ -138,6 +138,7 @@ func _run() -> void:
 	var split_sides: Dictionary = {}
 	var lap_marks: Array[float] = []
 	var top_speed := 0.0
+	var contact_spots: Dictionary = {}
 	var next_shot := 0
 	var marks: Array = course.SHOT_MARKS
 	for tick in range(30000):
@@ -151,7 +152,11 @@ func _run() -> void:
 		if brake != braking:
 			braking = brake
 			_touch(3, game.brake_button, brake)
+		var contacts_before: int = game.wall_contacts
 		game._physics_process(STEP)
+		if game.wall_contacts > contacts_before:
+			var bin: int = int(fposmod(game.previous_road_distance, game.track_length) / 50.0) * 50
+			contact_spots[bin] = int(contact_spots.get(bin, 0)) + 1
 		top_speed = maxf(top_speed, game.speed)
 		farthest_step = maxf(farthest_step, last_at.distance_to(game.player.position))
 		last_at = game.player.position
@@ -268,6 +273,7 @@ func _run() -> void:
 			]
 		)
 	)
+	print("[SignatureRace] Wandkontakte je 50 m: %s" % str(contact_spots))
 	check(await TEARDOWN.release_scene(self, game, "[SignatureRace]"), "Szene freigegeben")
 	print("[SignatureRace] ", "PASS" if failures.is_empty() else failures)
 	quit(0 if failures.is_empty() else 1)
