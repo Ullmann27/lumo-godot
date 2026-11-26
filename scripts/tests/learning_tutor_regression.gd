@@ -263,6 +263,8 @@ func _run() -> void:
 		await _row_bands()
 	if _wants("walk"):
 		await _lumo_walks_and_steps_back()
+	if _wants("attention"):
+		await _lumo_points_at_lesson_objects()
 	if _wants("path"):
 		await _path_steps_back()
 	if _wants("pause"):
@@ -709,6 +711,42 @@ func _lumo_walks_and_steps_back() -> void:
 	_check(game.split_blocks.split_count() == int(parts.teil1), "Zerlegen: Teil macht die 10 voll")
 	var first: Vector3 = game.split_blocks.first_part_position()
 	_check(game.fox_point_target.distance_to(first) < 0.01, "Lumo zeigt auf den ersten Teil")
+	await _close(game)
+
+
+func _lumo_points_at_lesson_objects() -> void:
+	var game := await _open(_learning("acht_plus_fuenf", "rechenrahmen", "vorzeigen"), false)
+	await _settle(game)
+	await _press(game.weiter_button)
+	await _settle(game)
+	await create_timer(0.40).timeout
+	var first: Vector3 = game.frame.counted_anchor(0)
+	var direction: Vector3 = first - game.fox.global_position
+	var target_yaw := atan2(direction.x, direction.z)
+	_check(game.fox.is_usable() and game.fox.skeleton.get_bone_count() == 65, "Original-Lumo im Lernpfad")
+	_check(game.fox_point_target.is_equal_approx(first), "Zehnerübergang blickt in die erste Reihe")
+	_check(
+		absf(angle_difference(game.fox.rotation.y, target_yaw)) < 0.65,
+		"Lumo dreht sich beim Zeigen zu den gezählten Perlen"
+	)
+	await _press(game.weiter_button)
+	await _settle(game)
+	var second: Vector3 = game.frame.counted_anchor(1)
+	_check(game.fox_point_target.is_equal_approx(second), "Rest wechselt sichtbar zur zweiten Reihe")
+	game.return_to_lesson()
+	_check(not game.fox.teacher_pose.has_target, "Rückkehr beendet die aktive Zeigegeste")
+	await _close(game)
+
+	game = await _open(_learning("acht_plus_fuenf", "zerlegen", "hinweis"), true)
+	await _press(game.weiter_button)
+	var whole: Vector3 = game.split_blocks.first_part_position()
+	_check(
+		game.split_blocks.visible and game.split_blocks.cube_count() == 5,
+		"Zerlegehinweis stellt den zweiten Summanden als ganze Gruppe dar"
+	)
+	_check(game.fox_point_target.is_equal_approx(whole), "Zerlegehinweis zeigt zur ganzen Würfelgruppe")
+	_check(not game.fox.player.is_playing() and game.is_settled(), "reduziert: ruhige Zeigepose")
+	_check(game._speech_host == null and not game.bubble_text.text.is_empty(), "offline: Geste und Text")
 	await _close(game)
 
 

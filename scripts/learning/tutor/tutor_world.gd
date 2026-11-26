@@ -38,6 +38,8 @@ const FOX_HOME := Vector3(-6.75, 0, 0.45)
 const FOX_SHOW := Vector3(-5.4, 0, 1.45)
 const FOX_HOME_FACING := 0.55
 const FOX_SHOW_FACING := 1.05
+## Der Körper hilft beim Zeigen mit. Der Rest bleibt der Kopf- und Pfotenpose.
+const FOX_POINT_TURN_LIMIT := 0.46
 ## Auf dem Zahlenstrahl tritt Lumo nach dem Springen hinter den Steinweg,
 ## damit die Zahl, auf der er gelandet ist, lesbar bleibt.
 const PATH_STEP_BACK := 1.0
@@ -302,6 +304,13 @@ func _teacher(reaction: String, target: Vector3) -> void:
 		fox.teacher_react(reaction)
 
 
+func _cancel_attention() -> void:
+	_pending_reaction = ""
+	fox_point_target = Vector3.INF
+	if is_instance_valid(fox) and fox.is_usable():
+		fox.cancel_teaching_performance()
+
+
 ## Lumo geht an einen Platz (oder steht mit „Animationen reduzieren“ sofort
 ## dort). [reaction] folgt, sobald er angekommen ist.
 func _walk_to(
@@ -309,6 +318,7 @@ func _walk_to(
 ) -> void:
 	_pending_reaction = ""
 	if _walk_time >= 0.0 and _walk_spot == spot:
+		_walk_facing = facing
 		_pending_reaction = reaction
 		_pending_target = target
 		return
@@ -370,7 +380,14 @@ func _tick_walk(delta: float) -> void:
 
 ## Am Rahmen: Lumo geht zum linken Rahmenende und zeigt auf [target].
 func _show_at_frame(reaction: String, target: Vector3) -> void:
-	_walk_to(FOX_SHOW, "show", FOX_SHOW_FACING, reaction, target)
+	var facing := FOX_SHOW_FACING
+	if reaction == "explain":
+		var direction := target - FOX_SHOW
+		var target_yaw := atan2(direction.x, direction.z)
+		facing += clampf(
+			angle_difference(facing, target_yaw), -FOX_POINT_TURN_LIMIT, FOX_POINT_TURN_LIMIT
+		)
+	_walk_to(FOX_SHOW, "show", facing, reaction, target)
 
 
 ## Am Rahmen: Lumo tritt aus der Mitte zurück an seinen Platz.
@@ -585,6 +602,7 @@ func _show_unavailable() -> void:
 
 
 func _restart() -> void:
+	_cancel_attention()
 	_hop_queue.clear()
 	_hop_time = -1.0
 	path.clear_hops()
@@ -656,8 +674,10 @@ func _finish_run() -> void:
 func _perform(action: Dictionary) -> void:
 	match str(action.get("art", "")):
 		"perlen":
+			var upper_changed: bool = tutor.reihe1 != frame.counts[0]
+			var lower_changed: bool = tutor.reihe2 != frame.counts[1]
+			var row := 1 if lower_changed or (not upper_changed and tutor.reihe2 > 0) else 0
 			frame.set_counts(tutor.reihe1, tutor.reihe2)
-			var row := 1 if tutor.reihe2 > 0 else 0
 			_show_at_frame("explain", frame.counted_anchor(row))
 		"huepfen":
 			_queue_hops(int(action.von), int(action.nach), "explain")
@@ -673,6 +693,10 @@ func _perform(action: Dictionary) -> void:
 			if _material_kind == "huepfen":
 				_teacher("explain", _material_focus())
 			else:
+				# A hint can show the whole group without demonstrating the split.
+				if tutor.weg == "zerlegen" and not split_blocks.visible:
+					split_blocks.show_whole(tutor.plan().b)
+					split_blocks.show()
 				_show_at_frame("explain", _material_focus())
 	_rebuild_choices()
 
@@ -704,6 +728,9 @@ func _update_material() -> void:
 func _material_focus() -> Vector3:
 	if _material_kind == "huepfen":
 		return path.stone_position(tutor.position)
+	var action: Dictionary = tutor.current().get("aktion", {})
+	if split_blocks.visible and action.get("art") in ["zeigen", "zerlegen"]:
+		return split_blocks.first_part_position()
 	return frame.counted_anchor(0)
 
 
@@ -848,7 +875,8 @@ func set_bead_count(row: int, count: int) -> String:
 	var outcome: String = tutor.try_beads(row, count)
 	if outcome != "ignoriert":
 		var hint := _hint_for(outcome, count)
-		frame.set_counts(tutor.reihe1, tutor.reihe2)
+		if outcome != "gezeigt":
+			frame.set_counts(tutor.reihe1, tutor.reihe2)
 		_result(outcome, frame.counted_anchor(row - 1), hint)
 	return outcome
 
@@ -952,7 +980,7 @@ func _after_hops(landed: int) -> void:
 
 
 func _process(delta: float) -> void:
-	if suspended:
+	if suspended or return_count > 0:
 		return
 	_tick_hops(delta)
 	_tick_walk(delta)
@@ -1378,6 +1406,7 @@ func return_to_lesson() -> void:
 		if not HostBridge.return_to_app("learn", payload):
 			feedback.text = HostBridge.SAVE_FAILURE
 			return
+	_cancel_attention()
 	return_count += 1
 	last_return = payload
 	events.append("return")
