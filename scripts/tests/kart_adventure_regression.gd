@@ -172,6 +172,9 @@ func _run() -> void:
 		assert(not production.is_empty(), "Production tunnel was lost")
 		var modules := Vector2(production.start, production.end)
 		assert(not _overlaps(Vector2(tunnel.x - 20.0, tunnel.y + 20.0), modules), "The two tunnel roofs overlap")
+		for section in THRILLS.of(world):
+			if section.kind == "bank":
+				assert(not _overlaps(Vector2(float(section.start) - 5.0, float(section.end) + 5.0), modules), "Tunnel overlaps a banked section")
 		_check_actions(world, tunnel)
 		_check_actions(world, modules)
 		for spec in THRILLS.specs_for(track_id):

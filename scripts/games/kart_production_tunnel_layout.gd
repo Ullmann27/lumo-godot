@@ -17,6 +17,7 @@ const MAX_CURVATURE: float = 0.045
 const MAX_GRADE: float = 0.25
 const OTHER_ROAD_CLEARANCE: float = 27.0
 const PASSAGES = preload("res://scripts/games/kart_passages.gd")
+const THRILLS = preload("res://scripts/games/kart_track_thrills.gd")
 
 
 static func supports(track_id: String) -> bool:
@@ -78,6 +79,11 @@ static func _blocked(world) -> Array[Vector2]:
 	if not adventure.is_empty():
 		result.append(Vector2(float(adventure.start) - 20.0, float(adventure.end) + 20.0))
 	result.append_array(PASSAGES.blocked_ranges(world))
+	for section in THRILLS.of(world):
+		# The floor of a road-following collision shell intersects an upright
+		# kart capsule where the road twists into a strongly banked curve.
+		if section.kind == "bank":
+			result.append(Vector2(float(section.start) - 5.0, float(section.end) + 5.0))
 	if not world.jump.is_empty():
 		result.append(Vector2(float(world.jump.ramp_start) - 16.0, float(world.jump.gap_end) + 25.0))
 	if not world.loop_layout.is_empty():
