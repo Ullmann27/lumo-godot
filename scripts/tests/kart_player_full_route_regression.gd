@@ -7,8 +7,10 @@ const PRECISION = preload("res://scripts/games/kart_precision_jump.gd")
 const POWERTRAIN = preload("res://scripts/games/kart_powertrain.gd")
 const RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
 const LASSO_RULES = preload("res://scripts/games/kart_lasso_rules.gd")
+const LOOP = preload("res://scripts/games/kart_physical_loop.gd")
 const TRACK_PASS = preload("res://scripts/games/kart_track_pass.gd")
 const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const TAKEOFF_TOLERANCE_M := 1.5
 var game
 var output := "res://exports/player-full-route"
 var recording := false
@@ -22,6 +24,8 @@ var recording_frame := 0
 var lasso_hold := 0.0
 var longest_lasso_hold := 0.0
 var test_child := ""
+var protected_lasso: Dictionary = {}
+var exposed_lasso: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -97,6 +101,32 @@ func _capture(name: String) -> void:
 	assert(root.get_texture().get_image().save_jpg(output.path_join(name + ".jpg"), 0.86) == OK)
 
 
+func _select_lassos() -> bool:
+	var loop: Dictionary = game.world.loop_layout
+	if loop.is_empty():
+		return false
+	var loop_exit: float = float(loop.start) + LOOP.advance_of(loop)
+	var boosted_speed: float = (
+		POWERTRAIN.top_speed(game.kart_factors, POWERTRAIN.race_pace())
+		* POWERTRAIN.boost_scale(game.kart_factors)
+	)
+	var maximum_boost_travel: float = game._boost_for(1.5) * boosted_speed
+	for encounter in game.roadside_lasso.layout:
+		var after_loop: float = float(encounter.distance) - loop_exit
+		if protected_lasso.is_empty() and after_loop >= 0.0 and after_loop < maximum_boost_travel:
+			protected_lasso = encounter
+		elif exposed_lasso.is_empty() and after_loop > maximum_boost_travel + 30.0:
+			exposed_lasso = encounter
+	return not protected_lasso.is_empty() and not exposed_lasso.is_empty()
+
+
+func _crossed(before: float, encounter: Dictionary) -> bool:
+	if encounter.is_empty():
+		return false
+	var line: float = float(encounter.distance)
+	return before < line and game.distance >= line
+
+
 func _drive_controls() -> void:
 	var road: Dictionary = game.world.sample_road(game.player.position, game.previous_road_distance)
 	var at: float = float(road.distance)
@@ -107,13 +137,15 @@ func _drive_controls() -> void:
 	var target_lane: float = (
 		float(layout.lane) if loop_lead >= -36.0 and loop_lead <= 130.0 else 0.0
 	)
-	# Meet one real, warned roadside encounter through touch steering on lap one.
-	# Every later crew is avoided in the centre lane, with no hazard state edits.
-	if game.distance < game.track_length and not game.roadside_lasso.layout.is_empty():
-		var encounter: Dictionary = game.roadside_lasso.layout[0]
-		var lasso_lead: float = float(encounter.distance) - at
-		if lasso_lead > -8.0 and lasso_lead < 100.0:
-			target_lane = float(encounter.lateral)
+	# Meet both warned crews on lap one: one with the loop reward still active,
+	# the other after it expires. Both are avoided in the centre on lap two.
+	if game.distance < game.track_length:
+		for encounter in [protected_lasso, exposed_lasso]:
+			if encounter.is_empty():
+				continue
+			var lasso_lead: float = float(encounter.distance) - at
+			if lasso_lead > -8.0 and lasso_lead < 100.0:
+				target_lane = float(encounter.lateral)
 	var target: Vector3 = game.world.position_at(at + 9.0, target_lane)
 	var direction: Vector3 = target - game.player.position
 	var heading: float = atan2(-direction.x, -direction.z)
@@ -167,6 +199,13 @@ func _run() -> void:
 	)
 	await process_frame
 	await process_frame
+	failed = not _select_lassos()
+	var expected_lips: Array[float] = []
+	for kicker in game.world.action.kickers:
+		expected_lips.append(float(kicker.take_off))
+	expected_lips.sort()
+	var expected_jumps: int = expected_lips.size() * game.TOTAL_LAPS
+	failed = failed or expected_lips.size() != 5
 	await _capture("start-grid")
 	for frame in range(1200):
 		game._physics_process(STEP)
@@ -201,21 +240,59 @@ func _run() -> void:
 	var previous_airborne: bool = game.airborne
 	var previous_loop: bool = game.loop_state.active
 	var last_checkpoint: int = game.checkpoint_index
+	var checked_lips := 0
+	var saw_turbo_protection := false
+	var saw_exposed_catch := false
+	var saw_turbo_release := false
 	for frame in range(30000):
+		var before_distance: float = game.distance
+		var before_speed: float = game.speed
+		var previous_catches: int = game.roadside_lasso.catches
 		_drive_controls()
 		game._physics_process(STEP)
 		var lasso_factor: float = float(game.player.get_meta("roadside_speed_factor", 1.0))
+		if _crossed(before_distance, protected_lasso):
+			saw_turbo_protection = (
+				game.boost_time > 0.0 and game.shield_time <= 0.0
+				and is_equal_approx(lasso_factor, 1.0)
+				and game.roadside_lasso.catches == previous_catches
+				and game.message.text == "Lasso abgewehrt!"
+			)
+			_record_event("lasso-protected")
+		if _crossed(before_distance, exposed_lasso):
+			saw_exposed_catch = (
+				game.roadside_lasso.catches == previous_catches + 1
+				and is_equal_approx(lasso_factor, LASSO_RULES.SPEED_FACTOR)
+				and game.speed < before_speed
+			)
+			_record_event("lasso-caught")
 		if lasso_factor < 1.0:
 			if not is_equal_approx(lasso_factor, LASSO_RULES.SPEED_FACTOR):
 				failed = true
 			lasso_hold += STEP
 			longest_lasso_hold = maxf(longest_lasso_hold, lasso_hold)
 		else:
+			if lasso_hold > 0.0 and lasso_hold < LASSO_RULES.HOLD_SECONDS - STEP:
+				# The marked outside line can reach a real pad before the hold
+				# expires. Early release is valid only when turbo freed the kart.
+				saw_turbo_release = (
+					game.boost_time > 0.0 and game.shield_time <= 0.0
+					and game.message.text == "Lasso abgewehrt!"
+				)
+				_record_event("lasso-turbo-release")
 			lasso_hold = 0.0
 		var displacement: float = previous_position.distance_to(game.player.position)
 		max_step = maxf(max_step, displacement)
 		previous_position = game.player.position
 		if game.airborne != previous_airborne:
+			if game.airborne:
+				var jump_index: int = game.action_kicker_jumps - 1
+				if jump_index >= 0 and jump_index < expected_jumps:
+					var lap: int = floori(game.distance / game.track_length)
+					var expected_lap: int = floori(float(jump_index) / expected_lips.size())
+					var lip: float = expected_lips[jump_index % expected_lips.size()]
+					if lap == expected_lap and absf(game.previous_road_distance - lip) <= TAKEOFF_TOLERANCE_M:
+						checked_lips += 1
 			_record_event("takeoff" if game.airborne else "landing")
 			previous_airborne = game.airborne
 		if game.loop_state.active != previous_loop:
@@ -256,12 +333,17 @@ func _run() -> void:
 		or not game.finished
 		or game.checkpoint_index != 16
 		or game.loop_count != 2
-		or game.action_kicker_jumps != 8
-		or game.landing_count < 8
+		or game.action_kicker_jumps != expected_jumps
+		or game.landing_count != expected_jumps
+		or checked_lips != expected_jumps
+		or int(game.precision_results.get("ziel", 0)) != game.TOTAL_LAPS
 		or inverted_frames == 0
-		or game.roadside_lasso.catches < 1
+		or not saw_turbo_protection
+		or not saw_exposed_catch
+		or game.roadside_lasso.catches != 1
 		or game.roadside_lasso.dodges < 1
-		or longest_lasso_hold <= 0.0
+		or longest_lasso_hold < 0.25
+		or (longest_lasso_hold < LASSO_RULES.HOLD_SECONDS - STEP and not saw_turbo_release)
 		or longest_lasso_hold > LASSO_RULES.HOLD_SECONDS + STEP
 	)
 	# This is the actual touch-driven finish above. No lap, pose, gate or
@@ -287,6 +369,11 @@ func _run() -> void:
 				"max_step_m": max_step,
 				"inverted_frames": inverted_frames,
 				"longest_lasso_hold_seconds": longest_lasso_hold,
+				"planned_takeoff_distances_m": expected_lips,
+				"verified_takeoffs": checked_lips,
+				"lasso_turbo_protection": saw_turbo_protection,
+				"lasso_exposed_catch": saw_exposed_catch,
+				"lasso_turbo_release": saw_turbo_release,
 				"events": events,
 				"trace": trace,
 				"input":
