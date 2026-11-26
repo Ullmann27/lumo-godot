@@ -39,6 +39,31 @@ func _touch(pedal: Control, down: bool, index: int) -> void:
 	pedal._gui_input(event)
 
 
+# The stock and short gear use the same exhaust. Match the actual low motor
+# period in the mixer output. Spectral brightness also depends on the phase
+# between body and intake and cannot reliably identify a transmission change.
+func _motor_frequency(samples: PackedVector2Array) -> float:
+	const STRIDE := 4
+	var rate := AudioServer.get_mix_rate()
+	var best_score := -1.0
+	var best_lag := 0
+	for lag in range(roundi(rate / 180.0), roundi(rate / 90.0) + 1):
+		var cross := 0.0
+		var first_energy := 0.0
+		var second_energy := 0.0
+		for i in range(lag, samples.size(), STRIDE):
+			var first := samples[i - lag].x
+			var second := samples[i].x
+			cross += first * second
+			first_energy += first * first
+			second_energy += second * second
+		var score := cross / sqrt(maxf(first_energy * second_energy, 0.000001))
+		if score > best_score:
+			best_score = score
+			best_lag = lag
+	return rate / best_lag if best_lag > 0 and best_score > 0.80 else 0.0
+
+
 func _sample(label: String) -> Dictionary:
 	# Scene timers measure simulated time. Wait for actual mixer frames, even
 	# after the first expensive race frame or when the CI driver runs slowly.
@@ -62,7 +87,8 @@ func _sample(label: String) -> Dictionary:
 		left += frame.x * frame.x
 		right += frame.y * frame.y
 		var mid := (frame.x + frame.y) * .5
-		variation += (mid - previous) * (mid - previous)
+		if i > 0:
+			variation += (mid - previous) * (mid - previous)
 		previous = mid
 		peak = maxf(peak, maxf(absf(frame.x), absf(frame.y)))
 		raw.encode_s16(i * 4, roundi(frame.x * 32767.0))
@@ -70,6 +96,8 @@ func _sample(label: String) -> Dictionary:
 	recording.append_array(raw)
 	var rms := sqrt((left + right) / (2.0 * maxi(1, samples.size())))
 	var metrics := {"rms": rms, "brightness": sqrt(variation / maxf(.000001, left + right)), "left": left, "right": right, "peak": peak}
+	if label in ["stock", "short_gear"]:
+		metrics["motor_hz"] = _motor_frequency(samples)
 	measurements[label] = metrics
 	check(samples.size() > 256, "AudioServer delivered PCM for " + label)
 	check(peak < .6, "Headroom for " + label)
@@ -139,8 +167,10 @@ func _run() -> void:
 		for i in 60:
 			audio.update_motors(game, STEP)
 		await _sample(setup[0])
-	for key in ["twin", "rocket", "electric", "heavy", "hybrid", "short_gear"]:
+	for key in ["twin", "rocket", "electric", "heavy", "hybrid"]:
 		check(absf(measurements[key].brightness / measurements.stock.brightness - 1.0) > .045, key + " changes measured spectrum at identical speed")
+	check(measurements.stock.motor_hz > 0.0 and measurements.short_gear.motor_hz > measurements.stock.motor_hz * 1.075,
+		"Shorter gearing raises the measured motor frequency at identical road speed")
 	_tap(player, false)
 	for style in ["boru_rally", "zuri_volt"]:
 		var kart := RivalEmitter.new()
