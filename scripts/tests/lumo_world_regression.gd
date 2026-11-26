@@ -177,9 +177,14 @@ func _real_scene() -> void:
 	await _frames(4)
 	scene._toggle_vehicle()
 	_check(scene.driving and not scene.fox.visible, "existing Lumo Kart is enterable without duplicate fox")
-	scene._drive_tick(Vector2(0, -1), 0.2)
+	scene.joystick.target = Vector2(0, -1)
+	await _frames(18)
 	_check(scene.drive_speed > 0 and scene.kart_body.velocity.length() > 0, "kart has real controlled motion")
-	scene.drive_speed = 0
+	scene.joystick.target = Vector2.ZERO
+	scene.joystick.axis = Vector2.ZERO
+	scene.run_button.pressed.emit()
+	await _frames(12)
+	_check(scene.kart_body.is_on_floor() and is_zero_approx(scene.drive_speed), "the brake stops the kart on the floor")
 	scene._toggle_vehicle()
 	_check(not scene.driving and scene.fox.visible, "exiting kart restores walking Lumo")
 	scene.player.position = Vector3(110, 0.2, 7)
