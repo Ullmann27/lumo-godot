@@ -47,8 +47,13 @@ func _run() -> void:
 	_check(home.distance_to(desired) < .5, "Visible house placed at tap")
 	var facility: StaticBody3D = v.facility_nodes["p_" + str(house.id)]
 	_check(facility.position.distance_to(home) < .1, "Collider follows house")
+	v.tutorial.replay("Gartenzaun")
+	_check(v.tutorial.current_id() == "zaunwerkzeug", "Optional tour starts with one real tool")
+	await _tap_control(v, _bubble_button(v.tutorial, "Allein weiter"))
+	_check(not v.tutorial.active(), "Optional tour can return to independent play")
+	v.tutorial.replay("Gartenzaun")
 	await _tap_control(v, v.yard_button)
-	_check(v.yard_mode, "Toolbar enters fence drawing")
+	_check(v.yard_mode and v.tutorial.current_id() == "zaunziehen", "Toolbar enters fence drawing")
 	var a := _screen_point(v, v._plot_world(0) + Vector3.UP * .17)
 	var b := _screen_point(v, v._plot_world(8) + Vector3.UP * .17)
 	await _drag(a, b)
@@ -58,6 +63,9 @@ func _run() -> void:
 		print("[VillageYard] FAILED ", failures, " ", v.feedback.text, " screen=", [a,b])
 		quit(1)
 		return
+	_check(v.tutorial.current_id() == "zauntor", "Real construction advances the optional tutorial")
+	await _tap_control(v, _bubble_button(v.tutorial, "Verstanden"))
+	_check(not v.tutorial.active(), "Gate explanation returns to independent play")
 	var yard: Dictionary = yards[0]
 	_check(YARDS.FIELDS.rect(yard.a, yard.b).size == Vector2i(3,3), "Three by three yard")
 	var gate := YARDS.gate(yard)
