@@ -185,3 +185,6 @@ func _draw_tacho(centre: Vector2, u: float) -> void:
 	draw_line(centre + needle * radius * 0.2, centre + needle * (radius + width * 0.2), Color("ff6a5a"), maxf(2.0, u * 0.05), true)
 	_text(str(roundi(float(values.get("speed", 0.0)))), centre + Vector2(0, -u * 0.04), u * 0.36, Color.WHITE, HORIZONTAL_ALIGNMENT_CENTER, 0.0)
 	_text("km/h", centre + Vector2(0, u * 0.3), u * 0.17, Color("a9dcff"), HORIZONTAL_ALIGNMENT_CENTER, 0.0)
+	var gear_text: String = str(values.get("gear", ""))
+	if not gear_text.is_empty():
+		_text(gear_text, centre + Vector2(0, -u * 0.33), u * 0.20, GOLD, HORIZONTAL_ALIGNMENT_CENTER, 0.0)

@@ -150,7 +150,13 @@ static func push(game: Node, place: int, display_speed: int) -> void:
 	var bar: Control = panel.get_node_or_null("KartRaceBar")
 	if bar != null:
 		var lap: int = mini(game.TOTAL_LAPS, int(game.distance / maxf(game.track_length, 0.001)) + 1)
+		var gear_text := ""
+		if is_instance_valid(game.kart_audio) and game.kart_audio.player_motor != null:
+			var voice = game.kart_audio.player_motor
+			if voice.body.playing:
+				gear_text = "R" if game.speed < -0.5 else ("E" if voice.electric >= 0.9 else "G%d" % (voice.gear + 1))
 		bar.show_values({
+			"gear": gear_text,
 			"mode": game.mode, "lap": lap, "laps": game.TOTAL_LAPS, "place": place, "field": 6,
 			"speed": display_speed, "top": top, "stars": game.collected.size(),
 			"time": maxf(0.0, game.arena_time_limit() - game.elapsed) if game.mode == "arena" else game.elapsed,

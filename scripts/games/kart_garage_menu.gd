@@ -1499,6 +1499,12 @@ func _select(key: String, value: String) -> void:
 		return
 	if str(setup.get(key, "")) == value:
 		return
+	if workshop != null and key in ["kart", "driver"]:
+		var kart_id: String = value if key == "kart" else str(setup.kart)
+		var driver_id: String = value if key == "driver" else str(setup.driver)
+		if not workshop.remember_vehicle(kart_id, driver_id):
+			show_workshop_save_failure()
+			return
 	setup[key] = value
 	_selection_reaction_pending = true
 	# Rapid taps replace one pending selection; the response belongs to the
@@ -1506,6 +1512,22 @@ func _select(key: String, value: String) -> void:
 	if not _selection_refresh_queued:
 		_selection_refresh_queued = true
 		call_deferred("_apply_selected_preview")
+
+
+func show_workshop_save_failure() -> void:
+	# A failed write must not be presented as a saved build, including on
+	# the spatial menu where the old detail label is hidden.
+	var existing := get_node_or_null("WorkshopSaveFailure")
+	if is_instance_valid(existing):
+		return
+	var dialog := AcceptDialog.new()
+	dialog.name = "WorkshopSaveFailure"
+	dialog.title = "Kart konnte nicht gespeichert werden"
+	dialog.dialog_text = "Deine bisher gespeicherten Teile bleiben erhalten. Bitte versuche es erneut."
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.canceled.connect(dialog.queue_free)
+	add_child(dialog)
+	dialog.popup_centered()
 
 
 func _apply_selected_preview() -> void:

@@ -160,6 +160,9 @@ var looks: Dictionary = {}  # kart_id -> {paint: id, rims: id, neon: id}
 var owned: Array[String] = []  # "paint:feuer", "rims:gold" …
 var tunes: Dictionary = {}  # kart_id -> {setting_id: -2..2} (Feineinstellung, 0 fehlt)
 var save_enabled: bool = true
+var saved_kart: String = ""
+var saved_driver: String = ""
+var storage_read_failed: bool = false
 
 
 static func path_for(child: String) -> String:
@@ -297,11 +300,18 @@ func can_upgrade(kart_id: String, part_id: String) -> bool:
 func upgrade(kart_id: String, part_id: String) -> bool:
 	if not can_upgrade(kart_id, part_id):
 		return false
-	var kart: Dictionary = levels.get(kart_id, {})
+	var existed := levels.has(kart_id)
+	var previous: Dictionary = levels.get(kart_id, {})
+	var kart := previous.duplicate(true)
 	kart[part_id] = level(kart_id, part_id) + 1
 	levels[kart_id] = kart
-	save()
-	return true
+	if save():
+		return true
+	if existed:
+		levels[kart_id] = previous
+	else:
+		levels.erase(kart_id)
+	return false
 
 
 ## Setzt alle Teile eines Karts auf Stufe 0 zurück und gibt die Sterne zurück (Aussehen bleibt).
@@ -310,8 +320,11 @@ func refund(kart_id: String) -> int:
 	for item in PARTS:
 		back += cost_to_reach(level(kart_id, str(item.id)))
 	if back > 0:
+		var previous: Dictionary = levels[kart_id]
 		levels.erase(kart_id)
-		save()
+		if not save():
+			levels[kart_id] = previous
+			return 0
 	return back
 
 
@@ -378,13 +391,21 @@ func tune_value(kart_id: String, setting_id: String) -> int:
 
 
 ## Speichert eine ganze Feineinstellung (kostenlos, jederzeit änderbar).
-func set_tune(kart_id: String, values: Dictionary) -> void:
+func set_tune(kart_id: String, values: Dictionary) -> bool:
+	var existed := tunes.has(kart_id)
+	var previous: Dictionary = tunes.get(kart_id, {})
 	var clean: Dictionary = FINE.sanitize(values)
 	if clean.is_empty():
 		tunes.erase(kart_id)
 	else:
 		tunes[kart_id] = clean
-	save()
+	if save():
+		return true
+	if existed:
+		tunes[kart_id] = previous
+	else:
+		tunes.erase(kart_id)
+	return false
 
 
 func set_tune_value(kart_id: String, setting_id: String, value: int) -> void:
@@ -398,8 +419,7 @@ func apply_preset(kart_id: String, preset_id: String) -> bool:
 	var entry: Dictionary = FINE.preset(preset_id)
 	if entry.is_empty():
 		return false
-	set_tune(kart_id, entry["values"])
-	return true
+	return set_tune(kart_id, entry["values"])
 
 
 ## Feineinstellung auf Werk zurücksetzen.
@@ -458,9 +478,12 @@ func can_buy_option(kind: String, id: String) -> bool:
 func buy_option(kind: String, id: String) -> bool:
 	if not can_buy_option(kind, id):
 		return false
-	owned.append("%s:%s" % [kind, id])
-	save()
-	return true
+	var key := "%s:%s" % [kind, id]
+	owned.append(key)
+	if save():
+		return true
+	owned.erase(key)
+	return false
 
 
 ## A build can include locked parts from several slots. Validate the whole basket
@@ -511,11 +534,63 @@ func mount_parts(kart_id: String, parts: Dictionary) -> bool:
 func choose(kart_id: String, kind: String, id: String) -> bool:
 	if str(option(kind, id).get("id", "")) != id or not has_option(kind, id):
 		return false
-	var look: Dictionary = looks.get(kart_id, {})
-	look[kind] = id
-	looks[kart_id] = look
-	save()
-	return true
+	return _store_choice(kart_id, kind, id, false)
+
+
+## A purchase and its installation are one durable transaction.
+func buy_and_choose(kart_id: String, kind: String, id: String) -> bool:
+	if not can_buy_option(kind, id):
+		return false
+	return _store_choice(kart_id, kind, id, true)
+
+
+func _store_choice(kart_id: String, kind: String, id: String, purchase: bool) -> bool:
+	var existed := looks.has(kart_id)
+	var previous: Dictionary = looks.get(kart_id, {})
+	var next := previous.duplicate(true)
+	var key := "%s:%s" % [kind, id]
+	if purchase:
+		owned.append(key)
+	next[kind] = id
+	looks[kart_id] = next
+	if save():
+		return true
+	if existed:
+		looks[kart_id] = previous
+	else:
+		looks.erase(kart_id)
+	if purchase:
+		owned.erase(key)
+	return false
+
+
+## Remember a real selected kart independently of an unfinished race.
+func remember_vehicle(kart_id: String, driver_id: String) -> bool:
+	if not FLEET.ids().has(kart_id) or driver_id.is_empty():
+		return false
+	if saved_kart == kart_id and saved_driver == driver_id:
+		return not storage_read_failed
+	var previous_kart := saved_kart
+	var previous_driver := saved_driver
+	saved_kart = kart_id
+	saved_driver = driver_id
+	if save():
+		return true
+	saved_kart = previous_kart
+	saved_driver = previous_driver
+	return false
+
+
+## Legacy installations did not store the last chassis. Recover an unambiguous
+## customized chassis without deleting or guessing between multiple builds.
+func preferred_kart() -> String:
+	if FLEET.ids().has(saved_kart):
+		return saved_kart
+	var customized: Array[String] = []
+	for id in FLEET.ids():
+		if not (looks.get(id, {}) as Dictionary).is_empty() or total_level(id) > 0 or not tune(id).is_empty():
+			customized.append(id)
+	return customized[0] if customized.size() == 1 else ""
 
 
 ## Fertige Darstellung für den Fahrzeugbau: Farben und Tuning-Stufen.
@@ -575,9 +650,17 @@ func load_from_disk() -> void:
 	looks.clear()
 	owned.clear()
 	tunes.clear()
+	saved_kart = ""
+	saved_driver = ""
+	storage_read_failed = false
 	var config := ConfigFile.new()
-	if config.load(path()) != OK:
+	var read_error := config.load(path())
+	if read_error != OK:
+		# Never replace an existing unreadable workshop with empty defaults.
+		storage_read_failed = read_error != ERR_FILE_NOT_FOUND
 		return
+	saved_kart = str(config.get_value("meta", "selected_kart", ""))
+	saved_driver = str(config.get_value("meta", "selected_driver", ""))
 	for kart_id in FLEET.ids():
 		var section: String = "kart_" + kart_id
 		var kart: Dictionary = {}
@@ -614,9 +697,13 @@ func load_from_disk() -> void:
 func save() -> bool:
 	if not save_enabled:
 		return true
+	if storage_read_failed:
+		return false
 	var config := ConfigFile.new()
 	config.set_value("meta", "version", 1)
 	config.set_value("meta", "lifetime", lifetime_stars)
+	config.set_value("meta", "selected_kart", saved_kart)
+	config.set_value("meta", "selected_driver", saved_driver)
 	for kart_id in levels:
 		for part_id in levels[kart_id]:
 			config.set_value("kart_" + str(kart_id), str(part_id), int(levels[kart_id][part_id]))
@@ -640,5 +727,7 @@ func save() -> bool:
 ## Setzt die Sterne-Obergrenze hoch (nie herunter) und merkt sie sich.
 func report_lifetime(stars: int) -> void:
 	if stars > lifetime_stars:
+		var previous := lifetime_stars
 		lifetime_stars = stars
-		save()
+		if not save():
+			lifetime_stars = previous

@@ -220,8 +220,16 @@ func update_player_motor(step: float, speed: float, brake: float, manual: bool,
 	var braking := 0.0 if grid else brake
 	var throttle := manual or (auto_gas and not grid and braking < .5)
 	var rev := manual and (grid or (braking > .5 and absf(speed) < 3.0) or airborne)
+	var before: int = player_motor.shifts
+	# Keep the player's motor in front of music and the distant rival motors.
+	# The existing effects slider, parent mute and focus/pause gates still apply.
 	player_motor.advance(step, 0.0 if grid else speed, float(throttle), braking,
-		boost and not grid, rev, effect_db() - 7.0)
+		boost and not grid, rev, effect_db() - 2.0)
+	if player_motor.shifts > before and throttle and not grid:
+		# Briefly clear the soundtrack from the real upshift; combustion
+		# motors get their soft original exhaust cue, not an electric shift.
+		duck(0.32)
+		effect("backfire", 0.90, 0.60)
 
 
 func music_db() -> float:

@@ -36,7 +36,8 @@ const RADIUS := 40.0
 const SHIFT_POINTS: Array[float] = [0.26, 0.50, 0.76]
 ## How much of the motor speed follows the gear (the rest follows road speed).
 const GEAR_SHARE := 0.42
-const SHIFT_DIP := 0.11
+const SHIFT_DIP := 0.24
+const SHIFT_PITCH_DROP := 0.42
 
 var body
 var induction
@@ -152,11 +153,15 @@ func advance(step: float, speed: float, throttle: float, brake: float, boost: bo
 		shaft_rate += .14
 		target_load = 1.0
 	shaft_rate += .15 * target_load
-	if _shift_dip > 0.0:
-		# The clutch opens for a moment: the motor falls and the load eases.
-		target_load *= 0.55
+	var shifting := _shift_dip > 0.0
+	if shifting:
+		# A short actual drop in shaft pitch, not just a small change in gain.
+		# The normal gear curve resumes smoothly as the clutch closes.
+		var envelope := clampf(_shift_dip / SHIFT_DIP, 0.0, 1.0)
+		shaft_rate *= 1.0 - SHIFT_PITCH_DROP * envelope
+		target_load *= 1.0 - 0.68 * envelope
 		_shift_dip = maxf(0.0, _shift_dip - step)
-	var falling := 6.0 if _shift_dip > 0.0 else 1.25
+	var falling := 12.0 if shifting else 1.25
 	rpm = move_toward(rpm, shaft_rate, step * (2.2 if rpm < shaft_rate else falling))
 	load_amount = move_toward(load_amount, target_load, step * 5.0)
 	var pitch := .80 + 1.84 * rpm

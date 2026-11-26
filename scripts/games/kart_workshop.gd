@@ -513,14 +513,18 @@ func _on_upgrade(part_id: String) -> void:
 		refund_armed = 0.0
 		_refresh_all()
 		changed.emit()
+	else:
+		_show_toast("Verbesserung nicht gespeichert.")
 
 
 func _on_swatch(kind: String, id: String) -> void:
 	if tuning.has_option(kind, id):
 		pending_option.erase(kind)
 		if tuning.choose(kart_id, kind, id):
-			_show_toast("%s: %s" % [_kind_title(kind), TUNING.option(kind, id).name])
+			_show_toast("%s gespeichert: %s" % [_kind_title(kind), TUNING.option(kind, id).name])
 			changed.emit()
+		else:
+			_show_toast("Nicht gespeichert – bisheriger Lack bleibt.")
 	else:
 		# Erst ansehen, dann kaufen: Das Kart zeigt den Vorschlag, der Kauf braucht einen zweiten Tipp.
 		pending_option[kind] = id
@@ -535,13 +539,14 @@ func _on_buy(kind: String) -> void:
 	var id: String = str(pending_option.get(kind, ""))
 	if id.is_empty():
 		return
-	if tuning.buy_option(kind, id):
-		tuning.choose(kart_id, kind, id)
+	if tuning.buy_and_choose(kart_id, kind, id):
 		pending_option.erase(kind)
-		_show_toast("%s gekauft: %s" % [_kind_title(kind), TUNING.option(kind, id).name])
+		_show_toast("%s gekauft und gespeichert: %s" % [_kind_title(kind), TUNING.option(kind, id).name])
 		_pop_preview()
 		_refresh_all()
 		changed.emit()
+	else:
+		_show_toast("Nicht gespeichert – bitte erneut versuchen.")
 
 
 func _on_refund() -> void:

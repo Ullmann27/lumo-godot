@@ -588,7 +588,7 @@ func _pending_price() -> int:
 
 
 func _sync_action() -> void:
-	title_label.text = "%d Teile gewählt" % pending.size() if pending.size() > 1 else "Teilewerkstatt"
+	title_label.text = "Vorschau · %d gewählt" % pending.size() if not pending.is_empty() else "Teilewerkstatt"
 	var price := _pending_price()
 	var workshop = _workshop()
 	mount_button.text = "Fertig" if pending.is_empty() else "Montieren"
@@ -624,8 +624,12 @@ func _on_mount() -> void:
 			_build_tiles()
 			if menu.has_method("_refresh_star_label"):
 				menu._refresh_star_label()
+			dyno_summary.text = "Freigeschaltet! Tippe jetzt auf Montieren, um die Teile zu speichern."
+		else:
+			dyno_summary.text = "Nicht gespeichert – bitte erneut versuchen."
 		return
 	if not workshop.mount_parts(_kart_id(), pending):
+		dyno_summary.text = "Nicht gespeichert – die bisher montierten Teile bleiben erhalten."
 		return
 	pending = {}
 	_close()

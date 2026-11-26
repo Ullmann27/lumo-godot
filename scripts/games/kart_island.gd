@@ -826,6 +826,16 @@ func _show_garage() -> void:
 		# Frischer Einstieg: ein neues Kind beginnt auf "Entdecken", sonst gilt
 		# die Stufe, die dieses Kind zuletzt gefahren oder eingestellt hat.
 		garage.setup["difficulty"] = known_level(difficulty)
+		var remembered: String = garage.workshop.preferred_kart()
+		if not remembered.is_empty():
+			var candidate: Dictionary = CATALOG.entry(CATALOG.KARTS, remembered)
+			if str(candidate.id) == remembered and (remembered == garage.workshop.saved_kart or CATALOG.unlocked(candidate, garage.stars, garage.unlocked_ids)):
+				garage.setup["kart"] = remembered
+		var previous_driver: String = garage.workshop.saved_driver
+		if not previous_driver.is_empty():
+			var actor: Dictionary = CATALOG.entry(CATALOG.DRIVERS, previous_driver)
+			if str(actor.id) == previous_driver:
+				garage.setup["driver"] = previous_driver
 	garage.start_requested.connect(_start_selected_race)
 	garage.resume_requested.connect(_resume_saved_race)
 	garage.main_menu_requested.connect(func(): _show_reference_landing(true))
@@ -1047,6 +1057,9 @@ func _start_selected_race(setup: Dictionary) -> void:
 			garage.detail.text = "Diese Strecke ist noch nicht startbereit. Bitte wähle eine andere."
 		return
 	difficulty = str(setup.get("difficulty", "gemuetlich"))
+	if is_instance_valid(garage) and not _ensure_workshop().remember_vehicle(selected_kart, selected_driver):
+		garage.show_workshop_save_failure()
+		return
 	cup_index = 0
 	cup_points = [0, 0, 0, 0, 0, 0]
 	cup_results.clear()
@@ -2181,7 +2194,8 @@ func _physics_process(delta: float) -> void:
 ## Werkstatt des aktuellen Kindes (einmal anlegen; die Sterne kommen aus dem Fortschritt).
 func _ensure_workshop():
 	if workshop == null:
-		var child: String = str(HostBridge.launch_options().get("childKey", "standalone"))
+		# The owner is captured at scene entry, not read again after a profile switch.
+		var child: String = track_pass.child_key if track_pass != null else str(HostBridge.launch_options().get("childKey", "standalone"))
 		workshop = TUNING.new(child, ProgressStore.lifetime_stars())
 	workshop.report_lifetime(ProgressStore.lifetime_stars())
 	return workshop
