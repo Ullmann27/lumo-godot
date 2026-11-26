@@ -24,6 +24,7 @@ const ORANGE := Color("ffca78")
 
 var stations: Dictionary = {}
 var station_views: Dictionary = {}
+var timber: StandardMaterial3D
 
 
 func _init() -> void:
@@ -108,7 +109,17 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 
 func _build_paths() -> void:
 	var terrain := _static(self, "WaldheimGround")
-	var material: Material = kit.textured("grass", Color("658759"))
+	var material: StandardMaterial3D = kit.textured("grass", Color("aabb85"))
+	material.albedo_texture = ADVENTURE.texture("grass_albedo.jpg")
+	material.normal_enabled = true
+	material.normal_texture = ADVENTURE.texture("grass_normal.jpg")
+	material.normal_scale = 0.48
+	material.uv1_scale = Vector3.ONE * 0.22
+	timber = ADVENTURE.material("wood").duplicate() as StandardMaterial3D
+	timber.albedo_color = Color("c8ad8e")
+	timber.uv1_triplanar = true
+	timber.uv1_world_triplanar = true
+	timber.uv1_scale = Vector3(0.69, 0.40, 0.69)
 	for area in LANDS:
 		var center := area.get_center()
 		var deck := Vector3(area.size.x, 1.0, area.size.y)
@@ -116,23 +127,32 @@ func _build_paths() -> void:
 		var visual := _solid(terrain, floor, deck, Color.WHITE)
 		visual.material_override = material
 	var bridge := _static(self, "Waldsteg")
-	var planks: Material = kit.textured("wood", Color("bb9571"))
 	for index in range(19):
 		var plank := kit.box(bridge, Vector3(172, 0.015, 77.0 + float(index)), Vector3(15.5, 0.025, 0.95), WOOD)
-		plank.material_override = planks
+		plank.material_override = timber
 	for x in [164.7, 179.3]:
 		kit.collision(bridge, Vector3(x, 0.65, 86), Vector3(0.30, 1.3, 20.0))
 		for z in [77.0, 83.0, 89.0, 95.0]:
-			kit.box(bridge, Vector3(x, 0.65, z), Vector3(0.23, 1.3, 0.23), WOOD).material_override = planks
-		kit.box(bridge, Vector3(x, 0.86, 86), Vector3(0.22, 0.20, 20.0), WOOD).material_override = planks
+			kit.box(bridge, Vector3(x, 0.65, z), Vector3(0.23, 1.3, 0.23), WOOD).material_override = timber
+		kit.box(bridge, Vector3(x, 0.86, 86), Vector3(0.22, 0.20, 20.0), WOOD).material_override = timber
 	for x in [168.2, 175.8]:
-		_solid(bridge, Vector3(x, 1.85, 98), Vector3(0.42, 3.7, 0.43), WOOD).material_override = planks
-	kit.box(bridge, Vector3(172, 3.60, 98), Vector3(8.0, 0.38, 0.6), WOOD).material_override = planks
+		_solid(bridge, Vector3(x, 1.85, 98), Vector3(0.42, 3.7, 0.43), WOOD).material_override = timber
+	kit.box(bridge, Vector3(172, 3.60, 98), Vector3(8.0, 0.38, 0.6), WOOD).material_override = timber
+	for x in [168.2, 175.8]:
+		kit.cylinder(bridge, Vector3(x, 2.76, 98.48), 0.175, 0.39, Color("c79357"), 12).material_override = ADVENTURE.material("brass")
+		kit.sphere(bridge, Vector3(x, 2.79, 98.52), Vector3(0.24, 0.31, 0.24), ORANGE, true)
 	_sign_at(self, "WALDHEIM", Vector3(172, 3.11, 98), TEAL)
 	_sign_at(self, "Waldheim · über den Steg", Vector3(165, 2.5, 65), ORANGE)
 	super._build_paths()
+	var path_material: Material = kit.textured("stone", Color("bcb091"))
 	for strip in get_node("OpenWorldPaths").get_children():
-		strip.material_override = kit.textured("stone", Color("bcb091"))
+		strip.material_override = path_material
+		if strip.name == "Path_waldsteg_0":
+			strip.hide()
+	for xz in [Vector2(68.3, 14.6), Vector2(102.8, 13.6)]:
+		var approach := kit.box(self, Vector3(172, 0.03, xz.x), Vector3(5.8, 0.04, xz.y), Color.WHITE)
+		approach.material_override = path_material
+		approach.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
 func _build_places() -> void:
@@ -188,6 +208,7 @@ func _build_woods() -> void:
 	var birch_transforms: Array[Transform3D] = []
 	var flowers: Array[Transform3D] = []
 	var rocks: Array[Transform3D] = []
+	var ferns: Array[Transform3D] = []
 	var solid_trees := _static(self, "WaldheimTrees")
 	var density := float(LumoQuality.budget().get("decor_density", 1.0))
 	for index in range(roundi(166 * clampf(density, 0.5, 1.0))):
@@ -206,10 +227,15 @@ func _build_woods() -> void:
 		if index % 2 == 0:
 			rocks.append(ADVENTURE.xf(at + Vector3(2, 0, 1), float(index) * 0.73, 0.55))
 		flowers.append(ADVENTURE.xf(at + Vector3(-1, 0, 0.9), float(index) * 0.7, 0.76))
+		if index % 4 != 0:
+			ferns.append(ADVENTURE.xf(at + Vector3(1.35, 0, 1.35), float(index) * 0.65, 1.2))
+	for at in [Vector3(126, 0, 126), Vector3(136, 0, 180), Vector3(222, 0, 121), Vector3(200, 0, 222), Vector3(228, 0, 219)]:
+		rocks.append(ADVENTURE.xf(at, at.z * 0.17, 1.8))
 	VILLAGE.batch(self, "WaldheimFichten", "tree_fir", tree_transforms, 156, true)
 	VILLAGE.batch(self, "WaldheimBirken", "tree_birch", birch_transforms, 156, true)
 	VILLAGE.batch(self, "WaldheimFindlinge", "rock_b", rocks, 100, false)
 	VILLAGE.batch(self, "WaldheimBlueten", "flowers", flowers, 75, false)
+	VILLAGE.batch(self, "WaldheimUnterholz", "bush", ferns, 88, false)
 
 
 func _reserved_ground(at: Vector3) -> bool:
@@ -234,15 +260,25 @@ func _hut(title: String, at: Vector3, roof_color: Color) -> void:
 	var hut := _static(self, title)
 	hut.position = at
 	kit.box(hut, Vector3(0, 0.025, 0), Vector3(8.0, 0.04, 7.4), Color.WHITE).material_override = kit.textured("stone")
-	_solid(hut, Vector3(0, 1.75, -3.3), Vector3(7.6, 3.0, 0.35), WOOD).material_override = kit.textured("wood")
+	_solid(hut, Vector3(0, 1.75, -3.3), Vector3(7.6, 3.0, 0.35), WOOD).material_override = timber
 	for x in [-3.65, 3.65]:
-		_solid(hut, Vector3(x, 1.7, 0), Vector3(0.35, 3.0, 6.9), WOOD).material_override = kit.textured("wood")
+		_solid(hut, Vector3(x, 1.7, 0), Vector3(0.35, 3.0, 6.9), WOOD).material_override = timber
 		var roof := kit.box(hut, Vector3(x * 0.55, 4.18, 0), Vector3(4.6, 0.28, 8.3), roof_color)
 		roof.rotation.z = -signf(x) * 0.43
 		kit.box(hut, Vector3(x * 0.96, 1.9, 3.52), Vector3(0.35, 3.2, 0.38), WOOD)
 		kit.box(hut, Vector3(x * 0.86, 0.75, 2.6), Vector3(1.25, 0.35, 1.2), WOOD)
+		for z in [-2.9, 2.9]:
+			kit.box(hut, Vector3(x * 0.97, 1.8, z), Vector3(0.42, 3.2, 0.38), WOOD).material_override = timber
+		for z in [-1.8, 0.0, 1.8]:
+			kit.box(hut, Vector3(x * 1.02, 1.85, z), Vector3(0.055, 0.075, 1.55), Color("abbf96"))
 	kit.box(hut, Vector3(0, 3.24, 3.48), Vector3(7.4, 0.35, 0.36), WOOD)
 	kit.box(hut, Vector3(0, 5.11, 0), Vector3(0.23, 0.20, 8.45), Color("714c32"))
+	kit.box(hut, Vector3(0, 1.08, -2.42), Vector3(4.8, 0.20, 1.35), WOOD).material_override = timber
+	for x in [-2.2, 2.2]:
+		kit.box(hut, Vector3(x, 0.51, -2.42), Vector3(0.22, 1.0, 1.20), WOOD)
+	for index in range(4):
+		var x := -1.4 + float(index) * 0.66
+		kit.box(hut, Vector3(x, 1.2, -2.36), Vector3(0.44, 0.12, 0.54), Color("c9ad71")).material_override = timber
 	_sign_at(self, title, at + Vector3(0, 2.82, 3.92), ORANGE)
 
 
@@ -264,8 +300,8 @@ func _build_station(data: Dictionary, at: Vector3) -> void:
 	exhibit.position = Vector3(0, 0, -1.9)
 	station.add_child(exhibit)
 	var furnishings := _static(exhibit, "Bench")
-	_solid(furnishings, Vector3(0, 0.47, 0), Vector3(6.4, 0.94, 1.31), WOOD).material_override = kit.textured("wood")
-	kit.box(exhibit, Vector3(0, 0.97, 0), Vector3(6.6, 0.16, 1.48), Color.WHITE).material_override = kit.textured("wood", Color("d4b383"))
+	_solid(furnishings, Vector3(0, 0.47, 0), Vector3(6.4, 0.94, 1.31), WOOD).material_override = timber
+	kit.box(exhibit, Vector3(0, 0.97, 0), Vector3(6.6, 0.16, 1.48), Color.WHITE).material_override = timber
 	for x in [-3.1, 3.1]:
 		kit.box(exhibit, Vector3(x, 0.78, 0.68), Vector3(0.11, 0.22, 0.05), TEAL, true)
 	var name_label := _sign_at(station, str(data.title), Vector3(0, 2.95, -2), ORANGE)
