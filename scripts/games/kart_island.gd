@@ -34,6 +34,8 @@ const JOYSTICK = preload("res://scripts/games/kart_joystick.gd")
 const RIVAL_ITEM_FX = preload("res://scripts/games/kart_rival_item_fx.gd")
 const RIVAL_RACECRAFT = preload("res://scripts/games/kart_rival_racecraft.gd")
 const RIVAL_RAMP_PLAN = preload("res://scripts/games/kart_rival_ramp_plan.gd")
+const RIVAL_DRIVING = preload("res://scripts/games/kart_rival_driving.gd")
+const CHILD_ASSIST = preload("res://scripts/games/kart_child_assist.gd")
 const OPPONENT_ROSTER = preload("res://scripts/games/lumo_opponent_roster.gd")
 const VISUAL_GRADE = preload("res://scripts/games/kart_visual_grade.gd")
 const SPEED_FX = preload("res://scripts/games/kart_speed_fx.gd")
@@ -2265,9 +2267,12 @@ func _drive_player(delta: float, axis: float, braking: float) -> void:
 		if absf(lane) > _road_width_at(float(road.distance)) * 0.48:
 			target *= _factor("offroad", 0.54)
 		# Beginner assistance nudges the steering at the shoulder; movement stays physical.
-		if difficulty == "gemuetlich" and absf(lane) > _road_width_at(float(road.distance)) * 0.31:
-			var correction: float = angle_difference(player_heading, _heading(float(road.distance)))
-			axis = clampf(axis - correction * 0.5 - signf(lane) * 0.30, -1.0, 1.0)
+		if difficulty == "gemuetlich":
+			axis = CHILD_ASSIST.edge_assist(
+				axis, lane, _road_width_at(float(road.distance)),
+				angle_difference(player_heading, _heading(float(road.distance))),
+				physical_velocity.dot((road.basis as Basis).x)
+			)
 		axis = _passage_steer_assist(axis, road)
 	var precision_limit: float = STUNT.SPEED_ZONE.speed_limit(world, previous_road_distance, kart_factors) if mode != "arena" and not airborne else INF
 	var approach_braking: bool = is_finite(precision_limit) and speed > precision_limit
@@ -2896,7 +2901,9 @@ func _collide_with_rail(road: Dictionary) -> void:
 		drive_fx.rail_contact(player, race_root.global_basis * (road_basis.x * side), into_wall, speed)
 	# Slide along the curb instead of bouncing off it and spinning out.
 	physical_velocity -= road_basis.x * side * into_wall * 1.08
-	speed *= clampf(1.0 - into_wall * 0.022, 0.80, 0.99)
+	# Entdecken: the rail guides like a soft cushion and costs only half the speed.
+	var rail_loss: float = 0.011 if difficulty == "gemuetlich" else 0.022
+	speed *= clampf(1.0 - into_wall * rail_loss, 0.90 if difficulty == "gemuetlich" else 0.80, 0.99)
 	var along: float = _heading(float(road.distance))
 	if absf(angle_difference(player_heading, along)) > PI / 2:
 		along += PI
@@ -3206,8 +3213,18 @@ func _drive_opponents(delta: float) -> void:
 		)
 		if is_instance_valid(item_ext):
 			target_lane += item_ext.rival_lane_bias(i)
+		# Entdecken: make room for the child coming from behind. All levels: a
+		# planned small mistake at some corners (runs wide or lifts off).
+		var courtesy: float = RIVAL_DRIVING.yield_lane(self, i, float(sampled.lateral), target_lane)
+		if courtesy < INF:
+			target_lane = courtesy
+		var slip: Dictionary = RIVAL_DRIVING.mistake(self, i, float(sampled.distance), delta)
+		if not slip.is_empty():
+			var edge: float = _wall_lateral_at(float(sampled.distance)) - 0.45
+			target_lane = clampf(target_lane + float(slip.lane), -edge, edge)
 		var local_gap: Vector3 = player.position - rival.position
 		_update_rival_item_tactics(i, local_gap, delta)
+		RIVAL_DRIVING.update_slipstream(self, i, delta)
 		target_lane = RIVAL_STUNTS.planned_loop_lane(self, i, float(sampled.distance), target_lane)
 		var passage_rule: Dictionary = PASSAGES.rival_control(
 			world, float(sampled.distance), absf(rival.motion_speed), elapsed, traffic, _traffic_player_entry,
@@ -3232,7 +3249,15 @@ func _drive_opponents(delta: float) -> void:
 		if opponent_boost_times[i] > 0.0:
 			# Leistungsteile der Rivalen (Turbo) wirken wie beim Kind; ohne Teile genau 1,32.
 			target_speed *= 1.0 + 0.32 * float(_rival_part_boost(i).power)
-		target_speed = minf(target_speed, RIVAL_RACECRAFT.corner_speed(bend, difficulty, rival.kart_style, i))
+		# Read the road ahead: brake in time for every corner, not at its entry.
+		target_speed = minf(
+			target_speed,
+			RIVAL_DRIVING.approach_speed(world, float(sampled.distance), difficulty, rival.kart_style, i)
+		)
+		if not slip.is_empty():
+			target_speed *= float(slip.speed)
+		if courtesy < INF:
+			target_speed *= 0.97
 		target_speed *= clampf(1.0 - absf(angle) * 0.33, 0.58, 1.0)
 		# Die Rampenplanung beschleunigt vom zuletzt GEPLANTEN Tempo aus, nicht vom
 		# gefahrenen: Gummiband/Nordlicht wirken unten genau einmal je Takt. Vorher
@@ -3270,6 +3295,13 @@ func _drive_opponents(delta: float) -> void:
 			var limited_target: float = minf(target_speed, precision_limit)
 			var braking_now: bool = float(rival.motion_speed) > limited_target
 			target_speed = move_toward(float(rival.motion_speed), limited_target, POWERTRAIN.acceleration(precision_factors, braking_now) * delta)
+		# Speed follows the kart's own drivetrain (no instant jumps); the brake
+		# lights show where a rival brakes.
+		var paced: Vector2 = RIVAL_DRIVING.envelope(
+			absf(float(rival.motion_speed)), target_speed, precision_factors, delta
+		)
+		target_speed = paced.x
+		rival.set_braking(paced.y)
 		var drive_velocity: Vector3 = world.surface_velocity(sampled, forward, target_speed)
 		rival.position += drive_velocity * delta
 		RIVAL_RACECRAFT.apply_contact_push(rival, delta)
