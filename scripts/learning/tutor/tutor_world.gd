@@ -253,6 +253,8 @@ func _build_stage() -> void:
 	add_child(split_blocks)
 	split_blocks.position = SPLIT_ORIGIN
 	fox = FOX.new()
+	# The tutor uses the recovered teaching rig; other game actors keep their original model.
+	fox.prefer_learning_model = true
 	fox.name = "NachhilfeLumo"
 	add_child(fox)
 	if fox.is_usable():

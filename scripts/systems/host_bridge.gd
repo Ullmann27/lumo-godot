@@ -80,6 +80,7 @@ static func validated_options(raw: Dictionary) -> Dictionary:
 			"memory",
 			"chess",
 			"quiz",
+			"stars",
 			"games",
 			"home"
 		]

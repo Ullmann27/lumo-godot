@@ -290,7 +290,9 @@ func _top_text(
 
 
 func _create_fox() -> Node3D:
-	return FOX.new()
+	var actor := FOX.new()
+	actor.prefer_learning_model = true
+	return actor
 
 
 func _build_stage() -> void:

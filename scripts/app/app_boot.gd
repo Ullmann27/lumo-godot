@@ -19,6 +19,7 @@ const COVER_BY_SCENE: Dictionary = {
 	"jump": "res://assets/kart/menu/lumo-world.webp",
 	"run": "res://assets/kart/menu/lumo-world.webp",
 	"skypost": "res://assets/skypost/cover.webp",
+	"stars": "res://assets/games/hub/stars.webp",
 }
 const TITLE_BY_SCENE: Dictionary = {
 	"kart": "LUMO KART",
@@ -31,6 +32,7 @@ const TITLE_BY_SCENE: Dictionary = {
 	"jump": "LUMO ABENTEUER",
 	"run": "LUMO LAUF",
 	"skypost": "LUMOS STERNENPOST",
+	"stars": "LUMO STERNENJAGD",
 	"learning": "LUMO LERNWERKSTATT",
 	"tutor": "NACHHILFE MIT LUMO",
 	"holo": "LUMOS HOLO-LERNRAUM",
@@ -88,7 +90,7 @@ func _ready() -> void:
 		_reduced_motion = _reduced_motion or bool(session.get_value("race", "reduced_motion", false))
 	var requested: String = str(options.get("scene", ""))
 	var target: String = requested if requested in [
-		"kart", "jump", "run", "skypost", "puzzle", "build", "settlement", "rhythm", "treasure", "world", "learning", "cards", "connect_four", "memory", "chess", "quiz", "home", "games"
+		"kart", "jump", "run", "skypost", "puzzle", "build", "settlement", "rhythm", "treasure", "world", "learning", "cards", "connect_four", "memory", "chess", "quiz", "stars", "home", "games"
 	] else "games"
 	# Die Lumo-Nachhilfe fährt über die geprüfte Lern-Route (Scope, Stimme,
 	# Rückkehr zur Aufgabe) und öffnet ihre eigene 3D-Szene.

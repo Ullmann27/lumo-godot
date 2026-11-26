@@ -1,0 +1,55 @@
+{
+  "character_sha256": "1694c5877f6a13144482545a53a721cd1ff62b238db7624281c5962d483023f3",
+  "props_sha256": "9628db6607c81ebd36c24b3c0b2960d3d6c7ffa57d5d2759776683010ed72c2a",
+  "triangles": 30116,
+  "bones": 65,
+  "clips_original": [
+    "agree_nod",
+    "celebrate",
+    "greeting_wave",
+    "idle",
+    "kart_jump",
+    "kart_seated",
+    "kart_steer_left",
+    "kart_steer_right",
+    "point_portal"
+  ],
+  "clips_added": [
+    "learn_celebrate",
+    "learn_encourage",
+    "learn_explain",
+    "learn_farewell",
+    "learn_idle_breathe",
+    "learn_interrupt",
+    "learn_listen",
+    "learn_nod",
+    "learn_point",
+    "learn_return_listen",
+    "learn_think",
+    "learn_unsure"
+  ],
+  "morphs": [
+    "blink",
+    "expression_smile",
+    "expression_surprise",
+    "viseme_A",
+    "viseme_E",
+    "viseme_FV",
+    "viseme_I",
+    "viseme_L",
+    "viseme_MBP",
+    "viseme_O",
+    "viseme_U"
+  ],
+  "props": [
+    "CounterBerry",
+    "LearningPodium",
+    "LetterTile",
+    "ShapeCircle",
+    "ShapeSquare",
+    "ShapeTriangle",
+    "TenBundle",
+    "TenFrameCell"
+  ],
+  "android_fps_measured": false
+}
