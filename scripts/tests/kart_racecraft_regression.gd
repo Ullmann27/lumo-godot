@@ -21,6 +21,17 @@ func _check(ok: bool, message: String) -> void:
 		push_error("[KartRacecraft] " + message)
 
 
+func _fastest_turbo_rival() -> float:
+	var rules: Dictionary = CATALOG.entry(CATALOG.DIFFICULTIES, "pro")
+	var fastest: float = 0.0
+	for kart in CATALOG.KARTS:
+		for index in range(CRAFT.STYLES.size()):
+			var cruise: float = CRAFT.cruise_speed(kart.id, rules, index)
+			var turbo: Dictionary = CRAFT.part_boost(kart.id, index, "pro")
+			fastest = maxf(fastest, cruise * (1.0 + 0.32 * float(turbo.power)))
+	return fastest
+
+
 func _run() -> void:
 	var styles: Dictionary = {}
 	for i in range(5):
@@ -110,16 +121,21 @@ func _run() -> void:
 	_check(game.opponent_distances[0] == float(layout.start) + 0.25, "Rejected aerial loop entry grants no progress")
 	game.opponents[0].remove_meta(FLIGHT.STATE_KEY)
 	var tested_panorama: bool = false
+	var fastest_turbo: float = _fastest_turbo_rival()
 	for kicker in game.world.action.kickers:
-		if bool(kicker.get("precision_jump", false)):
-			continue
-		var safe_launch: float = RAMP_PLAN.launch_speed(game.world, kicker)
-		if safe_launch <= 0.0:
-			continue
-		tested_panorama = true
 		var available: float = float(layout.start) - float(kicker.take_off)
+		if (
+			available <= 0.0 or not bool(kicker.get("hero_flight", false))
+			or bool(kicker.get("precision_jump", false))
+		):
+			continue
+		var launch_limit: float = RAMP_PLAN.launch_speed(game.world, kicker)
+		# A ramp moved further upstream may no longer need a planned brake.
+		# In that case check its real clearance at the fleet's fastest turbo.
+		var safe_launch: float = minf(launch_limit, fastest_turbo) if launch_limit > 0.0 else fastest_turbo
 		_check(PRECISION.landing_distance(safe_launch, kicker) <= available - 17.9, "Panorama plan lands with real ground before the loop")
-	_check(tested_panorama, "Production Sonnenhafen has a physically planned panorama approach")
+		tested_panorama = true
+	_check(tested_panorama, "Production Sonnenhafen has a panorama jump before the loop")
 	for i in range(game.opponents.size() - 1, 0, -1):
 		game.opponents[i].queue_free()
 	game.opponents.resize(1)
