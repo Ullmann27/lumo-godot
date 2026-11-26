@@ -520,7 +520,8 @@
      "dialog": "ole_thanks",
      "rewardCards": [
       "card_ole"
-     ]
+     ],
+     "requiresItem": "laternenglas"
     }
    ]
   },

@@ -269,7 +269,16 @@ func restore(raw: Variant) -> bool:
 	carrying = {}
 	if not carry.is_empty():
 		carrying = {"kind": str(carry.kind), "order": int(carry.get("order", -1))}
-	pending_lesson = lesson.duplicate(true)
+	pending_lesson = {}
+	if not lesson.is_empty():
+		pending_lesson = {
+			"version": 1,
+			"id": "school_numbers",
+			"requestId": str(lesson.requestId),
+			"subject": "Mathematik",
+			"grade": int(lesson.grade),
+			"returnGame": "world"
+		}
 	return true
 
 
@@ -297,8 +306,10 @@ static func _valid_request(lesson: Dictionary) -> bool:
 # --- Per frame -----------------------------------------------------------------------
 
 
+## The town lives (residents, light, boats) even when a damaged save section
+## keeps missions and trading closed; nothing of that section is changed then.
 func tick(at: Vector3, driving: bool, delta: float) -> void:
-	if not unlocked() or bool(world.get("paused")):
+	if not is_instance_valid(crowd) or not is_instance_valid(town) or bool(world.get("paused")):
 		return
 	var step := clampf(delta, 0.0, 0.1)
 	var routines = world.open_world.routines if is_instance_valid(world.get("open_world")) else null
@@ -308,7 +319,7 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 		clock = fposmod(clock + step, DAY_SECONDS)
 	hour = BRAIN.hour_of(clock, DAY_SECONDS)
 	var in_region := region_contains(at)
-	if in_region != was_in_region:
+	if in_region != was_in_region and unlocked():
 		was_in_region = in_region
 		world._update_mission()
 		if in_region:
@@ -318,6 +329,8 @@ func tick(at: Vector3, driving: bool, delta: float) -> void:
 	inside = town.update_focus(at)
 	town.tick(step, evening)
 	_update_daylight(step)
+	if not unlocked():
+		return
 	_update_crate()
 	var target := tracked_route()
 	if is_instance_valid(quest_marker):
@@ -599,6 +612,16 @@ func _talk(figure_id: String) -> void:
 	if brain != null:
 		brain.remember("met")
 	var steps: Array[Dictionary] = model.steps_for_figure(figure_id)
+	var needed := str(steps[0].step.get("requiresItem", "")) if not steps.is_empty() else ""
+	if not needed.is_empty() and int(inventory.get(needed, 0)) <= 0:
+		# The step needs a real item from the shop; nothing is handed over yet.
+		var title := str(ITEMS.get(needed, {}).get("title", needed))
+		world._open_dialog(
+			"%s · %s" % [str(brain.profile.name), str(model.mission(str(steps[0].mission)).title)],
+			"Hast du schon ein %s? Du bekommst es beim Hafenkrämer bei Greta." % title
+		)
+		world.modal_box.add_child(KIT.button("Weiter erkunden", world._close_dialog, 180))
+		return
 	if not steps.is_empty():
 		dialog_mission = str(steps[0].mission)
 		dialog_step = str(steps[0].step.id)
@@ -783,9 +806,13 @@ func _choose(index: int) -> void:
 				_end_conversation()
 				return
 			var mission_id := dialog_mission
+			var step_data: Dictionary = model.current_step(mission_id)
 			var result: Dictionary = model.complete(
 				mission_id, dialog_step, world.player.position, bool(world.driving)
 			)
+			var used := str(step_data.get("requiresItem", ""))
+			if bool(result.ok) and not used.is_empty():
+				inventory[used] = maxi(0, int(inventory.get(used, 0)) - 1)
 			_end_conversation()
 			if not bool(result.ok):
 				world.status_label.text = "Komm noch etwas näher und sprich in Ruhe mit der Figur."
