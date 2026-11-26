@@ -1,5 +1,5 @@
 extends RefCounted
-## Leistungsteile der Garage: neun Steckplätze mit 65 Optionen inklusive Serie.
+## Leistungsteile der Garage: neun Steckplätze mit geprüften Fahrunterschieden.
 ##
 ## Jede Variante hat einen klaren Charakter und eine Abwägung – keine ist nur „besser“.
 ## Sie verändert die Fahrfaktoren aus kart_fleet.multipliers(): „mul“ multipliziert,
@@ -15,6 +15,7 @@ extends RefCounted
 
 const LEGACY_FILE := "res://assets/kart/production/parts/kart_parts.glb"
 const SLOT_FILE := "res://assets/kart/production/parts/parts_%s.glb"
+const WORKSHOP_FILE := "res://assets/kart/production/parts/parts_workshop.glb"
 const SLOTS: Array[String] = [
 	"engine", "tires", "wing", "booster", "suspension", "steering", "brakes", "gearbox", "ballast"
 ]
@@ -695,7 +696,51 @@ static func catalog() -> Dictionary:
 		var additions := _evolution_parts()
 		for slot in SLOTS:
 			_catalog[slot].append(additions[slot])
+		var workshop_parts := _workshop_parts()
+		for slot in workshop_parts:
+			for entry in workshop_parts[slot]:
+				entry["file"] = WORKSHOP_FILE
+				_catalog[slot].append(entry)
 	return _catalog
+
+
+static func _workshop_parts() -> Dictionary:
+	return {
+		"engine": [
+			_part("engine", "berg", "Bergmotor", 8, "Engine_Torque",
+				{"accel": 1.065, "speed": 0.969}, {"offroad": 0.065},
+				"Zieht beim Start und im Gelände besser. Auf der Geraden ist das Endtempo niedriger.",
+				"Kraft fürs Gelände"),
+		],
+		"tires": [
+			_part("tires", "touring", "Tourenreifen", 6, "Tire_Touring",
+				{"speed": 1.018, "brake": 0.91, "grip": 0.985}, {},
+				"Rollt auf der Geraden schneller. Der Bremsweg wird länger.",
+				"Rollt schneller"),
+			_part("tires", "sand", "Sandreifen", 8, "Tire_Sand",
+				{"speed": 0.96}, {"offroad": 0.12},
+				"Rollt neben der Fahrbahn schneller. Auf Asphalt ist das Endtempo niedriger.",
+				"Hilft abseits der Straße"),
+			_part("tires", "kies", "Kiesreifen", 8, "Tire_Gravel",
+				{"grip": 1.03, "drift_charge": 0.89, "brake": 1.06}, {"offroad": 0.045},
+				"Bremst kürzer und rollt im Gelände schneller. Der Drift-Turbo lädt langsamer.",
+				"Bremst auch im Gelände"),
+			_part("tires", "lamellen", "Lamellenreifen", 8, "Tire_Winter",
+				{"brake": 1.12, "grip": 1.06, "speed": 0.951}, {},
+				"Bremst kürzer und rutscht in der Kurve weniger. Auf der Geraden sinkt das Endtempo.",
+				"Kurzer Bremsweg"),
+		],
+		"wing": [
+			_part("wing", "abriss", "Hecklippe", 6, "Wing_Tail",
+				{"speed": 1.012, "grip": 0.91}, {},
+				"Fährt auf der Geraden schneller. Beim Einlenken rutscht das Kart mehr.",
+				"Mehr Tempo geradeaus"),
+			_part("wing", "sprung", "Sprungflügel", 8, "Wing_Jump",
+				{"air_turn": 1.38, "speed": 0.977}, {},
+				"Lenkt im Sprung stärker. Auf der Geraden fährt das Kart etwas langsamer.",
+				"Lenkt im Sprung"),
+		],
+	}
 
 
 static func is_slot(slot: String) -> bool:

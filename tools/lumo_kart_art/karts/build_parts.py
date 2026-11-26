@@ -632,12 +632,14 @@ THUMB_CAMERA = {
 }
 
 
-def render_thumbs(roots):
+def render_thumbs(roots, denoise=None):
     thumbs = OUT / "thumbs"
     thumbs.mkdir(parents=True, exist_ok=True)
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 48
+    if denoise is not None:
+        scene.cycles.use_denoising = denoise
     scene.cycles.device = "CPU"
     scene.render.film_transparent = True
     scene.render.resolution_x = 256

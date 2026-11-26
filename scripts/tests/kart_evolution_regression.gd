@@ -70,8 +70,8 @@ func _catalogue_and_combinations() -> void:
         _check(added.id == NEW_PARTS[slot] and int(added.cost) == 0, "new free alternative " + slot)
         _check(ResourceLoader.exists(added.file), "real model source " + slot)
         _check(ResourceLoader.exists(added.thumb), "thumbnail source " + slot)
-    _check(option_count == 65, "65 options, including nine factory choices")
-    _check(CATALOG.combination_count() == 52706752, "exact number of independent loadouts")
+    _check(option_count == 72, "72 options, including nine factory choices")
+    _check(CATALOG.combination_count() == 112943040, "exact number of independent loadouts")
     var base := FLEET.multipliers(FLEET.base_stats("comet"), FLEET.entry("comet").traits)
     _check(CATALOG.apply(base, {}) == base, "stock factors remain exactly unchanged")
     # Independent positive products have their exact extrema at the per-slot

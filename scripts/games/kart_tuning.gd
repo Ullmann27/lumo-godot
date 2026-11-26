@@ -31,6 +31,21 @@ const PAINTS: Array[Dictionary] = [
 	{"id": "perle", "name": "Perlweiß", "cost": 10, "paint": Color("e6edf6"), "trim": Color("2b5aa8"), "accent": Color("ff8a2c")},
 	{"id": "nacht", "name": "Nachtschwarz", "cost": 10, "paint": Color("12151d"), "trim": Color("7f8aa0"), "accent": Color("5fe3ff")},
 	{"id": "gold", "name": "Goldglanz", "cost": 20, "paint": Color("d9a52a"), "trim": Color("fff4cf"), "accent": Color("1d3e8a")},
+	{"id": "kupfer", "name": "Kupfer", "cost": 4, "paint": Color("9a512c"), "trim": Color("eee1cb"), "accent": Color("46d0bb")},
+	{"id": "jade", "name": "Jade", "cost": 4, "paint": Color("326b46"), "trim": Color("e0ed9c"), "accent": Color("fbb84a")},
+	{"id": "karmin", "name": "Karmin", "cost": 6, "paint": Color("77293d"), "trim": Color("d4a688"), "accent": Color("ff9265")},
+	{"id": "koralle", "name": "Koralle", "cost": 4, "paint": Color("f07258"), "trim": Color("33234a"), "accent": Color("ffd47a")},
+	{"id": "himmel", "name": "Himmelblau", "cost": 2, "paint": Color("73bee0"), "trim": Color("174269"), "accent": Color("ffe29b")},
+	{"id": "ultramarin", "name": "Ultramarin", "cost": 4, "paint": Color("2944a5"), "trim": Color("d1eaf1"), "accent": Color("fab041")},
+	{"id": "lagune", "name": "Lagune", "cost": 4, "paint": Color("096079"), "trim": Color("dedfff"), "accent": Color("71e9d2")},
+	{"id": "lavendel", "name": "Lavendel", "cost": 4, "paint": Color("a899d6"), "trim": Color("563757"), "accent": Color("fff0bb")},
+	{"id": "brombeere", "name": "Brombeere", "cost": 6, "paint": Color("622567"), "trim": Color("f1c3cd"), "accent": Color("adf290")},
+	{"id": "malve", "name": "Malve", "cost": 4, "paint": Color("b35b77"), "trim": Color("ffdfbe"), "accent": Color("92e4da")},
+	{"id": "tanne", "name": "Tannengrün", "cost": 4, "paint": Color("153b36"), "trim": Color("f2dd9e"), "accent": Color("f07d56")},
+	{"id": "limette", "name": "Limette", "cost": 2, "paint": Color("92b929"), "trim": Color("103631"), "accent": Color("e2f1a0")},
+	{"id": "creme", "name": "Creme", "cost": 4, "paint": Color("edd9ad"), "trim": Color("914b39"), "accent": Color("68a7b3")},
+	{"id": "schiefer", "name": "Schiefer", "cost": 6, "paint": Color("48596b"), "trim": Color("e0e1cc"), "accent": Color("ff9b52")},
+	{"id": "bernstein", "name": "Bernstein", "cost": 4, "paint": Color("e99829"), "trim": Color("345476"), "accent": Color("fff0bf")},
 ]
 const RIMS: Array[Dictionary] = [
 	{"id": "chrom", "name": "Chrom", "cost": 0, "color": Color("c9d6e6")},
@@ -46,11 +61,16 @@ const NEONS: Array[Dictionary] = [
 	{"id": "gruen", "name": "Grün", "cost": 4, "color": Color("7dff7a")},
 	{"id": "orange", "name": "Orange", "cost": 4, "color": Color("ff9a3c")},
 	{"id": "weiss", "name": "Weiß", "cost": 4, "color": Color("f2fbff")},
+	{"id": "rot", "name": "Rot", "cost": 4, "color": Color("ff4549")},
+	{"id": "violett", "name": "Violett", "cost": 4, "color": Color("ab78ff")},
+	{"id": "blau", "name": "Blau", "cost": 4, "color": Color("4b77ff")},
+	{"id": "goldgelb", "name": "Goldgelb", "cost": 4, "color": Color("ffe358")},
+	{"id": "mint", "name": "Mint", "cost": 4, "color": Color("3affb1")},
+	{"id": "eisblau", "name": "Eisblau", "cost": 4, "color": Color("a9ceff")},
 ]
 const KINDS: Array[String] = ["paint", "rims", "neon"]
-## Anbauteile (nur Aussehen, kostenlos, schon bei 0 Sternen): Radaufsätze und Auspuffblenden.
-## Serie ist immer wählbar. Die Teile liegen in assets/kart/production/parts/kart_parts.glb
-## (tools/lumo_kart_art/karts/build_parts.py), „node“ ist der Knotenname dort.
+## Radaufsätze und Auspuffblenden sind kostenlose Optikteile.
+## „node“ ist der Knotenname im angegebenen GLB, ohne „file“ gilt kart_parts.glb.
 const WHEEL_COVERS: Array[Dictionary] = [
 	{"id": "serie", "name": "Serie", "cost": 0, "node": ""},
 	{"id": "turbine", "name": "Turbinenrad", "cost": 0, "node": "WheelCover_Turbine"},
@@ -60,6 +80,11 @@ const EXHAUSTS: Array[Dictionary] = [
 	{"id": "serie", "name": "Serie", "cost": 0, "node": ""},
 	{"id": "rakete", "name": "Raketendüse", "cost": 0, "node": "ExhaustTip_Rocket"},
 	{"id": "doppel", "name": "Doppelrohr", "cost": 0, "node": "ExhaustTip_Twin"},
+	{"id": "rally", "name": "Rallyrohr", "cost": 0, "node": "ExhaustTip_Rally", "file": PART_CATALOG.WORKSHOP_FILE},
+	{"id": "schiefer", "name": "Sechskantblende", "cost": 0, "node": "ExhaustTip_Slate", "file": PART_CATALOG.WORKSHOP_FILE},
+	{"id": "kupfer", "name": "Kupferrohr", "cost": 0, "node": "ExhaustTip_Copper", "file": PART_CATALOG.WORKSHOP_FILE},
+	{"id": "gitter", "name": "Gitterdüse", "cost": 0, "node": "ExhaustTip_Vent", "file": PART_CATALOG.WORKSHOP_FILE},
+	{"id": "versatz", "name": "Versetzte Doppelblende", "cost": 0, "node": "ExhaustTip_Slash", "file": PART_CATALOG.WORKSHOP_FILE},
 ]
 ## Alle Steckplätze der Garage: zuerst die neun Leistungsteile (kart_part_catalog.SLOTS),
 ## dann die zwei Optik-Teile.
