@@ -79,40 +79,42 @@ static func mountain() -> ArrayMesh:
 	], 11, 0.26)
 
 
-## Drawn as a single opaque surface. The ledges descend unevenly towards the
-## sea to give the headland a skyline that reads through coastal haze.
+## A long windward cliff, a split ridgeline and a shallow lee slope. The
+## outer rows and the two headlands descend below the harbour waterline.
 static func coastal_headland() -> ArrayMesh:
-	const SIDES := 16
-	var terraces: Array[Vector2] = [
-		Vector2(1.0, -0.08), Vector2(0.93, 0.13), Vector2(0.87, 0.37),
-		Vector2(0.78, 0.43), Vector2(0.73, 0.65), Vector2(0.62, 0.73),
-		Vector2(0.41, 0.93), Vector2(0.23, 0.98), Vector2(0.0, 1.0),
-	]
-	var strata: Array[Color] = [
-		Color("80786c"), Color("a09a86"), Color("d4c5a8"),
-		Color("a49682"), Color("cabda4"), Color("a3987b"),
-		Color("b7b296"), Color("828f78"), Color("7d8e75"),
-	]
-	var surface := SurfaceTool.new()
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for ring in range(terraces.size() - 1):
-		var winding := [0, 1, 2] if ring == terraces.size() - 2 else [0, 1, 2, 1, 3, 2]
-		for side in SIDES:
-			for index in winding:
-				var layer: int = ring + (index >> 1)
-				var theta := float(posmod(side + index % 2, SIDES)) * TAU / SIDES
-				var step := terraces[layer]
-				var radius := step.x * (0.94 + 0.08 * cos(theta * 3.0) + 0.06 * sin(theta * 5.0))
-				var tilt := (cos(theta + 0.4) * 0.16 + sin(theta * 3.0 + 0.8) * 0.06) * step.x
-				surface.set_color(strata[layer])
-				surface.add_vertex(Vector3(
-					cos(theta) * radius + step.y * 0.18,
-					step.y * (0.82 + tilt),
-					sin(theta) * radius
-				))
-	surface.generate_normals()
-	surface.index()
-	return surface.commit()
+	# Columns run along the coast. A notch separates the two main outcrops.
+	var heights := PackedFloat32Array([0.0, 0.13, 0.20, 0.40, 0.54, 0.50, 0.68, 0.91, 0.78, 0.43, 0.51, 0.76, 0.64, 0.39, 0.18, 0.0])
+	var widths := PackedFloat32Array([0.03, 0.34, 0.31, 0.42, 0.62, 0.53, 0.62, 0.77, 0.68, 0.51, 0.63, 0.72, 0.55, 0.46, 0.28, 0.03])
+	# Across the ridge, first the submerged toe and wave-cut ledge, then
+	# the fractured cliff face and finally the longer inland descent.
+	var section := PackedVector2Array([
+		Vector2(-1.0, 0.0), Vector2(-0.86, 0.20), Vector2(-0.66, 0.29),
+		Vector2(-0.56, 0.87), Vector2(-0.27, 1.0), Vector2(0.15, 0.78),
+		Vector2(0.57, 0.37), Vector2(1.0, 0.0),
+	])
+	var vertices := PackedVector3Array()
+	for column in heights.size():
+		var fraction := float(column) / (heights.size() - 1)
+		var centre := 0.11 * sin(fraction * 9.1) + 0.13 * sin(fraction * 4.3)
+		for row in section.size():
+			var cross_section := section[row]
+			var erosion := sin(float(column) * 2.8 + float(row) * 1.9) * 0.055
+			vertices.append(Vector3(
+				lerpf(-1.19, 1.19, fraction),
+				-0.09 + heights[column] * cross_section.y * (1.0 + erosion),
+				centre + (cross_section.x + erosion) * widths[column]
+			))
+	var mesh := SurfaceTool.new()
+	mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for column in range(heights.size() - 1):
+		for row in range(section.size() - 1):
+			var a := column * section.size() + row
+			var b := a + section.size()
+			for index in [a, b, a + 1, b, b + 1, a + 1]:
+				mesh.add_vertex(vertices[index])
+	mesh.generate_normals()
+	mesh.index()
+	return mesh.commit()
 
 
 static func sail() -> ArrayMesh:

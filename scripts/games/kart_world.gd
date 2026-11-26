@@ -744,6 +744,10 @@ func _flush_instances() -> void:
 			var basalt := ShaderMaterial.new()
 			basalt.shader = preload("res://assets/shaders/kart_basalt.gdshader")
 			node.material_override = basalt
+		if group.kind == "coastal_headland":
+			var limestone := ShaderMaterial.new()
+			limestone.shader = preload("res://assets/shaders/kart_coastal_headland.gdshader")
+			node.material_override = limestone
 		if group.kind=="premium_rail":
 			# Unique PBR metal material so cached generic primitives stay unchanged.
 			material = material.duplicate()
@@ -1080,7 +1084,7 @@ func _terrain() -> void:
 				relocated_mountains += 1
 			if track_id == "sonnenhafen":
 				var orientation := Basis(Vector3.UP, 0.65 - angle)
-				_prop("coastal_headland", at, mountain_size, Color("b9cbd2"), orientation)
+				_prop("coastal_headland", at, mountain_size, Color.WHITE, orientation)
 			else:
 				_prop("mountain", at, mountain_size, Color("7d99ae") if track_id == "bergwelt" else Color("72a3ad"))
 			if track_id=="bergwelt": _prop("mountain",at+Vector3.UP*h*0.58,Vector3(16,h*0.43,15),Color("eaf4f4"))

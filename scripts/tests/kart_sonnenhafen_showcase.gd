@@ -17,7 +17,15 @@ func _initialize() -> void:
 
 
 func _setup() -> void:
-	root.size = Vector2i(1280, 720)
+	var preview := "--menu-preview" in OS.get_cmdline_user_args()
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--out="):
+			out_dir = argument.trim_prefix("--out=")
+	if preview:
+		LumoQuality.set_graphics_choice("high", false)
+		root.size = Vector2i(1920, 1080)
+	else:
+		root.size = Vector2i(1280, 720)
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	world = WORLD.new()
 	root.add_child(world)
@@ -40,6 +48,12 @@ func _setup() -> void:
 		["05_harbour_run", 0.82, 0.7, Vector3(-1.8, 4.0, 9.4), 17.0],
 		["06_overview", 0.0, 0.0, Vector3.ZERO, 0.0],
 	]
+	if preview:
+		shots = [
+			["01_harbor_launch", 0.068, 0.2, Vector3(-2.4, 6.1, 14.0), 28.0],
+			["02_harbor_turn", 0.177, -0.4, Vector3(3.0, 8.2, 17.0), 30.0],
+			["03_sea_bridge", 0.429, 0.2, Vector3(-2.4, 6.2, 13.0), 22.0],
+		]
 	_place()
 
 
