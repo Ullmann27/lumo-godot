@@ -1032,7 +1032,10 @@ func _restore_tilt() -> void:
 ## Extra camera field of view (degrees) for this frame; 0 with reduced motion.
 ## Added on top of the race's smoothed FOV (never smoothed from), like fx.camera_fov_kick().
 func camera_fov_kick() -> float:
-	return 0.0 if reduced_motion else fov_punch + camera_rig.fov
+	if reduced_motion:
+		return 0.0
+	# The turbo's own punch already widens the view: the pull adds only what is left.
+	return fov_punch + camera_rig.fov * (1.0 - clampf(fov_punch / 5.0, 0.0, 1.0))
 
 
 ## Camera body language of this frame (camera-local metres); zero with reduced motion.
