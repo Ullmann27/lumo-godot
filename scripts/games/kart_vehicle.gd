@@ -119,6 +119,11 @@ var _menu_driver_behavior_remaining := 0.0
 ## Procedural rival-driver reactions (Lumo uses his rigged animation adapter).
 var hit_reaction: float = 0.0
 var brief_cheer_time: float = 0.0
+## Federung des Aufbaus (Nicken, Rollen, Hub) als gedämpfte Feder; nur Optik.
+var _body_motion_state := Vector3.ZERO
+var _body_velocity := Vector3.ZERO
+var _body_previous_speed := 0.0
+var _body_was_airborne := false
 
 
 func _ready() -> void:
@@ -2622,6 +2627,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(production_vehicle):
 		production_vehicle.apply_motion(wheel_spin_phase, motion_steer)
 		production_vehicle.set_braking(motion_brake)
+		_update_body_motion(delta)
 	# A restrained exhaust pilot light gives cruising karts a sense of speed.
 	# Full plasma remains boost-only; reduced-motion keeps the original policy.
 	var cruising_exhaust: bool = motion_speed > 7.0 and not reduced_motion and not far_detail
@@ -2720,6 +2726,37 @@ func _process(delta: float) -> void:
 	if celebration_place > 0 or celebration_place == -1:
 		_apply_celebration(delta)
 	_solve_steering_grips(delta)
+
+
+## Bremsen taucht die Nase ein, Gas lässt das Heck einfedern, Kurven rollen den Aufbau nach
+## außen, Landungen federn nach. Ruhige Darstellung (reduced_motion) hält den Aufbau still.
+func _update_body_motion(delta: float) -> void:
+	var step := clampf(delta, 0.0, 0.1) if is_finite(delta) else 0.0
+	if step <= 0.0:
+		return
+	var accel := (motion_speed - _body_previous_speed) / step
+	_body_previous_speed = motion_speed
+	var target := Vector3.ZERO
+	if reduced_motion:
+		_body_motion_state = Vector3.ZERO
+		_body_velocity = Vector3.ZERO
+	else:
+		var pace := clampf(absf(motion_speed) / 18.0, 0.0, 1.4)
+		var rolling := clampf(absf(motion_speed) / 4.0, 0.0, 1.0)
+		target.x = clampf(accel * 0.0015, -0.022, 0.022) - motion_brake * 0.018 * rolling
+		target.y = clampf(motion_steer, -1.0, 1.0) * 0.034 * pace
+		target.z = 0.018 if driver_airborne else sin(animation_time * 19.0) * 0.0025 * minf(pace, 1.0)
+		if _body_was_airborne and not driver_airborne:
+			_body_velocity.z -= 0.45
+	_body_was_airborne = driver_airborne
+	var remaining := step
+	while remaining > 0.0:
+		var h := minf(remaining, 1.0 / 120.0)
+		_body_velocity += ((target - _body_motion_state) * 150.0 - _body_velocity * 13.0) * h
+		_body_motion_state += _body_velocity * h
+		remaining -= h
+	var body := _body_motion_state
+	production_vehicle.set_body_motion(body.x, body.y, body.z)
 
 
 func _solve_steering_grips(delta: float) -> void:
