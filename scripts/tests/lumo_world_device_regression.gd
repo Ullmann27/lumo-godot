@@ -156,7 +156,7 @@ func _vehicle_transition() -> void:
 	await _settle()
 	scene._toggle_vehicle()
 	_check(scene.driving, "production entry transitions into the kart")
-	await _settle()
+	_check(await _land_kart(scene), "production physics establishes solid ground before testing exit")
 	scene.player.velocity = Vector3(4, -8, 2)
 	scene.airborne_time = 1.3
 	scene.last_safe = Vector3(0, 0.1, 6)
@@ -194,7 +194,7 @@ func _vehicle_transition() -> void:
 	await _settle()
 	_check(scene._safe_vehicle_exit() == null, "no-floor exit is rejected by real ground queries")
 	scene.kart_body.position = parked
-	await _settle()
+	_check(await _land_kart(scene), "the kart has real floor contact after being restored")
 	scene._toggle_vehicle()
 	_check(not scene.driving, "removing the obstruction restores a normal exit")
 	_check(not FileAccess.file_exists(village_path), "walking and kart transitions do not create or overwrite a village economy save")
@@ -247,6 +247,17 @@ func _vehicle_transition() -> void:
 	await _settle()
 	DirAccess.remove_absolute(world_path)
 	DirAccess.remove_absolute(village_path)
+
+
+## The fixture pauses automatic physics to isolate the transitions. Advance
+## the real drive controller explicitly before expecting a grounded exit.
+func _land_kart(scene: Node) -> bool:
+	for index in range(30):
+		await physics_frame
+		scene._drive_tick(Vector2.ZERO, 1.0 / 60.0)
+		if scene.kart_body.is_on_floor():
+			return true
+	return false
 
 
 func _settle() -> void:
