@@ -695,11 +695,17 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> v
 		y = actions.position.y
 		button_height = actions.size.y
 		gap = 4.0 * ui_scale
-		stats_width = 56.0 * ui_scale
-		open_width = actions.size.x - stats_width - gap
 		for button in [open_button, stats_button]:
 			button.custom_minimum_size.y = button_height
 			button.add_theme_font_size_override("font_size", roundi(14.0 * ui_scale))
+		# "Werte" keeps its full word; "Teile wechseln" takes the rest of the row.
+		stats_width = maxf(56.0 * ui_scale, _text_width(stats_button))
+		open_width = actions.size.x - stats_width - gap
+		if open_width < _text_width(open_button):
+			for button in [open_button, stats_button]:
+				button.add_theme_font_size_override("font_size", roundi(12.0 * ui_scale))
+			stats_width = maxf(56.0 * ui_scale, _text_width(stats_button))
+			open_width = actions.size.x - stats_width - gap
 	var row_width := open_width + stats_width + gap
 	if row.size.x > 0.0 and row_width > row.size.x:
 		var fit := row.size.x / row_width
@@ -727,6 +733,15 @@ func relayout(ui_scale: float, stage: Rect2, drawer: Rect2, actions: Rect2) -> v
 	_drawer = drawer
 	_apply_tile_size()
 	_sync()
+
+
+## Width of the whole label plus the button's own padding (style margins).
+func _text_width(button: Button) -> float:
+	var font_size := button.get_theme_font_size("font_size")
+	var font := button.get_theme_font("font")
+	var text := font.get_string_size(button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
+	var style := button.get_theme_stylebox("normal")
+	return text.x + style.get_margin(SIDE_LEFT) + style.get_margin(SIDE_RIGHT) + 10.0 * _scale
 
 
 func _apply_tile_size() -> void:

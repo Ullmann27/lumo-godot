@@ -140,9 +140,9 @@ Felgen, Neon; Anbauteile werden sichtbar montiert (`apply_parts`, mit Einflug-An
 
 - **Stehende Tierfiguren** mit 20 Clips: `assets/characters/animals/<id>/figure.glb`,
   Details und Clipnamen in `docs/qa/figuren_clipbibliothek.md`. Konzertpublikum steht jetzt und
-  schaut zur Bühne (`rhythm_concert_art.gd`). Offene Welt (Team C) kann über
-  `LumoOpponentRoster.figure_model_path(id)` umstellen; `lumo_world_open_world.gd` wurde nicht
-  angefasst.
+  schaut zur Bühne (`rhythm_concert_art.gd`). Die offene Welt nutzt die stehenden Figuren
+  (kleine Änderung in `lumo_world_open_world.gd`: Pfad + Gehtempo); die vorhandenen
+  Routinen schalten den echten Geh-Clip damit selbst frei.
 - **Federung der Produktions-Karts**: neuer Knoten `SprungBody` unter dem Fahrwerk
   (`kart_production_vehicle.gd`); darauf hängen Karosserie-Hülle (alle LODs, Meshy-Nahhülle,
   Aufkleber), `Coachwork`, Zierleisten und Aufbauteile aus der Werkstatt (Motor, Flügel,
@@ -152,6 +152,11 @@ Felgen, Neon; Anbauteile werden sichtbar montiert (`apply_parts`, mit Einflug-An
   (ca. 1,7° bei vollem Einschlag und hohem Tempo), in der Luft federt der Aufbau aus und
   nach der Landung ein. Ruhige Darstellung (reduced motion) und Pause halten ihn still.
   Test `kart_body_motion_regression` (144 Prüfungen), Bildfolge `kart_body_motion_capture.gd`.
+- **Garage, Fold innen (2176 × 1812)**: Werkzeugleiste über der Kartliste war auf „R ⌄“ und
+  „We…“ gekürzt → bei hohem Querformat zweizeilig („Rundum ansehen“, darunter „Teile
+  wechseln“ + „Werte“ mit gemessener Breite; `kart_spatial_menu.gd`, `kart_parts_bay.gd`).
+  Werkstatt-Vorschau schnitt das Kart seitlich ab → Kamera hält bei hoher Bühne die Breite
+  (`kart_workshop.gd`).
 - Nicht geändert: Radmodelle und -größen je Kart (die Meshy-Radhäuser sind auf das
   gemeinsame Rad gepasst; größere Räder bräuchten neue Hüllen), Bremslicht-Logik
   (funktioniert bereits), Fahrerpositionen (Prüfungen bestehen: Griffe < 1 mm bei Rivalen).

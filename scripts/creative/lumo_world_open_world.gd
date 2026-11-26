@@ -283,7 +283,11 @@ func _build_figures() -> void:
 	var level := 1 if PerformanceManager.get_profile_name() != "low" else 2
 	for entry in model.content.figures:
 		var id := str(entry.id)
-		var path := ROSTER.racing_model_path(id, level)
+		# Stehende Figur mit echtem Geh-Clip (Team B2); die Kart-Fahrer sind in die Sitzpose
+		# eingepasst und bleiben nur der Rückfall.
+		var path := ROSTER.figure_model_path(id)
+		if path.is_empty():
+			path = ROSTER.racing_model_path(id, level)
 		if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
 			push_warning("[LumoOpenWorld] Figur fehlt: " + id)
 			continue
@@ -312,6 +316,11 @@ func _build_figures() -> void:
 			var animation_player := node as AnimationPlayer
 			animation_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 			figure_walk_clips[id] = ROUTINES.walk_clip(animation_player)
+			# Schrittlänge passend zum Gehtempo der Routine: Füße gleiten nicht.
+			var walk_info: Variant = (ROSTER.figure_info(id).get("clips", {}) as Dictionary).get("walk")
+			if walk_info is Dictionary and float(walk_info.get("speed_mps", 0.0)) > 0.0:
+				var natural := float(walk_info.speed_mps) * model_node.scale.x
+				animation_player.set_meta("walk_rate", ROUTINES.WALK_SPEED / natural)
 			figure_gesture_slots[id] = 0
 			if animation_player.has_animation("idle"):
 				animation_player.get_animation("idle").loop_mode = Animation.LOOP_LINEAR
@@ -449,6 +458,8 @@ func _play_figure_clip(figure_id: String, clip: String, loop: bool) -> void:
 	if loop and str(player.current_animation) == clip and player.is_playing():
 		return
 	player.clear_queue()
+	var walking := clip == str(figure_walk_clips.get(figure_id, ""))
+	player.speed_scale = float(player.get_meta("walk_rate", 1.0)) if walking else 1.0
 	player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
 	player.play(clip, 0.2)
 	if not loop and player.has_animation("idle"):

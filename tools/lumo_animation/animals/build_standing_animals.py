@@ -255,6 +255,12 @@ def clip_table(sk):
         'enter_vehicle': (1.6, False, 30, lambda t: AM.vehicle_pose(sk, t, True)),
         'drive': (2.0, True, 15, lambda t: AM.drive_pose(sk, t)),
         'exit_vehicle': (1.4, False, 30, lambda t: AM.vehicle_pose(sk, t, False)),
+        # names the World, concert and table code already use for the drivers
+        'greeting_wave': (2.0, False, 30, lambda t: AM.wave_pose(sk, t)),
+        'celebrate': (1.6, False, 30, lambda t: AM.joy_pose(sk, t)),
+        'agree_nod': (1.5, False, 30, lambda t: AM.nod_pose(sk, t)),
+        'point_portal': (2.0, False, 30, lambda t: AM.point_pose(sk, t)),
+        'card_play': (1.5, False, 30, lambda t: AM.card_pose(sk, t)),
     }
     meta = {'walk': {'stride_m': walk.stride, 'speed_mps': walk.speed},
             'run': {'stride_m': run.stride, 'speed_mps': run.speed}}

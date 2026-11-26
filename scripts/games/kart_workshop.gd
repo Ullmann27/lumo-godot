@@ -30,6 +30,7 @@ var left_column: VBoxContainer
 var right_scroll: ScrollContainer
 var preview_container: SubViewportContainer
 var preview_pivot: Node3D
+var preview_camera: Camera3D
 var preview_kart: Node3D
 var preview_angle: float = 0.6
 var rotate_drag: bool = false
@@ -174,6 +175,10 @@ func _build_left() -> void:
 	var stage := Node3D.new()
 	viewport.add_child(stage)
 	var built: Dictionary = STAGE.build(stage)
+	preview_camera = built.camera
+	# A tall stage (inner Fold, landscape) keeps the horizontal field, so the kart
+	# is never cut at the sides; a wide stage keeps the vertical one as before.
+	preview_container.resized.connect(_fit_preview_camera)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees = Vector3(-25, 145, 0)
 	fill.light_color = Color("ceeaff")
@@ -197,6 +202,14 @@ func _build_left() -> void:
 	bars.name = "WorkshopStats"
 	bars.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stats_column.add_child(bars)
+
+
+func _fit_preview_camera() -> void:
+	if not is_instance_valid(preview_camera) or not is_instance_valid(preview_container):
+		return
+	var tall := preview_container.size.y > preview_container.size.x * 1.05
+	preview_camera.keep_aspect = Camera3D.KEEP_WIDTH if tall else Camera3D.KEEP_HEIGHT
+	preview_camera.fov = 46.0 if tall else 37.0
 
 
 func _build_right() -> void:

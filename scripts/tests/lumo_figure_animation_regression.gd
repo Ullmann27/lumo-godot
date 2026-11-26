@@ -50,7 +50,12 @@ const ONE_SHOTS := [
 	"disappointed",
 	"interact",
 	"enter_vehicle",
-	"exit_vehicle"
+	"exit_vehicle",
+	"greeting_wave",
+	"celebrate",
+	"agree_nod",
+	"point_portal",
+	"card_play"
 ]
 ## Clip pairs that play one after the other: end of the first == start of the second.
 const SEAMS := [

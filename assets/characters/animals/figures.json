@@ -5,8 +5,8 @@
    "id": "badger",
    "name": "Bruno (Dachs)",
    "model": "res://assets/characters/animals/badger/figure.glb",
-   "bytes": 1659060,
-   "sha256": "f67ab3d05b60dc48a731eecf117f3a9186a0158bf5f9c5c5f09c35f549ac8b32",
+   "bytes": 1775448,
+   "sha256": "254be30f949be490d2aa4eda37b2d021aaecec35348f3e0490ea45f53d707d51",
    "triangles": 16575,
    "bones": [
     "Root",
@@ -147,6 +147,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -182,7 +207,7 @@
      "wave"
     ]
    },
-   "build_seconds": 25.6,
+   "build_seconds": 41.8,
    "seat_height_m": 0.31531667073221353,
    "drive_seat_height_m": 0.31531667073221353,
    "vehicle_entry_offset_m": [
@@ -195,8 +220,8 @@
    "id": "cat",
    "name": "Mika (Katze)",
    "model": "res://assets/characters/animals/cat/figure.glb",
-   "bytes": 1685252,
-   "sha256": "5f706688faac01c903b8d7df27632cf483fc779099f7d7c8f4cc3798a6e252b8",
+   "bytes": 1802180,
+   "sha256": "8c156989c2579dd30f201bd1454694a54a31815e1b2525efa156edbe469b7f7b",
    "triangles": 16182,
    "bones": [
     "Root",
@@ -337,6 +362,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -372,7 +422,7 @@
      "wave"
     ]
    },
-   "build_seconds": 18.3,
+   "build_seconds": 37.4,
    "seat_height_m": 0.33037352194528385,
    "drive_seat_height_m": 0.33037352194528385,
    "vehicle_entry_offset_m": [
@@ -385,8 +435,8 @@
    "id": "frog",
    "name": "Frosch",
    "model": "res://assets/characters/animals/frog/figure.glb",
-   "bytes": 1645712,
-   "sha256": "f00b1328f23a2fb7e332410dbe14aa68f69de1f47c0450c0e197c64e3d85a79c",
+   "bytes": 1761956,
+   "sha256": "e0baeee6af305fe45a23cf8d51590207474b9a546bd52fe3013680952319366f",
    "triangles": 14776,
    "bones": [
     "Root",
@@ -527,6 +577,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -562,7 +637,7 @@
      "wave"
     ]
    },
-   "build_seconds": 15.8,
+   "build_seconds": 16.7,
    "seat_height_m": 0.40910642056637087,
    "drive_seat_height_m": 0.40910642056637087,
    "vehicle_entry_offset_m": [
@@ -575,8 +650,8 @@
    "id": "lion",
    "name": "Löwe",
    "model": "res://assets/characters/animals/lion/figure.glb",
-   "bytes": 1867144,
-   "sha256": "55970e530a19cf6df483ab6e438f28babe47c10e03ee9f4f49829f8a947ded2e",
+   "bytes": 1983776,
+   "sha256": "a6c6b0c06b8689164a2a9f4d1ab27febe4434c482310ee6b8e810866ce382eca",
    "triangles": 17907,
    "bones": [
     "Root",
@@ -717,6 +792,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -752,7 +852,7 @@
      "wave"
     ]
    },
-   "build_seconds": 13.9,
+   "build_seconds": 23.6,
    "seat_height_m": 0.3793484916797371,
    "drive_seat_height_m": 0.3793484916797371,
    "vehicle_entry_offset_m": [
@@ -765,8 +865,8 @@
    "id": "otter",
    "name": "Milo (Otter)",
    "model": "res://assets/characters/animals/otter/figure.glb",
-   "bytes": 1696752,
-   "sha256": "eae4928b2bae97f0e4c6f83d43a37841e00cd12805866064af8406e9bb155ae7",
+   "bytes": 1813588,
+   "sha256": "d47047e22cb75b6fac0c755b10086c32096fe5fdfca0042530ed96d927307b5c",
    "triangles": 17128,
    "bones": [
     "Root",
@@ -907,6 +1007,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -942,7 +1067,7 @@
      "wave"
     ]
    },
-   "build_seconds": 20.5,
+   "build_seconds": 29.7,
    "seat_height_m": 0.33176272299439125,
    "drive_seat_height_m": 0.33176272299439125,
    "vehicle_entry_offset_m": [
@@ -955,8 +1080,8 @@
    "id": "owl",
    "name": "Eule",
    "model": "res://assets/characters/animals/owl/figure.glb",
-   "bytes": 2037148,
-   "sha256": "5d3fd7e881949726e0e8937ae333f99fc68f3d184eea9632f88d1800ee1cd28b",
+   "bytes": 2153464,
+   "sha256": "05efdf0e0a0809b0c8799a2cd70ad7200f7a87c226ab55e0d7da883ed5c511f4",
    "triangles": 16593,
    "bones": [
     "Root",
@@ -1097,6 +1222,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -1132,7 +1282,7 @@
      "wave"
     ]
    },
-   "build_seconds": 16.5,
+   "build_seconds": 24.2,
    "seat_height_m": 0.27357025775179916,
    "drive_seat_height_m": 0.27357025775179916,
    "vehicle_entry_offset_m": [
@@ -1145,8 +1295,8 @@
    "id": "rabbit",
    "name": "Nova (Hase)",
    "model": "res://assets/characters/animals/rabbit/figure.glb",
-   "bytes": 1802672,
-   "sha256": "0a99a2fcaf23fb2bc0ef0c9c2fd27ab3d23235b8d2ad241e7c3b08b5c935716f",
+   "bytes": 1919580,
+   "sha256": "4dd63d43b7754c6c796101c8db611c5a3b59949aef33b5b5770e40d7ee2ee9df",
    "triangles": 16498,
    "bones": [
     "Root",
@@ -1287,6 +1437,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -1322,7 +1497,7 @@
      "wave"
     ]
    },
-   "build_seconds": 12.0,
+   "build_seconds": 13.7,
    "seat_height_m": 0.3820241724952955,
    "drive_seat_height_m": 0.3820241724952955,
    "vehicle_entry_offset_m": [
@@ -1335,8 +1510,8 @@
    "id": "squirrel",
    "name": "Eichhörnchen",
    "model": "res://assets/characters/animals/squirrel/figure.glb",
-   "bytes": 1799160,
-   "sha256": "cd398d64b2eb8eae345749a41415877533cc512b94e40d5603084f2366ea93a5",
+   "bytes": 1915656,
+   "sha256": "64151887b7cb6e7b36499bb62430618d80be40aac040e759bea3228081bbfc41",
    "triangles": 17144,
    "bones": [
     "Root",
@@ -1477,6 +1652,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -1512,7 +1712,7 @@
      "wave"
     ]
    },
-   "build_seconds": 13.9,
+   "build_seconds": 25.2,
    "seat_height_m": 0.37476655743005444,
    "drive_seat_height_m": 0.37476655743005444,
    "vehicle_entry_offset_m": [
@@ -1525,8 +1725,8 @@
    "id": "turtle",
    "name": "Schildkröte",
    "model": "res://assets/characters/animals/turtle/figure.glb",
-   "bytes": 1742412,
-   "sha256": "0bedcdd0c46db8fe42a56de0a61bd3a2bb51cfe7f04d0473fd7829e25b82ac5f",
+   "bytes": 1861584,
+   "sha256": "4ff6128f0ac6aee3ea73eff399b1783491831964f1f71111678d6422fc003672",
    "triangles": 16696,
    "bones": [
     "Root",
@@ -1667,6 +1867,31 @@
      "seconds": 1.4,
      "loop": false,
      "keys": 43
+    },
+    "greeting_wave": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "celebrate": {
+     "seconds": 1.6,
+     "loop": false,
+     "keys": 49
+    },
+    "agree_nod": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
+    },
+    "point_portal": {
+     "seconds": 2.0,
+     "loop": false,
+     "keys": 61
+    },
+    "card_play": {
+     "seconds": 1.5,
+     "loop": false,
+     "keys": 46
     }
    },
    "textures": [
@@ -1702,7 +1927,7 @@
      "wave"
     ]
    },
-   "build_seconds": 15.1,
+   "build_seconds": 34.2,
    "seat_height_m": 0.2632148815502704,
    "drive_seat_height_m": 0.2632148815502704,
    "vehicle_entry_offset_m": [
