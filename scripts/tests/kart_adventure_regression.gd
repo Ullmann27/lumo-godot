@@ -177,7 +177,9 @@ func _run() -> void:
 				assert(not _overlaps(Vector2(float(section.start) - 5.0, float(section.end) + 5.0), modules), "Tunnel overlaps a banked section")
 		_check_actions(world, tunnel)
 		_check_actions(world, modules)
+		var thrill_ids: Array = THRILLS.of(world).map(func(feature): return feature.id)
 		for spec in THRILLS.specs_for(track_id):
+			assert(spec.id in thrill_ids, "%s lost the authored feature %s" % [track_id, spec.id])
 			if spec.kind == "turbo":
 				var count: int = world.action.pads.filter(func(pad): return pad.get("thrill") == spec.id).size()
 				assert(count == 3, "Moving the turbo section lost a field")

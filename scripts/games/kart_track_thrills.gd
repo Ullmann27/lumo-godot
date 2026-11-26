@@ -582,6 +582,11 @@ static func plan(world) -> Array:
 	var specs: Array = (
 		[] if bool(world.get_meta(OFF_META, false)) else specs_for(str(world.track_id))
 	)
+	if world.has_meta("adventure_tunnel_plan") and not world.get_meta("adventure_tunnel_plan").is_empty():
+		# Place jumps and banked sections first. A relocated turbo group can
+		# use a range of straights, while those features need their approach
+		# and landing geometry intact near the authored location.
+		specs = specs.filter(func(spec): return spec.kind != "turbo") + specs.filter(func(spec): return spec.kind == "turbo")
 	for source in specs:
 		var spec: Dictionary = source.duplicate(true)
 		var blocked: Array = _base_blocked(world) + placed
