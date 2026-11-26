@@ -3,6 +3,8 @@ extends SceneTree
 ## targets inside the safe area on many screen shapes, and live displays that follow the
 ## real race values. Runs headless or with a renderer.
 
+const TEARDOWN = preload("res://scripts/tests/helpers/kart_scene_teardown.gd")
+const GLOBAL_TEARDOWN = preload("res://scripts/tests/lumo_scene_teardown.gd")
 const ACTION = preload("res://scripts/games/kart_touch_action.gd")
 const STICK = preload("res://scripts/games/kart_joystick.gd")
 const SCREENS: Array[Vector2i] = [
@@ -81,6 +83,18 @@ func _run() -> void:
 	await _check_touch()
 	await _check_live_states()
 	_check_bar()
+	# The test opens a production race directly under root, not as current_scene.
+	# Explicitly destroy that scene while the engine/audio mixer can still run.
+	# An immediate quit here previously left four live resources on the CI runner.
+	game.abandoned = true
+	actions.clear()
+	_check(await TEARDOWN.release_scene(self, game, "[KartHUD]"), "race scene and its audio are released")
+	game = null
+	# HUD presses can also play global SFX or route music. Wait for those
+	# actual playbacks to retire, rather than suppressing the engine error.
+	_check(await GLOBAL_TEARDOWN.release(self, "[KartHUD]"), "global audio playbacks are released")
+	await _settle(8)
+	DirAccess.remove_absolute("user://kart_sonnenhafen_session.cfg")
 	print("kart_hud_controls_regression: %d checks, %d failures" % [checks, failures.size()])
 	if failures.is_empty():
 		print("KART_HUD_CONTROLS_OK")

@@ -10,7 +10,7 @@ static func release_scene(tree: SceneTree, scene: Node, label: String) -> bool:
 		return false
 	var scene_reference: WeakRef = weakref(scene)
 	var playbacks: Array[WeakRef] = []
-	for player: Node in scene.find_children("*", "AudioStreamPlayer", true, false):
+	for player: Node in _audio_players(scene):
 		if player.has_stream_playback():
 			playbacks.append(weakref(player.get_stream_playback()))
 	var started := Time.get_ticks_msec()
@@ -39,7 +39,7 @@ static func release_scene(tree: SceneTree, scene: Node, label: String) -> bool:
 ## UI probes can leave click sounds in autoloads after their controls are freed.
 static func release_audio(tree: SceneTree, owner: Node, label: String) -> bool:
 	var playbacks: Array[WeakRef] = []
-	for player: Node in owner.find_children("*", "AudioStreamPlayer", true, false):
+	for player: Node in _audio_players(owner):
 		if player.has_stream_playback():
 			playbacks.append(weakref(player.get_stream_playback()))
 		player.stop()
@@ -56,6 +56,14 @@ static func release_audio(tree: SceneTree, owner: Node, label: String) -> bool:
 			return true
 		await tree.process_frame
 	return false
+
+
+## Motor and ambient emitters can be spatial. They must be observed too.
+static func _audio_players(owner: Node) -> Array[Node]:
+	var players: Array[Node] = []
+	for kind: String in ["AudioStreamPlayer", "AudioStreamPlayer2D", "AudioStreamPlayer3D"]:
+		players.append_array(owner.find_children("*", kind, true, false))
+	return players
 
 
 static func _pending_playbacks(references: Array[WeakRef]) -> Array[String]:
