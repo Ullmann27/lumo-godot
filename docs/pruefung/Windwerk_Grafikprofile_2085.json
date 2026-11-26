@@ -1,0 +1,67 @@
+{
+  "godot_commit": "0c36dbaa2e778dc982550989159bf70efbf1d47c",
+  "renderer_environment": "Linux container, Mesa llvmpipe, two CPU cores, with concurrent local tests",
+  "physical_device_status": "NICHT GETESTET",
+  "samples": [
+    {
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "effects_tier": "low",
+      "frames": 30,
+      "height": 540,
+      "median_draw_calls": 253,
+      "median_ms": 200.4805,
+      "metres": 1280.0,
+      "p95_ms": 218.887,
+      "renderer": "gl_compatibility",
+      "scenery_tier": "",
+      "tier": "low",
+      "track": "windwerk_3000",
+      "width": 960
+    },
+    {
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "effects_tier": "medium",
+      "frames": 30,
+      "height": 540,
+      "median_draw_calls": 423,
+      "median_ms": 1039.8785,
+      "metres": 1280.0,
+      "p95_ms": 1251.96,
+      "renderer": "gl_compatibility",
+      "scenery_tier": "",
+      "tier": "medium",
+      "track": "windwerk_3000",
+      "width": 960
+    },
+    {
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "effects_tier": "high",
+      "frames": 30,
+      "height": 540,
+      "median_draw_calls": 454,
+      "median_ms": 415.8835,
+      "metres": 1280.0,
+      "p95_ms": 553.356,
+      "renderer": "gl_compatibility",
+      "scenery_tier": "",
+      "tier": "high",
+      "track": "windwerk_3000",
+      "width": 960
+    },
+    {
+      "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "effects_tier": "ultra",
+      "frames": 30,
+      "height": 540,
+      "median_draw_calls": 454,
+      "median_ms": 644.2795,
+      "metres": 1280.0,
+      "p95_ms": 1154.567,
+      "renderer": "gl_compatibility",
+      "scenery_tier": "",
+      "tier": "ultra",
+      "track": "windwerk_3000",
+      "width": 960
+    }
+  ]
+}
