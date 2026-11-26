@@ -21,6 +21,20 @@ const COMPACT_WIDTH_DP := 470.0
 const INK := Color("f3f6fa")
 const ACCENT := Color("78dbbf")
 const PANEL := Color("13212e")
+const CHILD_EFFECTS := {
+	"top_kmh": ["Fährt auf der Geraden schneller.", "Fährt auf der Geraden langsamer."],
+	"sprint_s": ["Kommt schneller vom Start weg.", "Kommt langsamer vom Start weg."],
+	"brake_m": ["Kommt beim Bremsen früher zum Stehen.", "Braucht beim Bremsen länger bis zum Stehen."],
+	"radius_m": ["Kann engere Kurven fahren.", "Braucht mehr Platz in Kurven."],
+	"slide_m": ["Rutscht in der Kurve weniger.", "Rutscht in der Kurve mehr."],
+	"drift_s": ["Der Drift-Turbo ist früher bereit.", "Der Drift-Turbo ist später bereit."],
+	"boost_s": ["Der Drift-Turbo hält länger.", "Der Drift-Turbo hält kürzer."],
+	"boost_kmh": ["Fährt mit Turbo schneller.", "Fährt mit Turbo langsamer."],
+	"offroad_kmh": ["Fährt neben der Strecke schneller.", "Fährt neben der Strecke langsamer."],
+	"air_deg": ["Lenkt im Sprung stärker.", "Lenkt im Sprung schwächer."],
+	"landing_s": ["Fängt sich nach der Landung schneller.", "Wackelt nach der Landung länger."],
+	"bump_pct": ["Behält beim Rempler mehr von seinem Tempo.", "Behält beim Rempler weniger von seinem Tempo."],
+}
 
 var menu
 var open_button: Button
@@ -37,6 +51,10 @@ var body_scroll: ScrollContainer
 var tile_row: HBoxContainer
 ## Prüfstand: gemessene Werte vorher → nachher für das angetippte Teil.
 var dyno_box: VBoxContainer
+var dyno_summary_heading: Label
+var dyno_summary: Label
+var dyno_details_button: Button
+var dyno_details: VBoxContainer
 var dyno_title: Label
 var dyno_grid: GridContainer
 var dyno_text: Label
@@ -243,20 +261,46 @@ func _build_dyno(column: VBoxContainer) -> void:
 	dyno_box = VBoxContainer.new()
 	dyno_box.add_theme_constant_override("separation", 4)
 	frame.add_child(dyno_box)
+	dyno_summary_heading = _label("So fährt dein Kart", 15, ACCENT)
+	dyno_box.add_child(dyno_summary_heading)
+	dyno_summary = _label("", 16, INK)
+	dyno_summary.name = "PartsDrivingSummary"
+	dyno_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	dyno_box.add_child(dyno_summary)
+	dyno_details_button = _action(
+		"Messwerte zeigen", _toggle_dyno_details, Color("28434e"), INK
+	)
+	dyno_details_button.name = "PartsDynoDetailsButton"
+	dyno_box.add_child(dyno_details_button)
+	dyno_details = VBoxContainer.new()
+	dyno_details.name = "PartsDynoDetails"
+	dyno_box.add_child(dyno_details)
+	dyno_details.hide()
 	dyno_title = _label("Prüfstand", 15, ACCENT)
 	dyno_title.clip_text = true
 	dyno_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	dyno_box.add_child(dyno_title)
+	dyno_details.add_child(dyno_title)
 	dyno_grid = GridContainer.new()
 	dyno_grid.name = "PartsDynoGrid"
 	dyno_grid.columns = 3
 	dyno_grid.add_theme_constant_override("h_separation", 6)
 	dyno_grid.add_theme_constant_override("v_separation", 2)
-	dyno_box.add_child(dyno_grid)
+	dyno_details.add_child(dyno_grid)
 	dyno_text = _label("", 15, Color.WHITE)
 	dyno_text.name = "PartsDynoText"
 	dyno_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	dyno_box.add_child(dyno_text)
+	dyno_details.add_child(dyno_text)
+
+
+func _toggle_dyno_details() -> void:
+	_show_dyno_details(not dyno_details.visible)
+	if dyno_details.visible:
+		body_scroll.ensure_control_visible(dyno_details_button)
+
+
+func _show_dyno_details(visible_details: bool) -> void:
+	dyno_details.visible = visible_details
+	dyno_details_button.text = "Messwerte ausblenden" if visible_details else "Messwerte zeigen"
 
 
 func _kart_id() -> String:
@@ -453,6 +497,7 @@ func _refresh_dyno() -> void:
 		dyno_grid.remove_child(child)
 		child.queue_free()
 	dyno_values = {}
+	_show_dyno_details(false)
 	var id: String = _current(slot)
 	var option: Dictionary = TUNING.option(slot, id)
 	var workshop = _workshop()
@@ -463,10 +508,14 @@ func _refresh_dyno() -> void:
 	if workshop == null or (defaults.is_empty() and not has_performance_change):
 		dyno_title.text = str(option.name)
 		dyno_text.text = "Ändert das Aussehen. Die Fahrwerte bleiben gleich."
+		dyno_summary.text = dyno_text.text
+		dyno_details_button.hide()
 		_sync_action()
 		return
 	var before: Dictionary = DYNO.measure(workshop.multipliers(_kart_id()))
 	var after: Dictionary = DYNO.measure(workshop.multipliers_with(_kart_id(), pending))
+	dyno_details_button.show()
+	_summarize_dyno(defaults, before, after)
 	dyno_title.text = "Prüfstand · Montiert → Vorschau" if has_performance_change else "Prüfstand · Montiert"
 	var metrics: Array[String] = []
 	# The full combination stays inspectable; significant changes come first.
@@ -505,6 +554,18 @@ func _refresh_dyno() -> void:
 	_sync_action()
 
 
+func _summarize_dyno(defaults: Array, before: Dictionary, after: Dictionary) -> void:
+	if pending.is_empty():
+		dyno_summary.text = "Tippe auf ein anderes Teil und sieh, wie sich die Fahrt ändert."
+		return
+	var effects := PackedStringArray()
+	for metric in DYNO.display_metrics(defaults, before, after, 2):
+		var change := DYNO.verdict(metric, float(before[metric]), float(after[metric]))
+		if change != 0:
+			effects.append(str(CHILD_EFFECTS[metric][0 if change > 0 else 1]))
+	dyno_summary.text = "\n".join(effects) if not effects.is_empty() else "In der Vorschau zeigt sich kein Unterschied beim Fahren."
+
+
 func _pending_price() -> int:
 	var price := 0
 	for key in pending:
@@ -535,6 +596,10 @@ func _apply_dyno_font() -> void:
 		label.add_theme_font_size_override("font_size", roundi((13 if label.get_index() % 3 == 2 else 14) * _scale))
 	dyno_title.add_theme_font_size_override("font_size", roundi(15 * _scale))
 	dyno_text.add_theme_font_size_override("font_size", roundi(14 * _scale))
+	dyno_summary_heading.add_theme_font_size_override("font_size", roundi(15 * _scale))
+	dyno_summary.add_theme_font_size_override("font_size", roundi(16 * _scale))
+	dyno_details_button.add_theme_font_size_override("font_size", roundi(15 * _scale))
+	dyno_details_button.custom_minimum_size.y = ceilf(48 * _scale)
 
 
 func _on_mount() -> void:
@@ -555,6 +620,9 @@ func _on_mount() -> void:
 
 
 func _on_back() -> void:
+	if dyno_details.visible:
+		_show_dyno_details(false)
+		return
 	if _compact_portrait and _focused:
 		_focused = false
 		_sync_focus()
