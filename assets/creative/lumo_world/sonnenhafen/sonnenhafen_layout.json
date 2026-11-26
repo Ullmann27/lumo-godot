@@ -1,0 +1,1055 @@
+{
+ "schemaVersion": 1,
+ "note": "Sonnenhafen, Hafenstadt im Süden von LUMO World. Alle Koordinaten sind Weltkoordinaten (x, z). Rechtecke: [x_min, z_min, breite_x, tiefe_z]. Häuserreihen werden deterministisch aus dem Sonnenhafen-Baukasten zusammengesetzt (tools/lumo_world_art/build_sonnenhafen_kit.py).",
+ "title": "Sonnenhafen",
+ "platform": [
+  80,
+  -176,
+  186,
+  64
+ ],
+ "canal": [
+  62,
+  -112,
+  214,
+  14
+ ],
+ "water": [
+  -40,
+  -420,
+  319,
+  322
+ ],
+ "water_level": -0.9,
+ "bridges": [
+  {
+   "id": "sonnenbruecke",
+   "kind": "road",
+   "title": "Sonnenbrücke",
+   "rect": [
+    195,
+    -114,
+    10,
+    18
+   ]
+  },
+  {
+   "id": "fischersteg",
+   "kind": "foot",
+   "title": "Fischersteg",
+   "rect": [
+    116,
+    -114,
+    4,
+    18
+   ]
+  }
+ ],
+ "mainland_paths": [
+  {
+   "id": "hafenzufahrt",
+   "title": "Hafenzufahrt",
+   "rect": [
+    196,
+    -98,
+    8,
+    14
+   ]
+  },
+  {
+   "id": "stegweg",
+   "title": "Stegweg",
+   "rect": [
+    116,
+    -98,
+    4,
+    12
+   ]
+  },
+  {
+   "id": "stegweg_ost",
+   "title": "Stegweg",
+   "rect": [
+    116,
+    -88,
+    34,
+    4
+   ]
+  },
+  {
+   "id": "hafenweg",
+   "title": "Hafenweg",
+   "rect": [
+    200,
+    -84,
+    7,
+    78
+   ],
+   "nav": false
+  }
+ ],
+ "streets": [
+  {
+   "id": "kanalpromenade",
+   "title": "Kanalpromenade",
+   "rect": [
+    80,
+    -117,
+    186,
+    5
+   ]
+  },
+  {
+   "id": "hafenstrasse",
+   "title": "Hafenstraße",
+   "rect": [
+    196,
+    -137,
+    8,
+    20
+   ]
+  },
+  {
+   "id": "fischergasse",
+   "title": "Fischergasse",
+   "rect": [
+    115,
+    -167,
+    6,
+    50
+   ]
+  },
+  {
+   "id": "speichergasse",
+   "title": "Speichergasse",
+   "rect": [
+    246,
+    -167,
+    6,
+    50
+   ]
+  },
+  {
+   "id": "laternengasse",
+   "title": "Laternengasse",
+   "rect": [
+    80,
+    -143,
+    186,
+    6
+   ]
+  },
+  {
+   "id": "hafenmarkt",
+   "title": "Hafenmarkt",
+   "rect": [
+    172,
+    -167,
+    56,
+    24
+   ]
+  },
+  {
+   "id": "kai",
+   "title": "Kai",
+   "rect": [
+    80,
+    -176,
+    186,
+    9
+   ]
+  }
+ ],
+ "piers": [
+  {
+   "id": "westpier",
+   "title": "Fischerpier",
+   "rect": [
+    96,
+    -204,
+    4,
+    28
+   ]
+  },
+  {
+   "id": "mittelpier",
+   "title": "Mittelpier",
+   "rect": [
+    140,
+    -200,
+    4,
+    24
+   ]
+  },
+  {
+   "id": "marktpier",
+   "title": "Marktpier",
+   "rect": [
+    198,
+    -196,
+    4,
+    20
+   ]
+  }
+ ],
+ "mole": {
+  "rect": [
+   255,
+   -210,
+   6,
+   34
+  ],
+  "lighthouse": [
+   258,
+   -217
+  ],
+  "platform_radius": 7.0
+ },
+ "rows": [
+  {
+   "id": "nb1_canal",
+   "x": [
+    82,
+    115
+   ],
+   "front": -117,
+   "facing": "n",
+   "storeys": 3,
+   "seed": 11
+  },
+  {
+   "id": "nb1_lane",
+   "x": [
+    82,
+    115
+   ],
+   "front": -137,
+   "facing": "s",
+   "storeys": 2,
+   "seed": 12,
+   "shops": 1
+  },
+  {
+   "id": "nb2_canal",
+   "x": [
+    121,
+    196
+   ],
+   "front": -117,
+   "facing": "n",
+   "storeys": 3,
+   "seed": 21
+  },
+  {
+   "id": "nb2_lane",
+   "x": [
+    121,
+    196
+   ],
+   "front": -137,
+   "facing": "s",
+   "storeys": 2,
+   "seed": 22,
+   "shops": 3
+  },
+  {
+   "id": "nb3_canal",
+   "x": [
+    204,
+    246
+   ],
+   "front": -117,
+   "facing": "n",
+   "storeys": 3,
+   "seed": 31
+  },
+  {
+   "id": "nb3_lane",
+   "x": [
+    204,
+    246
+   ],
+   "front": -137,
+   "facing": "s",
+   "storeys": 2,
+   "seed": 32,
+   "shops": 2
+  },
+  {
+   "id": "sb1_lane",
+   "x": [
+    82,
+    115
+   ],
+   "front": -143,
+   "facing": "n",
+   "storeys": 2,
+   "seed": 41
+  },
+  {
+   "id": "sb2_lane",
+   "x": [
+    121,
+    156
+   ],
+   "front": -143,
+   "facing": "n",
+   "storeys": 2,
+   "seed": 51,
+   "shops": 1
+  },
+  {
+   "id": "sb2_quay",
+   "x": [
+    121,
+    156
+   ],
+   "front": -167,
+   "facing": "s",
+   "storeys": 3,
+   "seed": 52,
+   "shops": 1
+  },
+  {
+   "id": "sb4_lane",
+   "x": [
+    252,
+    266
+   ],
+   "front": -143,
+   "facing": "n",
+   "storeys": 2,
+   "seed": 71
+  }
+ ],
+ "shop_names": [
+  "Möwenbäckerei",
+  "Café Kompass",
+  "Segelmacherei",
+  "Laternenwerkstatt",
+  "Muschelstube",
+  "Buchladen Leuchtfeuer",
+  "Eisdiele Meeresbrise",
+  "Netzflickerei"
+ ],
+ "buildings": [
+  {
+   "id": "hafenkraemer",
+   "kind": "shop",
+   "title": "Hafenkrämer",
+   "front": [
+    172,
+    -154
+   ],
+   "facing": "e",
+   "bays": 5,
+   "depth": 12.8,
+   "storeys": 2,
+   "style": "brick",
+   "color": "c96a4a",
+   "roof": "slate",
+   "enterable": true,
+   "sign": "HAFENKRÄMER"
+  },
+  {
+   "id": "kontor",
+   "kind": "kontor",
+   "title": "Kontor im Speicher",
+   "front": [
+    228,
+    -154
+   ],
+   "facing": "w",
+   "bays": 5,
+   "depth": 12.8,
+   "storeys": 2,
+   "style": "planks",
+   "color": "b0855a",
+   "roof": "slate",
+   "enterable": true,
+   "sign": "KONTOR · LIEFERAUFTRÄGE"
+  },
+  {
+   "id": "fischhalle",
+   "kind": "hall",
+   "title": "Fischhalle",
+   "front": [
+    96.8,
+    -167
+   ],
+   "facing": "s",
+   "bays": 8,
+   "depth": 12.8,
+   "storeys": 1,
+   "style": "planks",
+   "color": "8a6a4a",
+   "roof": "slate",
+   "open_front": true,
+   "sign": "FISCHHALLE"
+  },
+  {
+   "id": "speicher_nord",
+   "kind": "warehouse",
+   "title": "Speicher Nord",
+   "front": [
+    252,
+    -126.6
+   ],
+   "facing": "w",
+   "bays": 6,
+   "depth": 12.8,
+   "storeys": 2,
+   "style": "planks",
+   "color": "9a6a3a",
+   "roof": "slate",
+   "sign": "SPEICHER NORD"
+  },
+  {
+   "id": "speicher_kai",
+   "kind": "warehouse",
+   "title": "Speicher am Kai",
+   "front": [
+    259,
+    -167
+   ],
+   "facing": "s",
+   "bays": 4,
+   "depth": 12.8,
+   "storeys": 2,
+   "style": "brick",
+   "color": "b5543a",
+   "roof": "slate",
+   "sign": "SPEICHER AM KAI"
+  }
+ ],
+ "interiors": {
+  "hafenkraemer": {
+   "counter": [
+    163.5,
+    -154,
+    1.5707963
+   ],
+   "keeper_spot": [
+    161.5,
+    -154
+   ],
+   "shelves": [
+    [
+     159.2,
+     -150.5,
+     1.5707963
+    ],
+    [
+     159.2,
+     -157.5,
+     1.5707963
+    ],
+    [
+     165,
+     -146.8,
+     3.1415926
+    ],
+    [
+     165,
+     -161.2,
+     0.0
+    ]
+   ],
+   "trade_spot": [
+    166.5,
+    -154
+   ],
+   "tables": []
+  },
+  "kontor": {
+   "board": [
+    240.1,
+    -151,
+    -1.5707963
+   ],
+   "desk": [
+    237.5,
+    -156.5,
+    -1.5707963
+   ],
+   "keeper_spot": [
+    239.5,
+    -156.5
+   ],
+   "pallets": [
+    [
+     232.5,
+     -148.5,
+     0.0
+    ],
+    [
+     232.5,
+     -159.5,
+     0.0
+    ],
+    [
+     237.5,
+     -160.0,
+     0.0
+    ]
+   ],
+   "trade_spot": [
+    235.0,
+    -154
+   ]
+  }
+ },
+ "props": [
+  {
+   "kind": "stall_fish",
+   "at": [
+    182,
+    -151
+   ],
+   "yaw": 1.5707963
+  },
+  {
+   "kind": "stall_fruit",
+   "at": [
+    216,
+    -150
+   ],
+   "yaw": -1.5707963
+  },
+  {
+   "kind": "stall_bread",
+   "at": [
+    190,
+    -162
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "stall_fish",
+   "at": [
+    210,
+    -162
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "fountain",
+   "at": [
+    200,
+    -153
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "crane",
+   "at": [
+    236,
+    -171.5
+   ],
+   "yaw": 3.1415926
+  },
+  {
+   "kind": "net_rack",
+   "at": [
+    88,
+    -171
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "net_rack",
+   "at": [
+    108,
+    -171.5
+   ],
+   "yaw": 0.2
+  },
+  {
+   "kind": "fish_crates",
+   "at": [
+    102,
+    -170
+   ],
+   "yaw": 0.4
+  },
+  {
+   "kind": "fish_crates",
+   "at": [
+    94,
+    -158
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "rope_coil",
+   "at": [
+    112,
+    -173
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "anchor",
+   "at": [
+    170,
+    -172.5
+   ],
+   "yaw": 0.3
+  },
+  {
+   "kind": "crate_stack",
+   "at": [
+    243,
+    -170
+   ],
+   "yaw": 0.2
+  },
+  {
+   "kind": "barrel_group",
+   "at": [
+    248,
+    -172.5
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "crate_stack",
+   "at": [
+    254,
+    -114.5
+   ],
+   "yaw": 0.6
+  },
+  {
+   "kind": "barrel_group",
+   "at": [
+    132,
+    -114.5
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "bench",
+   "at": [
+    150,
+    -113.2
+   ],
+   "yaw": 3.1415926
+  },
+  {
+   "kind": "bench",
+   "at": [
+    226,
+    -113.2
+   ],
+   "yaw": 3.1415926
+  },
+  {
+   "kind": "bench",
+   "at": [
+    186,
+    -158
+   ],
+   "yaw": 1.5707963
+  },
+  {
+   "kind": "bench",
+   "at": [
+    214,
+    -158
+   ],
+   "yaw": -1.5707963
+  },
+  {
+   "kind": "bench",
+   "at": [
+    125,
+    -174
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    193,
+    -145.5
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    207,
+    -145.5
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    176,
+    -165
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    224,
+    -165
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    193,
+    -116
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "flower_tub",
+   "at": [
+    207,
+    -116
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "rope_coil",
+   "at": [
+    146,
+    -175
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "crate_stack",
+   "at": [
+    176,
+    -147
+   ],
+   "yaw": 0.4
+  }
+ ],
+ "boats": [
+  {
+   "kind": "boat_cutter",
+   "at": [
+    104.5,
+    -193
+   ],
+   "yaw": 0.0
+  },
+  {
+   "kind": "boat_cutter",
+   "at": [
+    134.5,
+    -190
+   ],
+   "yaw": 0.06
+  },
+  {
+   "kind": "rowboat",
+   "at": [
+    92,
+    -186
+   ],
+   "yaw": 0.3
+  },
+  {
+   "kind": "boat_sail",
+   "at": [
+    207,
+    -188
+   ],
+   "yaw": -0.05
+  },
+  {
+   "kind": "rowboat",
+   "at": [
+    148.5,
+    -184
+   ],
+   "yaw": -0.2
+  },
+  {
+   "kind": "boat_sail",
+   "at": [
+    230,
+    -205
+   ],
+   "yaw": 0.8
+  }
+ ],
+ "trees": [
+  [
+   86,
+   -114.5
+  ],
+  [
+   110,
+   -114.5
+  ],
+  [
+   170,
+   -114.5
+  ],
+  [
+   240,
+   -114.5
+  ],
+  [
+   262,
+   -114.5
+  ],
+  [
+   174,
+   -145.5
+  ],
+  [
+   226,
+   -145.5
+  ]
+ ],
+ "spots": {
+  "kai_west": [
+   101,
+   -171
+  ],
+  "kai_mid": [
+   150,
+   -171.5
+  ],
+  "kai_east": [
+   238,
+   -174.5
+  ],
+  "kai_market": [
+   200,
+   -170.5
+  ],
+  "pier_west_end": [
+   98,
+   -201
+  ],
+  "pier_mid_end": [
+   142,
+   -197
+  ],
+  "pier_market_end": [
+   200,
+   -193
+  ],
+  "fish_hall": [
+   97,
+   -160
+  ],
+  "fish_hall_east": [
+   104,
+   -158.5
+  ],
+  "fish_stall": [
+   184.2,
+   -151
+  ],
+  "fruit_stall": [
+   213.8,
+   -150
+  ],
+  "bread_stall": [
+   190,
+   -159.3
+  ],
+  "fish_stall_2": [
+   210,
+   -159.3
+  ],
+  "fountain_n": [
+   200,
+   -147.6
+  ],
+  "fountain_s": [
+   200,
+   -158.6
+  ],
+  "market_center": [
+   194,
+   -157
+  ],
+  "shop_keeper": [
+   161.5,
+   -154
+  ],
+  "shop_inside": [
+   167,
+   -150.5
+  ],
+  "shop_door": [
+   174.5,
+   -154
+  ],
+  "kontor_keeper": [
+   239.5,
+   -156.5
+  ],
+  "kontor_inside": [
+   234,
+   -151
+  ],
+  "kontor_door": [
+   225.5,
+   -154
+  ],
+  "lighthouse": [
+   258,
+   -211.5
+  ],
+  "mole_mid": [
+   258,
+   -192
+  ],
+  "canal_bench_w": [
+   150,
+   -114.6
+  ],
+  "canal_bench_e": [
+   226,
+   -114.6
+  ],
+  "canal_view_w": [
+   100,
+   -113.4
+  ],
+  "bridge_south": [
+   200,
+   -116.5
+  ],
+  "footbridge_south": [
+   118,
+   -116.5
+  ],
+  "lane_west": [
+   100,
+   -140
+  ],
+  "lane_mid": [
+   160,
+   -140
+  ],
+  "lane_east": [
+   232,
+   -140
+  ],
+  "lane_far_east": [
+   258,
+   -140
+  ],
+  "crane": [
+   238.5,
+   -169.5
+  ],
+  "net_racks": [
+   96,
+   -170.5
+  ],
+  "warehouse_gate": [
+   249,
+   -126.6
+  ],
+  "speicher_kai_gate": [
+   259,
+   -169
+  ],
+  "bench_market_w": [
+   187.2,
+   -158
+  ],
+  "bench_market_e": [
+   212.8,
+   -158
+  ],
+  "bench_kai": [
+   125,
+   -172.8
+  ],
+  "hafenstrasse": [
+   200,
+   -128
+  ],
+  "fish_stall_vendor": [
+   179.6,
+   -151
+  ],
+  "fruit_stall_vendor": [
+   218.3,
+   -150
+  ],
+  "bread_stall_vendor": [
+   190,
+   -164.4
+  ],
+  "fish_stall_2_vendor": [
+   210,
+   -164.4
+  ],
+  "shop_shelf_w": [
+   160.5,
+   -150.5
+  ],
+  "shop_shelf_n": [
+   165,
+   -148.3
+  ],
+  "kontor_board": [
+   238.8,
+   -151
+  ],
+  "kontor_pallets": [
+   234.5,
+   -158.0
+  ],
+  "bakery_door": [
+   100.1,
+   -139.6
+  ],
+  "cafe_door": [
+   152.1,
+   -139.6
+  ],
+  "sail_loft": [
+   171.3,
+   -139.6
+  ],
+  "lamp_workshop": [
+   190.5,
+   -139.6
+  ],
+  "ice_cream": [
+   140.1,
+   -141.0
+  ],
+  "bookshop": [
+   218.6,
+   -139.6
+  ],
+  "net_loft": [
+   124.1,
+   -169.6
+  ]
+ },
+ "spawn_point": [
+  200,
+  -100
+ ],
+ "parking": {
+  "rect": [
+   184,
+   -97,
+   10,
+   8
+  ],
+  "title": "Kart-Parkplatz Sonnenhafen"
+ }
+}

@@ -13,6 +13,10 @@ const MODELS := "res://assets/chess/models/%s.glb"
 const TEX := "res://assets/chess/textures/%s.webp"
 const NAMES := ["", "pawn", "knight", "bishop", "rook", "queen", "king"]
 const SQUARE := 0.1
+## Zugablauf: bis GLIDE_FROM anheben, bis GLIDE_TO gleiten, dann absetzen.
+const GLIDE_FROM := 0.14
+const GLIDE_TO := 0.88
+const PIECE_LIFT := 0.022
 const TOP := 0.0304
 const SHADOW_SIZE := [0.0, 0.074, 0.08, 0.076, 0.08, 0.086, 0.088]
 
@@ -327,19 +331,23 @@ func animate_move(m: int, board_after: PackedInt32Array, seconds: float = 0.65) 
 	var duration := seconds / maxf(time_scale, 0.01)
 	var start := mover.position
 	var goal := square_center(to)
-	var arc := 0.035 + 0.018 * start.distance_to(goal) / SQUARE
+	var arc := 0.012 + 0.012 * minf(start.distance_to(goal) / SQUARE, 4.0)
 	_moving = true
 	_anim = create_tween()
+	# Anheben, gleiten, weich absetzen: Die Figur steigt zuerst vom Feld,
+	# gleitet über das Brett und setzt erst nach der Fahrt sanft auf.
 	_anim.tween_method(
 		func(t: float) -> void:
+			var glide := smoothstep(GLIDE_FROM, GLIDE_TO, t)
+			var raised := smoothstep(0.0, GLIDE_FROM + 0.06, t) * (1.0 - smoothstep(GLIDE_TO - 0.04, 1.0, t))
 			if is_instance_valid(mover):
-				var point := start.lerp(goal, t)
-				point.y += sin(t * PI) * arc
+				var point := start.lerp(goal, glide)
+				point.y += raised * PIECE_LIFT + sin(glide * PI) * arc
 				mover.position = point
 			if is_instance_valid(victim) and victim != mover:
-				victim.scale = Vector3.ONE * (1.0 - 0.99 * smoothstep(0.72, 1.0, t)),
+				victim.scale = Vector3.ONE * (1.0 - 0.99 * smoothstep(0.72, 1.0, glide)),
 		0.0, 1.0, duration
-	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	)
 	# Erst landet der König, dann zieht der Turm. Beide gehören zum selben Zug.
 	if flags & 8:
 		var rook_from := int({6: 7, 2: 0, 62: 63, 58: 56}.get(to, -1))

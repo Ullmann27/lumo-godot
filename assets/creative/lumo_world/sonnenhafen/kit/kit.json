@@ -1,0 +1,461 @@
+{
+ "atlas": "village_atlas_albedo.png (shared)",
+ "bay": 3.2,
+ "depth": 9.6,
+ "generator": "tools/lumo_world_art/build_sonnenhafen_kit.py",
+ "hall_depth": 12.8,
+ "modules": {
+  "acc_baker": {
+   "bytes": 22612,
+   "sha256": "e8273976585fa94667fbc573a0a2db403e6664fcf840648954766456320f2625",
+   "triangles": 132
+  },
+  "acc_cap": {
+   "bytes": 14660,
+   "sha256": "d00198066f02c2f53b6e87bdd7198d7f380a8bbe27b81b379accfaad8f5dc5e3",
+   "triangles": 116
+  },
+  "acc_scarf": {
+   "bytes": 8968,
+   "sha256": "c56dc1dbe71f23839713ad267e5d10cfa6153151a040ced15dd4ecdd12f98799",
+   "triangles": 64
+  },
+  "acc_souwester": {
+   "bytes": 23216,
+   "sha256": "a0f535ad80e29fa49301d070931b3ff18abf7147c5098f4c716b405ffe8cfc5d",
+   "triangles": 132
+  },
+  "acc_strawhat": {
+   "bytes": 17632,
+   "sha256": "590884526e510b14b30b2fec7a7e49d512782ba3da530b5fa717aa7c878c5930",
+   "triangles": 140
+  },
+  "anchor": {
+   "bytes": 13768,
+   "sha256": "04f75588ac8d693163b0ea1e5de0a40c676e2d11708ea8bf1f520de0eee499a6",
+   "triangles": 96
+  },
+  "awning_blue": {
+   "bytes": 24188,
+   "sha256": "90125b69473574d6d3e395fd1d1ce540d9a885d220db70ab1be8e3a58b209638",
+   "triangles": 168
+  },
+  "awning_green": {
+   "bytes": 24192,
+   "sha256": "f07a57f4531094e82bef258d18c77f25991109ffa1c1c6d67b9bd370062cf9ec",
+   "triangles": 168
+  },
+  "awning_red": {
+   "bytes": 24188,
+   "sha256": "ef449d33eef4b684280a5b0c1f30b8aeb23cb61a0d3ad73d55879b4a357b38cf",
+   "triangles": 168
+  },
+  "balcony": {
+   "bytes": 67248,
+   "sha256": "6b30aa329c0765a1f10380d48cfe2fbc4119ff53f60f73f311d986b74d250040",
+   "triangles": 432
+  },
+  "barrel_group": {
+   "bytes": 39316,
+   "sha256": "b1aa3371383d9192b608353c1db174ae3b4bd6685ebd478d4b49b8630aa93c2b",
+   "triangles": 304
+  },
+  "bench": {
+   "bytes": 11316,
+   "sha256": "d50f826be9524d2f4ccdd94a13fe9febc4626dc66d4f3e75702a42449fc20b30",
+   "triangles": 72
+  },
+  "board_delivery": {
+   "bytes": 41468,
+   "sha256": "0fea50a62d6b6cb4d2d82d710be4c62bf582aa7b4d51961c8e810fa59a202e29",
+   "triangles": 240
+  },
+  "boat_cutter": {
+   "bytes": 46856,
+   "sha256": "1b1cdb5d4f88caf7b29fcf67aa6bc4c71282b12cef150eac1a90af7a20f744b2",
+   "triangles": 284
+  },
+  "boat_sail": {
+   "bytes": 27764,
+   "sha256": "0152786a1ba00faf91a96727aeffb699b3f5c828a24cbb7b74a3bc01045e5af7",
+   "triangles": 178
+  },
+  "bollard": {
+   "bytes": 9760,
+   "sha256": "bb688d8b8f5b4f5fed3c9e91b01426ea1d7aa0f6471e09cdbae09a80deadfb9a",
+   "triangles": 72
+  },
+  "bridge_foot": {
+   "bytes": 51608,
+   "sha256": "0285749aade7ee256fa0db5283b2d4ee396dc304b18940f48b2cabeb52f299b2",
+   "triangles": 396
+  },
+  "bridge_road": {
+   "bytes": 20436,
+   "sha256": "e6421459b97b57537a897910e9e40d62c05fcd4aa5b5847eafa5dd075b1bba2e",
+   "triangles": 140
+  },
+  "chimney": {
+   "bytes": 7284,
+   "sha256": "2dac20d011c548e6f182444aa1b7d596a58c1d1e9ce213fcd6b1c41df6fd3400",
+   "triangles": 44
+  },
+  "corner": {
+   "bytes": 3220,
+   "sha256": "17c6a7cf147b8c046a7f4a075d8844a16774692e7b37f49cb8f7548bec89a75f",
+   "triangles": 12
+  },
+  "cornice": {
+   "bytes": 4872,
+   "sha256": "2451155a74ebd0fd99e12aad64ab51cac28a21fd17571139badb3b40b9dfa14c",
+   "triangles": 24
+  },
+  "counter": {
+   "bytes": 44092,
+   "sha256": "4f75262737e9dfd64bd604ad31535f5e62d6b5a493ab639438aceef7d3086514",
+   "triangles": 288
+  },
+  "crane": {
+   "bytes": 20792,
+   "sha256": "3a0cde96f79b61ee2d759568e89177d9955d7640ad17c27473daf6d5c87dc337",
+   "triangles": 142
+  },
+  "crate_pallet": {
+   "bytes": 16100,
+   "sha256": "1eadd51afd128a5b4f91c068a0d6043d3e5de5ec5407296849b895e50d56dac3",
+   "triangles": 108
+  },
+  "crate_stack": {
+   "bytes": 8068,
+   "sha256": "a580d6244fe3a32c13f784903ea964e373746fa7ecfb6beefcd36c840bf0be77",
+   "triangles": 48
+  },
+  "door_frame": {
+   "bytes": 8064,
+   "sha256": "f7807eb1c5f96d09d91d425967e3d41156c4cf1de3d40adedc2f238502fbcfe5",
+   "triangles": 48
+  },
+  "door_house": {
+   "bytes": 7292,
+   "sha256": "b0070683c18ab056edc0294a8976cc9ffa3af059a254ab5f9c9fe14bd67f0ded",
+   "triangles": 42
+  },
+  "door_warehouse": {
+   "bytes": 7400,
+   "sha256": "fbff622370d939f6d683285dfcf756d209a0d6be8a6172f9504acd5e06eec7bf",
+   "triangles": 40
+  },
+  "dormer": {
+   "bytes": 9816,
+   "sha256": "e916b64cafc1fedfffa7e51d779c3b62a3347450f0f0b015bbdd9f4bc1775109",
+   "triangles": 60
+  },
+  "downpipe": {
+   "bytes": 12144,
+   "sha256": "4df4559e8ce247445357c945a57d434bfe7358bf5b87e1ace9c3acfe491159a6",
+   "triangles": 84
+  },
+  "fish_crates": {
+   "bytes": 54012,
+   "sha256": "4b2bfa2ef9b7301b672ec9fd7f3a205c9c482caa7ad0f93ffb7288eea9de7921",
+   "triangles": 276
+  },
+  "floor_planks": {
+   "bytes": 2916,
+   "sha256": "adc50ce1f5be8df743acc630e2d2e1280b60721ad4623b5187dc581af263f1a8",
+   "triangles": 10
+  },
+  "flower_box": {
+   "bytes": 58728,
+   "sha256": "d12cd0e739c9aa102c43cf939bc5d09354821e6cf6d17fe319e3c1a15820cc75",
+   "triangles": 292
+  },
+  "flower_tub": {
+   "bytes": 93092,
+   "sha256": "1d7020da345cbd25456cbc3ebecdafe6fc275cb54d66cf3599f03219d50acde3",
+   "triangles": 484
+  },
+  "fountain": {
+   "bytes": 37904,
+   "sha256": "1ceb529fa914e1f725e8de4654630e572d5edea54120564667d57a629ab5bfce",
+   "triangles": 260
+  },
+  "gable_front_wall": {
+   "bytes": 1828,
+   "sha256": "8ba22a89e9a78e42bb87b996c97ef0a90647a0447e45eee1d78ecbe777304d13",
+   "triangles": 1
+  },
+  "gable_stepped": {
+   "bytes": 17740,
+   "sha256": "40ca945e3c94b46d38035c7df70ec03d99f0bfdd5fd0ba38c6ff77ce6db5b786",
+   "triangles": 120
+  },
+  "gable_stepped_trim": {
+   "bytes": 6768,
+   "sha256": "3a7825ee567530e06fc52153152b291c23fbc8092ce43178159fff44c82b10ff",
+   "triangles": 38
+  },
+  "gable_window": {
+   "bytes": 5400,
+   "sha256": "02ec2c9b67b28c723c49b1c2effb3dd9de7044d5fb6b1febeaf3edfafea0710d",
+   "triangles": 28
+  },
+  "gutter": {
+   "bytes": 8628,
+   "sha256": "77382d72820628fb8fc67fa7ba701fec0341b87587f72c51e1f32a2e7b23cff2",
+   "triangles": 52
+  },
+  "lamp_post": {
+   "bytes": 14300,
+   "sha256": "ac41ab46a238e007eb034e31172c9bac8a37f623698e30cb984335684643d586",
+   "triangles": 102
+  },
+  "lamp_wall": {
+   "bytes": 7012,
+   "sha256": "36064999a90d7d4cfa1cb20c01f2584ff61ea0538ff095d1a25d4b37d7606503",
+   "triangles": 38
+  },
+  "lighthouse": {
+   "bytes": 88920,
+   "sha256": "f8c751cd5b116224d932fae272b15604e0818e98b343ff2cebd259f96f6687da",
+   "triangles": 674
+  },
+  "net_rack": {
+   "bytes": 50404,
+   "sha256": "a8e48570e811bcc7c836de9aba1a772866edbb36600455b394481011293a71db",
+   "triangles": 316
+  },
+  "pier": {
+   "bytes": 19384,
+   "sha256": "bcf19d5820c6ce845118242e5820ee4d140aac47dfb12dabf2901aef1e2f589c",
+   "triangles": 148
+  },
+  "plinth": {
+   "bytes": 2972,
+   "sha256": "dc03ea42362b47e81a33e1acb9263cec690d6b5f0377c46f21b7e8e99a8299e7",
+   "triangles": 10
+  },
+  "quay_edge": {
+   "bytes": 6204,
+   "sha256": "532c464c9a2a045e31dcfa12c4a7b7f6d190e8ad74580519df380c946cedd1a2",
+   "triangles": 34
+  },
+  "roof_bay": {
+   "bytes": 4868,
+   "sha256": "025483aef10a51636a226d0e1122e04cbf41bbe4e0a292254e119b20243f4271",
+   "triangles": 24
+  },
+  "roof_bay_slate": {
+   "bytes": 4880,
+   "sha256": "1d6964b3d31869481bf6ef838e97543851099046ba84057e9324a6cdbec7f0de",
+   "triangles": 24
+  },
+  "roof_end": {
+   "bytes": 1992,
+   "sha256": "bc0375cf98f846dae79c6362d14479331ba37dc4982cc8a5bbfaa602a9da4cd5",
+   "triangles": 2
+  },
+  "roof_end_planks": {
+   "bytes": 5284,
+   "sha256": "991d58686540940f3664366e3fe2f37fcadb09ad73834a8347bd2facc9270bcd",
+   "triangles": 26
+  },
+  "roof_end_trim": {
+   "bytes": 6760,
+   "sha256": "5960290821cc5b885fa58a89118691be16ad3bdc654b84735c00ee60d8dcd1c0",
+   "triangles": 38
+  },
+  "roof_front_gable": {
+   "bytes": 4884,
+   "sha256": "bec18de90532f00b5031bf3e9adecd8ba7cc0121857f1fe6bd694f0464c3980a",
+   "triangles": 24
+  },
+  "roof_hall": {
+   "bytes": 4840,
+   "sha256": "e5970699ee18e4196ce72fbf20bab37ba74cc751c663202764b6f23d65d0fb2c",
+   "triangles": 24
+  },
+  "rope_coil": {
+   "bytes": 20696,
+   "sha256": "67a6333295b192d45a2dda474689e290eb9cb6ee5e33478819cc25387cfc5093",
+   "triangles": 148
+  },
+  "rowboat": {
+   "bytes": 26992,
+   "sha256": "0c772ab3b0035176230915ec53859da5354956e4879d4ead5c4bf8637f065a1c",
+   "triangles": 170
+  },
+  "shelf_goods": {
+   "bytes": 118760,
+   "sha256": "63cc90818df493f428f45cb0c24580030e7edba9d4991b5373e6af9919205a08",
+   "triangles": 700
+  },
+  "shutters": {
+   "bytes": 8092,
+   "sha256": "d6729b54624894734eec9f826e89e2f1de89249a2e6afe61decbfb8368c0af7f",
+   "triangles": 48
+  },
+  "sign_bracket": {
+   "bytes": 11328,
+   "sha256": "9e829cc507edca6f638ab9939ab021f3dcde5331f299eba2298f28f29f44d980",
+   "triangles": 72
+  },
+  "stall_bread": {
+   "bytes": 63780,
+   "sha256": "505108b133b636e7602d1632d7a4e37c890db705d94921b1fe87f6f7e2573f15",
+   "triangles": 368
+  },
+  "stall_fish": {
+   "bytes": 63776,
+   "sha256": "89a3f00973505cabd97f580511f978ce6e11b31ede9513e2790d8e179f3744b0",
+   "triangles": 368
+  },
+  "stall_fruit": {
+   "bytes": 63780,
+   "sha256": "be610468e846e742028ca41c436299e1cfd3b4d361463d9975efaa2d52d83676",
+   "triangles": 368
+  },
+  "stool": {
+   "bytes": 10548,
+   "sha256": "b8b18a44ad4ef2ba14e456c2beee22bec808d8c0a824d0bc3b4db473597b326b",
+   "triangles": 72
+  },
+  "table_round": {
+   "bytes": 14596,
+   "sha256": "5daa20ac77831df8bdcf8eade383f1d7c67f38c077750a0cef94dcf91ac830bd",
+   "triangles": 116
+  },
+  "wall_brick": {
+   "bytes": 2960,
+   "sha256": "63e0847defa9765b8f14514bf4140b1b9ae3da19be9f1624518776d598ab7f5f",
+   "triangles": 10
+  },
+  "wall_planks": {
+   "bytes": 6184,
+   "sha256": "c9430456075b0ead2ec86ada150742d72c637940ed517b53f790bc82720aa71f",
+   "triangles": 34
+  },
+  "wall_plaster": {
+   "bytes": 2964,
+   "sha256": "49f4085ccbfa16974e0b3c1d16321d6ad3ad5438c399ed7aab2f48d597aa117f",
+   "triangles": 10
+  },
+  "window_loft": {
+   "bytes": 7160,
+   "sha256": "2f2784781744aa79a587d217ed73c2f2e37a7c1e026ca6870beb8893e463bbd7",
+   "triangles": 42
+  },
+  "window_round": {
+   "bytes": 18228,
+   "sha256": "2d41ed3dd630b441e662fe5ed63084f54ea2829a64447d2daa2e47d270ab1d56",
+   "triangles": 123
+  },
+  "window_sash": {
+   "bytes": 9952,
+   "sha256": "4ab5b3d9450fb74249080e7c01ac5db9b07be23120497494f9ac60f1efe436d6",
+   "triangles": 62
+  },
+  "window_shop": {
+   "bytes": 8352,
+   "sha256": "d0a17d5538f7eb027beefb75aaa54332e3f197a0aefa2ab99c58992a625b292b",
+   "triangles": 50
+  }
+ },
+ "storey": 4.0,
+ "tile_means_linear": {
+  "bark": [
+   0.13068,
+   0.07173,
+   0.03801
+  ],
+  "beam": [
+   0.1453,
+   0.05485,
+   0.0198
+  ],
+  "cloth": [
+   0.61806,
+   0.57763,
+   0.4914
+  ],
+  "cobble": [
+   0.15946,
+   0.14826,
+   0.12188
+  ],
+  "door": [
+   0.15117,
+   0.05927,
+   0.02975
+  ],
+  "field": [
+   0.16196,
+   0.09534,
+   0.03374
+  ],
+  "leaves": [
+   0.05603,
+   0.1452,
+   0.02475
+  ],
+  "metal": [
+   0.09037,
+   0.09937,
+   0.11717
+  ],
+  "plain": [
+   0.88693,
+   0.88693,
+   0.88693
+  ],
+  "planks": [
+   0.41933,
+   0.19519,
+   0.06745
+  ],
+  "plaster": [
+   0.8104,
+   0.7377,
+   0.59075
+  ],
+  "roof_clay": [
+   0.39586,
+   0.10768,
+   0.04026
+  ],
+  "roof_slate": [
+   0.09633,
+   0.13743,
+   0.20116
+  ],
+  "stone_wall": [
+   0.2828,
+   0.22753,
+   0.17912
+  ],
+  "thatch": [
+   0.33516,
+   0.21367,
+   0.05372
+  ],
+  "window": [
+   0.44887,
+   0.43693,
+   0.38456
+  ]
+ },
+ "tintable": [
+  "gable_front_wall",
+  "gable_stepped",
+  "roof_bay",
+  "roof_bay_slate",
+  "roof_end",
+  "roof_front_gable",
+  "roof_hall",
+  "shutters",
+  "wall_brick",
+  "wall_planks",
+  "wall_plaster"
+ ],
+ "wall": 0.4
+}
