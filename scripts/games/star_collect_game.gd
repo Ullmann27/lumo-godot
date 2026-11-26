@@ -8,6 +8,8 @@
 ## Treffer: Funkenregen, „+1“, Ton, hüpfender Zähler, Lumo dreht sich zum
 ## Stern. Ende: gemessene Zeit, Bestzeit je Kind, „Nochmal“ oder zurück
 ## zur Spielewelt. Es werden keine Lern-Sterne (Währung) vergeben.
+## Pause (Knopf, Zurück-Geste oder App im Hintergrund) hält Uhr, Sterne,
+## Sternschnuppe und Wellenwechsel an; die Bestzeit misst nur Spielzeit.
 extends Node3D
 
 signal star_caught(total: int)
@@ -50,6 +52,9 @@ var hint: Control
 var result_panel: PanelContainer
 var result_box: VBoxContainer
 var safe: MarginContainer
+var pause_button: Button
+var pause_panel: PanelContainer
+var paused: bool = false
 
 var _lumo: Node3D
 var _star_mesh: ArrayMesh
@@ -60,6 +65,10 @@ var _clock: float = 0.0
 var _rng := RandomNumberGenerator.new()
 var _child_section: String = "kind"
 var _previous_quit_on_back: bool = true
+## Spielzeit-Countdowns statt Baum-Timern: sie stehen in der Pause still.
+var _next_wave_in: float = -1.0
+var _shooting_in: float = -1.0
+var _shooting_fly: Tween
 
 
 func _ready() -> void:
@@ -91,7 +100,18 @@ func _exit_tree() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		_back_to_games()
+		# Erst anhalten, ein zweites Zurück verlässt das Spiel.
+		if _can_pause():
+			set_paused(true)
+		else:
+			_back_to_games()
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_APPLICATION_PAUSED]:
+		if _can_pause():
+			set_paused(true)
+
+
+func _can_pause() -> bool:
+	return not paused and wave >= 0 and is_instance_valid(result_panel) and not result_panel.visible
 
 
 # --- Welt -------------------------------------------------------------------
@@ -256,6 +276,9 @@ func start_hunt() -> void:
 			star.queue_free()
 	stars.clear()
 	_clear_shooting_star()
+	set_paused(false)
+	_next_wave_in = -1.0
+	_shooting_in = -1.0
 	wave = -1
 	caught_total = 0
 	bonus_caught = false
@@ -272,8 +295,7 @@ func _next_wave() -> void:
 	_show_banner(WAVE_TEXT[wave])
 	_update_counter()
 	if wave == 2:
-		var delay := get_tree().create_timer(2.2)
-		delay.timeout.connect(_launch_shooting_star)
+		_shooting_in = 2.2
 	if _lumo != null and wave > 0 and _lumo.has_method("play_behavior"):
 		_lumo.play_behavior("idle")
 	wave_started.emit(wave)
@@ -364,9 +386,9 @@ func _launch_shooting_star() -> void:
 	trail.initial_velocity_min = 0.1
 	trail.initial_velocity_max = 0.4
 	shooting_star.add_child(trail)
-	var fly := shooting_star.create_tween()
-	fly.tween_property(shooting_star, "position", to, 5.5)
-	fly.tween_callback(_clear_shooting_star)
+	_shooting_fly = shooting_star.create_tween()
+	_shooting_fly.tween_property(shooting_star, "position", to, 5.5)
+	_shooting_fly.tween_callback(_clear_shooting_star)
 
 
 func _clear_shooting_star() -> void:
@@ -376,9 +398,21 @@ func _clear_shooting_star() -> void:
 
 
 func _process(delta: float) -> void:
+	if paused:
+		return
 	_clock += delta
 	if running:
 		elapsed += delta
+	if _next_wave_in >= 0.0:
+		_next_wave_in -= delta
+		if _next_wave_in <= 0.0:
+			_next_wave_in = -1.0
+			_next_wave()
+	if _shooting_in >= 0.0:
+		_shooting_in -= delta
+		if _shooting_in <= 0.0:
+			_shooting_in = -1.0
+			_launch_shooting_star()
 	for star in stars:
 		if not is_instance_valid(star):
 			continue
@@ -413,7 +447,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		and event.device != InputEvent.DEVICE_ID_EMULATION
 	):
 		at = event.position
-	if at == Vector2.INF or not running:
+	if at == Vector2.INF or not running or paused:
 		return
 	if try_catch_at(at):
 		get_viewport().set_input_as_handled()
@@ -484,8 +518,7 @@ func _wave_done() -> void:
 		_lumo.play_behavior("celebrate")
 	if wave + 1 < WAVES.size():
 		_show_banner("Super! Gleich kommen neue Sterne …")
-		var pause := get_tree().create_timer(1.6)
-		pause.timeout.connect(_next_wave)
+		_next_wave_in = 1.6
 	else:
 		_clear_shooting_star()
 		AudioManager.play_sfx("celebrate")
@@ -608,6 +641,9 @@ func _build_ui() -> void:
 	back_button = KIT.button("‹ Spielewelt", _back_to_games, 120)
 	back_button.name = "BackButton"
 	top.add_child(back_button)
+	pause_button = KIT.button("Pause", func() -> void: set_paused(true), 96)
+	pause_button.name = "PauseButton"
+	top.add_child(pause_button)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -653,6 +689,32 @@ func _build_ui() -> void:
 	result_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	result_panel.add_child(result_box)
 	result_panel.hide()
+	pause_panel = PanelContainer.new()
+	pause_panel.name = "PausePanel"
+	pause_panel.add_theme_stylebox_override(
+		"panel", KIT.tinted_panel(Color(0.04, 0.07, 0.2, 0.95), STAR_GOLD, 26)
+	)
+	pause_panel.set_anchors_preset(Control.PRESET_CENTER)
+	pause_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	pause_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	pause_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	layer.add_child(pause_panel)
+	var pause_box := VBoxContainer.new()
+	pause_box.name = "PauseBox"
+	pause_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	pause_panel.add_child(pause_box)
+	pause_box.add_child(_label("Pause", 30, Color("fff2b8")))
+	pause_box.add_child(_label("Die Sterne warten auf dich.", 20, Color.WHITE))
+	var resume := KIT.button("Weiter", func() -> void: set_paused(false), 200, Color(), "primary")
+	resume.name = "ResumeButton"
+	pause_box.add_child(resume)
+	var restart := KIT.button("Neu starten", _restart_from_pause, 200)
+	restart.name = "RestartButton"
+	pause_box.add_child(restart)
+	var leave := KIT.button("Zur Spielewelt", _back_to_games, 200)
+	leave.name = "PauseBackButton"
+	pause_box.add_child(leave)
+	pause_panel.hide()
 
 
 func _label(text: String, size: int, color: Color) -> Label:
@@ -689,6 +751,8 @@ func _layout() -> void:
 	)
 	back_button.custom_minimum_size = Vector2(118, 52) * unit
 	back_button.add_theme_font_size_override("font_size", roundi(18 * unit))
+	pause_button.custom_minimum_size = Vector2(96, 52) * unit
+	pause_button.add_theme_font_size_override("font_size", roundi(18 * unit))
 	counter_pill.custom_minimum_size = Vector2(150, 52) * unit
 	var icon := counter_pill.find_child("StarIcon", true, false) as Control
 	if icon != null:
@@ -706,6 +770,16 @@ func _layout() -> void:
 			var size: int = int(item.get_meta("base_size", 20))
 			item.add_theme_font_size_override("font_size", roundi(size * unit))
 	result_box.add_theme_constant_override("separation", roundi(12 * unit))
+	pause_panel.custom_minimum_size = result_panel.custom_minimum_size
+	var pause_box := pause_panel.get_node("PauseBox") as VBoxContainer
+	pause_box.add_theme_constant_override("separation", roundi(12 * unit))
+	for item in pause_box.get_children():
+		if item is Button:
+			item.custom_minimum_size = Vector2(0, 56) * unit
+			item.add_theme_font_size_override("font_size", roundi(20 * unit))
+		elif item is Label:
+			var size: int = int(item.get_meta("base_size", 20))
+			item.add_theme_font_size_override("font_size", roundi(size * unit))
 	_place_hint()
 
 
@@ -771,7 +845,33 @@ func _show_result(seconds: float, record: bool) -> void:
 	_layout()
 
 
+## Hält die Jagd an oder setzt sie fort. Nur während einer laufenden Jagd
+## oder zwischen zwei Wellen; das Ergebnis braucht keine Pause.
+func set_paused(value: bool) -> void:
+	if value and not _can_pause():
+		return
+	paused = value
+	if is_instance_valid(_shooting_fly) and _shooting_fly.is_valid():
+		if value:
+			_shooting_fly.pause()
+		else:
+			_shooting_fly.play()
+	if _lumo != null and _lumo.has_method("set_suspended"):
+		_lumo.set_suspended(value)
+	pause_panel.visible = value
+	pause_button.disabled = value
+	if value:
+		AudioManager.play_sfx("ui_click")
+	print("[StarCollect] paused:%s elapsed:%.1f" % [str(value), elapsed])
+
+
+func _restart_from_pause() -> void:
+	set_paused(false)
+	start_hunt()
+
+
 func _back_to_games() -> void:
+	paused = false
 	running = false
 	if _lumo != null and _lumo.has_method("play_behavior"):
 		_lumo.play_behavior("idle")

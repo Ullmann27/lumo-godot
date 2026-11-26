@@ -30,6 +30,10 @@ const ROSTER: Array[String] = [
 ## Ruhiges Tempo für echte Einzelzüge; time_scale bleibt nur die Prüfbeschleunigung.
 const CARD_MOVE_SECONDS := 0.82
 const TURN_THINK_SECONDS := 0.9
+## Aufnehmen der Karte aus dem Fächer: anheben, kurz halten, dann legen.
+const PICK_UP_SECONDS := 0.3
+const PICK_HOLD_SECONDS := 0.2
+const PICK_LIFT := 0.26
 
 const GOLD := Color(1.0, 0.78, 0.25, 0.95)
 const CYAN := Color(0.35, 0.9, 1.0, 0.95)
@@ -717,12 +721,34 @@ func _ai_turn(player: int) -> void:
 		return
 	var move: Dictionary = SESSION.ai_move(rules, player)
 	seat.calm()
+	if move.has("card") and not await _pick_up(player, int(move.card)):
+		return
 	var result: Dictionary = rules.play(player, move)
 	_store()
 	await _play_events(result.events)
 	if generation == _generation and not _closed:
 		_busy = false
 		_presenting_player = -1
+
+## Mitspieler nehmen die gewählte Karte sichtbar aus dem Fächer, halten sie
+## kurz und legen sie erst dann. Die Regeln ändern sich erst danach.
+func _pick_up(player: int, card: int) -> bool:
+	var node: Node3D = cards.get(card)
+	if node == null or node.zone != "fan" or node.owner_seat != player:
+		return true
+	var lifted: Transform3D = node.transform
+	lifted.origin -= lifted.basis.z.normalized() * ART.HEIGHT * PICK_LIFT
+	lifted.origin += lifted.basis.y.normalized() * 0.012
+	if reduced_motion:
+		node.snap_to(lifted)
+	else:
+		node.fly_to(lifted, PICK_UP_SECONDS / maxf(0.01, time_scale))
+		node.set_suspended(_paused)
+	_sfx("card_draw")
+	if not await _wait_for_cards():
+		return false
+	return await _wait(PICK_HOLD_SECONDS)
+
 
 func _begin_human_turn() -> void:
 	_legal_cards.clear()
