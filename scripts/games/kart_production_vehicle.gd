@@ -25,6 +25,7 @@ const MODEL_DIRECTORY := "res://assets/kart/production/karts/"
 const SHELL_DIRECTORY := "res://assets/kart/production/fleet/"
 const MESHY_SHELL_DIRECTORY := "res://assets/kart/production/meshy/"
 const MESHY_CLOSE_MARGIN := Vector3(0.96, 0.96, 0.96)
+const MESHY_PAINT = preload("res://assets/shaders/kart_meshy_paint.gdshader")
 const LOD_HYSTERESIS := 2.0
 ## Lackart (matt/metallic/perlmutt), Startnummer und Fantasie-Aufkleber je Kart-Design.
 const FINISH = preload("res://scripts/games/kart_vehicle_finish.gd")
@@ -239,6 +240,8 @@ func _install_shell(look: Dictionary, stock: Dictionary) -> bool:
 	if stock_close_mesh == null:
 		return false
 	var meshy_ready := _install_meshy_close_shell(shell, stock_close_mesh)
+	if meshy_ready:
+		_apply_meshy_paint(look, stock)
 	for level in range(3):
 		var mesh := shell.find_child("LOD%d" % level, true, false) as MeshInstance3D
 		if mesh == null:
@@ -337,6 +340,26 @@ func _install_meshy_close_shell(shell: Node3D, target_mesh: MeshInstance3D) -> b
 	_lod_meshes[0].append(visual)
 	source_paths.append(meshy_shell_path)
 	return true
+
+
+func _apply_meshy_paint(look: Dictionary, stock: Dictionary) -> void:
+	var factory: Color = stock.get("paint", Color.WHITE)
+	var selected: Color = look.get("paint", factory)
+	if selected.is_equal_approx(factory):
+		return
+	# The imported body carries its details in one baked texture. An instance
+	# override keeps the original GLB and leaves other karts' materials alone.
+	for surface in range(meshy_close_mesh.mesh.get_surface_count()):
+		var original := meshy_close_mesh.mesh.surface_get_material(surface) as StandardMaterial3D
+		if original == null or original.albedo_texture == null:
+			continue
+		var paint := ShaderMaterial.new()
+		paint.shader = MESHY_PAINT
+		paint.set_shader_parameter("original_albedo", original.albedo_texture)
+		paint.set_shader_parameter("factory_paint", factory)
+		paint.set_shader_parameter("selected_paint", selected)
+		paint.set_shader_parameter("factory_roughness", original.roughness)
+		meshy_close_mesh.set_surface_override_material(surface, paint)
 
 
 static func _relative_transform(node: Node3D, parent: Node3D) -> Transform3D:

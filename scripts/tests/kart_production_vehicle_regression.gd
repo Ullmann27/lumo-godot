@@ -53,13 +53,23 @@ func _material(kart, fragment: String, wheel: bool = false) -> StandardMaterial3
 	return null
 
 
+func _close_paint(kart) -> ShaderMaterial:
+	var shell: MeshInstance3D = kart.production_vehicle.meshy_close_mesh
+	return shell.get_active_material(0) as ShaderMaterial
+
+
 func _check_variant(variant: String) -> void:
 	var kart = _kart(variant)
 	_require(is_instance_valid(kart.production_vehicle), variant + " must use its imported asset")
 	_require(is_instance_valid(kart.lumo_animation), "Original Lumo retains his existing player adapter")
 	_require(not is_instance_valid(kart.production_driver), "Original Lumo cannot be replaced by a rival")
 	var production = kart.production_vehicle
-	_require(production.source_paths.size() == 3, "All authored LOD resources must be bound")
+	_require(production.source_paths.size() == 4, "Three mechanical LOD resources and a close shell")
+	for level in range(3):
+		var suffix := "" if level == 0 else "_lod%d" % level
+		_require(production.source_paths[level] == PRODUCTION.MODEL_DIRECTORY + "aurora_" + variant + suffix + ".glb", "Exact mechanical source for LOD %d" % level)
+	_require(production.source_paths[3] == PRODUCTION.MESHY_SHELL_DIRECTORY + variant + ".glb", "Exact Meshy source for the close shell")
+	_require(production.meshy_close_mesh.visible and not production.stock_close_mesh.visible, "Factory close shell is visible without the fallback underneath")
 	_require(production.find_children("*", "AnimationPlayer", true, false).is_empty(), "Demonstration animation cannot run over physics")
 	_require(kart.wheel_pivots.size() == 4 and kart.wheel_rotors.size() == 4, "Four real mechanical assemblies")
 	var anchors: Array[int] = []
@@ -136,18 +146,23 @@ func _check_variant(variant: String) -> void:
 
 func _check_tuning() -> void:
 	var reference = _kart("comet")
-	var stock := _material(reference, "_paint")
-	var stock_color := stock.albedo_color
+	var stock := reference.production_vehicle.meshy_close_mesh.get_active_material(0) as StandardMaterial3D
+	_require(stock != null and stock.albedo_texture != null, "Stock close shell draws its original texture")
 	var edited = _kart("comet")
 	edited.set_look({"paint": Color("b3202a"), "trim": Color.WHITE, "accent": Color("ffc23a"),
 		"rim": Color("e8b34c"), "rim_neon": true, "neon": Color("ff44bb"), "neon_custom": true})
-	_require(_material(edited, "_paint").albedo_color.is_equal_approx(Color("b3202a")), "Workshop paint reaches the imported finish")
+	var finish := _close_paint(edited)
+	_require(finish != null and finish.get_shader_parameter("selected_paint").is_equal_approx(Color("b3202a")), "Workshop paint reaches the visible Meshy shell")
+	_require(finish.get_shader_parameter("original_albedo") == stock.albedo_texture, "The selected paint preserves the baked details")
 	_require(_material(edited, "BrushedAluminium", true).albedo_color.is_equal_approx(Color("e8b34c")), "Workshop rim selection reaches the wheel surfaces")
+	edited.production_vehicle.set_lod(1)
 	_require(_material(edited, "InsetCyanLens").emission.is_equal_approx(Color("ff44bb")), "Workshop neon reaches the actual light surfaces")
-	_require(stock.albedo_color.is_equal_approx(stock_color), "A tuned vehicle cannot mutate shared stock materials")
-	for level in range(3):
+	_require(reference.production_vehicle.meshy_close_mesh.get_active_material(0) == stock, "A tuned vehicle cannot mutate shared stock materials")
+	for level in [1, 2]:
 		edited.production_vehicle.set_lod(level)
-		_require(_material(edited, "_paint").albedo_color.is_equal_approx(Color("b3202a")), "Tuning survives every LOD")
+		_require(_material(edited, "_paint").albedo_color.is_equal_approx(Color("b3202a")), "Paint survives every distant LOD")
+	edited.production_vehicle.set_lod(0)
+	_require(_close_paint(edited) == finish, "Returning to the close shell retains the selected paint")
 	results.append({"tuning_and_shared_material_isolation": true})
 	edited.free()
 	reference.free()
@@ -224,7 +239,8 @@ func _run() -> void:
 	var swatch: Button = workshop.find_child("Swatch_feuer", true, false)
 	_require(swatch != null, "Workshop exposes its real paint swatch")
 	swatch.pressed.emit()
-	_require(_material(workshop.preview_kart, "_paint").albedo_color.is_equal_approx(Color("b3202a")), "Actual swatch changes the imported paint immediately")
+	var finish := _close_paint(workshop.preview_kart)
+	_require(finish != null and finish.get_shader_parameter("selected_paint").is_equal_approx(Color("b3202a")), "Actual swatch changes the visible Meshy paint immediately")
 	_require(workshop.tuning.chosen("glider", "paint") == "werk", "Trying paint preserves the purchase state")
 	workshop.back_button.pressed.emit()
 	await process_frame
