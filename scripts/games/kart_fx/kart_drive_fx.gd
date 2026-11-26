@@ -13,6 +13,11 @@ extends Node3D
 ## Draw calls: at most five (sparks, soft particles, marks, speed lines, flames);
 ## HIGH adds two short-lived lights (turbo glow, rail-hit flash).
 ## Rivals near the player get the same effects on a strict per-profile budget.
+## Ground under the tyres (kart_fx_ground): kerb rumble, puddle splashes with wet
+## tyre tracks afterwards, clods and dust on the verge. The chase camera's body
+## language (g-force surge, soft landing heave, drift sway, kerb tremor) lives in
+## kart_fx_camera_rig. Four quality tiers: Leicht, Ausgewogen, Hoch, Sehr hoch;
+## each caps live particles (capacity) and new particles per tick (tick_cap).
 
 const PARTICLES = preload("res://scripts/games/kart_fx/kart_fx_particles.gd")
 const MARKS = preload("res://scripts/games/kart_fx/kart_fx_marks.gd")
@@ -25,16 +30,29 @@ const LINES_SHADER = preload("res://assets/shaders/kart_fx_speedlines.gdshader")
 const FLAME_SHADER = preload("res://assets/shaders/kart_fx_flame.gdshader")
 const FLAMES = preload("res://scripts/games/kart_fx/kart_fx_flames.gd")
 const PHOTO_FINISH = preload("res://scripts/games/kart_fx/kart_fx_photo_finish.gd")
+const GROUND = preload("res://scripts/games/kart_fx/kart_fx_ground.gd")
+const CAMERA_RIG = preload("res://scripts/games/kart_fx/kart_fx_camera_rig.gd")
+const GROUND_FX = preload("res://scripts/games/kart_fx/kart_fx_ground_effects.gd")
 
 ## Quality budgets. HIGH asks a lot of the newest phones; LOW stays readable.
+## "ultra" (Sehr hoch) is HIGH plus PerformanceManager.is_ultra(). tick_sparks /
+## tick_puffs cap the particles born between two ticks (CPU per frame).
 const BUDGETS := {
+	"ultra": {"sparks": 3600, "puffs": 2100, "marks": 3000, "mark_life": 9.0, "rate": 1.25,
+		"size": 1.15, "rivals": 5, "rival_rate": 0.45, "lights": true, "tick_sparks": 420,
+		"tick_puffs": 280},
 	"high": {"sparks": 2400, "puffs": 1400, "marks": 2200, "mark_life": 7.5, "rate": 1.0, "size": 1.15,
-		"rivals": 4, "rival_rate": 0.35, "lights": true},
+		"rivals": 4, "rival_rate": 0.35, "lights": true, "tick_sparks": 300, "tick_puffs": 200},
 	"medium": {"sparks": 1200, "puffs": 700, "marks": 1100, "mark_life": 5.0, "rate": 0.6, "size": 1.0,
-		"rivals": 2, "rival_rate": 0.25, "lights": false},
+		"rivals": 2, "rival_rate": 0.25, "lights": false, "tick_sparks": 180, "tick_puffs": 120},
 	"low": {"sparks": 420, "puffs": 240, "marks": 320, "mark_life": 3.0, "rate": 0.3, "size": 0.95,
-		"rivals": 0, "rival_rate": 0.0, "lights": false},
+		"rivals": 0, "rival_rate": 0.0, "lights": false, "tick_sparks": 90, "tick_puffs": 60},
 }
+## Names the child and the parents see in the settings.
+const PROFILE_NAMES := {
+	"low": "Leicht", "medium": "Ausgewogen", "high": "Hoch", "ultra": "Sehr hoch"
+}
+
 const DRIFT_COLORS: Array[Color] = [
 	Color(0.86, 0.93, 1.0), Color("4fb8ff"), Color("ff9a3c"), Color("c77dff")
 ]
@@ -74,6 +92,10 @@ var line_intensity: float = 0.0
 var rpm: float = 0.0
 var load: float = 0.0
 var scrape_level: float = 0.0
+var camera_rig = CAMERA_RIG.new()
+var ground: Dictionary = GROUND.ROAD
+var rumble_level: float = 0.0
+var wet_time: float = 0.0
 
 var _rng := RandomNumberGenerator.new()
 var _accumulators: Dictionary = {}
@@ -101,6 +123,7 @@ var _zoomed_camera: Camera3D
 var _zoom_offset: float = 0.0
 var _racing_speed: float = 0.0
 var _rival_afterglow: Dictionary = {}
+var _rival_ground: Dictionary = {}
 
 
 func _ready() -> void:
@@ -150,7 +173,7 @@ func _ready() -> void:
 func bind_race(owner: Node) -> void:
 	race = owner
 	style = STYLES.for_track(str(race.track_id))
-	_apply_profile(str(race.graphics_profile))
+	_apply_profile(_profile_of(race))
 	_read_light_tint()
 	reset()
 
@@ -169,6 +192,25 @@ func _read_light_tint() -> void:
 	puffs.set_parameter("light_tint", Vector3(light_tint.r, light_tint.g, light_tint.b))
 
 
+## The race's own tier; "high" becomes "ultra" (Sehr hoch) when the app-wide
+## PerformanceManager has the ultra scenery switched on.
+static func _profile_of(owner: Node) -> String:
+	var name: String = str(owner.get("graphics_profile"))
+	if name != "high":
+		return name
+	var loop := Engine.get_main_loop() as SceneTree
+	if loop == null or loop.root == null:
+		return name
+	var performance: Node = loop.root.get_node_or_null("PerformanceManager")
+	if performance != null and performance.has_method("is_ultra"):
+		return "ultra" if bool(performance.call("is_ultra")) else name
+	return name
+
+
+func profile_name() -> String:
+	return str(PROFILE_NAMES.get(profile, "Ausgewogen"))
+
+
 func _apply_profile(next: String) -> void:
 	if not BUDGETS.has(next):
 		next = "medium"
@@ -179,6 +221,8 @@ func _apply_profile(next: String) -> void:
 	sparks.resize(int(budget.sparks))
 	puffs.resize(int(budget.puffs))
 	marks.resize(int(budget.marks))
+	sparks.tick_cap = int(budget.tick_sparks)
+	puffs.tick_cap = int(budget.tick_puffs)
 	flames.light_enabled = bool(budget.lights)
 
 
@@ -207,6 +251,11 @@ func reset() -> void:
 	boost_age = 0.0
 	afterglow = 0.0
 	_rival_afterglow.clear()
+	_rival_ground.clear()
+	camera_rig.reset()
+	ground = GROUND.ROAD
+	rumble_level = 0.0
+	wet_time = 0.0
 	_previous_place = 0
 	_previous_boost = false
 	_silence()
@@ -236,7 +285,7 @@ func _process(_delta: float) -> void:
 	if bool(race.get("paused")):
 		return
 	var camera: Camera3D = race.get("camera")
-	var jolt := camera_shake()
+	var jolt := camera_shake() + camera_body_offset()
 	if is_instance_valid(camera) and jolt != Vector3.ZERO:
 		_camera_offset = camera.basis * jolt
 		camera.position += _camera_offset
@@ -323,8 +372,12 @@ func landed(impact: float, surface_frame: Basis) -> void:
 			)
 		_count("landing_sparks", burst)
 	if not reduced_motion:
+		# Soft landing: the body nods and the camera dips on a spring; only a
+		# really hard touch-down adds a short jolt on top.
 		_pitch_velocity -= 0.6 + strength * 1.6
-		shake = maxf(shake, 0.02 + strength * 0.07)
+		camera_rig.land(strength)
+		if strength > 0.45:
+			shake = maxf(shake, 0.01 + (strength - 0.45) * 0.08)
 	_sound("land_thump", 0.95 + _rng.randf() * 0.1, 0.45 + strength * 0.55)
 
 
@@ -336,7 +389,7 @@ func advance(delta: float) -> void:
 		return
 	var kart: Node3D = race.player
 	_restore_tilt()
-	_apply_profile(str(race.graphics_profile))
+	_apply_profile(_profile_of(race))
 	reduced_motion = bool(race.reduced_motion)
 	if bool(race.paused):
 		# Frozen frame: no time passes, nothing is born, the pose stays.
@@ -356,6 +409,7 @@ func advance(delta: float) -> void:
 		_contacts.clear()
 		marks.lift_all()
 		flames.finish()
+		camera_rig.advance(step, 0.0, false, 0.0, 0.0, 0.0)
 		_settle(step, kart)
 		_update_engine(step)
 		_silence(true)
@@ -479,14 +533,23 @@ func advance(delta: float) -> void:
 	_rivals(forward, step)
 	flames.finish()
 	_surface_trail(tyres, forward, up, speed, step, grounded and not drifting and not brake_marking)
+	GROUND_FX.advance(self, kart, tyres, forward, up, right, speed, step, grounded)
 	_slipstream(kart, forward, up, speed, step)
 	_lead_confetti(kart, up)
 	_update_lines(step, boosting and not reduced_motion)
 	# Body spring: nose dive when braking, squat on gas, lean in turns.
 	var target_pitch := clampf(_accel * 0.0032, -0.075, 0.045)
 	var target_roll := clampf(float(race.steering) * ratio * 0.05 * (1.4 if drifting else 1.0), -0.07, 0.07)
+	if rumble_level > 0.05 and not reduced_motion:
+		# Kerb ridges / verge bumps rock the body a touch.
+		target_roll += sin(_clock * absf(speed) / 0.7 * TAU) * 0.006 * rumble_level
 	_spring(step, target_pitch, target_roll)
 	_apply_tilt(kart)
+	if reduced_motion:
+		camera_rig.reset()
+	else:
+		var slide: float = signf(float(race.steering)) * 0.8 if drifting else 0.0
+		camera_rig.advance(step, _accel if grounded else 0.0, not grounded, slide, rumble_level, speed)
 	shake = maxf(0.0, shake - step * maxf(0.12, shake * 6.0))
 	fov_punch = move_toward(fov_punch, 0.0, step * 7.0)
 	_shake_phase += step
@@ -497,10 +560,14 @@ func advance(delta: float) -> void:
 	_set_loop("squeal", squeal / motor.tire_grip, (0.85 + speed / 45.0 + 0.05 * float(tier)) * motor.brake_timbre)
 	var rolling := ratio * (1.0 if grounded else 0.0)
 	var loop_kind: String = str(style.loop)
-	_set_loop("gravel", rolling * 0.9 if loop_kind == "gravel" else 0.0, 0.8 + ratio * 0.5)
+	var verge: float = rumble_level if str(ground.kind) == "verge" else 0.0
+	var gravel: float = rolling * 0.9 if loop_kind == "gravel" else 0.0
+	_set_loop("gravel", maxf(gravel, verge * 0.85), 0.8 + ratio * 0.5)
 	_set_loop("snow", rolling * 0.9 if loop_kind == "snow" else 0.0, 0.8 + ratio * 0.45)
 	_set_loop("turbo", 0.85 if boosting else 0.0, (1.0 + ratio * 0.2) * motor.boost_timbre)
-	_set_loop("wind", ratio * ratio * 0.75 + (0.25 if not grounded else 0.0), 0.8 + ratio * 0.5)
+	_set_loop("curb", rumble_level * (0.9 if str(ground.kind) == "curb" else 0.0), 0.75 + speed / 40.0)
+	var wind_pitch: float = 0.8 + ratio * 0.5 + (0.12 if boosting else 0.0)
+	_set_loop("wind", wind_gain(ratio, grounded, boosting), wind_pitch)
 
 
 func _process_contacts(step: float, forward: Vector3, up: Vector3) -> void:
@@ -710,6 +777,21 @@ func _surface_trail(tyres: Array[Node3D], forward: Vector3, up: Vector3, speed: 
 			_count("embers", embers)
 
 
+## Kart-to-kart contact (from the race's own collision check); see kart_fx_ground_effects.
+## [param away] points from [param other] towards [param kart] (world space).
+func kart_contact(kart: Node3D, other: Node3D, away: Vector3, closing: float) -> void:
+	GROUND_FX.kart_contact(self, kart, other, away, closing)
+
+
+## Wind under the helmet: grows with the square of the speed, louder in the air
+## and on a turbo, quieter in another kart's slipstream (the air is calm there).
+func wind_gain(ratio: float, grounded: bool, boosting: bool) -> float:
+	var towing = race.get("slipstream_charge")
+	var charge: float = float(towing) if towing != null else 0.0
+	var gain := ratio * ratio * 0.75 + (0.25 if not grounded else 0.0) + (0.15 if boosting else 0.0)
+	return clampf(gain * (1.0 - 0.45 * clampf(charge, 0.0, 1.0)), 0.0, 1.0)
+
+
 func _slipstream(kart: Node3D, forward: Vector3, up: Vector3, speed: float, step: float) -> void:
 	var charge: float = float(race.get("slipstream_charge")) if race.get("slipstream_charge") != null else 0.0
 	if charge <= 0.05 or speed < 8.0:
@@ -885,6 +967,20 @@ func _rivals(_forward: Vector3, step: float) -> void:
 						0.35 * _size(), _rng.randf_range(1.3, 2.2) * float(style.dust_scale) * 1.4 * _size(), 0.0,
 						_rng.randf_range(1.2, 2.2), -0.04, _tone(style.smoke, 0.05), Color(1.7, _rng.randf(), 0.4, 0.0))
 				_count("rival_dust", count)
+		var index: int = opponents.find(rival)
+		var lanes = race.get("opponent_lanes")
+		var progress = race.get("opponent_distances")
+		var known: bool = lanes != null and progress != null and index >= 0
+		if known and index < lanes.size() and index < progress.size():
+			var under: Dictionary = GROUND.sample(
+				race.world, float(progress[index]), float(lanes[index]), false
+			)
+			var was_wet: bool = bool(_rival_ground.get(id, false))
+			var wet: bool = str(under.kind) == "puddle" and speed > 3.0
+			if wet and not was_wet:
+				GROUND_FX.splash(self, rival.global_position, forward, up, right, speed, 0.6)
+				_count("rival_splash", 1)
+			_rival_ground[id] = wet
 		var boosting: bool = bool(rival.motion_boost) and speed > 0.5
 		var glow: float = float(_rival_afterglow.get(id, 0.0))
 		glow = 1.0 if boosting else move_toward(glow, 0.0, step / 1.6)
@@ -936,7 +1032,15 @@ func _restore_tilt() -> void:
 ## Extra camera field of view (degrees) for this frame; 0 with reduced motion.
 ## Added on top of the race's smoothed FOV (never smoothed from), like fx.camera_fov_kick().
 func camera_fov_kick() -> float:
-	return 0.0 if reduced_motion else fov_punch
+	if reduced_motion:
+		return 0.0
+	# The turbo's own punch already widens the view: the pull adds only what is left.
+	return fov_punch + camera_rig.fov * (1.0 - clampf(fov_punch / 5.0, 0.0, 1.0))
+
+
+## Camera body language of this frame (camera-local metres); zero with reduced motion.
+func camera_body_offset() -> Vector3:
+	return Vector3.ZERO if reduced_motion else camera_rig.offset()
 
 
 ## Small positional jolt (camera-local metres); zero with reduced motion.
@@ -978,7 +1082,7 @@ func _silence(keep_engine: bool = false) -> void:
 	var audio = race.get("kart_audio")
 	if not is_instance_valid(audio):
 		return
-	for kind in ["scrape", "squeal", "gravel", "snow", "turbo", "wind"]:
+	for kind in ["scrape", "squeal", "gravel", "snow", "turbo", "wind", "curb"]:
 		audio.set_loop(kind, 0.0)
 	if not keep_engine:
 		audio.stop_motors()
@@ -1104,4 +1208,16 @@ func visual_state() -> Dictionary:
 		"flames": flames.used,
 		"lights": int(flames.light.visible) + int(flash_light.visible),
 		"photo_finish": photo_finish.active,
+		"profile_name": profile_name(),
+		"tick_spark_cap": sparks.tick_cap,
+		"tick_soft_cap": puffs.tick_cap,
+		"tick_sparks_peak": sparks.tick_peak,
+		"tick_soft_peak": puffs.tick_peak,
+		"dropped": sparks.dropped_total + puffs.dropped_total,
+		"ground": str(ground.kind),
+		"rumble": rumble_level,
+		"wet_time": wet_time,
+		"camera_offset": camera_rig.offset(),
+		"camera_fov": camera_rig.fov,
+		"camera_landings": camera_rig.landings,
 	}

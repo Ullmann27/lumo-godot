@@ -5,12 +5,15 @@ Synthesised from scratch like tools/art/generate_kart_item_audio.py: no recordin
 Loops are built from circular FFT noise and whole numbers of periods, so they repeat without
 a seam. Requires numpy and ffmpeg with libvorbis. Writes assets/audio/kart/fx/*.ogg and a
 manifest. Run: python3 tools/art/generate_kart_fx_audio.py
+Only some cues (the others and their manifest entries stay untouched):
+    python3 tools/art/generate_kart_fx_audio.py --only curb,splash,bump
 """
 from pathlib import Path
 import hashlib
 import json
 import math
 import subprocess
+import sys
 import tempfile
 import wave
 
@@ -203,6 +206,59 @@ def rocket_fly(seconds):
     return hiss + rumble + whistle
 
 
+def own_rng(name):
+    """Cues added after 2026-11-26 draw from their own stream (seeded by name), so a
+    partial run (--only) reproduces them exactly and earlier cues stay identical."""
+    return np.random.default_rng(SEED + int(hashlib.sha256(name.encode()).hexdigest()[:8], 16))
+
+
+def own_noise(rng, n, low=None, high=None):
+    y = band(rng.normal(size=n), low, high)
+    return y / (np.std(y) + 1e-9)
+
+
+def curb(seconds):
+    """Kerb rumble: a rubber tyre drumming over painted ridges, 24 ridges per loop
+    second at the reference speed (pitch_scale speeds the rhythm up)."""
+    rng = own_rng("curb")
+    t = t_axis(seconds)
+    ridges = 24
+    phase = (t * ridges / seconds) % 1.0
+    hit = np.exp(-phase * 9.0)
+    thud = np.sin(TAU * (round(78 * seconds) / seconds) * t) * hit
+    body = own_noise(rng, len(t), 90, 700) * (0.35 + 0.65 * hit)
+    grit = own_noise(rng, len(t), 1200, 4200) * 0.18 * hit
+    return thud * 0.9 + body * 0.7 + grit
+
+
+def splash():
+    """A tyre through a puddle: a short wet burst, a sheet of spray, falling drops."""
+    rng = own_rng("splash")
+    t = t_axis(0.7)
+    burst = own_noise(rng, len(t), 350, 6500) * np.exp(-t * 9.0)
+    sheet = own_noise(rng, len(t), 1500, 9000) * np.exp(-t * 4.0) * 0.45
+    drops = np.zeros_like(t)
+    k = t_axis(0.03)
+    for when in rng.uniform(0.08, 0.6, 18):
+        i = int(when * SR)
+        f = rng.uniform(900, 2400)
+        drop = np.sin(TAU * f * k * (1 + 1.5 * k)) * np.exp(-k * 160) * rng.uniform(0.2, 0.6)
+        seg = drops[i:i + len(k)]
+        seg += drop[: len(seg)]
+    low = np.sin(TAU * 140 * t) * np.exp(-t * 18) * 0.5
+    return burst + sheet + drops + low
+
+
+def bump():
+    """Two karts touching: a soft rubber-bumper thump with a little plastic rattle."""
+    rng = own_rng("bump")
+    t = t_axis(0.32)
+    thump = np.sin(TAU * 118 * t * (1 - 0.35 * t)) * np.exp(-t * 22) * 1.2
+    knock = np.sin(TAU * 410 * t) * np.exp(-t * 38) * 0.35
+    rattle = own_noise(rng, len(t), 700, 4800) * np.exp(-t * 30) * 0.4
+    return thump + knock + rattle
+
+
 # name -> (builder, loop)
 SOUNDS = {
     "engine_low": (lambda: engine_layer(62, 1.0, 14, 1.15, 1.0), True),
@@ -223,6 +279,10 @@ SOUNDS = {
     "whoosh": (whoosh, False),
     # Appended last: the earlier cues keep their random stream (identical files).
     "rocket_fly": (lambda: rocket_fly(1.0), True),
+    # Own random streams (own_rng): kerb rumble, puddle splash, kart-to-kart bump.
+    "curb": (lambda: curb(1.0), True),
+    "splash": (splash, False),
+    "bump": (bump, False),
 }
 
 
@@ -255,9 +315,25 @@ def export(name, audio, loop):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    manifest = []
-    for name, (builder, loop) in SOUNDS.items():
-        manifest.append(export(name, builder(), loop))
+    only = None
+    for arg in sys.argv[1:]:
+        if arg.startswith("--only="):
+            only = set(arg.split("=", 1)[1].split(","))
+        elif arg == "--only" and sys.argv.index(arg) + 1 < len(sys.argv):
+            only = set(sys.argv[sys.argv.index(arg) + 1].split(","))
+    if only is not None:
+        manifest_path = OUT / "manifest.json"
+        previous = json.loads(manifest_path.read_text())["assets"] if manifest_path.exists() else []
+        by_file = {entry["file"]: entry for entry in previous}
+        for name, (builder, loop) in SOUNDS.items():
+            if name in only:
+                by_file[name + ".ogg"] = export(name, builder(), loop)
+        order = [name + ".ogg" for name in SOUNDS]
+        manifest = [by_file[f] for f in order if f in by_file]
+    else:
+        manifest = []
+        for name, (builder, loop) in SOUNDS.items():
+            manifest.append(export(name, builder(), loop))
     (OUT / "manifest.json").write_text(json.dumps({"generator": "tools/art/generate_kart_fx_audio.py", "seed": SEED,
                                                    "sample_rate": SR, "channels": 1,
                                                    "original_samples_only": True, "assets": manifest}, indent=2) + "\n")

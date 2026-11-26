@@ -151,6 +151,31 @@
       "sha256": "325a614f0698d6737c28fe3ad3ef694e4902c89b3e6371c78e2a8cfaea6a8f1a",
       "description": "Original synthesized rocket_fly",
       "seam_delta": 0.06338
+    },
+    {
+      "file": "curb.ogg",
+      "seconds": 1.0,
+      "loop": true,
+      "bytes": 12839,
+      "sha256": "e816df4f6980f91e6aac7dd276fe679fc853aa18b787b4fafb0c20ec212f2608",
+      "description": "Original synthesized curb",
+      "seam_delta": 0.18158
+    },
+    {
+      "file": "splash.ogg",
+      "seconds": 0.7,
+      "loop": false,
+      "bytes": 9270,
+      "sha256": "4c061a981c2258843b1da8b67098648df6bf91578ee9f18669f32560dd59be94",
+      "description": "Original synthesized splash"
+    },
+    {
+      "file": "bump.ogg",
+      "seconds": 0.32,
+      "loop": false,
+      "bytes": 5906,
+      "sha256": "fc21692a86f4a963873eaa838f96ecd55e41a9d6b287e26f80b9530a8b05f549",
+      "description": "Original synthesized bump"
     }
   ]
 }
