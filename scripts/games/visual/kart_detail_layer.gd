@@ -774,9 +774,10 @@ func _railside() -> void:
 	var kinds: Array = theme.get("railside", ["tire_stack", "flag_pole"])
 	var d: float = 50.0
 	var flag_gap: float = lerpf(90.0, 45.0, density)
+	var step: float = lerpf(16.0, 8.0, density) * float(theme.get("railside_spacing", 1.0))
 	var last_flag: float = -999.0
 	while d < _length() - 30.0:
-		d += lerpf(16.0, 8.0, density)
+		d += step
 		var turn: float = _corner_strength(d)
 		if absf(turn) > 0.16:
 			var outside: float = -signf(turn)

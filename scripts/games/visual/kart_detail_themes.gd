@@ -23,8 +23,28 @@ const VOLCANO: Array = [["lava_warning", 0.0, 0.0, 0.5], ["tire_stack", 1.5, 0.4
 const GALAXY: Array = [["satellite_dish", 0.0, 1.0, 0.9], ["drone", 1.6, 0.0, 0.5], ["pylon", -1.4, -0.4, 0.3]]
 const LAB: Array = [["abacus", 0.0, 0.8, 1.0], ["crate", 2.0, 0.4, 0.5], ["planter", -2.2, 0.6, 0.8]]
 const JUNGLE: Array = [["fern", 0.0, 0.0, 0.8], ["mushroom_cluster", 1.4, 0.6, 0.7], ["stump", -1.2, 0.8, 0.5], ["bush_round", 0.3, 1.8, 0.9]]
+const WIND_STATION: Array = [
+	["toolbox", 0.0, 0.5, 0.6], ["bench", 2.1, 0.9, 0.9], ["crate_stack", -2.2, 1.0, 0.9],
+]
 
 const THEMES: Dictionary = {
+	"windwerk_3000": {
+		"ground": "road", "road_wear": ["patch", "tar", "crack"],
+		"cluster_spacing": 1.85, "railside_spacing": 2.0, "reflectors": false,
+		"clusters": [WIND_STATION, PIT, TIRES], "brands": ["wolkenwerk", "fuchsflitzer", "lumo_kart"],
+		"pad_color": Color("526f70"), "pad_trim": Color("d8a45d"),
+		"flock": "gull_flock", "flock_height": 12.0, "lantern": "lamp_post_small",
+		"airship": false, "string_colors": [Color("ffe7a3"), Color("d8a45d"), Color("64cdbc")],
+	},
+	"riesengarten_2400": {
+		"ground": "road", "road_wear": ["patch", "puddle", "crack"],
+		"cluster_spacing": 1.85, "railside_spacing": 2.0, "reflectors": false,
+		"edge": "leaves", "edge_tint": Color("d6e7a5"),
+		"clusters": [FOREST, GLADE, HAY], "brands": ["gluehwurm", "blitzbeere", "lumo_kart"],
+		"pad_color": Color("7d7957"), "pad_trim": Color("bcda7b"),
+		"flock": "gull_flock", "flock_height": 8.0, "flock_scale": 0.6,
+		"lantern": "firefly_lantern", "airship": false,
+	},
 	# Signatur-Strecke Vulkanexpress (Team B1): Basaltbankett, keine Pfützen, kein Luftschiff.
 	"vulkanexpress_3100": {
 		"ground": "road", "road_wear": ["crack", "tar", "patch"], "edge": "sand",
