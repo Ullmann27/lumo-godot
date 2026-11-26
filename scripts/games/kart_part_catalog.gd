@@ -714,8 +714,8 @@ static func _workshop_parts() -> Dictionary:
 		],
 		"tires": [
 			_part("tires", "touring", "Tourenreifen", 6, "Tire_Touring",
-				{"speed": 1.018, "brake": 0.91, "grip": 0.985}, {},
-				"Rollt auf der Geraden schneller. Der Bremsweg wird länger.",
+				{"speed": 1.005, "accel": 1.035, "grip": 0.96}, {},
+				"Rollt auf der Geraden schneller und zieht etwas besser an. Rutscht in Kurven mehr.",
 				"Rollt schneller"),
 			_part("tires", "sand", "Sandreifen", 8, "Tire_Sand",
 				{"speed": 0.96}, {"offroad": 0.12},
