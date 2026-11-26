@@ -54,14 +54,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.6974234193563461,
-     "speed_mps": 0.7264827284961939
+     "speed_mps": 0.721472502782427
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.2432330518960952,
-     "speed_mps": 1.9425516435876489
+     "speed_mps": 1.9629995556254136
     },
     "turn_left": {
      "seconds": 1.0,
@@ -244,14 +244,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.6974234193563461,
-     "speed_mps": 0.7264827284961939
+     "speed_mps": 0.721472502782427
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.2432330518960952,
-     "speed_mps": 1.9425516435876489
+     "speed_mps": 1.9629995556254136
     },
     "turn_left": {
      "seconds": 1.0,
@@ -434,14 +434,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.842069786787033,
-     "speed_mps": 0.8771560279031595
+     "speed_mps": 0.8711066759865859
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.5010809242725371,
-     "speed_mps": 2.3454389441758394
+     "speed_mps": 2.370127775167164
     },
     "turn_left": {
      "seconds": 1.0,
@@ -624,14 +624,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.8038731008768081,
-     "speed_mps": 0.8373678134133418
+     "speed_mps": 0.8315928629760083
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.4329911798238752,
-     "speed_mps": 2.239048718474805
+     "speed_mps": 2.2626176523534873
     },
     "turn_left": {
      "seconds": 1.0,
@@ -814,14 +814,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.7365104407072066,
-     "speed_mps": 0.7671983757366736
+     "speed_mps": 0.7619073524557309
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.3129099160432813,
-     "speed_mps": 2.051421743817627
+     "speed_mps": 2.073015656910444
     },
     "turn_left": {
      "seconds": 1.0,
@@ -1004,14 +1004,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.590973737835884,
-     "speed_mps": 0.6155976435790459
+     "speed_mps": 0.6113521425888455
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.053474923968315,
-     "speed_mps": 1.6460545687004922
+     "speed_mps": 1.6633814588973395
     },
     "turn_left": {
      "seconds": 1.0,
@@ -1194,14 +1194,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.7554868757724761,
-     "speed_mps": 0.7869654955963293
+     "speed_mps": 0.7815381473508374
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.3467374742031095,
-     "speed_mps": 2.1042773034423585
+     "speed_mps": 2.126427590847015
     },
     "turn_left": {
      "seconds": 1.0,
@@ -1384,14 +1384,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.8329941093921661,
-     "speed_mps": 0.8677021972835064
+     "speed_mps": 0.8617180441987925
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 1.4849025428295135,
-     "speed_mps": 2.320160223171115
+     "speed_mps": 2.3445829623623897
     },
     "turn_left": {
      "seconds": 1.0,
@@ -1574,14 +1574,14 @@
      "loop": true,
      "keys": 30,
      "stride_m": 0.543253156542778,
-     "speed_mps": 0.5658887047320604
+     "speed_mps": 0.5619860240097703
     },
     "run": {
      "seconds": 0.6333333333333333,
      "loop": true,
      "keys": 20,
      "stride_m": 0.9684078007936476,
-     "speed_mps": 1.5131371887400744
+     "speed_mps": 1.529064948621549
     },
     "turn_left": {
      "seconds": 1.0,

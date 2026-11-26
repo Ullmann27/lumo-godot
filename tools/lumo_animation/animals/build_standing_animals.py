@@ -293,7 +293,10 @@ def animate(rig, sk):
                 key.interpolation = 'LINEAR'
         action.use_fake_user = True
         entry = {'seconds': frames / FPS, 'loop': loop, 'keys': len(keys)}
-        entry.update(meta.get(name, {}))
+        if name in meta:
+            # the clip lasts a whole number of frames: travel speed follows the real length
+            entry['stride_m'] = meta[name]['stride_m']
+            entry['speed_mps'] = meta[name]['stride_m'] / entry['seconds']
         report[name] = entry
     rig.animation_data.action = bpy.data.actions['idle']
     scene.frame_set(1)

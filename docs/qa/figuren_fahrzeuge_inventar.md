@@ -104,10 +104,11 @@ darauf die Karosserie `fleet/<id>.glb` (LOD0–2) und für die Nähe die Meshy-H
 | stella | turbo | 19.100 | 19.974 |
 
 Befunde (gelesen bzw. gerendert):
-- **Räder**: alle 14 Karts nutzen dasselbe Rad (Radius 0,234 m, Nabe auf 0,35 m). Die
-  Drehung rechnet aber mit 0,35 m als Radius (`kart_vehicle.gd`:
-  `wheel_spin_phase += motion_speed * delta / 0.35`) → rechnerisch (Maßstab 1) drehen die Räder ein Drittel zu langsam
-  (sichtbares Rutschen).
+- **Räder**: alle 14 Karts nutzen dasselbe Rad. Das Mesh hat 0,234 m Radius, der Radknoten
+  ist ×1,5 skaliert → wirksamer Radius 0,35 m = Nabenhöhe; im Kart gemessen liegt die
+  Reifenunterkante exakt auf y = 0. Die Drehung (`motion_speed * delta / 0.35`) rollt damit
+  schlupffrei. (Erste Fassung dieses Inventars hatte hier fälschlich „ein Drittel zu langsam“
+  – ohne den Knotenmaßstab gerechnet; per Engine-Messung korrigiert.)
 - Lenkung: Vorderräder ±0,34 rad, Lenkrad ±0,40 rad – vorhanden.
 - **Federung**: auf den Produktions-Karts keine Feder- oder Aufbaubewegung (nur der alte
   Ersatz-Kart wippt die Naben). Kein Nicken beim Bremsen/Beschleunigen, kein Rollen in Kurven.
@@ -132,5 +133,28 @@ Felgen, Neon; Anbauteile werden sichtbar montiert (`apply_parts`, mit Einflug-An
 1. Stehende Tierfiguren mit eigener Ruhepose (aus den Meshy-Originalen, nicht aus dem Sitz)
    und Clip-Bibliothek inkl. echtem Geh- und Laufzyklus mit Fußkontakt → Lieferung an Team C.
 2. Konzert-Publikum auf stehende Figuren umstellen.
-3. Radrollen mit echtem Radius, Federung/Aufbaubewegung, Brems-/Rücklicht.
+3. Federung/Aufbaubewegung, Brems-/Rücklicht, Fahrerposition je Kart prüfen.
 4. Garage-Präsentation.
+
+## 7. Umgesetzt (Team B2, 26.11.2026)
+
+- **Stehende Tierfiguren** mit 20 Clips: `assets/characters/animals/<id>/figure.glb`,
+  Details und Clipnamen in `docs/qa/figuren_clipbibliothek.md`. Konzertpublikum steht jetzt und
+  schaut zur Bühne (`rhythm_concert_art.gd`). Offene Welt (Team C) kann über
+  `LumoOpponentRoster.figure_model_path(id)` umstellen; `lumo_world_open_world.gd` wurde nicht
+  angefasst.
+- **Federung der Produktions-Karts**: neuer Knoten `SprungBody` unter dem Fahrwerk
+  (`kart_production_vehicle.gd`); darauf hängen Karosserie-Hülle (alle LODs, Meshy-Nahhülle,
+  Aufkleber), `Coachwork`, Zierleisten und Aufbauteile aus der Werkstatt (Motor, Flügel,
+  Booster, Ballast). Räder, Achsen, Lenkrad, Sitz- und Pedalpunkte bleiben auf dem Fahrwerk.
+  `kart_vehicle.gd` treibt eine gedämpfte Feder (k = 150, d = 13): Bremsen taucht die Nase ein
+  (max. ca. 2,5°), Gas lässt das Heck einfedern (ca. 1,3°), Kurven rollen nach außen
+  (ca. 1,7° bei vollem Einschlag und hohem Tempo), in der Luft federt der Aufbau aus und
+  nach der Landung ein. Ruhige Darstellung (reduced motion) und Pause halten ihn still.
+  Test `kart_body_motion_regression` (144 Prüfungen), Bildfolge `kart_body_motion_capture.gd`.
+- Nicht geändert: Radmodelle und -größen je Kart (die Meshy-Radhäuser sind auf das
+  gemeinsame Rad gepasst; größere Räder bräuchten neue Hüllen), Bremslicht-Logik
+  (funktioniert bereits), Fahrerpositionen (Prüfungen bestehen: Griffe < 1 mm bei Rivalen).
+- Bekannt und **nicht von B2 verursacht** (auf Basis 62108c03 identisch): `kart_production_vehicle_regression`
+  und `kart_fleet_regression` erwarten `source_paths.size() == 3`, die Meshy-Nahhülle fügt
+  einen vierten Pfad hinzu → beide Tests scheitern lokal schon auf der Basis.

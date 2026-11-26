@@ -73,9 +73,9 @@ Einmalig: `stop` 0,8 s, `sit_down` 1,2 s, `stand_up` 1,2 s, `wave` 2,0 s, `joy` 
 Geh- und Laufzyklen sind **auf der Stelle** gebaut: der Standfuß gleitet mit genau der
 Reisegeschwindigkeit nach hinten. Die Figur steht also in der Welt still, wenn der Knoten mit
 `speed_mps` aus `figures.json` vorwärts bewegt wird (oder: `player.speed_scale =
-velocity / speed_mps`). Werte (Löwe): `walk` 0,96 s, Schritt 0,80 m, 0,84 m/s;
-`run` 0,64 s, 1,43 m, 2,24 m/s. Andere Figuren je nach Beinlänge 0,57–0,88 m/s bzw.
-1,51–2,35 m/s. Bei Maßstab `s` am Knoten gilt `s × speed_mps`.
+velocity / speed_mps`). Werte (Löwe): `walk` 0,97 s, Schritt 0,80 m, 0,83 m/s;
+`run` 0,63 s, 1,43 m, 2,26 m/s. Andere Figuren je nach Beinlänge 0,56–0,87 m/s bzw.
+1,53–2,37 m/s. Bei Maßstab `s` am Knoten gilt `s × speed_mps`.
 
 Fußkontakt (geprüft in `lumo_figure_animation_regression`): beim Gehen immer mindestens ein
 Fuß am Boden, mit Doppelstandphase (Gewichtsverlagerung), Becken schwingt zur Standseite,
