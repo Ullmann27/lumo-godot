@@ -65,6 +65,10 @@ const LEVELS := {
 const MISTAKE_SECONDS := 1.3
 const YIELD_RANGE := 16.0
 const YIELD_LANE := 2.6
+## A charged tow fires once the rival is this far beside the kart ahead (m),
+## within this many seconds.
+const SLINGSHOT_LANE := 2.2
+const SLINGSHOT_SECONDS := 2.5
 
 static var _tables: Dictionary = {}
 
@@ -277,7 +281,9 @@ static func yield_lane(game, index: int, rival_lane: float, target_lane: float) 
 
 
 ## Slipstream for rivals (Abenteuer/Extrem): the same wake geometry and charge
-## time as the child's (kart_race_rules), the same tow boost length.
+## time as the child's (kart_race_rules), the same tow boost length. A charged
+## tow is a slingshot: the boost fires only once the rival has pulled out beside
+## the kart it followed (SLINGSHOT_LANE), never into its back; unused it fades.
 static func update_slipstream(game, index: int, delta: float) -> void:
 	if not bool(level(str(game.difficulty)).slipstream):
 		return
@@ -285,22 +291,41 @@ static func update_slipstream(game, index: int, delta: float) -> void:
 	var speed: float = absf(float(rival.motion_speed))
 	var heading: float = float(game.opponent_headings[index])
 	var forward := Vector3(-sin(heading), 0.0, -cos(heading))
-	var towed: bool = RACE_RULES.in_slipstream(rival.position, forward, game.player.position, speed)
+	var leader: int = -2
+	if RACE_RULES.in_slipstream(rival.position, forward, game.player.position, speed):
+		leader = -1
 	for other in range(game.opponents.size()):
-		if towed:
+		if leader != -2:
 			break
-		if other != index:
-			towed = RACE_RULES.in_slipstream(
+		if (
+			other != index
+			and RACE_RULES.in_slipstream(
 				rival.position, forward, game.opponents[other].position, speed
 			)
-	var charge: float = float(rival.get_meta(&"slipstream_charge", 0.0))
-	charge = charge + delta if towed else maxf(0.0, charge - delta * 2.0)
-	if charge >= RACE_RULES.SLIPSTREAM_CHARGE_SECONDS:
-		charge = 0.0
-		game.opponent_boost_times[index] = maxf(
-			game.opponent_boost_times[index], RACE_RULES.SLIPSTREAM_BOOST_SECONDS
+		):
+			leader = other
+	var window: float = float(rival.get_meta(&"slingshot_left", 0.0))
+	if window > 0.0:
+		window = maxf(0.0, window - delta)
+		var towed_by: int = int(rival.get_meta(&"slingshot_leader", -1))
+		var beside: Vector3 = (
+			game.player.position if towed_by == -1 else game.opponents[towed_by].position
 		)
-		rival.set_meta(&"slipstreams", int(rival.get_meta(&"slipstreams", 0)) + 1)
-		if game.has_method("_stat"):
-			game._stat("rival_slipstreams")
+		var basis: Basis = game.world.frame(float(game.opponent_distances[index]))
+		var gap: Vector3 = beside - rival.position
+		if absf(gap.dot(basis.x)) >= SLINGSHOT_LANE or gap.dot(-basis.z) < -1.0:
+			window = 0.0
+			game.opponent_boost_times[index] = maxf(
+				game.opponent_boost_times[index], RACE_RULES.SLIPSTREAM_BOOST_SECONDS
+			)
+			rival.set_meta(&"slipstreams", int(rival.get_meta(&"slipstreams", 0)) + 1)
+			if game.has_method("_stat"):
+				game._stat("rival_slipstreams")
+		rival.set_meta(&"slingshot_left", window)
+	var charge: float = float(rival.get_meta(&"slipstream_charge", 0.0))
+	charge = charge + delta if leader != -2 else maxf(0.0, charge - delta * 2.0)
+	if charge >= RACE_RULES.SLIPSTREAM_CHARGE_SECONDS and window <= 0.0:
+		charge = 0.0
+		rival.set_meta(&"slingshot_left", SLINGSHOT_SECONDS)
+		rival.set_meta(&"slingshot_leader", leader)
 	rival.set_meta(&"slipstream_charge", charge)
