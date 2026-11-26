@@ -45,10 +45,10 @@ static func environment_profile(track_id: String, low_detail: bool) -> Dictionar
 	}
 	match track_id:
 		"sonnenhafen":
-			profile.contrast = 1.13
-			profile.saturation = 1.16
-			profile.exposure = 1.03 if low_detail else 0.94
-			profile.glow_intensity = 0.68
+			profile.contrast = 1.10
+			profile.saturation = 1.02
+			profile.exposure = 0.98 if low_detail else 0.93
+			profile.glow_intensity = 0.58
 		"zauberwald":
 			profile.contrast = 1.14
 			profile.saturation = 1.16

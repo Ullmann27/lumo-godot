@@ -773,14 +773,14 @@ func _sky_for(id: String) -> Sky:
 	atmosphere.sky_curve=0.44
 	atmosphere.sun_angle_max=5.0
 	if id=="sonnenhafen":
-		# Mediterranean noon from the 2026-11-03 reference: deep zenith, warm horizon.
-		atmosphere.sky_top_color=Color("1a64b8")
-		atmosphere.sky_horizon_color=Color("f0c898")
-		atmosphere.ground_horizon_color=Color("e0c090")
-		atmosphere.sky_curve=0.15
-		atmosphere.sky_energy_multiplier=0.98
-		atmosphere.sun_angle_max=16.0
-		atmosphere.sun_curve=0.07
+		# The low coastal sun gives the harbour a warm edge and cool blue shadows.
+		atmosphere.sky_top_color = Color("315a7b")
+		atmosphere.sky_horizon_color = Color("d1c5af")
+		atmosphere.ground_horizon_color = Color("9a9f92")
+		atmosphere.sky_curve = 0.28
+		atmosphere.sky_energy_multiplier = 0.94
+		atmosphere.sun_angle_max = 8.0
+		atmosphere.sun_curve = 0.16
 	sky.sky_material=atmosphere
 	_skies[id]=sky
 	return sky
@@ -791,7 +791,7 @@ func _lighting() -> void:
 	environment.background_mode=Environment.BG_SKY
 	environment.sky=_sky_for(track_id)
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color=Color("f0d7bb") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
+	environment.ambient_light_color=Color("bacbd6") if track_id=="sonnenhafen" else (Color("bfd9f2") if track_id!="zauberwald" else Color("a8d4d0"))
 	environment.ambient_light_energy=(0.28 if low_detail else 0.20) if track_id=="sonnenhafen" else (0.22 if track_id!="holo_city" else 0.40)
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES if track_id in ["candy_cloud", "volcano_night"] else Environment.TONE_MAPPER_FILMIC
 	environment.tonemap_exposure=float(visual.exposure)
@@ -818,7 +818,7 @@ func _lighting() -> void:
 	world_environment.environment=environment
 	add_child(world_environment)
 	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees=Vector3(-25,-36,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
+	sun.rotation_degrees=Vector3(-28,-41,0) if track_id=="sonnenhafen" else (Vector3(-39,-36,0) if track_id!="zauberwald" else Vector3(-58,25,0))
 	sun.light_color=definition.sun
 	sun.light_energy=0.56 if track_id=="candy_cloud" else ((0.90 if low_detail else 1.00) if track_id=="sonnenhafen" else (0.70 if track_id!="holo_city" else 0.42))
 	if track_id==JUNGLE.ID:
@@ -832,7 +832,7 @@ func _lighting() -> void:
 	add_child(sun)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees=Vector3(-28,145,0)
-	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else (Color("e8b28c") if track_id=="sonnenhafen" else Color("9bccea"))
+	fill.light_color=Color("e0a18b") if track_id=="volcano_night" else (Color("a9c4dc") if track_id=="sonnenhafen" else Color("9bccea"))
 	fill.light_energy=0.18 if track_id=="volcano_night" else (0.14 if track_id=="sonnenhafen" else 0.10)
 	fill.shadow_enabled=false
 	add_child(fill)
@@ -999,10 +999,10 @@ func _terrain() -> void:
 	if track_id=="sonnenhafen":
 		var stylized := ShaderMaterial.new()
 		stylized.shader=preload("res://assets/shaders/kart_stylized_vertex_tint.gdshader")
-		stylized.set_shader_parameter("top_tint",Color("d8ef9c"))
-		stylized.set_shader_parameter("side_tint",Color("7eae5e"))
-		stylized.set_shader_parameter("bottom_tint",Color("657b68"))
-		stylized.set_shader_parameter("overall_tint",Color("e4efc0"))
+		stylized.set_shader_parameter("top_tint",Color("b8c49e"))
+		stylized.set_shader_parameter("side_tint",Color("829a77"))
+		stylized.set_shader_parameter("bottom_tint",Color("68766d"))
+		stylized.set_shader_parameter("overall_tint",Color("c7ccac"))
 		stylized.set_shader_parameter("roughness_value",0.90)
 		if not low_detail:
 			stylized.set_shader_parameter(

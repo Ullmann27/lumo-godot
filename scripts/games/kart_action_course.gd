@@ -368,7 +368,11 @@ static func _build_kicker(world, kicker: Dictionary, accent: Color) -> void:
 		half = float(world.road_width_at(float(kicker.start))) * 0.5
 	RAMP.build(
 		world, float(kicker.start), float(kicker.length), float(kicker.height), half,
-		{"stripe_a": Color("f7c84a"), "stripe_b": Color("23324a"), "profile": str(kicker.get("profile", "linear"))}
+		{
+			"deck": LumoKartRoadSurfaces.tint(str(world.track_id), Color("4e5360")).lerp(Color("484d53"), 0.62),
+			"paint": Color("e9d2a3").lerp(accent, 0.18),
+			"profile": str(kicker.get("profile", "linear")),
+		}
 	)
 	var lip: float = float(kicker.take_off) - 0.2
 	var lip_basis: Basis = world.frame(lip)
