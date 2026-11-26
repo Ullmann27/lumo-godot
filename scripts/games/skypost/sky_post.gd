@@ -136,25 +136,18 @@ func _ready() -> void:
 	print("[SkyPost] ready: grade=%d subject=%s profile=%s" % [grade, subject, profile])
 
 
-## Graphics profile: launch option (tests), else the Lumo Kart garage choice,
-## else the platform profile; software-rendered phones always get LOW.
+## A test can select its own tier. Regular launches use the shared graphics budget.
 func _choose_profile(options: Dictionary) -> String:
 	var config := ConfigFile.new()
-	var has_preferences: bool = config.load("user://kart_preferences.cfg") == OK
 	reduced_motion = bool(options.get("reduceAnimations", false))
-	if has_preferences:
+	if config.load("user://kart_preferences.cfg") == OK:
 		reduced_motion = reduced_motion or bool(config.get_value("race", "reduced_motion", false))
 	var wanted: String = str(options.get("skypostProfile", ""))
-	if wanted in ["low", "medium", "high"]:
+	if wanted in LumoQuality.TIERS:
 		return wanted
 	if PerformanceManager.software_rendered_mobile():
 		return "low"
-	if has_preferences:
-		var chosen: String = str(config.get_value("race", "graphics_profile", ""))
-		if chosen in ["low", "medium", "high"]:
-			return chosen
-	var by_platform: String = PerformanceManager.get_profile_name()
-	return by_platform if by_platform in ["low", "medium", "high"] else "medium"
+	return LumoQuality.tier()
 
 
 func _build_screens() -> void:

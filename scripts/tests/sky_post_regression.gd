@@ -54,6 +54,8 @@ func _run() -> void:
 	scene = load("res://scenes/games/sky_post.tscn")
 	if _wanted("register"):
 		_test_registration()
+	if _wanted("profile"):
+		await _test_profile_selection()
 	if _wanted("riddles"):
 		_test_riddles()
 	if _wanted("layout"):
@@ -180,6 +182,47 @@ func _test_registration() -> void:
 		not routes.launch_options_for("skypost", {}, 3, "Deutsch").is_empty(),
 		"Spielewelt baut Startoptionen für skypost"
 	)
+
+
+func _test_profile_selection() -> void:
+	await process_frame
+	await process_frame
+	var path := "user://kart_preferences.cfg"
+	var had_preferences := FileAccess.file_exists(path)
+	var previous := FileAccess.get_file_as_bytes(path) if had_preferences else PackedByteArray()
+	var preferences := ConfigFile.new()
+	preferences.set_value("race", "graphics_profile", "low")
+	preferences.set_value("race", "reduced_motion", true)
+	var saved := preferences.save(path)
+	_check(saved == OK, "alte Kart-Präferenzen für den Test gespeichert")
+	if saved != OK:
+		return
+	var fixture := FileAccess.get_file_as_bytes(path)
+	var previous_choice := LumoQuality.graphics_choice()
+	var store := root.get_node("SettingsStore")
+	var stored_choice: String = store.get_graphics_choice()
+	LumoQuality.set_graphics_choice("ultra", false)
+	var game = await _open("skypost-profile-test", {"skypostProfile": ""})
+	_check(
+		game.world.profile == "high", "Wolkenhafen nutzt das gemeinsame Profil Sehr hoch als Hoch"
+	)
+	_check(game.reduced_motion, "Sternenpost übernimmt weiterhin reduzierte Bewegung aus Kart")
+	_check(LumoQuality.graphics_choice() == "ultra", "Sternenpost behält das aktive gemeinsame Profil")
+	_check(store.get_graphics_choice() == stored_choice, "Sternenpost speichert keine Grafikauswahl")
+	_check(
+		FileAccess.get_file_as_bytes(path) == fixture,
+		"Sternenpost schreibt die Kart-Präferenzen nicht um"
+	)
+	await _close(game)
+	LumoQuality.set_graphics_choice(previous_choice, false)
+	if had_preferences:
+		var file := FileAccess.open(path, FileAccess.WRITE)
+		_check(
+			file != null and file.store_buffer(previous),
+			"vorhandene Kart-Präferenzen wiederhergestellt"
+		)
+	else:
+		_check(DirAccess.remove_absolute(path) == OK, "Kart-Testdatei entfernt")
 
 
 # ------------------------------------------------------------------ riddles
