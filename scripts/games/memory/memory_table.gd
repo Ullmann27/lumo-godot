@@ -1111,6 +1111,14 @@ func _layout() -> void:
 	camera.size = logical.y/100.0
 	var count: int = int(_state.get("count",8))
 	var grid := _choose_grid(count,_board_rect.size.x,_board_rect.size.y)
+	if compact and fox_room and int(grid.page_size) == 1:
+		# Bei sehr kurzen Querfenstern etwas vom Abstand zur Fußleiste
+		# nutzen, damit mehrere Karten ihre volle Touchfläche behalten.
+		const EXTRA_HEIGHT := 8.0
+		var expanded := _choose_grid(count,_board_rect.size.x,_board_rect.size.y+EXTRA_HEIGHT)
+		if int(expanded.page_size) > 1:
+			_board_rect.size.y += EXTRA_HEIGHT
+			grid = expanded
 	var grid_center := Vector2.ZERO
 	_page_size = int(grid.page_size)
 	_columns = int(grid.cols)
