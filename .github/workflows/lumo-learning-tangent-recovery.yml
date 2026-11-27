@@ -1,0 +1,74 @@
+name: LUMO learning actor tangent recovery – isolated native proof
+on:
+  push:
+    branches: [integration/lumo-learning-tangents-20261127]
+    paths:
+      - tools/prepare_nextgen_learning_tangents.py
+      - .github/workflows/lumo-learning-tangent-recovery.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lumo-learning-tangents-recovery
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'Ullmann27/lumo-godot' && github.ref_name == 'integration/lumo-learning-tangents-20261127'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare exact derived actor
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tangent-proof
+          python3 tools/prepare_nextgen_learning_tangents.py --write | tee tangent-proof/source.json.txt
+          python3 tools/verify_nextgen_learning_import.py
+          python3 -m py_compile tools/prepare_nextgen_learning_tangents.py tools/verify_nextgen_learning_import.py
+      - name: Install pinned Godot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl --fail --location --retry 3 --max-time 180 https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -o "$RUNNER_TEMP/godot/engine.zip"
+          printf '%s  %s\n' d0bc2113065e481c9c2c2b2c37daa4e8be3fe9e27f0ab9ab0b6096e9a37907f3 "$RUNNER_TEMP/godot/engine.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/godot/engine.zip" -d "$RUNNER_TEMP/godot"
+          mv "$RUNNER_TEMP/godot/Godot_v4.6.3-stable_linux.x86_64" "$RUNNER_TEMP/godot/godot"
+          echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+      - name: Strict native import and actual learning actor regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --single-threaded-scene --path . --editor --import --quit > tangent-proof/import.log 2>&1
+          if grep -E 'SCRIPT ERROR:|Parse Error:|ERROR:' tangent-proof/import.log; then exit 1; fi
+          for probe in completeness_2094_regression lumo_world_meshy_detail_regression lumo_world_regression learning_tangent_material_regression; do
+            log="tangent-proof/${probe}.log"
+            timeout 420s godot --headless --single-threaded-scene --audio-driver Dummy --path . --script "res://scripts/tests/${probe}.gd" > "$log" 2>&1
+            cat "$log"
+            if grep -Eq 'SCRIPT ERROR:|Parse Error:|Compile Error:|ERROR:|\] FAIL' "$log"; then exit 1; fi
+          done
+          grep -F '[Completeness2094] PASS' tangent-proof/completeness_2094_regression.log
+          grep -F '[WorldMeshy] PASS' tangent-proof/lumo_world_meshy_detail_regression.log
+          grep -F '[LumoWorld] PASS' tangent-proof/lumo_world_regression.log
+          grep -F '[LearningMaterials] PASS' tangent-proof/learning_tangent_material_regression.log
+      - name: Commit validated runtime asset only to isolated native branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=integration/lumo-learning-tangents-20261127
+          test "$GITHUB_REF_NAME" = "$target"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin "refs/heads/$target" | cut -f1)" = "$GITHUB_SHA"
+          asset=assets/characters/lumo_nextgen_chat3/Lumo-Learning-Animated.glb
+          python3 tools/verify_nextgen_learning_import.py
+          git add -- "$asset"
+          test "$(git diff --cached --name-only)" = "$asset"
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'LUMO: verified tangent-compatible derived learning actor'
+          git push origin "HEAD:refs/heads/$target"
+          git rev-parse HEAD | tee tangent-proof/validated-commit.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-learning-tangent-proof
+          path: tangent-proof/
