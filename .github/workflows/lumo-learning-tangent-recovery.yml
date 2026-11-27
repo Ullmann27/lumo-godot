@@ -2,9 +2,6 @@ name: LUMO learning actor tangent recovery – isolated native proof
 on:
   push:
     branches: [integration/lumo-learning-tangents-20261127]
-    paths:
-      - tools/prepare_nextgen_learning_tangents.py
-      - .github/workflows/lumo-learning-tangent-recovery.yml
   workflow_dispatch:
 permissions:
   contents: write
